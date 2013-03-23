@@ -1,1 +1,1 @@
-from observable import Observable, Observer
+from .observable import Observable, Observer

@@ -1,11 +1,10 @@
 # Current Thread Scheduler
 
 from datetime import timedelta
-from Queue import PriorityQueue
+from queue import PriorityQueue
 
-import scheduler
-from scheduler import Scheduler
-from scheduleditem import ScheduledItem
+from .scheduler import Scheduler
+from .scheduleditem import ScheduledItem
 
 class Trampoline(object):
     def __init__(self):
@@ -67,4 +66,4 @@ class CurrentThreadScheduler(Scheduler):
         if self.queue is None:
             return this.schedule(action)
         else:
-            return action()
+            return action(self, None)

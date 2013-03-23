@@ -1,4 +1,4 @@
-from disposable import Disposable
+from .disposable import Disposable
 
 # Single assignment
 class SingleAssignmentDisposable(Disposable):

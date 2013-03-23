@@ -28,8 +28,10 @@ class Enumerable(object):
         return Enumerable(iterator())   
 
     def first(self):
+        pass
 
     def last(self):
+        pass
 
     @classmethod
     def range(cls, start, count):
@@ -47,11 +49,11 @@ class Enumerable(object):
 
     @classmethod
     def repeat(cls, element, count):
-        return cls(element for _ in xrange(count))
+        return cls(element for _ in range(count))
 
 def main():
     #a = Enumerable(iter([1,2,30]))
-    a = Enumerable.range(0, sys.maxint)
+    a = Enumerable.range(0, sys.maxsize)
     #a = Enumerable.repeat(10, sys.maxint)
     #a = (a
     #    .where(lambda x: x > 3)
@@ -67,7 +69,7 @@ def main():
     # a.where([x for x in xs ])
     
     b = a.__iter__()
-    print list(b)
+    print(list(b))
     #print b.to_array()
 
 if __name__ == '__main__':

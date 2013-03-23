@@ -1,4 +1,4 @@
-from disposables import SingleAssignmentDisposable
+from rx.disposables import SingleAssignmentDisposable
 
 def defaultSubComparer(x, y):
     return x - y
@@ -22,5 +22,5 @@ class ScheduledItem(object):
         return self.disposable.is_disposed
 
     def invoke_core(self):
-        print "ScheduledItem:invoke_core", self.action
+        print("ScheduledItem:invoke_core", self.action)
         return self.action(self.scheduler, self.state)

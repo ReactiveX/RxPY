@@ -1,1 +1,1 @@
-from enumerable import Enumerable
+from .enumerable import Enumerable

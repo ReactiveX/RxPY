@@ -7,15 +7,15 @@ def test_rx():
 def test_returnvalue():
 	xs = Observable.returnvalue(42)
 
-	def on_next(value):
+	def on_next(value=None):
 		assert value == 42
 
 	xs.subscribe(on_next)
 
 def test_range():
 	xs = Observable.range(0, 10)
-
-	def on_next(value):
+	
+	def on_next(value=None):
 		assert value == 42
 
 	xs.subscribe(on_next)

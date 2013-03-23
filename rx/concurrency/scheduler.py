@@ -1,4 +1,4 @@
-from disposables import DisposableEmpty, CompositeDisposable
+from rx.disposables import DisposableEmpty, CompositeDisposable
 from datetime import datetime, timedelta
 
 class Scheduler(object):
@@ -12,8 +12,8 @@ class Scheduler(object):
         raise NotImplementedError
 
     def invoke_action(self, action, state=None):
-        #print "invoke_action", action, state
-        action(state)
+        print("invoke_action", action, state)
+        action(self, state)
         return DisposableEmpty()
         
     def invoke_rec_immediate(self, scheduler, pair):
@@ -29,14 +29,14 @@ class Scheduler(object):
                 is_added = False
                 is_done = False
                 
-                def action(scheduler1, state3):
+                def action(scheduler, state=None):
                     #print "action", scheduler1, state3
                     if is_added:
                         group.remove(d)
                     else:
                         is_done = True
                     
-                    recursive_action(state3)
+                    recursive_action(state)
                     return DisposableEmpty()
 
                 d = scheduler.schedule(action, state2)

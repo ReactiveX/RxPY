@@ -1,4 +1,4 @@
-from disposables import Disposable
+from .disposable import Disposable
 
 class CompositeDisposable(Disposable):
     def __init__(self, disposables=None):

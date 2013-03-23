@@ -1,7 +1,7 @@
 import types
 import sys
 
-from concurrency import ImmediateScheduler, CurrentThreadScheduler
+from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 
 class Observable(object):
     def __init__(self, subscribe):
@@ -30,7 +30,7 @@ class Observable(object):
 
     def subscribe(self, func_or_observer, on_error=None, on_completed=None):
         if isinstance(func_or_observer, types.FunctionType):
-            observer = Obsever(func_or_observer, on_error, on_completed)
+            observer = Observer(func_or_observer, on_error, on_completed)
         else:
             observer = func_or_observer
 
@@ -55,10 +55,10 @@ class Observable(object):
         
         def subscribe(observer):
             def action(self, i):
-                #print "Observable:range:subscribe:action", i, self
+                print("Observable:range:subscribe:action", self, i)
                 if i < count:
                     observer.on_next(start + i)
-                    self(i + 1)
+                    scheduler(i + 1)
                 else:
                     #print "completed"
                     observer.on_completed()
@@ -67,7 +67,7 @@ class Observable(object):
             
         return cls(subscribe)
 
-class Obsever(object):
+class Observer(object):
     def __init__(self, on_next, on_completed=None, on_error=None):
         self.on_next = on_next
         self._on_completed = on_completed
@@ -79,7 +79,7 @@ class Obsever(object):
 
 def main():
     #a = Observable.returnvalue(42)
-    a = Observable.range(0, 10) #sys.maxint)
+    a = Observable.range(0, 10)
     #a = Enumerable.repeat(10, sys.maxint)
     #a = (a
     #    .where(lambda x: x > 3)
@@ -95,10 +95,10 @@ def main():
     #a.where([x for x in xs ])
     
     def debug(x):
-        print "value: ", x
+        print("value: ", x)
 
     disp = a.subscribe(debug)
-    print disp
+    print(disp)
     disp.dispose()
     #print b.to_array()
 

@@ -1,7 +1,8 @@
-import scheduler
-from scheduler import Scheduler
+from datetime import timedelta
 
-from disposables import DisposableEmpty
+from .scheduler import Scheduler
+
+from rx.disposables import DisposableEmpty
 
 #from datetime import datetime
 
@@ -13,10 +14,10 @@ class ImmediateScheduler(Scheduler):
         return self.invoke_action(action, state)
 
     def schedule_relative(self, duetime, action, state=None):
-        if duetime > 0:
+        if duetime > timedelta(0):
             raise Exception(schedulerNoBlockError)
 
-        return self.invoke_action(self, state)
+        return self.invoke_action(action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
         return self.schedule_relative(duetime - self.now(), action, state)
