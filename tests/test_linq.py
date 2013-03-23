@@ -1,5 +1,5 @@
 import sys
-from linq import Enumerable
+from linq.enumerable import Enumerable
 
 def test():
 	assert True
