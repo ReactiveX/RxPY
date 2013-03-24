@@ -1,9 +1,11 @@
 import types
 import sys
 
+from .linq.observable_creation import ObservableCreation
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
+from .observer import Observer
 
-class Observable(object):
+class Observable(ObservableCreation):
     def __init__(self, subscribe):
         self._subscribe = subscribe
 
@@ -28,11 +30,11 @@ class Observable(object):
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
         return Observable(subscribe)
 
-    def subscribe(self, func_or_observer, on_error=None, on_completed=None):
-        if isinstance(func_or_observer, types.FunctionType):
-            observer = Observer(func_or_observer, on_error, on_completed)
+    def subscribe(self, on_next=None, on_error=None, on_completed=None):
+        if not on_next or isinstance(on_next, types.FunctionType):
+            observer = Observer(on_next, on_completed, on_error)
         else:
-            observer = func_or_observer
+            observer = on_next
 
         return self._subscribe(observer)
 
@@ -66,16 +68,6 @@ class Observable(object):
             return scheduler.schedule_recursive(action, 0)
             
         return cls(subscribe)
-
-class Observer(object):
-    def __init__(self, on_next, on_completed=None, on_error=None):
-        self.on_next = on_next
-        self._on_completed = on_completed
-        self.on_error = on_error
-
-    def on_completed(self):
-        if self._on_completed:
-            self._on_completed()
 
 def main():
     #a = Observable.returnvalue(42)
