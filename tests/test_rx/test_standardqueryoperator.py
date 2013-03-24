@@ -4,36 +4,38 @@ class RxException(Exception):
     pass
 
 def test_select_throws():
+
+    # Helper function for raising exceptions within lambdas
     def _raise(ex):
         raise RxException(ex)
 
     try:
-        return Observable.returnvalue(1) \
+        Observable.returnvalue(1) \
             .select(lambda x, y: x) \
             .subscribe(lambda x: _raise("ex"))
     except RxException:
         pass
 
     try:
-        return Observable.throw_exception('ex') \
-               .select(lambda x, y: x) \
-               .subscribe(on_error=lambda ex: _raise(ex))
+        Observable.throw_exception('ex') \
+            .select(lambda x, y: x) \
+            .subscribe(on_error=lambda ex: _raise(ex))
     except RxException:
         pass
 
-#     raises(function () {
-#         return Observable.empty().select(function (x) {
-#             return x;
-#         }).subscribe(function (x) { }, function (ex) { }, function () {
-#             throw 'ex';
-#         });
-#     });
-#     return raises(function () {
-#         return Observable.create(function (o) {
-#             throw 'ex';
-#         }).select(function (x) {
-#             return x;
-#         }).subscribe();
-#     });
+    try:
+        Observable.empty() \
+            .select(lambda x, y: x) \
+            .subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+    except RxException:
+        pass
 
-# });
+    try:
+        def subscribe(observer):
+            _raise('ex')
+        
+        Observable.create(subscribe) \
+            .select(lambda x: x) \
+            .subscribe()
+    except RxException:
+        pass

@@ -23,7 +23,6 @@ def select(self, selector):
             try:
                 result = selector(value, count)
             except Exception as err:
-                print (observer, err)
                 observer.on_error(err)
             else:
                 count += 1

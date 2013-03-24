@@ -1,3 +1,4 @@
+from rx.disposables import Disposable
 from rx.concurrency import ImmediateScheduler
 
 class ObservableCreation(object):
@@ -13,7 +14,6 @@ class ObservableCreation(object):
     @classmethod
     def create_with_disposable(cls, subscribe):
         return cls(subscribe)
-    #Observable.__class__.create_with_disposable = create_with_disposable
 
 # var observableDefer = Observable.defer = function (observableFactory) {
 #     return new AnonymousObservable(function (observer) {
@@ -27,14 +27,17 @@ class ObservableCreation(object):
 #     });
 # };
 
-# var observableEmpty = Observable.empty = function (scheduler) {
-#     scheduler || (scheduler = immediateScheduler);
-#     return new AnonymousObservable(function (observer) {
-#         return scheduler.schedule(function () {
-#             observer.onCompleted();
-#         });
-#     });
-# };
+    @classmethod
+    def empty(cls, scheduler=None):
+        scheduler = scheduler or ImmediateScheduler()
+    
+        def subscribe(observer):
+            def action(scheduler, state):
+                observer.on_completed()
+
+            return scheduler.schedule(action)
+
+        return cls(subscribe)
 
 # var observableFromArray = Observable.fromArray = function (array, scheduler) {
 #     scheduler || (scheduler = currentThreadScheduler);
@@ -80,12 +83,12 @@ class ObservableCreation(object):
 #         });
 #     });
 # };
+    @classmethod
+    def never(cls):
+        def subscribe(observer):
+            return Disposable.empty()
 
-# var observableNever = Observable.never = function () {
-#     return new AnonymousObservable(function () {
-#         return disposableEmpty;
-#     });
-# };
+        return cls(subscribe)
 
 # Observable.range = function (start, count, scheduler) {
 #     scheduler || (scheduler = currentThreadScheduler);
