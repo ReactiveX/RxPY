@@ -1,4 +1,6 @@
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.disposables import Disposable, SingleAssignmentDisposable
+from rx.disposables import CompositeDisposable, SerialDisposable
+from rx.disposables import RefCountDisposable
 
 class BooleanDisposable(Disposable):
     def __init__(self):
@@ -264,3 +266,42 @@ def test_mutabledisposable_dispose():
     assert disp
     assert m.disposable == None
 
+def test_refcountdisposable_singlereference():
+    d = BooleanDisposable()
+    r = RefCountDisposable(d)
+
+    assert not d.is_disposed
+    r.dispose()
+    assert d.is_disposed
+    r.dispose()
+    assert d.is_disposed
+
+def test_refcountdisposable_refcounting():
+    d = BooleanDisposable()
+    r = RefCountDisposable(d)
+    assert not d.is_disposed
+    d1 = r.disposable
+    d2 = r.disposable
+    assert not d.is_disposed
+    d1.dispose()
+    assert not d.is_disposed
+    d2.dispose()
+    assert not d.is_disposed
+    r.dispose()
+    assert d.is_disposed
+    d3 = r.disposable
+    d3.dispose()
+
+def test_refcountdisposable_primarydisposesfirst():
+    d = BooleanDisposable()
+    r = RefCountDisposable(d)
+    assert not d.is_disposed;
+    d1 = r.disposable
+    d2 = r.disposable
+    assert not d.is_disposed
+    d1.dispose()
+    assert not d.is_disposed
+    r.dispose()
+    assert not d.is_disposed
+    d2.dispose()
+    assert d.is_disposed
