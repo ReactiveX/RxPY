@@ -1,5 +1,6 @@
 # Current Thread Scheduler
 
+import time
 from datetime import timedelta
 from queue import PriorityQueue
 
@@ -20,13 +21,16 @@ class Trampoline(object):
     def run(self):
         #print "Trampoline:run"
         while self.queue.qsize() > 0:
-            item = self.queue.get();
+            item = self.queue.get()
             if not item.is_cancelled():
-                while item.duetime - Scheduler.now() > timedelta(0):
-                    pass
-
+                diff = item.duetime - Scheduler.now()
+                while diff > timedelta(0):
+                    seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
+                    time.sleep(seconds)
+                    diff = item.duetime - Scheduler.now()
+                
                 if not item.is_cancelled():
-                    #print "item.invoke"
+                    #print("item.invoke")
                     item.invoke()
 
 class CurrentThreadScheduler(Scheduler):    
@@ -64,6 +68,6 @@ class CurrentThreadScheduler(Scheduler):
     
     def ensure_trampoline(self, action):
         if self.queue is None:
-            return this.schedule(action)
+            return self.schedule(action)
         else:
             return action(self, None)

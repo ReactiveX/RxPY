@@ -5,14 +5,15 @@ class Scheduler(object):
     def schedule(self, action, state=None):
         raise NotImplementedError
 
-    def schedule_relative(self, action, state=None):
+    def schedule_relative(self, duetime, action, state=None):
         raise NotImplementedError
 
-    def schedule_absolute(self, state, action):
+    def schedule_absolute(self, duetime, action, state=None):
         raise NotImplementedError
 
     def invoke_action(self, action, state=None):
         print("invoke_action", action, state)
+        
         action(self, state)
         return DisposableEmpty()
         
@@ -30,6 +31,8 @@ class Scheduler(object):
                 is_done = False
                 
                 def action(scheduler, state=None):
+                    nonlocal is_added, is_done
+
                     #print "action", scheduler1, state3
                     if is_added:
                         group.remove(d)

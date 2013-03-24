@@ -41,7 +41,7 @@ class Observable(object):
         scheduler = scheduler or ImmediateScheduler()
 
         def subscribe(observer):
-            def action(state=None):
+            def action(scheduler, state=None):
                 observer.on_next(value)
                 observer.on_completed()
 
@@ -54,8 +54,8 @@ class Observable(object):
         scheduler = scheduler or CurrentThreadScheduler()
         
         def subscribe(observer):
-            def action(self, i):
-                print("Observable:range:subscribe:action", self, i)
+            def action(scheduler, i):
+                print("Observable:range:subscribe:action", scheduler, i)
                 if i < count:
                     observer.on_next(start + i)
                     scheduler(i + 1)

@@ -13,9 +13,9 @@ def test_returnvalue():
 	xs.subscribe(on_next)
 
 def test_range():
-	xs = Observable.range(0, 10)
+	xs = Observable.range(0, 1)
 	
 	def on_next(value=None):
-		assert value == 42
+		assert value == 0
 
 	xs.subscribe(on_next)
