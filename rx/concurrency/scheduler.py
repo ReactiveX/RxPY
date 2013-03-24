@@ -1,4 +1,4 @@
-from rx.disposables import DisposableEmpty, CompositeDisposable
+from rx.disposables import Disposable, CompositeDisposable
 from datetime import datetime, timedelta
 
 class Scheduler(object):
@@ -15,7 +15,7 @@ class Scheduler(object):
         print("invoke_action", action, state)
         
         action(self, state)
-        return DisposableEmpty()
+        return Disposable.empty()
         
     def invoke_rec_immediate(self, scheduler, pair):
         #print "invoke_rec_immediate", scheduler, pair
@@ -40,7 +40,7 @@ class Scheduler(object):
                         is_done = True
                     
                     recursive_action(state)
-                    return DisposableEmpty()
+                    return Disposable.empty()
 
                 d = scheduler.schedule(action, state2)
                 

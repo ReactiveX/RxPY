@@ -10,12 +10,14 @@ class Disposable(object):
     def dispose(self):
         if not self.is_disposed:
             self.action()
-            self.isDisposed = True
+            self.is_disposed = True
 
     @classmethod
     def create(cls, action):
         return cls(action)
 
-class DisposableEmpty(Disposable):
-    def __init__(self):
-        Disposable.__init__(self, noop)
+    @classmethod
+    def empty(cls):
+        return cls(noop)
+
+disposable_empty = Disposable.empty

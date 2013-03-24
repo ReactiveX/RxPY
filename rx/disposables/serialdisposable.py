@@ -1,31 +1,32 @@
 from .disposable import Disposable
 
-# Single assignment
-class SingleAssignmentDisposable(Disposable):
-
-    def __init__():
+# Multiple assignment disposable
+class SerialDisposable(Disposable):
+    def __init__(self):
         self.is_disposed = False
         self.current = None
-
-    def disposable(self, value):
-        return not value ? self.get_disposable() : self.set_disposable(value)
 
     def get_disposable(self):
         return self.current
 
-    def setDisposable(self, value):
-        if self.current:
-            raise Exception('Disposable has already been assigned')
-        
+    def set_disposable(self, value):
         should_dispose = self.is_disposed
+        old = None
+
         if not should_dispose:
+            old = self.current
             self.current = value
+        
+        if old:
+            old.dispose()
         
         if should_dispose and value:
             value.dispose()
-        
+    
+    disposable = property(get_disposable, set_disposable)
 
     def dispose(self):
+        old = None
         if not self.is_disposed:
             self.is_disposed = True
             old = self.current
@@ -33,3 +34,4 @@ class SingleAssignmentDisposable(Disposable):
         
         if old:
             old.dispose()
+        

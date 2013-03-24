@@ -2,8 +2,6 @@ from datetime import timedelta
 
 from .scheduler import Scheduler
 
-from rx.disposables import DisposableEmpty
-
 #from datetime import datetime
 
 # Immediate Scheduler

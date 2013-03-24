@@ -1,8 +1,9 @@
 from .disposable import Disposable
 
 class CompositeDisposable(Disposable):
-    def __init__(self, disposables=None):
-        self.disposables = disposables or []
+    def __init__(self, *args):
+        print (args)
+        self.disposables = list(args)
         self.is_disposed = False
         self.length = len(self.disposables)
 
@@ -32,20 +33,20 @@ class CompositeDisposable(Disposable):
         self.disposables = []
         self.length = 0
 
-        for disposable in currentDisposables:
+        for disposable in current_disposables:
             disposable.dispose()
             
     def clear(self):
-        currentDisposables = self.disposables[:]
+        current_disposables = self.disposables[:]
         self.disposables = []
         self.length = 0
         
-        for disposable in currentDisposables:
+        for disposable in current_disposables:
             disposable.dispose()
             
-    def contains(item):
+    def contains(self, item):
         return item in self.disposables
 
-    def toArray(self):
+    def to_array(self):
         return self.disposables[:]
 

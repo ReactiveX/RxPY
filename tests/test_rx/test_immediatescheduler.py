@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from rx.concurrency import Scheduler, ImmediateScheduler
-from rx.disposables import DisposableEmpty
+from rx.disposables import Disposable
 
 def test_immediate_now():
     res = Scheduler.now() - datetime.utcnow()
@@ -39,7 +39,7 @@ def test_immediate_simple1():
     def action(scheduler, state=None):
         nonlocal xx
         xx = state
-        return DisposableEmpty()
+        return Disposable.empty()
 
     scheduler.schedule(action, 42)
     assert xx == 42
@@ -51,7 +51,7 @@ def test_immediate_simple2():
     def action(scheduler, state=None):
          nonlocal xx
          xx = state
-         return DisposableEmpty()
+         return Disposable.empty()
 
     scheduler.schedule_absolute(datetime.utcnow(), action, 42);
     assert xx == 42
@@ -63,7 +63,7 @@ def test_immediate_simple3():
     def action(scheduler, state=None):
          nonlocal xx
          xx = state
-         return DisposableEmpty()
+         return Disposable.empty()
 
     scheduler.schedule_relative(timedelta(0), action, 42);
     assert xx == 42
@@ -81,7 +81,7 @@ def test_immediate_recursive1():
         def inner_action(scheduler, y):
             nonlocal yy
             yy = y
-            return DisposableEmpty()
+            return Disposable.empty()
         
         return scheduler.schedule(inner_action, 43) 
 
@@ -101,7 +101,7 @@ def test_immediate_recursive2():
         def inner_action(scheduler, state=None):
             nonlocal yy
             yy = state
-            return DisposableEmpty
+            return Disposable.empty()
 
         return scheduler.schedule_absolute(datetime.utcnow(), inner_action, 43)
 
@@ -122,7 +122,7 @@ def test_immediate_recursive3():
         def inner_action(scheduler, state):
             nonlocal yy
             yy = state
-            return DisposableEmpty()
+            return Disposable.empty()
 
         return scheduler.schedule_relative(timedelta(0), inner_action, 43)
     

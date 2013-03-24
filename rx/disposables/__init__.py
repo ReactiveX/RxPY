@@ -1,5 +1,5 @@
-from .disposable import Disposable
-from .disposable import DisposableEmpty
+from .disposable import Disposable, disposable_empty
 
 from .compositedisposable import CompositeDisposable
 from .singleassignmentdisposable import SingleAssignmentDisposable
+from .serialdisposable import SerialDisposable

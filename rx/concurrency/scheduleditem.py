@@ -14,7 +14,7 @@ class ScheduledItem(object):
         self.disposable = SingleAssignmentDisposable()
     
     def invoke(self):
-        self.disposable.disposable(self.invoke_core())
+        self.disposable.disposable = self.invoke_core()
     
     def compare_to(self, other):
         return self.comparer(self.duetime, other.duetime)
