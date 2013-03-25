@@ -22,7 +22,7 @@ class HotObservable(Observable):
     def subscribe(self, observer):
         observable = self
         self.observers.append(observer)
-        self.subscriptions.push(new Subscription(this.scheduler.clock))
+        self.subscriptions.append(Subscription(self.scheduler.clock))
         index = this.subscriptions.length - 1
 
         def action():

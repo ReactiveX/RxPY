@@ -9,23 +9,23 @@ class ObservableCreation(object):
             return Disposable.create(subscribe(observer))
         
         return cls(_subscribe)
-    #Observable.__class__.create2 = create
 
     @classmethod
     def create_with_disposable(cls, subscribe):
         return cls(subscribe)
 
-# var observableDefer = Observable.defer = function (observableFactory) {
-#     return new AnonymousObservable(function (observer) {
-#         var result;
-#         try {
-#             result = observableFactory();
-#         } catch (e) {
-#             return observableThrow(e).subscribe(observer);
-#         }
-#         return result.subscribe(observer);
-#     });
-# };
+    @classmethod
+    def defer(observable_factory):
+        def subscribe(observer):
+            result = None
+            try:
+                result = observable_factory()
+            except Exception as ex:
+                return Observable.throw(ex).subscribe(observer);
+            
+            return result.subscribe(observer)
+
+        return cls(subscribe)
 
     @classmethod
     def empty(cls, scheduler=None):

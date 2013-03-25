@@ -2,33 +2,14 @@ import types
 import sys
 
 from .linq.observable_creation import ObservableCreation
+from .linq.standardsequenceoperators import ObservableLinq
+
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
-class Observable(ObservableCreation):
+class Observable(ObservableCreation, ObservableLinq):
     def __init__(self, subscribe):
         self._subscribe = subscribe
-
-    def take(self, count, scheduler=None):
-        if count < 0:
-            raise Exception(argumentOutOfRange)
-        
-        if not count:
-            return observableEmpty(scheduler)
-        
-        def subscribe(observer):
-            # Need to store remaining in observer since Python cannot bind to nonlocal variables
-            observer.remaining = count;
-
-            def on_next(x):
-                if observer.remaining > 0:
-                    observer.remaining -= 1
-                    observer.on_next(x)
-                    if not observer.remaining:
-                        observer.on_completed()
-
-            return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return Observable(subscribe)
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None):
         if not on_next or isinstance(on_next, types.FunctionType):
