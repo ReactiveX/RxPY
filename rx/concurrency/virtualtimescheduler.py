@@ -89,7 +89,7 @@ class VirtualTimeScheduler(Scheduler):
         self.clock = dt
 
     def get_next(self):
-        while self.queue.lenght > 0:
+        while self.queue.length > 0:
             next = self.queue.peek()
             if next.is_cancelled():
                 self.queue.get()

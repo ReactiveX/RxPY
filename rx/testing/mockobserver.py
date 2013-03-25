@@ -1,6 +1,8 @@
 from rx import Observer
 from rx.notification import Notification, ON, OE, OC
 
+from .recorded import Recorded
+
 class MockObserver(Observer):
 
     def __init__(self, scheduler):
@@ -13,5 +15,5 @@ class MockObserver(Observer):
     def on_error(self, exception):
         self.messages.append(Recorded(self.scheduler.clock, OE(exception)));
     
-    def on_completed():
+    def on_completed(self):
         self.messages.append(Recorded(self.scheduler.clock, OC()))

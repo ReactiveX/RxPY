@@ -1,14 +1,16 @@
-# Notifications
+import types
 
+# Notifications
 class Notification(object):
     def __init__(self):
         self.has_value = False
     
-    def accept(self, observer_or_onnext, onerror, oncompleted):
-        if type(observer_or_on_nNext) == types.FunctionType:
-            return self._accept(observer_or_on_next, on_error, on_completed)
+    def accept(self, on_next, on_error=None, on_completed=None):
+        print (on_next)
+        if type(on_next) == types.FunctionType:
+            return self._accept(on_next, on_error, on_completed)
         else:
-            return self._acceptObservable(observer_or_on_next)
+            return self._accept_observable(on_next)
     
     def to_observable(self, scheduler):
         notification = self
@@ -37,7 +39,7 @@ class ON(Notification):
         return on_next(self.value)
     
     def _accept_observable(self, observer):
-        return observer.on_next(this.value)
+        return observer.on_next(self.value)
     
     def __str__(self):
         return "OnNext(%s)" % self.value

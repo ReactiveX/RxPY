@@ -66,6 +66,6 @@ def test_select_disposeinsideselector():
 
     scheduler.schedule_absolute(ReactiveTest.disposed, action)
     scheduler.start()
-    results.messages.assertEqual(on_next(100, 1), on_next(200, 2))
-    xs.subscriptions.assertEqual(subscribe(0, 500))
+    results.messages.assert_equal(on_next(100, 1), on_next(200, 2))
+    xs.subscriptions.assert_equal(subscribe(0, 500))
     assert invoked == 3

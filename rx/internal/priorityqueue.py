@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 # Collections
 class IndexedItem(object):
     def __init__(self, id, value):
@@ -19,7 +21,7 @@ class PriorityQueue(object):
         self.length = 0
     
     def is_higher_priority(self, left, right):
-        return self.items[left].compare_to(self.items[right]) < 0
+        return self.items[left].compare_to(self.items[right]) < timedelta(0)
 
     def percolate(self, index):
         if index >= self.length or index < 0:
@@ -35,7 +37,7 @@ class PriorityQueue(object):
             self.items[parent] = temp
             self.percolate(parent)
         
-    def heapify(self, index):
+    def heapify(self, index=None):
         if index is None:
             index = 0;
         
@@ -75,12 +77,12 @@ class PriorityQueue(object):
     def enqueue(self, item):
         index = self.length
         self.length += 1
-        self.items[index] = IndexedItem(PriorityQueue.count, item)
+        self.items.append(IndexedItem(PriorityQueue.count, item))
         PriorityQueue.count += 1
         self.percolate(index)
     
     def remove(self, item):
-        for _item, index in enumerate(self.items):
+        for index, _item in enumerate(self.items):
             if _item.value == item:
                 self.remove_at(index)
                 return True

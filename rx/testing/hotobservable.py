@@ -19,7 +19,7 @@ class HotObservable(Observable):
 
             def action(scheduler, state):
                 for observer in observable.observers:
-                    notification.accept(observable)            
+                    notification.accept(observer)            
                 return Disposable.empty()
 
             scheduler.schedule_absolute(message.time, action)
