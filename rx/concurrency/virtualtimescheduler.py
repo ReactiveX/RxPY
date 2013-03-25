@@ -1,18 +1,21 @@
-from queue import PriorityQueue
+from datetime import timedelta
+
+from rx.internal import PriorityQueue
 
 from .scheduler import Scheduler
+from .scheduleditem import ScheduledItem
 
 # Virtual Scheduler
 class VirtualTimeScheduler(Scheduler):
 
     def __init__(self, initial_clock, comparer):
-        self.clock = initial_clock
+        self.clock = initial_clock or Scheduler.now()
         self.comparer = comparer
         self.is_enabled = False
         self.queue = PriorityQueue(1024)
         
     def local_now(self):
-        return self.datetime_offset(self.clock)
+        return self.to_datetime_offset(self.clock)
 
     def schedule(self, action, state=None):
         return this.schedule_absolute(this.clock, action, state)
@@ -41,8 +44,8 @@ class VirtualTimeScheduler(Scheduler):
             while self.is_enabled:
                 next = self.get_next()
                 if next:
-                    if (self.comparer(next.duetime, this.clock) > 0):
-                        this.clock = next.duetime
+                    if self.comparer(next.duetime, self.clock) > timedelta(0):
+                        self.clock = next.duetime
                     
                     next.invoke()
                 else:
@@ -53,15 +56,15 @@ class VirtualTimeScheduler(Scheduler):
     
     def advance_to(self, time):
         next = None
-        if self.comparer(self.clock, time) >= 0:
+        if self.comparer(self.clock, time) >= timedelta(0):
             raise Exception(argumentOutOfRange)
         
         if not self.is_enabled:
             self.is_enabled = True
             while self.is_enabled:
                 next = self.get_next()
-                if next and self.comparer(next.duetime, time) <= 0:
-                    if self.comparer(next.dueTime, self.clock) > 0:
+                if next and self.comparer(next.duetime, time) <= timedelta(0):
+                    if self.comparer(next.dueTime, self.clock) > timedelta(0):
                         self.clock = next.duetime
 
                     next.invoke()
@@ -80,16 +83,16 @@ class VirtualTimeScheduler(Scheduler):
     def sleep(self, time):
         dt = self.add(self.clock, time)
 
-        if self.comparer(self.clock, dt) >= 0:
+        if self.comparer(self.clock, dt) >= timedelta(0):
             raise Exception(argumentOutOfRange)
 
         self.clock = dt
 
     def get_next(self):
-        while self.queue.length > 0:
+        while self.queue.lenght > 0:
             next = self.queue.peek()
             if next.is_cancelled():
-                self.queue.dequeue()
+                self.queue.get()
             else:
                 return next
         

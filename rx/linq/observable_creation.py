@@ -21,7 +21,7 @@ class ObservableCreation(object):
             try:
                 result = observable_factory()
             except Exception as ex:
-                return Observable.throw(ex).subscribe(observer);
+                return Observable.throw(ex).subscribe(observer)
             
             return result.subscribe(observer)
 
@@ -40,49 +40,49 @@ class ObservableCreation(object):
         return cls(subscribe)
 
 # var observableFromArray = Observable.fromArray = function (array, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler);
+#     scheduler || (scheduler = currentThreadScheduler)
 #     return new AnonymousObservable(function (observer) {
-#         var count = 0;
+#         var count = 0
 #         return scheduler.scheduleRecursive(function (self) {
 #             if (count < array.length) {
-#                 observer.onNext(array[count++]);
-#                 self();
+#                 observer.onNext(array[count++])
+#                 self()
 #             } else {
-#                 observer.onCompleted();
+#                 observer.onCompleted()
 #             }
-#         });
-#     });
-# };
+#         })
+#     })
+# }
 
 # Observable.generate = function (initialState, condition, iterate, resultSelector, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler);
+#     scheduler || (scheduler = currentThreadScheduler)
 #     return new AnonymousObservable(function (observer) {
-#         var first = true, state = initialState;
+#         var first = true, state = initialState
 #         return scheduler.scheduleRecursive(function (self) {
-#             var hasResult, result;
+#             var hasResult, result
 #             try {
 #                 if (first) {
-#                     first = false;
+#                     first = false
 #                 } else {
-#                     state = iterate(state);
+#                     state = iterate(state)
 #                 }
-#                 hasResult = condition(state);
+#                 hasResult = condition(state)
 #                 if (hasResult) {
-#                     result = resultSelector(state);
+#                     result = resultSelector(state)
 #                 }
 #             } catch (exception) {
-#                 observer.onError(exception);
-#                 return;
+#                 observer.onError(exception)
+#                 return
 #             }
 #             if (hasResult) {
-#                 observer.onNext(result);
-#                 self();
+#                 observer.onNext(result)
+#                 self()
 #             } else {
-#                 observer.onCompleted();
+#                 observer.onCompleted()
 #             }
-#         });
-#     });
-# };
+#         })
+#     })
+# }
     @classmethod
     def never(cls):
         def subscribe(observer):
@@ -91,36 +91,36 @@ class ObservableCreation(object):
         return cls(subscribe)
 
 # Observable.range = function (start, count, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler);
+#     scheduler || (scheduler = currentThreadScheduler)
 #     return new AnonymousObservable(function (observer) {
 #         return scheduler.scheduleRecursiveWithState(0, function (i, self) {
 #             if (i < count) {
-#                 observer.onNext(start + i);
-#                 self(i + 1);
+#                 observer.onNext(start + i)
+#                 self(i + 1)
 #             } else {
-#                 observer.onCompleted();
+#                 observer.onCompleted()
 #             }
-#         });
-#     });
-# };
+#         })
+#     })
+# }
 
 # Observable.repeat = function (value, repeatCount, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler);
+#     scheduler || (scheduler = currentThreadScheduler)
 #     if (repeatCount == undefined) {
-#         repeatCount = -1;
+#         repeatCount = -1
 #     }
-#     return observableReturn(value, scheduler).repeat(repeatCount);
-# };
+#     return observableReturn(value, scheduler).repeat(repeatCount)
+# }
 
 # var observableReturn = Observable.returnValue = function (value, scheduler) {
-#     scheduler || (scheduler = immediateScheduler);
+#     scheduler || (scheduler = immediateScheduler)
 #     return new AnonymousObservable(function (observer) {
 #         return scheduler.schedule(function () {
-#             observer.onNext(value);
-#             observer.onCompleted();
-#         });
-#     });
-# };
+#             observer.onNext(value)
+#             observer.onCompleted()
+#         })
+#     })
+# }
 
     @classmethod
     def throw_exception(cls, exception, scheduler=None):
@@ -137,17 +137,17 @@ class ObservableCreation(object):
 
 # Observable.using = function (resourceFactory, observableFactory) {
 #     return new AnonymousObservable(function (observer) {
-#         var disposable = disposableEmpty, resource, source;
+#         var disposable = disposableEmpty, resource, source
 #         try {
-#             resource = resourceFactory();
+#             resource = resourceFactory()
 #             if (resource) {
-#                 disposable = resource;
+#                 disposable = resource
 #             }
-#             source = observableFactory(resource);
+#             source = observableFactory(resource)
 #         } catch (exception) {
-#             return new CompositeDisposable(observableThrow(exception).subscribe(observer), disposable);
+#             return new CompositeDisposable(observableThrow(exception).subscribe(observer), disposable)
 #         }
-#         return new CompositeDisposable(source.subscribe(observer), disposable);
-#     });
-# };                 
+#         return new CompositeDisposable(source.subscribe(observer), disposable)
+#     })
+# }                 
 

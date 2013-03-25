@@ -1,3 +1,4 @@
+from rx import Observable 
 
 class ObservableLinq(object):
     # Observable.select extension metho
@@ -26,7 +27,8 @@ class ObservableLinq(object):
                     observer.on_next(result)
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return self.__class__(subscribe)
+
+        return Observable(subscribe)
 
     def take(self, count, scheduler=None):
         if count < 0:
@@ -47,4 +49,7 @@ class ObservableLinq(object):
                         observer.on_completed()
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return self.__class__(subscribe)
+        return Observable(subscribe)
+
+Observable.select = ObservableLinq.select
+Observable.take = ObservableLinq.take

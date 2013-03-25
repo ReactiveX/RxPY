@@ -2,12 +2,11 @@ import types
 import sys
 
 from .linq.observable_creation import ObservableCreation
-from .linq.standardsequenceoperators import ObservableLinq
 
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
-class Observable(ObservableCreation, ObservableLinq):
+class Observable(ObservableCreation):
     def __init__(self, subscribe):
         self._subscribe = subscribe
 
@@ -30,7 +29,8 @@ class Observable(ObservableCreation, ObservableLinq):
 
             return scheduler.schedule(action)
         
-        return cls(subscribe)
+        #return cls(subscribe)
+        return Observable(subscribe)
 
     @classmethod
     def range(cls, start, count, scheduler=None):
@@ -48,7 +48,8 @@ class Observable(ObservableCreation, ObservableLinq):
                 
             return scheduler.schedule_recursive(action, 0)
             
-        return cls(subscribe)
+        #return cls(subscribe)
+        return Observable(subscribe)
 
 def main():
     #a = Observable.returnvalue(42)

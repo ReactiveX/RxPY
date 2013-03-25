@@ -1,5 +1,8 @@
 from rx import Observable
-from rx.testing import TestScheduler
+from rx.testing import TestScheduler, ReactiveTest
+from rx.disposables import SerialDisposable
+
+on_next = ReactiveTest.on_next
 
 class RxException(Exception):
     pass
@@ -43,9 +46,9 @@ def test_select_throws():
 
 def test_select_disposeinsideselector():
     scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(onNext(100, 1), onNext(200, 2), onNext(500, 3), onNext(600, 4))
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(200, 2), on_next(500, 3), on_next(600, 4))
     invoked = 0
-    results = scheduler.createObserver()
+    results = scheduler.create_observer()
     d = SerialDisposable()
 
     def projection(x):
@@ -56,13 +59,13 @@ def test_select_disposeinsideselector():
         
         return x
 
-    d.disposable(xs.select(projection).subscribe(results));
+    d.disposable = xs.select(projection).subscribe(results)
 
     def action(scheduler, state):
         return d.dispose()
 
-    scheduler.schedule_absolute(disposed, action)
+    scheduler.schedule_absolute(ReactiveTest.disposed, action)
     scheduler.start()
-    results.messages.assertEqual(onNext(100, 1), onNext(200, 2));
-    xs.subscriptions.assertEqual(subscribe(0, 500));
+    results.messages.assertEqual(on_next(100, 1), on_next(200, 2))
+    xs.subscriptions.assertEqual(subscribe(0, 500))
     assert invoked == 3
