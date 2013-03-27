@@ -23,7 +23,7 @@ class ScheduledItem(object):
         return self.disposable.is_disposed
 
     def invoke_core(self):
-        print("ScheduledItem:invoke_core", self.action)
+        #print("ScheduledItem:invoke_core", self.action)
         return self.action(self.scheduler, self.state)
 
     def __lt__(self, other):

@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='RxPY',
-    version='0.0.1',
+    version='0.0.2',
     description='Reactive Extensions for Python',
     long_description = """\
 Longer description for Reactive Extensions for Python.
@@ -32,5 +32,5 @@ Longer description for Reactive Extensions for Python.
     test_suite='nose.collector',
 
     packages=['rx', 'linq', 'tests'],
-    package_dir = { 'rx':'rx', 'linq' : 'linq' }#, 'tests' : 'tests'}
+    package_dir = { 'rx':'rx', 'linq' : 'linq' , 'tests' : 'tests'}
 )

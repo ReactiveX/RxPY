@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
+
+from tests import assert_equal
 
 on_next = ReactiveTest.on_next
 
@@ -51,21 +55,22 @@ def test_select_disposeinsideselector():
     results = scheduler.create_observer()
     d = SerialDisposable()
 
-    def projection(x):
+    def projection(x, *args, **kw):
+        print("test_select_disposeinsideselector.projection", scheduler.clock)
         nonlocal invoked
         invoked += 1
+        
         if scheduler.clock > 400:
             d.dispose()
-        
         return x
 
-    d.disposable = xs.select(projection).subscribe(results)
+    d.disposable = xs.select(projection).dump("test").subscribe(results)
 
     def action(scheduler, state):
         return d.dispose()
 
     scheduler.schedule_absolute(ReactiveTest.disposed, action)
     scheduler.start()
-    results.messages.assert_equal(on_next(100, 1), on_next(200, 2))
+    assert_equal(results.messages, on_next(100, 1), on_next(200, 2))
     xs.subscriptions.assert_equal(subscribe(0, 500))
     assert invoked == 3
