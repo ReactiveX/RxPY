@@ -68,7 +68,6 @@ class TestScheduler(VirtualTimeScheduler):
         messages = list(args)
         return ColdObservable(self, messages)
     
-    @classmethod
-    def create_observer(cls):
-        return MockObserver(cls())
+    def create_observer(self):
+        return MockObserver(self)
     

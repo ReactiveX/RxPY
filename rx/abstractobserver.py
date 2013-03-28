@@ -13,8 +13,9 @@ class AbstractObserver(object):
             self.error(error)
     
     def on_completed(self):
+        print ("AbstractObserver:on_completed()")
         if not self.is_stopped:
-            self.isStopped = True
+            self.is_stopped = True
             self.completed()
     
     def dispose(self):

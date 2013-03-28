@@ -27,11 +27,14 @@ class Notification(object):
     def equals(self, other):
         other_string = '' if not other else str(other)
         return str(self) == other_string
+
+    def __eq__(self, other):
+        return self.equals(other)
     
 class ON(Notification):
     def __init__(self, value):
         self.value = value
-        self.hasValue = True
+        self.has_value = True
         self.kind = 'N'
 
     def _accept(self, on_next):

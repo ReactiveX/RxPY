@@ -8,7 +8,12 @@ class Subscription(object):
     def equals(self, other):
         return self.subscribe == other.subscribe and self.unsubscribe == other.unsubscribe
 
+    def __eq__(self, other):
+    	return self.equals(other)
+
+    def __repr__(self):
+    	return str(self)
+
     def __str__(self):
         unsubscribe = "Infinite" if self.unsubscribe == sys.maxsize else self.unsubscribe
         return "(%s, %s)" % (self.subscribe, unsubscribe)
-

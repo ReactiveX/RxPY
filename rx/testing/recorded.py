@@ -10,6 +10,9 @@ class Recorded(object):
     def equals(self, other):
         return self.time == other.time and self.comparer(self.value, other.value)
     
+    def __repr__(self):
+    	return str(self)
+
     def __str__(self):
-        return str(self.value) + '@' + self.time
+        return  "%s@%s" % (self.value, self.time)
 
