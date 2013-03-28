@@ -1,5 +1,4 @@
-def noop():
-   pass
+from rx.internal import noop
 
 # Main disposable class
 class Disposable(object):

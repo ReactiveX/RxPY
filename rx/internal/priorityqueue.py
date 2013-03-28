@@ -21,7 +21,7 @@ class PriorityQueue(object):
         self.length = 0
     
     def is_higher_priority(self, left, right):
-        return self.items[left].compare_to(self.items[right]) < timedelta(0)
+        return self.items[left].compare_to(self.items[right]) < 0
 
     def percolate(self, index):
         if index >= self.length or index < 0:

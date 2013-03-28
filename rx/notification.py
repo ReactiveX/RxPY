@@ -6,7 +6,6 @@ class Notification(object):
         self.has_value = False
     
     def accept(self, on_next, on_error=None, on_completed=None):
-        print (on_next)
         if type(on_next) == types.FunctionType:
             return self._accept(on_next, on_error, on_completed)
         else:

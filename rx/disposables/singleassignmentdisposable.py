@@ -11,7 +11,7 @@ class SingleAssignmentDisposable(Disposable):
         return self.current
     
     def set_disposable(self, value):
-        print("SingleAssignmentDisposable:set_disposable(%s)" % value)
+        #print("SingleAssignmentDisposable:set_disposable(%s)" % value)
 
         if self.current:
             raise Exception('Disposable has already been assigned')

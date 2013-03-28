@@ -1,10 +1,12 @@
 from datetime import timedelta
 
 from rx.concurrency import VirtualTimeScheduler
+from rx.disposables import Disposable
 
 from .coldobservable import ColdObservable
 from .hotobservable import HotObservable
 from .mockobserver import MockObserver
+from .reactivetest import ReactiveTest
 
 class TestScheduler(VirtualTimeScheduler):
     def __init__(self):
@@ -13,11 +15,8 @@ class TestScheduler(VirtualTimeScheduler):
         super(TestScheduler, self).__init__(0, comparer)
 
     def schedule_absolute(self, duetime, action, state=None):
-        if isinstance(duetime, int):
-            duetime =  self.clock + timedelta(duetime)
-
         if duetime <= self.clock:
-            duetime = self.clock + timedelta(1)
+            duetime = self.clock + 1
         
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)
     
@@ -25,31 +24,33 @@ class TestScheduler(VirtualTimeScheduler):
         return absolute + relative
     
     def to_datetime_offset(absolute):
-        return absolute #new Date(absolute).getTime()
+        return timedelta(microseconds=absolute)
     
     def to_relative(self, timespan):
         return timespan
     
     def start_with_timing(self, create, created, subscribed, disposed):
-        server = self.create()
+        observer = self.create_observer()
+        subscription = None
+        source = None
 
         def action1(scheduler, state):
+            nonlocal source
             source = create()
             return Disposable.empty()
-
         self.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
+            nonlocal subscription
             subscription = source.subscribe(observer)
             return Disposable.empty()
-
-        this.schedule_absolute(subscribed, action2)
+        self.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
             subscription.dispose()
-            return DisposableEmpty()
-
+            return Disposable.empty()
         self.schedule_absolute(disposed, action3)
+
         self.start()
         return observer
 

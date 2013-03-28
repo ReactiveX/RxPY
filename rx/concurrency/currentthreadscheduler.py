@@ -61,8 +61,6 @@ class CurrentThreadScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
-    #var currentScheduler = new Scheduler(defaultNow, scheduleNow, scheduleRelative, scheduleAbsolute)
-    
     def schedule_required(self):
         return queue == null
     

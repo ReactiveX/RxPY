@@ -1,15 +1,45 @@
+from rx.internal import noop, default_error
 
-class Observer(object):
-    def __init__(self, on_next, on_completed=None, on_error=None):
-        self.on_next = on_next
-        self._on_completed = on_completed
-        self._on_error = on_error
+from .abstractobserver import AbstractObserver
 
-    def on_completed(self):
-        if self._on_completed:
-            self._on_completed()
+class Observer(AbstractObserver):
+    def __init__(self, on_next=None, on_error=None, on_completed=None):
+        super(Observer, self).__init__()
 
-    def on_error(self, ex):
-        if self._on_error:
-            self._on_error(ex)
+        self._on_next = on_next or noop
+        self._on_error = on_error or default_error
+        self._on_completed = on_completed or noop
 
+    def next(self, value):
+        self._on_next(value)
+
+    def completed(self):
+        self._on_completed()
+
+    def error(self, ex):
+        self._on_error(ex)
+
+    @classmethod
+    def from_notifier(cls, handler):
+        def on_next(x):
+            return handler(notification_create_on_next(x))
+        def on_error(ex):
+            return handler(notification_create_on_error(exception))
+        def on_completed():
+            return handler(notification_create_on_completed())
+
+        return cls(on_next, on_error, on_completed)
+ 
+    def to_notifier(self):
+        observer = self
+
+        def func(n):
+            return n.accept(observer)
+        
+        return func
+
+    def checked(self):
+        return CheckedObserver(self)
+
+    #def as_observer():
+    #    return AnonymousObserver(self.on_next, this.on_error, on_completed)

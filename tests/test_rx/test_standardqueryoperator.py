@@ -7,6 +7,8 @@ from rx.disposables import SerialDisposable
 from tests import assert_equal
 
 on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 
 class RxException(Exception):
     pass
@@ -56,21 +58,48 @@ def test_select_disposeinsideselector():
     d = SerialDisposable()
 
     def projection(x, *args, **kw):
-        print("test_select_disposeinsideselector.projection", scheduler.clock)
+        print("projection()", scheduler.clock)
         nonlocal invoked
         invoked += 1
         
         if scheduler.clock > 400:
+            print("*** Dispose ****")
             d.dispose()
         return x
 
-    d.disposable = xs.select(projection).dump("test").subscribe(results)
+    d.disposable = xs.select(projection).subscribe(results)
 
     def action(scheduler, state):
+        """Test:action"""
+        #print ("**************action()")
         return d.dispose()
 
     scheduler.schedule_absolute(ReactiveTest.disposed, action)
     scheduler.start()
+    
+    # FIXME: Are we sure this is the correct behaviour?
     assert_equal(results.messages, on_next(100, 1), on_next(200, 2))
-    xs.subscriptions.assert_equal(subscribe(0, 500))
+    assert_equal(xs.subscriptions, ReactiveTest.subscribe(0, 500))
+    
     assert invoked == 3
+
+def test_select_completed():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
+    
+    def create():
+        def projection(x):
+            nonlocal invoked
+            invoked += 1
+            return x + 1
+
+        return xs.select(projection).dump();
+
+    results = scheduler.start_with_create(create)
+    assert_equal(results.messages, on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
+    assert_qual(xs.subscriptions, ReactiveTest.subscribe(200, 400))
+    assert invoked == 4
+
+if __name__ == '__main__':
+    test_select_disposeinsideselector()

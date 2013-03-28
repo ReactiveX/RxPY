@@ -12,7 +12,7 @@ class Observable(ObservableCreation):
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None):
         if not on_next or isinstance(on_next, types.FunctionType):
-            observer = Observer(on_next, on_completed, on_error)
+            observer = Observer(on_next, on_error, on_completed)
         else:
             observer = on_next
 

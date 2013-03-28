@@ -5,7 +5,7 @@ class Subscription(object):
         self.subscribe = start;
         self.unsubscribe = end or sys.maxsize
 
-    def equals(other):
+    def equals(self, other):
         return self.subscribe == other.subscribe and self.unsubscribe == other.unsubscribe
 
     def __str__(self):

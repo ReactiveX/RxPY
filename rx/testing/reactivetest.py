@@ -2,6 +2,7 @@ import types
 
 from rx.notification import Notification, ON, OE, OC
 from .recorded import Recorded
+from .subscription import Subscription
 
 # New predicate tests
 class OnNextPredicate(object):
