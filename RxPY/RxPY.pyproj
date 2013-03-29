@@ -25,7 +25,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="rx\abstractobserver.py" />
+    <Compile Include="rx\anonymousobservable.py" />
+    <Compile Include="rx\autodetachobserver.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
+    <Compile Include="rx\internal\basic.py" />
+    <Compile Include="rx\internal\priorityqueue.py" />
+    <Compile Include="rx\internal\__init__.py" />
+    <Compile Include="rx\notification.py" />
+    <Compile Include="rx\testing\mockobserver.py" />
+    <Compile Include="rx\testing\reactivetest.py" />
+    <Compile Include="rx\testing\recorded.py" />
+    <Compile Include="rx\testing\testscheduler.py" />
     <Compile Include="setup.py" />
     <Compile Include="linq\enumerable.py" />
     <Compile Include="linq\__init__.py" />
@@ -64,6 +75,7 @@
     <Folder Include="rx\concurrency" />
     <Folder Include="rx\disposables" />
     <Folder Include="rx\linq" />
+    <Folder Include="rx\internal\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
     <Folder Include="tests\test_linq" />
