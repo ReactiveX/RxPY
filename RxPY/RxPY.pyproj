@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>tests\test_rx\test_standardqueryoperator.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
+    <InterpreterVersion>3.3</InterpreterVersion>
+    <Name>RxPY</Name>
+    <RootNamespace>RxPY</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="rx\concurrency\virtualtimescheduler.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="linq\enumerable.py" />
+    <Compile Include="linq\__init__.py" />
+    <Compile Include="rx\observable.py" />
+    <Compile Include="rx\observer.py" />
+    <Compile Include="rx\__init__.py" />
+    <Compile Include="rx\concurrency\currentthreadscheduler.py" />
+    <Compile Include="rx\concurrency\immediatescheduler.py" />
+    <Compile Include="rx\concurrency\scheduleditem.py" />
+    <Compile Include="rx\concurrency\scheduler.py" />
+    <Compile Include="rx\concurrency\__init__.py" />
+    <Compile Include="rx\disposables\compositedisposable.py" />
+    <Compile Include="rx\disposables\disposable.py" />
+    <Compile Include="rx\disposables\refcountdisposable.py" />
+    <Compile Include="rx\disposables\serialdisposable.py" />
+    <Compile Include="rx\disposables\singleassignmentdisposable.py" />
+    <Compile Include="rx\disposables\__init__.py" />
+    <Compile Include="rx\linq\observable_creation.py" />
+    <Compile Include="rx\linq\standardsequenceoperators.py" />
+    <Compile Include="rx\linq\__init__.py" />
+    <Compile Include="rx\testing\coldobservable.py" />
+    <Compile Include="rx\testing\hotobservable.py" />
+    <Compile Include="rx\testing\subscription.py" />
+    <Compile Include="rx\testing\__init__.py" />
+    <Compile Include="tests\test_linq\test_linq.py" />
+    <Compile Include="tests\test_rx\test_currentthreadscheduler.py" />
+    <Compile Include="tests\test_rx\test_disposable.py" />
+    <Compile Include="tests\test_rx\test_immediatescheduler.py" />
+    <Compile Include="tests\test_rx\test_rx.py" />
+    <Compile Include="tests\test_rx\test_standardqueryoperator.py" />
+    <Content Include="license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="linq" />
+    <Folder Include="rx" />
+    <Folder Include="rx\concurrency" />
+    <Folder Include="rx\disposables" />
+    <Folder Include="rx\linq" />
+    <Folder Include="rx\testing" />
+    <Folder Include="tests\" />
+    <Folder Include="tests\test_linq" />
+    <Folder Include="tests\test_rx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>
