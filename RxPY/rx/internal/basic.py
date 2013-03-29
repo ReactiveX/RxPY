@@ -20,7 +20,7 @@ def default_key_sSerializer(x):
     return str(x)
 
 def default_error(err):
-    raise err
+    raise Exception(err)
 
 # Errors
 sequence_contains_no_elements = 'Sequence contains no elements.'
@@ -29,4 +29,4 @@ object_isposed = 'Object has been disposed'
 
 def checkDisposed(self):
     if (self.is_disposed):
-        raise Excdeption(object_isposed)
+        raise Exception(object_isposed)

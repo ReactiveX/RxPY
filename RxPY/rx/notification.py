@@ -8,12 +8,28 @@ class Notification(object):
         self.has_value = False
     
     def accept(self, on_next, on_error=None, on_completed=None):
+        """Invokes the delegate corresponding to the notification or an observer and returns the produced result. 
+        Returns result produced by the observation.
+        
+        1 - notification.accept(observer)
+        2 - notification.accept(on_next, on_error, on_completed)
+        
+        Keyword arguments:
+        on_next -- Delegate to invoke for an OnNext notification.
+        on_error -- [Optional] Delegate to invoke for an OnError notification.
+        on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
+        """
         if type(on_next) == types.FunctionType:
             return self._accept(on_next, on_error, on_completed)
         else:
             return self._accept_observable(on_next)
     
-    def to_observable(self, scheduler):
+    def to_observable(self, scheduler=None):
+        """Returns an observable sequence with a single notification, using the specified scheduler, else the immediate scheduler. The returned observable sequence surfaces the behavior of the notification upon subscription.
+
+        Keyword arguments:
+        scheduler -- [Optional] Scheduler to send out the notification calls on.
+        """
         notification = self
         scheduler = scheduler or ImmediateScheduler()
 
@@ -24,9 +40,10 @@ class Notification(object):
                     observer.on_completed()
                 
             return scheduler.schedule(action)
-        return Observable(subscribe)
+        return AnonymousObservable(subscribe)
 
     def equals(self, other):
+        """Indicates whether this instance and a specified object are equal."""
         other_string = '' if not other else str(other)
         return str(self) == other_string
 

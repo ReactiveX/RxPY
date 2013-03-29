@@ -67,7 +67,6 @@
     <Compile Include="tests\test_rx\test_immediatescheduler.py" />
     <Compile Include="tests\test_rx\test_rx.py" />
     <Compile Include="tests\test_rx\test_standardqueryoperator.py" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="linq" />

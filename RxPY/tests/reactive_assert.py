@@ -1,4 +1,4 @@
-from rx import Observable
+from rx import AnonymousObservable
 
 def default_comparer(x, y):
     if not y.equals:
@@ -43,6 +43,6 @@ class ObservableTest(object):
                 observer.on_completed()
 
             return self.subscribe(on_next, on_error, on_completed)
-        return Observable(subscribe)
+        return AnonymousObservable(subscribe)
 
-Observable.dump = ObservableTest.dump
+AnonymousObservable.dump = ObservableTest.dump

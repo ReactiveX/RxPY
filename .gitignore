@@ -36,3 +36,4 @@ nosetests.xml
 
 # Visual studio
 *.suo
+*.DotSettings.user

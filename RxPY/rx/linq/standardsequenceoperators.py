@@ -1,4 +1,4 @@
-from rx import Observable 
+from rx import Observable, AnonymousObservable
 
 from inspect import getargspec, getargvalues 
 
@@ -56,7 +56,7 @@ class ObservableLinq(object):
                     observer.on_next(result)
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return Observable(subscribe)
+        return AnonymousObservable(subscribe)
 
     def take(self, count, scheduler=None):
         if count < 0:
@@ -81,4 +81,4 @@ class ObservableLinq(object):
 
 # Stitch methods into the main Observable "God" object
 Observable.select = ObservableLinq.select
-Observable.take = ObservableLinq.take
+AnonymousObservable.take = ObservableLinq.take

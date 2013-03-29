@@ -45,7 +45,7 @@ class HotObservable(Observable):
         index = len(self.subscriptions) - 1 
 
         def dispose_action():
-            print ("HotObservable:subscribe:action(%s)" % self.scheduler.clock)
+            print ("HotObservable:subscribe:dispose_action(%s)" % self.scheduler.clock)
             observable.observers.remove(observer)
             observable.subscriptions[index] = Subscription(observable.subscriptions[index].subscribe, observable.scheduler.clock)
 

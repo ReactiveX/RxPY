@@ -61,6 +61,11 @@ class TestScheduler(VirtualTimeScheduler):
         return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, disposed)
     
     def start_with_create(self, create):
+        """Starts the test scheduler and uses default virtual times to invoke the factory function, to subscribe to the resulting sequence, and to dispose the subscription. Returns Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
+        
+        Keyword arguments:
+        create -- Factory method to create an observable sequence.
+        """
         return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, ReactiveTest.disposed)
     
     def create_hot_observable(self, *args):
