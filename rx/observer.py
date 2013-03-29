@@ -35,7 +35,6 @@ class Observer(AbstractObserver):
 
         def func(n):
             return n.accept(observer)
-        
         return func
 
     def checked(self):

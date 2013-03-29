@@ -31,7 +31,7 @@ class Scheduler(object):
                 is_done = False
                 
                 def action(scheduler, state=None):
-                    nonlocal is_added, is_done
+                    nonlocal is_done
 
                     #print "action", scheduler1, state3
                     if is_added:

@@ -1,4 +1,5 @@
 from rx.internal import PriorityQueue
+from rx.internal.basic import argument_out_of_range
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
@@ -49,6 +50,7 @@ class VirtualTimeScheduler(Scheduler):
                 if next:
                     if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
+                        print ("clock: %s" % self.clock)
                     
                     next.invoke()
                 else:
@@ -89,7 +91,7 @@ class VirtualTimeScheduler(Scheduler):
         dt = self.add(self.clock, time)
 
         if self.comparer(self.clock, dt) >= 0:
-            raise Exception(argumentOutOfRange)
+            raise Exception(argument_out_of_range)
 
         self.clock = dt
 

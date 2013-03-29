@@ -42,13 +42,13 @@ class HotObservable(Observable):
         observable = self
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
-        index = len(self.subscriptions) - 1
+        index = len(self.subscriptions) - 1 
 
-        def action():
-            print ("HotObservable:subscribe:action()")
+        def dispose_action():
+            print ("HotObservable:subscribe:action(%s)" % self.scheduler.clock)
             observable.observers.remove(observer)
             observable.subscriptions[index] = Subscription(observable.subscriptions[index].subscribe, observable.scheduler.clock)
 
-        return Disposable.create(action)
+        return Disposable.create(dispose_action)
 
     

@@ -23,9 +23,9 @@ def default_error(err):
     raise err
 
 # Errors
-sequenceContainsNoElements = 'Sequence contains no elements.'
-argumentOutOfRange = 'Argument out of range'
-objectDisposed = 'Object has been disposed'
+sequence_contains_no_elements = 'Sequence contains no elements.'
+argument_out_of_range = 'Argument out of range'
+object_isposed = 'Object has been disposed'
 
 def checkDisposed(self):
     if (self.is_disposed):

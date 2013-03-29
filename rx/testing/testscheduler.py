@@ -35,18 +35,21 @@ class TestScheduler(VirtualTimeScheduler):
         source = None
 
         def action1(scheduler, state):
+            print ("action1()")
             nonlocal source
             source = create()
             return Disposable.empty()
         self.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
+            print ("action2()")
             nonlocal subscription
             subscription = source.subscribe(observer)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
+            print ("action3()")
             subscription.dispose()
             return Disposable.empty()
         self.schedule_absolute(disposed, action3)

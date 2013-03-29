@@ -101,5 +101,59 @@ def test_select_completed():
     assert_equal(xs.subscriptions, ReactiveTest.subscribe(200, 400))
     assert invoked == 4
 
+
+def test_select_completed_two():
+    for i in range(100):
+        scheduler = TestScheduler()
+        invoked = 0
+
+        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'));
+        def create():
+            def projection(x):
+                nonlocal invoked
+                invoked +=1
+                return x + 1
+            return xs.select(projection)
+
+        results = scheduler.start_with_create(create)
+        assert_equal(results.messages, on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
+        #assert_equal(xs.subscriptions, ReactiveTest.subscribe(200, 400))
+        assert invoked == 4
+
+def test_select_not_completed():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5))
+    
+    def create():
+        def projection(x):
+            nonlocal invoked
+            invoked += 1
+            return x + 1
+        
+        return xs.select(projection)
+
+    results = scheduler.start_with_create(create)
+    assert_equal(results.messages, on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6))
+    assert_equal(xs.subscriptions, ReactiveTest.subscribe(200, 1000))
+    assert invoked == 4
+
+def test_select_error():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    invoked = 0
+    xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_error(400, ex), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
+    def create():
+        def projection(x):
+            nonlocal invoked
+            invoked += 1 
+            return x + 1
+        return xs.select(projection)
+            
+    results = scheduler.start_with_create(create)
+    assert_equal(results.messages, on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_error(400, ex))
+    #assert_equal(xs.subscriptions, ReactiveTest.subscribe(200, 400))
+    assert invoked == 4
+
 if __name__ == '__main__':
     test_select_completed()

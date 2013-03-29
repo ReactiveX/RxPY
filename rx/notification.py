@@ -1,5 +1,7 @@
 import types
 
+from .anonymousobservable import AnonymousObservable
+
 # Notifications
 class Notification(object):
     def __init__(self):
