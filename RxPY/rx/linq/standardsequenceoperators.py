@@ -77,8 +77,8 @@ class ObservableLinq(object):
                         observer.on_completed()
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return Observable(subscribe)
+        return AnonymousObservable(subscribe)
 
 # Stitch methods into the main Observable "God" object
 Observable.select = ObservableLinq.select
-AnonymousObservable.take = ObservableLinq.take
+Observable.take = ObservableLinq.take

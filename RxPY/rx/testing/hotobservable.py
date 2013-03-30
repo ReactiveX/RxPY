@@ -2,7 +2,9 @@ import types
 
 from rx import Observable, Observer
 from rx.disposables import Disposable
+
 from .subscription import Subscription
+from .reactive_assert import AssertList
 
 class HotObservable(Observable):
     def __init__(self, scheduler, messages):
@@ -11,7 +13,7 @@ class HotObservable(Observable):
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = []
+        self.subscriptions = AssertList()
         self.observers = []
 
         observable = self

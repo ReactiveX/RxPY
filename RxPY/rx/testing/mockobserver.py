@@ -2,12 +2,13 @@ from rx import Observer
 from rx.notification import Notification, ON, OE, OC
 
 from .recorded import Recorded
+from .reactive_assert import AssertList
 
 class MockObserver(Observer):
 
     def __init__(self, scheduler):
         self.scheduler = scheduler
-        self.messages = []
+        self.messages = AssertList()
     
     def on_next(self, value):
         self.messages.append(Recorded(self.scheduler.clock, ON(value)));
@@ -17,3 +18,4 @@ class MockObserver(Observer):
     
     def on_completed(self):
         self.messages.append(Recorded(self.scheduler.clock, OC()))
+

@@ -27,19 +27,24 @@ def assert_equal(expected, *actual):
     actual = list(actual)
     return are_elements_equal(expected, actual, default_comparer)
 
+class AssertList(list):
+    def assert_equal(self, *actual):
+        actual = list(actual)
+        return are_elements_equal(self, actual, default_comparer)
+
 class ObservableTest(object):
     # Observable.dump extension method
     def dump(self, name = "test"):
-        print ("Observable:dump(%s)" % name)
+        print("Observable:dump(%s)" % name)
         def subscribe(observer):
             def on_next(value):
-                print ("{%s}-->{%s}" % (name, value))
+                print("{%s}-->{%s}" % (name, value))
                 observer.on_next(value)
             def on_error(ex):
-                print ("{%s} error -->{%s}" % (name, ex))
+                print("{%s} error -->{%s}" % (name, ex))
                 observer.on_next(ex)
             def on_completed():
-                print ("{%s} completed" % name)
+                print("{%s} completed" % name)
                 observer.on_completed()
 
             return self.subscribe(on_next, on_error, on_completed)

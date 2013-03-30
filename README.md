@@ -1,6 +1,6 @@
 # The Reactive Extensions for Python 3
 
-...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python
+...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3. 
 
 The main Rx repository can be found at [CodePlex](http://rx.codeplex.com/).
 

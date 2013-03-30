@@ -30,26 +30,36 @@ class TestScheduler(VirtualTimeScheduler):
         return timespan
     
     def start_with_timing(self, create, created, subscribed, disposed):
+        """Starts the test scheduler and uses the specified virtual times to invoke the factory function, subscribe to the resulting sequence, and dispose the subscription.
+        
+        Keyword arguments:
+        create -- Factory method to create an observable sequence.
+        created -- Virtual time at which to invoke the factory to create an observable sequence.
+        subscribed -- Virtual time at which to subscribe to the created observable sequence.
+        disposed -- Virtual time at which to dispose the subscription.
+        
+        Returns Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
+        """
         observer = self.create_observer()
         subscription = None
         source = None
 
         def action1(scheduler, state):
-            print ("action1()")
+            #print ("action1()")
             nonlocal source
             source = create()
             return Disposable.empty()
         self.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-            print ("action2()")
+            #print ("action2()")
             nonlocal subscription
             subscription = source.subscribe(observer)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
-            print ("action3()")
+            #print ("action3()")
             subscription.dispose()
             return Disposable.empty()
         self.schedule_absolute(disposed, action3)
@@ -61,21 +71,39 @@ class TestScheduler(VirtualTimeScheduler):
         return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, disposed)
     
     def start_with_create(self, create):
-        """Starts the test scheduler and uses default virtual times to invoke the factory function, to subscribe to the resulting sequence, and to dispose the subscription. Returns Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
+        """Starts the test scheduler and uses default virtual times to invoke the factory function, to subscribe to the resulting sequence, and to dispose the subscription.
         
         Keyword arguments:
         create -- Factory method to create an observable sequence.
+        
+        Returns Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
         """
         return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, ReactiveTest.disposed)
     
     def create_hot_observable(self, *args):
+        """Creates a hot observable using the specified timestamped notification messages either as an array or arguments.
+        
+        Keyword arguments:
+        messages -- Notifications to surface through the created sequence at their specified absolute virtual times.
+        
+        Returns hot observable sequence that can be used to assert the timing of subscriptions and notifications.
+        """
         messages = list(args)
         return HotObservable(self, messages)
 
     def create_cold_observable(self, *args):
+        """Creates a cold observable using the specified timestamped notification messages either as an array or arguments.
+        
+        Keyword arguments:
+        messages -- Notifications to surface through the created sequence at their specified virtual time offsets from the sequence subscription time.
+        
+        Returns cold observable sequence that can be used to assert the timing of subscriptions and notifications.
+        """
         messages = list(args)
         return ColdObservable(self, messages)
     
     def create_observer(self):
+        """Creates an observer that records received notification messages and timestamps those. Return an Observer that can be used to assert the timing of received notifications.
+        """
         return MockObserver(self)
     
