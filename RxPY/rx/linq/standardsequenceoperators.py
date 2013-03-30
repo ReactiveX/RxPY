@@ -2,44 +2,34 @@ from rx import Observable, AnonymousObservable
 
 from inspect import getargspec, getargvalues 
 
-def adapt_call(func, args, kw, start=0): 
-    argnames, varargs, kwargs = getargspec(func)[:3] 
-    del argnames[:start] 
-    if kwargs in (None, "_decorator__kwargs"): 
-        seq = [key for key in kw if key not in argnames]
-        for key in seq: 
-            kw_.pop(key, None) 
-    if varargs in (None, "_decorator__varargs"): 
-        args = args[:len(argnames)] 
-    for n, key in enumerate(argnames): 
-        if key in kw: 
-            args = args[:n] 
-            break 
-    return args, kw 
+def adapt_call(func):
+    """Adapts func from taking 2 params to only taking 1 param"""
+    def func1(arg1, arg2):
+        return func(arg1)
+
+    func_wrapped = func
+    argnames, varargs, kwargs = getargspec(func)[:3]
+    if len(argnames) == 1 and not varargs and not kwargs:
+        func_wrapped = func1
+    
+    return func_wrapped
 
 class ObservableLinq(object):
     # Observable.select extension metho
     def select(self, selector):
-        # <summary>
-        # Projects each element of an observable sequence into a new form by incorporating the element's index.
-        # &#10;
-        # &#10;1 - source.select(function (value) { return value * value; });
-        # &#10;2 - source.select(function (value, index) { return value * value + index; });
-        # </summary>
-        # <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
-        # <returns>An observable sequence whose elements are the result of invoking the transform function on each element of source.</returns>        
-
-        #print ("Observable:select(%s)" % selector)
+        """Projects each element of an observable sequence into a new form by incorporating the element's index.
         
-        # Selector may or may not take a count parameter. We adapt our call accordingly
-        def selector_no_count(value, count):
-            return selector(value)
+        1 - source.select(lambda value: value * value)
+        2 - source.select(lambda value, index: value * value + index)
+        
+        Keyword arguments:
+        selector -- A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
+        
+        Returns an observable sequence whose elements are the result of invoking the transform function on each element of source.
+        """
+        #print ("Observable:select(%s)" % selector)
 
-        argnames, varargs, kwargs = getargspec(selector)[:3]
-        if len(argnames) == 1 and not varargs and not kwargs:
-            selector_wrapped = selector_no_count
-        else:
-            selector_wrapped = selector
+        selector = adapt_call(selector)        
 
         def subscribe(observer):
             count = 0
@@ -48,7 +38,7 @@ class ObservableLinq(object):
                 nonlocal count
                 result = None
                 try:
-                    result = selector_wrapped(value, count)
+                    result = selector(value, count)
                 except Exception as err:
                     observer.on_error(err)
                 else:
@@ -79,6 +69,40 @@ class ObservableLinq(object):
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
 
+    def where(self, predicate):
+        """Filters the elements of an observable sequence based on a predicate by incorporating the element's index.
+        
+        1 - source.where(lambda value: value < 10)
+        2 - source.where(lambda value, index: value < 10 or index < 10)
+        
+        Keyword arguments:
+        predicate -- A function to test each source element for a conditio; the second parameter of the function represents the index of the source element.
+        
+        Returns an observable sequence that contains elements from the input sequence that satisfy the condition.
+        """
+        predicate = adapt_call(predicate)
+        parent = self
+        
+        def subscribe(observer):
+            count = 0
+            def on_next(value):
+                nonlocal count
+                should_run = False
+                try:
+                    should_run = predicate(value, count)
+                except Exception as ex:
+                    observer.on_error(ex)
+                    return
+                else:
+                    count += 1
+                
+                if should_run:
+                    observer.on_next(value)
+                
+            return parent.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+
 # Stitch methods into the main Observable "God" object
 Observable.select = ObservableLinq.select
+Observable.where = ObservableLinq.where
 Observable.take = ObservableLinq.take
