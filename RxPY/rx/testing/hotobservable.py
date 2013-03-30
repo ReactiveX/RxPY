@@ -8,7 +8,7 @@ from .reactive_assert import AssertList
 
 class HotObservable(Observable):
     def __init__(self, scheduler, messages):
-        print ("HotObservable:__init__()")
+        #print ("HotObservable:__init__()")
         Observable.__init__(self, self.subscribe)
 
         self.scheduler = scheduler

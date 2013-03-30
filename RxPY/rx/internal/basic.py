@@ -16,7 +16,7 @@ def default_comparer(x, y):
 def default_sub_comparer(x, y):
     return x - y
 
-def default_key_sSerializer(x):
+def default_key_serializer(x):
     return str(x)
 
 def default_error(err):
@@ -25,8 +25,4 @@ def default_error(err):
 # Errors
 sequence_contains_no_elements = 'Sequence contains no elements.'
 argument_out_of_range = 'Argument out of range'
-object_isposed = 'Object has been disposed'
-
-def checkDisposed(self):
-    if (self.is_disposed):
-        raise Exception(object_isposed)
+object_is_disposed = 'Object has been disposed'

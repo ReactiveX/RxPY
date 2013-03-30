@@ -32,9 +32,13 @@
     <Compile Include="rx\internal\basic.py" />
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
+    <Compile Include="rx\linq\groupedobservable.py" />
     <Compile Include="rx\notification.py" />
+    <Compile Include="rx\subjects\subject.py" />
+    <Compile Include="rx\subjects\__init__.py" />
     <Compile Include="rx\testing\mockobserver.py" />
     <Compile Include="rx\testing\reactivetest.py" />
+    <Compile Include="rx\testing\reactive_assert.py" />
     <Compile Include="rx\testing\recorded.py" />
     <Compile Include="rx\testing\testscheduler.py" />
     <Compile Include="setup.py" />
@@ -75,6 +79,7 @@
     <Folder Include="rx\disposables" />
     <Folder Include="rx\linq" />
     <Folder Include="rx\internal\" />
+    <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
     <Folder Include="tests\test_linq" />

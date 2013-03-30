@@ -22,10 +22,10 @@ class AbstractObserver(object):
         print ("AbstractObserver:dispose()")
         self.is_stopped = True
     
-    def fail(self):
+    def fail(self, exn):
         if not self.is_stopped:
             self.is_stopped = True
-            self.error(True)
+            self.error(exn)
             return True
 
         return False
