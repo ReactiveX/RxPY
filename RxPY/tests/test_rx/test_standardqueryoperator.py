@@ -8,6 +8,7 @@ on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
 on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
+disposed = ReactiveTest.disposed
 
 class RxException(Exception):
     pass
@@ -201,6 +202,108 @@ def test_select_with_index_throws():
             .subscribe()
     except RxException:
         pass
+
+def test_select_with_index_dispose_inside_selector():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 4), on_next(200, 3), on_next(500, 2), on_next(600, 1))
+    invoked = 0
+    results = scheduler.create_observer()
+    d = SerialDisposable()
+    
+    def projection(x, index):
+        nonlocal invoked
+        invoked += 1
+        if scheduler.clock > 400:
+            d.dispose()
+        
+        return x + index * 10
+
+    d.disposable = xs.select(projection).subscribe(results)
+
+    def action(scheduler, state):
+        return d.dispose()
+
+    scheduler.schedule_absolute(disposed, action)
+    scheduler.start()
+    results.messages.assert_equal(on_next(100, 4), on_next(200, 13))
+    xs.subscriptions.assert_equal(subscribe(0, 500))
+    assert invoked == 3
+
+def test_select_with_index_completed():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
+    
+    def factory():
+        def projection(x, index):
+            nonlocal invoked
+            invoked += 1
+            return (x + 1) + (index * 10)
+        
+        return xs.select(projection)
+
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_completed(400))
+    xs.subscriptions.assert_equal(subscribe(200, 400))
+    assert invoked == 4
+
+def test_select_with_index_not_completed():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1))
+    def factory():
+        def projection(x, index):
+            nonlocal invoked
+            invoked += 1
+            return (x + 1) + (index * 10)
+
+        return xs.select(projection)
+
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32))
+    xs.subscriptions.assert_equal(subscribe(200, 1000))
+    assert invoked == 4
+
+def test_select_with_index_error():
+    scheduler = TestScheduler()
+    ex = 'ex';
+    invoked = 0;
+    xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_error(400, ex), on_next(410, -1), on_completed(420), on_error(430, 'ex'));
+    
+    def factory():
+        def projection(x, index):
+            nonlocal invoked
+            invoked += 1
+            return (x + 1) + (index * 10)
+        
+        return xs.select(projection)
+
+    results = scheduler.start_with_create(factory)
+        
+    results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_error(400, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 400))
+    assert invoked == 4
+
+def test_select_with_index_selector_throws():
+    scheduler = TestScheduler()
+    invoked = 0
+    ex = 'ex'
+    xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
+    
+    def factory():
+        def projection(x, index):
+            nonlocal invoked
+            invoked += 1
+            if invoked == 3:
+                raise Exception(ex)
+            return (x + 1) + (index * 10)
+
+        return xs.select(projection)
+
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_error(290, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 290))
+    assert invoked == 3
 
 if __name__ == '__main__':
     test_select_selector_throws()
