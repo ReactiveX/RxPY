@@ -367,7 +367,7 @@ def test_where_true():
 def test_where_false():
     scheduler = TestScheduler()
     invoked = 0
-    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600));
+    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     
     def factory():
         def predicate(x):
@@ -404,7 +404,7 @@ def test_where_error():
     scheduler = TestScheduler()
     invoked = 0
     ex = 'ex'
-    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630));
+    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
     def factory():
         def predicate(x):
@@ -415,15 +415,15 @@ def test_where_error():
 
     results = scheduler.start_with_create(factory)
         
-    results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_error(600, ex));
-    xs.subscriptions.assert_equal(subscribe(200, 600));
+    results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_error(600, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
     assert invoked == 9
 
 def test_where_throw():
     scheduler = TestScheduler()
     invoked = 0
     ex = 'ex'
-    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630));
+    xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
     def factory():
         def predicate(x):
@@ -649,7 +649,7 @@ def test_group_by_with_key_comparer():
                         on_completed(570),
                         on_next(580, "error"),
                         on_completed(600),
-                        on_error(650, 'ex'));
+                        on_error(650, 'ex'))
 
     def factory():
         def key_selector(x):
@@ -660,15 +660,15 @@ def test_group_by_with_key_comparer():
         return xs.group_by(key_selector, lambda x: x).dump().select(lambda g: g.key)
         
     results = scheduler.start_with_create(factory)
-    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570));
-    xs.subscriptions.assert_equal(subscribe(200, 570));
-    assert key_invoked == 12
+    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570))
+    xs.subscriptions.assert_equal(subscribe(200, 570))
+    assert(key_invoked == 12)
 
 def test_groupby_outer_complete():
     scheduler = TestScheduler()
     key_invoked = 0
     ele_invoked = 0
-    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'));
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
     
     def factory():
         def key_selector(x):
@@ -686,15 +686,15 @@ def test_groupby_outer_complete():
     results = scheduler.start_with_create(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570))
     xs.subscriptions.assert_equal(subscribe(200, 570))
-    assert key_invoked == 12
-    assert ele_invoked == 12
+    assert(key_invoked == 12)
+    assert(ele_invoked == 12)
 
 def test_group_by_outer_error():
     scheduler = TestScheduler()
     key_invoked = 0
     ele_invoked = 0
     ex = 'ex'
-    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_error(570, ex), on_next(580, "error"), on_completed(600), on_error(650, 'ex'));
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_error(570, ex), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
     
     def factory():
         def key_selector(x):
@@ -710,17 +710,17 @@ def test_group_by_outer_error():
 
     results = scheduler.start_with_create(factory)
 
-    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(570, ex));
+    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(570, ex))
     xs.subscriptions.assert_equal(subscribe(200, 570))
-    assert key_invoked == 12
-    assert ele_invoked == 12
+    assert(key_invoked == 12)
+    assert(ele_invoked == 12)
 
 
 def test_group_by_outer_dispose():
     scheduler = TestScheduler()
     key_invoked = 0
     ele_invoked = 0
-    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'));
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
     
     def dispose():
         def key_selector(x):
@@ -737,10 +737,67 @@ def test_group_by_outer_dispose():
 
     results = scheduler.start_with_dispose(dispose, 355)
     
-    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"));
+    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"))
     xs.subscriptions.assert_equal(subscribe(200, 355))
     assert(key_invoked == 5)
     assert(ele_invoked == 5)
+
+def test_group_by_outer_key_throw():
+    scheduler = TestScheduler()
+    key_invoked = 0
+    ele_invoked = 0
+    ex = 'ex'
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
+    def factory():
+        def key_selector(x):
+            nonlocal key_invoked
+            key_invoked += 1
+            if key_invoked == 10:
+                raise Exception(ex)
+            
+            return x.lower().strip()
+
+        def element_selector(x):
+            nonlocal ele_invoked
+            ele_invoked += 1
+            return x[::-1]
+        
+        return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+     
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(480, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 480))
+    assert(key_invoked == 10)
+    assert(ele_invoked == 9)
+
+def test_group_by_outer_ele_throw():
+    scheduler = TestScheduler()
+    key_invoked = 0
+    ele_invoked = 0
+    ex = 'ex'
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
+    
+    def factory():
+        def key_selector(x):
+            nonlocal key_invoked
+            key_invoked += 1
+            return x.lower().strip()
+        
+        def element_selector(x):
+            nonlocal ele_invoked
+            ele_invoked += 1
+            if ele_invoked == 10:
+                raise Exception(ex)
+            return x[::-1]
+
+        return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(480, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 480))
+    assert(key_invoked == 10)
+    assert(ele_invoked == 10)
+
 
 if __name__ == '__main__':
     test_group_by_with_key_comparer()
