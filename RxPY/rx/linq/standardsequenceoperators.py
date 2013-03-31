@@ -65,12 +65,12 @@ class ObservableLinq(object):
             remaining = count
 
             def on_next(x):
+                nonlocal remaining
                 if remaining > 0:
                     remaining -= 1
                     observer.on_next(x)
                     if not remaining:
                         observer.on_completed()
-
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
 

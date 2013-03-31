@@ -60,7 +60,6 @@ def test_select_disposeinsideselector():
     invoked = 0
     
     def projection(x, *args, **kw):
-        #print("projection()", scheduler.clock)
         nonlocal invoked
         invoked += 1
         
@@ -72,8 +71,6 @@ def test_select_disposeinsideselector():
     d.disposable = xs.select(projection).subscribe(results)
 
     def action(scheduler, state):
-        """Test:action"""
-        #print ("**************action()")
         return d.dispose()
 
     scheduler.schedule_absolute(ReactiveTest.disposed, action)
@@ -195,7 +192,7 @@ def test_select_with_index_throws():
     try:
         return Observable.empty() \
             .select(lambda x, index: x) \
-            .subscribe(lambda x: x, lambda ex: ex, lambda : _raise('ex'))
+            .subscribe(lambda x: x, lambda ex: _, lambda : _raise('ex'))
     except RxException:
         pass
 
@@ -927,7 +924,7 @@ def test_group_by_inner_error():
                 inner_subscriptions[group.key] = group.subscribe(result)
             
             scheduler.schedule_relative(100, action3)
-        outer_subscription = outer.subscribe(on_next, lambda e: e)
+        outer_subscription = outer.subscribe(on_next, lambda e: _)
         return outer_subscription
     scheduler.schedule_absolute(subscribed, action2)
 
@@ -945,7 +942,27 @@ def test_group_by_inner_error():
     #results['qux'].messages.assert_equal(on_error(570, ex))
     xs.subscriptions.assert_equal(subscribe(200, 570))
 
+def test_take_complete_after():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(70, 6), on_next(150, 4), on_next(210, 9), on_next(230, 13), on_next(270, 7), on_next(280, 1), on_next(300, -1), on_next(310, 3), on_next(340, 8), on_next(370, 11), on_next(410, 15), on_next(415, 16), on_next(460, 72), on_next(510, 76), on_next(560, 32), on_next(570, -100), on_next(580, -3), on_next(590, 5), on_next(630, 10), on_completed(690))
+    
+    def factory():
+        return xs.take(20)
 
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(210, 9), on_next(230, 13), on_next(270, 7), on_next(280, 1), on_next(300, -1), on_next(310, 3), on_next(340, 8), on_next(370, 11), on_next(410, 15), on_next(415, 16), on_next(460, 72), on_next(510, 76), on_next(560, 32), on_next(570, -100), on_next(580, -3), on_next(590, 5), on_next(630, 10), on_completed(690))
+    xs.subscriptions.assert_equal(subscribe(200, 690))
+
+def test_take_complete_same():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(70, 6), on_next(150, 4), on_next(210, 9), on_next(230, 13), on_next(270, 7), on_next(280, 1), on_next(300, -1), on_next(310, 3), on_next(340, 8), on_next(370, 11), on_next(410, 15), on_next(415, 16), on_next(460, 72), on_next(510, 76), on_next(560, 32), on_next(570, -100), on_next(580, -3), on_next(590, 5), on_next(630, 10), on_completed(690))
+
+    def factory():
+        return xs.take(17)
+
+    results = scheduler.start_with_create(factory)
+    results.messages.assert_equal(on_next(210, 9), on_next(230, 13), on_next(270, 7), on_next(280, 1), on_next(300, -1), on_next(310, 3), on_next(340, 8), on_next(370, 11), on_next(410, 15), on_next(415, 16), on_next(460, 72), on_next(510, 76), on_next(560, 32), on_next(570, -100), on_next(580, -3), on_next(590, 5), on_next(630, 10), on_completed(630))
+    xs.subscriptions.assert_equal(subscribe(200, 630))
 
 if __name__ == '__main__':
     test_group_by_inner_error()
