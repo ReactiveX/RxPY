@@ -7,7 +7,7 @@ class SingleAssignmentDisposable(Disposable):
         self.current = None
 
     def get_disposable(self):
-        print("SingleAssignmentDisposable:get_disposable()")
+        #print("SingleAssignmentDisposable:get_disposable()")
         return self.current
     
     def set_disposable(self, value):
@@ -26,7 +26,7 @@ class SingleAssignmentDisposable(Disposable):
     disposable = property(get_disposable, set_disposable)
         
     def dispose(self):
-        print("SingleAssignmentDisposable:dispose()")
+        #print("SingleAssignmentDisposable:dispose()")
         old = None
 
         if not self.is_disposed:

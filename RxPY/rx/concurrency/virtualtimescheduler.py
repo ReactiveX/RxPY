@@ -1,5 +1,5 @@
 from rx.internal import PriorityQueue
-from rx.internal.basic import argument_out_of_range
+from rx.internal.basic import ARGUMENT_OUT_OF_RANGE
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
@@ -87,7 +87,7 @@ class VirtualTimeScheduler(Scheduler):
         print ("advance_to()")
         next = None
         if self.comparer(self.clock, time) >= 0:
-            raise Exception(argument_out_of_range)
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
         
         if not self.is_enabled:
             self.is_enabled = True
@@ -113,7 +113,7 @@ class VirtualTimeScheduler(Scheduler):
         print("advance_by()")
         dt = self.add(self.clock, time)
         if self.comparer(self.clock, dt) >= 0:
-            raise Exception(argument_out_of_range)
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
         
         return self.advance_to(dt)
     
@@ -126,7 +126,7 @@ class VirtualTimeScheduler(Scheduler):
         dt = self.add(self.clock, time)
 
         if self.comparer(self.clock, dt) >= 0:
-            raise Exception(argument_out_of_range)
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
 
         self.clock = dt
 

@@ -1,5 +1,5 @@
 from rx import Observable
-from rx.internal.basic import object_is_disposed
+from rx.internal.basic import OBJECT_IS_DISPOSED
 from rx.disposables import Disposable
 
 from .anonymoussubject import AnonymousSubject
@@ -18,7 +18,7 @@ class Subject(Observable):
 
     def check_disposed(self):
         if self.is_disposed:
-            raise Exception(object_is_disposed)
+            raise Exception(OBJECT_IS_DISPOSED)
 
     def subscribe(self, observer):
         self.check_disposed()

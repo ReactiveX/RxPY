@@ -1,11 +1,9 @@
 import types
 
-from .linq.observable_creation import ObservableCreation
-
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
-class Observable(ObservableCreation):
+class Observable(object):
     """Represents a push-style collection."""
 
     def __init__(self, subscribe):

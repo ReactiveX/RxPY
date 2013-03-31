@@ -3,13 +3,13 @@ from inspect import getargspec, getargvalues
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
-from rx.internal.basic import default_key_serializer, identity
+from rx.internal.basic import default_key_serializer, identity, ARGUMENT_OUT_OF_RANGE
 
 from .groupedobservable import GroupedObservable
 
 def adapt_call(func):
     """Adapts func from taking 2 params to only taking 1 param"""
-    def func1(arg1, arg2):
+    def func1(arg1, arg2=None):
         return func(arg1)
 
     func_wrapped = func
@@ -55,7 +55,7 @@ class ObservableLinq(object):
 
     def take(self, count, scheduler=None):
         if count < 0:
-            raise Exception(argumentOutOfRange)
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
         
         if not count:
             return Observable.empty(scheduler)
@@ -183,8 +183,8 @@ class ObservableLinq(object):
 
                     def on_error(exn):
                         print ("on_error()", exn)
-                        for w in mapping.values():
-                            w.on_error(exn)
+                        for wr in mapping.values():
+                            wr.on_error(exn)
                         observer.on_error(exn)
 
                     def on_completed():

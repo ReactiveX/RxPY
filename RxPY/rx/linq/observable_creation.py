@@ -1,3 +1,6 @@
+from rx.observable import Observable
+from rx.anonymousobservable import AnonymousObservable
+
 from rx.disposables import Disposable
 from rx.concurrency import ImmediateScheduler
 
@@ -8,14 +11,14 @@ class ObservableCreation(object):
         def _subscribe(observer):
             return Disposable.create(subscribe(observer))
         
-        return cls(_subscribe)
+        return AnonymousObservable(_subscribe)
 
     @classmethod
     def create_with_disposable(cls, subscribe):
         return cls(subscribe)
 
     @classmethod
-    def defer(observable_factory):
+    def defer(cls, observable_factory):
         def subscribe(observer):
             result = None
             try:
@@ -25,7 +28,7 @@ class ObservableCreation(object):
             
             return result.subscribe(observer)
 
-        return cls(subscribe)
+        return AnonymousObservable(subscribe)
 
     @classmethod
     def empty(cls, scheduler=None):
@@ -37,7 +40,7 @@ class ObservableCreation(object):
 
             return scheduler.schedule(action)
 
-        return cls(subscribe)
+        return AnonymousObservable(subscribe)
 
 # var observableFromArray = Observable.fromArray = function (array, scheduler) {
 #     scheduler || (scheduler = currentThreadScheduler)
@@ -88,7 +91,7 @@ class ObservableCreation(object):
         def subscribe(observer):
             return Disposable.empty()
 
-        return cls(subscribe)
+        return AnonymousObservable(subscribe)
 
 # Observable.range = function (start, count, scheduler) {
 #     scheduler || (scheduler = currentThreadScheduler)
@@ -133,7 +136,7 @@ class ObservableCreation(object):
                 observer.on_error(exception)
 
             return scheduler.schedule(action)
-        return cls(subscribe)
+        return AnonymousObservable(subscribe)
 
 # Observable.using = function (resourceFactory, observableFactory) {
 #     return new AnonymousObservable(function (observer) {
@@ -151,3 +154,7 @@ class ObservableCreation(object):
 #     })
 # }                 
 
+Observable.create = ObservableCreation.create
+Observable.empty = ObservableCreation.empty
+Observable.never = ObservableCreation.never
+Observable.throw_exception = ObservableCreation.throw_exception
