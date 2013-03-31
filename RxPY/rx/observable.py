@@ -1,5 +1,4 @@
 import types
-import sys
 
 from .linq.observable_creation import ObservableCreation
 
@@ -7,11 +6,14 @@ from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
 class Observable(ObservableCreation):
+    """Represents a push-style collection."""
+
     def __init__(self, subscribe):
         self._subscribe = subscribe
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None):
-        """Subscribes an observer to the observable sequence. Returns he source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+        """Subscribes an observer to the observable sequence. Returns he source
+        sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
         
         1 - source.subscribe()
         2 - source.subscribe(observer)
@@ -62,31 +64,3 @@ class Observable(ObservableCreation):
             return scheduler.schedule_recursive(action, 0)
             
         return Observable(subscribe)
-
-def main():
-    #a = Observable.returnvalue(42)
-    a = Observable.range(0, 10)
-    #a = Enumerable.repeat(10, sys.maxint)
-    #a = (a
-    #    .where(lambda x: x > 3)
-    #    .select(lambda x: x * 10)
-    #    )
-
-    #a = a \
-    #    .where(lambda x: x > 3) \
-    #    .select(lambda x: x * 10)
-
-    a = a.take(2)
-
-    #a.where([x for x in xs ])
-    
-    def debug(x):
-        print("value: ", x)
-
-    disp = a.subscribe(debug)
-    print(disp)
-    disp.dispose()
-    #print b.to_array()
-
-if __name__ == '__main__':
-    main()

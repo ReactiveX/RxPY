@@ -2,8 +2,16 @@ from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
 
 class AnonymousObservable(Observable):
+    """Class to create an Observable instance from a delegate-based implementation
+    of the Subscribe method."""
+    
     def __init__(self, subscribe):
-        def s(observer):
+        """Creates an observable sequence object from the specified subscription function.
+
+        Keyword arguments:
+        subscribe -- Subscribe method implementation.
+        """
+        def _subscribe(observer):
             auto_detach_observer = AutoDetachObserver(observer)
             if False: #current_thread_scheduler.schedule_required()):
                 def action():
@@ -22,5 +30,5 @@ class AnonymousObservable(Observable):
 
             return auto_detach_observer
         
-        super(AnonymousObservable, self).__init__(s)
+        super(AnonymousObservable, self).__init__(_subscribe)
     

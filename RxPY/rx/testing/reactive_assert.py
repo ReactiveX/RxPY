@@ -35,7 +35,6 @@ class AssertList(list):
 class ObservableTest(object):
     # Observable.dump extension method
     def dump(self, name = "test"):
-        print("Observable:dump(%s)" % name)
         def subscribe(observer):
             def on_next(value):
                 print("{%s}-->{%s}" % (name, value))

@@ -657,7 +657,7 @@ def test_group_by_with_key_comparer():
             key_invoked += 1
             return x.lower().strip()
         
-        return xs.group_by(key_selector, lambda x: x).dump().select(lambda g: g.key)
+        return xs.group_by(key_selector, lambda x: x).select(lambda g: g.key)
         
     results = scheduler.start_with_create(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570))
@@ -798,6 +798,54 @@ def test_group_by_outer_ele_throw():
     assert(key_invoked == 10)
     assert(ele_invoked == 10)
 
+def test_group_by_inner_complete():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
+    outer_subscription = None
+    inner_subscriptions = {}
+    inners = {}
+    results = {}
+    outer = None
+
+    def action1(scheduler, state):
+        nonlocal outer
+        outer = xs.group_by(lambda x: x.lower().strip(), lambda x: x[::-1])
+    
+    scheduler.schedule_absolute(created, action1)
+    
+    def action2(scheduler, state):
+        nonlocal outer_subscription
+
+        def next(group):
+            nonlocal results, inners
+
+            result = scheduler.create_observer()
+            inners[group.key] = group
+            results[group.key] = result
+
+            def action21(scheduler, state):
+                nonlocal inner_subscriptions
+                inner_subscriptions[group.key] = group.subscribe(result)
+
+            scheduler.schedule_relative(100, action21)
+        outer_subscription = outer.subscribe(next)
+    scheduler.schedule_absolute(subscribed, action2)
+    
+    def action3(scheduler, state):
+        outer_subscription.dispose()
+        for sub in inner_subscriptions.values():
+            sub.dispose()
+        
+    scheduler.schedule_absolute(disposed, action3)
+    scheduler.start()
+    assert(len(inners) == 4)
+    results['foo'].messages.assert_equal(on_next(470, " OOF"), on_next(530, "    oOf    "), on_completed(570))
+    results['bar'].messages.assert_equal(on_next(390, "rab   "), on_next(420, "  RAB "), on_completed(570))
+    results['baz'].messages.assert_equal(on_next(480, "  zab"), on_next(510, " ZAb "), on_completed(570))
+    results['qux'].messages.assert_equal(on_completed(570))
+    xs.subscriptions.assert_equal(subscribe(200, 570))
+
+
 
 if __name__ == '__main__':
-    test_group_by_with_key_comparer()
+    test_group_by_inner_complete()

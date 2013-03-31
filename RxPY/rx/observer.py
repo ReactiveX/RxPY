@@ -1,8 +1,11 @@
 from rx.internal import noop, default_error
 
 from .abstractobserver import AbstractObserver
+from .anonymousobserver import AnonymousObserver
 
 class Observer(AbstractObserver):
+    """Supports push-style iteration over an observable sequence."""
+
     def __init__(self, on_next=None, on_error=None, on_completed=None):
         super(Observer, self).__init__()
 
@@ -18,27 +21,21 @@ class Observer(AbstractObserver):
 
     def error(self, ex):
         self._on_error(ex)
-
-    @classmethod
-    def from_notifier(cls, handler):
-        def on_next(x):
-            return handler(notification_create_on_next(x))
-        def on_error(ex):
-            return handler(notification_create_on_error(exception))
-        def on_completed():
-            return handler(notification_create_on_completed())
-
-        return cls(on_next, on_error, on_completed)
  
     def to_notifier(self):
+        """Creates a notification callback from an observer.
+        
+        Returns the action that forwards its input notification to the underlying observer.
+        """
         observer = self
 
-        def func(n):
-            return n.accept(observer)
+        def func(notifier):
+            return notifier.accept(observer)
         return func
 
-    def checked(self):
-        return CheckedObserver(self)
-
-    #def as_observer():
-    #    return AnonymousObserver(self.on_next, this.on_error, on_completed)
+    def as_observer(self):
+        """Hides the identity of an observer.
+        
+        Returns an observer that hides the identity of the specified observer.
+        """
+        return AnonymousObserver(self.on_next, self.on_error, self.on_completed)

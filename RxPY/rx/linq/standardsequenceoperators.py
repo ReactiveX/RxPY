@@ -130,7 +130,6 @@ class ObservableLinq(object):
                 try:
                     key = key_selector(x)
                 except Exception as e:
-                    print(e)
                     for w in mapping.values():
                         w.on_error(e)
                     
@@ -148,7 +147,7 @@ class ObservableLinq(object):
                         fire_new_map_entry = True
                     
                 except Exception as e:
-                    print("********************", e)
+                    print("Exception ********************", e)
                     for w in mapping.values():
                         w.on_error(e)
                     
@@ -161,7 +160,7 @@ class ObservableLinq(object):
                     try:
                         duration = duration_selector(duration_group)
                     except Exception as e:
-                        print ("*****************", e)
+                        print ("Exception *****************", e)
                         for w in mapping.values():
                             w.on_error(e)
                         
@@ -196,7 +195,7 @@ class ObservableLinq(object):
                 try:
                     element = element_selector(x)
                 except Exception as e:
-                    print("********************", e)
+                    print("Exception ********************", e)
                     for w in mapping.values():
                         w.on_error(e)
                     
@@ -206,7 +205,7 @@ class ObservableLinq(object):
                 writer.on_next(element)
             
             def on_error(ex):
-                print ("on_error", ex)
+                print ("on_error(%s)" % ex)
                 for w in mapping.values():
                     w.on_error(ex)
                 

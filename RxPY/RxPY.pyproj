@@ -27,13 +27,16 @@
   <ItemGroup>
     <Compile Include="rx\abstractobserver.py" />
     <Compile Include="rx\anonymousobservable.py" />
+    <Compile Include="rx\anonymousobserver.py" />
     <Compile Include="rx\autodetachobserver.py" />
+    <Compile Include="rx\checkedobserver.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
     <Compile Include="rx\internal\basic.py" />
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
     <Compile Include="rx\notification.py" />
+    <Compile Include="rx\subjects\innersubscription.py" />
     <Compile Include="rx\subjects\subject.py" />
     <Compile Include="rx\subjects\__init__.py" />
     <Compile Include="rx\testing\mockobserver.py" />

@@ -1,7 +1,11 @@
 from rx import Observable
 from rx.internal.basic import object_is_disposed
 
+from .innersubscription import InnerSubscription
+
 class Subject(Observable):
+    """Represents an object that is both an observable sequence as well as an observer. Each notification is broadcasted to all subscribed observers."""
+
     def __init__(self):
         super(Subject, self).__init__(self.subscribe)
         
@@ -27,6 +31,7 @@ class Subject(Observable):
         return Disposable.empty()
     
     def on_completed(self):
+        """Notifies all subscribed observers of the end of the sequence."""
         self.check_disposed()
         if not self.is_stopped:
             self.is_stopped = True
@@ -37,6 +42,11 @@ class Subject(Observable):
             self.observers = []
 
     def on_error(self, exception):
+        """Notifies all subscribed observers with the exception.
+        
+        Keyword arguments:
+        error -- The exception to send to all subscribed observers.
+        """
         self.check_disposed()
         if not self.is_stopped:
             self.is_stopped = True
@@ -47,12 +57,19 @@ class Subject(Observable):
             self.observers = []
 
     def on_next(self, value):
+        """Notifies all subscribed observers with the value.
+        
+        Keyword arguments:
+        value -- The value to send to all subscribed observers.
+        """
         self.check_disposed()
         if not self.is_stopped:
             for os in self.observers:
                 os.on_next(value)
 
     def dispose(self):
+        """Unsubscribe all observers and release resources."""
+        
         self.is_disposed = True
         self.observers = None
     
