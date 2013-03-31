@@ -32,7 +32,7 @@ class HotObservable(Observable):
             notification = message.value
 
             wrapper(message, notification)
-            
+           
     def subscribe(self, on_next, on_error=None, on_completed=None):
         print ("HotObservable:subscribe()")
 
@@ -47,9 +47,11 @@ class HotObservable(Observable):
         index = len(self.subscriptions) - 1 
 
         def dispose_action():
-            print ("HotObservable:subscribe:dispose_action(%s)" % self.scheduler.clock)
+            #print ("HotObservable:subscribe:dispose_action(%s)" % self.scheduler.clock)
             observable.observers.remove(observer)
-            observable.subscriptions[index] = Subscription(observable.subscriptions[index].subscribe, observable.scheduler.clock)
+            start = observable.subscriptions[index].subscribe
+            end = observable.scheduler.clock
+            observable.subscriptions[index] = Subscription(start, end)
 
         return Disposable.create(dispose_action)
 

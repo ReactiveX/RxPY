@@ -3,16 +3,19 @@ from rx.internal.basic import argument_out_of_range
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
+from .scheduleperiodicrecursive import SchedulePeriodicRecursive
 
 class VirtualTimeScheduler(Scheduler):
     """Virtual Scheduler"""
     def __init__(self, initial_clock=0, comparer=None):
-        """Creates a new virtual time scheduler with the specified initial clock value and absolute time comparer.
+        """Creates a new virtual time scheduler with the specified initial 
+        clock value and absolute time comparer.
         
         Keyword arguments:
         initial_clock -- Initial value for the clock.
         comparer -- Comparer to determine causality of events based on absolute time.
         """
+        
         self.clock = initial_clock
         self.comparer = comparer
         self.is_enabled = False
@@ -22,10 +25,11 @@ class VirtualTimeScheduler(Scheduler):
         return self.to_datetime_offset(self.clock)
 
     def schedule(self, action, state=None):
-        return this.schedule_absolute(this.clock, action, state)
+        return self.schedule_absolute(self.clock, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at dueTime. Return the disposable object used to cancel the scheduled action (best effort)
+        """Schedules an action to be executed at dueTime. Return the disposable
+        object used to cancel the scheduled action (best effort)
 
         Keyword arguments:
         due_time -- Relative time after which to execute the action.
@@ -50,8 +54,8 @@ class VirtualTimeScheduler(Scheduler):
         return si.disposable
     
     def schedule_periodic(self, period, action, state=None):
-        s = SchedulePeriodicRecursive(self, period, action, state)
-        return s.start()
+        scheduler = SchedulePeriodicRecursive(self, period, action, state)
+        return scheduler.start()
         
     def start(self):
         """Starts the virtual time scheduler."""
@@ -74,7 +78,8 @@ class VirtualTimeScheduler(Scheduler):
         self.is_enabled = False
     
     def advance_to(self, time):
-        """Advances the scheduler's clock to the specified time, running all work till that point.
+        """Advances the scheduler's clock to the specified time, running all 
+        work till that point.
         
         Keyword arguments:
         time -- Absolute time to advance the scheduler's clock to.
@@ -99,7 +104,8 @@ class VirtualTimeScheduler(Scheduler):
             self.clock = time
         
     def advance_by(self, time):
-        """Advances the scheduler's clock by the specified relative time, running all work scheduled for that timespan.
+        """Advances the scheduler's clock by the specified relative time, 
+        running all work scheduled for that timespan.
         
         Keyword arguments:
         time -- Relative time to advance the scheduler's clock by.

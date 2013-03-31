@@ -1,10 +1,13 @@
 from rx import Observable
 from rx.internal.basic import object_is_disposed
+from rx.disposables import Disposable
 
+from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 class Subject(Observable):
-    """Represents an object that is both an observable sequence as well as an observer. Each notification is broadcasted to all subscribed observers."""
+    """Represents an object that is both an observable sequence as well as an 
+    observer. Each notification is broadcasted to all subscribed observers."""
 
     def __init__(self):
         super(Subject, self).__init__(self.subscribe)

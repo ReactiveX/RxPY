@@ -1,4 +1,4 @@
-from .disposable import Disposable, disposable_empty
+from .disposable import Disposable
 
 from .compositedisposable import CompositeDisposable
 from .singleassignmentdisposable import SingleAssignmentDisposable

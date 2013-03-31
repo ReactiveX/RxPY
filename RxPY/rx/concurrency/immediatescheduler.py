@@ -5,7 +5,7 @@ from .scheduler import Scheduler
 #from datetime import datetime
 
 # Immediate Scheduler
-schedulerNoBlockError = "Scheduler is not allowed to block the thread"
+SCHEDULER_NO_BLOCK_ERROR = "Scheduler is not allowed to block the thread"
 
 class ImmediateScheduler(Scheduler):
     def schedule(self, action, state=None):
@@ -13,7 +13,7 @@ class ImmediateScheduler(Scheduler):
 
     def schedule_relative(self, duetime, action, state=None):
         if duetime > timedelta(0):
-            raise Exception(schedulerNoBlockError)
+            raise Exception(SCHEDULER_NO_BLOCK_ERROR)
 
         return self.invoke_action(action, state)
 

@@ -2,7 +2,6 @@ from .disposable import Disposable
 
 class CompositeDisposable(Disposable):
     def __init__(self, *args):
-        print (args)
         self.disposables = list(args)
         self.is_disposed = False
         self.length = len(self.disposables)

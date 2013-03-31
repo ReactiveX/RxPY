@@ -18,5 +18,3 @@ class Disposable(object):
     @classmethod
     def empty(cls):
         return cls(noop)
-
-disposable_empty = Disposable.empty

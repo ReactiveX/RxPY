@@ -21,7 +21,7 @@ class RefCountDisposable(Disposable):
         self.underlying_disposable = disposable
         self.is_disposed = False
         self.is_primary_disposed = False
-        self.count = 0;
+        self.count = 0
     
     def dispose(self):
         if not self.is_disposed:

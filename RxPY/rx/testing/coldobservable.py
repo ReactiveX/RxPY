@@ -1,10 +1,11 @@
 from rx import Observable
+from rx.disposables import Disposable, CompositeDisposable
 
 from .subscription import Subscription
 
 class ColdObservable(Observable):
     def __init__(self, scheduler, messages):
-        Observable.__init__(this, subscribe)
+        super(ColdObservable, self).__init__(self.subscribe)
         
         self.scheduler = scheduler
         self.messages = messages
@@ -12,8 +13,8 @@ class ColdObservable(Observable):
 
     def subscribe(self, observer):
         observable = self
-        self.subscriptions.push(Subscription(self.scheduler.clock))
-        index = self.subscriptions.length - 1
+        self.subscriptions.append(Subscription(self.scheduler.clock))
+        index = len(self.subscriptions) - 1
         d = CompositeDisposable()
         
         for message in self.messages:
@@ -26,7 +27,9 @@ class ColdObservable(Observable):
             d.add(observable.scheduler.schedule_relative(message.time, action))
 
         def action():
-            observable.subscriptions[index] = Subscription(observable.subscriptions[index].subscribe, observable.scheduler.clock)
+            start = observable.subscriptions[index].subscribe
+            end = observable.scheduler.clock
+            observable.subscriptions[index] = Subscription(start, end)
             d.dispose()
 
         return Disposable.create(action)
