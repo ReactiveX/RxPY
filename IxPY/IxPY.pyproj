@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>eb5dfc95-b103-43a0-ae39-1751faa3c6ab</ProjectGuid>
+    <ProjectHome>..\</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <InterpreterId>00000000-0000-0000-0000-000000000000</InterpreterId>
+    <InterpreterVersion>
+    </InterpreterVersion>
+    <Name>IxPY</Name>
+    <RootNamespace>IxPY</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ix\enumerable.py" />
+    <Compile Include="ix\__init__.py" />
+    <Compile Include="tests\test_linq\test_linq.py" />
+    <Compile Include="tests\test_linq\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ix" />
+    <Folder Include="tests\test_linq" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>
