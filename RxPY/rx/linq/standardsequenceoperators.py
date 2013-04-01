@@ -259,12 +259,14 @@ class ObservableLinq(object):
         input sequence starting at the first element in the linear series that
         does not pass the test specified by predicate.        
         """
+        predicate = adapt_call(predicate)
         source = self
 
         def subscribe(observer):
             i, running = 0, False
 
             def on_next(value):
+                nonlocal running, i
                 if not running:
                     try:
                         running = not predicate(value, i)
