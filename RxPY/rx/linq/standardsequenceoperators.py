@@ -1,3 +1,4 @@
+import types
 from inspect import getargspec, getargvalues 
 
 from rx import Observable, AnonymousObservable
@@ -212,6 +213,51 @@ class ObservableLinq(object):
 
         return AnonymousObservable(subscribe)
 
+    def select_many(self, selector, result_selector=None):
+        """One of the Following:
+        Projects each element of an observable sequence to an observable 
+        sequence and merges the resulting observable sequences into one 
+        observable sequence.
+        
+        1 - source.selectMany(function (x) { return Rx.Observable.range(0, x); });
+        
+        Or:
+        Projects each element of an observable sequence to an observable 
+        sequence, invokes the result selector for the source element and each 
+        of the corresponding inner sequence's elements, and merges the results
+        into one observable sequence.
+        
+        1 - source.selectMany(function (x) { return Rx.Observable.range(0, x); }, function (x, y) { return x + y; });
+        
+        Or:
+        Projects each element of the source observable sequence to the other
+        observable sequence and merges the resulting observable sequences into
+        one observable sequence.
+        
+        1 - source.selectMany(Rx.Observable.fromArray([1,2,3]));
+        
+        Keyword arguments:
+        selector -- A transform function to apply to each element or an observable sequence to project each element from the source sequence onto.</param>
+        result_selector -- [Optional] A transform function to apply to each element of the intermediate sequence.</param>
+        
+        Returns an observable sequence whose elements are the result of 
+        invoking the one-to-many transform function collectionSelector on each
+        element of the input sequence and then mapping each of those sequence 
+        elements and their corresponding source element to a result element.        
+        """
+        def select_many(selector):
+            return self.select(selector).merge_observable()
+        
+        if result_selector:
+            def projection(x):
+                return selector(x).select(lambda y: result_selector(x, y))
+            return self.select_many(projection)
+                
+        if type(selector) == types.FunctionType:
+            return select_many(selector)
+        
+        return select_many(lambda: selector)
+    
     def skip(self, count):
         """Bypasses a specified number of elements in an observable sequence 
         and then returns the remaining elements.
@@ -404,6 +450,7 @@ class ObservableLinq(object):
 Observable.select = ObservableLinq.select
 Observable.group_by = ObservableLinq.group_by
 Observable.group_by_until = ObservableLinq.group_by_until
+Observable.select_many = ObservableLinq.select_many
 Observable.skip = ObservableLinq.skip
 Observable.skip_while = ObservableLinq.skip_while
 Observable.take = ObservableLinq.take
