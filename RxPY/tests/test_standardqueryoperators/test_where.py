@@ -2,7 +2,7 @@ import math
 from datetime import datetime
 
 from rx.observable import Observable
-from rx.testing import TestScheduler, ReactiveTest
+from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
 on_next = ReactiveTest.on_next
@@ -19,17 +19,6 @@ class RxException(Exception):
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
-
-def is_prime(i):
-    if i <= 1:
-        return False
-    
-    max = math.floor(math.sqrt(i))
-    for j in range(2, max+1):
-        if not (i % j):
-            return False
-
-    return True
 
 def test_is_prime():
     assert is_prime(1) == False

@@ -1,8 +1,20 @@
+import math
 import types
 
 from rx.notification import Notification, ON, OE, OC
 from .recorded import Recorded
 from .subscription import Subscription
+
+def is_prime(i):
+    if i <= 1:
+        return False
+    
+    max = math.floor(math.sqrt(i))
+    for j in range(2, max+1):
+        if not (i % j):
+            return False
+
+    return True
 
 # New predicate tests
 class OnNextPredicate(object):

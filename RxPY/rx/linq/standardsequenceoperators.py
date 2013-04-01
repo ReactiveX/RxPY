@@ -281,6 +281,22 @@ class ObservableLinq(object):
         return AnonymousObservable(subscribe)
 
     def take(self, count, scheduler=None):
+        """Returns a specified number of contiguous elements from the start of
+        an observable sequence, using the specified scheduler for the edge case
+        of take(0).
+        
+        1 - source.take(5)
+        2 - source.take(0, rx.Scheduler.timeout)
+        
+        Keyword arguments:
+        count -- The number of elements to return.
+        scheduler -- [Optional] Scheduler used to produce an OnCompleted 
+            message in case count is set to 0.
+
+        Returns an observable sequence that contains the specified number of 
+        elements from the start of the input sequence.
+        """        
+        
         if count < 0:
             raise Exception(ARGUMENT_OUT_OF_RANGE)
         
@@ -304,11 +320,29 @@ class ObservableLinq(object):
         return AnonymousObservable(subscribe)
     
     def take_while(self, predicate):
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the 
+        predicate function.
+        
+        1 - source.take_while(lambda value: value < 10)
+        2 - source.take_while(lambda value, index: value < 10 or index < 10)
+        
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the 
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the 
+        input sequence that occur before the element at which the test no 
+        longer passes.        
+        """
+        predicate = adapt_call(predicate)
         observable = self
         def subscribe(observer):
-            i, running = 0, True
+            running, i = True, 0
 
             def on_next(value):
+                nonlocal running, i
                 if running:
                     try:
                         running = predicate(value, i)
