@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RxPY", "RxPY\RxPY.pyproj", "{67097CD8-8850-4BDA-A138-EE95841442F2}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "IxPY", "IxPY\IxPY\IxPY.pyproj", "{EB5DFC95-B103-43A0-AE39-1751FAA3C6AB}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "IxPY", "IxPY\IxPY.pyproj", "{EB5DFC95-B103-43A0-AE39-1751FAA3C6AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

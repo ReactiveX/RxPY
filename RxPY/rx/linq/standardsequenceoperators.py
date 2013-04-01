@@ -20,7 +20,8 @@ def adapt_call(func):
     return func_wrapped
 
 class ObservableLinq(object):
-    # Observable.select extension metho
+    """Standard sequence operator extension methods"""
+
     def select(self, selector):
         """Projects each element of an observable sequence into a new form by incorporating the element's index.
         
@@ -53,40 +54,22 @@ class ObservableLinq(object):
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
 
-    def take(self, count, scheduler=None):
-        if count < 0:
-            raise Exception(ARGUMENT_OUT_OF_RANGE)
-        
-        if not count:
-            return Observable.empty(scheduler)
-        
-        def subscribe(observer):
-            nonlocal count
-            remaining = count
-
-            def on_next(x):
-                nonlocal remaining
-                if remaining > 0:
-                    remaining -= 1
-                    observer.on_next(x)
-                    if not remaining:
-                        observer.on_completed()
-            return self.subscribe(on_next, observer.on_error, observer.on_completed)
-        return AnonymousObservable(subscribe)
-
     def group_by(self, key_selector, element_selector=None, key_serializer=None):
-        """Groups the elements of an observable sequence according to a specified key selector function and comparer and selects the resulting elements by using a specified function.
+        """Groups the elements of an observable sequence according to a 
+        specified key selector function and comparer and selects the resulting
+        elements by using a specified function.
         
         1 - observable.group_by(function (x) { return x.id; });
         2 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; });
         3 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; }, function (x) { return x.toString(); });
         
         Keyword arguments:
-        key_selector -- A function to extract the key for each element.</param>
-        element_selector -- [Optional] A function to map each source element to an element in an observable group.</param>
-        key_serializer -- [Optional] Used to serialize the given object into a string for object comparison.</param>
+        key_selector -- A function to extract the key for each element.
+        element_selector -- [Optional] A function to map each source element to an element in an observable group.
+        key_serializer -- [Optional] Used to serialize the given object into a string for object comparison.
         
-        Returns a sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>        
+        Returns a sequence of observable groups, each of which corresponds to a 
+        unique key value, containing all elements that share that same key value.        
         """
 
         def duration_selector(x):
@@ -95,9 +78,12 @@ class ObservableLinq(object):
         return self.group_by_until(key_selector, element_selector, duration_selector, key_serializer)
 
     def group_by_until(self, key_selector, element_selector, duration_selector, key_serializer=None):
-        """Groups the elements of an observable sequence according to a specified key selector function.
-        A duration selector function is used to control the lifetime of groups. When a group expires, it receives an OnCompleted notification. When a new element with the same
-        key value as a reclaimed group occurs, the group will be reborn with a new lifetime request.
+        """Groups the elements of an observable sequence according to a 
+        specified key selector function. A duration selector function is used
+        to control the lifetime of groups. When a group expires, it receives 
+        an OnCompleted notification. When a new element with the same key value
+        as a reclaimed group occurs, the group will be reborn with a new 
+        lifetime request.
         
         1 - observable.group_by_until(function (x) { return x.id; }, null,  function () { return Rx.Observable.never(); });
         2 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; },  function () { return Rx.Observable.never(); });
@@ -106,10 +92,14 @@ class ObservableLinq(object):
         Keyword arguments:
         key_selector -- A function to extract the key for each element.
         duration_selector -- A function to signal the expiration of a group.
-        key_serializer -- [Optional] Used to serialize the given object into a string for object comparison.
+        key_serializer -- [Optional] Used to serialize the given object into a 
+            string for object comparison.
         
-        Returns a sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
-        If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
+        Returns a sequence of observable groups, each of which corresponds to 
+        a unique key value, containing all elements that share that same key 
+        value. If a group's lifetime expires, a new group with the same key 
+        value can be created once an element with such a key value is 
+        encoutered.
         """      
 
         source = self
@@ -222,22 +212,115 @@ class ObservableLinq(object):
 
         return AnonymousObservable(subscribe)
 
+    def skip(self, count):
+        if count < 0:
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
+        
+        observable = self
+
+        def subscribe(observer):
+            remaining = count
+
+            def on_next(value):
+                nonlocal remaining
+
+                if remaining <= 0:
+                    observer.on_next(value)
+                else:
+                    remaining -= 1
+                
+            return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+
+    def skip_while(self, predicate):
+        source = self
+
+        def subscribe(observer):
+            i, running = 0, False
+
+            def on_next(value):
+                if not running:
+                    try:
+                        running = not predicate(value, i)
+                    except Exception as exn:
+                        observer.on_error(exn)
+                        return
+                    else:
+                        i += 1
+        
+                if running:
+                    observer.on_next(value)
+                
+            return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+
+    def take(self, count, scheduler=None):
+        if count < 0:
+            raise Exception(ARGUMENT_OUT_OF_RANGE)
+        
+        if not count:
+            return Observable.Empty(scheduler)
+        
+        observable = self
+        def subscribe(observer):
+            remaining = count
+
+            def on_next(value):
+                nonlocal remaining
+
+                if remaining > 0:
+                    remaining -= 1
+                    observer.on_next(value)
+                    if not remaining:
+                        observer.on_completed()
+                    
+            return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+    
+    def take_while(self, predicate):
+        observable = self
+        def subscribe(observer):
+            i, running = 0, True
+
+            def on_next(value):
+                if running:
+                    try:
+                        running = predicate(value, i)
+                    except Exception as exn:
+                        observer.on_error(exn)
+                        return
+                    else:
+                        i += 1
+                    
+                    if running:
+                        observer.on_next(value)
+                    else:
+                        observer.on_completed()
+    
+            return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+        
     def where(self, predicate):
-        """Filters the elements of an observable sequence based on a predicate by incorporating the element's index.
+        """Filters the elements of an observable sequence based on a predicate 
+        by incorporating the element's index.
         
         1 - source.where(lambda value: value < 10)
         2 - source.where(lambda value, index: value < 10 or index < 10)
         
         Keyword arguments:
-        predicate -- A function to test each source element for a conditio; the second parameter of the function represents the index of the source element.
+        predicate -- A function to test each source element for a conditio; the
+            second parameter of the function represents the index of the source 
+            element.
         
-        Returns an observable sequence that contains elements from the input sequence that satisfy the condition.
+        Returns an observable sequence that contains elements from the input 
+        sequence that satisfy the condition.
         """
         predicate = adapt_call(predicate)
         parent = self
         
         def subscribe(observer):
             count = 0
+
             def on_next(value):
                 nonlocal count
                 should_run = False
@@ -255,9 +338,12 @@ class ObservableLinq(object):
             return parent.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
 
-# Stitch methods into the main Observable "God" object
+# Stitch methods into the main Observable "God" object. TODO: find a nicer way 
 Observable.select = ObservableLinq.select
 Observable.group_by = ObservableLinq.group_by
 Observable.group_by_until = ObservableLinq.group_by_until
-Observable.where = ObservableLinq.where
+Observable.skip = ObservableLinq.skip
+Observable.skip_while = ObservableLinq.skip_while
 Observable.take = ObservableLinq.take
+Observable.take_while = ObservableLinq.take_while
+Observable.where = ObservableLinq.where
