@@ -47,8 +47,6 @@
     <Compile Include="rx\testing\recorded.py" />
     <Compile Include="rx\testing\testscheduler.py" />
     <Compile Include="setup.py" />
-    <Compile Include="linq\enumerable.py" />
-    <Compile Include="linq\__init__.py" />
     <Compile Include="rx\observable.py" />
     <Compile Include="rx\observer.py" />
     <Compile Include="rx\__init__.py" />
@@ -70,15 +68,18 @@
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
-    <Compile Include="tests\test_linq\test_linq.py" />
     <Compile Include="tests\test_rx\test_currentthreadscheduler.py" />
     <Compile Include="tests\test_rx\test_disposable.py" />
     <Compile Include="tests\test_rx\test_immediatescheduler.py" />
     <Compile Include="tests\test_rx\test_rx.py" />
     <Compile Include="tests\test_rx\test_standardqueryoperator.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_select.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_take.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_where.py" />
+    <Compile Include="tests\test_standardqueryoperators\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="linq" />
     <Folder Include="rx" />
     <Folder Include="rx\concurrency" />
     <Folder Include="rx\disposables" />
@@ -87,7 +88,7 @@
     <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
-    <Folder Include="tests\test_linq" />
+    <Folder Include="tests\test_standardqueryoperators\" />
     <Folder Include="tests\test_rx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
