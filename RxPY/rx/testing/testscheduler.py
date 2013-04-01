@@ -18,6 +18,7 @@ class TestScheduler(VirtualTimeScheduler):
         super(TestScheduler, self).__init__(0, comparer)
 
     def schedule_absolute(self, duetime, action, state=None):
+        #print ("TestScheduler:schedule_absolute(%s)", duetime)
         """Schedules an action to be executed at the specified virtual time.
         
         Keyword arguments:
@@ -37,6 +38,14 @@ class TestScheduler(VirtualTimeScheduler):
     
     @classmethod
     def to_datetime_offset(cls, absolute):
+        """Converts the absolute virtual time value to a DateTimeOffset value.
+        
+        Keyword arguments:
+        absolute -- Absolute virtual time value to convert.
+        
+        Returns corresponding DateTimeOffset value.
+        """
+            
         return timedelta(microseconds=absolute)
     
     @classmethod
@@ -85,6 +94,20 @@ class TestScheduler(VirtualTimeScheduler):
         return observer
 
     def start_with_dispose(self, create, disposed):
+        """Starts the test scheduler and uses the specified virtual time to 
+        dispose the subscription to the sequence obtained through the factory
+        function. Default virtual times are used for factory invocation and 
+        sequence subscription.
+        
+        Keyword arguments:
+        create -- Factory method to create an observable sequence.
+        disposed -- Virtual time at which to dispose the subscription.
+        
+        Returns observer with timestamped recordings of notification messages 
+        that were received during the virtual time window when the subscription
+        to the source sequence was active.
+        """
+            
         return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, disposed)
     
     def start_with_create(self, create):

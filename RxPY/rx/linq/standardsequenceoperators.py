@@ -219,7 +219,7 @@ class ObservableLinq(object):
         sequence and merges the resulting observable sequences into one 
         observable sequence.
         
-        1 - source.selectMany(function (x) { return Rx.Observable.range(0, x); });
+        1 - source.select_many(function (x) { return Rx.Observable.range(0, x); });
         
         Or:
         Projects each element of an observable sequence to an observable 
@@ -227,18 +227,21 @@ class ObservableLinq(object):
         of the corresponding inner sequence's elements, and merges the results
         into one observable sequence.
         
-        1 - source.selectMany(function (x) { return Rx.Observable.range(0, x); }, function (x, y) { return x + y; });
+        1 - source.select_many(function (x) { return rx.Observable.range(0, x); }, function (x, y) { return x + y; });
         
         Or:
         Projects each element of the source observable sequence to the other
         observable sequence and merges the resulting observable sequences into
         one observable sequence.
         
-        1 - source.selectMany(Rx.Observable.fromArray([1,2,3]));
+        1 - source.select_many(rx.Observable.from_array([1,2,3]));
         
         Keyword arguments:
-        selector -- A transform function to apply to each element or an observable sequence to project each element from the source sequence onto.</param>
-        result_selector -- [Optional] A transform function to apply to each element of the intermediate sequence.</param>
+        selector -- A transform function to apply to each element or an 
+            observable sequence to project each element from the source 
+            sequence onto.
+        result_selector -- [Optional] A transform function to apply to each
+            element of the intermediate sequence.
         
         Returns an observable sequence whose elements are the result of 
         invoking the one-to-many transform function collectionSelector on each
@@ -250,13 +253,15 @@ class ObservableLinq(object):
         
         if result_selector:
             def projection(x):
-                return selector(x).select(lambda y: result_selector(x, y))
+                return selector(x).select(lambda y, i: result_selector(x, y))
             return self.select_many(projection)
                 
         if type(selector) == types.FunctionType:
             return select_many(selector)
         
-        return select_many(lambda: selector)
+        def get_selector(value, i=None):
+            return selector
+        return select_many(get_selector)
     
     def skip(self, count):
         """Bypasses a specified number of elements in an observable sequence 

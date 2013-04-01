@@ -3,6 +3,7 @@ import types
 from rx import Observable
 from rx.concurrency import ImmediateScheduler
 
+from .observer import Observer
 from .anonymousobservable import AnonymousObservable
 
 # Notifications
@@ -27,11 +28,11 @@ class Notification(object):
         
         Returns result produced by the observation.
         """
-        if type(on_next) == types.FunctionType:
-            return self._accept(on_next, on_error, on_completed)
-        else:
+        if isinstance(on_next, Observer):
             return self._accept_observable(on_next)
-    
+        else:
+            return self._accept(on_next, on_error, on_completed)
+            
     def to_observable(self, scheduler=None):
         """Returns an observable sequence with a single notification, using the
         specified scheduler, else the immediate scheduler. 
@@ -90,7 +91,7 @@ class ON(Notification):
         self.has_value = True
         self.kind = 'N'
 
-    def _accept(self, on_next):
+    def _accept(self, on_next, on_error=None, on_completed=None):
         return on_next(self.value)
     
     def _accept_observable(self, observer):

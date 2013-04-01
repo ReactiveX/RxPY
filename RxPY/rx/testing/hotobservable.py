@@ -18,21 +18,20 @@ class HotObservable(Observable):
 
         observable = self
 
-        def wrapper(message, inner_notification):
+        def get_action(notification):
             def action(scheduler, state):
-                """HotObservable:wrapper:action"""
-
                 for observer in observable.observers:
-                    inner_notification.accept(observer)            
+                    notification.accept(observer)            
                 return Disposable.empty()
+            return action
             
-            scheduler.schedule_absolute(message.time, action)
-    
         for message in self.messages:
             notification = message.value
 
-            wrapper(message, notification)
-           
+            # Don't make closures within a loop
+            action = get_action(notification)
+            scheduler.schedule_absolute(message.time, action)
+    
     def subscribe(self, on_next, on_error=None, on_completed=None):
         print ("HotObservable:subscribe()")
 

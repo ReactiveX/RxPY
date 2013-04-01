@@ -8,6 +8,7 @@ class TimeoutScheduler(Scheduler):
         self.timer = None
 
     def schedule_now(self, action, state=None):
+        print("TimeoutScheduler:schedule_now()")
         scheduler = self
         disposable = SingleAssignmentDisposable()
         
@@ -19,6 +20,7 @@ class TimeoutScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(duetime, action, state=None):
+        print("TimeoutScheduler:schedule_relative")
         scheduler = self
         dt = Scheduler.normalize(duetime);
         if dt == 0:
@@ -37,4 +39,5 @@ class TimeoutScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, state, dueTime, action):
+        print ("TimeoutScheduler:schedule_absolute")
         return this.schedule_relative(dueTime - this.now(), action, state)

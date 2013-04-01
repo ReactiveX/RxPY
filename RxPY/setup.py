@@ -31,6 +31,6 @@ Longer description for Reactive Extensions for Python.
     ],
     test_suite='nose.collector',
 
-    packages=['rx', 'linq', 'tests'],
-    package_dir = { 'rx':'rx', 'linq' : 'linq' , 'tests' : 'tests'}
+    packages=['rx', 'tests'],
+    package_dir = { 'rx':'rx', 'tests' : 'tests'}
 )

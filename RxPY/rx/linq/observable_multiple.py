@@ -6,6 +6,12 @@ from rx.concurrency import ImmediateScheduler
 
 class ObservableMultiple(object):
     def merge_observable(self):
+        """Merges an observable sequence of observable sequences into an 
+        observable sequence.
+        
+        Returns the observable sequence that merges the elements of the inner 
+        sequences.        
+        """
         sources = self
 
         def subscribe(observer):
@@ -21,7 +27,7 @@ class ObservableMultiple(object):
                 def on_complete():
                     nonlocal group
                     group.remove(inner_subscription)
-                    if is_stopped and len(group) == 1:
+                    if is_stopped and group.length == 1:
                         observer.on_completed()
                     
                 disposable = inner_source.subscribe(

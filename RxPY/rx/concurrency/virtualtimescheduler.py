@@ -36,11 +36,12 @@ class VirtualTimeScheduler(Scheduler):
         action -- Action to be executed.
         state -- [Optional] State passed to the action to be executed.
         """
+        #print ("VirtualTimeScheduler:schedule_relative(%s)" % duetime)
         runat = self.add(self.clock, self.to_relative(duetime))
         return self.schedule_absolute(runat, action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
-        #print ("VirtualTimeScheduler:schedule_absolute(%s)" % action.__doc__)
+        #print ("VirtualTimeScheduler:schedule_absolute(%s)" % duetime)
         
         def run(scheduler, state1):
             #print ("VirtualTimeScheduler:schedule_absolute:run()")
@@ -63,12 +64,16 @@ class VirtualTimeScheduler(Scheduler):
         if not self.is_enabled:
             self.is_enabled = True
             while self.is_enabled:
+                #print (self.clock)
                 next = self.get_next()
                 if next:
                     if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
                         print ("clock: %s" % self.clock)
+                    #else:
+                    #    print ("skipping", next.duetime, self.clock)
                     
+                    #print ("Invoke: ", self.clock, next.action)
                     next.invoke()
                 else:
                     self.is_enabled = False
@@ -135,8 +140,8 @@ class VirtualTimeScheduler(Scheduler):
         while self.queue.length > 0:
             next = self.queue.peek()
             if next.is_cancelled():
-                print ("dequeue **************")
-                self.queue.get()
+                #print ("dequeue **************", next.duetime)
+                self.queue.dequeue()
             else:
                 return next
         

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_rx\test_standardqueryoperator.py</StartupFile>
+    <StartupFile>tests\test_standardqueryoperators\test_select_many.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy</WorkingDirectory>
@@ -31,11 +31,14 @@
     <Compile Include="rx\autodetachobserver.py" />
     <Compile Include="rx\checkedobserver.py" />
     <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
+    <Compile Include="rx\concurrency\timeoutscheduler.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
     <Compile Include="rx\internal\basic.py" />
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable_multiple.py" />
+    <Compile Include="rx\linq\observable_time.py" />
     <Compile Include="rx\notification.py" />
     <Compile Include="rx\subjects\anonymoussubject.py" />
     <Compile Include="rx\subjects\innersubscription.py" />
@@ -68,16 +71,20 @@
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
-    <Compile Include="tests\test_rx\test_currentthreadscheduler.py" />
-    <Compile Include="tests\test_rx\test_disposable.py" />
-    <Compile Include="tests\test_rx\test_immediatescheduler.py" />
-    <Compile Include="tests\test_rx\test_rx.py" />
-    <Compile Include="tests\test_rx\test_standardqueryoperator.py" />
+    <Compile Include="tests\test_currentthreadscheduler.py" />
+    <Compile Include="tests\test_disposable.py" />
+    <Compile Include="tests\test_immediatescheduler.py" />
+    <Compile Include="tests\test_rx.py" />
     <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
     <Compile Include="tests\test_standardqueryoperators\test_select.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_select_many.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_skip.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_skip_while.py" />
     <Compile Include="tests\test_standardqueryoperators\test_take.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
     <Compile Include="tests\test_standardqueryoperators\test_where.py" />
     <Compile Include="tests\test_standardqueryoperators\__init__.py" />
+    <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="rx" />
