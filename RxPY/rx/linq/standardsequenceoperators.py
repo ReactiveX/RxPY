@@ -213,6 +213,17 @@ class ObservableLinq(object):
         return AnonymousObservable(subscribe)
 
     def skip(self, count):
+        """Bypasses a specified number of elements in an observable sequence 
+        and then returns the remaining elements.
+        
+        Keyword arguments:
+        count -- The number of elements to skip before returning the remaining 
+            elements.
+        
+        Returns an observable sequence that contains the elements that occur 
+        after the specified index in the input sequence.
+        """        
+        
         if count < 0:
             raise Exception(ARGUMENT_OUT_OF_RANGE)
         
@@ -233,6 +244,21 @@ class ObservableLinq(object):
         return AnonymousObservable(subscribe)
 
     def skip_while(self, predicate):
+        """Bypasses elements in an observable sequence as long as a specified 
+        condition is true and then returns the remaining elements. The 
+        element's index is used in the logic of the predicate function.
+        
+        1 - source.skip_while(lambda value: value < 10)
+        2 - source.skip_while(lambda value, index: value < 10 or index < 10)
+        
+        predicate -- A function to test each element for a condition; the 
+            second parameter of the function represents the index of the 
+            source element.
+        
+        Returns an observable sequence that contains the elements from the 
+        input sequence starting at the first element in the linear series that
+        does not pass the test specified by predicate.        
+        """
         source = self
 
         def subscribe(observer):
