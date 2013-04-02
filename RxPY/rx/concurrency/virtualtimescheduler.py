@@ -44,7 +44,7 @@ class VirtualTimeScheduler(Scheduler):
         #print ("VirtualTimeScheduler:schedule_absolute(%s)" % duetime)
         
         def run(scheduler, state1):
-            #print ("VirtualTimeScheduler:schedule_absolute:run()")
+            #print ("VirtualTimeScheduler:schedule_absolute:run(%s)" % repr(state1))
             self.queue.remove(si)
             
             #print ("running action", action.__doc__)

@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 # Collections
 class IndexedItem(object):
     def __init__(self, id, value):
@@ -12,8 +10,8 @@ class IndexedItem(object):
             c = self.id - other.id        
         return c
 
-# Priority Queue for Scheduling
 class PriorityQueue(object):
+    """ Priority Queue for Scheduling"""
     count = 0
 
     def __init__(self, capacity):

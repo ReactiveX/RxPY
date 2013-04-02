@@ -27,7 +27,6 @@ class ObservableCreation(object):
                 return Observable.throw(ex).subscribe(observer)
             
             return result.subscribe(observer)
-
         return AnonymousObservable(subscribe)
 
     @classmethod
@@ -39,7 +38,6 @@ class ObservableCreation(object):
                 observer.on_completed()
 
             return scheduler.schedule(action)
-
         return AnonymousObservable(subscribe)
 
 # var observableFromArray = Observable.fromArray = function (array, scheduler) {

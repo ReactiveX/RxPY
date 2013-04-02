@@ -53,12 +53,47 @@ class Scheduler(object):
         recursive_action(state)
         return group
     
+    def invoke_rec_date(self, scheduler, pair, method):
+        state = pair.get('first') 
+        action = pair.get('second')
+        group = CompositeDisposable()
+        
+        def recursive_action(state1):
+            def action1(state2, duetime1):
+                is_added, is_done = False, False
+
+                def action2(scheduler1, state3):
+                    nonlocal is_done
+
+                    if is_added:
+                        group.remove(d)
+                    else:
+                        is_done = True
+                    
+                    recursive_action(state3)
+                    return Disposable.empty()
+                
+                d = getattr(scheduler, method)(duetime1, action2, state2)
+                if not is_done:
+                    group.add(d)
+                    is_added = True
+                
+            action(state1, action1)
+        recursive_action(state)
+        return group
+
     def schedule_recursive(self, action, state=None):
         #print "schedule_recursive", action, state
         def action2(scheduler, pair):
             return self.invoke_rec_immediate(scheduler, pair)
 
         return self.schedule(action2, dict(state=state, action=action))
+
+    def schedule_recursive_relative(self, duetime, action, state):
+        def action1(s, p):
+            print ("Scheduler:schedule_recursive_relative:action()")
+            return self.invoke_rec_date(s, p, 'schedule_relative')
+        return self.schedule_relative(duetime, action1, { "first": state, "second": action })
 
     @classmethod
     def now(cls):

@@ -1,5 +1,3 @@
-import types
-
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
@@ -24,11 +22,11 @@ class Observable(object):
         on_error -- [Optional] Action to invoke upon exceptional termination of the observable sequence.
         on_completed -- [Optional] Action to invoke upon graceful termination of the observable sequence.
         """
-        if not on_next or isinstance(on_next, types.FunctionType):
-            observer = Observer(on_next, on_error, on_completed)
-        else:
+        if isinstance(on_next, Observer):
             observer = on_next
-
+        else:
+            observer = Observer(on_next, on_error, on_completed)
+            
         return self._subscribe(observer)
 
     @classmethod

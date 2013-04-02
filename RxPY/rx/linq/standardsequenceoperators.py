@@ -256,7 +256,7 @@ class ObservableLinq(object):
                 return selector(x).select(lambda y, i: result_selector(x, y))
             return self.select_many(projection)
                 
-        if type(selector) == types.FunctionType:
+        if not isinstance(selector, Observable):
             return select_many(selector)
         
         def get_selector(value, i=None):

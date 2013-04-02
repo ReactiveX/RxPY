@@ -84,6 +84,7 @@
     <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
     <Compile Include="tests\test_standardqueryoperators\test_where.py" />
     <Compile Include="tests\test_standardqueryoperators\__init__.py" />
+    <Compile Include="tests\test_timeoutscheduler.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>

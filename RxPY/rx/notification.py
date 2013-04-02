@@ -1,5 +1,3 @@
-import types
-
 from rx import Observable
 from rx.concurrency import ImmediateScheduler
 

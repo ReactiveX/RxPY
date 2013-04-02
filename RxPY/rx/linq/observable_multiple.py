@@ -15,9 +15,9 @@ class ObservableMultiple(object):
         sources = self
 
         def subscribe(observer):
+            m = SingleAssignmentDisposable()
             group = CompositeDisposable()
             is_stopped = False
-            m = SingleAssignmentDisposable()
             group.add(m)
             
             def on_next(inner_source):
@@ -33,8 +33,8 @@ class ObservableMultiple(object):
                 disposable = inner_source.subscribe(
                     observer.on_next,
                     observer.on_error, 
-                        on_complete)
-                
+                    on_complete
+                )
                 inner_subscription.disposable = disposable
             
             def on_complete():
