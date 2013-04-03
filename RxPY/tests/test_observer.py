@@ -12,7 +12,7 @@ class MyObserver(Observer):
         self.has_on_completed = True
 
 def test_to_observer_notification_on_next():
-    i = 0;
+    i = 0
     def next(n):
         assert(i == 0)
         assert(n.kind == 'N')
@@ -44,7 +44,7 @@ def test_to_observer_notification_on_completed():
 
 def test_to_notifier_forwards():
     obsn = MyObserver()
-    obsn.to_notifier()(ON(42));
+    obsn.to_notifier()(ON(42))
     assert(obsn.has_on_next == 42)
 
     ex = 'ex'
@@ -60,7 +60,7 @@ def test_create_on_next():
     next = False
     def on_next(x):
         nonlocal next
-        assert(42 == x);
+        assert(42 == x)
         next = True
 
     res = Observer(on_next)
@@ -92,70 +92,89 @@ def test_create_on_next_has_error():
 
     assert(ex == e_)
 
-# test('Create_On_nextOn_completed', function () {
-#     var next = False;
-#     var completed = False;
-#     var res = Observer.create(function (x) {
-#         assert(42, x);
-#         return next = True;
-#     }, undefined, function () {
-#         return completed = True;
-#     });
+def test_create_on_next_on_completed():
+    next = False
+    completed = False
 
-#     res.on_next(42);
+    def on_next(x):
+        nonlocal next
+        assert(42 == x)
+        next = True
+        return next
 
-#     assert(next);
-#     assert(!completed);
+    def on_completed():
+        nonlocal completed
+        completed = True
+        return completed
 
-#     res.on_completed();
+    res = Observer(on_next, None, on_completed)
+    
+    res.on_next(42)
 
-#     assert(completed);
-# });
+    assert(next)
+    assert(not completed)
 
-# test('Create_On_nextOn_completed_HasError', function () {
-#     var e_;
-#     var ex = 'ex';
-#     var next = False;
-#     var completed = False;
-#     var res = Observer.create(function (x) {
-#         assert(42, x);
-#         next = True;
-#     }, undefined, function () {
-#         completed = True;
-#     });
-#     res.on_next(42);
-#     assert(next);
-#     assert(!completed);
-#     try {
-#         res.on_error(ex);
-#         assert(False);
-#     } catch (e) {
-#         e_ = e;
-#     }
-#     assert(ex, e_);
-#     assert(!completed);
-# });
+    res.on_completed()
 
-# test('Create_On_nextOn_error', function () {
-#     var ex = 'ex';
-#     var next = True;
-#     var error = False;
-#     var res = Observer.create(function (x) {
-#         assert(42, x);
-#         next = True;
-#     }, function (e) {
-#         assert(ex, e);
-#         error = True;
-#     });
+    assert(completed)
 
-#     res.on_next(42);
 
-#     assert(next);
-#     assert(!error);
+def test_create_on_next_on_completed_has_error():
+    e_ = None
+    ex = 'ex'
+    next = False
+    completed = False
 
-#     res.on_error(ex);
-#     assert(error);
-# });
+
+    def on_next(x):
+        nonlocal next
+        assert(42 == x)
+        next = True
+
+    def on_completed():
+        nonlocal completed
+        completed = True
+
+    res = Observer(on_next, None, on_completed)
+    
+    res.on_next(42)
+    assert(next)
+    assert(not completed)
+    try:
+        res.on_error(ex)
+        assert(False)
+    except Exception as e:
+        e_ = e.args[0]
+    
+    assert(ex == e_)
+    assert(not completed)
+
+
+def test_create_on_next_on_error():
+    ex = 'ex'
+    next = True
+    error = False
+
+    def on_next(x):
+        nonlocal next
+        assert(42 == x)
+        next = True
+    
+    def on_error(e):
+        nonlocal error
+        assert(ex == e)
+        error = True
+
+    res = Observer(on_next, on_error)
+    
+    res.on_next(42)
+
+    assert(next)
+    assert(not error)
+
+    res.on_error(ex)
+    assert(error)
+
 
 def test_create_on_next_on_error_hit_completed():
     ex = 'ex'
@@ -174,7 +193,7 @@ def test_create_on_next_on_error_hit_completed():
 
     res = Observer(on_next, on_error)
 
-    res.on_next(42);
+    res.on_next(42)
     assert(next)
     assert(not error)
 
@@ -216,117 +235,117 @@ def test_create_on_next_on_error_on_completed1():
     assert(not error)
 
 # test('Create_On_nextOn_errorOn_completed2', function () {
-#     ex = 'ex';
-#     next = True;
-#     error = False;
-#     completed = False;
+#     ex = 'ex'
+#     next = True
+#     error = False
+#     completed = False
 #     res = Observer.create(function (x) {
-#         assert(42, x);
-#         next = True;
+#         assert(42, x)
+#         next = True
 #     }, function (e) {
-#         assert(ex, e);
-#         error = True;
+#         assert(ex, e)
+#         error = True
 #     }, function () {
-#         completed = True;
-#     });
+#         completed = True
+#     
 
-#     res.on_next(42);
+#     res.on_next(42)
 
-#     assert(next);
-#     assert(!error);
-#     assert(!completed);
+#     assert(next)
+#     assert(!error)
+#     assert(!completed)
 
-#     res.on_error(ex);
+#     res.on_error(ex)
     
-#     assert(!completed);
-#     assert(error);
-# });
+#     assert(!completed)
+#     assert(error)
+# 
 
 # MyObserver = (function () {
 #     function on_next (value) {
-#         this.hasOn_next = value;
+#         this.hasOn_next = value
 #     }
 
 #     function on_error (err) {
-#         this.hasOn_error = err;
+#         this.hasOn_error = err
 #     }
 
 #     function on_completed () {
-#         this.hasOn_completed = True;
+#         this.hasOn_completed = True
 #     }
 
 #     return function () {
-#         obs = new Observer();
-#         obs.on_next = on_next.bind(obs);
-#         obs.on_error = on_error.bind(obs);
-#         obs.on_completed = on_completed.bind(obs);
+#         obs = new Observer()
+#         obs.on_next = on_next.bind(obs)
+#         obs.on_error = on_error.bind(obs)
+#         obs.on_completed = on_completed.bind(obs)
 
-#         return obs;
-#     };
-# }());
+#         return obs
+#     }
+# }())
 
 # test('AsObserver_Hides', function () {
-#     obs, res;
-#     obs = new MyObserver();
-#     res = obs.asObserver();
-#     notDeepassert(obs, res);
-# });
+#     obs, res
+#     obs = new MyObserver()
+#     res = obs.asObserver()
+#     notDeepassert(obs, res)
+# 
 
 # test('AsObserver_Forwards', function () {
-#     obsn = new MyObserver();
-#     obsn.asObserver().on_next(42);
-#     assert(obsn.hasOn_next, 42);
+#     obsn = new MyObserver()
+#     obsn.asObserver().on_next(42)
+#     assert(obsn.hasOn_next, 42)
 
-#     ex = 'ex';
-#     obse = new MyObserver();
-#     obse.asObserver().on_error(ex);
-#     assert(obse.hasOn_error, ex);
+#     ex = 'ex'
+#     obse = new MyObserver()
+#     obse.asObserver().on_error(ex)
+#     assert(obse.hasOn_error, ex)
 
-#     obsc = new MyObserver();
-#     obsc.asObserver().on_completed();
-#     assert(obsc.hasOn_completed);
-# });
+#     obsc = new MyObserver()
+#     obsc.asObserver().on_completed()
+#     assert(obsc.hasOn_completed)
+# 
 
 # test('Observer_Checked_AlreadyTerminated_Completed', function () {
-#     m = 0, n = 0;
+#     m = 0, n = 0
 #     o = Observer.create(function () { 
-#         m++; 
+#         m++ 
 #     }, function () {
-#         assert(False);
+#         assert(False)
 #     }, function () {
-#         n++;
-#     }).checked();
+#         n++
+#     .checked()
 
-#     o.on_next(1);
-#     o.on_next(2);
-#     o.on_completed();
+#     o.on_next(1)
+#     o.on_next(2)
+#     o.on_completed()
 
-#     raises(function () { o.on_completed(); });
-#     raises(function () { on.on_error(new Error('error')); });
-#     assert(2, m);
-#     assert(1, n);
-# });
+#     raises(function () { o.on_completed() 
+#     raises(function () { on.on_error(new Error('error')) 
+#     assert(2, m)
+#     assert(1, n)
+# 
 
 # test('Observer_Checked_AlreadyTerminated_Error', function () {
-#     m = 0, n = 0;
+#     m = 0, n = 0
 #     o = Observer.create(function () {
-#         m++;
+#         m++
 #     }, function () { 
-#         n++;
+#         n++
 #     }, function () {
-#         assert(False);
-#     }).checked();
+#         assert(False)
+#     .checked()
 
-#     o.on_next(1);
-#     o.on_next(2);
-#     o.on_error(new Error('error'));
+#     o.on_next(1)
+#     o.on_next(2)
+#     o.on_error(new Error('error'))
 
-#     raises(function () { o.on_completed(); });
-#     raises(function () { o.on_error(new Error('error')); });
+#     raises(function () { o.on_completed() 
+#     raises(function () { o.on_error(new Error('error')) 
 
-#     assert(2, m);
-#     assert(1, n);
-# });
+#     assert(2, m)
+#     assert(1, n)
+# 
 
 def test_observer_checked_reentrant_next():
     n = 0
@@ -360,37 +379,37 @@ def test_observer_checked_reentrant_next():
     assert(1 == n)
 
 # test('Observer_Checked_Reentrant_Error', function () {
-#     n = 0;
-#     o;
+#     n = 0
+#     o
 #     o = Observer.create(function () {
-#         assert(False);
+#         assert(False)
 #     }, function () {
-#         n++;
-#         raises(function () { o.on_next(9); });
-#         raises(function () { o.on_error(new Error('error')); });
-#         raises(function () { o.on_completed(); });
+#         n++
+#         raises(function () { o.on_next(9) 
+#         raises(function () { o.on_error(new Error('error')) 
+#         raises(function () { o.on_completed() 
 #     }, function () {
-#         assert(False);
-#     }).checked();
+#         assert(False)
+#     .checked()
 
-#     o.on_error(new Error('error'));
-#     assert(1, n);
-# });
+#     o.on_error(new Error('error'))
+#     assert(1, n)
+# 
 
 # test('Observer_Checked_Reentrant_Completed', function () {
-#     n = 0;
-#     o;
+#     n = 0
+#     o
 #     o = Observer.create(function () {
-#         assert(False);
+#         assert(False)
 #     }, function () {
-#         assert(False);
+#         assert(False)
 #     }, function () {
-#         n++;
-#         raises(function () { o.on_next(9); });
-#         raises(function () { o.on_error(new Error('error')); });
-#         raises(function () { o.on_completed(); });
-#     }).checked();
+#         n++
+#         raises(function () { o.on_next(9) 
+#         raises(function () { o.on_error(new Error('error')) 
+#         raises(function () { o.on_completed() 
+#     .checked()
 
-#     o.on_completed();
-#     assert(1, n);
-# });
+#     o.on_completed()
+#     assert(1, n)
+# 
