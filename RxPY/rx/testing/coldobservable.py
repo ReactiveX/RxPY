@@ -20,7 +20,6 @@ class ColdObservable(Observable):
         else: 
             observer = Observer(on_next, on_error, on_completed)
             
-        observable = self
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
         disposable = CompositeDisposable()
@@ -37,14 +36,13 @@ class ColdObservable(Observable):
             
             # Don't make closures within a loop
             action = get_action(notification)
-
-            disposable.add(observable.scheduler.schedule_relative(message.time, action))
+            disposable.add(self.scheduler.schedule_relative(message.time, action))
 
         def dispose():
             print ("ColdObservable:dispose()")
-            start = observable.subscriptions[index].subscribe
-            end = observable.scheduler.clock
-            observable.subscriptions[index] = Subscription(start, end)
+            start = self.subscriptions[index].subscribe
+            end = self.scheduler.clock
+            self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 
         return Disposable.create(dispose)

@@ -1,4 +1,4 @@
-from rx import Observable
+from rx import Observable, Observer
 from rx.concurrency import ImmediateScheduler
 
 from .observer import Observer
@@ -54,7 +54,7 @@ class Notification(object):
         return AnonymousObservable(subscribe)
 
     @classmethod
-    def observable_from_notifier(cls, handler):
+    def observer_from_notifier(cls, handler):
         """Creates an observer from a notification callback.
         
         Keyword arguments:
@@ -71,7 +71,7 @@ class Notification(object):
         def _on_completed():
             return handler(OC())
 
-        return Observable(_on_next, _on_error, _on_completed)
+        return Observer(_on_next, _on_error, _on_completed)
 
     def equals(self, other):
         """Indicates whether this instance and a specified object are equal."""
@@ -85,6 +85,8 @@ class ON(Notification):
     """Represents an OnNext notification to an observer."""
     def __init__(self, value):
         """Constructs a notification of a new value."""
+        
+        super(ON, self).__init__()
         self.value = value
         self.has_value = True
         self.kind = 'N'
@@ -103,6 +105,8 @@ class OE(Notification):
 
     def __init__(self, exception):
         """Constructs a notification of an exception."""
+
+        super(OE, self).__init__()
         self.exception = exception
         self.kind = 'E'
 
@@ -120,6 +124,8 @@ class OC(Notification):
 
     def __init__(self):
         """Constructs a notification of the end of a sequence."""
+        
+        super(OC, self).__init__()
         self.kind = 'C'
 
     def _accept(self, on_next, on_error, on_completed):
@@ -132,4 +138,4 @@ class OC(Notification):
         return "OnCompleted()"
 
 # Stiched here to avoid circular dependencies in import chain
-Observable.from_notifier = Notification.observable_from_notifier
+Observer.from_notifier = Notification.observer_from_notifier

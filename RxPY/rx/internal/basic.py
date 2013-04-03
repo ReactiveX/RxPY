@@ -1,7 +1,7 @@
 from datetime import datetime
 
 # Defaults
-def noop():
+def noop(*args, **kw):
    pass
 
 def identity(x):

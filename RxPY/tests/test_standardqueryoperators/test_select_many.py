@@ -28,9 +28,12 @@ def test_select_many_then_complete_complete_2():
     scheduler = TestScheduler()
     xs = scheduler.create_cold_observable(on_next(100, 4), on_next(200, 2), on_next(300, 3), on_next(400, 1), on_completed(700))
     ys = scheduler.create_cold_observable(on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"), on_next(200, "qux"), on_completed(250))
-    results = scheduler.start_with_create(lambda: xs.select_many(ys).dump())
+
+    def factory():
+        return xs.select_many(ys)
+    results = scheduler.start_with_create(factory)
     
-    #results.messages.assert_equal(on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"), on_next(450, "foo"), on_next(500, "qux"), on_next(500, "bar"), on_next(550, "baz"), on_next(550, "foo"), on_next(600, "qux"), on_next(600, "bar"), on_next(650, "baz"), on_next(650, "foo"), on_next(700, "qux"), on_next(700, "bar"), on_next(750, "baz"), on_next(800, "qux"), on_completed(900))
+    results.messages.assert_equal(on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"), on_next(450, "foo"), on_next(500, "qux"), on_next(500, "bar"), on_next(550, "baz"), on_next(550, "foo"), on_next(600, "qux"), on_next(600, "bar"), on_next(650, "baz"), on_next(650, "foo"), on_next(700, "qux"), on_next(700, "bar"), on_next(750, "baz"), on_next(800, "qux"), on_completed(900))
     xs.subscriptions.assert_equal(subscribe(200, 900))
     ys.subscriptions.assert_equal(subscribe(300, 550), subscribe(400, 650), subscribe(500, 750), subscribe(600, 850))
 
@@ -216,7 +219,7 @@ def test_select_many_use_function():
     
     def factory():
         def projection(x):
-            return Observable.interval(10, scheduler).select(lambda x: x).take(x)
+            return Observable.interval(10, scheduler).select(lambda a, b: x).take(x)
         return xs.select_many(projection)
     results = scheduler.start_with_create(factory)
         

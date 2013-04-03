@@ -46,7 +46,7 @@ class TestScheduler(VirtualTimeScheduler):
         Returns corresponding DateTimeOffset value.
         """
             
-        return timedelta(microseconds=absolute)
+        return timedelta(milliseconds=absolute)
     
     @classmethod
     def to_relative(cls, timespan):
