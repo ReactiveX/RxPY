@@ -3,6 +3,7 @@ from inspect import getargspec, getargvalues
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
+from rx.observable import ObservableMeta
 from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import default_key_serializer, identity, ARGUMENT_OUT_OF_RANGE
 
@@ -19,9 +20,11 @@ def adapt_call(func):
         func_wrapped = func1
     
     return func_wrapped
-
-class ObservableLinq(object):
-    """Standard sequence operator extension methods"""
+        
+class ObservableLinq(Observable, metaclass=ObservableMeta):
+    """Standard sequence operator extension methods. Note that we do some magic
+    here by using a meta class to extend Observable with the methods in this
+    class"""
 
     def select(self, selector):
         """Projects each element of an observable sequence into a new form by incorporating the element's index.
@@ -348,8 +351,8 @@ class ObservableLinq(object):
 
         Returns an observable sequence that contains the specified number of 
         elements from the start of the input sequence.
-        """        
-        
+        """
+
         if count < 0:
             raise Exception(ARGUMENT_OUT_OF_RANGE)
         
@@ -450,14 +453,3 @@ class ObservableLinq(object):
                 
             return parent.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
-
-# Stitch methods into the main Observable "God" object. TODO: find a nicer way 
-Observable.select = ObservableLinq.select
-Observable.group_by = ObservableLinq.group_by
-Observable.group_by_until = ObservableLinq.group_by_until
-Observable.select_many = ObservableLinq.select_many
-Observable.skip = ObservableLinq.skip
-Observable.skip_while = ObservableLinq.skip_while
-Observable.take = ObservableLinq.take
-Observable.take_while = ObservableLinq.take_while
-Observable.where = ObservableLinq.where

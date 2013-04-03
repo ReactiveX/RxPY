@@ -1,6 +1,15 @@
 from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
+class ObservableMeta(type):
+    def __new__(cls, name, bases, namespace):
+        assert len(bases) == 1, "Exactly one base class required"
+        base = bases[0]
+        for name, value in namespace.items():
+            if name not in ["__metaclass__", "__module__", "__doc__"]:
+                setattr(base, name, value)
+        return base
+
 class Observable(object):
     """Represents a push-style collection."""
 

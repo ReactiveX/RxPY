@@ -1,10 +1,10 @@
-from rx.observable import Observable
+from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable
 from rx.concurrency import ImmediateScheduler
 
-class ObservableCreation(object):
+class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def create(cls, subscribe):
@@ -151,8 +151,3 @@ class ObservableCreation(object):
 #         return new CompositeDisposable(source.subscribe(observer), disposable)
 #     })
 # }                 
-
-Observable.create = ObservableCreation.create
-Observable.empty = ObservableCreation.empty
-Observable.never = ObservableCreation.never
-Observable.throw_exception = ObservableCreation.throw_exception

@@ -1,11 +1,11 @@
-from rx.observable import Observable
+from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable, \
     SingleAssignmentDisposable
 from rx.concurrency import TimeoutScheduler
 
-class ObservableTime(Observable):
+class ObservableTime(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
@@ -30,6 +30,3 @@ class ObservableTime(Observable):
         print ("ObservableTime:interval(%s)" % period)
         scheduler = scheduler or TimeoutScheduler()
         return cls.observable_timer_timespan_and_period(period, period, scheduler)
-
-Observable.observable_timer_timespan_and_period = ObservableTime.observable_timer_timespan_and_period
-Observable.interval = ObservableTime.interval

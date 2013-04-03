@@ -1,10 +1,10 @@
-from rx.observable import Observable
+from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import ImmediateScheduler
 
-class ObservableMultiple(object):
+class ObservableMultiple(Observable, metaclass=ObservableMeta):
     def merge_observable(self):
         """Merges an observable sequence of observable sequences into an 
         observable sequence.
@@ -47,5 +47,3 @@ class ObservableMultiple(object):
             return group
         
         return AnonymousObservable(subscribe)
-
-Observable.merge_observable = ObservableMultiple.merge_observable
