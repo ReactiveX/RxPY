@@ -9,8 +9,6 @@ class CheckedObserver(Observer):
         self.check_access()
         try:
             self._observer.on_next(value)
-        except Exception:
-            pass
         finally:
             self._state = 0
 
@@ -18,8 +16,6 @@ class CheckedObserver(Observer):
         self.check_access()
         try:
             self._observer.on_error(err)
-        except Exception:
-            pass
         finally:
             self._state = 2
 
@@ -27,8 +23,6 @@ class CheckedObserver(Observer):
         self.check_access()
         try:
             self._observer.on_completed()
-        except Exception:
-            pass
         finally:
             self._state = 2
 

@@ -261,93 +261,98 @@ def test_create_on_next_on_error_on_completed1():
 #     assert(error)
 # 
 
-# MyObserver = (function () {
-#     function on_next (value) {
-#         this.hasOn_next = value
-#     }
+def test_as_observer_hides():
+    obs = MyObserver()
+    res = obs.as_observer()
+    
+    assert(res != obs)
+    assert(not isinstance(res, obs.__class__))
+    assert(not isinstance(obs, res.__class__))
 
-#     function on_error (err) {
-#         this.hasOn_error = err
-#     }
+def test_as_observer_forwards():
+    obsn = MyObserver()
+    obsn.as_observer().on_next(42)
+    assert(obsn.has_on_next == 42)
 
-#     function on_completed () {
-#         this.hasOn_completed = True
-#     }
+    ex = 'ex'
+    obse = MyObserver()
+    obse.as_observer().on_error(ex)
+    assert(obse.has_on_error == ex)
 
-#     return function () {
-#         obs = new Observer()
-#         obs.on_next = on_next.bind(obs)
-#         obs.on_error = on_error.bind(obs)
-#         obs.on_completed = on_completed.bind(obs)
+    obsc = MyObserver()
+    obsc.as_observer().on_completed()
+    assert(obsc.has_on_completed)
 
-#         return obs
-#     }
-# }())
 
-# test('AsObserver_Hides', function () {
-#     obs, res
-#     obs = new MyObserver()
-#     res = obs.asObserver()
-#     notDeepassert(obs, res)
-# 
+def test_observer_checked_already_terminated_completed():
+    m, n = 0, 0
 
-# test('AsObserver_Forwards', function () {
-#     obsn = new MyObserver()
-#     obsn.asObserver().on_next(42)
-#     assert(obsn.hasOn_next, 42)
+    def on_next(x):
+        nonlocal m
+        m += 1
 
-#     ex = 'ex'
-#     obse = new MyObserver()
-#     obse.asObserver().on_error(ex)
-#     assert(obse.hasOn_error, ex)
+    def on_error(x):
+        assert(False)
 
-#     obsc = new MyObserver()
-#     obsc.asObserver().on_completed()
-#     assert(obsc.hasOn_completed)
-# 
+    def on_completed():
+        nonlocal n
+        n += 1
 
-# test('Observer_Checked_AlreadyTerminated_Completed', function () {
-#     m = 0, n = 0
-#     o = Observer.create(function () { 
-#         m++ 
-#     }, function () {
-#         assert(False)
-#     }, function () {
-#         n++
-#     .checked()
+    o = Observer(on_next, on_error, on_completed).checked()
 
-#     o.on_next(1)
-#     o.on_next(2)
-#     o.on_completed()
+    o.on_next(1)
+    o.on_next(2)
+    o.on_completed()
 
-#     raises(function () { o.on_completed() 
-#     raises(function () { on.on_error(new Error('error')) 
-#     assert(2, m)
-#     assert(1, n)
-# 
+    try: 
+        o.on_completed()
+    except Exception:
+        pass
 
-# test('Observer_Checked_AlreadyTerminated_Error', function () {
-#     m = 0, n = 0
-#     o = Observer.create(function () {
-#         m++
-#     }, function () { 
-#         n++
-#     }, function () {
-#         assert(False)
-#     .checked()
+    try:  
+        on.on_error(Exception('error'))
+    except Exception:
+        pass
 
-#     o.on_next(1)
-#     o.on_next(2)
-#     o.on_error(new Error('error'))
+    assert(2 == m)
+    assert(1 == n)
 
-#     raises(function () { o.on_completed() 
-#     raises(function () { o.on_error(new Error('error')) 
 
-#     assert(2, m)
-#     assert(1, n)
-# 
+def test_observer_checked_already_terminated_error():
+    m, n = 0, 0
+
+    def on_next(x):
+        nonlocal m
+        m += 1
+
+    def on_error(x):
+        nonlocal n
+        n += 1
+
+    def on_completed():
+        assert(False)
+
+    o = Observer(on_next, on_error, on_completed).checked()
+
+    o.on_next(1)
+    o.on_next(2)
+    o.on_error(Exception('error'))
+
+    try:
+        o.on_completed()
+    except Exception:
+        pass
+
+    try: 
+        o.on_error(Exception('error'))
+    except Exception:
+        pass 
+
+    assert(2 == m)
+    assert(1 == n)
 
 def test_observer_checked_reentrant_next():
+    ex = "Re-entrancy detected"
     n = 0
     def on_next(x):
         nonlocal n
@@ -355,18 +360,18 @@ def test_observer_checked_reentrant_next():
 
         try:
             o.on_next(9)
-        except Exception:
-            pass
+        except Exception as e:
+            assert str(e) == ex
 
         try:
             o.on_error(Exception('error'))
-        except Exception:
-            pass
+        except Exception as e:
+            assert str(e) == ex
 
         try:
             o.on_completed()
-        except Exception:
-            pass
+        except Exception as e:
+            assert str(e) == ex
 
     def on_error(ex):
         assert(False)
@@ -378,23 +383,39 @@ def test_observer_checked_reentrant_next():
     o.on_next(1)
     assert(1 == n)
 
-# test('Observer_Checked_Reentrant_Error', function () {
-#     n = 0
-#     o
-#     o = Observer.create(function () {
-#         assert(False)
-#     }, function () {
-#         n++
-#         raises(function () { o.on_next(9) 
-#         raises(function () { o.on_error(new Error('error')) 
-#         raises(function () { o.on_completed() 
-#     }, function () {
-#         assert(False)
-#     .checked()
+def test_observer_checked_reentrant_error():
+    msg = "Re-entrancy detected"
+    n = 0
+    
+    def on_next(x):
+        assert(False)
+        
+    def on_error(ex):
+        nonlocal n
+        n += 1
 
-#     o.on_error(new Error('error'))
-#     assert(1, n)
-# 
+        try:
+            o.on_next(9)
+        except Exception as e:
+            assert str(e) == msg
+
+        try:
+            o.on_error(Exception('error'))
+        except Exception as e:
+            assert str(e) == msg
+
+        try:
+            o.on_completed()
+        except Exception as e:
+            assert str(e) == msg
+
+    def on_completed():
+        assert(False)
+
+    o = Observer(on_next, on_error, on_completed).checked()
+    o.on_error(Exception('error'))
+    assert(1 == n)
+
 
 # test('Observer_Checked_Reentrant_Completed', function () {
 #     n = 0
