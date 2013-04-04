@@ -19,16 +19,12 @@ class AutoDetachObserver(AbstractObserver):
     def error(self, exn):
         try:
             self.observer.on_error(exn)
-        except Exception:
-            pass
         finally:
             self.dispose()
         
     def completed(self):
         try:
             self.observer.on_completed()
-        except Exception:
-            pass
         finally:
             self.dispose()
         

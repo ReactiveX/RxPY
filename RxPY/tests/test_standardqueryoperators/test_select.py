@@ -42,12 +42,12 @@ def test_select_throws():
     except RxException:
         pass
 
+    def subscribe(observer):
+        _raise('ex')
+
     try:
-        def subscribe(observer):
-            _raise('ex')
-        
         Observable.create(subscribe) \
-            .select(lambda x: x) \
+            .select(lambda x: x).dump() \
             .subscribe()
     except RxException:
         pass
@@ -304,3 +304,6 @@ def test_select_with_index_selector_throws():
     results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_error(290, ex))
     xs.subscriptions.assert_equal(subscribe(200, 290))
     assert invoked == 3
+
+if __name__ == '__main__':
+    test_select_throws()

@@ -40,7 +40,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             def on_complete():
                 nonlocal is_stopped
                 is_stopped = True
-                if len(group) == 1:
+                if group.length == 1:
                     observer.on_completed()
             
             m.disposable = sources.subscribe(on_next, observer.on_error, on_complete)

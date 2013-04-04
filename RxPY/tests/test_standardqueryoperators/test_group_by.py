@@ -320,7 +320,7 @@ def test_group_by_inner_error():
                 inner_subscriptions[group.key] = group.subscribe(result)
             
             scheduler.schedule_relative(100, action3)
-        outer_subscription = outer.subscribe(on_next, lambda e: _)
+        outer_subscription = outer.subscribe(on_next, lambda e: None)
         return outer_subscription
     scheduler.schedule_absolute(subscribed, action2)
 

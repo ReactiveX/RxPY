@@ -234,32 +234,38 @@ def test_create_on_next_on_error_on_completed1():
     assert(completed)
     assert(not error)
 
-# test('Create_On_nextOn_errorOn_completed2', function () {
-#     ex = 'ex'
-#     next = True
-#     error = False
-#     completed = False
-#     res = Observer.create(function (x) {
-#         assert(42, x)
-#         next = True
-#     }, function (e) {
-#         assert(ex, e)
-#         error = True
-#     }, function () {
-#         completed = True
-#     
+def test_create_on_next_on_error_on_completed2():
+    ex = 'ex'
+    next = True
+    error = False
+    completed = False
 
-#     res.on_next(42)
-
-#     assert(next)
-#     assert(!error)
-#     assert(!completed)
-
-#     res.on_error(ex)
+    def on_next(x):
+        nonlocal next
+        assert(42 == x)
+        next = True
     
-#     assert(!completed)
-#     assert(error)
-# 
+    def on_error(e):
+        nonlocal error
+        assert(ex == e)
+        error = True
+
+    def on_completed():
+        nonlocal completed
+        completed = True
+
+    res = Observer(on_next, on_error, on_completed)
+
+    res.on_next(42)
+
+    assert(next)
+    assert(not error)
+    assert(not completed)
+
+    res.on_error(ex)
+    
+    assert(not completed)
+    assert(error)
 
 def test_as_observer_hides():
     obs = MyObserver()
@@ -417,20 +423,36 @@ def test_observer_checked_reentrant_error():
     assert(1 == n)
 
 
-# test('Observer_Checked_Reentrant_Completed', function () {
-#     n = 0
-#     o
-#     o = Observer.create(function () {
-#         assert(False)
-#     }, function () {
-#         assert(False)
-#     }, function () {
-#         n++
-#         raises(function () { o.on_next(9) 
-#         raises(function () { o.on_error(new Error('error')) 
-#         raises(function () { o.on_completed() 
-#     .checked()
+def test_observer_checked_reentrant_completed():
+    msg = "Re-entrancy detected"
+    n = 0
 
-#     o.on_completed()
-#     assert(1, n)
-# 
+    def on_next(x):
+        assert(False)
+
+    def on_error(ex):
+        assert(False)
+
+    def on_completed():
+        nonlocal n
+        n += 1
+        try:
+            o.on_next(9)
+        except Exception as e:
+            assert str(e) == msg
+
+        try: 
+            o.on_error(Exception('error'))
+        except Exception as e:
+            assert str(e) == msg
+
+        try:
+            o.on_completed()
+        except Exception as e:
+            assert str(e) == msg
+
+
+    o = Observer(on_next, on_error, on_completed).checked()
+
+    o.on_completed()
+    assert(1 == n)

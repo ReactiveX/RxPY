@@ -20,7 +20,10 @@ def default_key_serializer(x):
     return str(x)
 
 def default_error(err):
-    raise Exception(err)
+    if isinstance(err, BaseException):
+        raise err
+    else:
+        raise Exception(err)
 
 # Errors
 SEQUENCE_CONTAINS_NO_ELEMENTS = "Sequence contains no elements"
