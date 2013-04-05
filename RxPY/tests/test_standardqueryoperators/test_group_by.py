@@ -52,7 +52,7 @@ def test_group_by_with_key_comparer():
         
         return xs.group_by(key_selector, lambda x: x).select(lambda g: g.key)
         
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570))
     xs.subscriptions.assert_equal(subscribe(200, 570))
     assert(key_invoked == 12)
@@ -76,7 +76,7 @@ def test_groupby_outer_complete():
 
         return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_completed(570))
     xs.subscriptions.assert_equal(subscribe(200, 570))
     assert(key_invoked == 12)
@@ -101,7 +101,7 @@ def test_group_by_outer_error():
         
         return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
 
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(570, ex))
     xs.subscriptions.assert_equal(subscribe(200, 570))
@@ -115,7 +115,7 @@ def test_group_by_outer_dispose():
     ele_invoked = 0
     xs = scheduler.create_hot_observable(on_next(90, "error"), on_next(110, "error"), on_next(130, "error"), on_next(220, "  foo"), on_next(240, " FoO "), on_next(270, "baR  "), on_next(310, "foO "), on_next(350, " Baz   "), on_next(360, "  qux "), on_next(390, "   bar"), on_next(420, " BAR  "), on_next(470, "FOO "), on_next(480, "baz  "), on_next(510, " bAZ "), on_next(530, "    fOo    "), on_completed(570), on_next(580, "error"), on_completed(600), on_error(650, 'ex'))
     
-    def dispose():
+    def factory():
         def key_selector(x):
             nonlocal key_invoked
             key_invoked += 1
@@ -128,7 +128,7 @@ def test_group_by_outer_dispose():
 
         return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
-    results = scheduler.start_with_dispose(dispose, 355)
+    results = scheduler.start(factory, disposed=355)
     
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"))
     xs.subscriptions.assert_equal(subscribe(200, 355))
@@ -157,7 +157,7 @@ def test_group_by_outer_key_throw():
         
         return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
      
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(480, ex))
     xs.subscriptions.assert_equal(subscribe(200, 480))
     assert(key_invoked == 10)
@@ -185,7 +185,7 @@ def test_group_by_outer_ele_throw():
 
         return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(220, "foo"), on_next(270, "bar"), on_next(350, "baz"), on_next(360, "qux"), on_error(480, ex))
     xs.subscriptions.assert_equal(subscribe(200, 480))
     assert(key_invoked == 10)

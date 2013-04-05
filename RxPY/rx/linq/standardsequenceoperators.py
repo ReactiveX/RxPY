@@ -27,15 +27,19 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
     class"""
 
     def select(self, selector):
-        """Projects each element of an observable sequence into a new form by incorporating the element's index.
+        """Projects each element of an observable sequence into a new form by
+        incorporating the element's index.
         
         1 - source.select(lambda value: value * value)
         2 - source.select(lambda value, index: value * value + index)
         
         Keyword arguments:
-        selector -- A transform function to apply to each source element; the second parameter of the function represents the index of the source element.
+        selector -- A transform function to apply to each source element; the
+            second parameter of the function represents the index of the source 
+            element.
         
-        Returns an observable sequence whose elements are the result of invoking the transform function on each element of source.
+        Returns an observable sequence whose elements are the result of 
+        invoking the transform function on each element of source.
         """
         #print ("Observable:select(%s)" % selector)
 
@@ -69,8 +73,10 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         
         Keyword arguments:
         key_selector -- A function to extract the key for each element.
-        element_selector -- [Optional] A function to map each source element to an element in an observable group.
-        key_serializer -- [Optional] Used to serialize the given object into a string for object comparison.
+        element_selector -- [Optional] A function to map each source element to
+            an element in an observable group.
+        key_serializer -- [Optional] Used to serialize the given object into a 
+            string for object comparison.
         
         Returns a sequence of observable groups, each of which corresponds to a 
         unique key value, containing all elements that share that same key value.        

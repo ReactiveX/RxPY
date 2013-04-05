@@ -22,7 +22,7 @@ def _raise(ex):
 
 def test_select_throws():
     try:
-        Observable.returnvalue(1) \
+        Observable.return_value(1) \
             .select(lambda x, y: x) \
             .subscribe(lambda x: _raise("ex"))
     except RxException:
@@ -94,7 +94,7 @@ def test_select_completed():
 
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
     xs.subscriptions.assert_equal(ReactiveTest.subscribe(200, 400))
     assert invoked == 4
@@ -113,7 +113,7 @@ def test_select_completed_two():
                 return x + 1
             return xs.select(projection)
 
-        results = scheduler.start_with_create(factory)
+        results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
         xs.subscriptions.assert_equal(subscribe(200, 400))
         assert invoked == 4
@@ -131,7 +131,7 @@ def test_select_not_completed():
         
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6))
     xs.subscriptions.assert_equal(subscribe(200, 1000))
     assert invoked == 4
@@ -148,7 +148,7 @@ def test_select_error():
             return x + 1
         return xs.select(projection)
             
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_error(400, ex))
     xs.subscriptions.assert_equal(subscribe(200, 400))
     assert invoked == 4
@@ -169,14 +169,14 @@ def test_select_selector_throws():
             return x + 1
         return xs.select(projection)
       
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_error(290, ex))
     xs.subscriptions.assert_equal(subscribe(200, 290))
     assert invoked == 3
 
 def test_select_with_index_throws():
     try:
-        return Observable.returnvalue(1) \
+        return Observable.return_value(1) \
             .select(lambda x, index: x) \
             .subscribe(lambda x: _raise('ex'))
     except RxException:
@@ -242,7 +242,7 @@ def test_select_with_index_completed():
         
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_completed(400))
     xs.subscriptions.assert_equal(subscribe(200, 400))
     assert invoked == 4
@@ -259,7 +259,7 @@ def test_select_with_index_not_completed():
 
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32))
     xs.subscriptions.assert_equal(subscribe(200, 1000))
     assert invoked == 4
@@ -278,7 +278,7 @@ def test_select_with_index_error():
         
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
         
     results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_error(400, ex))
     xs.subscriptions.assert_equal(subscribe(200, 400))
@@ -300,7 +300,7 @@ def test_select_with_index_selector_throws():
 
         return xs.select(projection)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(factory)
     results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_error(290, ex))
     xs.subscriptions.assert_equal(subscribe(200, 290))
     assert invoked == 3

@@ -33,7 +33,7 @@ def test_where_complete():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
@@ -41,7 +41,7 @@ def test_where_complete():
         
         return xs.where(predicate)
         
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
 
     results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -52,14 +52,14 @@ def test_where_true():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return True
         return xs.where(predicate)
    
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
     assert invoked == 9
@@ -69,7 +69,7 @@ def test_where_false():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
@@ -77,7 +77,7 @@ def test_where_false():
 
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
 
     results.messages.assert_equal(on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -88,14 +88,14 @@ def test_where_dispose():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.where(predicate)
     
-    results = scheduler.start_with_dispose(factory, 400)
+    results = scheduler.start(create, disposed=400)
     results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7))
     xs.subscriptions.assert_equal(subscribe(200, 400))
     assert invoked == 5
@@ -106,14 +106,14 @@ def test_where_error():
     ex = 'ex'
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_error(600, ex))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -125,7 +125,7 @@ def test_where_throw():
     ex = 'ex'
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
@@ -135,7 +135,7 @@ def test_where_throw():
             return is_prime(x)
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_error(380, ex))
     xs.subscriptions.assert_equal(subscribe(200, 380))
@@ -184,7 +184,7 @@ def test_where_index_complete():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
@@ -192,7 +192,7 @@ def test_where_index_complete():
         
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
     assert invoked == 9
@@ -202,7 +202,7 @@ def test_where_index_true():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
 
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
@@ -210,7 +210,7 @@ def test_where_index_true():
 
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
     assert invoked == 9
@@ -220,14 +220,14 @@ def test_where_index_false():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
 
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
             return False
         return xs.where(predicate)
     
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
 
     results.messages.assert_equal(on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -238,7 +238,7 @@ def test_where_index_dispose():
     invoked = 0
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
     
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
@@ -246,7 +246,7 @@ def test_where_index_dispose():
         
         return xs.where(predicate)
 
-    results = scheduler.start_with_dispose(factory, 400)
+    results = scheduler.start(create, disposed=400)
     results.messages.assert_equal(on_next(230, 3), on_next(390, 7))
     xs.subscriptions.assert_equal(subscribe(200, 400))
     assert invoked == 5
@@ -257,14 +257,14 @@ def test_where_index_error():
     ex = 'ex'
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
     
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
             return is_prime(x + index * 10)
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     
     results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_error(600, ex))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -276,7 +276,7 @@ def test_where_index_throw():
     ex = 'ex'
     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
 
-    def factory():
+    def create():
         def predicate(x, index):
             nonlocal invoked
             invoked += 1
@@ -286,7 +286,7 @@ def test_where_index_throw():
             return is_prime(x + index * 10)
         return xs.where(predicate)
 
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     results.messages.assert_equal(on_next(230, 3), on_error(380, ex))
     xs.subscriptions.assert_equal(subscribe(200, 380))
     assert invoked == 4

@@ -91,37 +91,42 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
         return AnonymousObservable(subscribe)
 
-# Observable.range = function (start, count, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler)
-#     return new AnonymousObservable(function (observer) {
-#         return scheduler.scheduleRecursiveWithState(0, function (i, self) {
-#             if (i < count) {
-#                 observer.onNext(start + i)
-#                 self(i + 1)
-#             } else {
-#                 observer.onCompleted()
-#             }
-#         })
-#     })
-# }
+    @classmethod
+    def range(cls, start, count, scheduler=None):
+        scheduler = scheduler or CurrentThreadScheduler()
+        
+        def subscribe(observer):
+            def action(scheduler, i):
+                #print("Observable:range:subscribe:action", scheduler, i)
+                if i < count:
+                    observer.on_next(start + i)
+                    scheduler(i + 1)
+                else:
+                    #print "completed"
+                    observer.on_completed()
+                
+            return scheduler.schedule_recursive(action, 0)
+        return AnonymousObservable(subscribe)
 
-# Observable.repeat = function (value, repeatCount, scheduler) {
-#     scheduler || (scheduler = currentThreadScheduler)
-#     if (repeatCount == undefined) {
-#         repeatCount = -1
-#     }
-#     return observableReturn(value, scheduler).repeat(repeatCount)
-# }
+    @classmethod
+    def repeat(cls, value, repeat_count=None, scheduler=None):
+        scheduler = scheduler or CurrentThreadScheduler()
+        if repeat_count is None:
+            repeat_count = -1
+        
+        return AnonymousObservable.return_value(value, scheduler).repeat(repeat_count)
 
-# var observableReturn = Observable.returnValue = function (value, scheduler) {
-#     scheduler || (scheduler = immediateScheduler)
-#     return new AnonymousObservable(function (observer) {
-#         return scheduler.schedule(function () {
-#             observer.onNext(value)
-#             observer.onCompleted()
-#         })
-#     })
-# }
+    @classmethod
+    def return_value(cls, value, scheduler=None):
+        scheduler = scheduler or ImmediateScheduler()
+
+        def subscribe(observer):
+            def action(scheduler, state=None):
+                observer.on_next(value)
+                observer.on_completed()
+
+            return scheduler.schedule(action)
+        return AnonymousObservable(subscribe)
 
     @classmethod
     def throw_exception(cls, exception, scheduler=None):
@@ -136,18 +141,18 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
 
-# Observable.using = function (resourceFactory, observableFactory) {
-#     return new AnonymousObservable(function (observer) {
-#         var disposable = disposableEmpty, resource, source
-#         try {
-#             resource = resourceFactory()
-#             if (resource) {
-#                 disposable = resource
-#             }
-#             source = observableFactory(resource)
-#         } catch (exception) {
-#             return new CompositeDisposable(observableThrow(exception).subscribe(observer), disposable)
-#         }
-#         return new CompositeDisposable(source.subscribe(observer), disposable)
-#     })
-# }                 
+    @classmethod
+    def using(cls, resource_factory, observable_factory):
+        def subscribe(observer):
+            disposable = Disposable.empty()
+            try:
+                resource = resource_factory()
+                if resource:
+                    disposable = resource
+                
+                source = observable_factory(resource)
+            except Exception as exception:
+                return CompositeDisposable(Observable.throw(exception).subscribe(observer), disposable)
+            
+            return CompositeDisposable(source.subscribe(observer), disposable)
+        return AnonymousObservable(subscribe)

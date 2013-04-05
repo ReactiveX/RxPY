@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from rx import Observable
 from rx.concurrency import VirtualTimeScheduler
 from rx.disposables import Disposable
 
@@ -52,7 +53,7 @@ class TestScheduler(VirtualTimeScheduler):
     def to_relative(cls, timespan):
         return timespan
     
-    def start_with_timing(self, create, created, subscribed, disposed):
+    def start(self, create=None, created=None, subscribed=None, disposed=None):
         """Starts the test scheduler and uses the specified virtual times to 
         invoke the factory function, subscribe to the resulting sequence, and
         dispose the subscription.
@@ -67,6 +68,13 @@ class TestScheduler(VirtualTimeScheduler):
         that were received during the virtual time window when the subscription
         to the source sequence was active.
         """
+
+        # Defaults
+        create = create or Observable.empty
+        created = created or ReactiveTest.created
+        subscribed = subscribed or ReactiveTest.subscribed 
+        disposed= disposed or ReactiveTest.disposed
+        
         observer = self.create_observer()
         subscription = None
         source = None
@@ -78,51 +86,18 @@ class TestScheduler(VirtualTimeScheduler):
         self.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-            #print ("action2()")
             nonlocal subscription
             subscription = source.subscribe(observer)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
-            #print ("action3()")
             subscription.dispose()
             return Disposable.empty()
         self.schedule_absolute(disposed, action3)
 
-        self.start()
+        super(TestScheduler, self).start()
         return observer
-
-    def start_with_dispose(self, create, disposed):
-        """Starts the test scheduler and uses the specified virtual time to 
-        dispose the subscription to the sequence obtained through the factory
-        function. Default virtual times are used for factory invocation and 
-        sequence subscription.
-        
-        Keyword arguments:
-        create -- Factory method to create an observable sequence.
-        disposed -- Virtual time at which to dispose the subscription.
-        
-        Returns observer with timestamped recordings of notification messages 
-        that were received during the virtual time window when the subscription
-        to the source sequence was active.
-        """
-            
-        return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, disposed)
-    
-    def start_with_create(self, create):
-        """Starts the test scheduler and uses default virtual times to invoke
-        the factory function, to subscribe to the resulting sequence, and to 
-        dispose the subscription.
-        
-        Keyword arguments:
-        create -- Factory method to create an observable sequence.
-        
-        Returns observer with timestamped recordings of notification messages 
-        that were received during the virtual time window when the subscription
-        to the source sequence was active.
-        """
-        return self.start_with_timing(create, ReactiveTest.created, ReactiveTest.subscribed, ReactiveTest.disposed)
     
     def create_hot_observable(self, *args):
         """Creates a hot observable using the specified timestamped 

@@ -14,13 +14,13 @@ def test_skip_while_complete_before():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_completed(330), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
 
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
             
     results.messages.assert_equal(on_completed(330))
     xs.subscriptions.assert_equal(subscribe(200, 330))
@@ -31,13 +31,13 @@ def test_skip_while_complete_after():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -49,13 +49,13 @@ def test_skip_while_error_before():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_error(270, ex), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
 
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
             
     results.messages.assert_equal(on_error(270, ex))
     xs.subscriptions.assert_equal(subscribe(200, 270))
@@ -67,13 +67,13 @@ def test_skip_while_error_after():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_error(600, ex))
     invoked = 0
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
             
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_error(600, ex))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -84,13 +84,13 @@ def test_skip_while_dispose_before():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
     
-    def dispose():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_dispose(dispose, 300)
+    results = scheduler.start(create, disposed=300)
 
     results.messages.assert_equal()
     xs.subscriptions.assert_equal(subscribe(200, 300))
@@ -101,13 +101,13 @@ def test_skip_while_dispose_after():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
 
-    def dispose():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_dispose(dispose, 470)
+    results = scheduler.start(create, disposed=470)
 
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8))
     xs.subscriptions.assert_equal(subscribe(200, 470))
@@ -118,13 +118,13 @@ def test_skip_while_zero():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(205, 100), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     invoked = 0
     
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
             
     results.messages.assert_equal(on_next(205, 100), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
@@ -135,7 +135,7 @@ def test_skip_while_throw():
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     ex = 'ex'
     invoked = 0
-    def factory():
+    def create():
         def predicate(x):
             nonlocal invoked
             invoked += 1
@@ -144,7 +144,7 @@ def test_skip_while_throw():
             
             return is_prime(x)
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
     
     results.messages.assert_equal(on_error(290, ex))
     xs.subscriptions.assert_equal(subscribe(200, 290))
@@ -154,11 +154,11 @@ def test_skip_while_index():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(90, -1), on_next(110, -1), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     
-    def factory():
+    def create():
         def predicate(x, i):
             return i < 5
         return xs.skip_while(predicate)
-    results = scheduler.start_with_create(factory)
+    results = scheduler.start(create)
         
     
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))

@@ -37,35 +37,3 @@ class Observable(object):
             observer = Observer(on_next, on_error, on_completed)
             
         return self._subscribe(observer)
-
-    @classmethod
-    def returnvalue(cls, value, scheduler=None):
-        scheduler = scheduler or ImmediateScheduler()
-
-        def subscribe(observer):
-            def action(scheduler, state=None):
-                observer.on_next(value)
-                observer.on_completed()
-
-            return scheduler.schedule(action)
-        
-        #return cls(subscribe)
-        return Observable(subscribe)
-
-    @classmethod
-    def range(cls, start, count, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler()
-        
-        def subscribe(observer):
-            def action(scheduler, i):
-                print("Observable:range:subscribe:action", scheduler, i)
-                if i < count:
-                    observer.on_next(start + i)
-                    scheduler(i + 1)
-                else:
-                    #print "completed"
-                    observer.on_completed()
-                
-            return scheduler.schedule_recursive(action, 0)
-            
-        return Observable(subscribe)
