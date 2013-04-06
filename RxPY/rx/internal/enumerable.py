@@ -24,14 +24,7 @@ class Enumerable(object):
                 yield value
             
             raise StopIteration
-            
         return Enumerable(iterator())   
-
-    def first(self):
-        pass
-
-    def last(self):
-        pass
 
     @classmethod
     def range(cls, start, count):
@@ -44,12 +37,12 @@ class Enumerable(object):
                 n -= 1
 
             raise StopIteration
-
         return cls(iterator())
 
     @classmethod
     def repeat(cls, value, count=None):
-        if count:
-            return cls(element for _ in range(count))
-            
+        if not count is None:
+            return cls(value for _ in range(count))
         return cls(itertools.repeat(value))
+
+

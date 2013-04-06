@@ -25,7 +25,7 @@ class Scheduler(object):
         
         def recursive_action(state1):
             # FIXME: need a better name for this function
-            def action2(state2):
+            def action2(state2=None):
                 #print "action2", state2
                 is_added = False
                 is_done = False

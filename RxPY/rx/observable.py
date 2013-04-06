@@ -6,15 +6,24 @@ class ObservableMeta(type):
         assert len(bases) == 1, "Exactly one base class required"
         base = bases[0]
         for name, value in namespace.items():
-            if name not in ["__metaclass__", "__module__", "__doc__"]:
+            if name == "__init__":
+                base.initializers.append(value)
+
+            if not name.startswith("__"):
                 setattr(base, name, value)
         return base
 
 class Observable(object):
     """Represents a push-style collection."""
 
+    initializers = []
+
     def __init__(self, subscribe):
         self._subscribe = subscribe
+        
+        # Run exension method initializers added by meta class
+        for init in self.initializers:
+            init(self, subscribe)
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None):
         """Subscribes an observer to the observable sequence. Returns he source

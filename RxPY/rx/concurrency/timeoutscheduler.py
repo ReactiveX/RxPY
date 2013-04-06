@@ -23,7 +23,7 @@ class TimeoutScheduler(Scheduler):
         def dispose():
             #print ("TimeoutScheduler:schedule.dispose()")
             self.timer.cancel()
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         #print("TimeoutScheduler:schedule_relative(%d)" % duetime)
@@ -46,7 +46,7 @@ class TimeoutScheduler(Scheduler):
             #print ("TimeoutScheduler:schedule_relative.dispose()")
             self.timer.cancel()
         
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         #print ("TimeoutScheduler:schedule_absolute(%s)" % duetime)

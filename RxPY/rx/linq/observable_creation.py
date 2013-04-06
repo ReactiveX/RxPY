@@ -9,7 +9,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
     @classmethod
     def create(cls, subscribe):
         def _subscribe(observer):
-            return Disposable.create(subscribe(observer))
+            return Disposable(subscribe(observer))
         
         return AnonymousObservable(_subscribe)
 
@@ -195,9 +195,10 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         Returns an observable sequence that repeats the given element the 
         specified number of times.
         """
+
         scheduler = scheduler or CurrentThreadScheduler()
-        if repeat_count is None:
-            repeat_count = -1
+        if repeat_count == -1:
+            repeat_count = None
         
         xs = cls.return_value(value, scheduler)
         ret = xs.repeat(repeat_count)

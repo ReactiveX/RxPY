@@ -50,6 +50,6 @@ class HotObservable(Observable):
             end = observable.scheduler.clock
             observable.subscriptions[index] = Subscription(start, end)
 
-        return Disposable.create(dispose_action)
+        return Disposable(dispose_action)
 
     

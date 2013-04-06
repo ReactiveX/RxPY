@@ -1,14 +1,54 @@
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable
+from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import ImmediateScheduler
 
 from rx.internal import Enumerable
 
+def concat(sources):
+    def subscribe(observer):
+        e = iter(sources)
+        is_disposed = False
+        subscription = SerialDisposable()
+        immediate_scheduler = ImmediateScheduler()
+
+        def action(action1, state=None):
+            current = None
+            
+            if is_disposed:
+                return
+            try:
+                current = next(e)
+            except StopIteration:
+                observer.on_completed()    
+            except Exception as ex:
+                observer.on_error(ex)
+            else:
+                d = SingleAssignmentDisposable()
+                subscription.disposable = d
+                print (current)
+                d.disposable = current.subscribe(
+                    observer.on_next,
+                    observer.on_error,
+                    lambda: action1()
+                )
+
+        cancelable = immediate_scheduler.schedule_recursive(action)
+        
+        def dispose():
+            nonlocal is_disposed
+            is_disposed = True
+        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+    return AnonymousObservable(subscribe)
+
 class ObservableSingle(Observable, metaclass=ObservableMeta):
     
-    def repeat(self, repeat_count=None):
+    def __init__(self, subscribe):
+        self.repeat = self.__repeat
+
+    # We do this to avoid overwriting the class method with the same name
+    def __repeat(self, repeat_count=None):
         """Repeats the observable sequence a specified number of times. If the 
         repeat count is not specified, the sequence repeats indefinitely.
      
@@ -22,5 +62,22 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         Returns the observable sequence producing the elements of the given 
         sequence repeatedly.   
         """
+
+        return concat(Enumerable.repeat(self, repeat_count))
+
+    def retry(self, retry_count):
+        """Repeats the source observable sequence the specified number of times
+        or until it successfully terminates. If the retry count is not 
+        specified, it retries indefinitely.
+     
+        1 - retried = retry.repeat();
+        2 - retried = retry.repeat(42);
+    
+        retry_count -- [Optional] Number of times to retry the sequence. If not
+        provided, retry the sequence indefinitely.
         
-        return Enumerable.repeat(repeat_count).concat()
+        Returns an observable sequence producing the elements of the given 
+        sequence repeatedly until it terminates successfully. 
+        """
+    
+        return Enumerable.repeat(self, retry_count).catch_exception()

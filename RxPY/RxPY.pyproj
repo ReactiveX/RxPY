@@ -34,6 +34,7 @@
     <Compile Include="rx\concurrency\timeoutscheduler.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
     <Compile Include="rx\internal\basic.py" />
+    <Compile Include="rx\internal\enumerable.py" />
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />

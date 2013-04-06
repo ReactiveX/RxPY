@@ -45,6 +45,6 @@ class ColdObservable(Observable):
             self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 
-        return Disposable.create(dispose)
+        return Disposable(dispose)
 
     

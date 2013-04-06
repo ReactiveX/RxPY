@@ -4,4 +4,4 @@ from .anonymousobservable import AnonymousObservable
 from .observer import Observer
 from . import checkedobserver
 
-from .linq import standardsequenceoperators
+from . import linq

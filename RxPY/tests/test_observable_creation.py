@@ -68,7 +68,7 @@ def test_return_disposed_after_next():
     scheduler.start()
     results.messages.assert_equal(on_next(101, 42))
 
-def test_Return_ObserverThrows():
+def test_return_observer_throws():
     scheduler1 = TestScheduler()
     xs = Observable.return_value(1, scheduler1)
     xs.subscribe(lambda x: _raise('ex'))
@@ -677,33 +677,37 @@ def test__subscribe_to_enumerable_finite():
 #     results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4))
 
 
-# def test_CreateWithDisposable_Observerraise Exception(():
-# )    raises(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_next(1)
-#             return Rx.Disposable.empty
-#         .subscribe(function (x) {
-#             raise Exception('ex')
-        
-    
-#     raises(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_error('exception')
-#             return Rx.Disposable.empty
-#         .subscribe(function (x) { }, function (ex) {
-#             raise Exception('ex')
-        
-    
-#     raises(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_completed()
-#             return Rx.Disposable.empty
-#         .subscribe(function (x) { }, function (ex) { }, function () {
-#             raise Exception('ex')
-        
-    
+def test_create_with_disposable_observer_throws():
+    def subscribe1(o):
+        o.on_next(1)
+        return Disposable.empty()
 
+    def on_next(x):
+        _raise('ex')
 
+    try:
+        return Observable.create_with_disposable(subscribe1).subscribe(on_next)
+    except RxException:
+        pass
+    
+    def subscribe2(o):
+        o.on_error('exception')
+        return Disposable.empty()
+
+    try:
+        return Observable.create_with_disposable(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+    except RxException:
+        pass
+    
+    def subscribe3(o):
+        o.on_completed()
+        return Disposable.empty()
+
+    try:
+        return Observable.create_with_disposable(subscribe3).subscribe(on_completed=_raise('ex'))
+    except RxException:
+        pass
+        
 def test_range_zero():
     scheduler = TestScheduler()
 
@@ -712,7 +716,6 @@ def test_range_zero():
 
     results = scheduler.start(create)    
     results.messages.assert_equal(on_completed(201))
-
 
 def test_range_one():
     scheduler = TestScheduler()
@@ -774,16 +777,13 @@ def test_repeat_observable_basic():
                         subscribe(950, 1000))
 
 
-# def test_Repeat_Observable_Infinite():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat()
+def test_repeat_observable_infinite():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+    results = scheduler.start(lambda: xs.repeat())
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
-#     return xs.subscriptions.assert_equal(subscribe(200, 1000))
-
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
+    return xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 def test_repeat_observable_error():
     results = None
@@ -911,15 +911,13 @@ def test_repeat_observable_error():
     
 
 
-# def test_Retry_Observable_Basic():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
-#     results = scheduler.start_with_create(function () {
-#         return xs.retry()
+def test_retry_observable_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
+    results = scheduler.start(lambda: xs.retry())
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_completed(450))
-#     xs.subscriptions.assert_equal(subscribe(200, 450))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_completed(450))
+    xs.subscriptions.assert_equal(subscribe(200, 450))
 
 
 # def test_Retry_Observable_Infinite():
@@ -1061,51 +1059,52 @@ def test_repeat_observable_error():
 #     raises(function () {
 #         return xss.subscribe()
     
+def test_repeat_value_count_zero():
+    scheduler = TestScheduler()
 
-
-# def test_Repeat_Value_Count_Zero():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.repeat(42, 0, scheduler)
+    def create():
+        return Observable.repeat(42, 0, scheduler)
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_completed(200))
+    results.messages.assert_equal(on_completed(200))
 
 
-# def test_Repeat_Value_Count_One():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.repeat(42, 1, scheduler)
+def test_repeat_value_count_one():
+    scheduler = TestScheduler()
+
+    def create():
+        return Observable.repeat(42, 1, scheduler)
     
-#     results.messages.assert_equal(on_next(201, 42), on_completed(201))
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(201, 42), on_completed(201))
 
 
-# def test_Repeat_Value_Count_Ten():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.repeat(42, 10, scheduler)
+def test_repeat_value_count_ten():
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42), on_next(207, 42), on_next(208, 42), on_next(209, 42), on_next(210, 42), on_completed(210))
+    def create():    
+        return Observable.repeat(42, 10, scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42), on_next(207, 42), on_next(208, 42), on_next(209, 42), on_next(210, 42), on_completed(210))
 
+def test_repeat_value_count_dispose():
+    scheduler = TestScheduler()
 
-# def test_Repeat_Value_Count_Dispose():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_dispose(function () {
-#         return Observable.repeat(42, 10, scheduler)
-#     }, 207)
-#     results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
+    def create():
+        return Observable.repeat(42, 10, scheduler)
 
+    results = scheduler.start(create, disposed=207)
+    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
 
-# def test_Repeat_Value():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_dispose(function () {
-#         return Observable.repeat(42, -1, scheduler)
-#     }, 207)
-#     results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
+def test_repeat_value():
+    scheduler = TestScheduler()
+    def create():
+        return Observable.repeat(42, -1, scheduler)
+
+    results = scheduler.start(create, disposed=207)
+    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
 
 if __name__ == '__main__':
-    test_repeat_observable_basic()
+    test_repeat_value_count_zero()
