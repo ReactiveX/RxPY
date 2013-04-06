@@ -147,7 +147,6 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
                         fire_new_map_entry = True
                     
                 except Exception as e:
-                    print("Exception ********************", e)
                     for w in mapping.values():
                         w.on_error(e)
                     
@@ -160,7 +159,6 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
                     try:
                         duration = duration_selector(duration_group)
                     except Exception as e:
-                        print ("Exception *****************", e)
                         for w in mapping.values():
                             w.on_error(e)
                         
@@ -195,7 +193,6 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
                 try:
                     element = element_selector(x)
                 except Exception as e:
-                    print("Exception ********************", e)
                     for w in mapping.values():
                         w.on_error(e)
                     

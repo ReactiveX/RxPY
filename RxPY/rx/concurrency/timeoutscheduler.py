@@ -11,17 +11,17 @@ class TimeoutScheduler(Scheduler):
         self.timer = None
 
     def schedule(self, action, state=None):
-        print("TimeoutScheduler:schedule_now()")
+        #print("TimeoutScheduler:schedule_now()")
         scheduler = self
         disposable = SingleAssignmentDisposable()
         
         def interval():
-            print ("TimeoutScheduler:schedule.interval()")
+            #print ("TimeoutScheduler:schedule.interval()")
             disposable.disposable = action(scheduler, state)
         self.timer = Timer(0, interval)
         self.timer.start()        
         def dispose():
-            print ("TimeoutScheduler:schedule.dispose()")
+            #print ("TimeoutScheduler:schedule.dispose()")
             self.timer.cancel()
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
@@ -34,20 +34,20 @@ class TimeoutScheduler(Scheduler):
         
         disposable = SingleAssignmentDisposable()
         def interval():
-            print ("TimeoutScheduler:schedule_relative.interval()")
+            #print ("TimeoutScheduler:schedule_relative.interval()")
             disposable.disposable = action(scheduler, state)
         
         seconds = dt.seconds+dt.microseconds/1000000
-        print ("timeout: %s" % seconds)
+        #print ("timeout: %s" % seconds)
         self.timer = Timer(seconds, interval)
         self.timer.start()
 
         def dispose():
-            print ("TimeoutScheduler:schedule_relative.dispose()")
+            #print ("TimeoutScheduler:schedule_relative.dispose()")
             self.timer.cancel()
         
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_absolute(self, state, duetime, action):
-        print ("TimeoutScheduler:schedule_absolute(%s)" % duetime)
+    def schedule_absolute(self, duetime, action, state=None):
+        #print ("TimeoutScheduler:schedule_absolute(%s)" % duetime)
         return self.schedule_relative(duetime - self.now(), action, state)

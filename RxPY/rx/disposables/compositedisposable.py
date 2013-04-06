@@ -49,3 +49,6 @@ class CompositeDisposable(Disposable):
     def to_array(self):
         return self.disposables[:]
 
+    def __len__(self):
+        return len(self.disposables)
+

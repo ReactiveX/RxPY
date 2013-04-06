@@ -10,6 +10,13 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+class RxException(Exception):
+    pass
+
+# Helper function for raising exceptions within lambdas
+def _raise(ex):
+    raise RxException(ex)
+
 class BooleanDisposable(object):
     def __init__(self):
         self.is_disposed = false
@@ -61,29 +68,24 @@ def test_return_disposed_after_next():
     scheduler.start()
     results.messages.assert_equal(on_next(101, 42))
 
-# def test_Return_ObserverThrows():
-#     scheduler1, scheduler2, xs, ys
-#     scheduler1 = TestScheduler()
-#     xs = Observable.return_value(1, scheduler1)
-#     xs.subscribe(function (x) {
-#         raise Exception('ex')
+def test_Return_ObserverThrows():
+    scheduler1 = TestScheduler()
+    xs = Observable.return_value(1, scheduler1)
+    xs.subscribe(lambda x: _raise('ex'))
     
-#     raises(function () {
-#         scheduler1.start()
+    try:
+        scheduler1.start()
+    except RxException:
+        pass
     
-#     scheduler2 = TestScheduler()
-#     ys = Observable.return_value(1, scheduler2)
-#     ys.subscribe(function (x) {
+    scheduler2 = TestScheduler()
+    ys = Observable.return_value(1, scheduler2)
+    ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
-#     }, function (ex) {
-
-#     }, function () {
-#         raise Exception('ex')
-    
-#     raises(function () {
-#         scheduler2.start()
-    
-
+    try:
+        scheduler2.start()
+    except RxException:
+        pass
 
 def test_never_basic():
     scheduler = TestScheduler()
@@ -103,7 +105,7 @@ def test_throw_exception_basic():
     results = scheduler.start(factory)
     results.messages.assert_equal(on_error(201, ex))
 
-def test_throw_exception_disposed():
+def test_throw_disposed():
     scheduler = TestScheduler()
     def factory():
         return Observable.throw_exception('ex', scheduler)
@@ -111,16 +113,16 @@ def test_throw_exception_disposed():
     results = scheduler.start(factory, disposed=200)
     results.messages.assert_equal()
 
-# def test_raise Exception(Obse)rverraise Exception(():
-# )    scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = Observable.raise Exception(xcep)tion('ex', scheduler)
-#     xs.subscribe(function (x) { }, function (ex) {
-#         raise Exception('ex')
-#     }, function () { 
-#     raises(function () {
-#         return scheduler.start()
+def test_throw_observer_throws():
+    scheduler = TestScheduler()
+    xs = Observable.throw_exception('ex', scheduler)
+    xs.subscribe(lambda x: None, lambda ex: _raise('ex'), lambda: None)
     
+    try:
+        return scheduler.start()
+    except RxException:
+        pass
+
 def test_empty_basic():
     scheduler = TestScheduler()
 
@@ -139,33 +141,33 @@ def test_empty_disposed():
     results = scheduler.start(factory, disposed=200)
     results.messages.assert_equal()
 
-# def test_Empty_Observerraise Exception(():
-# )    scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = Observable.empty(scheduler)
-#     xs.subscribe(function (x) { }, function (ex) { }, function () {
-#         raise Exception('ex')
+def test_empty_observer_throw_exception():
+    scheduler = TestScheduler()
+    xs = Observable.empty(scheduler)
+    xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'))
     
-#     raises(function () {
-#         return scheduler.start()
+    try:
+        return scheduler.start()
+    except RxException:
+        pass
     
-
-
-# def test_SubscribeToEnumerable_Finite():
-#     enumerableFinite, results, scheduler
-#     enumerableFinite = [1, 2, 3, 4, 5]
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.fromArray(enumerableFinite, scheduler)
+def test__subscribe_to_enumerable_finite():
+    enumerable_finite = [1, 2, 3, 4, 5]
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(
-#                         on_next(201, 1),
-#                         on_next(202, 2),
-#                         on_next(203, 3),
-#                         on_next(204, 4),
-#                         on_next(205, 5),
-#                         on_completed(206)
-#                     )
+    def create():
+        return Observable.from_array(enumerable_finite, scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(
+                        on_next(201, 1),
+                        on_next(202, 2),
+                        on_next(203, 3),
+                        on_next(204, 4),
+                        on_next(205, 5),
+                        on_completed(206)
+                    )
 
 
 # def test_Generate_Finite():
@@ -265,7 +267,7 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.defer(function () {
 #             invoked++
-#             xs = scheduler.createColdObservable(
+#             xs = scheduler.create_cold_observable(
 #                                 on_next(100, scheduler.clock),
 #                                 on_completed(200)
 #                             )
@@ -288,7 +290,7 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.defer(function () {
 #             invoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_error(200, ex))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
 #             return xs
         
     
@@ -304,7 +306,7 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.defer(function () {
 #             invoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_next(200, invoked), on_next(1100, 1000))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked), on_next(1100, 1000))
 #             return xs
         
     
@@ -341,7 +343,7 @@ def test_empty_disposed():
 #         }, function (d) {
 #             _d = d
 #             createInvoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_completed(200))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
 #             return xs
         
     
@@ -361,12 +363,12 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.using(function () {
 #             disposeInvoked++
-#             disposable = new Rx.MockDisposable(scheduler)
+#             disposable = MockDisposable(scheduler)
 #             return disposable
 #         }, function (d) {
 #             _d = d
 #             createInvoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_completed(200))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
 #             return xs
         
     
@@ -387,12 +389,12 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.using(function () {
 #             disposeInvoked++
-#             disposable = new Rx.MockDisposable(scheduler)
+#             disposable = MockDisposable(scheduler)
 #             return disposable
 #         }, function (d) {
 #             _d = d
 #             createInvoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_error(200, ex))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
 #             return xs
         
     
@@ -412,12 +414,12 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.using(function () {
 #             disposeInvoked++
-#             disposable = new Rx.MockDisposable(scheduler)
+#             disposable = MockDisposable(scheduler)
 #             return disposable
 #         }, function (d) {
 #             _d = d
 #             createInvoked++
-#             xs = scheduler.createColdObservable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
+#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
 #             return xs
         
     
@@ -459,7 +461,7 @@ def test_empty_disposed():
 #     results = scheduler.start_with_create(function () {
 #         return Observable.using(function () {
 #             disposeInvoked++
-#             disposable = new Rx.MockDisposable(scheduler)
+#             disposable = MockDisposable(scheduler)
 #             return disposable
 #         }, function (d) {
 #             createInvoked++
@@ -702,80 +704,80 @@ def test_empty_disposed():
     
 
 
-# def test_Range_Zero():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.range(0, 0, scheduler)
+def test_range_zero():
+    scheduler = TestScheduler()
+
+    def create():
+        return Observable.range(0, 0, scheduler)
+
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_completed(201))
+
+
+def test_range_one():
+    scheduler = TestScheduler()
+
+    def create():
+        return Observable.range(0, 1, scheduler)
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_completed(201))
+    results.messages.assert_equal(on_next(201, 0), on_completed(202))
 
+def test_range_five():
+    scheduler = TestScheduler()
 
-# def test_Range_One():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.range(0, 1, scheduler)
+    def create():
+        return Observable.range(10, 5, scheduler)
+
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_next(201, 0), on_completed(202))
+    results.messages.assert_equal(
+                        on_next(201, 10),
+                        on_next(202, 11),
+                        on_next(203, 12),
+                        on_next(204, 13),
+                        on_next(205, 14),
+                        on_completed(206))
 
+def test_range_dispose():
+    scheduler = TestScheduler()
 
-# def test_Range_Five():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.range(10, 5, scheduler)
+    def create():
+        return Observable.range(-10, 5, scheduler)
+
+    results = scheduler.start(create, disposed=204)
+    results.messages.assert_equal(on_next(201, -10), on_next(202, -9), on_next(203, -8))
+
+def test_repeat_observable_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(
+                        on_next(100, 1),
+                        on_next(150, 2),
+                        on_next(200, 3),
+                        on_completed(250))
+    results = scheduler.start(lambda: xs.repeat())
     
-#     results.messages.assert_equal(
-#                         on_next(201, 10),
-#                         on_next(202, 11),
-#                         on_next(203, 12),
-#                         on_next(204, 13),
-#                         on_next(205, 14),
-#                         on_completed(206))
-
-
-# def test_Range_Dispose():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_dispose(function () {
-#         return Observable.range(-10, 5, scheduler)
-#     }, 204)
-#     results.messages.assert_equal(on_next(201, -10), on_next(202, -9), on_next(203, -8))
-
-
-# def test_Repeat_Observable_Basic():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(
-#                         on_next(100, 1),
-#                         on_next(150, 2),
-#                         on_next(200, 3),
-#                         on_completed(250))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat()
-    
-#     results.messages.assert_equal(
-#                         on_next(300, 1),
-#                         on_next(350, 2),
-#                         on_next(400, 3),
-#                         on_next(550, 1),
-#                         on_next(600, 2),
-#                         on_next(650, 3),
-#                         on_next(800, 1),
-#                         on_next(850, 2),
-#                         on_next(900, 3))
-#     xs.subscriptions.assert_equal(
-#                         subscribe(200, 450),
-#                         subscribe(450, 700),
-#                         subscribe(700, 950),
-#                         subscribe(950, 1000))
+    results.messages.assert_equal(
+                        on_next(300, 1),
+                        on_next(350, 2),
+                        on_next(400, 3),
+                        on_next(550, 1),
+                        on_next(600, 2),
+                        on_next(650, 3),
+                        on_next(800, 1),
+                        on_next(850, 2),
+                        on_next(900, 3))
+    xs.subscriptions.assert_equal(
+                        subscribe(200, 450),
+                        subscribe(450, 700),
+                        subscribe(700, 950),
+                        subscribe(950, 1000))
 
 
 # def test_Repeat_Observable_Infinite():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
 #     results = scheduler.start_with_create(function () {
 #         return xs.repeat()
     
@@ -783,16 +785,15 @@ def test_empty_disposed():
 #     return xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 
-# def test_Repeat_Observable_Error():
-#     ex, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat()
+def test_repeat_observable_error():
+    results = None
+    scheduler = TestScheduler()
+    ex = 'ex'
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
+    results = scheduler.start(lambda: xs.repeat())
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_error(450, ex))
-#     return xs.subscriptions.assert_equal(subscribe(200, 450))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_error(450, ex))
+    return xs.subscriptions.assert_equal(subscribe(200, 450))
 
 
 # def test_Repeat_Observable_raise Exception(():
@@ -833,7 +834,7 @@ def test_empty_disposed():
 # def test_Repeat_Observable_RepeatCount_Basic():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
+#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
 #     results = scheduler.start_with_create(function () {
 #         return xs.repeat(3)
     
@@ -844,7 +845,7 @@ def test_empty_disposed():
 # def test_Repeat_Observable_RepeatCount_Dispose():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
+#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
 #     results = scheduler.start_with_dispose(function () {
 #         return xs.repeat(3)
 #     }, 231)
@@ -855,7 +856,7 @@ def test_empty_disposed():
 # def test_Repeat_Observable_RepeatCount_Infinite():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
 #     results = scheduler.start_with_create(function () {
 #         return xs.repeat(3)
     
@@ -867,7 +868,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
 #     results = scheduler.start_with_create(function () {
 #         return xs.repeat(3)
     
@@ -913,7 +914,7 @@ def test_empty_disposed():
 # def test_Retry_Observable_Basic():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
 #     results = scheduler.start_with_create(function () {
 #         return xs.retry()
     
@@ -924,7 +925,7 @@ def test_empty_disposed():
 # def test_Retry_Observable_Infinite():
 #     results, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
 #     results = scheduler.start_with_create(function () {
 #         return xs.retry()
     
@@ -936,7 +937,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
 #     results = scheduler.start_with_dispose(function () {
 #         return xs.retry()
 #     }, 1100)
@@ -983,7 +984,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     scheduler = TestScheduler()
 #     ex = 'ex'
-#     xs = scheduler.createColdObservable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
+#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
 #     results = scheduler.start_with_create(function () {
 #         return xs.retry(3)
     
@@ -995,7 +996,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     scheduler = TestScheduler()
 #     ex = 'ex'
-#     xs = scheduler.createColdObservable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
+#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
 #     results = scheduler.start_with_dispose(function () {
 #         return xs.retry(3)
 #     }, 231)
@@ -1007,7 +1008,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     scheduler = TestScheduler()
 #     ex = 'ex'
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
 #     results = scheduler.start_with_create(function () {
 #         return xs.retry(3)
     
@@ -1019,7 +1020,7 @@ def test_empty_disposed():
 #     ex, results, scheduler, xs
 #     scheduler = TestScheduler()
 #     ex = 'ex'
-#     xs = scheduler.createColdObservable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
+#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
 #     results = scheduler.start_with_create(function () {
 #         return xs.retry(3)
     
@@ -1105,3 +1106,6 @@ def test_empty_disposed():
 #         return Observable.repeat(42, -1, scheduler)
 #     }, 207)
 #     results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
+
+if __name__ == '__main__':
+    test_repeat_observable_basic()
