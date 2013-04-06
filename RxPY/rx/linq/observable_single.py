@@ -42,6 +42,52 @@ def concat(sources):
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return AnonymousObservable(subscribe)
 
+def catch_exception(sources):
+    def subscribe(observer):
+        e = iter(sources)
+        is_disposed = False
+        last_exception = None
+        subscription = SerialDisposable()
+        immediate_scheduler = ImmediateScheduler()
+
+        def action(action1, state=None):
+            current = None
+            
+            def on_error(exn):
+                nonlocal last_exception
+                last_exception = exn
+                action1()
+
+            if is_disposed:
+                return
+            try:
+                current = next(e)
+            except StopIteration:
+                if last_exception:
+                    observer.on_error(last_exception)
+                else:
+                    observer.on_completed()    
+            except Exception as ex:
+                observer.on_error(ex)
+            else:
+                d = SingleAssignmentDisposable()
+                subscription.disposable = d
+                
+                d.disposable = current.subscribe(
+                    observer.on_next,
+                    on_error,
+                    observer.on_completed
+                )
+
+        cancelable = immediate_scheduler.schedule_recursive(action)
+        
+        def dispose():
+            nonlocal is_disposed
+            is_disposed = True
+        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+    return AnonymousObservable(subscribe)
+
+
 class ObservableSingle(Observable, metaclass=ObservableMeta):
     
     def __init__(self, subscribe):
@@ -65,7 +111,7 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
 
         return concat(Enumerable.repeat(self, repeat_count))
 
-    def retry(self, retry_count):
+    def retry(self, retry_count=None):
         """Repeats the source observable sequence the specified number of times
         or until it successfully terminates. If the retry count is not 
         specified, it retries indefinitely.
@@ -80,4 +126,4 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         sequence repeatedly until it terminates successfully. 
         """
     
-        return Enumerable.repeat(self, retry_count).catch_exception()
+        return catch_exception(Enumerable.repeat(self, retry_count))

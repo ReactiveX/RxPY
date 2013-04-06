@@ -634,12 +634,11 @@ def test__subscribe_to_enumerable_finite():
 #     results.messages.assert_equal(on_error(200, ex))
 
 
-# def test_CreateWithDisposable_Exception():
-#     raises(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             raise Exception('ex')
-#         .subscribe()
-    
+def test_create_with_disposable_exception():
+    try:
+        return Observable.create_with_disposable(lambda: o, _raise('ex')).subscribe()
+    except RxException:
+        pass
 
 
 # def test_CreateWithDisposable_Dispose():
@@ -831,49 +830,37 @@ def test_repeat_observable_error():
     
 
 
-# def test_Repeat_Observable_RepeatCount_Basic():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat(3)
+def test_repeat_observable_repeat_count_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
+    results = scheduler.start(lambda: xs.repeat(3))
     
-#     results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_completed(260))
-#     xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
+    results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_completed(260))
+    xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
 
+def test_repeat_observable_repeat_count_dispose():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
+    results = scheduler.start(lambda: xs.repeat(3), disposed=231)
+    results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2))
+    return xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
 
-# def test_Repeat_Observable_RepeatCount_Dispose():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
-#     results = scheduler.start_with_dispose(function () {
-#         return xs.repeat(3)
-#     }, 231)
-#     results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2))
-#     return xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
-
-
-# def test_Repeat_Observable_RepeatCount_Infinite():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat(3)
+def test_repeat_observable_repeat_count_infinite():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+    results = scheduler.start(lambda: xs.repeat(3))
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
-#     return xs.subscriptions.assert_equal(subscribe(200, 1000))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
+    return xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-
-# def test_Repeat_Observable_RepeatCount_Error():
-#     ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
-#     results = scheduler.start_with_create(function () {
-#         return xs.repeat(3)
+def test_repeat_observable_repeat_count_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
+    results = scheduler.start(lambda: xs.repeat(3))
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_error(450, ex))
-#     return xs.subscriptions.assert_equal(subscribe(200, 450))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_error(450, ex))
+    return xs.subscriptions.assert_equal(subscribe(200, 450))
 
 
 # def test_Repeat_Observable_RepeatCount_Throws():
@@ -909,8 +896,6 @@ def test_repeat_observable_error():
 #     raises(function () {
 #         return xss.subscribe()
     
-
-
 def test_retry_observable_basic():
     scheduler = TestScheduler()
     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
@@ -919,29 +904,21 @@ def test_retry_observable_basic():
     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_completed(450))
     xs.subscriptions.assert_equal(subscribe(200, 450))
 
-
-# def test_Retry_Observable_Infinite():
-#     results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
-#     results = scheduler.start_with_create(function () {
-#         return xs.retry()
+def test_retry_observable_infinite():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+    results = scheduler.start(lambda: xs.retry())
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
-#     return xs.subscriptions.assert_equal(subscribe(200, 1000))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
+    return xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-
-# def test_Retry_Observable_Error():
-#     ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
-#     results = scheduler.start_with_dispose(function () {
-#         return xs.retry()
-#     }, 1100)
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_next(550, 1), on_next(600, 2), on_next(650, 3), on_next(800, 1), on_next(850, 2), on_next(900, 3), on_next(1050, 1))
-#     return xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1100))
-
+def test_retry_observable_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_error(250, ex))
+    results = scheduler.start(lambda: xs.retry(), disposed=1100)
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_next(550, 1), on_next(600, 2), on_next(650, 3), on_next(800, 1), on_next(850, 2), on_next(900, 3), on_next(1050, 1))
+    return xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1100))
 
 # def test_Retry_Observable_Throws():
 #     d, scheduler1, scheduler2, scheduler3, xs, xss, ys, zs
@@ -978,16 +955,14 @@ def test_retry_observable_basic():
     
 
 
-# def test_Retry_Observable_RetryCount_Basic():
-#     ex, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
-#     results = scheduler.start_with_create(function () {
-#         return xs.retry(3)
+def test_retry_observable_retry_count_basic():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_error(20, ex))
+    results = scheduler.start(lambda: xs.retry(3))
     
-#     results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_error(260, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
+    results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_error(260, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
 
 
 # def test_Retry_Observable_RetryCount_Dispose():
@@ -1002,28 +977,23 @@ def test_retry_observable_basic():
 #     xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
 
 
-# def test_Retry_Observable_RetryCount_Dispose():
-#     ex, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
-#     results = scheduler.start_with_create(function () {
-#         return xs.retry(3)
+def test_retry_observable_retry_count_dispose():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
+    results = scheduler.start(lambda: xs.retry(3))
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
+    xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-
-# def test_Retry_Observable_RetryCount_Dispose():
-#     ex, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
-#     results = scheduler.start_with_create(function () {
-#         return xs.retry(3)
+def test_retry_observable_retry_count_dispose():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))
+    results = scheduler.start(lambda: xs.retry(3))
     
-#     results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_completed(450))
-#     xs.subscriptions.assert_equal(subscribe(200, 450))
+    results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_completed(450))
+    xs.subscriptions.assert_equal(subscribe(200, 450))
 
 
 # def test_Retry_Observable_RetryCount_Throws():

@@ -2,7 +2,7 @@ from datetime import timedelta
 from rx.disposables import SingleAssignmentDisposable
 
 def default_sub_comparer(x, y):
-    print ("default_sub_comparer", x, y)
+    #print ("default_sub_comparer", x, y)
     return 0 if x == y else 1 if x > y else -1
 
 class ScheduledItem(object):
