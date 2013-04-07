@@ -1,4 +1,5 @@
 from rx import Observable, Observer
+from rx.abstractobserver import AbstractObserver
 from rx.concurrency import ImmediateScheduler
 
 from .observer import Observer
@@ -26,7 +27,7 @@ class Notification(object):
         
         Returns result produced by the observation.
         """
-        if isinstance(on_next, Observer):
+        if isinstance(on_next, AbstractObserver):
             return self._accept_observable(on_next)
         else:
             return self._accept(on_next, on_error, on_completed)
@@ -83,6 +84,7 @@ class Notification(object):
     
 class ON(Notification):
     """Represents an OnNext notification to an observer."""
+    
     def __init__(self, value):
         """Constructs a notification of a new value."""
         

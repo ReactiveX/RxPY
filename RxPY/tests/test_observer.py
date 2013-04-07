@@ -456,3 +456,6 @@ def test_observer_checked_reentrant_completed():
 
     o.on_completed()
     assert(1 == n)
+
+if __name__ == '__main__':
+    test_to_notifier_forwards()

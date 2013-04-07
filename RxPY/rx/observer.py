@@ -9,18 +9,9 @@ class Observer(AbstractObserver):
     def __init__(self, on_next=None, on_error=None, on_completed=None):
         super(Observer, self).__init__()
 
-        self._on_next = on_next or noop
-        self._on_error = on_error or default_error
-        self._on_completed = on_completed or noop
-
-    def next(self, value):
-        self._on_next(value)
-
-    def completed(self):
-        self._on_completed()
-
-    def error(self, ex):
-        self._on_error(ex)
+        self.next = on_next or noop
+        self.error = on_error or default_error
+        self.completed = on_completed or noop
  
     def to_notifier(self):
         """Creates a notification callback from an observer.

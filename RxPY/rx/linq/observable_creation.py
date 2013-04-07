@@ -15,7 +15,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def create_with_disposable(cls, subscribe):
-        return cls(subscribe)
+        return AnonymousObservable(subscribe)
 
     @classmethod
     def defer(cls, observable_factory):
@@ -36,7 +36,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
             try:
                 result = observable_factory()
             except Exception as ex:
-                return Observable.throw(ex).subscribe(observer)
+                return Observable.throw_exception(ex).subscribe(observer)
             
             return result.subscribe(observer)
         return AnonymousObservable(subscribe)

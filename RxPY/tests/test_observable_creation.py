@@ -1,6 +1,6 @@
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
-from rx.disposables import SerialDisposable
+from rx.disposables import Disposable, SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -169,59 +169,53 @@ def test__subscribe_to_enumerable_finite():
                         on_completed(206)
                     )
 
+def test_generate_finite():
+    scheduler = TestScheduler()
 
-# def test_Generate_Finite():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.generate(0, function (x) {
-#             return x <= 3
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, scheduler)
+    def create():
+        return Observable.generate(0, 
+            lambda x: x <= 3,
+            lambda x: x + 1,
+            lambda x: x,
+            scheduler)
     
-#     results.messages.assert_equal(
-#                         on_next(201, 0),
-#                         on_next(202, 1),
-#                         on_next(203, 2),
-#                         on_next(204, 3),
-#                         on_completed(205)
-#                     )
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(
+                        on_next(201, 0),
+                        on_next(202, 1),
+                        on_next(203, 2),
+                        on_next(204, 3),
+                        on_completed(205)
+                    )
 
+def test_generate_throw_condition():
+    scheduler = TestScheduler()
+    ex = 'ex'
 
-# def test_Generate_raise Exception(Cond)ition():
-#     ex, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.generate(0, function (x) {
-#             raise Exception(ex
-#  )       }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, scheduler)
+    def create():
+        return Observable.generate(0, 
+            lambda x: _raise('ex'),
+            lambda x: x + 1,
+            lambda x: x,
+            scheduler)
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_error(201, ex))
+    results.messages.assert_equal(on_error(201, ex))
 
+def test_generate_throw_result_selector():
+    scheduler = TestScheduler()
+    ex = 'ex'
 
-# def test_Generate_raise Exception(Resu)ltSelector():
-#     ex, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.generate(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             raise Exception(ex
-#  )       }, scheduler)
+    def create():
+        return Observable.generate(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: _raise('ex'),
+            scheduler)
     
-#     results.messages.assert_equal(on_error(201, ex))
-
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(201, ex))
 
 # def test_Generate_raise Exception(Iter)ate():
 #     ex, results, scheduler
@@ -242,23 +236,21 @@ def test__subscribe_to_enumerable_finite():
 #                     )
 
 
-# def test_Generate_Dispose():
-#     ex, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     results = scheduler.start_with_dispose(function () {
-#         return Observable.generate(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, scheduler)
-#     }, 203)
-#     results.messages.assert_equal(
-#                         on_next(201, 0),
-#                         on_next(202, 1))
+def test_generate_dispose():
+    scheduler = TestScheduler()
+    ex = 'ex'
 
+    def create():
+        return Observable.generate(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            scheduler)
+
+    results = scheduler.start(create, disposed=203)
+    results.messages.assert_equal(
+                        on_next(201, 0),
+                        on_next(202, 1))
 
 # def test_Defer_Complete():
 #     invoked, results, scheduler, xs
@@ -282,52 +274,61 @@ def test__subscribe_to_enumerable_finite():
 #     return xs.subscriptions.assert_equal(subscribe(200, 400))
 
 
-# def test_Defer_Error():
-#     ex, invoked, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     invoked = 0
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.defer(function () {
-#             invoked++
-#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
-#             return xs
+def test_defer_error():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = None
+    ex = 'ex'
+    
+    def create():
+        def defer():
+            nonlocal invoked, xs
+            invoked += 1
+            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+            return xs
+        return Observable.defer(defer)
+            
+    results = scheduler.start(create)
         
+    results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
+    assert (1 == invoked)
+    return xs.subscriptions.assert_equal(subscribe(200, 400))
+
+def test_defer_dispose():
+    scheduler = TestScheduler()
+    invoked = 0
+    xs = None
+
+    def create():
+        def defer():
+            nonlocal invoked, xs
+            invoked += 1
+            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked), on_next(1100, 1000))
+            return xs
+        return Observable.defer(defer)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(300, 200), on_next(400, 1))
+    assert(1 == invoked)
+    return xs.subscriptions.assert_equal(subscribe(200, 1000))
+
+
+def test_defer_throw():
+    scheduler = TestScheduler()
+    invoked = 0
+    ex = 'ex'
+
+    def create():
+        def defer():
+            nonlocal invoked
+            invoked += 1
+            raise Exception(ex)
+
+        return Observable.defer(defer)
+    results = scheduler.start(create)       
     
-#     results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
-#     equal(1, invoked)
-#     return xs.subscriptions.assert_equal(subscribe(200, 400))
-
-
-# def test_Defer_Dispose():
-#     invoked, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     invoked = 0
-#     results = scheduler.start_with_create(function () {
-#         return Observable.defer(function () {
-#             invoked++
-#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked), on_next(1100, 1000))
-#             return xs
-        
-    
-#     results.messages.assert_equal(on_next(300, 200), on_next(400, 1))
-#     equal(1, invoked)
-#     return xs.subscriptions.assert_equal(subscribe(200, 1000))
-
-
-# def test_Defer_raise Exception():
-#  )   ex, invoked, results, scheduler
-#     scheduler = TestScheduler()
-#     invoked = 0
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.defer(function () {
-#             invoked++
-#             raise Exception(ex
-#  )       
-    
-#     results.messages.assert_equal(on_error(200, ex))
-#     return equal(1, invoked)
+    results.messages.assert_equal(on_error(200, ex))
+    assert(1 == invoked)
 
 
 # def test_Using_Null():
@@ -431,7 +432,7 @@ def test__subscribe_to_enumerable_finite():
 #     disposable.disposes.assert_equal(200, 1000)
 
 
-# def test_Using_raise Exception(esou)rceSelector():
+# def test_Using_ThrowResourceSelector():
 #     createInvoked, disposeInvoked, ex, results, scheduler
 #     scheduler = TestScheduler()
 #     disposeInvoked = 0
@@ -451,7 +452,7 @@ def test__subscribe_to_enumerable_finite():
 #     return equal(1, disposeInvoked)
 
 
-# def test_Using_raise Exception(esou)rceUsage():
+# def test_using_throw_resource_usage():
 #     createInvoked, disposable, disposeInvoked, ex, results, scheduler
 #     scheduler = TestScheduler()
 #     disposeInvoked = 0
@@ -474,59 +475,57 @@ def test__subscribe_to_enumerable_finite():
 #     return disposable.disposes.assert_equal(200, 200)
 
 
-# def test_Create_Next():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.create(function (o) {
-#             o.on_next(1)
-#             o.on_next(2)
-#             return function () { }
-        
+def test_create_next():
+    scheduler = TestScheduler()
+    def create():
+        def subscribe(o):
+            o.on_next(1)
+            o.on_next(2)
+            return lambda: None
+        return Observable.create(subscribe)
+
+    results = scheduler.start(create)        
+    results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
+
+def test_create_completed():
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
+    def create():
+        def subscribe(o):
+            o.on_completed()
+            o.on_next(100)
+            o.on_error('ex')
+            o.on_completed()
+            return lambda: None
+        return Observable.create(subscribe)
+      
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(200))
+
+def test_create_error():
+    scheduler = TestScheduler()
+    ex = 'ex'
+
+    def create():
+        def subscribe(o):
+            o.on_error(ex)
+            o.on_next(100)
+            o.on_error('foo')
+            o.on_completed()
+            return lambda: None
+        return Observable.create(subscribe)
+
+    results = scheduler.start(create)      
+    results.messages.assert_equal(on_error(200, ex))
 
 
-# def test_Create_Completed():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.create(function (o) {
-#             o.on_completed()
-#             o.on_next(100)
-#             o.on_error('ex')
-#             o.on_completed()
-#             return function () { }
-        
-    
-#     results.messages.assert_equal(on_completed(200))
+def test_create_exception():
+    try:
+        return Observable.create(lambda o: _raise('ex')).subscribe()
+    except RxException:
+        pass
 
-
-# def test_Create_Error():
-#     ex, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.create(function (o) {
-#             o.on_error(ex)
-#             o.on_next(100)
-#             o.on_error('foo')
-#             o.on_completed()
-#             return function () { }
-        
-    
-#     results.messages.assert_equal(on_error(200, ex))
-
-
-# def test_Create_Exception():
-#     raises(function () {
-#         return Observable.create(function (o) {
-#             raise Exception('ex')
-#         .subscribe()
-    
-
-
-# def test_Create_Dispose():
+# def test_create_dispose():
 #     results, scheduler
 #     scheduler = TestScheduler()
 #     results = scheduler.start_with_create(function () {
@@ -563,76 +562,73 @@ def test__subscribe_to_enumerable_finite():
 #     results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4))
 
 
-# def test_Create_Observerraise Exception(():
-# )    raises(function () {
-#         return Observable.create(function (o) {
-#             o.on_next(1)
-#             return function () { }
-#         .subscribe(function (x) {
-#             raise Exception('ex')
-        
+def test_create_observer_throws():
+    def subscribe(o):
+        o.on_next(1)
+        return lambda: None
+    try:
+        return Observable.create(subscribe).subscribe(lambda x: _raise('ex'))
+    except RxException:
+        pass
+
+    def subscribe2(o):
+        o.on_error('exception')
+        return lambda: None
+    try:
+        return Observable.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+    except RxException:
+        pass
     
-#     raises(function () {
-#         return Observable.create(function (o) {
-#             o.on_error('exception')
-#             return function () { }
-#         .subscribe(function (x) { }, function (ex) {
-#             raise Exception('ex')
+    def subscribe3(o):
+        o.on_completed()
+        return lambda: None
+    try:
+        return Observable.create(subscribe3).subscribe(on_complete=lambda: _raise('ex'))
+    except RxException:
+        pass
+
+def test_create_with_disposable_next():
+    scheduler = TestScheduler()
+    def create():
+        def subscribe(o):
+            o.on_next(1)
+            o.on_next(2)
+            return Disposable.empty()
+        return Observable.create_with_disposable(subscribe)
+    results = scheduler.start(create)
+
+    results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
+
+
+def test_create_with_disposable_completed():
+    scheduler = TestScheduler()
+    def create():
+        def subscribe(o):
+            o.on_completed()
+            o.on_next(100)
+            o.on_error('ex')
+            o.on_completed()
+            return Disposable.empty()
+        return Observable.create_with_disposable(subscribe)
         
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(200))
+
+def test_create_with_disposable_error():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    def create():
+        def subscribe(o):
+            o.on_error(ex)
+            o.on_next(100)
+            o.on_error('foo')
+            o.on_completed()
+            return Disposable.empty()
+
+        return Observable.create_with_disposable(subscribe)
+    results = scheduler.start(create)
     
-#     raises(function () {
-#         return Observable.create(function (o) {
-#             o.on_completed()
-#             return function () { }
-#         .subscribe(function (x) { }, function (ex) { }, function () {
-#             raise Exception('ex')
-        
-    
-
-
-# def test_CreateWithDisposable_Next():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_next(1)
-#             o.on_next(2)
-#             return Rx.Disposable.empty
-        
-    
-#     results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
-
-
-# def test_CreateWithDisposable_Completed():
-#     results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_completed()
-#             o.on_next(100)
-#             o.on_error('ex')
-#             o.on_completed()
-#             return Rx.Disposable.empty
-        
-    
-#     results.messages.assert_equal(on_completed(200))
-
-
-# def test_CreateWithDisposable_Error():
-#     ex, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.createWithDisposable(function (o) {
-#             o.on_error(ex)
-#             o.on_next(100)
-#             o.on_error('foo')
-#             o.on_completed()
-#             return Rx.Disposable.empty
-        
-    
-#     results.messages.assert_equal(on_error(200, ex))
-
+    results.messages.assert_equal(on_error(200, ex))
 
 def test_create_with_disposable_exception():
     try:
@@ -1077,4 +1073,4 @@ def test_repeat_value():
     results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
 
 if __name__ == '__main__':
-    test_repeat_value_count_zero()
+    test_defer_dispose()
