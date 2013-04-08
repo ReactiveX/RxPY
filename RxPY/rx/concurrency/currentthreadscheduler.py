@@ -2,7 +2,8 @@
 
 import time
 from datetime import timedelta
-from queue import PriorityQueue
+
+from rx.internal import PriorityQueue
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
@@ -12,16 +13,15 @@ class Trampoline(object):
         self.queue = PriorityQueue(4)
 
     def enqueue(self, item):
-        #print "Trampoline:enqueue"
-        return self.queue.put(item)
+        return self.queue.enqueue(item)
 
     def dispose(self):
         self.queue = None
 
     def run(self):
         #print "Trampoline:run"
-        while self.queue.qsize() > 0:
-            item = self.queue.get()
+        while self.queue.length > 0:
+            item = self.queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - Scheduler.now()
                 while diff > timedelta(0):
@@ -45,13 +45,14 @@ class CurrentThreadScheduler(Scheduler):
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
         
-        if not self.queue:
+        if self.queue is None:
             self.queue = Trampoline()
             try:
                 self.queue.enqueue(si)
                 self.queue.run()
             finally:
                 self.queue.dispose()
+                self.queue = None
             
         else:
             self.queue.enqueue(si)
