@@ -2,7 +2,7 @@ from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import ImmediateScheduler
+from rx.concurrency import immediate_scheduler
 
 from rx.internal import Enumerable
 
@@ -11,7 +11,6 @@ def concat(sources):
         e = iter(sources)
         is_disposed = False
         subscription = SerialDisposable()
-        immediate_scheduler = ImmediateScheduler()
 
         def action(action1, state=None):
             current = None
@@ -48,7 +47,6 @@ def catch_exception(sources):
         is_disposed = False
         last_exception = None
         subscription = SerialDisposable()
-        immediate_scheduler = ImmediateScheduler()
 
         def action(action1, state=None):
             current = None

@@ -62,10 +62,12 @@ class CurrentThreadScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
-        return queue == None
+        return self.queue == None
     
     def ensure_trampoline(self, action):
         if self.queue is None:
             return self.schedule(action)
         else:
             return action(self, None)
+
+current_thread_scheduler = CurrentThreadScheduler()

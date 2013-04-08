@@ -1,6 +1,6 @@
 from rx import Observable, Observer
 from rx.abstractobserver import AbstractObserver
-from rx.concurrency import ImmediateScheduler
+from rx.concurrency import immediate_scheduler
 
 from .observer import Observer
 from .anonymousobservable import AnonymousObservable
@@ -43,7 +43,7 @@ class Notification(object):
         notification upon subscription.
         """
         notification = self
-        scheduler = scheduler or ImmediateScheduler()
+        scheduler = scheduler or immediate_scheduler
 
         def subscribe(observer):
             def action(scheduler, state):

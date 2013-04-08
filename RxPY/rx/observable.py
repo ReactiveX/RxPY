@@ -1,4 +1,3 @@
-from .concurrency import ImmediateScheduler, CurrentThreadScheduler
 from .observer import Observer
 
 class ObservableMeta(type):

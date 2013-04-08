@@ -1,7 +1,7 @@
 from rx import Observable, AnonymousObservable
 
 def default_comparer(x, y):
-    if not y.equals:
+    if not hasattr(y, 'equals'):
         return x == y
     
     return x.equals(y)

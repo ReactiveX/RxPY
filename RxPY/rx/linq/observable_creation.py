@@ -2,7 +2,7 @@ from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
-from rx.concurrency import ImmediateScheduler, CurrentThreadScheduler
+from rx.concurrency import immediate_scheduler, current_thread_scheduler
 
 class ObservableCreation(Observable, metaclass=ObservableMeta):
 
@@ -54,7 +54,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         returs an observable sequence with no elements.
         """
 
-        scheduler = scheduler or ImmediateScheduler()
+        scheduler = scheduler or immediate_scheduler
     
         def subscribe(observer):
             def action(scheduler, state):
@@ -78,7 +78,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         given enumerable sequence.
         """
 
-        scheduler = scheduler or CurrentThreadScheduler()
+        scheduler = scheduler or current_thread_scheduler
 
         def subscribe(observer):
             count = 0
@@ -116,7 +116,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         Returns the generated sequence.
         """
 
-        scheduler = scheduler or CurrentThreadScheduler()
+        scheduler = scheduler or current_thread_scheduler
 
         def subscribe(observer):
             first = True
@@ -152,6 +152,11 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
     
     @classmethod
     def never(cls):
+        """Returns a non-terminating observable sequence, which can be used to 
+        denote an infinite duration (e.g. when using reactive joins).
+     
+        Returns an observable sequence whose observers will never get called.
+        """
         def subscribe(observer):
             return Disposable.empty()
 
@@ -159,7 +164,23 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def range(cls, start, count, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler()
+        """Generates an observable sequence of integral numbers within a 
+        specified range, using the specified scheduler to send out observer 
+        messages.
+     
+        1 - res = Rx.Observable.range(0, 10);
+        2 - res = Rx.Observable.range(0, 10, Rx.Scheduler.timeout);
+    
+        Keyword arguments:
+        start -- The value of the first integer in the sequence.
+        count -- The number of sequential integers to generate.
+        scheduler -- [Optional] Scheduler to run the generator loop on. If not 
+            specified, defaults to Scheduler.currentThread.
+    
+        Returns an observable sequence that contains a range of sequential 
+        integral numbers.
+        """
+        scheduler = scheduler or current_thread_scheduler
         
         def subscribe(observer):
             def action(scheduler, i):
@@ -196,7 +217,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         specified number of times.
         """
 
-        scheduler = scheduler or CurrentThreadScheduler()
+        scheduler = scheduler or current_thread_scheduler
         if repeat_count == -1:
             repeat_count = None
         
@@ -206,7 +227,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def return_value(cls, value, scheduler=None):
-        scheduler = scheduler or ImmediateScheduler()
+        scheduler = scheduler or immediate_scheduler
 
         def subscribe(observer):
             def action(scheduler, state=None):
@@ -218,7 +239,21 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def throw_exception(cls, exception, scheduler=None):
-        scheduler = scheduler or ImmediateScheduler()
+        """Returns an observable sequence that terminates with an exception, 
+        using the specified scheduler to send out the single OnError message.
+    
+        1 - res = rx.Observable.throw_exception(new Error('Error'));
+        2 - res = rx.Observable.throw_exception(new Error('Error'), Rx.Scheduler.timeout);
+     
+        Keyword arguments:
+        exception -- An object used for the sequence's termination.
+        scheduler -- Scheduler to send the exceptional termination call on. If
+            not specified, defaults to ImmediateScheduler.
+    
+        Returns the observable sequence that terminates exceptionally with the 
+        specified exception object.
+        """
+        scheduler = scheduler or immediate_scheduler
         
         exception = Exception(exception) if type(exception) is Exception else exception
 
@@ -231,6 +266,19 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def using(cls, resource_factory, observable_factory):
+        """Constructs an observable sequence that depends on a resource object,
+        whose lifetime is tied to the resulting observable sequence's lifetime.
+      
+        1 - res = Rx.Observable.using(function () { return new AsyncSubject(); }, function (s) { return s; });
+    
+        Keyword arguments:
+        resource_factory -- Factory function to obtain a resource object.
+        observable_factory -- Factory function to obtain an observable sequence
+            that depends on the obtained resource.
+     
+        Returns an observable sequence whose lifetime controls the lifetime of 
+        the dependent resource object.
+        """
         def subscribe(observer):
             disposable = Disposable.empty()
             try:
@@ -240,7 +288,8 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
                 
                 source = observable_factory(resource)
             except Exception as exception:
-                return CompositeDisposable(Observable.throw(exception).subscribe(observer), disposable)
+                d = Observable.throw_exception(exception).subscribe(observer)
+                return CompositeDisposable(d, disposable)
             
             return CompositeDisposable(source.subscribe(observer), disposable)
         return AnonymousObservable(subscribe)

@@ -1,3 +1,5 @@
+from rx.concurrency import current_thread_scheduler
+
 from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
 
@@ -13,8 +15,8 @@ class AnonymousObservable(Observable):
         """
         def _subscribe(observer):
             auto_detach_observer = AutoDetachObserver(observer)
-            if False: #current_thread_scheduler.schedule_required()):
-                def action():
+            if current_thread_scheduler.schedule_required():
+                def action(scheduler, state=None):
                     try:
                         auto_detach_observer.disposable = subscribe(auto_detach_observer)
                     except Exception as ex:

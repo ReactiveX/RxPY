@@ -2,7 +2,6 @@ from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable
-from rx.concurrency import ImmediateScheduler
 
 class ObservableMultiple(Observable, metaclass=ObservableMeta):
     def merge_observable(self):

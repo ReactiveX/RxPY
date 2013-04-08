@@ -46,6 +46,7 @@
     <Compile Include="rx\subjects\innersubscription.py" />
     <Compile Include="rx\subjects\subject.py" />
     <Compile Include="rx\subjects\__init__.py" />
+    <Compile Include="rx\testing\mockdisposable.py" />
     <Compile Include="rx\testing\mockobserver.py" />
     <Compile Include="rx\testing\reactivetest.py" />
     <Compile Include="rx\testing\reactive_assert.py" />
