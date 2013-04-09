@@ -1,4 +1,4 @@
-from .observer import Observer
+from .observer import Observer, AbstractObserver
 
 class ObservableMeta(type):
     def __new__(cls, name, bases, namespace):
@@ -39,7 +39,7 @@ class Observable(object):
         on_error -- [Optional] Action to invoke upon exceptional termination of the observable sequence.
         on_completed -- [Optional] Action to invoke upon graceful termination of the observable sequence.
         """
-        if isinstance(on_next, Observer):
+        if isinstance(on_next, AbstractObserver):
             observer = on_next
         else:
             observer = Observer(on_next, on_error, on_completed)
