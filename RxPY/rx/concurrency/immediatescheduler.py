@@ -2,8 +2,6 @@ from datetime import timedelta
 
 from .scheduler import Scheduler
 
-#from datetime import datetime
-
 # Immediate Scheduler
 SCHEDULER_NO_BLOCK_ERROR = "Scheduler is not allowed to block the thread"
 
