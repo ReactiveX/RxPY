@@ -35,7 +35,7 @@ class Trampoline(object):
 
 class CurrentThreadScheduler(Scheduler):    
     def __init__(self):
-        self.queue = None
+        self.queue = 0 # Must be different from None, FIXME: 
 
     def schedule(self, action, state=None):
         #print "CurrentThreadScheduler:schedule"
@@ -45,7 +45,7 @@ class CurrentThreadScheduler(Scheduler):
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
         
-        if self.queue is None:
+        if not self.queue:
             self.queue = Trampoline()
             try:
                 self.queue.enqueue(si)
@@ -63,7 +63,7 @@ class CurrentThreadScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
-        return self.queue == None
+        return self.queue is None
     
     def ensure_trampoline(self, action):
         if self.queue is None:
