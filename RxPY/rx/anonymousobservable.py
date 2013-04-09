@@ -20,7 +20,7 @@ class AnonymousObservable(Observable):
                     try:
                         auto_detach_observer.disposable = subscribe(auto_detach_observer)
                     except Exception as ex:
-                        if not auto_detach_observer.fail(): #(ex):
+                        if not auto_detach_observer.fail(ex):
                             raise ex
                 current_thread_scheduler.schedule(action)
             else:
