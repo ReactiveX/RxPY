@@ -1,5 +1,5 @@
 from rx import Observer
-from rx.notification import ON, OE, OC
+from rx.notification import OnNext, OnError, OnCompleted
 
 class MyObserver(Observer):
     def on_next(self, value):
@@ -44,16 +44,16 @@ def test_to_observer_notification_on_completed():
 
 def test_to_notifier_forwards():
     obsn = MyObserver()
-    obsn.to_notifier()(ON(42))
+    obsn.to_notifier()(OnNext(42))
     assert(obsn.has_on_next == 42)
 
     ex = 'ex'
     obse = MyObserver()
-    obse.to_notifier()(OE(ex))
+    obse.to_notifier()(OnError(ex))
     assert(ex == obse.has_on_error)
 
     obsc = MyObserver()
-    obsc.to_notifier()(OC())
+    obsc.to_notifier()(OnCompleted())
     assert(obsc.has_on_completed)
 
 def test_create_on_next():

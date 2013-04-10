@@ -66,11 +66,11 @@ class Notification(object):
         """
         
         def _on_next(value):
-            return handler(ON(value))
+            return handler(OnNext(value))
         def _on_error(ex):
-            return handler(OE(ex))
+            return handler(OnError(ex))
         def _on_completed():
-            return handler(OC())
+            return handler(OnCompleted())
 
         return Observer(_on_next, _on_error, _on_completed)
 
@@ -82,13 +82,13 @@ class Notification(object):
     def __eq__(self, other):
         return self.equals(other)
     
-class ON(Notification):
+class OnNext(Notification):
     """Represents an OnNext notification to an observer."""
     
     def __init__(self, value):
         """Constructs a notification of a new value."""
         
-        super(ON, self).__init__()
+        super(OnNext, self).__init__()
         self.value = value
         self.has_value = True
         self.kind = 'N'
@@ -102,17 +102,17 @@ class ON(Notification):
     def __str__(self):
         return "OnNext(%s)" % self.value
     
-class OE(Notification):
+class OnError(Notification):
     """Represents an OnError notification to an observer."""
 
     def __init__(self, exception):
         """Constructs a notification of an exception."""
 
-        super(OE, self).__init__()
+        super(OnError, self).__init__()
         self.exception = exception
         self.kind = 'E'
 
-    def _accept(self, on_next, on_error):
+    def _accept(self, on_next, on_error, on_completed):
         return on_error(self.exception)
     
     def _accept_observable(self, observer):
@@ -121,13 +121,13 @@ class OE(Notification):
     def __str__(self):
         return "OnError(%s)" % self.exception
 
-class OC(Notification):
+class OnCompleted(Notification):
     """Represents an OnCompleted notification to an observer."""
 
     def __init__(self):
         """Constructs a notification of the end of a sequence."""
         
-        super(OC, self).__init__()
+        super(OnCompleted, self).__init__()
         self.kind = 'C'
 
     def _accept(self, on_next, on_error, on_completed):

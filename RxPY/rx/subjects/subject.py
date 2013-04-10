@@ -35,6 +35,7 @@ class Subject(Observable):
     
     def on_completed(self):
         """Notifies all subscribed observers of the end of the sequence."""
+        
         self.check_disposed()
         if not self.is_stopped:
             self.is_stopped = True

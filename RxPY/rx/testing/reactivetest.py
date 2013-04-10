@@ -1,7 +1,7 @@
 import math
 import types
 
-from rx.notification import Notification, ON, OE, OC
+from rx.notification import Notification, OnNext, OnError, OnCompleted
 from .recorded import Recorded
 from .subscription import Subscription
 
@@ -53,18 +53,18 @@ class ReactiveTest(object):
         if type(value) == types.FunctionType:
             return Recorded(ticks, OnNextPredicate(value))
         
-        return Recorded(ticks, ON(value))
+        return Recorded(ticks, OnNext(value))
     
     @classmethod
     def on_error(cls, ticks, exception):
         if type(exception) == types.FunctionType:
             return Recorded(ticks, OnErrorPredicate(exception))
         
-        return Recorded(ticks, OE(exception))
+        return Recorded(ticks, OnError(exception))
     
     @classmethod
     def on_completed(cls, ticks):
-        return Recorded(ticks, OC())
+        return Recorded(ticks, OnCompleted())
     
     @classmethod
     def subscribe(cls, start, end):
