@@ -396,76 +396,90 @@ def test_using_complete():
     disposable.disposes.assert_equal(200, 400)
 
 
-# def test_Using_Error():
-#     createInvoked, disposable, disposeInvoked, ex, results, scheduler, xs, _d
-#     scheduler = TestScheduler()
-#     disposeInvoked = 0
-#     createInvoked = 0
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.using(function () {
-#             disposeInvoked++
-#             disposable = MockDisposable(scheduler)
-#             return disposable
-#         }, function (d) {
-#             _d = d
-#             createInvoked++
-#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
-#             return xs
-        
+def test_using_error():
+    scheduler = TestScheduler()
+    dispose_invoked = 0
+    create_invoked = 0
+    ex = 'ex'
+    disposable = None
+    xs = None
+    _d = None
     
-#     strictEqual(disposable, _d)
-#     results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
-#     equal(1, createInvoked)
-#     equal(1, disposeInvoked)
-#     xs.subscriptions.assert_equal(subscribe(200, 400))
-#     disposable.disposes.assert_equal(200, 400)
-
-
-# def test_Using_Dispose():
-#     createInvoked, disposable, disposeInvoked, results, scheduler, xs, _d
-#     scheduler = TestScheduler()
-#     disposeInvoked = 0
-#     createInvoked = 0
-#     results = scheduler.start_with_create(function () {
-#         return Observable.using(function () {
-#             disposeInvoked++
-#             disposable = MockDisposable(scheduler)
-#             return disposable
-#         }, function (d) {
-#             _d = d
-#             createInvoked++
-#             xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
-#             return xs
-        
+    def create():
+        def create_resource():
+            nonlocal dispose_invoked, disposable
+            dispose_invoked += 1
+            disposable = MockDisposable(scheduler)
+            return disposable
+        def create_observable(d):
+            nonlocal _d, create_invoked, xs
+            _d = d
+            create_invoked += 1
+            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+            return xs
+        return Observable.using(create_resource, create_observable)
+    results = scheduler.start(create)
     
-#     strictEqual(disposable, _d)
-#     results.messages.assert_equal(on_next(300, 200))
-#     equal(1, createInvoked)
-#     equal(1, disposeInvoked)
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
-#     disposable.disposes.assert_equal(200, 1000)
+    assert (disposable == _d)
+    results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
+    assert(1 == create_invoked)
+    assert(1, dispose_invoked)
+    xs.subscriptions.assert_equal(subscribe(200, 400))
+    disposable.disposes.assert_equal(200, 400)
 
+def test_using_dispose():
+    disposable = None
+    xs = None 
+    _d = None
+    scheduler = TestScheduler()
+    dispose_invoked = 0
+    create_invoked = 0
 
-# def test_Using_ThrowResourceSelector():
-#     createInvoked, disposeInvoked, ex, results, scheduler
-#     scheduler = TestScheduler()
-#     disposeInvoked = 0
-#     createInvoked = 0
-#     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
-#         return Observable.using(function () {
-#             disposeInvoked++
-#             raise Exception(ex
-#  )       }, function (d) {
-#             createInvoked++
-#             return Observable.never()
-        
+    def create():
+        def create_resource():
+            nonlocal dispose_invoked, disposable
+            dispose_invoked += 1
+            disposable = MockDisposable(scheduler)
+            return disposable
+        def create_observable(d):
+            nonlocal _d, create_invoked, xs
+            _d = d
+            create_invoked += 1
+            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
+            return xs
+        return Observable.using(create_resource, create_observable)
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_error(200, ex))
-#     equal(0, createInvoked)
-#     return equal(1, disposeInvoked)
+    assert(disposable == _d)
+    results.messages.assert_equal(on_next(300, 200))
+    assert(1 == create_invoked)
+    assert(1 == dispose_invoked)
+    xs.subscriptions.assert_equal(subscribe(200, 1000))
+    disposable.disposes.assert_equal(200, 1000)
 
+
+def test_using_throw_resource_selector():
+    scheduler = TestScheduler()
+    dispose_invoked = 0
+    create_invoked = 0
+    ex = 'ex'
+    
+    def create():
+        def create_resource():
+            nonlocal dispose_invoked
+            dispose_invoked += 1
+            raise _raise(ex)
+        def create_observable(d):
+            nonlocal create_invoked
+            create_invoked += 1
+            return Observable.never()
+        
+        return Observable.using(create_resource, create_observable)
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_error(200, ex))
+    assert(0 == create_invoked)
+    assert(1 == dispose_invoked)
 
 def test_using_throw_resource_usage():
     scheduler = TestScheduler()
