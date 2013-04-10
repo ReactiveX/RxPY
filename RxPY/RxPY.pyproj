@@ -33,6 +33,7 @@
     <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
     <Compile Include="rx\concurrency\timeoutscheduler.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
+    <Compile Include="rx\disposables\scheduleddisposable.py" />
     <Compile Include="rx\internal\basic.py" />
     <Compile Include="rx\internal\enumerable.py" />
     <Compile Include="rx\internal\exceptions.py" />

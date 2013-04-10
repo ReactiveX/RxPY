@@ -1,7 +1,7 @@
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
 class ObservableConcurrency(Observable, metaclass=ObservableMeta):
     def observe_on(self, scheduler):
