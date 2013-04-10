@@ -25,7 +25,4 @@ def default_error(err):
     else:
         raise Exception(err)
 
-# Errors
-SEQUENCE_CONTAINS_NO_ELEMENTS = "Sequence contains no elements"
-ARGUMENT_OUT_OF_RANGE = "Argument out of range"
-OBJECT_IS_DISPOSED = "Object has been disposed"
+
