@@ -1,4 +1,5 @@
 from rx import Observable, Observer
+from rx.abstractobserver import AbstractObserver
 from rx.disposables import Disposable
 
 from .subscription import Subscription
@@ -33,7 +34,7 @@ class HotObservable(Observable):
     def subscribe(self, on_next, on_error=None, on_completed=None):
         print ("HotObservable:subscribe()")
 
-        if isinstance(on_next, Observer):
+        if isinstance(on_next, AbstractObserver):
             observer = on_next
         else: 
             observer = Observer(on_next, on_error, on_completed)

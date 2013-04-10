@@ -15,6 +15,8 @@ class AnonymousObservable(Observable):
         """
         def _subscribe(observer):
             auto_detach_observer = AutoDetachObserver(observer)
+
+            # Backup. Kick queue if there's anything left: TODO: can we move this somewhere else?
             if current_thread_scheduler.schedule_required():
                 def action(scheduler, state=None):
                     try:

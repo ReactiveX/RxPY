@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_observable_creation.py</StartupFile>
+    <StartupFile>tests\test_observable_concurrency.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy</WorkingDirectory>
@@ -39,10 +39,13 @@
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable_concurrency.py" />
     <Compile Include="rx\linq\observable_multiple.py" />
     <Compile Include="rx\linq\observable_single.py" />
     <Compile Include="rx\linq\observable_time.py" />
     <Compile Include="rx\notification.py" />
+    <Compile Include="rx\observeonobserver.py" />
+    <Compile Include="rx\scheduledobserver.py" />
     <Compile Include="rx\subjects\anonymoussubject.py" />
     <Compile Include="rx\subjects\innersubscription.py" />
     <Compile Include="rx\subjects\subject.py" />
@@ -76,6 +79,7 @@
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
     <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable_concurrency.py" />
     <Compile Include="tests\test_observable_creation.py" />
     <Compile Include="tests\test_observable_imperative.py" />
     <Compile Include="tests\test_observer.py" />
