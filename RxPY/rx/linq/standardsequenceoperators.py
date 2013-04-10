@@ -5,7 +5,8 @@ from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
 from rx.observable import ObservableMeta
 from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
-from rx.internal.basic import default_key_serializer, identity, ARGUMENT_OUT_OF_RANGE
+from rx.internal.basic import default_key_serializer, identity
+from rx.internal import ArgumentOutOfRangeException
 
 from .groupedobservable import GroupedObservable
 
@@ -282,7 +283,7 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         """        
         
         if count < 0:
-            raise Exception(ARGUMENT_OUT_OF_RANGE)
+            raise ArgumentOutOfRangeException()
         
         observable = self
 
@@ -357,7 +358,7 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         """
 
         if count < 0:
-            raise Exception(ARGUMENT_OUT_OF_RANGE)
+            raise ArgumentOutOfRangeException()
         
         if not count:
             return Observable.Empty(scheduler)
