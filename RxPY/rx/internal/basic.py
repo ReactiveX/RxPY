@@ -24,5 +24,3 @@ def default_error(err):
         raise err
     else:
         raise Exception(err)
-
-
