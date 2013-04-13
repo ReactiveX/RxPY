@@ -1,3 +1,4 @@
+from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
@@ -26,7 +27,6 @@ def concat(sources):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                print (current)
                 d.disposable = current.subscribe(
                     observer.on_next,
                     observer.on_error,
@@ -125,3 +125,61 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         """
     
         return catch_exception(Enumerable.repeat(self, retry_count))
+
+    def scan(self, seed=None, accumulator=None):
+        """Applies an accumulator function over an observable sequence and 
+        returns each intermediate result. The optional seed value is used as 
+        the initial accumulator value. For aggregation behavior with no 
+        intermediate results, see Observable.aggregate.
+        
+        1 - scanned = source.scan(lambda acc, x: acc + x)
+        2 - scanned = source.scan(0, lambda acc, x: acc + x)
+        
+        Keyword arguments:
+        seed -- [Optional] The initial accumulator value.
+        accumulator -- An accumulator function to be invoked on each element.
+        
+        Returns an observable sequence containing the accumulated values.</returns>        
+        """
+        has_seed = False
+        if not seed is None:
+            has_seed = True
+
+        source = self
+
+        def defer():
+            has_accumulation = False
+            accumulation = None
+
+            def projection(x):
+                nonlocal accumulation, has_accumulation
+
+                if has_accumulation:
+                    accumulation = accumulator(accumulation, x)
+                else:
+                    accumulation =  accumulator(seed, x) if has_seed else x
+                    has_accumulation = True
+                
+                return accumulation
+            return source.select(projection)
+        return Observable.defer(defer)
+
+    def start_with(self, *args, **kw):
+        """Prepends a sequence of values to an observable sequence with an 
+        optional scheduler and an argument list of values to prepend.
+        
+        1 - source.start_with(1, 2, 3)
+        2 - source.start_with(Rx.Scheduler.timeout, 1, 2, 3)
+        
+        Returns the source sequence prepended with the specified values.
+        """
+        
+        scheduler = kw.get("scheduler")
+        
+        if not scheduler and isinstance(args[0], Scheduler):
+            scheduler = args.pop(0)
+        else:
+            scheduler = immediate_scheduler
+
+        sequence = [Observable.from_array(args, scheduler), self]
+        return concat(Enumerable.for_each(sequence))

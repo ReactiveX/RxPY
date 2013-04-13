@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.subjects import Subject
 from rx.disposables import Disposable, CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
-from rx.concurrency import TimeoutScheduler
+from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
 
 # Rx Utils
 def add_ref(xs, r):
@@ -11,6 +13,62 @@ def add_ref(xs, r):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return AnonymousObservable(subscribe)
+
+def observable_timer_date(duetime, scheduler):
+    def subscribe(observer):
+        def action(scheduler, state):
+            observer.on_next(0)
+            observer.on_completed()
+        
+        return scheduler.schedule_absolute(duetime, action);
+    return AnonymousObservable(subscribe)
+
+def observable_timer_date_and_period(duetime, period, scheduler):
+    p = Scheduler.normalize(period)
+
+    def subscribe(observer):
+        count = 0
+        d = duetime
+
+        def action(scheduler, state):
+            nonlocal d, count
+            if p > 0:
+                now = scheduler.now()
+                d = d + p
+                if d <= now:
+                    d = now + p
+            
+            observer.on_ext(count)
+            count += 1
+            self(d)
+        
+        return scheduler.schedule_recursive(d, action)
+    return AnonymousObservable(subscribe)
+
+def observable_timer_timespan(duetime, scheduler):
+    d = Scheduler.normalize(duetime)
+
+    def subscribe(observer):
+        def action(scheduler, state):
+            observer.on_next(0)
+            observer.on_completed()
+    
+        return scheduler.schedule_relative(d, action)
+    return AnonymousObservable(subscribe)
+
+def observable_timer_timespan_and_period(duetime, period, scheduler):
+    if duetime == period:
+        def subcribe(observer):
+            def action(scheduler, state):
+                observer.on_next(count)
+                return count + 1
+            
+            return scheduler.schedule_periodic(period, action, state=0)
+        return AnonymousObservable(subscribe)
+
+    def defer():
+        return observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
+    return Observable.defer(defer)
 
 class ObservableTime(Observable, metaclass=ObservableMeta):
 
@@ -50,6 +108,21 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or TimeoutScheduler()
         return cls.observable_timer_timespan_and_period(period, period, scheduler)
 
+    @classmethod
+    def timer(cls, duetime, period=None, scheduler=None):
+        period = None
+        scheduler = scheduler or timeout_scheduler
+        
+        if isinstance(duetime, datetime) and period is None:
+            return observable_timer_date(duetime, scheduler);
+        
+        if isinstance(duetime, datetime) and period:
+            return observable_timer_date_and_period(duetime, period, scheduler);
+        
+        if period is None:
+            return observable_timer_timespan(duetime, scheduler)
+        
+        return observable_timer_timespan_and_period(duetime, period, scheduler)
 
     def observable_delay_timespan(self, duetime, scheduler):
         source = self
@@ -121,7 +194,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
     def observable_delay_date(self, duetime, scheduler):
         def defer():
             timespan = duetime - scheduler.now()
-            return observableDelayTimeSpan(timespan, scheduler)
+            return observable_delay_timespan(timespan, scheduler)
         
         return Observable.defer(defer)
 

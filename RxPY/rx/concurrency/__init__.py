@@ -2,4 +2,4 @@ from .scheduler import Scheduler
 from .immediatescheduler import ImmediateScheduler, immediate_scheduler
 from .currentthreadscheduler import CurrentThreadScheduler, current_thread_scheduler
 from .virtualtimescheduler import VirtualTimeScheduler
-from .timeoutscheduler import TimeoutScheduler
+from .timeoutscheduler import TimeoutScheduler, timeout_scheduler

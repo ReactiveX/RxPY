@@ -1,3 +1,5 @@
+import sys, traceback
+
 from rx import Observable, AnonymousObservable
 
 def default_comparer(x, y):
@@ -40,7 +42,8 @@ class ObservableTest(object):
                 print("{%s}-->{%s}" % (name, value))
                 observer.on_next(value)
             def on_error(ex):
-                print("{%s} error -->{%s}" % (name, ex))
+                print("{%s} error -->{%s}" % (name, ex))    
+                traceback.print_exc(file=sys.stdout)
                 observer.on_error(ex)
             def on_completed():
                 print("{%s} completed" % name)

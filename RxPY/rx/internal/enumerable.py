@@ -1,5 +1,7 @@
 import itertools
 
+from .basic import identity
+
 class Enumerable(object):
     def __init__(self, iterator):
         self._iterator = iterator
@@ -10,7 +12,8 @@ class Enumerable(object):
     def where(self, predicate):
         return Enumerable(value for value in self if predicate(value))
 
-    def select(self, selector):
+    def select(self, selector=None):
+        selector = selector or identity
         return Enumerable(selector(value) for value in self)
 
     def take(self, count):
@@ -45,4 +48,7 @@ class Enumerable(object):
             return cls(value for _ in range(count))
         return cls(itertools.repeat(value))
 
-
+    @classmethod
+    def for_each(cls, source, selector=None):
+        selector = selector or identity
+        return Enumerable(selector(value) for value in source)

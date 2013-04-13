@@ -1,6 +1,6 @@
 # Rx Exceptions
 
-class SequenceContainsNoElements(Exception):
+class SequenceContainsNoElementsError(Exception):
     def __init__(self, arg=None):
         self.args = arg or "Sequence contains no elements"
 

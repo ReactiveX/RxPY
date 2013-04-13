@@ -57,51 +57,49 @@ def test_window_with_time_or_count_disposed():
     results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"))
     xs.subscriptions.assert_equal(subscribe(200, 370))
 
-# def test_BufferWithTimeOrCount_Basic():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.bufferWithTimeOrCount(70, 3, scheduler).select(function (x) {
-#             return x.toString()
-        
+def test_buffer_with_time_or_count_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
     
-#     results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"), on_next(440, "8"), on_next(510, "9"), on_next(580, ""), on_next(600, ""), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
+    def create():
+        return xs.buffer_with_time_or_count(70, 3, scheduler).select(lambda x: ",".join([str(a) for a in x]))
 
-# def test_BufferWithTimeOrCount_Error():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
-#     results = scheduler.start(create)
-#         return xs.bufferWithTimeOrCount(70, 3, scheduler).select(function (x) {
-#             return x.toString()
+    results = scheduler.start(create)
         
-    
-#     results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"), on_next(440, "8"), on_next(510, "9"), on_next(580, ""), on_error(600, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
+    results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"), on_next(440, "8"), on_next(510, "9"), on_next(580, ""), on_next(600, ""), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
 
-# def test_BufferWithTimeOrCount_Disposed():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.bufferWithTimeOrCount(70, 3, scheduler).select(function (x) {
-#             return x.toString()
+def test_buffer_with_time_or_count_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
+    
+    def create():
+        return xs.buffer_with_time_or_count(70, 3, scheduler).select(lambda x: ",".join([str(a) for a in x]))
         
-#     }, 370)
-#     results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"))
-#     xs.subscriptions.assert_equal(subscribe(200, 370))
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"), on_next(440, "8"), on_next(510, "9"), on_next(580, ""), on_error(600, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
 
-
-# def test_OneShotTimer_TimeSpan_Basic():
-#     var results, scheduler
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Rx.Observable.timer(300, scheduler)
+def test_Buffer_with_time_or_count_disposed():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
     
-#     results.messages.assert_equal(on_next(500, 0), on_completed(500))
+    def create():
+        return xs.buffer_with_time_or_count(70, 3, scheduler).select(lambda x: ",".join([str(a) for a in x]))
+
+    results = scheduler.start(create, disposed=370)
+    results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"))
+    xs.subscriptions.assert_equal(subscribe(200, 370))
+
+def test_one_shot_timer_timespan_basic():
+    scheduler = TestScheduler()
+
+    def create():    
+        return Observable.timer(300, scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(500, 0), on_completed(500))
 
 # def test_OneShotTimer_TimeSpan_Zero():
 #     var results, scheduler
