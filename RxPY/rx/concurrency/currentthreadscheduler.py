@@ -1,12 +1,15 @@
 # Current Thread Scheduler
 
 import time
+import logging
 from datetime import timedelta
 
 from rx.internal import PriorityQueue
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
+
+log = logging.getLogger('Rx')
 
 class Trampoline(object):
     def __init__(self):
@@ -26,6 +29,7 @@ class Trampoline(object):
                 diff = item.duetime - Scheduler.now()
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
+                    log.info("Trampoline:run(), Sleeping: %s" % seconds)
                     time.sleep(seconds)
                     diff = item.duetime - Scheduler.now()
                 
@@ -38,10 +42,11 @@ class CurrentThreadScheduler(Scheduler):
         self.queue = 0 # Must be different from None, FIXME: 
 
     def schedule(self, action, state=None):
-        #print "CurrentThreadScheduler:schedule"
-        return self.schedule_relative(0, action, state)
+        log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
+        return self.schedule_relative(timedelta(0), action, state)
 
     def schedule_relative(self, duetime, action, state=None):
+        log.debug("CurrentThreadScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
         
@@ -52,8 +57,7 @@ class CurrentThreadScheduler(Scheduler):
                 self.queue.run()
             finally:
                 self.queue.dispose()
-                self.queue = None
-            
+                self.queue = None            
         else:
             self.queue.enqueue(si)
         

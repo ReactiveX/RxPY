@@ -9,7 +9,7 @@ def default_comparer(x, y):
     return x.equals(y)
 
 def create_message(actual, expected):
-    return 'Expected: [%s]\r\nActual: [%s]' % (str(expected), str(actual))
+    return '\r\n\tExpected: [%s]\r\n\tActual:   [%s]' % (str(expected), str(actual))
 
 def are_elements_equal(expected, actual, comparer=None, message=None):
     is_ok = True
@@ -23,16 +23,16 @@ def are_elements_equal(expected, actual, comparer=None, message=None):
         if not is_ok:
             break
         
-    assert is_ok, message or create_message(expected, actual)
+    assert is_ok, message or create_message(actual, expected)
 
 def assert_equal(expected, *actual):
     actual = list(actual)
     return are_elements_equal(expected, actual, default_comparer)
 
 class AssertList(list):
-    def assert_equal(self, *actual):
-        actual = list(actual)
-        return are_elements_equal(self, actual, default_comparer)
+    def assert_equal(self, *expected):
+        expected = list(expected)
+        return are_elements_equal(expected, self, default_comparer)
 
 class ObservableTest(object):
     # Observable.dump extension method

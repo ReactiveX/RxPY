@@ -1,9 +1,12 @@
+import logging
 from threading import Timer
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 
 from .scheduler import Scheduler
+
+log = logging.getLogger("Rx")
 
 # Timeout Scheduler
 class TimeoutScheduler(Scheduler):
@@ -19,14 +22,15 @@ class TimeoutScheduler(Scheduler):
             #print ("TimeoutScheduler:schedule.interval()")
             disposable.disposable = action(scheduler, state)
         self.timer = Timer(0, interval)
-        self.timer.start()        
+        self.timer.start()
         def dispose():
             #print ("TimeoutScheduler:schedule.dispose()")
             self.timer.cancel()
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
-        #print("TimeoutScheduler:schedule_relative(%d)" % duetime)
+        log.info("TimeoutScheduler:schedule_relative(%s)" % duetime)
+        
         scheduler = self
         dt = Scheduler.normalize(duetime)
         if dt == 0:
@@ -34,16 +38,16 @@ class TimeoutScheduler(Scheduler):
         
         disposable = SingleAssignmentDisposable()
         def interval():
-            #print ("TimeoutScheduler:schedule_relative.interval()")
+            log.info("TimeoutScheduler:schedule_relative.interval()")
             disposable.disposable = action(scheduler, state)
         
         seconds = dt.seconds+dt.microseconds/1000000
-        #print ("timeout: %s" % seconds)
+        log.info("timeout: %s" % seconds)
         self.timer = Timer(seconds, interval)
         self.timer.start()
 
         def dispose():
-            #print ("TimeoutScheduler:schedule_relative.dispose()")
+            print ("TimeoutScheduler:schedule_relative.dispose()")
             self.timer.cancel()
         
         return CompositeDisposable(disposable, Disposable(dispose))

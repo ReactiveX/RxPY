@@ -101,7 +101,8 @@ class Scheduler(object):
 
     @classmethod
     def normalize(cls, timespan):
-        nospan = timedelta(0)
+        nospan = 0 if isinstance(timespan, int) else timedelta(0)
+        #timespan = timespan if isinstance(timespan, timedelta) else timedelta(milliseconds=timespan)
         if not timespan or timespan < nospan:
             timespan = nospan
         

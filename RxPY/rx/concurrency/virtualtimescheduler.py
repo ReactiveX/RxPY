@@ -1,8 +1,12 @@
+import logging
+
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
 from .scheduleperiodicrecursive import SchedulePeriodicRecursive
+
+log = logging.getLogger("Rx")
 
 class VirtualTimeScheduler(Scheduler):
     """Virtual Scheduler"""
@@ -35,12 +39,13 @@ class VirtualTimeScheduler(Scheduler):
         action -- Action to be executed.
         state -- [Optional] State passed to the action to be executed.
         """
-        #print ("VirtualTimeScheduler:schedule_relative(%s)" % duetime)
+        log.debug("VirtualTimeScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
+
         runat = self.add(self.clock, self.to_relative(duetime))
         return self.schedule_absolute(runat, action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
-        #print ("VirtualTimeScheduler:schedule_absolute(%s)" % duetime)
+        log.debug("VirtualTimeScheduler.schedule_absolute(duetime=%s, state=%s)" % (duetime, state))
         
         def run(scheduler, state1):
             #print ("VirtualTimeScheduler:schedule_absolute:run(%s)" % repr(state1))
@@ -68,7 +73,7 @@ class VirtualTimeScheduler(Scheduler):
                 if next:
                     if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
-                        print ("clock: %s" % self.clock)
+                        log.info("VirtualTimeScheduler.start(), clock: %s" % self.clock)
                     #else:
                     #    print ("skipping", next.duetime, self.clock)
                     
@@ -114,7 +119,8 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         time -- Relative time to advance the scheduler's clock by.
         """
-        print("advance_by()")
+        log.debug("VirtualTimeScheduler.advance_by(time=%s)" % time)
+
         dt = self.add(self.clock, time)
         if self.comparer(self.clock, dt) >= 0:
             raise ArgumentOutOfRangeException()
@@ -139,7 +145,6 @@ class VirtualTimeScheduler(Scheduler):
         while self.queue.length > 0:
             next = self.queue.peek()
             if next.is_cancelled():
-                #print ("dequeue **************", next.duetime)
                 self.queue.dequeue()
             else:
                 return next

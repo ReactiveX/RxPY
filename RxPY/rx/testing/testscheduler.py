@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from rx import Observable
@@ -9,6 +10,8 @@ from .hotobservable import HotObservable
 from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
 
+log = logging.getLogger("Rx")
+
 class TestScheduler(VirtualTimeScheduler):
     """Virtual time scheduler used for testing applications and libraries 
     built using Reactive Extensions."""
@@ -19,7 +22,6 @@ class TestScheduler(VirtualTimeScheduler):
         super(TestScheduler, self).__init__(0, comparer)
 
     def schedule_absolute(self, duetime, action, state=None):
-        #print ("TestScheduler:schedule_absolute(%s)", duetime)
         """Schedules an action to be executed at the specified virtual time.
         
         Keyword arguments:
@@ -29,6 +31,9 @@ class TestScheduler(VirtualTimeScheduler):
         
         Returns disposable object used to cancel the scheduled action (best effort).
         """
+
+        log.debug("TestScheduler.schedule_absolute(duetime=%s, state=%s)" % (duetime, state))
+
         if duetime <= self.clock:
             duetime = self.clock + 1
         

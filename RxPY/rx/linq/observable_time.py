@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 from rx.observable import Observable, ObservableMeta
@@ -7,68 +8,14 @@ from rx.disposables import Disposable, CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
 from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
 
+log = logging.getLogger("Rx")
+
 # Rx Utils
 def add_ref(xs, r):
     def subscribe(observer):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return AnonymousObservable(subscribe)
-
-def observable_timer_date(duetime, scheduler):
-    def subscribe(observer):
-        def action(scheduler, state):
-            observer.on_next(0)
-            observer.on_completed()
-        
-        return scheduler.schedule_absolute(duetime, action);
-    return AnonymousObservable(subscribe)
-
-def observable_timer_date_and_period(duetime, period, scheduler):
-    p = Scheduler.normalize(period)
-
-    def subscribe(observer):
-        count = 0
-        d = duetime
-
-        def action(scheduler, state):
-            nonlocal d, count
-            if p > 0:
-                now = scheduler.now()
-                d = d + p
-                if d <= now:
-                    d = now + p
-            
-            observer.on_ext(count)
-            count += 1
-            self(d)
-        
-        return scheduler.schedule_recursive(d, action)
-    return AnonymousObservable(subscribe)
-
-def observable_timer_timespan(duetime, scheduler):
-    d = Scheduler.normalize(duetime)
-
-    def subscribe(observer):
-        def action(scheduler, state):
-            observer.on_next(0)
-            observer.on_completed()
-    
-        return scheduler.schedule_relative(d, action)
-    return AnonymousObservable(subscribe)
-
-def observable_timer_timespan_and_period(duetime, period, scheduler):
-    if duetime == period:
-        def subcribe(observer):
-            def action(scheduler, state):
-                observer.on_next(count)
-                return count + 1
-            
-            return scheduler.schedule_periodic(period, action, state=0)
-        return AnonymousObservable(subscribe)
-
-    def defer():
-        return observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
-    return Observable.defer(defer)
 
 class ObservableTime(Observable, metaclass=ObservableMeta):
 
@@ -96,7 +43,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         1 - res = rx.Observable.interval(1000)
         2 - res = rx.Observable.interval(1000, rx.Scheduler.timeout)
         
-        Keyword parmeters:
+        Keyword arguments:
         period -- Period for producing the values in the resulting sequence 
             (specified as an integer denoting milliseconds).
         scheduler -- [Optional] Scheduler to run the timer on. If not specified,
@@ -108,21 +55,110 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or TimeoutScheduler()
         return cls.observable_timer_timespan_and_period(period, period, scheduler)
 
+    @staticmethod
+    def observable_timer_date(duetime, scheduler):
+        def subscribe(observer):
+            def action(scheduler, state):
+                observer.on_next(0)
+                observer.on_completed()
+            
+            return scheduler.schedule_absolute(duetime, action);
+        return AnonymousObservable(subscribe)
+
+    @staticmethod
+    def observable_timer_date_and_period(duetime, period, scheduler):
+        p = Scheduler.normalize(period)
+
+        def subscribe(observer):
+            count = 0
+            d = duetime
+
+            def action(scheduler, state):
+                nonlocal d, count
+                if p > 0:
+                    now = scheduler.now()
+                    d = d + p
+                    if d <= now:
+                        d = now + p
+                
+                observer.on_ext(count)
+                count += 1
+                self(d)
+            
+            return scheduler.schedule_recursive(d, action)
+        return AnonymousObservable(subscribe)
+
+    @staticmethod
+    def observable_timer_timespan(duetime, scheduler):
+        log.debug("observable_timer_timespan()")
+        d = Scheduler.normalize(duetime)
+
+        def subscribe(observer):
+            def action(scheduler, state):
+                print ("observable_timer_timespan:subscribe:action()")
+                observer.on_next(0)
+                observer.on_completed()
+        
+            return scheduler.schedule_relative(d, action)
+        return AnonymousObservable(subscribe)
+
+    @staticmethod
+    def observable_timer_timespan_and_period(duetime, period, scheduler):
+        if duetime == period:
+            def subscribe(observer):
+                def action(count):
+                    observer.on_next(count)
+                    return count + 1
+                
+                return scheduler.schedule_periodic(period, action, state=0)
+            return AnonymousObservable(subscribe)
+
+        def defer():
+            return observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
+        return Observable.defer(defer)
+
     @classmethod
     def timer(cls, duetime, period=None, scheduler=None):
-        period = None
+        """Returns an observable sequence that produces a value after duetime 
+        has elapsed and then after each period.
+        
+        1 - res = Observable.timer(new Date());
+        2 - res = Observable.timer(new Date(), 1000);
+        3 - res = Observable.timer(new Date(), Scheduler.timeout);
+        4 - res = Observable.timer(new Date(), 1000, Rx.Scheduler.timeout);
+        
+        5 - res = Observable.timer(5000);
+        6 - res = Observable.timer(5000, 1000);
+        7 - res = Observable.timer(5000, Scheduler.timeout);
+        8 - res = Observable.timer(5000, 1000, Scheduler.timeout);
+        
+        Keyword arguments:
+        duetime -- Absolute (specified as a Date object) or relative time 
+            (specified as an integer denoting milliseconds) at which to produce
+            the first value.</param>
+        period -- [Optional] Period to produce subsequent values (specified as 
+            an integer denoting milliseconds), or the scheduler to run the 
+            timer on. If not specified, the resulting timer is not recurring.
+        scheduler -- [Optional] Scheduler to run the timer on. If not 
+            specified, the timeout scheduler is used.
+        
+        Returns an observable sequence that produces a value after due time has
+        elapsed and then each period.
+        """
+        log.debug("Observable.timer(duetime=%s, period=%s)" % (duetime, period))
+        
         scheduler = scheduler or timeout_scheduler
         
         if isinstance(duetime, datetime) and period is None:
-            return observable_timer_date(duetime, scheduler);
+            return cls.observable_timer_date(duetime, scheduler);
         
         if isinstance(duetime, datetime) and period:
-            return observable_timer_date_and_period(duetime, period, scheduler);
+            return cls.observable_timer_date_and_period(duetime, period, scheduler);
         
         if period is None:
-            return observable_timer_timespan(duetime, scheduler)
+            return cls.observable_timer_timespan(duetime, scheduler)
         
-        return observable_timer_timespan_and_period(duetime, period, scheduler)
+        return cls.observable_timer_timespan_and_period(duetime, period, scheduler)
 
     def observable_delay_timespan(self, duetime, scheduler):
         source = self
@@ -198,12 +234,30 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         
         return Observable.defer(defer)
 
-    def delay(self, duetime, scheduler):
+    def delay(self, duetime, scheduler=None):
+        """Time shifts the observable sequence by duetime. The relative time 
+        intervals between the values are preserved.
+        
+        1 - res = Rx.Observable.timer(datetime())
+        2 - res = Rx.Observable.timer(datetime(), Scheduler.timeout)
+        
+        3 - res = Rx.Observable.delay(5000)
+        4 - res = Rx.Observable.delay(5000, 1000, Scheduler.timeout)
+        
+        Keyword arguments:
+        duetime -- Absolute (specified as a Date object) or relative time 
+            (specified as an integer denoting milliseconds) by which to shift 
+            the observable sequence.</param>
+        scheduler -- [Optional] Scheduler to run the delay timers on. If not 
+            specified, the timeout scheduler is used.
+        
+        Returns time-shifted sequence.
+        """
         scheduler = scheduler or timeout_scheduler
         if isinstance(duetime, datetime):
-            observable_delay_date(duetime.getTime(), scheduler)
+            self.observable_delay_date(duetime, scheduler)
         else:
-            observable_delay_timespan(duetime, scheduler)
+            self.observable_delay_timespan(duetime, scheduler)
 
     # observableProto.throttle = function (duetime, scheduler) {
     #     scheduler || (scheduler = timeoutScheduler)
@@ -393,22 +447,51 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         return AnonymousObservable(subscribe)
     
 
-    def buffer_with_time(timespan, time_shift_or_scheduler, scheduler):
-        if not time_shift_or_scheduler:
+    def buffer_with_time(self, timespan, timeshift=None, scheduler=None):
+        """Projects each element of an observable sequence into zero or more 
+        buffers which are produced based on timing information.
+        
+        1 - res = xs.bufferWithTime(1000 /*, scheduler */); // non-overlapping segments of 1 second
+        2 - res = xs.bufferWithTime(1000, 500 /*, scheduler */); // segments of 1 second with time shift 0.5 seconds
+        
+        Keyword arguments:
+        timespan -- Length of each buffer (specified as an integer denoting 
+            milliseconds).
+        timeshift -- [Optional] Interval between creation of consecutive 
+            buffers (specified as an integer denoting milliseconds), or an 
+            optional scheduler parameter. If not specified, the time shift 
+            corresponds to the timespan parameter, resulting in non-overlapping
+            adjacent buffers.
+        scheduler -- [Optional] Scheduler to run buffer timers on. If not 
+            specified, the timeout scheduler is used.
+        
+        Returns an observable sequence of buffers.
+        """
+        if not timeshift:
             time_shift = timespan
         
         scheduler = scheduler or timeout_scheduler
-        if isinstance(time_shift_or_scheduler, int):
-            time_shift = time_shift_or_scheduler
-        elif isinstance(time_shift_or_scheduler, Scheduler):
-            time_shift = timespan
-            scheduler = time_shift_or_scheduler
         
-        return this.windowWithTime(timespan, time_shift, scheduler) \
+        return self.window_with_time(timespan, timeshift, scheduler) \
             .select_many(lambda x: x.to_array())
         
 
     def buffer_with_time_or_count(self, timespan, count, scheduler):
+        """Projects each element of an observable sequence into a buffer that 
+        is completed when either it's full or a given amount of time has 
+        elapsed.
+        
+        1 - res = source.bufferWithTimeOrCount(5000, 50); # 5s or 50 items in an array
+        2 - res = source.bufferWithTimeOrCount(5000, 50, Scheduler.timeout); # 5s or 50 items in an array
+        
+        Keyword arguments:
+        timespan -- Maximum time length of a buffer.
+        count -- Maximum element count of a buffer.
+        scheduler -- [Optional] Scheduler to run bufferin timers on. If not 
+            specified, the timeout scheduler is used.
+        
+        Returns an observable sequence of buffers.
+        """
         scheduler = scheduler or timeout_scheduler
         return self.window_with_time_or_count(timespan, count, scheduler) \
             .select_many(lambda x: x.to_array())
