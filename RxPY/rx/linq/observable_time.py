@@ -21,7 +21,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
-        print ("ObservableTime:observable_timer_timespan_and_period()")
+        log.debug("ObservableTime.observable_timer_timespan_and_period()")
         
         if duetime == period:
             def subscribe(observer):
@@ -95,7 +95,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
         def subscribe(observer):
             def action(scheduler, state):
-                print ("observable_timer_timespan:subscribe:action()")
+                log.debug("observable_timer_timespan:subscribe:action()")
                 observer.on_next(0)
                 observer.on_completed()
         
@@ -171,16 +171,17 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             q = []
 
             def on_next(notification):
+                nonlocal q, active, cancelable, exception, running
                 should_run = False
                 d = None
                 
-                if notification.value.kind == 'E':
+                if notification["value"].kind == 'E':
                     q = []
                     q.append(notification)
-                    exception = notification.value.exception
+                    exception = notification["value"].exception
                     should_run = not running
                 else:
-                    q.append(dict(value=notification.value, timestamp=notification.timestamp + duetime))
+                    q.append(dict(value=notification["value"], timestamp=notification["timestamp"] + duetime))
                     should_run = not active
                     active = True
                 
@@ -192,14 +193,15 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                         cancelable.disposable = d
 
                         def action(self):
+                            nonlocal q, active, running
                             if exception:
                                 return
                             
                             running = True
                             while True:
                                 result = None
-                                if len(q) > 0 and (q[0].timestamp - scheduler.now() <= 0):
-                                    result = q.pop(0).value
+                                if len(q) > 0 and (q[0]["timestamp"] - scheduler.now() <= 0):
+                                    result = q.pop(0)["value"]
                                 
                                 if result:
                                     result.accept(observer)
@@ -211,7 +213,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                             recurse_duetime = 0
                             if len(q) > 0:
                                 should_recurse = True
-                                recurse_duetime = max(0, q[0].timestamp - scheduler.now())
+                                recurse_duetime = max(0, q[0]["timestamp"] - scheduler.now())
                             else:
                                 active = False
                             
@@ -255,9 +257,11 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         """
         scheduler = scheduler or timeout_scheduler
         if isinstance(duetime, datetime):
-            self.observable_delay_date(duetime, scheduler)
+            observable = self.observable_delay_date(duetime, scheduler)
         else:
-            self.observable_delay_timespan(duetime, scheduler)
+            observable = self.observable_delay_timespan(duetime, scheduler)
+
+        return observable
 
     # observableProto.throttle = function (duetime, scheduler) {
     #     scheduler || (scheduler = timeoutScheduler)
@@ -496,3 +500,23 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         return self.window_with_time_or_count(timespan, count, scheduler) \
             .select_many(lambda x: x.to_array())
         
+    def timestamp(self, scheduler=None):
+        """Records the timestamp for each value in an observable sequence.
+      
+        1 - res = source.timestamp(); // produces { value: x, timestamp: ts }
+        2 - res = source.timestamp(Rx.Scheduler.timeout);
+       
+        scheduler -- [Optional] Scheduler used to compute timestamps. If not 
+            specified, the timeout scheduler is used.
+    
+        Returns an observable sequence with timestamp information on values.
+        """
+        scheduler = scheduler or timeout_scheduler
+
+        def projection(x):
+            return {
+                "value": x,
+                "timestamp": scheduler.now()
+            }
+        return self.select(projection)
+

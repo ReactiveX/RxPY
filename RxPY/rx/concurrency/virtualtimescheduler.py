@@ -24,8 +24,9 @@ class VirtualTimeScheduler(Scheduler):
         self.is_enabled = False
         self.queue = PriorityQueue(1024)
         
-    def local_now(self):
-        return self.to_datetime_offset(self.clock)
+    def now(self):
+        return self.clock
+        #return self.to_datetime_offset(self.clock) # FIXME: virtualtimescheduler cannot work with datetimes
 
     def schedule(self, action, state=None):
         return self.schedule_absolute(self.clock, action, state)

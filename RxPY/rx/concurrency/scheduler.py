@@ -89,11 +89,24 @@ class Scheduler(object):
 
         return self.schedule(action2, dict(state=state, action=action))
 
-    def schedule_recursive_relative(self, duetime, action, state):
+    def schedule_recursive_relative(self, duetime, action, state=None):
         def action1(s, p):
             print ("Scheduler:schedule_recursive_relative:action()")
             return self.invoke_rec_date(s, p, 'schedule_relative')
-        return self.schedule_relative(duetime, action1, { "first": state, "second": action })
+        return self.schedule_relative(duetime, action1, state={ "first": state, "second": action })
+
+    def schedule_recursive_with_relative(self, duetime, action):
+        def action1(_action, this=None):
+            def func(dt):
+                this(_action, dt)
+            _action(func)
+        return self.schedule_recursive_with_relative_and_state(action, duetime, action1)
+
+    def schedule_recursive_with_relative_and_state(self, state, duetime, action):
+        def action1(s, p):
+            return self.invoke_rec_date(s, p, 'schedule_relative')
+
+        return self.schedule_relative(duetime, action1, state={ "first": state, "second": action })
 
     @classmethod
     def now(cls):

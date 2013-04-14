@@ -13,8 +13,8 @@ class AutoDetachObserver(AbstractObserver):
     def next(self, value):
         try:
             self.observer.on_next(value)
-        except Exception:
-            self.dispose()
+        except Exception as ex:
+                self.dispose()
         
     def error(self, exn):
         try:

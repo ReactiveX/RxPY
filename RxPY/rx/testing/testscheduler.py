@@ -84,22 +84,25 @@ class TestScheduler(VirtualTimeScheduler):
         subscription = None
         source = None
 
-        def action1(scheduler, state):
+        def action_create(scheduler, state):
+            """Called at create time. Defaults to 100"""
             nonlocal source
             source = create()
             return Disposable.empty()
-        self.schedule_absolute(created, action1)
+        self.schedule_absolute(created, action_create)
 
-        def action2(scheduler, state):
+        def action_subscribe(scheduler, state):
+            """Called at subscribe time. Defaults to 200"""
             nonlocal subscription
             subscription = source.subscribe(observer)
             return Disposable.empty()
-        self.schedule_absolute(subscribed, action2)
+        self.schedule_absolute(subscribed, action_subscribe)
 
-        def action3(scheduler, state):
+        def action_dispose(scheduler, state):
+            """Called at dispose time. Defaults to 1000"""
             subscription.dispose()
             return Disposable.empty()
-        self.schedule_absolute(disposed, action3)
+        self.schedule_absolute(disposed, action_dispose)
 
         super(TestScheduler, self).start()
         return observer
