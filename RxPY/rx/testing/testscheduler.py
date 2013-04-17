@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from rx import Observable
 from rx.concurrency import VirtualTimeScheduler
@@ -40,6 +40,7 @@ class TestScheduler(VirtualTimeScheduler):
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)
     
     def add(self, absolute, relative):
+        log.debug("TestScheduler.add(absolute=%s, relative=%s)" % (absolute, relative))
         return absolute + relative
     
     @classmethod
@@ -52,10 +53,16 @@ class TestScheduler(VirtualTimeScheduler):
         Returns corresponding DateTimeOffset value.
         """
             
-        return timedelta(milliseconds=absolute)
+        return datetime.fromtimestamp(absolute/1000)
     
     @classmethod
     def to_relative(cls, timespan):
+        """Converts timespan to milliseconds"""
+
+        if isinstance(timespan, datetime):
+            timespan = timespan - datetime.fromtimestamp(0)
+        if isinstance(timespan, timedelta):
+            timespan = int(timespan.total_seconds()*1000)
         return timespan
     
     def start(self, create=None, created=None, subscribed=None, disposed=None):

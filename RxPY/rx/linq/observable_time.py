@@ -171,6 +171,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             q = []
 
             def on_next(notification):
+                log.debug("observable_delay_timespan:subscribe:on_next()")
                 nonlocal q, active, cancelable, exception, running
                 should_run = False
                 d = None
@@ -187,6 +188,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                 
                 if should_run:
                     if exception:
+                        console.error("*** Exception: %s" % exception)
                         observer.on_error(exception)
                     else:
                         d = SingleAssignmentDisposable()
@@ -195,12 +197,13 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                         def action(self):
                             nonlocal q, active, running
                             if exception:
+                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s" % exception)
                                 return
                             
                             running = True
                             while True:
                                 result = None
-                                if len(q) > 0 and (q[0]["timestamp"] - scheduler.now() <= 0):
+                                if len(q) and q[0]["timestamp"] <= scheduler.now():
                                     result = q.pop(0)["value"]
                                 
                                 if result:
@@ -213,7 +216,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                             recurse_duetime = 0
                             if len(q) > 0:
                                 should_recurse = True
-                                recurse_duetime = max(0, q[0]["timestamp"] - scheduler.now())
+                                recurse_duetime = max(timedelta(0), q[0]["timestamp"] - scheduler.now())
                             else:
                                 active = False
                             
@@ -232,7 +235,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
     def observable_delay_date(self, duetime, scheduler):
         def defer():
             timespan = duetime - scheduler.now()
-            return observable_delay_timespan(timespan, scheduler)
+            return self.observable_delay_timespan(timespan, scheduler)
         
         return Observable.defer(defer)
 
@@ -240,16 +243,16 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         """Time shifts the observable sequence by duetime. The relative time 
         intervals between the values are preserved.
         
-        1 - res = Rx.Observable.timer(datetime())
-        2 - res = Rx.Observable.timer(datetime(), Scheduler.timeout)
+        1 - res = Rx.Observable.delay(datetime())
+        2 - res = Rx.Observable.delay(datetime(), Scheduler.timeout)
         
         3 - res = Rx.Observable.delay(5000)
         4 - res = Rx.Observable.delay(5000, 1000, Scheduler.timeout)
         
         Keyword arguments:
-        duetime -- Absolute (specified as a Date object) or relative time 
+        duetime -- Absolute (specified as a datetime object) or relative time 
             (specified as an integer denoting milliseconds) by which to shift 
-            the observable sequence.</param>
+            the observable sequence.
         scheduler -- [Optional] Scheduler to run the delay timers on. If not 
             specified, the timeout scheduler is used.
         
@@ -259,6 +262,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         if isinstance(duetime, datetime):
             observable = self.observable_delay_date(duetime, scheduler)
         else:
+            duetime = duetime if isinstance(duetime, timedelta) else timedelta(milliseconds=duetime)
             observable = self.observable_delay_timespan(duetime, scheduler)
 
         return observable

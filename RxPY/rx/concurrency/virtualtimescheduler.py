@@ -25,14 +25,14 @@ class VirtualTimeScheduler(Scheduler):
         self.queue = PriorityQueue(1024)
         
     def now(self):
-        return self.clock
-        #return self.to_datetime_offset(self.clock) # FIXME: virtualtimescheduler cannot work with datetimes
+        #return self.clock
+        return self.to_datetime_offset(self.clock)
 
     def schedule(self, action, state=None):
         return self.schedule_absolute(self.clock, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at dueTime. Return the disposable
+        """Schedules an action to be executed at duetime. Return the disposable
         object used to cancel the scheduled action (best effort)
 
         Keyword arguments:
@@ -104,7 +104,7 @@ class VirtualTimeScheduler(Scheduler):
             while self.is_enabled:
                 next = self.get_next()
                 if next and self.comparer(next.duetime, time) <= 0:
-                    if self.comparer(next.dueTime, self.clock) > 0:
+                    if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
 
                     next.invoke()

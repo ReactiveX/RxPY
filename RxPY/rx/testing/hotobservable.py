@@ -31,7 +31,7 @@ class HotObservable(Observable):
         for message in self.messages:
             notification = message.value
 
-            # Don't make closures within a loop
+            # Warning: Don't make closures within a loop
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
     

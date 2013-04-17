@@ -1,3 +1,5 @@
+import sys, traceback # FIXME: remove after debug
+
 from rx.disposables import SingleAssignmentDisposable
 
 from .abstractobserver import AbstractObserver
@@ -14,7 +16,8 @@ class AutoDetachObserver(AbstractObserver):
         try:
             self.observer.on_next(value)
         except Exception as ex:
-                self.dispose()
+            traceback.print_exc(file=sys.stdout)
+            self.dispose()
         
     def error(self, exn):
         try:

@@ -1,11 +1,13 @@
 import logging
+from datetime import datetime, timedelta
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
 from rx.disposables import Disposable, SerialDisposable
 
 FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
-logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)
+#logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)
+logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 log = logging.getLogger('Rx')
 
 on_next = ReactiveTest.on_next
@@ -212,32 +214,35 @@ def test_delay_timespan_simple1():
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
     def create():
-        return xs.delay(100, scheduler=scheduler)
+        return xs.dump("xs").delay(100, scheduler=scheduler).dump("delayed")
     
     results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
     xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_DateTimeOffset_Simple1_Impl():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(Date(300), scheduler)
+def test_delay_datetime_offset_simple1_impl():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
-#     results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        dt = datetime.fromtimestamp(300/1000)
+        return xs.delay(dt, scheduler).dump()
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_TimeSpan_Simple2_Impl():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(50, scheduler)
+def test_delay_timespan_simple2_impl():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
-#     results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(50, scheduler)
+    
+    results = scheduler.start(create) 
+    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
 # def test_Delay_DateTimeOffset_Simple2_Impl():
 #     , xs
@@ -2071,3 +2076,4 @@ def test_delay_timespan_simple1():
 
 if __name__ == '__main__':
     test_delay_timespan_simple1()
+    #test_delay_datetime_offset_simple1_impl()
