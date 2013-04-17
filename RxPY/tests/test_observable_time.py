@@ -244,110 +244,130 @@ def test_delay_timespan_simple2_impl():
     results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_DateTimeOffset_Simple2_Impl():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(Date(250), scheduler)
+def test_delay_datetime_offset_simple2_impl():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
-#     results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(datetime.fromtimestamp(250/1000), scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_TimeSpan_Simple3_Impl():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(150, scheduler)
+def test_delay_timespan_simple3_impl():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
-#     results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(150, scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_DateTimeOffset_Simple3_Impl():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(Date(350), scheduler)
+def test_delay_datetime_offset_simple3_impl():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
-#     results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(datetime.fromtimestamp(0.350), scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_TimeSpan_Error1_Impl():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.delay(50, scheduler)
+def test_delay_timespan_error1_impl():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
     
-#     results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(50, scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_DateTimeOffset_Error1_Impl():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.delay(Date(250), scheduler)
+def test_delay_datetime_offset_error1_impl():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
     
-#     results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(datetime.fromtimestamp(0.250), scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_TimeSpan_Error2_Impl():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.delay(150, scheduler)
+def test_delay_timespan_error2_impl():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
     
-#     results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(150, scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_DateTimeOffset_Error2_Impl():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.delay(Date(350), scheduler)
+def test_delay_datetime_offset_error2_impl():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
     
-#     results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(datetime.fromtimestamp(0.350), scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_Empty():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.delay(10, scheduler)
+def test_delay_empty():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(550))
     
-#     results.messages.assert_equal(on_completed(560))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(10, scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_completed(560))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_Error():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.delay(10, scheduler)
+def test_delay_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_error(550, ex))
     
-#     results.messages.assert_equal(on_error(550, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
+    def create():
+        return xs.delay(10, scheduler)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_error(550, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Delay_Never():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     results = scheduler.start(create)
-#         return xs.delay(10, scheduler)
+def test_delay_never():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1))
     
-#     results.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
+    def create():
+        return xs.delay(10, scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal()
+    xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 # def test_Throttle_TimeSpan_AllPass():
 #     , xs

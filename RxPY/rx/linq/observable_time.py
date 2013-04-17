@@ -188,7 +188,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                 
                 if should_run:
                     if exception:
-                        console.error("*** Exception: %s" % exception)
+                        log.error("*** Exception: %s" % exception)
                         observer.on_error(exception)
                     else:
                         d = SingleAssignmentDisposable()
