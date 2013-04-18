@@ -163,7 +163,7 @@ def test_oneshot_timer_timespan_observer_throws():
     except RxException:
         pass
 
-def test_Interval_timespan_basic():
+def test_interval_timespan_basic():
     
     scheduler = TestScheduler()
     
@@ -173,7 +173,7 @@ def test_Interval_timespan_basic():
     results = scheduler.start(create)
     results.messages.assert_equal(on_next(300, 0), on_next(400, 1), on_next(500, 2), on_next(600, 3), on_next(700, 4), on_next(800, 5), on_next(900, 6))
 
-def test_Interval_timespan_zero():    
+def test_interval_timespan_zero():    
     scheduler = TestScheduler()
 
     def create():
@@ -214,7 +214,7 @@ def test_delay_timespan_simple1():
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
     def create():
-        return xs.dump("xs").delay(100, scheduler=scheduler).dump("delayed")
+        return xs.delay(100, scheduler=scheduler)
     
     results = scheduler.start(create)
         
@@ -227,7 +227,7 @@ def test_delay_datetime_offset_simple1_impl():
     
     def create():
         dt = datetime.fromtimestamp(300/1000)
-        return xs.delay(dt, scheduler).dump()
+        return xs.delay(dt, scheduler)
     
     results = scheduler.start(create)
     results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
@@ -369,14 +369,16 @@ def test_delay_never():
     results.messages.assert_equal()
     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-# def test_Throttle_TimeSpan_AllPass():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.throttle(40, scheduler)
+def test_Throttle_TimeSpan_AllPass():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
     
-#     return results.messages.assert_equal(on_next(290, 3), on_next(340, 4), on_next(390, 5), on_next(440, 6), on_next(490, 7), on_next(540, 8), on_completed(550))
+    def create():
+        return xs.throttle(40, scheduler)
+    
+    results = scheduler.start(create)
+        
+    return results.messages.assert_equal(on_next(290, 3), on_next(340, 4), on_next(390, 5), on_next(440, 6), on_next(490, 7), on_next(540, 8), on_completed(550))
 
 # def test_Throttle_TimeSpan_AllPass_ErrorEnd():
 #     var ex, results, scheduler, xs

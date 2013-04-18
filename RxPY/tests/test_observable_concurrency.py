@@ -122,7 +122,7 @@ def test_subscribe_on_empty():
     xs.subscriptions.assert_equal(subscribe(201, 251))
 
 
-def test_subscribe_on_Never():
+def test_subscribe_on_never():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
                         on_next(150, 1)
