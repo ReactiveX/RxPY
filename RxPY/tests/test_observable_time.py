@@ -369,7 +369,7 @@ def test_delay_never():
     results.messages.assert_equal()
     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-def test_Throttle_TimeSpan_AllPass():
+def test_throttle_timespan_allpass():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
     
@@ -380,86 +380,97 @@ def test_Throttle_TimeSpan_AllPass():
         
     return results.messages.assert_equal(on_next(290, 3), on_next(340, 4), on_next(390, 5), on_next(440, 6), on_next(490, 7), on_next(540, 8), on_completed(550))
 
-# def test_Throttle_TimeSpan_AllPass_ErrorEnd():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.throttle(40, scheduler)
+def test_throttle_timespan_allpass_error_end():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_error(550, ex))
     
-#     return results.messages.assert_equal(on_next(290, 3), on_next(340, 4), on_next(390, 5), on_next(440, 6), on_next(490, 7), on_next(540, 8), on_error(550, ex))
+    def create():
+        return xs.throttle(40, scheduler)
+    
+    results = scheduler.start(create)
+    return results.messages.assert_equal(on_next(290, 3), on_next(340, 4), on_next(390, 5), on_next(440, 6), on_next(490, 7), on_next(540, 8), on_error(550, ex))
 
-# def test_Throttle_TimeSpan_AllDrop():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
-#     results = scheduler.start(create)
-#         return xs.throttle(60, scheduler)
+def test_throttle_timespan_alldrop():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
     
-#     return results.messages.assert_equal(on_next(550, 8), on_completed(550))
+    def create():
+        return xs.throttle(60, scheduler)
+    
+    results = scheduler.start(create)
+    return results.messages.assert_equal(on_next(550, 8), on_completed(550))
 
-# def test_Throttle_TimeSpan_AllDrop_ErrorEnd():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_error(550, ex))
-#     results = scheduler.start(create)
-#         return xs.throttle(60, scheduler)
+def test_throttle_timespan_alldrop_error_end():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_error(550, ex))
     
-#     return results.messages.assert_equal(on_error(550, ex))
+    def create():
+        return xs.throttle(60, scheduler)
+    
+    results = scheduler.start(create)
+    return results.messages.assert_equal(on_error(550, ex))
 
-# def test_Throttle_TimeSpan_SomeDrop():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(370, 4), on_next(421, 5), on_next(480, 6), on_next(490, 7), on_next(500, 8), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.throttle(50, scheduler)
+def test_throttle_timespan_some_drop():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(370, 4), on_next(421, 5), on_next(480, 6), on_next(490, 7), on_next(500, 8), on_completed(600))
     
-#     return results.messages.assert_equal(on_next(300, 2), on_next(420, 4), on_next(471, 5), on_next(550, 8), on_completed(600))
+    def create():
+        return xs.throttle(50, scheduler)
+    
+    results = scheduler.start(create)    
+    return results.messages.assert_equal(on_next(300, 2), on_next(420, 4), on_next(471, 5), on_next(550, 8), on_completed(600))
 
-# def test_Throttle_Empty():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.empty(scheduler).throttle(10, scheduler)
+def test_throttle_empty():
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_completed(201))
+    def create():
+        return Observable.empty(scheduler).throttle(10, scheduler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_completed(201))
 
-# def test_Throttle_Error():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.throwException(ex, scheduler).throttle(10, scheduler)
+def test_throttle_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_error(201, ex))
+    def create():
+        return Observable.throw_exception(ex, scheduler).throttle(10, scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(201, ex))
 
-# def test_Throttle_Never():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.never().throttle(10, scheduler)
+def test_throttle_never():
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal()
+    def create():
+        return Observable.never().throttle(10, scheduler)
+    
+    results = scheduler.start(create)    
+    results.messages.assert_equal()
 
-# def test_Throttle_Duration_DelayBehavior():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, -1), on_next(250, 0), on_next(280, 1), on_next(310, 2), on_next(350, 3), on_next(400, 4), on_completed(550))
-#     ys = [scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99))]
-#     results = scheduler.start(create)
-#         return xs.throttleWithSelector((function (x) {
-#             return ys[x]
-#         }))
+def test_throttle_duration_delay_behavior():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, -1), on_next(250, 0), on_next(280, 1), on_next(310, 2), on_next(350, 3), on_next(400, 4), on_completed(550))
+    ys = [scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99)), scheduler.create_cold_observable(on_next(20, 42), on_next(25, 99))]
     
-#     results.messages.assert_equal(on_next(250 + 20, 0), on_next(280 + 20, 1), on_next(310 + 20, 2), on_next(350 + 20, 3), on_next(400 + 20, 4), on_completed(550))
-#     xs.subscriptions.assert_equal(subscribe(200, 550))
-#     ys[0].subscriptions.assert_equal(subscribe(250, 250 + 20))
-#     ys[1].subscriptions.assert_equal(subscribe(280, 280 + 20))
-#     ys[2].subscriptions.assert_equal(subscribe(310, 310 + 20))
-#     ys[3].subscriptions.assert_equal(subscribe(350, 350 + 20))
-#     ys[4].subscriptions.assert_equal(subscribe(400, 400 + 20))
+    def create():
+        def selector(x):
+            return ys[x]
+        
+        return xs.throttle_with_selector(selector)
+
+    results = scheduler.start(create)
+            
+    results.messages.assert_equal(on_next(250 + 20, 0), on_next(280 + 20, 1), on_next(310 + 20, 2), on_next(350 + 20, 3), on_next(400 + 20, 4), on_completed(550))
+    xs.subscriptions.assert_equal(subscribe(200, 550))
+    ys[0].subscriptions.assert_equal(subscribe(250, 250 + 20))
+    ys[1].subscriptions.assert_equal(subscribe(280, 280 + 20))
+    ys[2].subscriptions.assert_equal(subscribe(310, 310 + 20))
+    ys[3].subscriptions.assert_equal(subscribe(350, 350 + 20))
+    ys[4].subscriptions.assert_equal(subscribe(400, 400 + 20))
 
 # def test_Throttle_Duration_ThrottleBehavior():
 #     , xs, ys

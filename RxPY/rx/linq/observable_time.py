@@ -267,42 +267,134 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
         return observable
 
-    # observableProto.throttle = function (duetime, scheduler) {
-    #     scheduler || (scheduler = timeoutScheduler)
-    #     source = this
-    #     return AnonymousObservable(function (observer) {
-    #         cancelable = SerialDisposable(), hasvalue = False, id = 0, subscription, value = None
-    #         subscription = source.subscribe(function (x) {
-    #             currentId, d
-    #             hasvalue = True
-    #             value = x
-    #             id++
-    #             currentId = id
-    #             d = SingleAssignmentDisposable()
-    #             cancelable.disposable = d
-    #             d.disposable = scheduler.scheduleWithRelative(duetime, function () {
-    #                 if (hasvalue && id === currentId) {
-    #                     observer.on_next(value)
-    #                 }
-    #                 hasvalue = False
-    #             )
-    #         }, function (exception) {
-    #             cancelable.dispose()
-    #             observer.on_error(exception)
-    #             hasvalue = False
-    #             id += 1
-    #         }, function () {
-    #             cancelable.dispose()
-    #             if hasvalue:
-    #                 observer.on_next(value)
-    #             
-    #             observer.on_completed()
-    #             hasvalue = False
-    #             id += 1
-    #         
-    #         return CompositeDisposable(subscription, cancelable)
-    #     
-    # }
+    def throttle(self, duetime, scheduler):
+        scheduler = scheduler or timeout_scheduler
+        source = self
+
+        def subscribe(observer):
+            cancelable = SerialDisposable()
+            has_value = False
+            value = None
+            _id = 0
+            
+            def on_next(x):
+                nonlocal _id, value, has_value, cancelable
+                
+                has_value = True
+                value = x
+                _id += 1
+                current_id = _id
+                d = SingleAssignmentDisposable()
+                cancelable.disposable = d
+
+                def action(scheduler, state=None):
+                    nonlocal has_value
+                    if has_value and _id == current_id:
+                        observer.on_next(value)   
+                    has_value = False
+                
+                d.disposable = scheduler.schedule_relative(duetime, action)
+
+            def on_error(exception):
+                nonlocal _id, has_value, cancelable
+
+                cancelable.dispose()
+                observer.on_error(exception)
+                has_value = False
+                _id += 1
+
+            def on_completed():
+                nonlocal cancelable, has_value, _id
+
+                cancelable.dispose()
+                if has_value:
+                    observer.on_next(value)
+                
+                observer.on_completed()
+                has_value = False
+                _id += 1
+            
+            subscription = source.subscribe(on_next, on_error, on_completed) 
+            return CompositeDisposable(subscription, cancelable)
+        return AnonymousObservable(subscribe)
+
+    def throttle_with_selector(self, throttle_duration_selector):
+        """Ignores values from an observable sequence which are followed by 
+        another value within a computed throttle duration.
+     
+        1 - res = source.delay_with_selector(function (x) { return Rx.Scheduler.timer(x + x); }); 
+     
+        Keyword arguments:
+        throttle_duration_selector -- Selector function to retrieve a sequence 
+            indicating the throttle duration for each given element.
+        
+        Returns the throttled sequence.
+        """
+        source = self
+
+        def subscribe(observer):
+            has_value = False
+            cancelable = SerialDisposable()
+            _id = 0
+
+            def on_next(x):
+                nonlocal has_value, _id
+
+                throttle = None
+                try:
+                    throttle = throttle_duration_selector(x)
+                except Exception as e:
+                    observer.onError(e)
+                    return
+                
+                has_value = True
+                value = x
+                _id += 1
+                current_id = _id
+                d = SingleAssignmentDisposable()
+                cancelable.disposable = d
+
+                def on_next(x):
+                    nonlocal has_value
+                    if has_value and _id == current_id:
+                        observer.on_next(value)
+                    
+                    has_value = False
+                    d.dispose()
+                
+                def on_completed():
+                    nonlocal has_value
+                    if has_value and id == current_id:
+                        observer.on_next(value)
+                    
+                    has_value = False
+                    d.dispose()
+                
+                d.disposable = throttle.subscribe(on_next, observer.on_error, on_completed)
+            
+            def on_error(e):
+                nonlocal has_value, _id
+                
+                cancelable.dispose()
+                observer.on_error(e)
+                has_value = False
+                _id += 1
+            
+            def on_completed():
+                nonlocal has_value, _id
+
+                cancelable.dispose()
+                if has_value:
+                    observer.on_next(value)
+                
+                observer.on_completed()
+                has_value = False
+                _id += 1
+
+            subscription = source.subscribe(on_next, on_error, on_completed)
+            return CompositeDisposable(subscription, cancelable)
+        return AnonymousObservable(subscribe)
+
 
     # observableProto.window_with_time = function (timespan, time_shift_or_scheduler, scheduler) {
     #     source = this, time_shift
