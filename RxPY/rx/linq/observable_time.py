@@ -333,18 +333,19 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            has_value = False
             cancelable = SerialDisposable()
+            has_value = False
+            value = None
             _id = 0
 
             def on_next(x):
-                nonlocal has_value, _id
+                nonlocal value, has_value, _id
 
                 throttle = None
                 try:
                     throttle = throttle_duration_selector(x)
                 except Exception as e:
-                    observer.onError(e)
+                    observer.on_error(e)
                     return
                 
                 has_value = True
@@ -364,7 +365,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                 
                 def on_completed():
                     nonlocal has_value
-                    if has_value and id == current_id:
+                    if has_value and _id == current_id:
                         observer.on_next(value)
                     
                     has_value = False
