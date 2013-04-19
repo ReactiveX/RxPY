@@ -8,10 +8,10 @@
     <StartupFile>tests\test_observable_time.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy</WorkingDirectory>
+    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\RxPY</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
-    <InterpreterVersion>3.3</InterpreterVersion>
+    <InterpreterVersion>3.2</InterpreterVersion>
     <Name>RxPY</Name>
     <RootNamespace>RxPY</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>

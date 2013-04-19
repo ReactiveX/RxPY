@@ -594,26 +594,28 @@ def test_throttle_duration_inner_done_throttle_behavior():
     results.messages.assert_equal(on_next(250 + 2 * 10, 2), on_next(300 + 4 * 10, 4), on_next(410 + 6 * 10, 6), on_completed(550))
     xs.subscriptions.assert_equal(subscribe(200, 550))
 
-# def test_Window_Time_Basic():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(240, 3), on_next(270, 4), on_next(320, 5), on_next(360, 6), on_next(390, 7), on_next(410, 8), on_next(460, 9), on_next(470, 10), on_completed(490))
-#     results = scheduler.start(create)
-#         return xs.windowWithTime(100, scheduler).select(function (ys, i) {
-#             return ys.select(function (y) {
-#                 return i + ' ' + y
-#             }).concat(Observable.returnValue(i + ' end'))
-#         }).merge_observable()
+def test_window_time_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(240, 3), on_next(270, 4), on_next(320, 5), on_next(360, 6), on_next(390, 7), on_next(410, 8), on_next(460, 9), on_next(470, 10), on_completed(490))
     
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(270, "0 4"), on_next(300, "0 end"), on_next(320, "1 5"), on_next(360, "1 6"), on_next(390, "1 7"), on_next(400, "1 end"), on_next(410, "2 8"), on_next(460, "2 9"), on_next(470, "2 10"), on_next(490, "2 end"), on_completed(490))
-#     xs.subscriptions.assert_equal(subscribe(200, 490))
+    def create():
+        def selector(ys, i):
+            def proj(y):
+                return "%s %s" % (i, y)
+            return ys.select(proj).concat(Observable.return_value('%s end' % i)).dump("i")
+        return xs.window_with_time(100, scheduler=scheduler).dump("w").select(selector).dump("s").merge_observable().dump("o")
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(270, "0 4"), on_next(300, "0 end"), on_next(320, "1 5"), on_next(360, "1 6"), on_next(390, "1 7"), on_next(400, "1 end"), on_next(410, "2 8"), on_next(460, "2 9"), on_next(470, "2 10"), on_next(490, "2 end"), on_completed(490))
+    xs.subscriptions.assert_equal(subscribe(200, 490))
 
 # def test_Window_Time_Basic_Both():
 #     , xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(240, 3), on_next(270, 4), on_next(320, 5), on_next(360, 6), on_next(390, 7), on_next(410, 8), on_next(460, 9), on_next(470, 10), on_completed(490))
 #     results = scheduler.start(create)
-#         return xs.windowWithTime(100, 50, scheduler).select(function (ys, i) {
+#         return xs.window_with_time(100, 50, scheduler).select(function (ys, i) {
 #             return ys.select(function (y) {
 #                 return i + " " + y
 #             }).concat(Observable.returnValue(i + " end"))
@@ -697,13 +699,14 @@ def test_throttle_duration_inner_done_throttle_behavior():
     
 #     results.messages.assert_equal(on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)), on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)), on_next(350, Timestamp(6, 350)), on_completed(400))
 
-# def test_Timestamp_Empty():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.empty(scheduler).timeInterval(scheduler)
+def test_timestamp_empty():
+    scheduler = TestScheduler()
+
+    def create():
+        return Observable.empty(scheduler).time_interval(scheduler)
     
-#     results.messages.assert_equal(on_completed(201))
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(201))
 
 # def test_Timestamp_Error():
 #     var ex, results, scheduler
@@ -1283,12 +1286,12 @@ def test_throttle_duration_inner_done_throttle_behavior():
 #     }, 210)
 #     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
 
-# def test_WindowWithTime_Basic():
+# def test_Window_with_time_Basic():
 #     , xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
 #     results = scheduler.start(create)
-#         return xs.windowWithTime(100, 70, scheduler).select(function (w, i) {
+#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
 #             return w.select(function (x) {
 #                 return i.toString() + " " + x.toString()
             
@@ -1297,13 +1300,13 @@ def test_throttle_duration_inner_done_throttle_behavior():
 #     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600))
 #     xs.subscriptions.assert_equal(subscribe(200, 600))
 
-# def test_WindowWithTime_Error():
+# def test_Window_with_time_Error():
 #     var ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
 #     results = scheduler.start(create)
-#         return xs.windowWithTime(100, 70, scheduler).select(function (w, i) {
+#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
 #             return w.select(function (x) {
 #                 return i.toString() + " " + x.toString()
             
@@ -1312,12 +1315,12 @@ def test_throttle_duration_inner_done_throttle_behavior():
 #     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_error(600, ex))
 #     xs.subscriptions.assert_equal(subscribe(200, 600))
 
-# def test_WindowWithTime_Disposed():
+# def test_Window_with_time_Disposed():
 #     , xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
 #     results = scheduler.startWithDispose(function () {
-#         return xs.windowWithTime(100, 70, scheduler).select(function (w, i) {
+#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
 #             return w.select(function (x) {
 #                 return i.toString() + " " + x.toString()
             
@@ -1326,12 +1329,12 @@ def test_throttle_duration_inner_done_throttle_behavior():
 #     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
 #     xs.subscriptions.assert_equal(subscribe(200, 370))
 
-# def test_WindowWithTime_Basic_Same():
+# def test_Window_with_time_Basic_Same():
 #     , xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
 #     results = scheduler.start(create)
-#         return xs.windowWithTime(100, scheduler).select(function (w, i) {
+#         return xs.window_with_time(100, scheduler).select(function (w, i) {
 #             return w.select(function (x) {
 #                 return i.toString() + " " + x.toString()
             
@@ -2122,5 +2125,6 @@ def test_throttle_duration_inner_done_throttle_behavior():
 #     xs.subscriptions.assert_equal(subscribe(200, 235))
 
 if __name__ == '__main__':
-    test_delay_timespan_simple1()
+    #test_delay_timespan_simple1()
     #test_delay_datetime_offset_simple1_impl()
+    test_window_time_basic()

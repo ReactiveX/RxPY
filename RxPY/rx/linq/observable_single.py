@@ -90,7 +90,7 @@ def catch_exception(sources):
 class ObservableSingle(Observable, metaclass=ObservableMeta):
     
     def __init__(self, subscribe):
-        self.repeat = self.__repeat
+        self.repeat = self.__repeat # Stitch in instance method
 
     # We do this to avoid overwriting the class method with the same name
     def __repeat(self, repeat_count=None):

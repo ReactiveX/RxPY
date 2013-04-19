@@ -396,93 +396,89 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
 
+    def window_with_time(self, timespan, timeshift=None, scheduler=None):
+        source = self
+        
+        if timeshift is None:
+            timeshift = timespan
+        
+        scheduler = scheduler or timeout_scheduler
+        
+        def subscribe(observer):
+            timerD = SerialDisposable()
+            next_shift = timeshift
+            next_span = timespan
+            total_time = 0
+            q = []
+            
+            group_disposable = CompositeDisposable(timerD)
+            ref_count_disposable = RefCountDisposable(group_disposable)
+            
+            def create_timer():
+                nonlocal q, total_time, next_span, next_shift
 
-    # observableProto.window_with_time = function (timespan, time_shift_or_scheduler, scheduler) {
-    #     source = this, time_shift
-    #     if not time_shift_or_scheduler:
-    #         time_shift = timespan
-    #     
-    #     if not scheduler:
-    #         scheduler = timeoutScheduler
-    #     
-    #     if (typeof time_shift_or_scheduler === 'number') {
-    #         time_shift = time_shift_or_scheduler
-    #     } else if (typeof time_shift_or_scheduler === 'object') {
-    #         time_shift = timespan
-    #         scheduler = time_shift_or_scheduler
-    #     }
-    #     return AnonymousObservable(function (observer) {
-    #         create_timer,
-    #             group_disposable,
-    #             next_shift = time_shift,
-    #             nextSpan = timespan,
-    #             q = [],
-    #             ref_count_disposable,
-    #             timerD = SerialDisposable(),
-    #             totalTime = 0
-    #         group_disposable = CompositeDisposable(timerD)
-    #         ref_count_disposable = RefCountDisposable(group_disposable)
-    #         create_timer = function () {
-    #             isShift, isSpan, m, newTotalTime, ts
-    #             m = SingleAssignmentDisposable()
-    #             timerD.disposable = m
-    #             isSpan = False
-    #             isShift = False
-    #             if (nextSpan === next_shift) {
-    #                 isSpan = True
-    #                 isShift = True
-    #             } else if (nextSpan < next_shift) {
-    #                 isSpan = True
-    #             } else {
-    #                 isShift = True
-    #             }
-    #             newTotalTime = isSpan ? nextSpan : next_shift
-    #             ts = newTotalTime - totalTime
-    #             totalTime = newTotalTime
-    #             if (isSpan) {
-    #                 nextSpan += time_shift
-    #             }
-    #             if (isShift) {
-    #                 next_shift += time_shift
-    #             }
-    #             m.disposable = scheduler.scheduleWithRelative(ts, function () {
-    #                 s
-    #                 if (isShift) {
-    #                     s = Subject()
-    #                     q.append(s)
-    #                     observer.on_next(add_ref(s, ref_count_disposable))
-    #                 }
-    #                 if (isSpan) {
-    #                     s = q.shift()
-    #                     s.on_completed()
-    #                 }
-    #                 create_timer()
-    #             )
-    #         }
-    #         q.append(Subject())
-    #         observer.on_next(add_ref(q[0], ref_count_disposable))
-    #         create_timer()
-    #         group_disposable.add(source.subscribe(function (x) {
-    #             i, s
-    #             for s in q:
-    #                 s.on_next(x)
-    #             }
-    #         }, function (e) {
-    #             for s in q:
-    #                 s.on_error(e)
-    #             }
-    #             observer.on_error(e)
-    #         }, function () {
-    #             for s in q:
-    #                 s.on_completed()
-    #             }
-    #             observer.on_completed()
-    #         )
-    #         return ref_count_disposable
-    #     
-    # }
+                m = SingleAssignmentDisposable()
+                timerD.disposable = m
+                is_span = False
+                is_shift = False
 
-    def window_with_time_or_count(self, timespan, count, scheduler):
+                if next_span == next_shift:
+                    is_span = True
+                    is_shift = True
+                elif next_span < next_shift:
+                    is_span = True
+                else:
+                    is_shift = True
+                
+                new_total_time = next_span if is_span else next_shift
+                ts = new_total_time - total_time
+                total_time = new_total_time
+                if is_span:
+                    next_span += timeshift
+                
+                if is_shift:
+                    next_shift += timeshift
+                
+                def action(scheduler, state=None):
+                    s = None
+                    
+                    if is_shift:
+                        s = Subject()
+                        q.append(s)
+                        observer.on_next(add_ref(s, ref_count_disposable))
+                    
+                    if is_span:
+                        s = q.pop(0)
+                        s.on_completed()
+                    
+                    create_timer()
+                m.disposable = scheduler.schedule_relative(ts, action)
+            
+            q.append(Subject())
+            observer.on_next(add_ref(q[0], ref_count_disposable))
+            create_timer()
+            
+            def on_next(x):
+                for s in q:
+                    s.on_next(x)
+            
+            def on_error(e):
+                for s in q:
+                    s.on_error(e)
+                
+                observer.on_error(e)
+            
+            def on_completed():
+                for s in q:
+                    s.on_completed()
+                
+                observer.on_completed()
+            
+            group_disposable.add(source.subscribe(on_next, on_error, on_completed))
+            return ref_count_disposable
+        return AnonymousObservable(subscribe)
+
+    def window_with_time_or_count(self, timespan, count, scheduler=None):
         source = self
         scheduler = scheduler or timeout_scheduler
 
@@ -569,7 +565,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         Returns an observable sequence of buffers.
         """
         if not timeshift:
-            time_shift = timespan
+            timeshift = timespan
         
         scheduler = scheduler or timeout_scheduler
         
@@ -596,7 +592,35 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or timeout_scheduler
         return self.window_with_time_or_count(timespan, count, scheduler) \
             .select_many(lambda x: x.to_array())
-        
+    
+    def time_interval(self, scheduler):
+        """Records the time interval between consecutive values in an 
+        observable sequence.
+    
+        1 - res = source.time_interval();
+        2 - res = source.time_interval(Scheduler.timeout)
+    
+        Keyword arguments:
+        scheduler -- [Optional] Scheduler used to compute time intervals. If 
+            not specified, the timeout scheduler is used.
+    
+        Return An observable sequence with time interval information on values.
+        """
+        source = self
+        scheduler = scheduler or timeout_scheduler
+
+        def defer():
+            last = scheduler.now()
+
+            def selector(x):
+                now = scheduler.now() 
+                span = now - last
+                last = now
+                return dict(value=x, interval=span)
+                
+            return source.select(selector)
+        return Observable.defer(defer)
+
     def timestamp(self, scheduler=None):
         """Records the timestamp for each value in an observable sequence.
       

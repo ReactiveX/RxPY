@@ -15,7 +15,8 @@ def are_elements_equal(expected, actual, comparer=None, message=None):
     is_ok = True
     comparer = comparer or default_comparer
     if len(expected) != len(actual):
-        assert False, 'Not equal length. Expected: %s Actual: %s' % (len(expected), len(actual))
+        msg = 'Not equal length. Expected: %s Actual: %s' % (len(expected), len(actual))
+        assert False, msg
         return
     
     for i, ex in enumerate(expected):
