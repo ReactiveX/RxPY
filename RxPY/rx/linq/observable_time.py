@@ -81,7 +81,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                     if d <= now:
                         d = now + p
                 
-                observer.on_ext(count)
+                observer.on_next(count)
                 count += 1
                 self(d)
             
