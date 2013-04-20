@@ -34,6 +34,8 @@ class TestScheduler(VirtualTimeScheduler):
 
         log.debug("TestScheduler.schedule_absolute(duetime=%s, state=%s)" % (duetime, state))
 
+        duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
+
         if duetime <= self.clock:
             duetime = self.clock + 1
         
@@ -57,7 +59,7 @@ class TestScheduler(VirtualTimeScheduler):
     
     @classmethod
     def to_relative(cls, timespan):
-        """Converts timespan to milliseconds"""
+        """Converts timespan to from datetime/timedelta to milliseconds"""
 
         if isinstance(timespan, datetime):
             timespan = timespan - datetime.fromtimestamp(0)
