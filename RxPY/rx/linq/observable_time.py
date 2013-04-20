@@ -901,3 +901,64 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             original.disposable = source.subscribe(on_next, on_error, on_completed)
             return CompositeDisposable(subscription, timer)
         return AnonymousObservable(subscribe)
+
+    @classmethod
+    def generate_with_relative_time(cls, initial_state, condition, iterate, result_selector, time_selector, scheduler=None):
+        """Generates an observable sequence by iterating a state from an 
+        initial state until the condition fails.
+        
+        res = source.generate_with_relative_time(0, 
+            lambda x: True, 
+            lambda x: x + 1, 
+            lambda x: x, 
+            lambda x: 500
+    
+        initial_state -- Initial state.
+        condition -- Condition to terminate generation (upon returning false).
+        iterate -- Iteration step function.
+        result_selector -- Selector function for results produced in the sequence.
+        time_selector -- Time selector function to control the speed of values 
+            being produced each iteration, returning integer values denoting 
+            milliseconds.
+        scheduler -- [Optional] Scheduler on which to run the generator loop. 
+            If not specified, the timeout scheduler is used.
+    
+        Returns the generated sequence.
+        """
+        scheduler = scheduler or timeout_scheduler
+        
+        def subscribe(observer):
+            state = initial_state
+            has_result = False
+            result = None
+            first = True
+            time = None
+            
+            def action(this):
+                nonlocal state, first, has_result, result
+
+                if has_result:
+                    observer.on_next(result)
+                
+                try:
+                    if first:
+                        first = False
+                    else:
+                        state = iterate(state)
+                    
+                    has_result = condition(state)
+                    if has_result:
+                        result = result_selector(state)
+                        time = time_selector(state)
+                    
+                except Exception as e:
+                    observer.on_error(e)
+                    return
+                
+                if has_result:
+                    this(time)
+                else:
+                    observer.on_completed()
+
+            return scheduler.schedule_recursive_with_relative(0, action)
+        return AnonymousObservable(subscribe)

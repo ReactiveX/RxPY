@@ -1126,205 +1126,174 @@ def test_timeout_duration_simple_source_throws():
     ys.subscriptions.assert_equal(subscribe(200, 310))
     zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 420), subscribe(420, 450))
 
-# def test_Generate_TimeSpan_Finite():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             return x <= 3
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return x + 1
-#         }, scheduler)
+def test_generate_timespan_finite():    
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
-
-# def test_Generate_TimeSpan_Throw_Condition():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return x + 1
-#         }, scheduler)
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: x <= 3,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: x + 1,
+            scheduler=scheduler)
     
-#     results.messages.assert_equal(on_error(201, ex))
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
 
-# def test_Generate_TimeSpan_Throw_ResultSelector():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return x + 1
-#         }, scheduler)
+def test_generate_timespan_throw_condition():
+    ex = 'ex'
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_error(201, ex))
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: _raise(ex),
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: x + 1,
+            scheduler=scheduler)
+        
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_error(201, ex))
 
-# def test_Generate_TimeSpan_Throw_Iterate():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return x + 1
-#         }, scheduler)
+def test_generate_timespan_throw_result_selector():
+    ex = 'ex'
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
-
-# def test_Generate_TimeSpan_Throw_TimeSelector():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             throw ex
-#         }, scheduler)
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: _raise(ex),
+            lambda x: x + 1,
+            scheduler=scheduler)
     
-#     results.messages.assert_equal(on_error(201, ex))
+    results = scheduler.start(create) 
+    results.messages.assert_equal(on_error(201, ex))
 
-# def test_Generate_TimeSpan_Dispose():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.startWithDispose(function () {
-#         return Observable.generateWithRelativeTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return x + 1
-#         }, scheduler)
-#     }, 210)
-#     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
-
-# def test_Generate_DateTimeOffset_Finite():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             return x <= 3
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return scheduler.now() + x + 1
-#         }, scheduler)
+def test_generate_timespan_throw_iterate():
+    ex = 'ex'
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
-
-# def test_Generate_DateTimeOffset_Throw_Condition():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return scheduler.now() + x + 1
-#         }, scheduler)
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: _raise(ex),
+            lambda x: x,
+            lambda x: x + 1,
+            scheduler=scheduler)
     
-#     results.messages.assert_equal(on_error(201, ex))
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
 
-# def test_Generate_DateTimeOffset_Throw_ResultSelector():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return scheduler.now() + x + 1
-#         }, scheduler)
+def test_generate_timespan_throw_timeselector():
+    ex = 'ex'
+    scheduler = TestScheduler()
     
-#     results.messages.assert_equal(on_error(201, ex))
-
-# def test_Generate_DateTimeOffset_Throw_Iterate():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             throw ex
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return scheduler.now() + x + 1
-#         }, scheduler)
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: _raise(ex),
+            scheduler=scheduler)
     
-#     results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(201, ex))
 
-# def test_Generate_DateTimeOffset_Throw_TimeSelector():
-#     var ex, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     results = scheduler.start(create)
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             throw ex
-#         }, scheduler)
+def test_Generate_TimeSpan_Dispose():
     
-#     results.messages.assert_equal(on_error(201, ex))
+    scheduler = TestScheduler()
 
-# def test_Generate_DateTimeOffset_Dispose():
-#     
-#     scheduler = TestScheduler()
-#     results = scheduler.startWithDispose(function () {
-#         return Observable.generateWithAbsoluteTime(0, function (x) {
-#             return true
-#         }, function (x) {
-#             return x + 1
-#         }, function (x) {
-#             return x
-#         }, function (x) {
-#             return scheduler.now() + x + 1
-#         }, scheduler)
-#     }, 210)
-#     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
+    def create():
+        return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create, disposed=210)
+    results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
+
+def test_generate_datetime_offset_finite():
+    scheduler = TestScheduler()
+    
+    return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: scheduler.now() + x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
+
+def test_generate_datetime_offset_throw_condition():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    return Observable.generate_with_relative_time(0, 
+            lambda x: _raise(ex),
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: scheduler.now() + x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(201, ex))
+
+def test_generate_datetime_offset_throw_result_selector():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    
+    return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: _raise(ex),
+            lambda x: scheduler.now() + x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(201, ex))
+
+def test_generate_datetime_offset_throw_iterate():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    
+    return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: _raise(ex),
+            lambda x: x,
+            lambda x: scheduler.now() + x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
+
+def test_generate_datetime_offset_throw_time_selector():
+    ex = 'ex'
+    scheduler = TestScheduler()
+
+    return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: _raise(ex),
+            scheduler=scheduler)
+    
+    results.messages.assert_equal(on_error(201, ex))
+
+def test_generate_datetime_offset_dispose():
+    scheduler = TestScheduler()
+
+    return Observable.generate_with_relative_time(0, 
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: scheduler.now() + x + 1,
+            scheduler=scheduler)
+    
+    results = scheduler.start(create, disposed=210)
+    results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
 
 # def test_Window_with_time_Basic():
 #     , xs
