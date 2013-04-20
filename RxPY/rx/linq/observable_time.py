@@ -11,6 +11,29 @@ from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
 log = logging.getLogger("Rx")
 
 # Rx Utils
+class TimeInterval(object):
+    def __init__(self, value, interval):
+        self.value = value
+        self.interval = interval
+
+    #def __str__(self):
+    #    return "%s@%s" % (self.value, self.interval)
+    
+    #def equals(other):
+    #    return other.interval == self.interval and other.value == self.value
+
+
+class Timestamp(object):
+    def __init__(self, value, timestamp):
+        self.value = value
+        self.timestamp = timestamp
+
+    #def __str__(self):
+    #    return "%s@%s" % (self.value, self.timestamp)
+    
+    #def equals(other):
+    #    return other.timestamp == self.timestamp and other.value == self.value
+
 def add_ref(xs, r):
     def subscribe(observer):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
@@ -176,13 +199,13 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                 should_run = False
                 d = None
                 
-                if notification["value"].kind == 'E':
+                if notification.value.kind == 'E':
                     q = []
                     q.append(notification)
-                    exception = notification["value"].exception
+                    exception = notification.value.exception
                     should_run = not running
                 else:
-                    q.append(dict(value=notification["value"], timestamp=notification["timestamp"] + duetime))
+                    q.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
                     should_run = not active
                     active = True
                 
@@ -203,8 +226,8 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                             running = True
                             while True:
                                 result = None
-                                if len(q) and q[0]["timestamp"] <= scheduler.now():
-                                    result = q.pop(0)["value"]
+                                if len(q) and q[0].timestamp <= scheduler.now():
+                                    result = q.pop(0).value
                                 
                                 if result:
                                     result.accept(observer)
@@ -216,7 +239,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                             recurse_duetime = 0
                             if len(q) > 0:
                                 should_recurse = True
-                                recurse_duetime = max(timedelta(0), q[0]["timestamp"] - scheduler.now())
+                                recurse_duetime = max(timedelta(0), q[0].timestamp - scheduler.now())
                             else:
                                 active = False
                             
@@ -490,13 +513,13 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             group_disposable = CompositeDisposable(timerD)
             ref_count_disposable = RefCountDisposable(group_disposable)
             
-            def create_timer(id):
+            def create_timer(_id):
                 m = SingleAssignmentDisposable()
                 timerD.disposable = m
 
                 def action(scheduler, state):
                     nonlocal n, s, window_id
-                    if id != window_id:
+                    if _id != window_id:
                         return
                     
                     n = 0
@@ -515,8 +538,10 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             
             def on_next(x):
                 nonlocal s, n, window_id
-                new_id = 0
+                
                 new_window = False
+                new_id = 0
+                
                 s.on_next(x)
                 n += 1
                 if n == count:
@@ -613,10 +638,12 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             last = scheduler.now()
 
             def selector(x):
+                nonlocal last
+
                 now = scheduler.now() 
                 span = now - last
                 last = now
-                return dict(value=x, interval=span)
+                return TimeInterval(value=x, interval=span)
                 
             return source.select(selector)
         return Observable.defer(defer)
@@ -634,10 +661,151 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         """
         scheduler = scheduler or timeout_scheduler
 
-        def projection(x):
-            return {
-                "value": x,
-                "timestamp": scheduler.now()
-            }
-        return self.select(projection)
+        def selector(x):
+          return Timestamp(value=x, timestamp=scheduler.now())
 
+        return self.select(selector)
+
+    def sample_observable(self, sampler):
+        source = self
+
+        def subscribe(observer):
+            at_end = None
+            has_value = None
+            value = None
+
+            def sample_subscribe(x):
+                nonlocal has_value
+
+                if has_value:
+                    has_value = False
+                    observer.on_next(value)
+                
+                if at_end:
+                    observer.on_completed()
+
+            def on_next(new_value):
+                nonlocal value, has_value
+                
+                has_value = True
+                value = new_value
+            
+            def on_completed():
+                nonlocal at_end
+
+                at_end = True
+
+            return CompositeDisposable(
+                source.subscribe(on_next, observer.on_error, on_completed),
+                sampler.subscribe(sample_subscribe, observer.on_error, sample_subscribe)
+            )
+        return AnonymousObservable(subscribe)
+    
+    def sample(self, interval=None, sampler=None, scheduler=None):
+        """Samples the observable sequence at each interval.
+        
+        1 - res = source.sample(sampleObservable) // Sampler tick sequence
+        2 - res = source.sample(5000) // 5 seconds
+        2 - res = source.sample(5000, Rx.Scheduler.timeout) // 5 seconds
+     
+        Keyword arguments:
+        source -- Source sequence to sample.
+        interval -- Interval at which to sample (specified as an integer 
+            denoting milliseconds).
+        scheduler -- [Optional] Scheduler to run the sampling timer on. If not
+            specified, the timeout scheduler is used.
+        
+        Returns sampled observable sequence.
+        """
+        scheduler = scheduler or timeout_scheduler
+        if not interval is None:
+            return self.sample_observable(Observable.interval(interval, scheduler=scheduler))
+        
+        return self.sample_observable(sampler)
+
+    def timeout(self, duetime, other=None, scheduler=None):
+        """
+        Returns the source observable sequence or the other observable sequence
+        if duetime elapses.
+    
+        1 - res = source.timeout(new Date()); // As a date
+        2 - res = source.timeout(5000); // 5 seconds
+        3 - res = source.timeout(new Date(), Rx.Observable.returnValue(42)); // As a date and timeout observable
+        4 - res = source.timeout(5000, Rx.Observable.returnValue(42)); // 5 seconds and timeout observable
+        5 - res = source.timeout(new Date(), Rx.Observable.returnValue(42), Rx.Scheduler.timeout); // As a date and timeout observable
+        6 - res = source.timeout(5000, Rx.Observable.returnValue(42), Rx.Scheduler.timeout); // 5 seconds and timeout observable
+        
+        duetime -- Absolute (specified as a datetime object) or relative time 
+            (specified as an integer denoting milliseconds) when a timeout 
+            occurs.
+        other -- [Optional] Sequence to return in case of a timeout. If not 
+            specified, a timeout error throwing sequence will be used.
+        scheduler -- [Optional] Scheduler to run the timeout timers on. If not 
+            specified, the timeout scheduler is used.
+    
+        Returns the source sequence switching to the other sequence in case of 
+        a timeout.
+        """
+        
+        scheduler_method = None
+        source = self
+
+        other = other or Observable.throw_exception(Exception("Timeout"))
+        scheduler = scheduler or timeout_scheduler
+        
+        if isinstance(duetime, datetime):
+            scheduler_method = scheduler.schedule_absolute
+        else:
+            scheduler_method = scheduler.schedule_relative
+        
+        def subscribe(observer):
+            switched = False
+            _id = 0
+            
+            original = SingleAssignmentDisposable()
+            subscription = SerialDisposable()
+            timer = SerialDisposable()
+            subscription.disposable = original
+
+            def create_timer():
+                my_id = _id
+
+                def action(scheduler, state=None):
+                    nonlocal switched
+
+                    switched = (_id == my_id)
+                    timer_wins = switched
+                    if timer_wins:
+                        subscription.disposable = other.subscribe(observer)
+                    
+                timer.disposable = scheduler_method(duetime, action)
+
+            create_timer()
+            def on_next(x):
+                nonlocal _id
+
+                on_next_wins = not switched
+                if on_next_wins:
+                    _id += 1
+                    observer.on_next(x)
+                    create_timer()
+
+            def on_error(e):
+                nonlocal _id
+
+                on_error_wins = not switched
+                if on_error_wins:
+                    _id += 1
+                    observer.on_error(e)
+
+            def on_completed():
+                nonlocal _id
+                
+                on_completed_wins = not switched
+                if on_completed_wins:
+                    _id += 1
+                    observer.on_completed()
+            
+            original.disposable = source.subscribe(on_next, on_error, on_completed)
+            return CompositeDisposable(subscription, timer)
+        return AnonymousObservable(subscribe)

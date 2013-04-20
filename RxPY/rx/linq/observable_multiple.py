@@ -31,6 +31,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
                 def on_complete():
                     nonlocal group
+                    
                     group.remove(inner_subscription)
                     if is_stopped and group.length == 1:
                         observer.on_completed()
@@ -44,6 +45,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             
             def on_complete():
                 nonlocal is_stopped
+
                 is_stopped = True
                 if group.length == 1:
                     observer.on_completed()
