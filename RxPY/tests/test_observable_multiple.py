@@ -117,79 +117,87 @@ def test_take_until_nopreempt_never_never():
     results = scheduler.start(create)
     results.messages.assert_equal()
 
-# def test_Take_until_Preempt_BeforeFirstProduced():
-#     var l, l_msgs, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
-#     r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.take_until(r)
-#     
-#     results.messages.assert_equal(on_completed(210))
-# 
+def test_Take_until_Preempt_BeforeFirstProduced():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
+    r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
+    l = scheduler.create_hot_observable(l_msgs)
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.take_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(210))
 
-# def test_Take_until_Preempt_BeforeFirstProduced_RemainSilentAndProperDisposed():
-#     var l, l_msgs, r, r_msgs, results, scheduler, sourceNotDisposed
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_error(215, 'ex'), on_completed(240)]
-#     r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-#     sourceNotDisposed = false
-#     l = scheduler.create_hot_observable(l_msgs).doAction(function () {
-#         sourceNotDisposed = true
-#     
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.take_until(r)
-#     
-#     results.messages.assert_equal(on_completed(210))
-#     ok(!sourceNotDisposed)
-# 
+def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_disposed():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_error(215, 'ex'), on_completed(240)]
+    r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
+    source_not_disposed = False
 
-# def test_Take_until_NoPreempt_AfterLastProduced_ProperDisposedSignal():
-#     var l, l_msgs, r, r_msgs, results, scheduler, signalNotDisposed
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
-#     r_msgs = [on_next(150, 1), on_next(250, 2), on_completed(260)]
-#     signalNotDisposed = false
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = scheduler.create_hot_observable(r_msgs).doAction(function () {
-#         signalNotDisposed = true
-#     
-#     results = scheduler.start(create)
-#         return l.take_until(r)
-#     
-#     results.messages.assert_equal(on_next(230, 2), on_completed(240))
-#     ok(!signalNotDisposed)
-# 
+    def action():
+        nonlocal source_not_disposed
 
-# def test_SkipUntil_SomeData_Next():
-#     var l, l_msgs, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     r_msgs = [on_next(150, 1), on_next(225, 99), on_completed(230)]
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal(on_next(230, 4), on_next(240, 5), on_completed(250))
-# 
+        source_not_disposed = True
+    l = scheduler.create_hot_observable(l_msgs).do_action(on_next=action)
+    
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.take_until(r)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_completed(210))
+    assert(not source_not_disposed)
 
-# def test_SkipUntil_SomeData_Error():
-#     var ex, l, l_msgs, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     ex = 'ex'
-#     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     r_msgs = [on_next(150, 1), on_error(225, ex)]
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal(on_error(225, ex))
-# 
+def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
+    r_msgs = [on_next(150, 1), on_next(250, 2), on_completed(260)]
+    signal_not_disposed = False
+    l = scheduler.create_hot_observable(l_msgs)
+
+    def action():
+        nonlocal signal_not_disposed
+        signal_not_disposed = True
+    r = scheduler.create_hot_observable(r_msgs).do_action(on_next=action)
+    
+    def create():
+        return l.take_until(r)
+    
+    results = scheduler.start(create)        
+    results.messages.assert_equal(on_next(230, 2), on_completed(240))
+    assert(not signal_not_disposed)
+
+def test_skip_until_somedata_next():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+    r_msgs = [on_next(150, 1), on_next(225, 99), on_completed(230)]
+    l = scheduler.create_hot_observable(l_msgs)
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(230, 4), on_next(240, 5), on_completed(250))
+
+def test_skip_until_somedata_error():
+    scheduler = TestScheduler()
+    ex = 'ex'
+    l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+    r_msgs = [on_next(150, 1), on_error(225, ex)]
+    l = scheduler.create_hot_observable(l_msgs)
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_error(225, ex))
+
 
 # def test_SkipUntil_SomeData_Empty():
 #     var l, l_msgs, r, r_msgs, results, scheduler
@@ -268,18 +276,18 @@ def test_take_until_nopreempt_never_never():
 #     var disposed, l, l_msgs, r, results, scheduler
 #     scheduler = TestScheduler()
 #     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     disposed = false
+#     disposed = False
 #     l = scheduler.create_hot_observable(l_msgs)
 #     r = Observable.create(function () {
 #         return function () {
-#             disposed = true
+#             disposed = True
 #         }
 #     
 #     results = scheduler.start(create)
 #         return l.skipUntil(r)
 #     
 #     results.messages.assert_equal()
-#     ok(disposed)
+#     assert(disposed)
 # 
 
 # def test_Merge_Never2():
@@ -481,9 +489,9 @@ def test_take_until_nopreempt_never_never():
 #     .messages
 #     equal(9, results.length)
 #     for (i = 0 i < 8 i++) {
-#         ok(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
+#         assert(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
 #     }
-#     ok(results[8].value.kind === 'C' && results[8].time === 250)
+#     assert(results[8].value.kind === 'C' && results[8].time === 250)
 # 
 # def test_Merge_Lots3():
 #     var i, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler
@@ -499,9 +507,9 @@ def test_take_until_nopreempt_never_never():
 #     .messages
 #     equal(9, results.length)
 #     for (i = 0 i < 8 i++) {
-#         ok(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
+#         assert(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
 #     }
-#     ok(results[8].value.kind === 'C' && results[8].time === 250)
+#     assert(results[8].value.kind === 'C' && results[8].time === 250)
 # 
 # def test_Merge_ErrorLeft():
 #     var ex, msgs1, msgs2, o1, o2, results, scheduler
@@ -517,21 +525,21 @@ def test_take_until_nopreempt_never_never():
 #     results.messages.assert_equal(on_next(210, 2), on_next(215, 3), on_error(245, ex))
 # 
 # def test_Merge_ErrorCausesDisposal():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler, sourceNotDisposed
+#     var ex, msgs1, msgs2, o1, o2, results, _nch_dduler, sourceNotDisposed
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_error(210, ex)]
 #     msgs2 = [on_next(150, 1), on_next(220, 1), on_completed(250)]
-#     sourceNotDisposed = false
+#     source_not_disposed = False
 #     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).doAction(function () {
-#         return sourceNotDisposed = true
+#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
+#         return source_not_disposed = True
 #     
 #     results = scheduler.start(create)
 #         return Observable.merge(scheduler, o1, o2)
 #     
 #     results.messages.assert_equal(on_error(210, ex))
-#     ok(!sourceNotDisposed)
+#     assert(not source_not_disposed)
 # 
 # def test_Merge_ObservableOfObservable_Data():
 #     var results, scheduler, xs
@@ -662,71 +670,71 @@ def test_take_until_nopreempt_never_never():
 #     results.messages.assert_equal(on_completed(225))
 # 
 # def test_Amb_RegularShouldDisposeLoser():
-#     var msgs1, msgs2, o1, o2, results, scheduler, sourceNotDisposed
+#     var msgs1, msgs2, o1, o2, results, schedule_n, _dourceNotDisposed
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(240)]
 #     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     sourceNotDisposed = false
+#     source_not_disposed = False
 #     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).doAction(function () {
-#         return sourceNotDisposed = true
+#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
+#         return source_not_disposed = True
 #     
 #     results = scheduler.start(create)
 #         return o1.amb(o2)
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_completed(240))
-#     ok(!sourceNotDisposed)
+#     assert(not source_not_disposed)
 # 
 # def test_Amb_WinnerThrows():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler, sourceNotDisposed
+#     var ex, msgs1, msgs2, o1, o2, _nes_dlts, scheduler, sourceNotDisposed
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex)]
 #     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     sourceNotDisposed = false
+#     source_not_disposed = False
 #     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).doAction(function () {
-#         return sourceNotDisposed = true
+#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
+#         return source_not_disposed = True
 #     
 #     results = scheduler.start(create)
 #         return o1.amb(o2)
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
-#     ok(!sourceNotDisposed)
+#     assert(not source_not_disposed)
 # 
 # def test_Amb_LoserThrows():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler, sourceNotDisposed
+#     var ex, msgs1, msgs2, o1, o2,_nre_dults, scheduler, sourceNotDisposed
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
 #     msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
-#     sourceNotDisposed = false
-#     o1 = scheduler.create_hot_observable(msgs1).doAction(function () {
-#         return sourceNotDisposed = true
+#     source_not_disposed = False
+#     o1 = scheduler.create_hot_observable(msgs1).do_action(function () {
+#         return source_not_disposed = True
 #     
 #     o2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
 #         return o1.amb(o2)
 #     
 #     results.messages.assert_equal(on_next(210, 3), on_completed(250))
-#     ok(!sourceNotDisposed)
+#     assert(not source_not_disposed)
 # 
 # def test_Amb_ThrowsBeforeElection():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler, sourceNotDisposed
+#     var ex, msgs1, msgs2, o1, o2, results,_nsc_deduler, sourceNotDisposed
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_error(210, ex)]
 #     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     sourceNotDisposed = false
+#     source_not_disposed = False
 #     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).doAction(function () {
-#         return sourceNotDisposed = true
+#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
+#         return source_not_disposed = True
 #     
 #     results = scheduler.start(create)
 #         return o1.amb(o2)
 #     
 #     results.messages.assert_equal(on_error(210, ex))
-#     ok(!sourceNotDisposed)
+#     assert(not source_not_disposed)
 # 
 # def test_Catch_NoErrors():
 #     var msgs1, msgs2, o1, o2, results, scheduler
@@ -831,7 +839,7 @@ def test_take_until_nopreempt_never_never():
 # def test_Catch_ErrorSpecific_Caught():
 #     var ex, handlerCalled, msgs1, msgs2, o1, o2, results, scheduler
 #     ex = 'ex'
-#     handlerCalled = false
+#     handlerCalled = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
 #     msgs2 = [on_next(240, 4), on_completed(250)]
@@ -839,51 +847,51 @@ def test_take_until_nopreempt_never_never():
 #     o2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             handlerCalled = true
+#             handlerCalled = True
 #             return o2
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
-#     ok(handlerCalled)
+#     assert(handlerCalled)
 # 
 # def test_Catch_ErrorSpecific_CaughtImmediate():
 #     var ex, handlerCalled, msgs2, o2, results, scheduler
 #     ex = 'ex'
-#     handlerCalled = false
+#     handlerCalled = False
 #     scheduler = TestScheduler()
 #     msgs2 = [on_next(240, 4), on_completed(250)]
 #     o2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
 #         return Observable.throwException('ex').catchException(function (e) {
-#             handlerCalled = true
+#             handlerCalled = True
 #             return o2
 #         
 #     
 #     results.messages.assert_equal(on_next(240, 4), on_completed(250))
-#     ok(handlerCalled)
+#     assert(handlerCalled)
 # 
 # def test_Catch_HandlerThrows():
 #     var ex, ex2, handlerCalled, msgs1, o1, results, scheduler
 #     ex = 'ex'
 #     ex2 = 'ex2'
-#     handlerCalled = false
+#     handlerCalled = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
 #     o1 = scheduler.create_hot_observable(msgs1)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             handlerCalled = true
+#             handlerCalled = True
 #             throw ex2
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
-#     ok(handlerCalled)
+#     assert(handlerCalled)
 # 
 # def test_Catch_Nested_OuterCatches():
 #     var ex, firstHandlerCalled, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandlerCalled
 #     ex = 'ex'
-#     firstHandlerCalled = false
-#     secondHandlerCalled = false
+#     firstHandlerCalled = False
+#     secondHandlerCalled = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
 #     msgs2 = [on_next(220, 3), on_completed(225)]
@@ -893,23 +901,23 @@ def test_take_until_nopreempt_never_never():
 #     o3 = scheduler.create_hot_observable(msgs3)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             firstHandlerCalled = true
+#             firstHandlerCalled = True
 #             return o2
 #         .catchException(function (e) {
-#             secondHandlerCalled = true
+#             secondHandlerCalled = True
 #             return o3
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
-#     ok(firstHandlerCalled)
-#     ok(!secondHandlerCalled)
+#     assert(firstHandlerCalled)
+#     assert(not secondHandlerCalled)
 # 
 # def test_Catch_ThrowFromNestedCatch():
 #     var ex, ex2, firstHandlerCalled, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandlerCalled
 #     ex = 'ex'
 #     ex2 = 'ex'
-#     firstHandlerCalled = false
-#     secondHandlerCalled = false
+#     firstHandlerCalled = False
+#     secondHandlerCalled = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
 #     msgs2 = [on_next(220, 3), on_error(225, ex2)]
@@ -919,18 +927,18 @@ def test_take_until_nopreempt_never_never():
 #     o3 = scheduler.create_hot_observable(msgs3)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             firstHandlerCalled = true
+#             firstHandlerCalled = True
 #             equal(e, ex)
 #             return o2
 #         .catchException(function (e) {
-#             secondHandlerCalled = true
+#             secondHandlerCalled = True
 #             equal(e, ex2)
 #             return o3
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
-#     ok(firstHandlerCalled)
-#     ok(secondHandlerCalled)
+#     assert(firstHandlerCalled)
+#     assert(secondHandlerCalled)
 # 
 # def test_On_errorResumeNext_NoErrors():
 #     var msgs1, msgs2, o1, o2, results, scheduler
@@ -1276,7 +1284,7 @@ def test_take_until_nopreempt_never_never():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         ok(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
 #     }
 # 
 # def test_Zip_SomeDataAsymmetric2():
@@ -1310,7 +1318,7 @@ def test_take_until_nopreempt_never_never():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         ok(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
 #     }
 # 
 # def test_Zip_SomeDataSymmetric():
@@ -1344,7 +1352,7 @@ def test_take_until_nopreempt_never_never():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         ok(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
 #     }
 # 
 # def test_Zip_SelectorThrows():

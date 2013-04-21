@@ -208,4 +208,108 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
             
             return source.subscribe(on_next, on_error, on_completed)
         return AnonymousObservable(subscribe)
+    
+    def distinct_until_changed(self, key_selector, comparer):
+        """Returns an observable sequence that contains only distinct 
+        contiguous elements according to the key_selector and the comparer.
+     
+        1 - var obs = observable.distinct_until_changed();
+        2 - var obs = observable.distinct_until_changed(function (x) { return x.id; });
+        3 - var obs = observable.distinct_until_changed(function (x) { return x.id; }, function (x, y) { return x === y; });
+     
+        key_selector -- [Optional] A function to compute the comparison key for
+            each element. If not provided, it projects the value.
+        comparer -- [Optional] Equality comparer for computed key values. If 
+            not provided, defaults to an equality comparer function.
+    
+        Return An observable sequence only containing the distinct contiguous 
+        elements, based on a computed key value, from the source sequence.
+        """
+        source = self
+        key_selector = key_selector or identity
+        comparer = comparer or default_comparer
         
+        def subscribe(observer):
+            has_current_key = False
+            current_key = None
+
+            def on_next(value):
+                comparer_equals = False
+                try:
+                    key = key_selector(value);
+                except Exception as exception:
+                    observer.onError(exception)
+                    return
+                
+                if has_current_key:
+                    try:
+                        comparer_equals = comparer(currentKey, key);
+                    except Exception as exception:
+                        observer.onError(exception)
+                        return
+                    
+                if not has_current_key or not comparer_equals:
+                    has_current_key = True
+                    current_key = key
+                    observer.on_next(value)
+            
+            return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+
+    def do_action(self, observer=None, on_next=None, on_error=None, on_completed=None):
+        """Invokes an action for each element in the observable sequence and 
+        invokes an action upon graceful or exceptional termination of the 
+        observable sequence. This method can be used for debugging, logging, 
+        etc. of query behavior by intercepting the message stream to run 
+        arbitrary actions for messages on the pipeline.
+    
+        1 - observable.do_action(observer);
+        2 - observable.do_action(onNext);
+        3 - observable.do_action(onNext, onError);
+        4 - observable.do_action(onNext, onError, onCompleted);
+     
+        observer -- [Optional] Observer, or ... 
+        on_next -- [Optional] Action to invoke for each element in the observable sequence.
+        on_error -- [Optional] Action to invoke upon exceptional termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
+        on_completed -- [Optional] Action to invoke upon graceful termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
+     
+        Returns the source sequence with the side-effecting behavior applied.   
+        """
+        source = self
+        if not observer is None:
+            on_next = observer.on_next
+            on_error = observer.on_error
+            on_completed = observer.on_ompleted
+        
+        def subscribe(observer):
+            def on_next(x):
+                try:
+                    on_next(x)
+                except Exception as e:
+                    observer.onError(e);
+                
+                observer.on_next(x)
+
+            def on_error(exception):
+                if not on_error:
+                    observer.on_error(exception)
+                else:
+                    try:
+                        on_error(exception)
+                    except Exception as e:
+                        observer.on_error(e)
+                    
+                    observer.on_error(exception)
+
+            def on_completed():
+                if not on_completed:
+                    observer.on_completed()
+                else:
+                    try:
+                        on_completed()
+                    except Exception as e:
+                        observer.on_error(e)
+                    
+                    observer.on_completed()
+            return source.subscribe(on_next, on_error, on_completed)
+        return AnonymousObservable(subscribe)

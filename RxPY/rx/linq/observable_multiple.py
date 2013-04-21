@@ -97,7 +97,105 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         observed inner sequence, in sequential order.
         """
         return self.merge(1)
+
+    def switch(self):
+        """Transforms an observable sequence of observable sequences into an 
+        observable sequence producing values only from the most recent 
+        observable sequence.
+        
+        Returns the observable sequence that at any point in time produces the 
+        elements of the most recent inner observable sequence that has been received.  
+        """
     
+        sources = self
+
+        def subscribe(observer):
+            has_latest = False
+            inner_subscription = SerialDisposable()
+            is_stopped = False
+            latest = 0
+
+            def on_next(inner_source):
+                nonlocal latest, has_latest
+
+                d = SingleAssignmentDisposable()
+                latest += 1
+                _id = latest
+                has_latest = True
+                inner_subscription.disposable = d
+
+                def on_next(x):
+                    if latest == _id:
+                        observer.on_ext(x)
+                
+                def on_error(e):
+                    if latest == _id:
+                        observer.on_error(e)
+                
+                def on_completed():
+                    nonlocal has_latest
+
+                    if latest == _id:
+                        has_latest = False;
+                        if is_stopped:
+                            observer.on_completed()
+                        
+                d.disposable = inner_source.subscribe(on_next, on_error, on_completed)
+            
+            def on_completed():
+                nonlocal is_stopped
+
+                is_stopped = True
+                if not has_latest:
+                    observer.on_completed()
+                
+            subscription = sources.subscribe(on_next, observer.on_error, on_completed)
+            return CompositeDisposable(subscription, inner_subscription)
+        return AnonymousObservable(subscribe)
+
+    def skip_until(self, other):
+        """Returns the values from the source observable sequence only after 
+        the other observable sequence produces a value.
+     
+        other -- The observable sequence that triggers propagation of elements of the source sequence.
+     
+        Returns an observable sequence containing the elements of the source 
+        sequence starting from the point the other sequence triggered 
+        propagation.    
+        """
+    
+        source = self
+
+        def subscribe(observer):
+            is_open = False
+
+            def on_next(left):
+                if is_open:
+                    observer.on_next(left)
+            
+            def on_completed():
+                if is_open:
+                    observer.on_completed()
+            
+            disposables = CompositeDisposable(source.subscribe(on_next, observer.on_error, on_completed))
+
+            right_subscription = SingleAssignmentDisposable()
+            disposables.add(right_subscription)
+
+            def on_next2(x):
+                nonlocal is_open
+
+                is_open = True
+                right_subscription.dispose()
+            
+            def on_completed2():
+                right_subscription.dispose()
+
+            right_subscription.disposable = other.subscribe(on_next2, observer.on_error, on_completed2)
+
+            return disposables;
+        return AnonymousObservable(subscribe)
+
     def take_until(self, other):
         """Returns the values from the source observable sequence until the 
         other observable sequence produces a value.
@@ -114,9 +212,10 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         def subscribe(observer):
             def on_completed(x):
                 observer.on_completed()
-                
+
             return CompositeDisposable(
                 source.subscribe(observer),
                 other.subscribe(on_completed, observer.on_error, noop)
             )
         return AnonymousObservable(subscribe)
+
