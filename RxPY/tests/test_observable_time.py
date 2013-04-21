@@ -1295,216 +1295,219 @@ def test_generate_datetime_offset_dispose():
     results = scheduler.start(create, disposed=210)
     results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
 
-# def test_Window_with_time_Basic():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + " " + x.toString()
+def test_window_with_time_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        def selector(w, i):
+            return w.select(lambda x: "%s %s" % (i, x))
+    
+        return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+def test_window_with_time_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
+    
+    def create():
+        def selector(w, i):
+            return w.select(lambda x: "%s %s" % (i, x))
+        
+        return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_error(600, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+def test_Window_with_time_disposed():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        def selector(w, i):
+            return w.select(lambda x: "%s %s" % (i, x))
+        
+        return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+    
+    results = scheduler.start(create, disposed=370)
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
+    xs.subscriptions.assert_equal(subscribe(200, 370))
+
+def test_window_with_time_basic_same():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+
+    def create():
+        def selector(w, i):
+            return w.select(lambda x: "%s %s" % (i, x))
+        
+        return xs.window_with_time(100, scheduler=scheduler).select(selector).merge_observable()
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(380, "1 7"), on_next(420, "2 8"), on_next(470, "2 9"), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+def test_buffer_with_time_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        return xs.buffer_with_time(100, 70, scheduler=scheduler).select(lambda x: ",".join([str(a) for a in x]))
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(300, "2,3,4"), on_next(370, "4,5,6"), on_next(440, "6,7,8"), on_next(510, "8,9"), on_next(580, ""), on_next(600, ""), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+def test_buffer_with_time_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
+    
+    def create():
+        return xs.buffer_with_time(100, 70, scheduler=scheduler).select(lambda x: ",".join([str(a) for a in x]))
+    
+    results = scheduler.start(create)    
+    
+    results.messages.assert_equal(on_next(300, "2,3,4"), on_next(370, "4,5,6"), on_next(440, "6,7,8"), on_next(510, "8,9"), on_next(580, ""), on_error(600, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+def test_buffer_with_time_disposed():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        return xs.buffer_with_time(100, 70, scheduler=scheduler).select(lambda x: ",".join([str(a) for a in x]))
+
+    results = scheduler.start(create, disposed=370)
+    results.messages.assert_equal(on_next(300, "2,3,4"))
+    xs.subscriptions.assert_equal(subscribe(200, 370))
+
+def test_Buffer_with_time_basic_same():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        return xs.buffer_with_time(100, scheduler=scheduler).select(lambda x: ",".join([str(a) for a in x]))
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(300, "2,3,4"), on_next(400, "5,6,7"), on_next(500, "8,9"), on_next(600, ""), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
+
+# Delay with selector
+def test_delay_duration_simple1():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 10), on_next(220, 30), on_next(230, 50), on_next(240, 35), on_next(250, 20), on_completed(260))
+    
+    def create():
+        def selector(x):
+            return scheduler.create_cold_observable(on_next(x, '!'))
+    
+        return xs.delay_with_selector(selector)
             
-#         }).merge_observable()
-    
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# def test_Window_with_time_Error():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
-#     results = scheduler.start(create)
-#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + " " + x.toString()
-            
-#         }).merge_observable()
-    
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_error(600, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# def test_Window_with_time_Disposed():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.window_with_time(100, 70, scheduler).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + " " + x.toString()
-            
-#         }).merge_observable()
-#     }, 370)
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
-#     xs.subscriptions.assert_equal(subscribe(200, 370))
-
-# def test_Window_with_time_Basic_Same():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.window_with_time(100, scheduler).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + " " + x.toString()
-            
-#         }).merge_observable()
-    
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(380, "1 7"), on_next(420, "2 8"), on_next(470, "2 9"), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# def test_BufferWithTime_Basic():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.bufferWithTime(100, 70, scheduler).select(function (x) {
-#             return x.toString()
+    results = scheduler.start(create)
         
+    results.messages.assert_equal(on_next(210 + 10, 10), on_next(220 + 30, 30), on_next(250 + 20, 20), on_next(240 + 35, 35), on_next(230 + 50, 50), on_completed(280))
+    xs.subscriptions.assert_equal(subscribe(200, 260))
+
+def test_delay_duration_simple2():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
+    ys = scheduler.create_cold_observable(on_next(10, '!'))
     
-#     results.messages.assert_equal(on_next(300, "2,3,4"), on_next(370, "4,5,6"), on_next(440, "6,7,8"), on_next(510, "8,9"), on_next(580, ""), on_next(600, ""), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# def test_BufferWithTime_Error():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
-#     results = scheduler.start(create)
-#         return xs.bufferWithTime(100, 70, scheduler).select(function (x) {
-#             return x.toString()
-        
+    def create():
+        return xs.delay_with_selector(lambda _: ys)
     
-#     results.messages.assert_equal(on_next(300, "2,3,4"), on_next(370, "4,5,6"), on_next(440, "6,7,8"), on_next(510, "8,9"), on_next(580, ""), on_error(600, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# def test_BufferWithTime_Disposed():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.bufferWithTime(100, 70, scheduler).select(function (x) {
-#             return x.toString()
-        
-#     }, 370)
-#     results.messages.assert_equal(on_next(300, "2,3,4"))
-#     xs.subscriptions.assert_equal(subscribe(200, 370))
-
-# def test_BufferWithTime_Basic_Same():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.bufferWithTime(100, scheduler).select(function (x) {
-#             return x.toString()
-        
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_next(300, "2,3,4"), on_next(400, "5,6,7"), on_next(500, "8,9"), on_next(600, ""), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
+    results.messages.assert_equal(on_next(210 + 10, 2), on_next(220 + 10, 3), on_next(230 + 10, 4), on_next(240 + 10, 5), on_next(250 + 10, 6), on_completed(300))
+    xs.subscriptions.assert_equal(subscribe(200, 300))
+    ys.subscriptions.assert_equal(subscribe(210, 220), subscribe(220, 230), subscribe(230, 240), subscribe(240, 250), subscribe(250, 260))
 
-
-# // Delay with selector
-# def test_Delay_Duration_Simple1():
-#     var results, xs, scheduler
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 10), on_next(220, 30), on_next(230, 50), on_next(240, 35), on_next(250, 20), on_completed(260))
-#     results = scheduler.start(create)
-#         return xs.delayWithSelector(function (x) {
-#             return scheduler.create_cold_observable(on_next(x, '!'))
-        
+def test_delay_duration_simple3():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
+    ys = scheduler.create_cold_observable(on_next(100, '!'))
     
-#     results.messages.assert_equal(on_next(210 + 10, 10), on_next(220 + 30, 30), on_next(250 + 20, 20), on_next(240 + 35, 35), on_next(230 + 50, 50), on_completed(280))
-#     xs.subscriptions.assert_equal(subscribe(200, 260))
-
-# def test_Delay_Duration_Simple2():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-#     ys = scheduler.create_cold_observable(on_next(10, '!'))
-#     results = scheduler.start(create)
-#         return xs.delayWithSelector(function () {
-#             return ys
-        
+    def create():
+        return xs.delay_with_selector(lambda _: ys)
     
-#     results.messages.assert_equal(on_next(210 + 10, 2), on_next(220 + 10, 3), on_next(230 + 10, 4), on_next(240 + 10, 5), on_next(250 + 10, 6), on_completed(300))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-#     ys.subscriptions.assert_equal(subscribe(210, 220), subscribe(220, 230), subscribe(230, 240), subscribe(240, 250), subscribe(250, 260))
-
-# def test_Delay_Duration_Simple3():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-#     ys = scheduler.create_cold_observable(on_next(100, '!'))
-#     results = scheduler.start(create)
-#         return xs.delayWithSelector(function () {
-#             return ys
-        
+    results = scheduler.start(create)    
     
-#     results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-#     ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
+    results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
+    xs.subscriptions.assert_equal(subscribe(200, 300))
+    ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
 
-# def test_Delay_Duration_Simple4_InnerEmpty():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-#     ys = scheduler.create_cold_observable(on_completed(100))
-#     results = scheduler.start(create)
-#         return xs.delayWithSelector(function () {
-#             return ys
-        
+def test_delay_duration_simple4_inner_empty():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
+    ys = scheduler.create_cold_observable(on_completed(100))
     
-#     results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-#     ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
-
-# def test_Delay_Duration_Dispose1():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-#     ys = scheduler.create_cold_observable(on_next(200, '!'))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.delayWithSelector(function () {
-#             return ys
+    def create():
+        return xs.delay_with_selector(lambda _: ys)
+    
+    results = scheduler.start(create)
         
-#     }, 425)
-#     results.messages.assert_equal(on_next(210 + 200, 2), on_next(220 + 200, 3))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-#     ys.subscriptions.assert_equal(subscribe(210, 410), subscribe(220, 420), subscribe(230, 425), subscribe(240, 425), subscribe(250, 425))
+    results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
+    xs.subscriptions.assert_equal(subscribe(200, 300))
+    ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
 
-# def test_Delay_Duration_Dispose2():
-#     , xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(400, 3), on_completed(500))
-#     ys = scheduler.create_cold_observable(on_next(50, '!'))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.delayWithSelector(function () {
-#             return ys
+def test_delay_duration_dispose1():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
+    ys = scheduler.create_cold_observable(on_next(200, '!'))
+    
+    def create():
+        return xs.delay_with_selector(lambda _: ys)
         
-#     }, 300)
-#     results.messages.assert_equal(on_next(210 + 50, 2))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-#     ys.subscriptions.assert_equal(subscribe(210, 260))
+    results = scheduler.start(create, disposed=425)
+    results.messages.assert_equal(on_next(210 + 200, 2), on_next(220 + 200, 3))
+    xs.subscriptions.assert_equal(subscribe(200, 300))
+    ys.subscriptions.assert_equal(subscribe(210, 410), subscribe(220, 420), subscribe(230, 425), subscribe(240, 425), subscribe(250, 425))
+
+def test_delay_duration_dispose2():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(400, 3), on_completed(500))
+    ys = scheduler.create_cold_observable(on_next(50, '!'))
+    
+    def create():
+        return xs.delay_with_selector(lambda _: ys)
+        
+    results = scheduler.start(create, disposed=300)
+    results.messages.assert_equal(on_next(210 + 50, 2))
+    xs.subscriptions.assert_equal(subscribe(200, 300))
+    ys.subscriptions.assert_equal(subscribe(210, 260))
 
 
 # // TakeLastBuffer
-# def test_takeLastBufferWithTime_Zero1():
+# def test_takeLastBuffer_with_time_Zero1():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(0, scheduler)
+#         return xs.takeLastBuffer_with_time(0, scheduler)
     
 #     res.messages.assert_equal(on_next(230, function (lst) {
 #         return lst.length === 0
 #     }), on_completed(230))
 #     xs.subscriptions.assert_equal(subscribe(200, 230))
 
-# def test_takeLastBufferWithTime_Zero2():
+# def test_takeLastBuffer_with_time_Zero2():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(0, scheduler)
+#         return xs.takeLastBuffer_with_time(0, scheduler)
     
 #     res.messages.assert_equal(on_next(230, function (lst) {
 #         return lst.length === 0
@@ -1520,83 +1523,83 @@ def test_generate_datetime_offset_dispose():
 #     return true
 # }
 
-# def test_takeLastBufferWithTime_Some1():
+# def test_takeLastBuffer_with_time_Some1():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(240))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(25, scheduler)
+#         return xs.takeLastBuffer_with_time(25, scheduler)
     
 #     res.messages.assert_equal(on_next(240, function (lst) {
 #         return arrayEqual(lst, [2, 3])
 #     }), on_completed(240))
 #     xs.subscriptions.assert_equal(subscribe(200, 240))
 
-# def test_takeLastBufferWithTime_Some2():
+# def test_takeLastBuffer_with_time_Some2():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(300))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(25, scheduler)
+#         return xs.takeLastBuffer_with_time(25, scheduler)
     
 #     res.messages.assert_equal(on_next(300, function (lst) {
 #         return lst.length === 0
 #     }), on_completed(300))
 #     xs.subscriptions.assert_equal(subscribe(200, 300))
 
-# def test_takeLastBufferWithTime_Some3():
+# def test_takeLastBuffer_with_time_Some3():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_next(270, 7), on_next(280, 8), on_next(290, 9), on_completed(300))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(45, scheduler)
+#         return xs.takeLastBuffer_with_time(45, scheduler)
     
 #     res.messages.assert_equal(on_next(300, function (lst) {
 #         return arrayEqual(lst, [6, 7, 8, 9])
 #     }), on_completed(300))
 #     xs.subscriptions.assert_equal(subscribe(200, 300))
 
-# def test_takeLastBufferWithTime_Some4():
+# def test_takeLastBuffer_with_time_Some4():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(240, 2), on_next(250, 3), on_next(280, 4), on_next(290, 5), on_next(300, 6), on_completed(350))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(25, scheduler)
+#         return xs.takeLastBuffer_with_time(25, scheduler)
     
 #     res.messages.assert_equal(on_next(350, function (lst) {
 #         return lst.length === 0
 #     }), on_completed(350))
 #     xs.subscriptions.assert_equal(subscribe(200, 350))
 
-# def test_takeLastBufferWithTime_All():
+# def test_takeLastBuffer_with_time_All():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(50, scheduler)
+#         return xs.takeLastBuffer_with_time(50, scheduler)
     
 #     res.messages.assert_equal(on_next(230, function (lst) {
 #         return arrayEqual(lst, [1, 2])
 #     }), on_completed(230))
 #     xs.subscriptions.assert_equal(subscribe(200, 230))
 
-# def test_takeLastBufferWithTime_Error():
+# def test_takeLastBuffer_with_time_Error():
 #     var ex, res, scheduler, xs
 #     scheduler = TestScheduler()
 #     ex = 'ex'
 #     xs = scheduler.create_hot_observable(on_error(210, ex))
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(50, scheduler)
+#         return xs.takeLastBuffer_with_time(50, scheduler)
     
 #     res.messages.assert_equal(on_error(210, ex))
 #     xs.subscriptions.assert_equal(subscribe(200, 210))
 
-# def test_takeLastBufferWithTime_Never():
+# def test_takeLastBuffer_with_time_Never():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_hot_observable()
 #     res = scheduler.start(create)
-#         return xs.takeLastBufferWithTime(50, scheduler)
+#         return xs.takeLastBuffer_with_time(50, scheduler)
     
 #     res.messages.assert_equal()
 #     xs.subscriptions.assert_equal(subscribe(200, 1000))

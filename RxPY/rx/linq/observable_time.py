@@ -962,3 +962,97 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
             return scheduler.schedule_recursive_with_relative(0, action)
         return AnonymousObservable(subscribe)
+
+    def delay_subscription(self, duetime, scheduler):
+        """Time shifts the observable sequence by delaying the subscription.
+    
+        1 - res = source.delay_subscription(5000) // 5s
+        2 - res = source.delay_subscription(5000, Scheduler.timeout) // 5 seconds
+    
+        duetime -- Absolute or relative time to perform the subscription at.
+        scheduler [Optional] Scheduler to run the subscription delay timer on. 
+            If not specified, the timeout scheduler is used.
+    
+        Returns time-shifted sequence.
+        """
+        scheduler = scheduler or timeout_scheduler
+
+        def selector(x):
+            return Observable.empty()
+        return this.delay_with_selector(Observable.timer(duetime, scheduler), selector)
+
+    def delay_with_selector(self, subscription_delay=None, delay_duration_selector=None):
+        """Time shifts the observable sequence based on a subscription delay 
+        and a delay selector function for each element.
+    
+        1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000)) # with selector only
+        2 - res = source.delay_with_selector(Observable.timer(2000), lambda x: Observable.timer(x)) # with delay and selector
+    
+        subscription_delay -- [Optional] Sequence indicating the delay for the 
+            subscription to the source. 
+        delay_duration_selector [Optional] Selector function to retrieve a 
+            sequence indicating the delay for each given element.
+    
+        Returns time-shifted sequence.
+        """
+        source = self
+        sub_delay, selector = None, None
+
+        if isinstance(subscription_delay, Observable):
+            selector = delay_duration_selector
+            sub_delay = subscription_delay
+        else:
+            selector = subscription_delay
+        
+        def subscribe(observer):
+            delays = CompositeDisposable() 
+            at_end = False 
+
+            def done():
+                if (at_end and delays.length == 0):
+                    observer.on_completed()
+            
+            subscription = SerialDisposable()
+
+            def start():
+                def on_next(x):
+                    try:
+                        delay = selector(x)
+                    except Exception as error:
+                        observer.on_error(error)
+                        return
+                    
+                    d = SingleAssignmentDisposable()
+                    delays.add(d)
+
+                    def on_next(_):
+                        observer.on_next(x)
+                        delays.remove(d)
+                        done()
+                    
+                    def on_completed():
+                        observer.on_next(x)
+                        delays.remove(d)
+                        done()
+                    
+                    d.disposable = delay.subscribe(on_next, observer.on_error, on_completed)
+                
+                def on_completed():
+                    nonlocal at_end
+                    
+                    at_end = True
+                    subscription.dispose()
+                    done()
+                
+                subscription.disposable = source.subscribe(on_next, observer.on_error, on_completed)
+
+            if not sub_delay:
+                start()
+            else:
+                subscription.disposable(sub_delay.subscribe(
+                    lambda _: start(),
+                    observer.on_error,
+                    lambda: start()))
+            
+            return CompositeDisposable(subscription, delays)
+        return AnonymousObservable(subscribe)
