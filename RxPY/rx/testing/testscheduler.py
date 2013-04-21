@@ -127,22 +127,37 @@ class TestScheduler(VirtualTimeScheduler):
         Returns hot observable sequence that can be used to assert the timing 
         of subscriptions and notifications.
         """
-        messages = list(args)
+
+        if len(args) and isinstance(args[0], list):
+            messages = args[0]
+        else:
+            messages = list(args)
         return HotObservable(self, messages)
 
     def create_cold_observable(self, *args):
-        """Creates a cold observable using the specified timestamped notification messages either as an array or arguments.
+        """Creates a cold observable using the specified timestamped 
+        notification messages either as an array or arguments.
         
         Keyword arguments:
-        messages -- Notifications to surface through the created sequence at their specified virtual time offsets from the sequence subscription time.
+        messages -- Notifications to surface through the created sequence at 
+            their specified virtual time offsets from the sequence subscription 
+            time.
         
-        Returns cold observable sequence that can be used to assert the timing of subscriptions and notifications.
+        Returns cold observable sequence that can be used to assert the timing 
+        of subscriptions and notifications.
         """
-        messages = list(args)
+        
+        if len(args) and isinstance(args[0], list):
+            messages = args[0]
+        else:
+            messages = list(args)
         return ColdObservable(self, messages)
     
     def create_observer(self):
-        """Creates an observer that records received notification messages and timestamps those. Return an Observer that can be used to assert the timing of received notifications.
+        """Creates an observer that records received notification messages and 
+        timestamps those. Return an Observer that can be used to assert the 
+        timing of received notifications.
         """
+        
         return MockObserver(self)
     

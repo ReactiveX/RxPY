@@ -9,25 +9,25 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-# def test_while_always_false():
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
+def test_while_always_false():
+    scheduler = TestScheduler()
+    xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
     
-#     def factory():
-#         def predicate(x):
-#             return False
+    def create():
+        def predicate(x):
+            return False
 
-#         return Observable.while_do(predicate, xs)
-#     results = scheduler.start_with_create(factory)
+        return Observable.while_do(predicate, xs)
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_completed(200))
-#     xs.subscriptions.assert_equal()
+    results.messages.assert_equal(on_completed(200))
+    xs.subscriptions.assert_equal()
 
 # def test_While_AlwaysTrue():
 #     var results, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.whileDo(function () {
 #             return True
 #         }, xs)
@@ -41,7 +41,7 @@ created = ReactiveTest.created
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(onError(50, ex))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.whileDo(function () {
 #             return True
 #         }, xs)
@@ -54,7 +54,7 @@ created = ReactiveTest.created
 #     var results, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.whileDo(function () {
 #             return True
 #         }, xs)
@@ -68,7 +68,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 #     n = 0
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.whileDo(function () {
 #             return ++n < 3
 #         }, xs)
@@ -83,7 +83,7 @@ created = ReactiveTest.created
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 #     n = 0
 #     ex = 'ex'
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.whileDo(function () {
 #             if (++n < 3) {
 #                 return True
@@ -101,7 +101,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.createHotObservable(on_next(210, 1), on_next(250, 2), on_completed(300))
 #     ys = scheduler.createHotObservable(on_next(310, 3), on_next(350, 4), on_completed(400))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return True
 #         }, xs, ys)
@@ -116,7 +116,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.createHotObservable(on_next(210, 1), on_next(250, 2), on_completed(300))
 #     ys = scheduler.createHotObservable(on_next(310, 3), on_next(350, 4), on_completed(400))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return False
 #         }, xs, ys)
@@ -132,7 +132,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.createHotObservable(on_next(210, 1), on_next(250, 2), on_completed(300))
 #     ys = scheduler.createHotObservable(on_next(310, 3), on_next(350, 4), on_completed(400))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             throw ex
 #         }, xs, ys)
@@ -147,7 +147,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.createHotObservable(on_next(210, 1), on_next(250, 2))
 #     ys = scheduler.createHotObservable(on_next(310, 3), on_next(350, 4), on_completed(400))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return True
 #         }, xs, ys)
@@ -161,7 +161,7 @@ created = ReactiveTest.created
 #     var results, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             return False
         
@@ -174,7 +174,7 @@ created = ReactiveTest.created
 #     var results, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             return True
         
@@ -188,7 +188,7 @@ created = ReactiveTest.created
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(onError(50, ex))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             return True
         
@@ -201,7 +201,7 @@ created = ReactiveTest.created
 #     var results, scheduler, xs
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1))
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             return True
         
@@ -215,7 +215,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 #     n = 0
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             return ++n < 3
         
@@ -230,7 +230,7 @@ created = ReactiveTest.created
 #     scheduler = TestScheduler()
 #     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 #     n = 0
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return xs.doWhile(function () {
 #             if (++n < 3) {
 #                 return True
@@ -253,7 +253,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 1
 #         }, map, zs)
@@ -274,7 +274,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 2
 #         }, map, zs)
@@ -295,7 +295,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 3
 #         }, map, zs)
@@ -317,7 +317,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             throw ex
 #         }, map, zs)
@@ -337,7 +337,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 1
 #         }, map, scheduler)
@@ -356,7 +356,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 2
 #         }, map, scheduler)
@@ -375,7 +375,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             return 3
 #         }, map, scheduler)
@@ -395,7 +395,7 @@ created = ReactiveTest.created
 #         1: xs,
 #         2: ys
 #     }
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.switchCase(function () {
 #             throw ex
 #         }, map, scheduler)
@@ -408,7 +408,7 @@ created = ReactiveTest.created
 # def test_For_Basic():
 #     var results, scheduler
 #     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.forIn([1, 2, 3], function (x) {
 #             return scheduler.create_cold_observable(on_next(x * 100 + 10, x * 10 + 1), on_next(x * 100 + 20, x * 10 + 2), on_next(x * 100 + 30, x * 10 + 3), on_completed(x * 100 + 40))
         
@@ -420,7 +420,7 @@ created = ReactiveTest.created
 #     var ex, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.forIn([1, 2, 3], function () {
 #             throw ex
         
@@ -436,7 +436,7 @@ created = ReactiveTest.created
 #     scheduler.scheduleAbsolute(150, function () {
 #         b = True
     
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return b
 #         }, xs)
@@ -454,7 +454,7 @@ created = ReactiveTest.created
 #     scheduler.scheduleAbsolute(150, function () {
 #         b = True
     
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return b
 #         }, xs)
@@ -471,7 +471,7 @@ created = ReactiveTest.created
 #     scheduler.scheduleAbsolute(150, function () {
 #         b = True
     
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return b
 #         }, xs)
@@ -488,7 +488,7 @@ created = ReactiveTest.created
 #     scheduler.scheduleAbsolute(150, function () {
 #         b = False
     
-#     results = scheduler.start_with_create(function () {
+#     results = scheduler.start(function () {
 #         return Observable.ifThen(function () {
 #             return b
 #         }, xs)
