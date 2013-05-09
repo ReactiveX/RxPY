@@ -9,19 +9,19 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-def test_while_always_false():
-    scheduler = TestScheduler()
-    xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
+# def test_while_always_false():
+#     scheduler = TestScheduler()
+#     xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
     
-    def create():
-        def predicate(x):
-            return False
+#     def create():
+#         def predicate(x):
+#             return False
 
-        return Observable.while_do(predicate, xs)
-    results = scheduler.start(create)
+#         return Observable.while_do(predicate, xs)
+#     results = scheduler.start(create)
     
-    results.messages.assert_equal(on_completed(200))
-    xs.subscriptions.assert_equal()
+#     results.messages.assert_equal(on_completed(200))
+#     xs.subscriptions.assert_equal()
 
 # def test_While_AlwaysTrue():
 #     var results, scheduler, xs

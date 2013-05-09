@@ -12,7 +12,6 @@ def test_timeout_schedule_action():
     ran = False
     
     def action(scheduler, state):
-        print ("action()")
         nonlocal ran
         ran = True
 

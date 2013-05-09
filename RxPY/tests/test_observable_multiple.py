@@ -198,301 +198,304 @@ def test_skip_until_somedata_error():
     
     results.messages.assert_equal(on_error(225, ex))
 
+def test_skip_until_somedata_empty():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+    r_msgs = [on_next(150, 1), on_completed(225)]
+    l = scheduler.create_hot_observable(l_msgs)
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_SkipUntil_SomeData_Empty():
-#     var l, l_msgs, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     r_msgs = [on_next(150, 1), on_completed(225)]
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-# 
+def test_skip_until_never_next():
+    scheduler = TestScheduler()
+    r_msgs = [on_next(150, 1), on_next(225, 2), on_completed(250)]
+    l = Observable.never()
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_SkipUntil_Never_Next():
-#     var l, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     r_msgs = [on_next(150, 1), on_next(225, 2), on_completed(250)]
-#     l = Observable.never()
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-# 
+def test_skip_until_never_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    r_msgs = [on_next(150, 1), on_error(225, ex)]
+    l = Observable.never()
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(225, ex))
 
-# def test_SkipUntil_Never_Error():
-#     var ex, l, r, r_msgs, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     r_msgs = [on_next(150, 1), on_error(225, ex)]
-#     l = Observable.never()
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal(on_error(225, ex))
-# 
+def test_skip_until_somedata_never():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+    l = scheduler.create_hot_observable(l_msgs)
+    r = Observable.never()
 
-# def test_SkipUntil_SomeData_Never():
-#     var l, l_msgs, r, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = Observable.never()
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-# 
+    def create():
+        return l.skip_until(r)
 
-# def test_SkipUntil_Never_Empty():
-#     var l, r, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     r_msgs = [on_next(150, 1), on_completed(225)]
-#     l = Observable.never()
-#     r = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-# 
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_SkipUntil_Never_Never():
-#     var l, r, results, scheduler
-#     scheduler = TestScheduler()
-#     l = Observable.never()
-#     r = Observable.never()
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-# 
+def test_skip_until_never_empty():
+    scheduler = TestScheduler()
+    r_msgs = [on_next(150, 1), on_completed(225)]
+    l = Observable.never()
+    r = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_SkipUntil_HasCompletedCausesDisposal():
-#     var disposed, l, l_msgs, r, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-#     disposed = False
-#     l = scheduler.create_hot_observable(l_msgs)
-#     r = Observable.create(function () {
-#         return function () {
-#             disposed = True
-#         }
-#     
-#     results = scheduler.start(create)
-#         return l.skipUntil(r)
-#     
-#     results.messages.assert_equal()
-#     assert(disposed)
-# 
+def test_skip_until_never_never():
+    scheduler = TestScheduler()
+    l = Observable.never()
+    r = Observable.never()
+    
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_Merge_Never2():
-#     var n1, n2, results, scheduler
-#     scheduler = TestScheduler()
-#     n1 = Observable.never()
-#     n2 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, n1, n2)
-#     
-#     results.messages.assert_equal()
-# 
+def test_skip_until_has_completed_causes_disposal():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+    disposed = False
+    l = scheduler.create_hot_observable(l_msgs)
+    
+    def subscribe(observer):
+        nonlocal disposed
+        disposed = True
+    
+    r = Observable(subscribe)
+        
+    def create():
+        return l.skip_until(r)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+    assert(disposed)
 
-# def test_Merge_Never3():
-#     var n1, n2, n3, results, scheduler
-#     scheduler = TestScheduler()
-#     n1 = Observable.never()
-#     n2 = Observable.never()
-#     n3 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, n1, n2, n3)
-#     
-#     results.messages.assert_equal()
-# 
+def test_merge_never2():
+    scheduler = TestScheduler()
+    n1 = Observable.never()
+    n2 = Observable.never()
+    
+    def create():
+        return Observable.merge(scheduler, n1, n2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_Merge_Empty2():
-#     var e1, e2, results, scheduler
-#     scheduler = TestScheduler()
-#     e1 = Observable.empty()
-#     e2 = Observable.empty()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, e2)
-#     
-#     results.messages.assert_equal(on_completed(203))
-# 
+def test_merge_never3():
+    scheduler = TestScheduler()
+    n1 = Observable.never()
+    n2 = Observable.never()
+    n3 = Observable.never()
+    
+    def create():
+        return Observable.merge(scheduler, n1, n2, n3)
+    
+    results = scheduler.start(create)    
+    results.messages.assert_equal()
 
-# def test_Merge_Empty3():
-#     var e1, e2, e3, results, scheduler
-#     scheduler = TestScheduler()
-#     e1 = Observable.empty()
-#     e2 = Observable.empty()
-#     e3 = Observable.empty()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, e2, e3)
-#     
-#     results.messages.assert_equal(on_completed(204))
-# 
+def test_merge_empty2():
+    scheduler = TestScheduler()
+    e1 = Observable.empty()
+    e2 = Observable.empty()
+    
+    def create():
+        return Observable.merge(scheduler, e1, e2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(203))
 
-# def test_Merge_EmptyDelayed2_RightLast():
-#     var e1, e2, l_msgs, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_completed(240)]
-#     r_msgs = [on_next(150, 1), on_completed(250)]
-#     e1 = scheduler.create_hot_observable(l_msgs)
-#     e2 = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, e2)
-#     
-#     results.messages.assert_equal(on_completed(250))
-# 
 
-# def test_Merge_EmptyDelayed2_LeftLast():
-#     var e1, e2, l_msgs, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     l_msgs = [on_next(150, 1), on_completed(250)]
-#     r_msgs = [on_next(150, 1), on_completed(240)]
-#     e1 = scheduler.create_hot_observable(l_msgs)
-#     e2 = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, e2)
-#     
-#     results.messages.assert_equal(on_completed(250))
-# 
+def test_merge_empty3():
+    scheduler = TestScheduler()
+    e1 = Observable.empty()
+    e2 = Observable.empty()
+    e3 = Observable.empty()
 
-# def test_Merge_EmptyDelayed3_MiddleLast():
-#     var e1, e2, e3, msgs1, msgs2, msgs3, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(245)]
-#     msgs2 = [on_next(150, 1), on_completed(250)]
-#     msgs3 = [on_next(150, 1), on_completed(240)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     e3 = scheduler.create_hot_observable(msgs3)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, e2, e3)
-#     
-#     results.messages.assert_equal(on_completed(250))
-# 
+    def create():
+        return Observable.merge(scheduler, e1, e2, e3)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(204))
 
-# def test_Merge_EmptyNever():
-#     var e1, msgs1, n1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(245)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, n1)
-#     
-#     results.messages.assert_equal()
-# 
+def test_merge_empty_delayed2_right_last():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_completed(240)]
+    r_msgs = [on_next(150, 1), on_completed(250)]
+    e1 = scheduler.create_hot_observable(l_msgs)
+    e2 = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return Observable.merge(scheduler, e1, e2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(250))
 
-# def test_Merge_NeverEmpty():
-#     var e1, msgs1, n1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(245)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, n1, e1)
-#     
-#     results.messages.assert_equal()
-# 
+def test_merge_empty_delayed2_left_last():
+    scheduler = TestScheduler()
+    l_msgs = [on_next(150, 1), on_completed(250)]
+    r_msgs = [on_next(150, 1), on_completed(240)]
+    e1 = scheduler.create_hot_observable(l_msgs)
+    e2 = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return Observable.merge(scheduler, e1, e2)
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(250))
 
-# def test_Merge_ReturnNever():
-#     var msgs1, n1, r1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(245)]
-#     r1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, r1, n1)
-#     
-#     results.messages.assert_equal(on_next(210, 2))
-# 
+def test_merge_empty_delayed3_middle_last():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(245)]
+    msgs2 = [on_next(150, 1), on_completed(250)]
+    msgs3 = [on_next(150, 1), on_completed(240)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    e3 = scheduler.create_hot_observable(msgs3)
 
-# def test_Merge_NeverReturn():
-#     var msgs1, n1, r1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(245)]
-#     r1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, n1, r1)
-#     
-#     results.messages.assert_equal(on_next(210, 2))
-# 
+    def create():
+       return Observable.merge(scheduler, e1, e2, e3)
 
-# def test_Merge_ErrorNever():
-#     var e1, ex, msgs1, n1, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, n1)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
-# 
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_completed(250))
 
-# def test_Merge_NeverError():
-#     var e1, ex, msgs1, n1, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     n1 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, n1, e1)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
-# 
+def test_merge_empty_never():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(245)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+    
+    def create():
+       return Observable.merge(scheduler, e1, n1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_Merge_EmptyReturn():
-#     var e1, msgs1, msgs2, r1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(245)]
-#     msgs2 = [on_next(150, 1), on_next(210, 2), on_completed(250)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     r1 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, e1, r1)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_completed(250))
-# 
+def test_merge_never_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(245)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+    
+    def create():
+        return Observable.merge(scheduler, n1, e1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 
-# def test_Merge_ReturnEmpty():
-#     var e1, msgs1, msgs2, r1, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(245)]
-#     msgs2 = [on_next(150, 1), on_next(210, 2), on_completed(250)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     r1 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, r1, e1)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_completed(250))
-# 
+def test_merge_return_never():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(245)]
+    r1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+    
+    def create():
+        return Observable.merge(scheduler, r1, n1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2))
 
-# def test_Merge_Lots2():
-#     var i, msgs1, msgs2, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 6), on_next(240, 8), on_completed(245)]
-#     msgs2 = [on_next(150, 1), on_next(215, 3), on_next(225, 5), on_next(235, 7), on_next(245, 9), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, o1, o2)
-#     .messages
-#     equal(9, results.length)
-#     for (i = 0 i < 8 i++) {
-#         assert(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
-#     }
-#     assert(results[8].value.kind === 'C' && results[8].time === 250)
-# 
+def test_merge_never_return():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(245)]
+    r1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+
+    def create():
+        return Observable.merge(scheduler, n1, r1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2))
+
+def test_merge_error_never():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+
+    def create():
+        return Observable.merge(scheduler, e1, n1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
+
+def test_merge_never_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    n1 = Observable.never()
+    
+    def create():
+        return Observable.merge(scheduler, n1, e1)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
+
+def test_merge_empty_eeturn():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(245)]
+    msgs2 = [on_next(150, 1), on_next(210, 2), on_completed(250)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    r1 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        return Observable.merge(scheduler, e1, r1)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_completed(250))
+
+def test_merge_return_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(245)]
+    msgs2 = [on_next(150, 1), on_next(210, 2), on_completed(250)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    r1 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        return Observable.merge(scheduler, r1, e1)
+
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_next(210, 2), on_completed(250))
+
+def test_merge_lots2():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 6), on_next(240, 8), on_completed(245)]
+    msgs2 = [on_next(150, 1), on_next(215, 3), on_next(225, 5), on_next(235, 7), on_next(245, 9), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return Observable.merge(scheduler, o1, o2)
+    
+    results = scheduler.start(create).messages
+    assert(len(results) == 9)
+    for i, result in enumerate(results[:-1]):
+        assert(result.value.kind == 'N')
+        assert(result.time == 210 + i * 5)
+        assert(result.value.value == i + 2)
+    
+    assert(results[8].value.kind == 'C' and results[8].time == 250)
+
 # def test_Merge_Lots3():
 #     var i, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler
 #     scheduler = TestScheduler()
