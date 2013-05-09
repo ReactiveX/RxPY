@@ -496,405 +496,458 @@ def test_merge_lots2():
     
     assert(results[8].value.kind == 'C' and results[8].time == 250)
 
-# def test_Merge_Lots3():
-#     var i, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(225, 5), on_next(240, 8), on_completed(245)]
-#     msgs2 = [on_next(150, 1), on_next(215, 3), on_next(230, 6), on_next(245, 9), on_completed(250)]
-#     msgs3 = [on_next(150, 1), on_next(220, 4), on_next(235, 7), on_completed(240)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     o3 = scheduler.create_hot_observable(msgs3)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, o1, o2, o3)
-#     .messages
-#     equal(9, results.length)
-#     for (i = 0 i < 8 i++) {
-#         assert(results[i].value.kind === 'N' && results[i].time === 210 + i * 5 && results[i].value.value === i + 2)
-#     }
-#     assert(results[8].value.kind === 'C' && results[8].time === 250)
-# 
-# def test_Merge_ErrorLeft():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
-#     msgs2 = [on_next(150, 1), on_next(215, 3), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, o1, o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(215, 3), on_error(245, ex))
-# 
-# def test_Merge_ErrorCausesDisposal():
-#     var ex, msgs1, msgs2, o1, o2, results, _nch_dduler, sourceNotDisposed
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_error(210, ex)]
-#     msgs2 = [on_next(150, 1), on_next(220, 1), on_completed(250)]
-#     source_not_disposed = False
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
-#         return source_not_disposed = True
-#     
-#     results = scheduler.start(create)
-#         return Observable.merge(scheduler, o1, o2)
-#     
-#     results.messages.assert_equal(on_error(210, ex))
-#     assert(not source_not_disposed)
-# 
-# def test_Merge_ObservableOfObservable_Data():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.createColdObservable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_next(120, 305), on_completed(150))), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.mergeObservable()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(410, 201), on_next(420, 104), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 105), on_next(510, 301), on_next(520, 106), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_next(620, 305), on_completed(650))
-# 
-# def test_Merge_ObservableOfObservable_Data_NonOverlapped():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.createColdObservable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.mergeObservable()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(600))
-# 
-# def test_Merge_ObservableOfObservable_InnerThrows():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_error(50, ex))), on_next(500, scheduler.createColdObservable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.mergeObservable()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
-# 
-# def test_Merge_ObservableOfObservable_OuterThrows():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_error(500, ex))
-#     results = scheduler.start(create)
-#         return xs.mergeObservable()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
-# 
-# def test_Switch_Data():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.createColdObservable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(150))), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.switchLatest()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(650))
-# 
-# def test_Switch_InnerThrows():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_error(50, ex))), on_next(500, scheduler.createColdObservable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(150))), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.switchLatest()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
-# 
-# def test_Switch_OuterThrows():
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.createColdObservable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_error(500, ex))
-#     results = scheduler.start(create)
-#         return xs.switchLatest()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
-# 
-# def test_Switch_NoInner():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_completed(500))
-#     results = scheduler.start(create)
-#         return xs.switchLatest()
-#     
-#     results.messages.assert_equal(on_completed(500))
-# 
-# def test_Switch_InnerCompletes():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(300, scheduler.createColdObservable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_completed(540))
-#     results = scheduler.start(create)
-#         return xs.switchLatest()
-#     
-#     results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(420, 104), on_next(510, 105), on_next(520, 106), on_completed(540))
-# 
-# def test_Amb_Never2():
-#     var l, r, results, scheduler
-#     scheduler = TestScheduler()
-#     l = Observable.never()
-#     r = Observable.never()
-#     results = scheduler.start(create)
-#         return l.amb(r)
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Amb_Never3():
-#     var n1, n2, n3, results, scheduler
-#     scheduler = TestScheduler()
-#     n1 = Observable.never()
-#     n2 = Observable.never()
-#     n3 = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.amb(n1, n2, n3)
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Amb_NeverEmpty():
-#     var e, n, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     r_msgs = [on_next(150, 1), on_completed(225)]
-#     n = Observable.never()
-#     e = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return n.amb(e)
-#     
-#     results.messages.assert_equal(on_completed(225))
-# 
-# def test_Amb_EmptyNever():
-#     var e, n, r_msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     r_msgs = [on_next(150, 1), on_completed(225)]
-#     n = Observable.never()
-#     e = scheduler.create_hot_observable(r_msgs)
-#     results = scheduler.start(create)
-#         return e.amb(n)
-#     
-#     results.messages.assert_equal(on_completed(225))
-# 
-# def test_Amb_RegularShouldDisposeLoser():
-#     var msgs1, msgs2, o1, o2, results, schedule_n, _dourceNotDisposed
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(240)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     source_not_disposed = False
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
-#         return source_not_disposed = True
-#     
-#     results = scheduler.start(create)
-#         return o1.amb(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_completed(240))
-#     assert(not source_not_disposed)
-# 
-# def test_Amb_WinnerThrows():
-#     var ex, msgs1, msgs2, o1, o2, _nes_dlts, scheduler, sourceNotDisposed
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     source_not_disposed = False
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
-#         return source_not_disposed = True
-#     
-#     results = scheduler.start(create)
-#         return o1.amb(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
-#     assert(not source_not_disposed)
-# 
-# def test_Amb_LoserThrows():
-#     var ex, msgs1, msgs2, o1, o2,_nre_dults, scheduler, sourceNotDisposed
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
-#     msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
-#     source_not_disposed = False
-#     o1 = scheduler.create_hot_observable(msgs1).do_action(function () {
-#         return source_not_disposed = True
-#     
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.amb(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 3), on_completed(250))
-#     assert(not source_not_disposed)
-# 
-# def test_Amb_ThrowsBeforeElection():
-#     var ex, msgs1, msgs2, o1, o2, results,_nsc_deduler, sourceNotDisposed
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_error(210, ex)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-#     source_not_disposed = False
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2).do_action(function () {
-#         return source_not_disposed = True
-#     
-#     results = scheduler.start(create)
-#         return o1.amb(o2)
-#     
-#     results.messages.assert_equal(on_error(210, ex))
-#     assert(not source_not_disposed)
-# 
-# def test_Catch_NoErrors():
-#     var msgs1, msgs2, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(230)]
-#     msgs2 = [on_next(240, 5), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(230))
-# 
-# def test_Catch_Never():
-#     var msgs2, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs2 = [on_next(240, 5), on_completed(250)]
-#     o1 = Observable.never()
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Catch_Empty():
-#     var msgs1, msgs2, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(230)]
-#     msgs2 = [on_next(240, 5), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_completed(230))
-# 
-# def test_Catch_Return():
-#     var msgs1, msgs2, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
-#     msgs2 = [on_next(240, 5), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_completed(230))
-# 
-# def test_Catch_Error():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
-#     msgs2 = [on_next(240, 5), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 5), on_completed(250))
-# 
-# def test_Catch_Error_Never():
-#     var ex, msgs1, o1, o2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = Observable.never()
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3))
-# 
-# def test_Catch_Error_Error():
-#     var ex, msgs1, msgs2, o1, o2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, 'ex1')]
-#     msgs2 = [on_next(240, 4), on_error(250, ex)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(o2)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_error(250, ex))
-# 
-# def test_Catch_Multiple():
-#     var ex, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
-#     msgs2 = [on_next(220, 3), on_error(225, ex)]
-#     msgs3 = [on_next(230, 4), on_completed(235)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     o3 = scheduler.create_hot_observable(msgs3)
-#     results = scheduler.start(create)
-#         return Observable.catchException(o1, o2, o3)
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
-# 
-# def test_Catch_ErrorSpecific_Caught():
-#     var ex, handlerCalled, msgs1, msgs2, o1, o2, results, scheduler
-#     ex = 'ex'
-#     handlerCalled = False
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
-#     msgs2 = [on_next(240, 4), on_completed(250)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return o1.catchException(function (e) {
-#             handlerCalled = True
-#             return o2
-#         
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
-#     assert(handlerCalled)
-# 
-# def test_Catch_ErrorSpecific_CaughtImmediate():
-#     var ex, handlerCalled, msgs2, o2, results, scheduler
-#     ex = 'ex'
-#     handlerCalled = False
-#     scheduler = TestScheduler()
-#     msgs2 = [on_next(240, 4), on_completed(250)]
-#     o2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return Observable.throwException('ex').catchException(function (e) {
-#             handlerCalled = True
-#             return o2
-#         
-#     
-#     results.messages.assert_equal(on_next(240, 4), on_completed(250))
-#     assert(handlerCalled)
-# 
-# def test_Catch_HandlerThrows():
-#     var ex, ex2, handlerCalled, msgs1, o1, results, scheduler
-#     ex = 'ex'
-#     ex2 = 'ex2'
-#     handlerCalled = False
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
-#     o1 = scheduler.create_hot_observable(msgs1)
-#     results = scheduler.start(create)
-#         return o1.catchException(function (e) {
-#             handlerCalled = True
-#             throw ex2
-#         
-#     
-#     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
-#     assert(handlerCalled)
+def test_merge_lots3():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(225, 5), on_next(240, 8), on_completed(245)]
+    msgs2 = [on_next(150, 1), on_next(215, 3), on_next(230, 6), on_next(245, 9), on_completed(250)]
+    msgs3 = [on_next(150, 1), on_next(220, 4), on_next(235, 7), on_completed(240)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    o3 = scheduler.create_hot_observable(msgs3)
+    
+    def create():
+        return Observable.merge(scheduler, o1, o2, o3)
+    
+    results = scheduler.start(create).messages
+    assert(len(results) == 9)
+    for i, result in enumerate(results[:-1]):
+        assert(results[i].value.kind == 'N' and results[i].time == 210 + i * 5 and results[i].value.value == i + 2)
+    
+    assert(results[8].value.kind == 'C' and results[8].time == 250)
+
+def test_merge_error_left():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(245, ex)]
+    msgs2 = [on_next(150, 1), on_next(215, 3), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return Observable.merge(scheduler, o1, o2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_next(215, 3), on_error(245, ex))
+
+def test_merge_error_causes_disposal():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_error(210, ex)]
+    msgs2 = [on_next(150, 1), on_next(220, 1), on_completed(250)]
+    source_not_disposed = False
+    o1 = scheduler.create_hot_observable(msgs1)
+    
+    def action():
+        nonlocal source_not_disposed
+        source_not_disposed = True
+    
+    o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+    
+    def create():
+        return Observable.merge(scheduler, o1, o2)
+    
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_error(210, ex))
+    assert(not source_not_disposed)
+
+def test_merge_observable_of_observable_data():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_next(120, 305), on_completed(150))), on_completed(600))
+    
+    def create():
+        return xs.merge_observable()
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(410, 201), on_next(420, 104), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 105), on_next(510, 301), on_next(520, 106), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_next(620, 305), on_completed(650))
+
+def test_merge_observable_of_observable_data_non_overlapped():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
+    
+    def create():
+        return xs.merge_observable()
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(600))
+
+def test_merge_observable_of_observable_inner_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_error(50, ex))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
+
+    def create():
+        return xs.merge_observable()
+
+    results = scheduler.start(create)    
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
+
+def test_merge_observable_of_observable_outer_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_error(500, ex))
+    
+    def create():
+        return xs.merge_observable()
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
+
+def test_switch_data():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(150))), on_completed(600))
+    
+    def create():
+        return xs.switch_latest()
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(650))
+
+def test_switch_inner_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_error(50, ex))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(150))), on_completed(600))
+    
+    def create():
+        return xs.switch_latest()
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
+
+def test_switch_outer_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_error(500, ex))
+    
+    def create():
+        return xs.switch_latest()
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
+
+def test_switch_no_inner():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_completed(500))
+    
+    def create():
+        return xs.switch_latest()
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(500))
+
+def test_switch_inner_completes():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_completed(540))
+    
+    def create():
+        return xs.switch_latest()
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(420, 104), on_next(510, 105), on_next(520, 106), on_completed(540))
+
+def test_amb_never2():
+    scheduler = TestScheduler()
+    l = Observable.never()
+    r = Observable.never()
+
+    def create():
+        return l.amb(r)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_amb_never3():
+    scheduler = TestScheduler()
+    n1 = Observable.never()
+    n2 = Observable.never()
+    n3 = Observable.never()
+
+    def create():
+        return Observable.amb(n1, n2, n3)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_amb_never_empty():
+    scheduler = TestScheduler()
+    r_msgs = [on_next(150, 1), on_completed(225)]
+    n = Observable.never()
+    e = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return n.amb(e)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(225))
+
+def test_amb_empty_never():
+    scheduler = TestScheduler()
+    r_msgs = [on_next(150, 1), on_completed(225)]
+    n = Observable.never()
+    e = scheduler.create_hot_observable(r_msgs)
+    
+    def create():
+        return e.amb(n)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(225))
+
+def test_amb_regular_should_dispose_loser():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(240)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
+    source_not_disposed = False
+    o1 = scheduler.create_hot_observable(msgs1)
+
+    def action():
+        nonlocal source_not_disposed
+        source_not_disposed = True
+
+    o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+    
+    def create():
+        return o1.amb(o2)
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(210, 2), on_completed(240))
+    assert(not source_not_disposed)
+
+def test_amb_winner_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
+    source_not_disposed = False
+    o1 = scheduler.create_hot_observable(msgs1)
+    
+    def action():
+        nonlocal source_not_disposed
+        source_not_disposed = True
+    
+    o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+    
+    def create():
+        return o1.amb(o2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
+    assert(not source_not_disposed)
+
+def test_amb_loser_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
+    msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
+    source_not_disposed = False
+    
+    def action():
+        nonlocal source_not_disposed
+        source_not_disposed = True
+    o1 = scheduler.create_hot_observable(msgs1).do_action(on_next=action)
+    
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return o1.amb(o2)
+        
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 3), on_completed(250))
+    assert(not source_not_disposed)
+
+def test_amb_throws_before_election():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_error(210, ex)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
+    source_not_disposed = False
+    o1 = scheduler.create_hot_observable(msgs1)
+    
+    def action():
+        nonlocal source_not_disposed
+        source_not_disposed = True
+    
+    o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+    
+    def create():
+        return o1.amb(o2)
+        
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_error(210, ex))
+    assert(not source_not_disposed)
+
+def test_catch_no_errors():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(230)]
+    msgs2 = [on_next(240, 5), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return o1.catch_exception(o2)
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(230))
+
+def test_catch_never():
+    scheduler = TestScheduler()
+    msgs2 = [on_next(240, 5), on_completed(250)]
+    o1 = Observable.never()
+    o2 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        return o1.catch_exception(o2)
+    results = scheduler.start(create)
+    
+    results.messages.assert_equal()
+
+def test_catch_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    msgs2 = [on_next(240, 5), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return o1.catch_exception(o2)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(230))
+
+def test_catch_return():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
+    msgs2 = [on_next(240, 5), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        return o1.catch_exception(o2)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_completed(230))
+
+def test_catch_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
+    msgs2 = [on_next(240, 5), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return o1.catch_exception(o2)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 5), on_completed(250))
+
+def test_catch_error_never():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = Observable.never()
+    def create():
+        return o1.catch_exception(o2)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3))
+
+def test_catch_error_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, 'ex1')]
+    msgs2 = [on_next(240, 4), on_error(250, ex)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return o1.catch_exception(o2)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_error(250, ex))
+
+def test_catch_multiple():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
+    msgs2 = [on_next(220, 3), on_error(225, ex)]
+    msgs3 = [on_next(230, 4), on_completed(235)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    o3 = scheduler.create_hot_observable(msgs3)
+    
+    def create():
+        return Observable.catch_exception(o1, o2, o3)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
+
+def test_catch_error_specific_caught():
+    ex = 'ex'
+    handler_called = False
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
+    msgs2 = [on_next(240, 4), on_completed(250)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    o2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        def handler(e):
+            nonlocal handler_called
+            
+            handler_called = True
+            return o2
+
+        return o1.catch_exception(handler)
+    
+    results = scheduler.start(create)
+
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
+    assert(handler_called)
+
+def test_catch_error_specific_caught_immediate():
+    ex = 'ex'
+    handler_called = False
+    scheduler = TestScheduler()
+    msgs2 = [on_next(240, 4), on_completed(250)]
+    o2 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        def handler(e):
+            nonlocal handler_called
+            handler_called = True
+            return o2
+
+        return Observable.throw_exception('ex').catch_exception(handler)
+
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(240, 4), on_completed(250))
+    assert(handler_called)
+
+def test_catch_handler_throws():
+    ex = 'ex'
+    ex2 = 'ex2'
+    handler_called = False
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
+    o1 = scheduler.create_hot_observable(msgs1)
+    
+    def create():
+        def handler(e):
+            nonlocal handler_called
+            handler_called = True
+            raise Exception(ex2)
+        return o1.catch_exception(handler)
+    
+    results = scheduler.start(create)
+        
+    results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
+    assert(handler_called)
 # 
 # def test_Catch_Nested_OuterCatches():
-#     var ex, firstHandlerCalled, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandlerCalled
+#     var ex, firstHandler_called, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandler_called
 #     ex = 'ex'
-#     firstHandlerCalled = False
-#     secondHandlerCalled = False
+#     firstHandler_called = False
+#     secondHandler_called = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
 #     msgs2 = [on_next(220, 3), on_completed(225)]
@@ -904,23 +957,23 @@ def test_merge_lots2():
 #     o3 = scheduler.create_hot_observable(msgs3)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             firstHandlerCalled = True
+#             firstHandler_called = True
 #             return o2
 #         .catchException(function (e) {
-#             secondHandlerCalled = True
+#             secondHandler_called = True
 #             return o3
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
-#     assert(firstHandlerCalled)
-#     assert(not secondHandlerCalled)
+#     assert(firstHandler_called)
+#     assert(not secondHandler_called)
 # 
 # def test_Catch_ThrowFromNestedCatch():
-#     var ex, ex2, firstHandlerCalled, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandlerCalled
+#     var ex, ex2, firstHandler_called, msgs1, msgs2, msgs3, o1, o2, o3, results, scheduler, secondHandler_called
 #     ex = 'ex'
 #     ex2 = 'ex'
-#     firstHandlerCalled = False
-#     secondHandlerCalled = False
+#     firstHandler_called = False
+#     secondHandler_called = False
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
 #     msgs2 = [on_next(220, 3), on_error(225, ex2)]
@@ -930,18 +983,18 @@ def test_merge_lots2():
 #     o3 = scheduler.create_hot_observable(msgs3)
 #     results = scheduler.start(create)
 #         return o1.catchException(function (e) {
-#             firstHandlerCalled = True
+#             firstHandler_called = True
 #             equal(e, ex)
 #             return o2
 #         .catchException(function (e) {
-#             secondHandlerCalled = True
+#             secondHandler_called = True
 #             equal(e, ex2)
 #             return o3
 #         
 #     
 #     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
-#     assert(firstHandlerCalled)
-#     assert(secondHandlerCalled)
+#     assert(firstHandler_called)
+#     assert(secondHandler_called)
 # 
 # def test_On_errorResumeNext_NoErrors():
 #     var msgs1, msgs2, o1, o2, results, scheduler
@@ -1287,7 +1340,7 @@ def test_merge_lots2():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
 #     }
 # 
 # def test_Zip_SomeDataAsymmetric2():
@@ -1321,7 +1374,7 @@ def test_merge_lots2():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
 #     }
 # 
 # def test_Zip_SomeDataSymmetric():
@@ -1355,7 +1408,7 @@ def test_merge_lots2():
 #     for (i = 0 i < len i++) {
 #         sum = msgs1[i].value.value + msgs2[i].value.value
 #         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind === 'N' && results[i].time === time && results[i].value.value === sum)
+#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
 #     }
 # 
 # def test_Zip_SelectorThrows():
@@ -1368,7 +1421,7 @@ def test_merge_lots2():
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
 #         return e1.zip(e2, function (x, y) {
-#             if (y === 5) {
+#             if (y == 5) {
 #                 throw ex
 #             } else {
 #                 return x + y
@@ -1948,7 +2001,7 @@ def test_merge_lots2():
 # def test_MergeConcat_Basic():
 #     var results, scheduler, xs;
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
 #     results = scheduler.start(create)
 #         return xs.merge(2);
 #     ;
@@ -1958,7 +2011,7 @@ def test_merge_lots2():
 # def test_MergeConcat_Basic_Long():
 #     var results, scheduler, xs;
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
 #     results = scheduler.start(create)
 #         return xs.merge(2);
 #     ;
@@ -1968,7 +2021,7 @@ def test_merge_lots2():
 # def test_MergeConcat_Basic_Wide():
 #     var results, scheduler, xs;
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(450));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(450));
 #     results = scheduler.start(create)
 #         return xs.merge(3);
 #     ;
@@ -1978,7 +2031,7 @@ def test_merge_lots2():
 # def test_MergeConcat_Basic_Late():
 #     var results, scheduler, xs;
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(750));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(750));
 #     results = scheduler.start(create)
 #         return xs.merge(3);
 #     ;
@@ -1988,7 +2041,7 @@ def test_merge_lots2():
 # def test_MergeConcat_Disposed():
 #     var results, scheduler, xs;
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
 #     results = scheduler.startWithDispose(function () {
 #         return xs.merge(2);
 #     }, 450);
@@ -1999,7 +2052,7 @@ def test_merge_lots2():
 #     var ex, results, scheduler, xs;
 #     ex = 'ex';
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_error(400, ex));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_error(400, ex));
 #     results = scheduler.start(create)
 #         return xs.merge(2);
 #     ;
@@ -2010,7 +2063,7 @@ def test_merge_lots2():
 #     var ex, results, scheduler, xs;
 #     ex = 'ex';
 #     scheduler = TestScheduler();
-#     xs = scheduler.create_hot_observable(on_next(210, scheduler.createColdObservable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.createColdObservable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.createColdObservable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_error(140, ex))), on_next(320, scheduler.createColdObservable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
+#     xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_error(140, ex))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400));
 #     results = scheduler.start(create)
 #         return xs.merge(2);
 #     ;
@@ -2145,7 +2198,7 @@ def test_merge_lots2():
 #     n2 = [3, 5];
 #     results = scheduler.start(create)
 #         return n1.zip(n2, function (x, y) {
-#             if (y === 5) {
+#             if (y == 5) {
 #                 throw ex;
 #             }
 #             return x + y;
@@ -2187,8 +2240,3 @@ def test_merge_lots2():
 #     strictEqual(subscribes, 1, "catchException(function): After dispose: 1 subscribes");
 #     strictEqual(unsubscribes, 1, "catchException(function): After dispose: 1 unsubscribes"); // this one FAILS (unsubscribes is 0)
 # ;
-
-# // must call `QUnit.start()` if using QUnit < 1.3.0 with Node.js or any
-# // version of QUnit with Narwhal, Rhino, or RingoJS
-
-# }(typeof global == 'object' && global || this))*/

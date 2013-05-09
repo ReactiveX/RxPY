@@ -264,9 +264,9 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         arbitrary actions for messages on the pipeline.
     
         1 - observable.do_action(observer);
-        2 - observable.do_action(onNext);
-        3 - observable.do_action(onNext, onError);
-        4 - observable.do_action(onNext, onError, onCompleted);
+        2 - observable.do_action(on_next);
+        3 - observable.do_action(on_next, on_error);
+        4 - observable.do_action(on_next, on_error, on_eompleted);
      
         observer -- [Optional] Observer, or ... 
         on_next -- [Optional] Action to invoke for each element in the observable sequence.
@@ -279,7 +279,7 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         if not observer is None:
             on_next = observer.on_next
             on_error = observer.on_error
-            on_completed = observer.on_ompleted
+            on_completed = observer.on_completed
         
         def subscribe(observer):
             def on_next(x):

@@ -2,14 +2,108 @@
 from rx.internal import Enumerable, noop
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable
+from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
-from .observable_single import concat
+from .observable_single import concat, catch_exception
 
 class ObservableMultiple(Observable, metaclass=ObservableMeta):
     def __init__(self, subscribe):
         self.concat = self.__concat # Stitch in instance method
         self.merge = self.__merge
+        self.amb = self.__amb
+        self.catch_exception = self.__catch_exception
+
+    def __amb(self, right_source):
+        """Propagates the observable sequence that reacts first.
+    
+        right_source Second observable sequence.
+        
+        returns an observable sequence that surfaces either of the given 
+        sequences, whichever reacted first.
+        """
+        left_source = self
+
+        def subscribe(observer):
+            choice = None
+            left_choice = 'L'
+            right_choice = 'R',
+            left_subscription = SingleAssignmentDisposable()
+            right_subscription = SingleAssignmentDisposable()
+
+            def choiceL():
+                nonlocal choice
+
+                if not choice:
+                    choice = left_choice
+                    right_subscription.dispose()
+
+            def choiceR():
+                nonlocal choice
+
+                if not choice:
+                    choice = right_choice
+                    left_subscription.dispose()
+
+            def on_left_next(left):
+                choiceL();
+                if choice == left_choice:
+                    observer.on_next(left)
+            
+            def on_left_error(err):
+                choiceL()
+                if choice == left_choice:
+                    observer.on_error(err)
+                
+
+            def on_left_completed():
+                choiceL();
+                if choice == left_choice:
+                    observer.on_completed()
+
+            left_subscription.disposable = left_source.subscribe(on_left_next, on_left_error, on_left_completed)
+
+            def on_right_next(right):
+                choiceR()
+                if choice == right_choice:
+                    observer.on_next(right)
+            
+            def on_right_error(err):
+                choiceR()
+                if choice == right_choice:
+                    observer.on_error(err)
+            
+            def on_right_completed():
+                choiceR()
+                if choice == right_choice:
+                    observer.on_completed()
+
+            right_subscription.disposable = right_source.subscribe(on_right_next, on_right_error, on_right_completed)
+            return CompositeDisposable(left_subscription, right_subscription)
+        return AnonymousObservable(subscribe)
+
+    @classmethod
+    def amb(cls, *args):
+        """Propagates the observable sequence that reacts first.
+    
+        E.g. winner = Rx.Observable.amb(xs, ys, zs);
+     
+        Returns an observable sequence that surfaces any of the given sequences, whichever reacted first.
+        """
+    
+        acc = Observable.never()
+
+        if isinstance(args[0], list):
+            items = args[0]
+        else:
+            items = list(args)
+        
+        def func(previous, current):
+            return previous.amb(current)
+        
+        for item in items:
+            acc = func(acc, item)
+        
+        return acc
 
     def merge_observable(self):
         """Merges an observable sequence of observable sequences into an 
@@ -56,6 +150,72 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         
         return AnonymousObservable(subscribe)
 
+    @staticmethod
+    def catch_handler(source, handler):
+        def subscribe(observer):
+            d1 = SingleAssignmentDisposable()
+            subscription = SerialDisposable()
+
+            subscription.disposable = d1
+            
+            def on_error(exception):
+                try:
+                    result = handler(exception);
+                except Exception as ex:
+                    observer.on_error(ex)
+                    return
+                
+                d = SingleAssignmentDisposable()
+                subscription.disposable = d
+                d.disposable = result.subscribe(observer)
+            
+            d1.disposable = source.subscribe(observer.on_next, on_error, observer.on_completed)
+            return subscription
+        return AnonymousObservable(subscribe)
+    
+
+    def __catch_exception(self, second=None, handler=None):
+        """Continues an observable sequence that is terminated by an exception 
+        with the next observable sequence.
+     
+        1 - xs.catch_exception(ys)
+        2 - xs.catch_exception(lambda ex: ys(ex))
+    
+        Keyword arguments:
+        handler -- Exception handler function that returns an observable sequence 
+            given the error that occurred in the first sequence.
+        second -- Second observable sequence used to produce results when an 
+            error occurred in the first sequence.
+    
+        Returns an observable sequence containing the first sequence's 
+        elements, followed by the elements of the handler sequence in case an 
+        exception occurred.
+        """
+    
+        if handler or not isinstance(second, Observable):
+            return self.catch_handler(self, handler or second)
+        
+        return Observable.catch_exception([self, second])
+
+    @classmethod
+    def catch_exception(cls, *args):
+        """Continues an observable sequence that is terminated by an 
+        exception with the next observable sequence.
+     
+        1 - res = Observable.catch_exception(xs, ys, zs);
+        2 - res = Observable.catch_exception([xs, ys, zs]);
+    
+        Returns an observable sequence containing elements from consecutive 
+        source sequences until a source sequence terminates successfully.
+        """
+
+        if args and isinstance(args[0], list):
+            items = args[0]
+        else:
+            items = list(args)
+
+        return catch_exception(Enumerable.for_each(items))
+
     def __concat(self, *args):
         """Concatenates all the observable sequences. This takes in either an 
         array or variable arguments to concatenate.
@@ -99,7 +259,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         """
         return self.merge(1)
 
-    def switch(self):
+    def switch_latest(self):
         """Transforms an observable sequence of observable sequences into an 
         observable sequence producing values only from the most recent 
         observable sequence.
@@ -127,7 +287,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
                 def on_next(x):
                     if latest == _id:
-                        observer.on_ext(x)
+                        observer.on_next(x)
                 
                 def on_error(e):
                     if latest == _id:
