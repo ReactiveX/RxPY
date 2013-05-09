@@ -559,10 +559,99 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             
             def on_completed():
                 is_stopped = True
-                if (group.length == 1):
+                if len(group) == 1:
                     observer.on_completed()
 
             m.disposable = sources.subscribe(on_next, observer.on_error, on_completed)
             return group
 
+        return AnonymousObservable(subscribe)
+
+    def zip_array(self, second, result_selector):
+        first = self
+
+        def subscribe(observer):
+            index = 0
+            length = len(second)
+
+            def on_next(left):
+                nonlocal index
+
+                if index < length:
+                    right = second[index]
+                    index += 1
+                    try:
+                        result = resultSelector(left, right)
+                    except Exception as e:
+                        observer.on_error(e)
+                        return
+                    
+                    observer.on_next(result)
+                else:
+                    observer.on_completed()
+                
+            return first.subscribe(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+
+    def zip(self, *args):
+        """Merges the specified observable sequences into one observable 
+        sequence by using the selector function whenever all of the observable 
+        sequences or an array have produced an element at a corresponding index.
+        
+        The last element in the arguments must be a function to invoke for each 
+        series of elements at corresponding indexes in the sources.
+        
+        1 - res = obs1.zip(obs2, fn);
+        2 - res = x1.zip([1,2,3], fn);  
+     
+        Returns an observable sequence containing the result of combining 
+        elements of the sources using the specified result selector function. 
+        """
+
+        if args and isinstance(args[0], list):
+            return self.zip_array(list(args))
+        
+        parent = self
+        sources = args[:]
+        result_selector = sources.pop()
+        sources.unshift(parent);
+        
+        def subscribe(observer):
+            n = sources.length,
+            queues = [[] for i in range(n)]
+            is_done = [False for i in range(n)]
+            
+            def next(i):
+                if queues.every(lambda x: len(x) > 0 ):
+                    try:
+                        queued_values = [x.pop(0) for x in queues]
+                        res = result_selector(parent, queued_values)
+                    except Exception as ex:
+                        observer.on_error(ex)
+                        return
+                    
+                    observer.on_next(res)
+                elif is_done.filter(lambda x, j: j != i).every(lambda x: x ):
+                    observer.on_completed()
+                
+            def done(i):
+                is_done[i] = True
+                if is_done.every(lambda x: x):
+                    observer.on_completed()
+
+            subscriptions = []
+
+            def func(i):
+                subscriptions[i] = SingleAssignmentDisposable()
+
+                def on_next(x):
+                    queues[i].push(x)
+                    next(i)
+                
+                subscriptions[i].disposable = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
+                
+            for idx in range(n):
+                func(idx)
+
+            return CompositeDisposable(subscriptions)
         return AnonymousObservable(subscribe)
