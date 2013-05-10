@@ -1112,17 +1112,16 @@ def test_on_error_resume_next_start_with_never():
     
     results.messages.assert_equal()
 
-# def test_Zip_NeverNever():
-#     var o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     o1 = Observable.never()
-#     o2 = Observable.never()
-#     results = scheduler.start(create)
-#         return o1.zip(o2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
+def test_zip_never_never():
+    scheduler = TestScheduler()
+    o1 = Observable.never()
+    o2 = Observable.never()
+    
+    def create():
+        return o1.zip(o2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 # 
 # def test_Zip_NeverEmpty():
 #     var msgs, o1, o2, results, scheduler
@@ -1854,18 +1853,18 @@ def test_combine_latest_never_never():
 #         return e1.concat(e2);
 #     ;
 #     results.messages.assert_equal();
-# ;
-# def test_Concat_NeverEmpty():
-#     var e1, e2, msgs1, results, scheduler;
-#     scheduler = TestScheduler();
-#     msgs1 = [on_next(150, 1), on_completed(230)];
-#     e1 = scheduler.create_hot_observable(msgs1);
-#     e2 = Observable.never();
-#     results = scheduler.start(create)
-#         return e2.concat(e1);
-#     ;
-#     results.messages.assert_equal();
-# ;
+
+def test_concat_never_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = Observable.never()
+    def create():
+        return e2.concat(e1)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
 # def test_Concat_NeverNever():
 #     var e1, e2, results, scheduler;
 #     scheduler = TestScheduler();

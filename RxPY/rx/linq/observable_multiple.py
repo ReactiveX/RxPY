@@ -702,12 +702,12 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             return self.zip_array(list(args))
         
         parent = self
-        sources = args[:]
+        sources = list(args)
         result_selector = sources.pop()
         sources.insert(0, parent)
         
         def subscribe(observer):
-            n = sources.length,
+            n = len(sources)
             queues = [[] for i in range(n)]
             is_done = [False for i in range(n)]
             
