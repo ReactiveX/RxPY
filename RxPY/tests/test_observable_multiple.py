@@ -1443,18 +1443,17 @@ def test_on_error_resume_next_start_with_never():
 #         
 #     
 #     results.messages.assert_equal(on_next(220, 2 + 3), on_error(230, ex))
-# 
-# def test_CombineLatest_NeverNever():
-#     var e1, e2, results, scheduler
-#     scheduler = TestScheduler()
-#     e1 = Observable.never()
-#     e2 = Observable.never()
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
+
+def test_combine_latest_never_never():
+    scheduler = TestScheduler()
+    e1 = Observable.never()
+    e2 = Observable.never()
+
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal()
 # 
 # def test_CombineLatest_NeverEmpty():
 #     var e1, e2, msgs, results, scheduler

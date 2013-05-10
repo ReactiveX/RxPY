@@ -14,6 +14,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         self.amb = self.__amb
         self.catch_exception = self.__catch_exception
         self.on_error_resume_next = self.__on_error_resume_next
+        self.combine_latest = self.__combine_latest
 
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
@@ -47,7 +48,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                     left_subscription.dispose()
 
             def on_left_next(left):
-                choiceL();
+                choiceL()
                 if choice == left_choice:
                     observer.on_next(left)
             
@@ -58,7 +59,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 
 
             def on_left_completed():
-                choiceL();
+                choiceL()
                 if choice == left_choice:
                     observer.on_completed()
 
@@ -87,7 +88,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
     def amb(cls, *args):
         """Propagates the observable sequence that reacts first.
     
-        E.g. winner = Rx.Observable.amb(xs, ys, zs);
+        E.g. winner = Rx.Observable.amb(xs, ys, zs)
      
         Returns an observable sequence that surfaces any of the given sequences, whichever reacted first.
         """
@@ -162,7 +163,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             
             def on_error(exception):
                 try:
-                    result = handler(exception);
+                    result = handler(exception)
                 except Exception as ex:
                     observer.on_error(ex)
                     return
@@ -204,8 +205,8 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         """Continues an observable sequence that is terminated by an 
         exception with the next observable sequence.
      
-        1 - res = Observable.catch_exception(xs, ys, zs);
-        2 - res = Observable.catch_exception([xs, ys, zs]);
+        1 - res = Observable.catch_exception(xs, ys, zs)
+        2 - res = Observable.catch_exception([xs, ys, zs])
     
         Returns an observable sequence containing elements from consecutive 
         source sequences until a source sequence terminates successfully.
@@ -217,6 +218,95 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             items = list(args)
 
         return catch_exception(Enumerable.for_each(items))
+
+    def __combine_latest(self, *args):
+        """Merges the specified observable sequences into one observable 
+        sequence by using the selector function whenever any of the observable
+        sequences produces an element. This can be in the form of an argument 
+        list of observables or an array.
+     
+        1 - obs = observable.combine_latest(obs1, obs2, obs3, function (o1, o2, o3) { return o1 + o2 + o3; })
+        2 - obs = observable.combine_latest([obs1, obs2, obs3], function (o1, o2, o3) { return o1 + o2 + o3; })
+     
+        Returns an observable sequence containing the result of combining 
+        elements of the sources using the specified result selector function.
+        """
+        
+        args = list(args)
+        if args and isinstance(args[0], list):
+            args[0].insert(0, self)
+        else:
+            args.insert(0, self)
+        
+        return Observable.combine_latest(args)
+    
+    @classmethod
+    def combine_latest(cls, *args):
+        """Merges the specified observable sequences into one observable 
+        sequence by using the selector function whenever any of the observable 
+        sequences produces an element.
+     
+        1 - obs = Observable.combine_latest(obs1, obs2, obs3, function (o1, o2, o3) { return o1 + o2 + o3; })
+        2 - obs = Observable.combine_latest([obs1, obs2, obs3], function (o1, o2, o3) { return o1 + o2 + o3; })     
+     
+        Returns an observable sequence containing the result of combining 
+        elements of the sources using the specified result selector function.
+        """
+    
+        args = list(args)
+        
+        result_selector = args.pop(0)
+        
+        if args and isinstance(args[0], list):
+            args = args[0]
+            
+        def subscribe(observer):
+            n = len(args)
+            has_value = [False] * n
+            has_value_all = False
+            is_done = [False] * n
+            values = []
+
+            def next(i):
+                nonlocal has_value_all
+
+                has_value[i] = True
+                if has_value_all or all(has_value):
+                    try:
+                        res = result_selector(values)
+                    except Exception as ex:
+                        observer.on_error(ex)
+                        return
+                    
+                    observer.on_next(res)
+                elif all([j != i for i, j in enumerate(is_done)]):
+                    observer.on_completed()
+
+                has_value_all = all(has_value) # TODO: will this work?
+
+            def done(i):
+                is_done[i] = True
+                if all(is_done):
+                    observer.on_completed()
+             
+            subscriptions = [None] * n
+            def func(i):
+                subscriptions[i] = SingleAssignmentDisposable()
+                
+                def on_next(x):
+                    values[i] = x
+                    next(i)
+                
+                def on_completed():
+                    done(i)
+                
+                subscriptions[i].disposable = args[i].subscribe(on_next, observer.on_error, on_completed)
+
+            for idx in range(n):
+                func(idx)
+
+            return CompositeDisposable(subscriptions)
+        return AnonymousObservable(subscribe)
 
     def __concat(self, *args):
         """Concatenates all the observable sequences. This takes in either an 
@@ -239,8 +329,8 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
     def concat(cls, *args):
         """Concatenates all the observable sequences.
     
-        1 - res = Rx.Observable.concat(xs, ys, zs);
-        2 - res = Rx.Observable.concat([xs, ys, zs]);
+        1 - res = Observable.concat(xs, ys, zs)
+        2 - res = Observable.concat([xs, ys, zs])
      
         Returns an observable sequence that contains the elements of each given
         sequence, in sequential order.
@@ -299,7 +389,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                     nonlocal has_latest
 
                     if latest == _id:
-                        has_latest = False;
+                        has_latest = False
                         if is_stopped:
                             observer.on_completed()
                         
@@ -327,7 +417,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         """
     
         if not second:
-            raise Exception('Second observable is required');
+            raise Exception('Second observable is required')
         
         return Observable.on_error_resume_next([self, second])
 
@@ -408,7 +498,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
             right_subscription.disposable = other.subscribe(on_next2, observer.on_error, on_completed2)
 
-            return disposables;
+            return disposables
         return AnonymousObservable(subscribe)
 
     def take_until(self, other):
@@ -581,7 +671,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                     right = second[index]
                     index += 1
                     try:
-                        result = resultSelector(left, right)
+                        result = result_selector(left, right)
                     except Exception as e:
                         observer.on_error(e)
                         return
@@ -601,8 +691,8 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         The last element in the arguments must be a function to invoke for each 
         series of elements at corresponding indexes in the sources.
         
-        1 - res = obs1.zip(obs2, fn);
-        2 - res = x1.zip([1,2,3], fn);  
+        1 - res = obs1.zip(obs2, fn)
+        2 - res = x1.zip([1,2,3], fn)  
      
         Returns an observable sequence containing the result of combining 
         elements of the sources using the specified result selector function. 
@@ -614,7 +704,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         parent = self
         sources = args[:]
         result_selector = sources.pop()
-        sources.unshift(parent);
+        sources.insert(0, parent)
         
         def subscribe(observer):
             n = sources.length,
