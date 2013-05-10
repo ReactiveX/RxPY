@@ -390,8 +390,8 @@ def test_using_complete():
     
     assert(disposable == _d)
     results.messages.assert_equal(on_next(300, 200), on_completed(400))
-    assert(1, create_invoked)
-    assert(1, dispose_invoked)
+    assert(create_invoked == 1)
+    assert(dispose_invoked == 1)
     xs.subscriptions.assert_equal(subscribe(200, 400))
     disposable.disposes.assert_equal(200, 400)
 
@@ -422,8 +422,8 @@ def test_using_error():
     
     assert (disposable == _d)
     results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
-    assert(1 == create_invoked)
-    assert(1, dispose_invoked)
+    assert(create_invoked == 1)
+    assert(dispose_invoked == 1)
     xs.subscriptions.assert_equal(subscribe(200, 400))
     disposable.disposes.assert_equal(200, 400)
 
