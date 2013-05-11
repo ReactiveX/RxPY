@@ -1122,48 +1122,45 @@ def test_zip_never_never():
     
     results = scheduler.start(create)
     results.messages.assert_equal()
-# 
-# def test_Zip_NeverEmpty():
-#     var msgs, o1, o2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(210)]
-#     o1 = Observable.never()
-#     o2 = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create)
-#         return o1.zip(o2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Zip_EmptyEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_completed(210)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(210))
-# 
-# def test_Zip_EmptyNonEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(215))
-# 
+
+def test_zip_never_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(210)]
+    o1 = Observable.never()
+    o2 = scheduler.create_hot_observable(msgs)
+
+    def create():    
+        return o1.zip(o2, lambda x, y: x + y)
+
+    results = scheduler.start(create)    
+    results.messages.assert_equal()
+
+def test_zip_empty_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_completed(210)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():    
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(210))
+
+def test_zip_empty_non_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():    
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(215))
+
 # def test_Zip_NonEmptyEmpty():
 #     var e1, e2, msgs1, msgs2, results, scheduler
 #     scheduler = TestScheduler()
@@ -1453,161 +1450,150 @@ def test_combine_latest_never_never():
 
     results = scheduler.start(create)
     results.messages.assert_equal()
+
+def test_combine_latest_never_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(210)]
+    e1 = Observable.never()
+    e2 = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_combine_latest_empty_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(210)]
+    e1 = Observable.never()
+    e2 = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_combine_latest_empty_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_completed(210)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(210))
+
+def test_combine_latest_empty_return():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(215))
+
+def test_combine_latest_return_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(215))
+
+def test_combine_latest_never_feturn():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs)
+    e2 = Observable.never()
+
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_combine_latest_return_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(215, 2), on_completed(210)]
+    e1 = scheduler.create_hot_observable(msgs)
+    e2 = Observable.never()
+
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_combine_latest_return_return():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(220, 2 + 3), on_completed(240))
+
+def test_combine_latest_empty_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_combine_latest_error_empty():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_combine_latest_return_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_NeverEmpty():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(210)]
-#     e1 = Observable.never()
-#     e2 = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_CombineLatest_EmptyNever():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(210)]
-#     e1 = Observable.never()
-#     e2 = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_CombineLatest_EmptyEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_completed(210)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(210))
-# 
-# def test_CombineLatest_EmptyReturn():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(215))
-# 
-# def test_CombineLatest_ReturnEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(215))
-# 
-# def test_CombineLatest_NeverReturn():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs)
-#     e2 = Observable.never()
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_CombineLatest_ReturnNever():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(215, 2), on_completed(210)]
-#     e1 = scheduler.create_hot_observable(msgs)
-#     e2 = Observable.never()
-#     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_CombineLatest_ReturnReturn():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_next(220, 2 + 3), on_completed(240))
-# 
-# def test_CombineLatest_EmptyError():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_CombineLatest_ErrorEmpty():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_CombineLatest_ReturnThrow():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_CombineLatest_ThrowReturn():
+# def test_Combine_latest_ThrowReturn():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1616,13 +1602,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_ThrowThrow():
+# def test_Combine_latest_ThrowThrow():
 #     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
@@ -1632,13 +1618,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex1))
 # 
-# def test_CombineLatest_ErrorThrow():
+# def test_Combine_latest_ErrorThrow():
 #     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
@@ -1648,13 +1634,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex1))
 # 
-# def test_CombineLatest_ThrowError():
+# def test_Combine_latest_ThrowError():
 #     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
@@ -1664,13 +1650,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex1))
 # 
-# def test_CombineLatest_NeverThrow():
+# def test_Combine_latest_NeverThrow():
 #     var e1, e2, ex, msgs, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1678,13 +1664,13 @@ def test_combine_latest_never_never():
 #     e1 = Observable.never()
 #     e2 = scheduler.create_hot_observable(msgs)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_ThrowNever():
+# def test_Combine_latest_ThrowNever():
 #     var e1, e2, ex, msgs, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1692,13 +1678,13 @@ def test_combine_latest_never_never():
 #     e1 = Observable.never()
 #     e2 = scheduler.create_hot_observable(msgs)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_SomeThrow():
+# def test_Combine_latest_SomeThrow():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1707,13 +1693,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_ThrowSome():
+# def test_Combine_latest_ThrowSome():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1722,13 +1708,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(220, ex))
 # 
-# def test_CombineLatest_ThrowAfterCompleteLeft():
+# def test_Combine_latest_ThrowAfterCompleteLeft():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1737,13 +1723,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(230, ex))
 # 
-# def test_CombineLatest_ThrowAfterCompleteRight():
+# def test_Combine_latest_ThrowAfterCompleteRight():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1752,13 +1738,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(230, ex))
 # 
-# def test_CombineLatest_InterleavedWithTail():
+# def test_Combine_latest_InterleavedWithTail():
 #     var e1, e2, msgs1, msgs2, results, scheduler
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(230)]
@@ -1766,13 +1752,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_next(220, 2 + 3), on_next(225, 3 + 4), on_next(230, 4 + 5), on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250))
 # 
-# def test_CombineLatest_Consecutive():
+# def test_Combine_latest_Consecutive():
 #     var e1, e2, msgs1, msgs2, results, scheduler
 #     scheduler = TestScheduler()
 #     msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(230)]
@@ -1780,13 +1766,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250))
 # 
-# def test_CombineLatest_ConsecutiveEndWithErrorLeft():
+# def test_Combine_latest_ConsecutiveEndWithErrorLeft():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1795,13 +1781,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function (x, y) {
+#         return e1.combine_latest(e2, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_error(230, ex))
 # 
-# def test_CombineLatest_ConsecutiveEndWithErrorRight():
+# def test_Combine_latest_ConsecutiveEndWithErrorRight():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1810,13 +1796,13 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e2.combineLatest(e1, function (x, y) {
+#         return e2.combine_latest(e1, function (x, y) {
 #             return x + y
 #         
 #     
 #     results.messages.assert_equal(on_next(235, 4 + 6), on_next(240, 4 + 7), on_error(245, ex))
 # 
-# def test_CombineLatest_SelectorThrows():
+# def test_Combine_latest_SelectorThrows():
 #     var e1, e2, ex, msgs1, msgs2, results, scheduler
 #     ex = 'ex'
 #     scheduler = TestScheduler()
@@ -1825,7 +1811,7 @@ def test_combine_latest_never_never():
 #     e1 = scheduler.create_hot_observable(msgs1)
 #     e2 = scheduler.create_hot_observable(msgs2)
 #     results = scheduler.start(create)
-#         return e1.combineLatest(e2, function () {
+#         return e1.combine_latest(e2, function () {
 #             throw ex
 #         
 #     

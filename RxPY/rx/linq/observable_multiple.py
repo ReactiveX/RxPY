@@ -193,7 +193,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         else:
             args.insert(0, self)
         
-        return Observable.combine_latest(args)
+        return Observable.combine_latest(*args)
     
     @classmethod
     def combine_latest(cls, *args):
@@ -208,19 +208,19 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         elements of the sources using the specified result selector function.
         """
     
-        args = list(args)
-        
-        result_selector = args.pop(0)
-        
         if args and isinstance(args[0], list):
             args = args[0]
-            
+        else:
+            args = list(args)
+        
+        result_selector = args.pop()
+         
         def subscribe(observer):
             n = len(args)
             has_value = [False] * n
             has_value_all = False
             is_done = [False] * n
-            values = []
+            values = [None]*n
 
             def next(i):
                 nonlocal has_value_all
@@ -259,7 +259,6 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
             for idx in range(n):
                 func(idx)
-
             return CompositeDisposable(subscriptions)
         return AnonymousObservable(subscribe)
 
@@ -360,7 +359,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                     active_count += 1
                     subscribe(inner_source)
                 else:
-                    q.push(inner_source)
+                    q.append(inner_source)
 
             def on_completed():
                 nonlocal is_stopped
@@ -717,7 +716,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 if all([len(q) for q in queues]):
                     try:
                         queued_values = [x.pop(0) for x in queues]
-                        res = result_selector(parent, queued_values)
+                        res = result_selector(queued_values)
                     except Exception as ex:
                         observer.on_error(ex)
                         return
@@ -737,13 +736,12 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 subscriptions[i] = SingleAssignmentDisposable()
 
                 def on_next(x):
-                    queues[i].push(x)
+                    queues[i].append(x)
                     next(i)
                 
                 subscriptions[i].disposable = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
                 
             for idx in range(n):
                 func(idx)
-
             return CompositeDisposable(subscriptions)
         return AnonymousObservable(subscribe)
