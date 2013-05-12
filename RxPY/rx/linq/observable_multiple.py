@@ -189,9 +189,9 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         
         args = list(args)
         if args and isinstance(args[0], list):
-            args[0].insert(0, self)
-        else:
-            args.insert(0, self)
+            args = args[0]
+
+        args.insert(0, self)
         
         return Observable.combine_latest(*args)
     
@@ -224,22 +224,24 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
             def next(i):
                 nonlocal has_value_all
-
                 has_value[i] = True
+                
                 if has_value_all or all(has_value):
                     try:
+                        print("selector: ", values)
                         res = result_selector(*values)
                     except Exception as ex:
                         observer.on_error(ex)
                         return
                     
                     observer.on_next(res)
-                elif all([j for i, j in enumerate(is_done) if j != i]):
+                elif all([x for j, x in enumerate(is_done) if j != i]):
                     observer.on_completed()
 
-                has_value_all = all(has_value) # TODO: will this work?
+                has_value_all = all(has_value)
 
             def done(i):
+                print("done: ", i)
                 is_done[i] = True
                 if all(is_done):
                     observer.on_completed()
@@ -249,10 +251,12 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 subscriptions[i] = SingleAssignmentDisposable()
                 
                 def on_next(x):
+                    print("on_next: ", x)
                     values[i] = x
                     next(i)
                 
                 def on_completed():
+                    print("on_completed")
                     done(i)
                 
                 subscriptions[i].disposable = args[i].subscribe(on_next, observer.on_error, on_completed)

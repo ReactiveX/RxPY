@@ -1307,108 +1307,98 @@ def test_zip_error_some():
     results = scheduler.start(create)
     results.messages.assert_equal(on_error(220, ex))
 
-# def test_Zip_SomeDataAsymmetric1():
-#     var e1, e2, i, len, msgs1, msgs2, results, scheduler, sum, time
-#     scheduler = TestScheduler()
-#     msgs1 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 5 i++) {
-#             _results.push(on_next(205 + i * 5, i))
-#         }
-#         return _results
-#     ()
-#     msgs2 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 10 i++) {
-#             _results.push(on_next(205 + i * 8, i))
-#         }
-#         return _results
-#     ()
-#     len = Math.min(msgs1.length, msgs2.length)
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     .messages
-#     equal(len, results.length)
-#     for (i = 0 i < len i++) {
-#         sum = msgs1[i].value.value + msgs2[i].value.value
-#         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
-#     }
-# 
-# def test_Zip_SomeDataAsymmetric2():
-#     var e1, e2, i, len, msgs1, msgs2, results, scheduler, sum, time
-#     scheduler = TestScheduler()
-#     msgs1 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 10 i++) {
-#             _results.push(on_next(205 + i * 5, i))
-#         }
-#         return _results
-#     ()
-#     msgs2 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 5 i++) {
-#             _results.push(on_next(205 + i * 8, i))
-#         }
-#         return _results
-#     ()
-#     len = Math.min(msgs1.length, msgs2.length)
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     .messages
-#     equal(len, results.length)
-#     for (i = 0 i < len i++) {
-#         sum = msgs1[i].value.value + msgs2[i].value.value
-#         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
-#     }
-# 
-# def test_Zip_SomeDataSymmetric():
-#     var e1, e2, i, len, msgs1, msgs2, results, scheduler, sum, time
-#     scheduler = TestScheduler()
-#     msgs1 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 10 i++) {
-#             _results.push(on_next(205 + i * 5, i))
-#         }
-#         return _results
-#     ()
-#     msgs2 = (function () {
-#         var _results
-#         _results = []
-#         for (i = 0 i < 10 i++) {
-#             _results.push(on_next(205 + i * 8, i))
-#         }
-#         return _results
-#     ()
-#     len = Math.min(msgs1.length, msgs2.length)
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     .messages
-#     equal(len, results.length)
-#     for (i = 0 i < len i++) {
-#         sum = msgs1[i].value.value + msgs2[i].value.value
-#         time = Math.max(msgs1[i].time, msgs2[i].time)
-#         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
-#     }
-# 
+def test_zip_some_data_asymmetric1():
+    scheduler = TestScheduler()
+    
+    def msgs1_factory():
+        results = []
+        for i in range(5):
+            results.append(on_next(205 + i * 5, i))
+        return results
+    msgs1 = msgs1_factory()
+    
+    def msgs2_factory():
+        results = []
+        for i in range(10):
+            results.append(on_next(205 + i * 8, i))
+        return results
+    msgs2 = msgs2_factory()
+    
+    length = min(len(msgs1), len(msgs2))
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+        
+    results = scheduler.start(create).messages
+    assert(length == len(results))
+    for i in range(length):
+        _sum = msgs1[i].value.value + msgs2[i].value.value
+        time = max(msgs1[i].time, msgs2[i].time)
+        assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+ 
+def test_zip_some_data_asymmetric2():
+    scheduler = TestScheduler()
+    def msgs1_factory():
+        results = []
+        for i in range(10):
+            results.append(on_next(205 + i * 5, i))
+        
+        return results
+    msgs1 = msgs1_factory()
+
+    def msgs2_factory():
+        results = []
+        for i in range(5):
+            results.append(on_next(205 + i * 8, i))
+        return results
+    msgs2 = msgs2_factory()
+
+    length = min(len(msgs1), len(msgs2))
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create).messages
+    assert(length == len(results))
+    for i in range(length):
+        _sum = msgs1[i].value.value + msgs2[i].value.value
+        time = max(msgs1[i].time, msgs2[i].time)
+        assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+
+def test_zip_some_data_symmetric():
+    scheduler = TestScheduler()
+    def msgs1_factory():
+        results = []
+        for i in range(10):
+            results.append(on_next(205 + i * 5, i))
+        return results
+    msgs1 = msgs1_factory()
+    
+    def msgs2_factory():
+        results = []
+        for i in range(10):
+            results.append(on_next(205 + i * 8, i))
+        return results
+    msgs2 = msgs2_factory()
+
+    length = min(len(msgs1), len(msgs2))
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create).messages
+    assert(length == len(results))
+    for i in range(length):
+        _sum = msgs1[i].value.value + msgs2[i].value.value
+        time = max(msgs1[i].time, msgs2[i].time)
+        assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+
 def test_zip_selector_throws():
     ex = 'ex'
     scheduler = TestScheduler()
@@ -2225,4 +2215,4 @@ def test_concat_some_data_some_data():
 # 
 
 if __name__ == '__main__':
-    test_zip_empty_non_empty()
+    test_combine_latest_return_empty()
