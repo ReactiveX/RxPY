@@ -220,7 +220,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             has_value = [False] * n
             has_value_all = False
             is_done = [False] * n
-            values = [None]*n
+            values = [None] * n
 
             def next(i):
                 nonlocal has_value_all
@@ -228,13 +228,13 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 has_value[i] = True
                 if has_value_all or all(has_value):
                     try:
-                        res = result_selector(values)
+                        res = result_selector(*values)
                     except Exception as ex:
                         observer.on_error(ex)
                         return
                     
                     observer.on_next(res)
-                elif all([j != i for i, j in enumerate(is_done)]):
+                elif all([j for i, j in enumerate(is_done) if j != i]):
                     observer.on_completed()
 
                 has_value_all = all(has_value) # TODO: will this work?
@@ -709,20 +709,20 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         
         def subscribe(observer):
             n = len(sources)
-            queues = [[]] * n
+            queues = [[] for _ in range(n)]
             is_done = [False] * n
             
             def next(i):
                 if all([len(q) for q in queues]):
                     try:
                         queued_values = [x.pop(0) for x in queues]
-                        res = result_selector(queued_values)
+                        res = result_selector(*queued_values)
                     except Exception as ex:
                         observer.on_error(ex)
                         return
                     
                     observer.on_next(res)
-                elif all([j != i for j, x in enumerate(is_done)]):
+                elif all([x for j, x in enumerate(is_done) if j != i]):
                     observer.on_completed()
                 
             def done(i):

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_observable_time.py</StartupFile>
+    <StartupFile>tests\test_observable_multiple.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\RxPY</WorkingDirectory>
@@ -85,6 +85,7 @@
     <Compile Include="tests\test_observable_concurrency.py" />
     <Compile Include="tests\test_observable_creation.py" />
     <Compile Include="tests\test_observable_imperative.py" />
+    <Compile Include="tests\test_observable_multiple.py" />
     <Compile Include="tests\test_observable_time.py" />
     <Compile Include="tests\test_observer.py" />
     <Compile Include="tests\test_currentthreadscheduler.py" />

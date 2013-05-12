@@ -1161,164 +1161,152 @@ def test_zip_empty_non_empty():
     results = scheduler.start(create)
     results.messages.assert_equal(on_completed(215))
 
-# def test_Zip_NonEmptyEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(210)]
-#     msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_completed(215))
-# 
-# def test_Zip_NeverNonEmpty():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs)
-#     e2 = Observable.never()
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Zip_NonEmptyNever():
-#     var e1, e2, msgs, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
-#     e1 = scheduler.create_hot_observable(msgs)
-#     e2 = Observable.never()
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal()
-# 
-# def test_Zip_NonEmptyNonEmpty():
-#     var e1, e2, msgs1, msgs2, results, scheduler
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_next(220, 2 + 3), on_completed(240))
-# 
-# def test_Zip_EmptyError():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Zip_ErrorEmpty():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Zip_NeverError():
-#     var e1, e2, ex, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = Observable.never()
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Zip_ErrorNever():
-#     var e1, e2, ex, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = Observable.never()
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Zip_ErrorError():
-#     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
-#     ex1 = 'ex1'
-#     ex2 = 'ex2'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_error(230, ex1)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex2)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex2))
-# 
-# def test_Zip_SomeError():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Zip_ErrorSome():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.zip(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
+def test_zip_non_empty_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(210)]
+    msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_completed(215))
+
+def test_zip_never_non_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs)
+    e2 = Observable.never()
+
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_zip_non_empty_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
+    e1 = scheduler.create_hot_observable(msgs)
+    e2 = Observable.never()
+
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    results = scheduler.start(create)
+    results.messages.assert_equal()
+
+def test_zip_non_empty_non_empty():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(220, 2 + 3), on_completed(240))
+
+def test_zip_empty_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_zip_error_empty():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_zip_never_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = Observable.never()
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_zip_error_never():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = Observable.never()
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_zip_error_error():
+    ex1 = 'ex1'
+    ex2 = 'ex2'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_error(230, ex1)]
+    msgs2 = [on_next(150, 1), on_error(220, ex2)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex2))
+
+def test_zip_some_error():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.zip(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_zip_error_some():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.zip(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
 # def test_Zip_SomeDataAsymmetric1():
 #     var e1, e2, i, len, msgs1, msgs2, results, scheduler, sum, time
 #     scheduler = TestScheduler()
@@ -1421,24 +1409,25 @@ def test_zip_empty_non_empty():
 #         assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == sum)
 #     }
 # 
-# def test_Zip_SelectorThrows():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(240)]
-#     msgs2 = [on_next(150, 1), on_next(220, 3), on_next(230, 5), on_completed(250)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.zip(e2, function (x, y) {
-#             if (y == 5) {
-#                 throw ex
-#             } else {
-#                 return x + y
-#             }
-#         
-#     
-#     results.messages.assert_equal(on_next(220, 2 + 3), on_error(230, ex))
+def test_zip_selector_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(240)]
+    msgs2 = [on_next(150, 1), on_next(220, 3), on_next(230, 5), on_completed(250)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        def selector(x, y):
+            if y == 5:
+                raise Exception(ex)
+            else:
+                return x + y
+            
+        return e1.zip(e2, selector)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_next(220, 2 + 3), on_error(230, ex))
 
 def test_combine_latest_never_never():
     scheduler = TestScheduler()
@@ -1592,84 +1581,79 @@ def test_combine_latest_return_throw():
     
     results = scheduler.start(create)
     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Combine_latest_ThrowReturn():
-#     var e1, e2, ex, msgs1, msgs2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
-#     msgs2 = [on_next(150, 1), on_error(220, ex)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.combine_latest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
-# def test_Combine_latest_ThrowThrow():
-#     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
-#     ex1 = 'ex1'
-#     ex2 = 'ex2'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_error(220, ex1)]
-#     msgs2 = [on_next(150, 1), on_error(230, ex2)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combine_latest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex1))
-# 
-# def test_Combine_latest_ErrorThrow():
-#     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
-#     ex1 = 'ex1'
-#     ex2 = 'ex2'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
-#     msgs2 = [on_next(150, 1), on_error(230, ex2)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e1.combine_latest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex1))
-# 
-# def test_Combine_latest_ThrowError():
-#     var e1, e2, ex1, ex2, msgs1, msgs2, results, scheduler
-#     ex1 = 'ex1'
-#     ex2 = 'ex2'
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
-#     msgs2 = [on_next(150, 1), on_error(230, ex2)]
-#     e1 = scheduler.create_hot_observable(msgs1)
-#     e2 = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create)
-#         return e2.combine_latest(e1, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex1))
-# 
-# def test_Combine_latest_NeverThrow():
-#     var e1, e2, ex, msgs, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(220, ex)]
-#     e1 = Observable.never()
-#     e2 = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create)
-#         return e1.combine_latest(e2, function (x, y) {
-#             return x + y
-#         
-#     
-#     results.messages.assert_equal(on_error(220, ex))
-# 
+
+def test_combine_latest_throw_return():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
+    msgs2 = [on_next(150, 1), on_error(220, ex)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
+def test_combine_latest_throw_throw():
+    ex1 = 'ex1'
+    ex2 = 'ex2'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_error(220, ex1)]
+    msgs2 = [on_next(150, 1), on_error(230, ex2)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex1))
+
+def test_combine_latest_error_throw():
+    ex1 = 'ex1'
+    ex2 = 'ex2'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
+    msgs2 = [on_next(150, 1), on_error(230, ex2)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create) 
+    results.messages.assert_equal(on_error(220, ex1))
+
+def test_combine_latest_throw_error():
+    ex1 = 'ex1'
+    ex2 = 'ex2'
+    scheduler = TestScheduler()
+    msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
+    msgs2 = [on_next(150, 1), on_error(230, ex2)]
+    e1 = scheduler.create_hot_observable(msgs1)
+    e2 = scheduler.create_hot_observable(msgs2)
+    
+    def create():
+        return e2.combine_latest(e1, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex1))
+
+def test_combine_latest_never_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(220, ex)]
+    e1 = Observable.never()
+    e2 = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return e1.combine_latest(e2, lambda x, y: x + y)
+    
+    results = scheduler.start(create)
+    results.messages.assert_equal(on_error(220, ex))
+
 # def test_Combine_latest_ThrowNever():
 #     var e1, e2, ex, msgs, results, scheduler
 #     ex = 'ex'
@@ -2249,3 +2233,6 @@ def test_concat_some_data_some_data():
 #     strictEqual(subscribes, 1, "catchException(function): After dispose: 1 subscribes")
 #     strictEqual(unsubscribes, 1, "catchException(function): After dispose: 1 unsubscribes") // this one FAILS (unsubscribes is 0)
 # 
+
+if __name__ == '__main__':
+    test_zip_empty_non_empty()
