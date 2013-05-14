@@ -107,7 +107,7 @@ def test_select_many_complete():
     xs.messages[5].value.value.subscriptions.assert_equal(subscribe(750, 790))
     xs.messages[6].value.value.subscriptions.assert_equal(subscribe(850, 950))
 
-def test_select_many_Complete_InnerNotComplete():
+def test_select_many_complete_inner_not_complete():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(5, scheduler.create_cold_observable(on_error(1, 'ex1'))), on_next(105, scheduler.create_cold_observable(on_error(1, 'ex2'))), on_next(300, scheduler.create_cold_observable(on_next(10, 102), on_next(90, 103), on_next(110, 104), on_next(190, 105), on_next(440, 106), on_completed(460))), on_next(400, scheduler.create_cold_observable(on_next(180, 202), on_next(190, 203))), on_next(550, scheduler.create_cold_observable(on_next(10, 301), on_next(50, 302), on_next(70, 303), on_next(260, 304), on_next(310, 305), on_completed(410))), on_next(750, scheduler.create_cold_observable(on_completed(40))), on_next(850, scheduler.create_cold_observable(on_next(80, 401), on_next(90, 402), on_completed(100))), on_completed(900))
 
@@ -123,7 +123,7 @@ def test_select_many_Complete_InnerNotComplete():
     xs.messages[5].value.value.subscriptions.assert_equal(subscribe(750, 790))
     xs.messages[6].value.value.subscriptions.assert_equal(subscribe(850, 950))
 
-def test_select_many_complete_outerNotComplete():
+def test_select_many_complete_outer_not_complete():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(5, scheduler.create_cold_observable(on_error(1, 'ex1'))), on_next(105, scheduler.create_cold_observable(on_error(1, 'ex2'))), on_next(300, scheduler.create_cold_observable(on_next(10, 102), on_next(90, 103), on_next(110, 104), on_next(190, 105), on_next(440, 106), on_completed(460))), on_next(400, scheduler.create_cold_observable(on_next(180, 202), on_next(190, 203), on_completed(205))), on_next(550, scheduler.create_cold_observable(on_next(10, 301), on_next(50, 302), on_next(70, 303), on_next(260, 304), on_next(310, 305), on_completed(410))), on_next(750, scheduler.create_cold_observable(on_completed(40))), on_next(850, scheduler.create_cold_observable(on_next(80, 401), on_next(90, 402), on_completed(100))))
     
@@ -139,7 +139,7 @@ def test_select_many_complete_outerNotComplete():
     xs.messages[5].value.value.subscriptions.assert_equal(subscribe(750, 790))
     xs.messages[6].value.value.subscriptions.assert_equal(subscribe(850, 950))
 
-def test_select_many_Error_Outer():
+def test_select_many_error_outer():
     ex = 'ex'
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(5, scheduler.create_cold_observable(on_error(1, 'ex1'))), on_next(105, scheduler.create_cold_observable(on_error(1, 'ex2'))), on_next(300, scheduler.create_cold_observable(on_next(10, 102), on_next(90, 103), on_next(110, 104), on_next(190, 105), on_next(440, 106), on_completed(460))), on_next(400, scheduler.create_cold_observable(on_next(180, 202), on_next(190, 203), on_completed(205))), on_next(550, scheduler.create_cold_observable(on_next(10, 301), on_next(50, 302), on_next(70, 303), on_next(260, 304), on_next(310, 305), on_completed(410))), on_next(750, scheduler.create_cold_observable(on_completed(40))), on_next(850, scheduler.create_cold_observable(on_next(80, 401), on_next(90, 402), on_completed(100))), on_error(900, ex))

@@ -12,7 +12,7 @@ class AnonymousSubject(Observable):
 
 
     def on_completed(self):
-        self.observer.on_ompleted()
+        self.observer.on_completed()
 
     def on_error(self, exception):
         self.observer.on_error(exception)

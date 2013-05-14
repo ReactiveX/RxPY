@@ -1,11 +1,12 @@
 from rx import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
+from rx.abstractobserver import AbstractObserver
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
-class Subject(Observable):
+class Subject(Observable, AbstractObserver):
     """Represents an object that is both an observable sequence as well as an 
     observer. Each notification is broadcasted to all subscribed observers."""
 
@@ -15,6 +16,7 @@ class Subject(Observable):
         self.is_disposed = False
         self.is_stopped = False
         self.observers = []
+        self.exception = None
 
     def check_disposed(self):
         if self.is_disposed:
