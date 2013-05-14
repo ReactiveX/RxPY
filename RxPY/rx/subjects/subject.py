@@ -1,4 +1,4 @@
-from rx import Observable
+from rx.observable import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
 from rx.abstractobserver import AbstractObserver
