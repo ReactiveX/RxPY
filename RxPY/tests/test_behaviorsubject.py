@@ -112,62 +112,98 @@ def test_infinite():
         on_next(940, 11)
     )
 
+def test_finite():
+    scheduler = TestScheduler()
 
-# def test_finite():
-#     scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(
+        on_next(70, 1),
+        on_next(110, 2),
+        on_next(220, 3),
+        on_next(270, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_completed(630),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, RxException())
+    )
 
-#     xs = scheduler.create_hot_observable(
-#         on_next(70, 1),
-#         on_next(110, 2),
-#         on_next(220, 3),
-#         on_next(270, 4),
-#         on_next(340, 5),
-#         on_next(410, 6),
-#         on_next(520, 7),
-#         on_completed(630),
-#         on_next(640, 9),
-#         on_completed(650),
-#         on_error(660, Error())
-#     )
+    subject = None
+    subscription = None
+    subscription1 = None
+    subscription2 = None
+    subscription3 = None
 
-#     subject, subscription, subscription1, subscription2, subscription3
+    results1 = scheduler.create_observer()
+    results2 = scheduler.create_observer()
+    results3 = scheduler.create_observer()
 
-#     results1 = scheduler.create_observer()
-#     results2 = scheduler.create_observer()
-#     results3 = scheduler.create_observer()
+    def action1(scheduler, state=None):
+        nonlocal subject
+        subject = BehaviorSubject(100)
+    scheduler.schedule_absolute(100, action1)
+    
+    def action2(scheduler, state=None):
+        nonlocal subscription
+        subscription = xs.subscribe(subject)
+    scheduler.schedule_absolute(200, action2) 
+    
+    def action3(scheduler, state=None):
+        subscription.dispose()
+    scheduler.schedule_absolute(1000, action3) 
+    
+    def action4(scheduler, state=None):
+        nonlocal subscription1
+        subscription1 = subject.subscribe(results1)
+    scheduler.schedule_absolute(300, action4)
+    
+    def action5(scheduler, state=None):
+        nonlocal subscription2
+        subscription2 = subject.subscribe(results2)
+    scheduler.schedule_absolute(400, action5)
+    
+    def action6(scheduler, state=None):
+        nonlocal subscription3
+        subscription3 = subject.subscribe(results3)
+    scheduler.schedule_absolute(900, action6)
+    
+    def action7(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(600, action7)
+    
+    def action8(scheduler, state=None):
+        subscription2.dispose()
+    scheduler.schedule_absolute(700, action8)
+    
+    def action9(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(800, action9)
+    
+    def action10(scheduler, state=None):
+        subscription3.dispose()
+    scheduler.schedule_absolute(950, action10)
 
-#     scheduler.schedule_absolute(100, function () { subject = BehaviorSubject(100)
-#     scheduler.schedule_absolute(200, function () { subscription = xs.subscribe(subject)
-#     scheduler.schedule_absolute(1000, function () { subscription.dispose()
+    scheduler.start()
 
-#     scheduler.schedule_absolute(300, function () { subscription1 = subject.subscribe(results1)
-#     scheduler.schedule_absolute(400, function () { subscription2 = subject.subscribe(results2)
-#     scheduler.schedule_absolute(900, function () { subscription3 = subject.subscribe(results3)
+    results1.messages.assert_equal(
+        on_next(300, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7)
+    )
 
-#     scheduler.schedule_absolute(600, function () { subscription1.dispose()
-#     scheduler.schedule_absolute(700, function () { subscription2.dispose()
-#     scheduler.schedule_absolute(800, function () { subscription1.dispose()
-#     scheduler.schedule_absolute(950, function () { subscription3.dispose()
+    results2.messages.assert_equal(
+        on_next(400, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_completed(630)
+    )
 
-#     scheduler.start()
+    results3.messages.assert_equal(
+        on_completed(900)
+    )
 
-#     results1.messages.assert_equal(
-#         on_next(300, 4),
-#         on_next(340, 5),
-#         on_next(410, 6),
-#         on_next(520, 7)
-#     )
-
-#     results2.messages.assert_equal(
-#         on_next(400, 5),
-#         on_next(410, 6),
-#         on_next(520, 7),
-#         on_completed(630)
-#     )
-
-#     results3.messages.assert_equal(
-#         on_completed(900)
-#     )
 # def test_error():
 #     scheduler = TestScheduler()
 

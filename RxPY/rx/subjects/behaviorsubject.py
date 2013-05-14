@@ -53,7 +53,7 @@ class BehaviorSubject(Observable, AbstractObserver):
             os = self.observers[:]
             self.is_stopped = True
             for o in os:
-                os.on_completed()
+                o.on_completed()
 
             self.observers = []
     
