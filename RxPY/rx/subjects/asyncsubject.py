@@ -11,6 +11,24 @@ class AsyncSubject(Observable, AbstractObserver):
     is sent to all subscribed observers.
     """  
 
+    def __init__(self):
+        """Creates a subject that can only receive one value and that value is 
+        cached for all future observations.
+        """
+    
+        super(AsyncSubject, self).__init__(self.subscribe)
+
+        self.is_disposed = False
+        self.is_stopped = False
+        self.value = None
+        self.has_value = False
+        self.observers = []
+        self.exception = None
+    
+    def check_disposed(self):
+        if self.is_disposed:
+            raise DisposedException()
+
     def subscribe(self, observer):
         self.check_disposed()
         if not self.is_stopped:
@@ -28,22 +46,7 @@ class AsyncSubject(Observable, AbstractObserver):
         else:
             observer.on_completed()
         
-        return disposableEmpty
-    
-    def __init__(self):
-        """Creates a subject that can only receive one value and that value is 
-        cached for all future observations.
-        """
-    
-        super(AsyncSubject, self).__init__(self.subscribe)
-
-        self.is_disposed = False
-        self.is_stopped = False
-        self.value = None
-        self.has_value = False
-        self.observers = []
-        self.exception = None
-    
+        return Disposable.empty()
 
     def on_completed(self):
         self.check_disposed()
