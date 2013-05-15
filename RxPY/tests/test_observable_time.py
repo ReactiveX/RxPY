@@ -1200,8 +1200,7 @@ def test_generate_timespan_throw_timeselector():
     results = scheduler.start(create)
     results.messages.assert_equal(on_error(201, ex))
 
-def test_Generate_TimeSpan_Dispose():
-    
+def test_generate_timespan_Dispose():
     scheduler = TestScheduler()
 
     def create():
