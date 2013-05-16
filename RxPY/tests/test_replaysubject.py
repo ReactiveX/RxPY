@@ -305,106 +305,178 @@ def test_finite():
         on_completed(901)
     )
 
-# def test_Error():
-#     scheduler = TestScheduler()
+def test_error():
+    scheduler = TestScheduler()
 
-#     ex = Error('ex')
+    ex = RxException('ex')
 
-#     xs = scheduler.create_hot_observable(
-#         on_next(70, 1),
-#         on_next(110, 2),
-#         on_next(220, 3),
-#         on_next(270, 4),
-#         on_next(340, 5),
-#         on_next(410, 6),
-#         on_next(520, 7),
-#         on_error(630, ex),
-#         on_next(640, 9),
-#         on_completed(650),
-#         on_error(660, Error('ex'))
-#     )
+    xs = scheduler.create_hot_observable(
+        on_next(70, 1),
+        on_next(110, 2),
+        on_next(220, 3),
+        on_next(270, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_error(630, ex),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, RxException('ex'))
+    )
 
-#     subject, subscription, subscription1, subscription2, subscription3
+    subject = None
+    subscription = None
+    subscription1 = None
+    subscription2 = None
+    subscription3 = None
 
-#     results1 = scheduler.create_observer()
-#     results2 = scheduler.create_observer()
-#     results3 = scheduler.create_observer()
+    results1 = scheduler.create_observer()
+    results2 = scheduler.create_observer()
+    results3 = scheduler.create_observer()
 
-#     scheduler.schedule_absolute(100, action)subject = ReplaySubject(3, 100, scheduler) })
-#     scheduler.schedule_absolute(200, action)subscription = xs.subscribe(subject) })
-#     scheduler.schedule_absolute(1000, action)subscription.dispose() })
+    def action1(scheduler, state=None):
+        nonlocal subject
+        subject = ReplaySubject(3, 100, scheduler)
+    scheduler.schedule_absolute(100, action1)
 
-#     scheduler.schedule_absolute(300, function () { subscription1 = subject.subscribe(results1) })
-#     scheduler.schedule_absolute(400, function () { subscription2 = subject.subscribe(results2) })
-#     scheduler.schedule_absolute(900, function () { subscription3 = subject.subscribe(results3) })
+    def action2(scheduler, state=None):
+        nonlocal subscription
+        subscription = xs.subscribe(subject)
+    scheduler.schedule_absolute(200, action2)
 
-#     scheduler.schedule_absolute(600, function () { subscription1.dispose() })
-#     scheduler.schedule_absolute(700, function () { subscription2.dispose() })
-#     scheduler.schedule_absolute(800, function () { subscription1.dispose() })
-#     scheduler.schedule_absolute(950, function () { subscription3.dispose() })
+    def action3(scheduler, state=None):
+        subscription.dispose()
+    scheduler.schedule_absolute(1000, action3)
 
-#     scheduler.start()
+    def action4(scheduler, state=None):
+        nonlocal subscription1
+        subscription1 = subject.subscribe(results1)
+    scheduler.schedule_absolute(300, action4)
+    
+    def action5(scheduler, state=None):
+        nonlocal subscription2
+        subscription2 = subject.subscribe(results2)
+    scheduler.schedule_absolute(400, action5)
+    
+    def action6(scheduler, state=None):
+        nonlocal subscription3
+        subscription3 = subject.subscribe(results3)
+    scheduler.schedule_absolute(900, action6)
+    
+    def action7(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(600, action7)
+    
+    def action8(scheduler, state=None):
+        subscription2.dispose()
+    scheduler.schedule_absolute(700, action8)
+    
+    def action9(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(800, action9)
+    
+    def action10(scheduler, state=None):
+        subscription3.dispose()
+    scheduler.schedule_absolute(950, action10)
+    
+    scheduler.start()
 
-#     results1.messages.assert_equal(
-#         on_next(301, 3),
-#         on_next(302, 4),
-#         on_next(341, 5),
-#         on_next(411, 6),
-#         on_next(521, 7)
-#     )
+    results1.messages.assert_equal(
+        on_next(301, 3),
+        on_next(302, 4),
+        on_next(341, 5),
+        on_next(411, 6),
+        on_next(521, 7)
+    )
 
-#     results2.messages.assert_equal(
-#         on_next(401, 5),
-#         on_next(411, 6),
-#         on_next(521, 7),
-#         on_error(631, ex)
-#     )
+    results2.messages.assert_equal(
+        on_next(401, 5),
+        on_next(411, 6),
+        on_next(521, 7),
+        on_error(631, ex)
+    )
 
-#     results3.messages.assert_equal(
-#         on_error(901, ex)
-#     )
+    results3.messages.assert_equal(
+        on_error(901, ex)
+    )
 
-# def test_Canceled():
-#     scheduler = TestScheduler()
+def test_canceled():
+    scheduler = TestScheduler()
 
-#     xs = scheduler.create_hot_observable(
-#         on_completed(630),
-#         on_next(640, 9),
-#         on_completed(650),
-#         on_error(660, Error())
-#     )
+    xs = scheduler.create_hot_observable(
+        on_completed(630),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, RxException())
+    )
 
-#     subject, subscription, subscription1, subscription2, subscription3
+    subject = None
+    subscription = None
+    subscription1 = None
+    subscription2 = None
+    subscription3 = None
 
-#     results1 = scheduler.create_observer()
-#     results2 = scheduler.create_observer()
-#     results3 = scheduler.create_observer()
+    results1 = scheduler.create_observer()
+    results2 = scheduler.create_observer()
+    results3 = scheduler.create_observer()
 
-#     scheduler.schedule_absolute(100, function () { subject = ReplaySubject(3, 100, scheduler) })
-#     scheduler.schedule_absolute(200, function () { subscription = xs.subscribe(subject) })
-#     scheduler.schedule_absolute(1000, function () { subscription.dispose() })
+    def action1(scheduler, state=None):
+        nonlocal subject
+        subject = ReplaySubject(3, 100, scheduler)
+    scheduler.schedule_absolute(100, action1)
 
-#     scheduler.schedule_absolute(300, function () { subscription1 = subject.subscribe(results1) })
-#     scheduler.schedule_absolute(400, function () { subscription2 = subject.subscribe(results2) })
-#     scheduler.schedule_absolute(900, function () { subscription3 = subject.subscribe(results3) })
+    def action2(scheduler, state=None):
+        nonlocal subscription
+        subscription = xs.subscribe(subject)
+    scheduler.schedule_absolute(200, action2)
+    
+    def action3(scheduler, state=None):
+        subscription.dispose()
+    scheduler.schedule_absolute(1000, action3)
+    
+    def action4(scheduler, state=None):
+        nonlocal subscription1
+        subscription1 = subject.subscribe(results1)
+    scheduler.schedule_absolute(300, action4)
+    
+    def action5(scheduler, state=None):
+        nonlocal subscription2
+        subscription2 = subject.subscribe(results2)
+    scheduler.schedule_absolute(400, action5)
+    
+    def action6(scheduler, state=None):
+        nonlocal subscription3
+        subscription3 = subject.subscribe(results3)
+    scheduler.schedule_absolute(900, action6)
+    
+    def action7(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(600, action7)
+    
+    def action8(scheduler, state=None):
+        subscription2.dispose()
+    scheduler.schedule_absolute(700, action8)
+    
+    def action9(scheduler, state=None):
+        subscription1.dispose()
+    scheduler.schedule_absolute(800, action9)
+    
+    def action10(scheduler, state=None):
+        subscription3.dispose()
+    scheduler.schedule_absolute(950, action10)
+    
+    scheduler.start()
 
-#     scheduler.schedule_absolute(600, function () { subscription1.dispose() })
-#     scheduler.schedule_absolute(700, function () { subscription2.dispose() })
-#     scheduler.schedule_absolute(800, function () { subscription1.dispose() })
-#     scheduler.schedule_absolute(950, function () { subscription3.dispose() })
+    results1.messages.assert_equal(
+    )
 
-#     scheduler.start()
+    results2.messages.assert_equal(
+        on_completed(631)
+    )
 
-#     results1.messages.assert_equal(
-#     )
-
-#     results2.messages.assert_equal(
-#         on_completed(631)
-#     )
-
-#     results3.messages.assert_equal(
-#         on_completed(901)
-#     )
+    results3.messages.assert_equal(
+        on_completed(901)
+    )
 
 # def test_SubjectDisposed():
 #     scheduler = TestScheduler()
@@ -415,7 +487,7 @@ def test_finite():
 #     results2 = scheduler.create_observer()
 #     results3 = scheduler.create_observer()
 
-#     scheduler.schedule_absolute(100, function () { subject = ReplaySubject(undefined, undefined, scheduler) })
+#     scheduler.schedule_absolute(100, function () { subject = ReplaySubject(undefined, undefined, scheduler)
 #     scheduler.schedule_absolute(200, function () { subscription1 = subject.subscribe(results1) })
 #     scheduler.schedule_absolute(300, function () { subscription2 = subject.subscribe(results2) })
 #     scheduler.schedule_absolute(400, function () { subscription3 = subject.subscribe(results3) })
