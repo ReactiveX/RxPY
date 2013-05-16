@@ -6,8 +6,8 @@ except ImportError:
     from setuptools import setup
 
 setup(
-    name='RxPY',
-    version='0.0.2',
+    name='Rx',
+    version='0.1.0',
     description='Reactive Extensions for Python',
     long_description = """\
 Longer description for Reactive Extensions for Python.
