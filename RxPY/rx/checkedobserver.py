@@ -1,4 +1,5 @@
 from rx import Observer
+from rx.internal.exceptions import ReEntracyException, CompletedException
 
 class CheckedObserver(Observer):
     def __init__(self, observer):
@@ -28,9 +29,9 @@ class CheckedObserver(Observer):
 
     def check_access(self):
         if self._state == 1: 
-            raise Exception('Re-entrancy detected')
+            raise ReEntracyException()
         if self._state == 2: 
-            raise Exception('Observer completed')
+            raise CompletedException()
         if self._state == 0:
             self._state = 1
 

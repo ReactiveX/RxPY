@@ -1,13 +1,21 @@
 # Rx Exceptions
 
 class SequenceContainsNoElementsError(Exception):
-    def __init__(self, arg=None):
-        self.args = arg or "Sequence contains no elements"
+    def __init__(self, msg=None):
+        super(ReEntracyException, self).__init__(msg or "Sequence contains no elements")
 
 class ArgumentOutOfRangeException(ValueError):
-    def __init__(self, arg=None):
-        self.args = arg or "Argument out of range"
+    def __init__(self, msg=None):
+        super(ArgumentOutOfRangeException, self).__init__(msg or "Argument out of range")
 
 class DisposedException(Exception):
-    def __init__(self, arg=None):
-        self.args = arg or "Object has been disposed"
+    def __init__(self, msg=None):
+        super(DisposedException, self).__init__(msg or "Object has been disposed")
+
+class ReEntracyException(Exception):
+	def __init__(self, msg=None):
+		super(ReEntracyException, self).__init__(msg or 'Re-entrancy detected')
+       
+class CompletedException(Exception):
+	def __init__(self, msg=None):
+		super(CompletedException, self).__init__(msg or 'Observer completed')
