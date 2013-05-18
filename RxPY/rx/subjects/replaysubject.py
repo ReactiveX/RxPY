@@ -39,8 +39,8 @@ class ReplaySubject(Observable, AbstractObserver):
         """
     
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
-        self.window = sys.maxsize if window is None else window
-        if isinstance(self.window, int):
+        self.window = timedelta.max if window is None else window
+        if not isinstance(self.window, timedelta):
             self.window = timedelta(milliseconds=self.window)
         self.scheduler = scheduler or current_thread_scheduler
         self.q = []

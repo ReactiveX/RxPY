@@ -1,7 +1,10 @@
+from nose.tools import raises
+
 from rx import Observable, Observer
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
 from rx.disposables import Disposable, SerialDisposable
 from rx.subjects import BehaviorSubject
+from rx.internal.exceptions import DisposedException
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -448,32 +451,24 @@ def test_subject_disposed():
         subject.on_next(5)
     scheduler.schedule_absolute(550, action13)
     
+    @raises(DisposedException)
     def action14(scheduler, state=None):
-        try:
-            subject.on_next(6)
-        except Exception:
-            pass
+        subject.on_next(6)
     scheduler.schedule_absolute(650, action14)
     
+    @raises(DisposedException)
     def action15(scheduler, state=None):
-        try:
-            subject.on_completed()
-        except Exception:
-            pass
+        subject.on_completed()
     scheduler.schedule_absolute(750, action15)
     
+    @raises(DisposedException)
     def action16(scheduler, state=None):
-        try:
-            subject.on_error(RxException())
-        except Exception:
-            pass
+        subject.on_error(RxException())
     scheduler.schedule_absolute(850, action16)
 
+    @raises(DisposedException)
     def action17(scheduler, state=None):
-        try:
-            subject.subscribe()
-        except Exception:
-            pass
+        subject.subscribe(None)
     scheduler.schedule_absolute(950, action17)
 
     scheduler.start()

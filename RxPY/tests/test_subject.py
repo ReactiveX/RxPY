@@ -1,3 +1,5 @@
+from nose.tools import assert_raises, raises
+
 from rx import Observable, Observer
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
 from rx.disposables import Disposable, SerialDisposable
@@ -193,7 +195,7 @@ def test_finite():
         on_completed(900)
     )
 
-def test_Error():
+def test_error():
     s = None
     subscription = None
     subscription1 = None 

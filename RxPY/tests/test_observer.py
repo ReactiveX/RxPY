@@ -1,5 +1,8 @@
+from nose.tools import assert_raises
+
 from rx import Observer
 from rx.notification import OnNext, OnError, OnCompleted
+from rx.internal.exceptions import CompletedException
 
 class MyObserver(Observer):
     def on_next(self, value):
@@ -310,11 +313,8 @@ def test_observer_checked_already_terminated_completed():
     o.on_next(2)
     o.on_completed()
 
-    try: 
-        o.on_completed()
-    except Exception:
-        pass
-
+    assert_raises(CompletedException, o.on_completed)
+    
     try:  
         on.on_error(Exception('error'))
     except Exception:
@@ -439,6 +439,7 @@ def test_observer_checked_reentrant_completed():
         try:
             o.on_next(9)
         except Exception as e:
+            print (str(e))
             assert str(e) == msg
 
         try: 
