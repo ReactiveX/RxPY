@@ -16,7 +16,7 @@ Longer description for Reactive Extensions for Python.
     author_email='dag@brattli.net',
     license='Apache License',
     url='https://github.com/dbrattli/RxPy',
-    download_url = 'https://github.com/dbrattli/RxPy',
+    download_url = 'https://github.com/dbrattli/Rx',
     zip_safe = True,
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
