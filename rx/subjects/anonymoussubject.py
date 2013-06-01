@@ -10,7 +10,6 @@ class AnonymousSubject(Observable):
     def subscribe(self, observer):
         return self.observable.subscribe(observer)
 
-
     def on_completed(self):
         self.observer.on_completed()
 

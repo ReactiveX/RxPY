@@ -25,7 +25,7 @@ class Observable(object):
             init(self, subscribe)
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None):
-        """Subscribes an observer to the observable sequence. Returns he source
+        """Subscribes an observer to the observable sequence. Returns the source
         sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
         
         1 - source.subscribe()

@@ -11,7 +11,7 @@ class Subject(Observable, AbstractObserver):
     observer. Each notification is broadcasted to all subscribed observers."""
 
     def __init__(self):
-        super(Subject, self).__init__(self.subscribe)
+        super(Subject, self).__init__(self.__subscribe)
         
         self.is_disposed = False
         self.is_stopped = False
@@ -22,7 +22,7 @@ class Subject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
 
-    def subscribe(self, observer):
+    def __subscribe(self, observer):
         self.check_disposed()
         if not self.is_stopped:
             self.observers.append(observer)
@@ -33,6 +33,7 @@ class Subject(Observable, AbstractObserver):
             return Disposable.empty()
         
         observer.on_completed()
+
         return Disposable.empty()
     
     def on_completed(self):

@@ -50,13 +50,13 @@ class ReplaySubject(Observable, AbstractObserver):
         self.has_error = False
         self.error = None
 
-        super(ReplaySubject, self).__init__(self.subscribe)
+        super(ReplaySubject, self).__init__(self.__subscribe)
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def subscribe(self, observer):
+    def __subscribe(self, observer):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
         self.check_disposed()

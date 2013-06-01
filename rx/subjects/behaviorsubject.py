@@ -20,7 +20,7 @@ class BehaviorSubject(Observable, AbstractObserver):
         Keyword parameters:
         value -- Initial value sent to observers when no other value has been received by the subject yet.
         """
-        super(BehaviorSubject, self).__init__(self.subscribe)
+        super(BehaviorSubject, self).__init__(self.__subscribe)
 
         self.value = value
         self.observers = []
@@ -32,7 +32,7 @@ class BehaviorSubject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
     
-    def subscribe(self, observer):
+    def __subscribe(self, observer):
         self.check_disposed()
         if not self.is_stopped:
             self.observers.append(observer)
