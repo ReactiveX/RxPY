@@ -6,16 +6,15 @@ except ImportError:
     from setuptools import setup
 
 setup(
-    name='Rx',
-    version='0.1.0',
+    name='rx',
+    version='0.1.1',
     description='Reactive Extensions for Python',
     long_description = """\
-Longer description for Reactive Extensions for Python.
-""",
+is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3""",
     author='Dag Brattli',
     author_email='dag@brattli.net',
     license='Apache License',
-    url='https://github.com/dbrattli/RxPy',
+    url='https://github.com/dbrattli/Rx',
     download_url = 'https://github.com/dbrattli/Rx',
     zip_safe = True,
 
@@ -31,6 +30,6 @@ Longer description for Reactive Extensions for Python.
     ],
     test_suite='nose.collector',
 
-    packages=['rx', 'tests'],
-    package_dir = { 'rx':'rx', 'tests' : 'tests'}
+    packages=['rx', 'rx.internal', 'rx.linq', 'rx.testing', 'rx.concurrency', 'rx.disposables', 'rx.subjects' ],
+    package_dir = { 'rx':'rx' }
 )
