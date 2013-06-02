@@ -6,7 +6,7 @@ except ImportError:
     from setuptools import setup
 
 setup(
-    name='rx',
+    name='Rx',
     version='0.1.1',
     description='Reactive Extensions for Python',
     long_description = """\
