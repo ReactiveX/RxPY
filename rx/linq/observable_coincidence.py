@@ -1,4 +1,5 @@
 import logging
+from collections import OrderedDict
 
 from rx import AnonymousObservable, Observable
 from rx.internal import noop
@@ -36,10 +37,10 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
         def subscribe(observer):
             group = CompositeDisposable()
             left_done = False
-            left_map = dict()
+            left_map = OrderedDict()
             left_id = 0
             right_done = False
-            right_map = dict()
+            right_map = OrderedDict()
             right_id = 0
             
             def on_next_left(value):
@@ -49,6 +50,10 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
                 current_id = left_id
                 left_id += 1
                 md = SingleAssignmentDisposable()
+                
+                log.debug("**** left_map[%s] = %s" % (current_id, value))
+                #log.debug(value.get_hash_code())
+                
                 left_map[current_id] = value
                 group.add(md)
 
