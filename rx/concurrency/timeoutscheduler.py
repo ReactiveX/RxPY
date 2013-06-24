@@ -47,7 +47,7 @@ class TimeoutScheduler(Scheduler):
         self.timer.start()
 
         def dispose():
-            print ("TimeoutScheduler:schedule_relative.dispose()")
+            log.debug("TimeoutScheduler:schedule_relative.dispose()")
             self.timer.cancel()
         
         return CompositeDisposable(disposable, Disposable(dispose))
