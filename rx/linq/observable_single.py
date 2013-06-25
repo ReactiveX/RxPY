@@ -127,7 +127,7 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
     
         return catch_exception(Enumerable.repeat(self, retry_count))
 
-    def scan(self, seed=None, accumulator=None):
+    def scan(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence and 
         returns each intermediate result. The optional seed value is used as 
         the initial accumulator value. For aggregation behavior with no 
@@ -140,7 +140,7 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         seed -- [Optional] The initial accumulator value.
         accumulator -- An accumulator function to be invoked on each element.
         
-        Returns an observable sequence containing the accumulated values.</returns>        
+        Returns an observable sequence containing the accumulated values.        
         """
         has_seed = False
         if not seed is None:
@@ -170,7 +170,7 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         optional scheduler and an argument list of values to prepend.
         
         1 - source.start_with(1, 2, 3)
-        2 - source.start_with(Rx.Scheduler.timeout, 1, 2, 3)
+        2 - source.start_with(Scheduler.timeout, 1, 2, 3)
         
         Returns the source sequence prepended with the specified values.
         """

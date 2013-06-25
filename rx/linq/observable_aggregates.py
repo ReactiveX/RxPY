@@ -14,8 +14,8 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
         For aggregation behavior with incremental intermediate results, see 
         Observable.scan.
      
-        1 - res = source.aggregate(function (acc, x) { return acc + x; });
-        2 - res = source.aggregate(0, function (acc, x) { return acc + x; });
+        1 - res = source.aggregate(lambda acc, x: acc + x)
+        2 - res = source.aggregate(0, lambda acc, x: acc + x, seed=0)
 
         Keyword arguments:
         accumulator -- An accumulator function to be invoked on each element.
@@ -25,14 +25,14 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
         final accumulator value.
         """
 
-        if seed:
-            return self.scan(seed, accumulator).start_with(seed).final_value()
+        if not seed is None:
+            return self.scan(accumulator, seed=seed).start_with(seed).final_value()
         else:
             return self.scan(accumulator).final_value()
     
     def reduce(self, accumulator, seed=None):
-        if seed: 
-            return self.scan(seed, accumulator).start_with(seed).final_value()
+        if not seed is None: 
+            return self.scan(accumulator, seed=seed).start_with(seed).final_value()
         else:
             return self.scan(accumulator).final_value()
     
@@ -56,4 +56,4 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
         if predicate:
             return self.where(predicate).count()
         else:
-            return self.aggregate(seed=0, accumulator=lambda count: count + 1)
+            return self.aggregate(lambda count, _: count + 1, seed=0)

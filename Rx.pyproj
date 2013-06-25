@@ -5,10 +5,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_observable_multiple.py</StartupFile>
+    <StartupFile>tests\test_observable_time.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\RxPY</WorkingDirectory>
+    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
     <InterpreterVersion>3.2</InterpreterVersion>
@@ -41,6 +41,7 @@
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable_aggregates.py" />
     <Compile Include="rx\linq\observable_concurrency.py" />
     <Compile Include="rx\linq\observable_leave.py" />
     <Compile Include="rx\linq\observable_multiple.py" />
@@ -82,6 +83,7 @@
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
     <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable_aggregates.py" />
     <Compile Include="tests\test_observable_concurrency.py" />
     <Compile Include="tests\test_observable_creation.py" />
     <Compile Include="tests\test_observable_imperative.py" />

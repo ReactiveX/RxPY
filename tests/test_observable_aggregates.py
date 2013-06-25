@@ -599,97 +599,84 @@ def test_count_empty_ii():
     res = scheduler.start(create=create).messages
     res.assert_equal(on_next(250, 1), on_completed(250))
 
-# def test_Count_Some():
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count()
-#     }).messages
-#     res.assert_equal(on_next(250, 3), on_completed(250))
+def test_count_some():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
+    res = scheduler.start(create=lambda: xs.count()).messages
+    res.assert_equal(on_next(250, 3), on_completed(250))
 
+def test_count_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
+    res = scheduler.start(create=lambda: xs.count()).messages
+    res.assert_equal(on_error(210, ex))
 
-# def test_Count_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.count()
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+def test_count_never():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1))
+    res = scheduler.start(create=lambda: xs.count()).messages
+    res.assert_equal()
 
-
-# def test_Count_Never():
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     res = scheduler.start(create=create)
-#         return xs.count()
-#     }).messages
-#     res.assert_equal()
-
-
-# def test_Count_Predicate_Empty_True():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return true
-        
+def test_count_predicate_empty_true():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
     
-#     res.messages.assert_equal(on_next(250, 0), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-
-# def test_Count_Predicate_Empty_False():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return false
-        
+    def create():
+        return xs.count(lambda _: True)
     
-#     res.messages.assert_equal(on_next(250, 0), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-
-# def test_Count_Predicate_Return_True():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return true
-        
+    res = scheduler.start(create=create)
     
-#     res.messages.assert_equal(on_next(250, 1), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
+    res.messages.assert_equal(on_next(250, 0), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
 
-
-# def test_Count_Predicate_Return_False():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return false
-        
+def test_count_predicate_empty_false():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
     
-#     res.messages.assert_equal(on_next(250, 0), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-
-# def test_Count_Predicate_Some_All():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function (x) {
-#             return x < 10
-        
+    def create():
+        return xs.count(lambda _: False)
     
-#     res.messages.assert_equal(on_next(250, 3), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
+    res = scheduler.start(create=create)
+        
+    res.messages.assert_equal(on_next(250, 0), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
+
+def test_count_predicate_return_true():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+    
+    def create():
+        return xs.count(lambda _: True)
+    
+    res = scheduler.start(create=create)
+        
+    res.messages.assert_equal(on_next(250, 1), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
+
+def test_count_predicate_return_false():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+    
+    def create():
+        return xs.count(lambda _: False)
+    
+    res = scheduler.start(create=create)
+        
+    res.messages.assert_equal(on_next(250, 0), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
+
+def test_count_predicate_some_all():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
+    
+    def create():
+        return xs.count(lambda x: x < 10)
+        
+    res = scheduler.start(create=create)
+        
+    res.messages.assert_equal(on_next(250, 3), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
 
 
 # def test_Count_Predicate_Some_None():
@@ -3159,3 +3146,5 @@ def test_count_empty_ii():
 #     res.messages.assert_equal(on_error(230, ex))
 #     xs.subscriptions.assert_equal(subscribe(200, 230))
 
+if __name__ == '__main__':
+    test_count_empty()
