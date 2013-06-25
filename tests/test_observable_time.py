@@ -1391,7 +1391,7 @@ def test_buffer_with_time_disposed():
     results.messages.assert_equal(on_next(300, "2,3,4"))
     xs.subscriptions.assert_equal(subscribe(200, 370))
 
-def test_Buffer_with_time_basic_same():
+def test_buffer_with_time_basic_same():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
     

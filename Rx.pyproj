@@ -42,6 +42,7 @@
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
     <Compile Include="rx\linq\observable_aggregates.py" />
+    <Compile Include="rx\linq\observable_coincidence.py" />
     <Compile Include="rx\linq\observable_concurrency.py" />
     <Compile Include="rx\linq\observable_leave.py" />
     <Compile Include="rx\linq\observable_multiple.py" />
@@ -82,6 +83,9 @@
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
+    <Compile Include="tests\test_asyncsubject.py" />
+    <Compile Include="tests\test_behaviorsubject.py" />
+    <Compile Include="tests\test_group_join.py" />
     <Compile Include="tests\test_notification.py" />
     <Compile Include="tests\test_observable_aggregates.py" />
     <Compile Include="tests\test_observable_concurrency.py" />
@@ -93,7 +97,7 @@
     <Compile Include="tests\test_currentthreadscheduler.py" />
     <Compile Include="tests\test_disposable.py" />
     <Compile Include="tests\test_immediatescheduler.py" />
-    <Compile Include="tests\test_rx.py" />
+    <Compile Include="tests\test_replaysubject.py" />
     <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
     <Compile Include="tests\test_standardqueryoperators\test_select.py" />
     <Compile Include="tests\test_standardqueryoperators\test_select_many.py" />
@@ -103,6 +107,7 @@
     <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
     <Compile Include="tests\test_standardqueryoperators\test_where.py" />
     <Compile Include="tests\test_standardqueryoperators\__init__.py" />
+    <Compile Include="tests\test_subject.py" />
     <Compile Include="tests\test_timeoutscheduler.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
@@ -116,7 +121,6 @@
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
     <Folder Include="tests\test_standardqueryoperators\" />
-    <Folder Include="tests\test_rx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
