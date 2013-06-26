@@ -15,7 +15,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
     author_email='dag@brattli.net',
     license='Apache License',
     url='https://github.com/dbrattli/Rx',
-    download_url = 'https://github.com/dbrattli/Rx',
+    download_url = 'https://github.com/dbrattli/RxPY',
     zip_safe = True,
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
