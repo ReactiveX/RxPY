@@ -32,4 +32,4 @@ class ObservableLeave(Observable, metaclass=ObservableMeta):
             res.append(i)
             return res[:]
         
-        return self.scan([], accumulator).start_with([]).final_value()
+        return self.scan(accumulator, seed=[]).start_with([]).final_value()

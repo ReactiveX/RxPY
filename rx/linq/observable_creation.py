@@ -64,7 +64,7 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         return AnonymousObservable(subscribe)
 
     @classmethod
-    def from_array(cls, array, scheduler):
+    def from_array(cls, array, scheduler=None):
         """Converts an array to an observable sequence, using an optional 
         scheduler to enumerate the array.
     

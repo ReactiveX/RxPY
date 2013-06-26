@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
+from rx.internal.utils import add_ref
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.subjects import Subject
@@ -33,12 +34,6 @@ class Timestamp(object):
     
     #def equals(other):
     #    return other.timestamp == self.timestamp and other.value == self.value
-
-def add_ref(xs, r):
-    def subscribe(observer):
-        return CompositeDisposable(r.disposable, xs.subscribe(observer))
-
-    return AnonymousObservable(subscribe)
 
 class ObservableTime(Observable, metaclass=ObservableMeta):
 
@@ -425,13 +420,18 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         if timeshift is None:
             timeshift = timespan
         
+        if not isinstance(timespan, timedelta):
+            timespan = timedelta(milliseconds=timespan)
+        if not isinstance(timeshift, timedelta):
+            timeshift = timedelta(milliseconds=timeshift)
+
         scheduler = scheduler or timeout_scheduler
         
         def subscribe(observer):
             timerD = SerialDisposable()
             next_shift = timeshift
             next_span = timespan
-            total_time = 0
+            total_time = timedelta(0)
             q = []
             
             group_disposable = CompositeDisposable(timerD)
@@ -454,6 +454,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                     is_shift = True
                 
                 new_total_time = next_span if is_span else next_shift
+
                 ts = new_total_time - total_time
                 total_time = new_total_time
                 if is_span:
