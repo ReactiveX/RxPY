@@ -678,91 +678,86 @@ def test_count_predicate_some_all():
     res.messages.assert_equal(on_next(250, 3), on_completed(250))
     xs.subscriptions.assert_equal(subscribe(200, 250))
 
+def test_count_predicate_some_none():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
 
-# def test_Count_Predicate_Some_None():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function (x) {
-#             return x > 10
+    def create():
+        return xs.count(lambda x: x > 10)
+
+    res = scheduler.start(create=create)
         
+    res.messages.assert_equal(on_next(250, 0), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
+
+def test_count_predicate_some_even():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
     
-#     res.messages.assert_equal(on_next(250, 0), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
+    def create():
+        return xs.count(lambda x: x % 2 == 0)
 
+    res = scheduler.start(create=create)
+            
+    res.messages.assert_equal(on_next(250, 2), on_completed(250))
+    xs.subscriptions.assert_equal(subscribe(200, 250))
 
-# def test_Count_Predicate_Some_Even():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.count(function (x) {
-#             return x % 2 === 0
+def test_count_predicate_throw_true():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
+
+    def create():
+        return xs.count(lambda _: True)
+
+    res = scheduler.start(create=create)
         
-    
-#     res.messages.assert_equal(on_next(250, 2), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
+    res.messages.assert_equal(on_error(210, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 210))
 
+def test_count_predicate_throw_false():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
-# def test_Count_Predicate_Throw_True():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return true
+    def create():
+        return xs.count(lambda _: False)
+
+    res = scheduler.start(create=create)
         
-    
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
+    res.messages.assert_equal(on_error(210, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 210))
 
-
-# def test_Count_Predicate_Throw_False():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return false
+def test_count_predicate_never():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1))
+ 
+    def create():
+        return xs.count(lambda _: True)
+ 
+    res = scheduler.start(create=create)
         
-    
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
+    res.messages.assert_equal()
+    xs.subscriptions.assert_equal(subscribe(200, 1000))
 
+def test_count_predicate_predicate_throws():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_completed(240))
 
-# def test_Count_Predicate_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     res = scheduler.start(create=create)
-#         return xs.count(function () {
-#             return true
-        
-    
-#     res.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
+    def create():
+        def predicate(x):
+            if x == 3:
+                raise Exception(ex)
+            else:
+                return True
+            
+        return xs.count(predicate)
 
-
-# def test_Count_Predicate_PredicateThrows():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_completed(240))
-#     res = scheduler.start(create=create)
-#         return xs.count(function (x) {
-#             if (x === 3) {
-#                 throw ex
-#             } else {
-#                 return true
-#             }
-        
-    
-#     res.messages.assert_equal(on_error(230, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
+    res = scheduler.start(create=create)
+            
+    res.messages.assert_equal(on_error(230, ex))
+    xs.subscriptions.assert_equal(subscribe(200, 230))
 
 # def test_Sum_Int32_Empty():
 #     var res, scheduler, xs
@@ -772,7 +767,6 @@ def test_count_predicate_some_all():
 #         return xs.sum()
 #     }).messages
 #     res.assert_equal(on_next(250, 0), on_completed(250))
-
 
 # def test_Sum_Int32_Return():
 #     var res, scheduler, xs
