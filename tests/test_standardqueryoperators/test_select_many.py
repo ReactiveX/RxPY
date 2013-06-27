@@ -68,7 +68,7 @@ def test_select_many_then_complete_error():
     xs.subscriptions.assert_equal(subscribe(200, 600))
     ys.subscriptions.assert_equal(subscribe(300, 600), subscribe(400, 600), subscribe(500, 600), subscribe(600, 600))
 
-def test_select_many_Then_error_complete():
+def test_select_many_then_error_complete():
     ex = 'ex'
     scheduler = TestScheduler()
     xs = scheduler.create_cold_observable(on_next(100, 4), on_next(200, 2), on_next(300, 3), on_next(400, 1), on_error(500, ex))

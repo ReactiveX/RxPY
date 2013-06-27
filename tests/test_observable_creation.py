@@ -36,7 +36,6 @@ def test_return_basic():
                         on_next(201, 42),
                         on_completed(201))
 
-
 def test_return_disposed():
     scheduler = TestScheduler()
 
@@ -671,7 +670,7 @@ def test_create_with_disposable_exception():
     except RxException:
         pass
 
-def test_CreateWithDisposable_Dispose():
+def test_create_with_disposable_dispose():
     scheduler = TestScheduler()
 
     def create():
