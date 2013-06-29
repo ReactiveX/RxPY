@@ -2,7 +2,7 @@
 
 class SequenceContainsNoElementsError(Exception):
     def __init__(self, msg=None):
-        super(ReEntracyException, self).__init__(msg or "Sequence contains no elements")
+        super(SequenceContainsNoElementsError, self).__init__(msg or "Sequence contains no elements")
 
 class ArgumentOutOfRangeException(ValueError):
     def __init__(self, msg=None):

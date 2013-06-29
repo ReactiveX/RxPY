@@ -55,167 +55,154 @@ def test_aggregate_with_seed_never():
     res = scheduler.start(create=create).messages
     res.assert_equal()
 
-# def test_AggregateWithSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(42, function (acc, x) {
-#             return acc + x
+def test_aggregate_with_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(seed=42, accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     res.assert_equal(on_next(260, 10 + 42), on_completed(260))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10 + 42), on_completed(260))
 
-
-# def test_AggregateWithoutSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
+def test_aggregate_without_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== undefined)
-#     equal(250, res[0].time)
+    res = scheduler.start(create=create).messages
+    assert(len(res) == 1)
+    assert(res[0].value.kind == 'E' and res[0].value.exception != None)
+    assert(res[0].time == 250)
 
+def test_aggregate_without_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_AggregateWithoutSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     res.assert_equal(on_next(250, 24), on_completed(250))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 24), on_completed(250))
 
+def test_aggregate_without_seed_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(210, ex)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_error(210, ex))
 
-# def test_AggregateWithoutSeed_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+def test_aggregate_without_seed_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal()
 
-# def test_AggregateWithoutSeed_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal()
+def test_aggregate_without_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10), on_completed(260))
 
-# def test_AggregateWithoutSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_next(260, 10), on_completed(260))
+def test_reduce_with_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(lambda acc, x: acc + x, 42)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 42), on_completed(250))
 
+def test_reduce_with_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_ReduceWithSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(250, 42), on_completed(250))
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 42 + 24), on_completed(250))
 
+def test_reduce_with_seed_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(210, ex)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_ReduceWithSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(250, 42 + 24), on_completed(250))
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_error(210, ex))
 
-# def test_ReduceWithSeed_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+def test_reduce_with_seed_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
+    res = scheduler.start(create=create).messages
+    res.assert_equal()
 
-# def test_ReduceWithSeed_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal()
+def test_reduce_with_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
-# def test_ReduceWithSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(260, 10 + 42), on_completed(260))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10 + 42), on_completed(260))
 
+def test_reduce_without_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x)
 
-# def test_ReduceWithoutSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== undefined)
-#     equal(250, res[0].time)
+    res = scheduler.start(create=create).messages
+    assert(len(res) == 1)
+    assert(res[0].value.kind == 'E' and res[0].value.exception != None)
+    assert(res[0].time == 250)
 
+def test_reduce_without_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x)
 
-# def test_ReduceWithoutSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_next(250, 24), on_completed(250))
-
+    xs = scheduler.create_hot_observable(msgs)
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 24), on_completed(250))
 
 # def test_ReduceWithoutSeed_Throw():
 #     ex = 'ex'
@@ -829,7 +816,7 @@ def test_count_predicate_predicate_throws():
 #         return xs.min()
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== null)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
 #     ok(res[0].time == 250)
 
 
@@ -891,7 +878,7 @@ def test_count_predicate_predicate_throws():
 #         return xs.min(comparer)
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== null)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
 #     ok(res[0].time == 250)
 
 
@@ -1344,7 +1331,7 @@ def test_count_predicate_predicate_throws():
 #         return xs.max()
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== null)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
 #     ok(res[0].time == 250)
 
 
@@ -1407,7 +1394,7 @@ def test_count_predicate_predicate_throws():
 #         return xs.max(reverseComparer)
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception !== null)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
 #     ok(res[0].time == 250)
 
 
@@ -2395,7 +2382,7 @@ def test_average_int32_empty():
 #     equal(1, results.messages.length)
 #     equal(600, results.messages[0].time)
 #     equal('E', results.messages[0].value.kind)
-#     ok(results.messages[0].value.exception !== null)
+#     ok(results.messages[0].value.exception != null)
 
 
 # def test_ElementAt_Error():
@@ -2464,7 +2451,7 @@ def test_average_int32_empty():
 #         return xs.first()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2526,7 +2513,7 @@ def test_average_int32_empty():
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2676,7 +2663,7 @@ def test_average_int32_empty():
 #         return xs.last()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2737,7 +2724,7 @@ def test_average_int32_empty():
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2887,7 +2874,7 @@ def test_average_int32_empty():
 #         return xs.single()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2911,7 +2898,7 @@ def test_average_int32_empty():
 #         return xs.single()
     
 #     res.messages.assert_equal(on_error(220, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 220))
 
@@ -2938,7 +2925,7 @@ def test_average_int32_empty():
         
     
 #     res.messages.assert_equal(on_error(240, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 240))
 
@@ -2953,7 +2940,7 @@ def test_average_int32_empty():
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -3034,7 +3021,7 @@ def test_average_int32_empty():
 #         return xs.singleOrDefault(null, 0)
     
 #     res.messages.assert_equal(on_error(220, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 220))
 
@@ -3061,7 +3048,7 @@ def test_average_int32_empty():
 #         }, 0)
     
 #     res.messages.assert_equal(on_error(240, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 240))
 
