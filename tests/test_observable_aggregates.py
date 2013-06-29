@@ -55,167 +55,154 @@ def test_aggregate_with_seed_never():
     res = scheduler.start(create=create).messages
     res.assert_equal()
 
-# def test_AggregateWithSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(42, function (acc, x) {
-#             return acc + x
+def test_aggregate_with_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(seed=42, accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     res.assert_equal(on_next(260, 10 + 42), on_completed(260))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10 + 42), on_completed(260))
 
-
-# def test_AggregateWithoutSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
+def test_aggregate_without_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== undefined)
-#     equal(250, res[0].time)
+    res = scheduler.start(create=create).messages
+    assert(len(res) == 1)
+    assert(res[0].value.kind == 'E' and res[0].value.exception != None)
+    assert(res[0].time == 250)
 
+def test_aggregate_without_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_AggregateWithoutSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
         
-#     }).messages
-#     res.assert_equal(on_next(250, 24), on_completed(250))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 24), on_completed(250))
 
+def test_aggregate_without_seed_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(210, ex)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_error(210, ex))
 
-# def test_AggregateWithoutSeed_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+def test_aggregate_without_seed_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal()
 
-# def test_AggregateWithoutSeed_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal()
+def test_aggregate_without_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.aggregate(accumulator=lambda acc, x: acc + x)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10), on_completed(260))
 
-# def test_AggregateWithoutSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.aggregate(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_next(260, 10), on_completed(260))
+def test_reduce_with_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(lambda acc, x: acc + x, 42)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 42), on_completed(250))
 
+def test_reduce_with_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_ReduceWithSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(250, 42), on_completed(250))
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 42 + 24), on_completed(250))
 
+def test_reduce_with_seed_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(210, ex)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_ReduceWithSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(250, 42 + 24), on_completed(250))
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_error(210, ex))
 
-# def test_ReduceWithSeed_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+def test_reduce_with_seed_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
+    res = scheduler.start(create=create).messages
+    res.assert_equal()
 
-# def test_ReduceWithSeed_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal()
+def test_reduce_with_seed_range():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
-# def test_ReduceWithSeed_Range():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-#         }, 42)
-#     }).messages
-#     res.assert_equal(on_next(260, 10 + 42), on_completed(260))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(260, 10 + 42), on_completed(260))
 
+def test_reduce_without_seed_empty():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x)
 
-# def test_ReduceWithoutSeed_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== undefined)
-#     equal(250, res[0].time)
+    res = scheduler.start(create=create).messages
+    assert(len(res) == 1)
+    assert(res[0].value.kind == 'E' and res[0].value.exception != None)
+    assert(res[0].time == 250)
 
+def test_reduce_without_seed_return():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
+    
+    def create():
+        return xs.reduce(accumulator=lambda acc, x: acc + x)
 
-# def test_ReduceWithoutSeed_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.reduce(function (acc, x) {
-#             return acc + x
-        
-#     }).messages
-#     res.assert_equal(on_next(250, 24), on_completed(250))
-
+    xs = scheduler.create_hot_observable(msgs)
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, 24), on_completed(250))
 
 # def test_ReduceWithoutSeed_Throw():
 #     ex = 'ex'
@@ -565,7 +552,7 @@ def test_aggregate_with_seed_never():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 3), on_next(220, 4), on_next(230, 8), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.contains(42, function (a, b) {
-#             return a % 2 === b % 2
+#             return a % 2 == b % 2
         
 #     }).messages
 #     res.assert_equal(on_next(220, true), on_completed(220))
@@ -577,7 +564,7 @@ def test_aggregate_with_seed_never():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 8), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.contains(21, function (a, b) {
-#             return a % 2 === b % 2
+#             return a % 2 == b % 2
         
 #     }).messages
 #     res.assert_equal(on_next(250, false), on_completed(250))
@@ -698,7 +685,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.count(function (x) {
-#             return x % 2 === 0
+#             return x % 2 == 0
         
     
 #     res.messages.assert_equal(on_next(250, 2), on_completed(250))
@@ -753,7 +740,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_completed(240))
 #     res = scheduler.start(create=create)
 #         return xs.count(function (x) {
-#             if (x === 3) {
+#             if (x == 3) {
 #                 throw ex
 #             } else {
 #                 return true
@@ -835,8 +822,8 @@ def test_count_predicate_some_all():
 #         return xs.min()
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== null)
-#     ok(res[0].time === 250)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
+#     ok(res[0].time == 250)
 
 
 # def test_Min_Int32_Return():
@@ -887,7 +874,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -897,8 +884,8 @@ def test_count_predicate_some_all():
 #         return xs.min(comparer)
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== null)
-#     ok(res[0].time === 250)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
+#     ok(res[0].time == 250)
 
 
 # def test_MinOfT_Comparer_Empty():
@@ -908,7 +895,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -928,7 +915,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -947,7 +934,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -984,7 +971,7 @@ def test_count_predicate_some_all():
 #     }).messages
 #     equal(2, res.length)
 #     equal(0, res[0].value.value.length)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Return():
@@ -1000,11 +987,11 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Some():
@@ -1031,11 +1018,11 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('c', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Multiple():
@@ -1071,13 +1058,13 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(2, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('d', res[0].value.value[0].value)
 #     equal(2, res[0].value.value[1].key)
 #     equal('y', res[0].value.value[1].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Throw():
@@ -1127,7 +1114,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1140,7 +1127,7 @@ def test_count_predicate_some_all():
 #     }).messages
 #     equal(2, res.length)
 #     equal(0, res[0].value.value.length)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Comparer_Return():
@@ -1159,7 +1146,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1171,11 +1158,11 @@ def test_count_predicate_some_all():
 #         }, reverseComparer)
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Comparer_Some():
@@ -1200,7 +1187,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1212,11 +1199,11 @@ def test_count_predicate_some_all():
 #         }, reverseComparer)
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(20, res[0].value.value[0].key)
 #     equal('c', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MinBy_Comparer_Throw():
@@ -1233,7 +1220,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1260,7 +1247,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1297,7 +1284,7 @@ def test_count_predicate_some_all():
 #         if (a > b) {
 #             return -1
 #         }
-#         if (a === b) {
+#         if (a == b) {
 #             return 0
 #         }
 #         return 1
@@ -1350,8 +1337,8 @@ def test_count_predicate_some_all():
 #         return xs.max()
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== null)
-#     ok(res[0].time === 250)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
+#     ok(res[0].time == 250)
 
 
 # def test_Max_Int32_Return():
@@ -1413,8 +1400,8 @@ def test_count_predicate_some_all():
 #         return xs.max(reverseComparer)
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== null)
-#     ok(res[0].time === 250)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
+#     ok(res[0].time == 250)
 
 
 # def test_MaxOfT_Comparer_Return():
@@ -1527,7 +1514,7 @@ def test_count_predicate_some_all():
 #     }).messages
 #     equal(2, res.length)
 #     equal(0, res[0].value.value.length)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Return():
@@ -1548,11 +1535,11 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Some():
@@ -1579,11 +1566,11 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(4, res[0].value.value[0].key)
 #     equal('c', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Multiple():
@@ -1626,13 +1613,13 @@ def test_count_predicate_some_all():
         
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(2, res[0].value.value.length)
 #     equal(4, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
 #     equal(4, res[0].value.value[1].key)
 #     equal('r', res[0].value.value[1].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Throw():
@@ -1698,7 +1685,7 @@ def test_count_predicate_some_all():
 #     }).messages
 #     equal(2, res.length)
 #     equal(0, res[0].value.value.length)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Comparer_Return():
@@ -1729,11 +1716,11 @@ def test_count_predicate_some_all():
 #         }, reverseComparer)
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Comparer_Some():
@@ -1770,11 +1757,11 @@ def test_count_predicate_some_all():
 #         }, reverseComparer)
 #     }).messages
 #     equal(2, res.length)
-#     ok(res[0].value.kind === 'N')
+#     ok(res[0].value.kind == 'N')
 #     equal(1, res[0].value.value.length)
 #     equal(2, res[0].value.value[0].key)
 #     equal('a', res[0].value.value[0].value)
-#     ok(res[1].value.kind === 'C' && res[1].time === 250)
+#     ok(res[1].value.kind == 'C' and res[1].time == 250)
 
 
 # def test_MaxBy_Comparer_Throw():
@@ -1908,8 +1895,8 @@ def test_count_predicate_some_all():
 #         return xs.average()
 #     }).messages
 #     equal(1, res.length)
-#     ok(res[0].value.kind === 'E' && res[0].value.exception !== null)
-#     ok(res[0].time === 250)
+#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
+#     ok(res[0].time == 250)
 
 
 # def test_Average_Int32_Return():
@@ -2296,7 +2283,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3 - 2, 4, 5, 6 + 42, 7 - 6], function (x, y) {
-#             return x % 2 === y % 2
+#             return x % 2 == y % 2
         
     
 #     res.messages.assert_equal(on_next(510, true), on_completed(510))
@@ -2309,7 +2296,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3 - 2, 4, 5 + 9, 6 + 42, 7 - 6], function (x, y) {
-#             return x % 2 === y % 2
+#             return x % 2 == y % 2
         
     
 #     res.messages.assert_equal(on_next(310, false), on_completed(310))
@@ -2318,10 +2305,10 @@ def test_count_predicate_some_all():
 
 # function throwComparer(value, exn) {
 #     return function (x, y) {
-#         if (x === value) {
+#         if (x == value) {
 #             throw exn
 #         }
-#         return x === y
+#         return x == y
 #     }
 # }
 
@@ -2404,7 +2391,7 @@ def test_count_predicate_some_all():
 #     equal(1, results.messages.length)
 #     equal(600, results.messages[0].time)
 #     equal('E', results.messages[0].value.kind)
-#     ok(results.messages[0].value.exception !== null)
+#     ok(results.messages[0].value.exception != null)
 
 
 # def test_ElementAt_Error():
@@ -2473,7 +2460,7 @@ def test_count_predicate_some_all():
 #         return xs.first()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2518,7 +2505,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.first(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_next(220, 3), on_completed(220))
@@ -2535,7 +2522,7 @@ def test_count_predicate_some_all():
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2547,7 +2534,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_error(220, ex))
 #     res = scheduler.start(create=create)
 #         return xs.first(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_error(220, ex))
@@ -2624,7 +2611,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.firstOrDefault(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
 #         }, 0)
     
 #     res.messages.assert_equal(on_next(220, 3), on_completed(220))
@@ -2651,7 +2638,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_error(220, ex))
 #     res = scheduler.start(create=create)
 #         return xs.firstOrDefault(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
 #         }, 0)
     
 #     res.messages.assert_equal(on_error(220, ex))
@@ -2685,7 +2672,7 @@ def test_count_predicate_some_all():
 #         return xs.last()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2729,7 +2716,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.last(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_next(250, 5), on_completed(250))
@@ -2746,7 +2733,7 @@ def test_count_predicate_some_all():
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2758,7 +2745,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 #     res = scheduler.start(create=create)
 #         return xs.last(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_error(210, ex))
@@ -2773,7 +2760,7 @@ def test_count_predicate_some_all():
 #     res = scheduler.start(create=create)
 #         return xs.last(function (x) {
 #             if (x < 4) {
-#                 return x % 2 === 1
+#                 return x % 2 == 1
 #             } else {
 #                 throw ex
 #             }
@@ -2835,7 +2822,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.lastOrDefault(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
 #         }, 0)
     
 #     res.messages.assert_equal(on_next(250, 5), on_completed(250))
@@ -2877,7 +2864,7 @@ def test_count_predicate_some_all():
 #     res = scheduler.start(create=create)
 #         return xs.lastOrDefault(function (x) {
 #             if (x < 4) {
-#                 return x % 2 === 1
+#                 return x % 2 == 1
 #             } else {
 #                 throw ex
 #             }
@@ -2896,7 +2883,7 @@ def test_count_predicate_some_all():
 #         return xs.single()
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2920,7 +2907,7 @@ def test_count_predicate_some_all():
 #         return xs.single()
     
 #     res.messages.assert_equal(on_error(220, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 220))
 
@@ -2943,11 +2930,11 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.single(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_error(240, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 240))
 
@@ -2958,11 +2945,11 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.single(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
         
     
 #     res.messages.assert_equal(on_error(250, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -2973,7 +2960,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.single(function (x) {
-#             return x === 4
+#             return x == 4
         
     
 #     res.messages.assert_equal(on_next(250, 4), on_completed(250))
@@ -3043,7 +3030,7 @@ def test_count_predicate_some_all():
 #         return xs.singleOrDefault(null, 0)
     
 #     res.messages.assert_equal(on_error(220, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 220))
 
@@ -3066,11 +3053,11 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.singleOrDefault(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
 #         }, 0)
     
 #     res.messages.assert_equal(on_error(240, function (e) {
-#         return e !== null
+#         return e != null
 #     }))
 #     xs.subscriptions.assert_equal(subscribe(200, 240))
 
@@ -3081,7 +3068,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.singleOrDefault(function (x) {
-#             return x % 2 === 1
+#             return x % 2 == 1
 #         }, 0)
     
 #     res.messages.assert_equal(on_next(250, 0), on_completed(250))
@@ -3095,7 +3082,7 @@ def test_count_predicate_some_all():
 #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     res = scheduler.start(create=create)
 #         return xs.singleOrDefault(function (x) {
-#             return x === 4
+#             return x == 4
 #         }, 0)
     
 #     res.messages.assert_equal(on_next(250, 4), on_completed(250))
