@@ -1880,17 +1880,7 @@ def test_count_predicate_predicate_throws():
 #     }).messages
 #     res.assert_equal(on_error(220, ex))
 
-def test_average_int32_empty():
-    scheduler = TestScheduler()
-    msgs = [on_next(150, 1), on_completed(250)]
-    xs = scheduler.create_hot_observable(msgs)
-    res = scheduler.start(create=lambda: xs.average()).messages
-    
-    assert(len(res) == 1)
-    assert(res[0].value.kind == 'E' and res[0].value.exception != None)
-    assert(res[0].time == 250)
-
-# def test_Average_Int32_Return():
+# def test_average_int32_return():
 #     scheduler = TestScheduler()
 #     msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
 #     xs = scheduler.create_hot_observable(msgs)
