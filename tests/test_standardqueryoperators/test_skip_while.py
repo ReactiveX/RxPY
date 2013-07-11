@@ -41,7 +41,7 @@ def test_skip_while_complete_after():
         
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
-    assert(6, invoked)
+    assert(invoked == 6)
 
 def test_skip_while_error_before():
     ex = 'ex'
@@ -59,7 +59,7 @@ def test_skip_while_error_before():
             
     results.messages.assert_equal(on_error(270, ex))
     xs.subscriptions.assert_equal(subscribe(200, 270))
-    assert(2, invoked)
+    assert(invoked == 2)
 
 def test_skip_while_error_after():
     ex = 'ex'
@@ -77,7 +77,7 @@ def test_skip_while_error_after():
             
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_error(600, ex))
     xs.subscriptions.assert_equal(subscribe(200, 600))
-    assert(6, invoked)
+    assert(invoked == 6)
 
 def test_skip_while_dispose_before():
     scheduler = TestScheduler()
@@ -94,7 +94,7 @@ def test_skip_while_dispose_before():
 
     results.messages.assert_equal()
     xs.subscriptions.assert_equal(subscribe(200, 300))
-    assert(3, invoked)
+    assert(invoked == 3)
 
 def test_skip_while_dispose_after():
     scheduler = TestScheduler()
@@ -111,7 +111,7 @@ def test_skip_while_dispose_after():
 
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8))
     xs.subscriptions.assert_equal(subscribe(200, 470))
-    assert(6, invoked)
+    assert(invoked == 6)
 
 def test_skip_while_zero():
     scheduler = TestScheduler()
@@ -128,7 +128,7 @@ def test_skip_while_zero():
             
     results.messages.assert_equal(on_next(205, 100), on_next(210, 2), on_next(260, 5), on_next(290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
-    assert(1, invoked)
+    assert(invoked == 1)
 
 def test_skip_while_throw():
     scheduler = TestScheduler()
@@ -148,7 +148,7 @@ def test_skip_while_throw():
     
     results.messages.assert_equal(on_error(290, ex))
     xs.subscriptions.assert_equal(subscribe(200, 290))
-    assert(3, invoked)
+    assert(invoked == 3)
 
 def test_skip_while_index():
     scheduler = TestScheduler()
@@ -159,7 +159,6 @@ def test_skip_while_index():
             return i < 5
         return xs.skip_while(predicate)
     results = scheduler.start(create)
-        
     
     results.messages.assert_equal(on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))

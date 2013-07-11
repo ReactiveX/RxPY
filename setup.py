@@ -7,12 +7,12 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.1.2',
+    version='0.1.3',
     description='Reactive Extensions for Python',
     long_description = """\
 is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3""",
     author='Dag Brattli',
-    author_email='dag@brattli.net',
+    author_email='dbrattli@microsoft.com',
     license='Apache License',
     url='https://github.com/dbrattli/Rx',
     download_url = 'https://github.com/dbrattli/RxPY',
