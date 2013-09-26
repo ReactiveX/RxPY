@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>tests\test_observable_time.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
+    <InterpreterVersion>3.2</InterpreterVersion>
+    <Name>RxPY</Name>
+    <RootNamespace>RxPY</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="rx\abstractobserver.py" />
+    <Compile Include="rx\anonymousobservable.py" />
+    <Compile Include="rx\anonymousobserver.py" />
+    <Compile Include="rx\autodetachobserver.py" />
+    <Compile Include="rx\checkedobserver.py" />
+    <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
+    <Compile Include="rx\concurrency\timeoutscheduler.py" />
+    <Compile Include="rx\concurrency\virtualtimescheduler.py" />
+    <Compile Include="rx\disposables\scheduleddisposable.py" />
+    <Compile Include="rx\internal\basic.py" />
+    <Compile Include="rx\internal\enumerable.py" />
+    <Compile Include="rx\internal\enumerator.py" />
+    <Compile Include="rx\internal\exceptions.py" />
+    <Compile Include="rx\internal\priorityqueue.py" />
+    <Compile Include="rx\internal\__init__.py" />
+    <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable_aggregates.py" />
+    <Compile Include="rx\linq\observable_coincidence.py" />
+    <Compile Include="rx\linq\observable_concurrency.py" />
+    <Compile Include="rx\linq\observable_leave.py" />
+    <Compile Include="rx\linq\observable_multiple.py" />
+    <Compile Include="rx\linq\observable_single.py" />
+    <Compile Include="rx\linq\observable_time.py" />
+    <Compile Include="rx\notification.py" />
+    <Compile Include="rx\observeonobserver.py" />
+    <Compile Include="rx\scheduledobserver.py" />
+    <Compile Include="rx\subjects\anonymoussubject.py" />
+    <Compile Include="rx\subjects\innersubscription.py" />
+    <Compile Include="rx\subjects\subject.py" />
+    <Compile Include="rx\subjects\__init__.py" />
+    <Compile Include="rx\testing\mockdisposable.py" />
+    <Compile Include="rx\testing\mockobserver.py" />
+    <Compile Include="rx\testing\reactivetest.py" />
+    <Compile Include="rx\testing\reactive_assert.py" />
+    <Compile Include="rx\testing\recorded.py" />
+    <Compile Include="rx\testing\testscheduler.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="rx\observable.py" />
+    <Compile Include="rx\observer.py" />
+    <Compile Include="rx\__init__.py" />
+    <Compile Include="rx\concurrency\currentthreadscheduler.py" />
+    <Compile Include="rx\concurrency\immediatescheduler.py" />
+    <Compile Include="rx\concurrency\scheduleditem.py" />
+    <Compile Include="rx\concurrency\scheduler.py" />
+    <Compile Include="rx\concurrency\__init__.py" />
+    <Compile Include="rx\disposables\compositedisposable.py" />
+    <Compile Include="rx\disposables\disposable.py" />
+    <Compile Include="rx\disposables\refcountdisposable.py" />
+    <Compile Include="rx\disposables\serialdisposable.py" />
+    <Compile Include="rx\disposables\singleassignmentdisposable.py" />
+    <Compile Include="rx\disposables\__init__.py" />
+    <Compile Include="rx\linq\observable_creation.py" />
+    <Compile Include="rx\linq\standardsequenceoperators.py" />
+    <Compile Include="rx\linq\__init__.py" />
+    <Compile Include="rx\testing\coldobservable.py" />
+    <Compile Include="rx\testing\hotobservable.py" />
+    <Compile Include="rx\testing\subscription.py" />
+    <Compile Include="rx\testing\__init__.py" />
+    <Compile Include="tests\test_asyncsubject.py" />
+    <Compile Include="tests\test_behaviorsubject.py" />
+    <Compile Include="tests\test_group_join.py" />
+    <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable_aggregates.py" />
+    <Compile Include="tests\test_observable_concurrency.py" />
+    <Compile Include="tests\test_observable_creation.py" />
+    <Compile Include="tests\test_observable_imperative.py" />
+    <Compile Include="tests\test_observable_multiple.py" />
+    <Compile Include="tests\test_observable_time.py" />
+    <Compile Include="tests\test_observer.py" />
+    <Compile Include="tests\test_currentthreadscheduler.py" />
+    <Compile Include="tests\test_disposable.py" />
+    <Compile Include="tests\test_immediatescheduler.py" />
+    <Compile Include="tests\test_replaysubject.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_select.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_select_many.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_skip.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_skip_while.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_take.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
+    <Compile Include="tests\test_standardqueryoperators\test_where.py" />
+    <Compile Include="tests\test_standardqueryoperators\__init__.py" />
+    <Compile Include="tests\test_subject.py" />
+    <Compile Include="tests\test_timeoutscheduler.py" />
+    <Compile Include="tests\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="rx" />
+    <Folder Include="rx\concurrency" />
+    <Folder Include="rx\disposables" />
+    <Folder Include="rx\linq" />
+    <Folder Include="rx\internal\" />
+    <Folder Include="rx\subjects\" />
+    <Folder Include="rx\testing" />
+    <Folder Include="tests\" />
+    <Folder Include="tests\test_standardqueryoperators\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

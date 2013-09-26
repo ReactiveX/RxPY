@@ -33,3 +33,13 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+<<<<<<< HEAD
+=======
+
+# Visual studio
+*.suo
+*.DotSettings.user
+
+# Log files
+*.log
+>>>>>>> 40571f4091103c01920119f2cd8332b56853732a
