@@ -21,7 +21,7 @@ To install Rx:
 
 ## Contributing ##
 
-There are lots of ways to [contribute](https://github.com/Reactive-Extensions/RxJS/wiki/Contributing) to the project, and we appreciate our [contributors](https://github.com/Reactive-Extensions/RxJS/wiki/Contributors).
+There are lots of ways to [contribute](https://github.com/Reactive-Extensions/RxPy/wiki/Contributing) to the project, and we appreciate our [contributors](https://github.com/Reactive-Extensions/RxPy/wiki/Contributors).
 
 You can contribute by reviewing and sending feedback on code checkins, suggesting and trying out new features as they are implemented, submit bugs and help us verify fixes as they are checked in, as well as submit code fixes or code contributions of your own. Note that all code submissions will be rigorously reviewed and tested by the Rx Team, and only those that meet an extremely high bar for both quality and design/roadmap appropriateness will be merged into the source.
 
