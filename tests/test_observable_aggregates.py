@@ -1983,96 +1983,77 @@ def test_average_int32_empty():
 #     results.assert_equal()
 #     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-
-# def test_SequenceEqual_Equal():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return xs.sequenceEqual(ys)
+def test_sequence_equal_equal():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: xs.sequence_equal(ys))
     
-#     results.messages.assert_equal(on_next(720, true), on_completed(720))
-#     xs.subscriptions.assert_equal(subscribe(200, 720))
-#     ys.subscriptions.assert_equal(subscribe(200, 720))
+    results.messages.assert_equal(on_next(720, True), on_completed(720))
+    xs.subscriptions.assert_equal(subscribe(200, 720))
+    ys.subscriptions.assert_equal(subscribe(200, 720))
 
-
-# def test_SequenceEqual_Equal_Sym():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return ys.sequenceEqual(xs)
+def test_sequence_equal_equal_sym():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: ys.sequence_equal(xs))
     
-#     results.messages.assert_equal(on_next(720, true), on_completed(720))
-#     xs.subscriptions.assert_equal(subscribe(200, 720))
-#     ys.subscriptions.assert_equal(subscribe(200, 720))
+    results.messages.assert_equal(on_next(720, True), on_completed(720))
+    xs.subscriptions.assert_equal(subscribe(200, 720))
+    ys.subscriptions.assert_equal(subscribe(200, 720))
 
-
-# def test_SequenceEqual_NotEqual_Left():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 0), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return xs.sequenceEqual(ys)
+def test_sequence_equal_not_equal_left():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 0), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: xs.sequence_equal(ys))
     
-#     results.messages.assert_equal(on_next(310, false), on_completed(310))
-#     xs.subscriptions.assert_equal(subscribe(200, 310))
-#     ys.subscriptions.assert_equal(subscribe(200, 310))
+    results.messages.assert_equal(on_next(310, False), on_completed(310))
+    xs.subscriptions.assert_equal(subscribe(200, 310))
+    ys.subscriptions.assert_equal(subscribe(200, 310))
 
-
-# def test_SequenceEqual_NotEqual_Left_Sym():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 0), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return ys.sequenceEqual(xs)
+def test_sequence_equal_not_equal_left_sym():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 0), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: ys.sequence_equal(xs))
     
-#     results.messages.assert_equal(on_next(310, false), on_completed(310))
-#     xs.subscriptions.assert_equal(subscribe(200, 310))
-#     ys.subscriptions.assert_equal(subscribe(200, 310))
+    results.messages.assert_equal(on_next(310, False), on_completed(310))
+    xs.subscriptions.assert_equal(subscribe(200, 310))
+    ys.subscriptions.assert_equal(subscribe(200, 310))
 
-
-# def test_SequenceEqual_NotEqual_Right():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return xs.sequenceEqual(ys)
+def test_sequence_equal_not_equal_right():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: xs.sequence_equal(ys))
     
-#     results.messages.assert_equal(on_next(510, false), on_completed(510))
-#     xs.subscriptions.assert_equal(subscribe(200, 510))
-#     ys.subscriptions.assert_equal(subscribe(200, 510))
+    results.messages.assert_equal(on_next(510, False), on_completed(510))
+    xs.subscriptions.assert_equal(subscribe(200, 510))
+    ys.subscriptions.assert_equal(subscribe(200, 510))
 
-
-# def test_SequenceEqual_NotEqual_Right_Sym():
-#     var msgs1, msgs2, results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
-#     msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
-#     xs = scheduler.create_hot_observable(msgs1)
-#     ys = scheduler.create_hot_observable(msgs2)
-#     results = scheduler.start(create=create)
-#         return ys.sequenceEqual(xs)
+def test_sequence_equal_not_equal_right_sym():
+    scheduler = TestScheduler()
+    msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
+    msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
+    xs = scheduler.create_hot_observable(msgs1)
+    ys = scheduler.create_hot_observable(msgs2)
+    results = scheduler.start(lambda: ys.sequence_equal(xs))
     
-#     results.messages.assert_equal(on_next(510, false), on_completed(510))
-#     xs.subscriptions.assert_equal(subscribe(200, 510))
-#     ys.subscriptions.assert_equal(subscribe(200, 510))
-
+    results.messages.assert_equal(on_next(510, False), on_completed(510))
+    xs.subscriptions.assert_equal(subscribe(200, 510))
+    ys.subscriptions.assert_equal(subscribe(200, 510))
 
 # def test_SequenceEqual_NotEqual_2():
 #     var msgs1, msgs2, results, scheduler, xs, ys
