@@ -59,6 +59,7 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
         else:
             return self.aggregate(lambda count, _: count + 1, seed=0)
 
+    @staticmethod
     def sequence_equal_array(first, second, comparer):
         def subscribe(observer):
             count = 0
@@ -82,7 +83,7 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
                     observer.on_completed()
 
             def on_completed():
-                observer.on_next(count == lenght)
+                observer.on_next(count == length)
                 observer.on_completed()
             
             return first.subscribe(on_next, observer.on_error, on_completed)
@@ -109,7 +110,7 @@ class ObservableAggregates(Observable, metaclass=ObservableMeta):
         first = self
         comparer = comparer or default_comparer
         if isinstance(second, list):
-            return sequence_equal_array(first, second, comparer)
+            return ObservableAggregates.sequence_equal_array(first, second, comparer)
         
         def subscribe(observer):
             donel = False
