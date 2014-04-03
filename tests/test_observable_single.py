@@ -106,30 +106,25 @@ created = ReactiveTest.created
 #     assert(results[2].value.kind == 'C')
 
 
-# var sequenceEqual
-# sequenceEqual = function (arr1, arr2) {
-#     var i
-#     if (arr1.length !== arr2.length) {
-#         return false
-#     }
-#     for (i = 0 i < arr1.length i++) {
-#         if (arr1[i] !== arr2[i]) {
-#             return false
-#         }
-#     }
-#     return true
-# }
+def sequenceEqual(arr1, arr2):
+    if  len(arr1) != len(arr2):
+        return False
 
-# def test_Buffer_Count_PartialWindow():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
-#     results = scheduler.start(create)
-#         return xs.bufferWithCount(5)
-#     }).messages
-#     equal(2, results.length)
-#     assert(sequenceEqual(results[0].value.value, [2, 3, 4, 5]) and results[0].time == 250)
-#     assert(results[1].value.kind == 'C' and results[1].time == 250)
+    for i in range(len(arr1)):
+         if arr1[i] != arr2[i]:
+             return false
+    return True
+
+# def test_buffer_count_partial_window():
+#      scheduler = TestScheduler()
+#      xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+     
+#      def create():
+#         return xs.buffer_with_count(5)
+#      results = scheduler.start(create).messages
+#      equal(2, results.length)
+#      assert(sequenceEqual(results[0].value.value, [2, 3, 4, 5]) and results[0].time == 250)
+#      assert(results[1].value.kind == 'C' and results[1].time == 250)
 
 # def test_Buffer_Count_FullWindows():
 #     var results, scheduler, xs
@@ -1160,33 +1155,31 @@ def test_scan_noSeed_somedata():
 #     results.messages.assert_equal(on_error(610, ex))
 #     xs.subscriptions.assert_equal(subscribe(200, 610))
 
-# def test_WindowWithCount_Basic():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.start(create)
-#         return xs.windowWithCount(3, 2).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-            
-#         }).mergeObservable()
+def test_window_with_count_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    def create():
+        def proj(w, i):
+            print("proj")
+            return w.select(lambda x: str(i) + ' ' + str(x))
+        return xs.window_with_count(3, 2).select(proj).merge_observable()
+    results = scheduler.start(create)
     
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600))
+    xs.subscriptions.assert_equal(subscribe(200, 600))
 
-# def test_WindowWithCount_Disposed():
-#     var results, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.windowWithCount(3, 2).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-            
-#         }).mergeObservable()
-#     }, 370)
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
-#     xs.subscriptions.assert_equal(subscribe(200, 370))
+def test_window_with_count_disposed():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
+    
+    def create():
+        def proj(w, i):
+            return w.select(lambda x: str(i) + ' ' + str(x))        
+        return xs.window_with_count(3, 2).select(proj).merge_observable()
+    
+    results = scheduler.start(create, disposed=370)
+    results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
+    xs.subscriptions.assert_equal(subscribe(200, 370))
 
 # def test_WindowWithCount_Error():
 #     var ex, results, scheduler, xs
