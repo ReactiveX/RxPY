@@ -134,12 +134,10 @@ def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_dispose
     scheduler = TestScheduler()
     l_msgs = [on_next(150, 1), on_error(215, 'ex'), on_completed(240)]
     r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-    source_not_disposed = False
+    source_not_disposed = [False]
 
     def action():
-        nonlocal source_not_disposed
-
-        source_not_disposed = True
+        source_not_disposed[0] = True
     l = scheduler.create_hot_observable(l_msgs).do_action(on_next=action)
     
     r = scheduler.create_hot_observable(r_msgs)
@@ -150,18 +148,17 @@ def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_dispose
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_completed(210))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal():
     scheduler = TestScheduler()
     l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
     r_msgs = [on_next(150, 1), on_next(250, 2), on_completed(260)]
-    signal_not_disposed = False
+    signal_not_disposed = [False]
     l = scheduler.create_hot_observable(l_msgs)
 
     def action():
-        nonlocal signal_not_disposed
-        signal_not_disposed = True
+        signal_not_disposed[0] = True
     r = scheduler.create_hot_observable(r_msgs).do_action(on_next=action)
     
     def create():
@@ -169,7 +166,7 @@ def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal():
     
     results = scheduler.start(create)        
     results.messages.assert_equal(on_next(230, 2), on_completed(240))
-    assert(not signal_not_disposed)
+    assert(not signal_not_disposed[0])
 
 def test_skip_until_somedata_next():
     scheduler = TestScheduler()
@@ -274,12 +271,11 @@ def test_skip_until_never_never():
 def test_skip_until_has_completed_causes_disposal():
     scheduler = TestScheduler()
     l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
-    disposed = False
+    disposed = [False]
     l = scheduler.create_hot_observable(l_msgs)
     
     def subscribe(observer):
-        nonlocal disposed
-        disposed = True
+        disposed[0] = True
     
     r = Observable(subscribe)
         
@@ -288,7 +284,7 @@ def test_skip_until_has_completed_causes_disposal():
     
     results = scheduler.start(create)
     results.messages.assert_equal()
-    assert(disposed)
+    assert(disposed[0])
 
 def test_merge_never2():
     scheduler = TestScheduler()
@@ -534,12 +530,11 @@ def test_merge_error_causes_disposal():
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_error(210, ex)]
     msgs2 = [on_next(150, 1), on_next(220, 1), on_completed(250)]
-    source_not_disposed = False
+    source_not_disposed = [False]
     o1 = scheduler.create_hot_observable(msgs1)
     
     def action():
-        nonlocal source_not_disposed
-        source_not_disposed = True
+        source_not_disposed[0] = True
     
     o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
     
@@ -549,7 +544,7 @@ def test_merge_error_causes_disposal():
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_error(210, ex))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_merge_observable_of_observable_data():
     scheduler = TestScheduler()
@@ -693,12 +688,11 @@ def test_amb_regular_should_dispose_loser():
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(240)]
     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-    source_not_disposed = False
+    source_not_disposed = [False]
     o1 = scheduler.create_hot_observable(msgs1)
 
     def action():
-        nonlocal source_not_disposed
-        source_not_disposed = True
+        source_not_disposed[0] = True
 
     o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
     
@@ -707,19 +701,18 @@ def test_amb_regular_should_dispose_loser():
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_next(210, 2), on_completed(240))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_amb_winner_throws():
     ex = 'ex'
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex)]
     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-    source_not_disposed = False
+    source_not_disposed = [False]
     o1 = scheduler.create_hot_observable(msgs1)
     
     def action():
-        nonlocal source_not_disposed
-        source_not_disposed = True
+        source_not_disposed[0] = True
     
     o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
     
@@ -728,18 +721,17 @@ def test_amb_winner_throws():
     
     results = scheduler.start(create)
     results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_amb_loser_throws():
     ex = 'ex'
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
     msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
-    source_not_disposed = False
+    source_not_disposed = [False]
     
     def action():
-        nonlocal source_not_disposed
-        source_not_disposed = True
+        source_not_disposed[0] = True
     o1 = scheduler.create_hot_observable(msgs1).do_action(on_next=action)
     
     o2 = scheduler.create_hot_observable(msgs2)
@@ -749,19 +741,18 @@ def test_amb_loser_throws():
         
     results = scheduler.start(create)
     results.messages.assert_equal(on_next(210, 3), on_completed(250))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_amb_throws_before_election():
     ex = 'ex'
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_error(210, ex)]
     msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
-    source_not_disposed = False
+    source_not_disposed = [False]
     o1 = scheduler.create_hot_observable(msgs1)
     
     def action():
-        nonlocal source_not_disposed
-        source_not_disposed = True
+        source_not_disposed[0] = True
     
     o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
     
@@ -771,7 +762,7 @@ def test_amb_throws_before_election():
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_error(210, ex))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_catch_no_errors():
     scheduler = TestScheduler()
@@ -882,7 +873,7 @@ def test_catch_multiple():
 
 def test_catch_error_specific_caught():
     ex = 'ex'
-    handler_called = False
+    handler_called = [False]
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
     msgs2 = [on_next(240, 4), on_completed(250)]
@@ -891,9 +882,7 @@ def test_catch_error_specific_caught():
     
     def create():
         def handler(e):
-            nonlocal handler_called
-            
-            handler_called = True
+            handler_called[0] = True
             return o2
 
         return o1.catch_exception(handler)
@@ -901,19 +890,18 @@ def test_catch_error_specific_caught():
     results = scheduler.start(create)
 
     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
-    assert(handler_called)
+    assert(handler_called[0])
 
 def test_catch_error_specific_caught_immediate():
     ex = 'ex'
-    handler_called = False
+    handler_called = [False]
     scheduler = TestScheduler()
     msgs2 = [on_next(240, 4), on_completed(250)]
     o2 = scheduler.create_hot_observable(msgs2)
 
     def create():
         def handler(e):
-            nonlocal handler_called
-            handler_called = True
+            handler_called[0] = True
             return o2
 
         return Observable.throw_exception('ex').catch_exception(handler)
@@ -921,32 +909,31 @@ def test_catch_error_specific_caught_immediate():
     results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(240, 4), on_completed(250))
-    assert(handler_called)
+    assert(handler_called[0])
 
 def test_catch_handler_throws():
     ex = 'ex'
     ex2 = 'ex2'
-    handler_called = False
+    handler_called = [False]
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
     o1 = scheduler.create_hot_observable(msgs1)
     
     def create():
         def handler(e):
-            nonlocal handler_called
-            handler_called = True
+            handler_called[0] = True
             raise Exception(ex2)
         return o1.catch_exception(handler)
     
     results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
-    assert(handler_called)
+    assert(handler_called[0])
 
 def test_catch_nested_outer_catches():
     ex = 'ex'
-    first_handler_called = False
-    second_handler_called = False
+    first_handler_called = [False]
+    second_handler_called = [False]
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
     msgs2 = [on_next(220, 3), on_completed(225)]
@@ -957,26 +944,24 @@ def test_catch_nested_outer_catches():
     
     def create():
         def handler1(e):
-            nonlocal first_handler_called
-            first_handler_called = True
+            first_handler_called[0] = True
             return o2
         def handler2(e):
-            nonlocal second_handler_called
-            second_handler_called = True
+            second_handler_called[0] = True
             return o3
         return o1.catch_exception(handler1).catch_exception(handler2)
     
     results = scheduler.start(create)    
     
     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
-    assert(first_handler_called)
-    assert(not second_handler_called)
+    assert(first_handler_called[0])
+    assert(not second_handler_called[0])
 
 def test_catch_throw_from_nested_catch():
     ex = 'ex'
     ex2 = 'ex'
-    first_handler_called = False
-    second_handler_called = False
+    first_handler_called = [False]
+    second_handler_called = [False]
     scheduler = TestScheduler()
     msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
     msgs2 = [on_next(220, 3), on_error(225, ex2)]
@@ -987,13 +972,11 @@ def test_catch_throw_from_nested_catch():
     
     def create():
         def handler1(e):
-            nonlocal first_handler_called
-            first_handler_called = True
+            first_handler_called[0] = True
             assert(e == ex)
             return o2
         def handler2(e):
-            nonlocal second_handler_called
-            second_handler_called = True
+            second_handler_called[0] = True
             assert(e == ex2)
             return o3
         return o1.catch_exception(handler1).catch_exception(handler2)
@@ -1001,8 +984,8 @@ def test_catch_throw_from_nested_catch():
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
-    assert(first_handler_called)
-    assert(second_handler_called)
+    assert(first_handler_called[0])
+    assert(second_handler_called[0])
 
 def test_on_error_resume_next_no_errors():
     scheduler = TestScheduler()

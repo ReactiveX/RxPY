@@ -250,19 +250,18 @@ def test_generate_dispose():
                         on_next(202, 1))
 
 def test_defer_complete():
-    xs = None
-    invoked = 0
+    xs = [None]
+    invoked = [0]
     scheduler = TestScheduler()
 
     def create():
         def defer():
-            nonlocal invoked, xs
-            invoked += 1
-            xs = scheduler.create_cold_observable(
+            invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(
                                 on_next(100, scheduler.clock),
                                 on_completed(200)
                             )
-            return xs
+            return xs[0]
         return Observable.defer(defer)
     results = scheduler.start(create)
         
@@ -271,241 +270,226 @@ def test_defer_complete():
                         on_next(300, 200),
                         on_completed(400)
                     )
-    assert(1 == invoked)
-    return xs.subscriptions.assert_equal(subscribe(200, 400))
+    assert(1 == invoked[0])
+    return xs[0].subscriptions.assert_equal(subscribe(200, 400))
 
 
 def test_defer_error():
     scheduler = TestScheduler()
-    invoked = 0
-    xs = None
+    invoked = [0]
+    xs = [None]
     ex = 'ex'
     
     def create():
         def defer():
-            nonlocal invoked, xs
-            invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
-            return xs
+            invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+            return xs[0]
         return Observable.defer(defer)
             
     results = scheduler.start(create)
         
     results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
-    assert (1 == invoked)
-    return xs.subscriptions.assert_equal(subscribe(200, 400))
+    assert (1 == invoked[0])
+    return xs[0].subscriptions.assert_equal(subscribe(200, 400))
 
 def test_defer_dispose():
     scheduler = TestScheduler()
-    invoked = 0
-    xs = None
+    invoked = [0]
+    xs = [None]
 
     def create():
         def defer():
-            nonlocal invoked, xs
-            invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked), on_next(1100, 1000))
-            return xs
+            invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
+            return xs[0]
         return Observable.defer(defer)
 
     results = scheduler.start(create)
     results.messages.assert_equal(on_next(300, 200), on_next(400, 1))
-    assert(1 == invoked)
-    return xs.subscriptions.assert_equal(subscribe(200, 1000))
+    assert(1 == invoked[0])
+    return xs[0].subscriptions.assert_equal(subscribe(200, 1000))
 
 def test_defer_throw():
     scheduler = TestScheduler()
-    invoked = 0
+    invoked = [0]
     ex = 'ex'
 
     def create():
         def defer():
-            nonlocal invoked
-            invoked += 1
+            invoked[0] += 1
             raise Exception(ex)
 
         return Observable.defer(defer)
     results = scheduler.start(create)       
     
     results.messages.assert_equal(on_error(200, ex))
-    assert(1 == invoked)
+    assert(1 == invoked[0])
 
 def test_using_null():
-    disposable = None
-    xs = None
-    _d = None
+    disposable = [None]
+    xs = [None]
+    _d = [None]
 
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
+    dispose_invoked = [0]
+    create_invoked = [0]
 
     def create():
         def create_resources():
-            nonlocal dispose_invoked
-            dispose_invoked += 1
-            disposable = None
-            return disposable
+            dispose_invoked[0] += 1
+            disposable[0] = None
+            return disposable[0]
 
         def create_observable(d):
-            nonlocal create_invoked, xs, _d
-            _d = d
-            create_invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
-            return xs        
+            _d[0] = d
+            create_invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
+            return xs[0]
         return Observable.using(create_resources, create_observable)
         
     results = scheduler.start(create)
     
-    assert(disposable == _d)
+    assert(disposable[0] == _d[0])
     results.messages.assert_equal(on_next(300, 200), on_completed(400))
-    assert(1 == create_invoked)
-    assert(1 == dispose_invoked)
-    xs.subscriptions.assert_equal(subscribe(200, 400))
-    assert(disposable == None)
+    assert(1 == create_invoked[0])
+    assert(1 == dispose_invoked[0])
+    xs[0].subscriptions.assert_equal(subscribe(200, 400))
+    assert(disposable[0] == None)
 
 def test_using_complete():
-    disposable = None
-    xs = None 
-    _d = None
+    disposable = [None]
+    xs = [None]
+    _d = [None]
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
+    dispose_invoked = [0]
+    create_invoked = [0]
     
     def create():
         def create_resource():
-            nonlocal dispose_invoked, disposable
-            dispose_invoked += 1
-            disposable = MockDisposable(scheduler)
-            return disposable
+            dispose_invoked[0] += 1
+            disposable[0] = MockDisposable(scheduler)
+            return disposable[0]
         def create_observable(d):
-            nonlocal _d, create_invoked, xs
-            _d = d
-            create_invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
-            return xs
+            _d[0] = d
+            create_invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
+            return xs[0]
         return Observable.using(create_resource, create_observable)
         
     results = scheduler.start(create)
     
     assert(disposable == _d)
     results.messages.assert_equal(on_next(300, 200), on_completed(400))
-    assert(create_invoked == 1)
-    assert(dispose_invoked == 1)
-    xs.subscriptions.assert_equal(subscribe(200, 400))
-    disposable.disposes.assert_equal(200, 400)
+    assert(create_invoked[0] == 1)
+    assert(dispose_invoked[0] == 1)
+    xs[0].subscriptions.assert_equal(subscribe(200, 400))
+    disposable[0].disposes.assert_equal(200, 400)
 
 
 def test_using_error():
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
+    dispose_invoked = [0]
+    create_invoked = [0]
     ex = 'ex'
-    disposable = None
-    xs = None
-    _d = None
+    disposable = [None]
+    xs = [None]
+    _d = [None]
     
     def create():
         def create_resource():
-            nonlocal dispose_invoked, disposable
-            dispose_invoked += 1
-            disposable = MockDisposable(scheduler)
-            return disposable
+            dispose_invoked[0] += 1
+            disposable[0] = MockDisposable(scheduler)
+            return disposable[0]
         def create_observable(d):
-            nonlocal _d, create_invoked, xs
-            _d = d
-            create_invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
-            return xs
+            _d[0] = d
+            create_invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+            return xs[0]
         return Observable.using(create_resource, create_observable)
     results = scheduler.start(create)
     
-    assert (disposable == _d)
+    assert (disposable[0] == _d[0])
     results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
-    assert(create_invoked == 1)
-    assert(dispose_invoked == 1)
-    xs.subscriptions.assert_equal(subscribe(200, 400))
-    disposable.disposes.assert_equal(200, 400)
+    assert(create_invoked[0] == 1)
+    assert(dispose_invoked[0] == 1)
+    xs[0].subscriptions.assert_equal(subscribe(200, 400))
+    disposable[0].disposes.assert_equal(200, 400)
 
 def test_using_dispose():
-    disposable = None
-    xs = None 
-    _d = None
+    disposable = [None]
+    xs = [None]
+    _d = [None]
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
+    dispose_invoked = [0]
+    create_invoked = [0]
 
     def create():
         def create_resource():
-            nonlocal dispose_invoked, disposable
-            dispose_invoked += 1
-            disposable = MockDisposable(scheduler)
-            return disposable
+            dispose_invoked[0] += 1
+            disposable[0] = MockDisposable(scheduler)
+            return disposable[0]
         def create_observable(d):
-            nonlocal _d, create_invoked, xs
-            _d = d
-            create_invoked += 1
-            xs = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
-            return xs
+            _d[0] = d
+            create_invoked[0] += 1
+            xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1))
+            return xs[0]
         return Observable.using(create_resource, create_observable)
     results = scheduler.start(create)
     
-    assert(disposable == _d)
+    assert(disposable[0] == _d[0])
     results.messages.assert_equal(on_next(300, 200))
-    assert(1 == create_invoked)
-    assert(1 == dispose_invoked)
-    xs.subscriptions.assert_equal(subscribe(200, 1000))
-    disposable.disposes.assert_equal(200, 1000)
+    assert(1 == create_invoked[0])
+    assert(1 == dispose_invoked[0])
+    xs[0].subscriptions.assert_equal(subscribe(200, 1000))
+    disposable[0].disposes.assert_equal(200, 1000)
 
 
 def test_using_throw_resource_selector():
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
+    dispose_invoked = [0]
+    create_invoked = [0]
     ex = 'ex'
     
     def create():
         def create_resource():
-            nonlocal dispose_invoked
-            dispose_invoked += 1
+            dispose_invoked[0] += 1
             raise _raise(ex)
         def create_observable(d):
-            nonlocal create_invoked
-            create_invoked += 1
+            create_invoked[0] += 1
             return Observable.never()
         
         return Observable.using(create_resource, create_observable)
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_error(200, ex))
-    assert(0 == create_invoked)
-    assert(1 == dispose_invoked)
+    assert(0 == create_invoked[0])
+    assert(1 == dispose_invoked[0])
 
 def test_using_throw_resource_usage():
     scheduler = TestScheduler()
-    dispose_invoked = 0
-    create_invoked = 0
-    disposable = None
+    dispose_invoked = [0]
+    create_invoked = [0]
+    disposable = [None]
     ex = 'ex'
     
     def create():
         def create_resource():
-            nonlocal disposable, dispose_invoked
-            dispose_invoked += 1
-            disposable = MockDisposable(scheduler)
-            return disposable
+            dispose_invoked[0] += 1
+            disposable[0] = MockDisposable(scheduler)
+            return disposable[0]
         
         def create_observable(d):
-            nonlocal create_invoked
-            create_invoked += 1
+            create_invoked[0] += 1
             _raise(ex)
 
         return Observable.using(create_resource, create_observable)
     results = scheduler.start(create)
 
     results.messages.assert_equal(on_error(200, ex))
-    assert(1 == create_invoked)
-    assert(1 == dispose_invoked)
-    return disposable.disposes.assert_equal(200, 200)
+    assert(1 == create_invoked[0])
+    assert(1 == dispose_invoked[0])
+    return disposable[0].disposes.assert_equal(200, 200)
 
 def test_create_next():
     scheduler = TestScheduler()
@@ -562,33 +546,32 @@ def test_create_dispose():
 
     def create():    
         def subscribe(o):
-            is_stopped = False
+            is_stopped = [False]
             o.on_next(1)
             o.on_next(2)
 
             def action1(scheduler, state):
-                if not is_stopped:
+                if not is_stopped[0]:
                     return o.on_next(3)
             scheduler.schedule_relative(600, action1)
             
             def action2(scheduler, state):
-                if not is_stopped:
+                if not is_stopped[0]:
                     return o.on_next(4)
             scheduler.schedule_relative(700, action2)
             
             def action3(scheduler, state):
-                if not is_stopped:
+                if not is_stopped[0]:
                     return o.on_next(5)
             scheduler.schedule_relative(900, action3)
             
             def action4(scheduler, state):
-                if not is_stopped:
+                if not is_stopped[0]:
                     return o.on_next(6)
             scheduler.schedule_relative(1100, action4)
             
             def dispose():
-                nonlocal is_stopped
-                is_stopped = True
+                is_stopped[0] = True
             return dispose
         return Observable.create(subscribe)
         

@@ -60,32 +60,30 @@ def test_to_notifier_forwards():
     assert(obsc.has_on_completed)
 
 def test_create_on_next():
-    next = False
+    next = [False]
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
 
     res = Observer(on_next)
     
     res.on_next(42)
-    assert(next)
+    assert(next[0])
     return res.on_completed()
 
 def test_create_on_next_has_error():
     ex = 'ex'
-    next = False
+    next = [False]
     _e = None
 
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
 
     res = Observer(on_next)
     
     res.on_next(42)
-    assert(next)
+    assert(next[0])
     
     try:
         res.on_error(ex)
@@ -96,53 +94,49 @@ def test_create_on_next_has_error():
     assert(ex == e_)
 
 def test_create_on_next_on_completed():
-    next = False
-    completed = False
+    next = [False]
+    completed = [False]
 
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
-        return next
+        next[0] = True
+        return next[0]
 
     def on_completed():
-        nonlocal completed
-        completed = True
-        return completed
+        completed[0] = True
+        return completed[0]
 
     res = Observer(on_next, None, on_completed)
     
     res.on_next(42)
 
-    assert(next)
-    assert(not completed)
+    assert(next[0])
+    assert(not completed[0])
 
     res.on_completed()
 
-    assert(completed)
+    assert(completed[0])
 
 
 def test_create_on_next_on_completed_has_error():
     e_ = None
     ex = 'ex'
-    next = False
-    completed = False
+    next = [False]
+    completed = [False]
 
 
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
 
     def on_completed():
-        nonlocal completed
-        completed = True
+        completed[0] = True
 
     res = Observer(on_next, None, on_completed)
     
     res.on_next(42)
-    assert(next)
-    assert(not completed)
+    assert(next[0])
+    assert(not completed[0])
     try:
         res.on_error(ex)
         assert(False)
@@ -150,125 +144,115 @@ def test_create_on_next_on_completed_has_error():
         e_ = e.args[0]
     
     assert(ex == e_)
-    assert(not completed)
+    assert(not completed[0])
 
 
 def test_create_on_next_on_error():
     ex = 'ex'
-    next = True
-    error = False
+    next = [True]
+    error = [False]
 
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
     
     def on_error(e):
-        nonlocal error
         assert(ex == e)
-        error = True
+        error[0] = True
 
     res = Observer(on_next, on_error)
     
     res.on_next(42)
 
-    assert(next)
-    assert(not error)
+    assert(next[0])
+    assert(not error[0])
 
     res.on_error(ex)
-    assert(error)
+    assert(error[0])
 
 
 def test_create_on_next_on_error_hit_completed():
     ex = 'ex'
-    next = True
-    error = False
+    next = [True]
+    error = [False]
     
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
     
     def on_error(e):
-        nonlocal error
         assert(ex == e)
-        error = True
+        error[0] = True
 
     res = Observer(on_next, on_error)
 
     res.on_next(42)
-    assert(next)
-    assert(not error)
+    assert(next[0])
+    assert(not error[0])
 
     res.on_completed()
 
-    assert(not error)
+    assert(not error[0])
 
 def test_create_on_next_on_error_on_completed1():
     ex = 'ex'
-    next = True
-    error = False
-    completed = False
+    next = [True]
+    error = [False]
+    completed = [False]
     
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
     
     def on_error(e):
-        nonlocal error
         assert(ex == e)
-        error = True
+        error[0] = True
 
     def on_completed():
-        nonlocal completed
-        completed = True
+        completed[0] = True
 
     res = Observer(on_next, on_error, on_completed)
 
     res.on_next(42)
 
-    assert(next)
-    assert(not error)
-    assert(not completed)
+    assert(next[0])
+    assert(not error[0])
+    assert(not completed[0])
 
     res.on_completed()
 
-    assert(completed)
-    assert(not error)
+    assert(completed[0])
+    assert(not error[0])
 
 def test_create_on_next_on_error_on_completed2():
     ex = 'ex'
-    next = True
-    error = False
-    completed = False
+    next = [True]
+    error = [False]
+    completed = [False]
 
     def on_next(x):
-        nonlocal next
         assert(42 == x)
-        next = True
+        next[0] = True
     
     def on_error(e):
-        nonlocal error
         assert(ex == e)
-        error = True
+        error[0] = True
 
     def on_completed():
-        nonlocal completed
-        completed = True
+        completed[0] = True
 
     res = Observer(on_next, on_error, on_completed)
 
     res.on_next(42)
 
-    assert(next)
-    assert(not error)
-    assert(not completed)
+    assert(next[0])
+    assert(not error[0])
+    assert(not completed[0])
 
     res.on_error(ex)
     
-    assert(not completed)
-    assert(error)
+    assert(not completed[0])
+    assert(error[0])
 
 def test_as_observer_hides():
     obs = MyObserver()
@@ -294,18 +278,16 @@ def test_as_observer_forwards():
 
 
 def test_observer_checked_already_terminated_completed():
-    m, n = 0, 0
+    m, n = [0], [0]
 
     def on_next(x):
-        nonlocal m
-        m += 1
+        m[0] += 1
 
     def on_error(x):
         assert(False)
 
     def on_completed():
-        nonlocal n
-        n += 1
+        n[0] += 1
 
     o = Observer(on_next, on_error, on_completed).checked()
 
@@ -320,20 +302,18 @@ def test_observer_checked_already_terminated_completed():
     except Exception:
         pass
 
-    assert(2 == m)
-    assert(1 == n)
+    assert(2 == m[0])
+    assert(1 == n[0])
 
 
 def test_observer_checked_already_terminated_error():
-    m, n = 0, 0
+    m, n = [0], [0]
 
     def on_next(x):
-        nonlocal m
-        m += 1
+        m[0] += 1
 
     def on_error(x):
-        nonlocal n
-        n += 1
+        n[0] += 1
 
     def on_completed():
         assert(False)
@@ -354,15 +334,14 @@ def test_observer_checked_already_terminated_error():
     except Exception:
         pass 
 
-    assert(2 == m)
-    assert(1 == n)
+    assert(2 == m[0])
+    assert(1 == n[0])
 
 def test_observer_checked_reentrant_next():
     ex = "Re-entrancy detected"
-    n = 0
+    n = [0]
     def on_next(x):
-        nonlocal n
-        n += 1
+        n[0] += 1
 
         try:
             o.on_next(9)
@@ -387,18 +366,17 @@ def test_observer_checked_reentrant_next():
     o = Observer(on_next, on_error, on_completed).checked()
 
     o.on_next(1)
-    assert(1 == n)
+    assert(1 == n[0])
 
 def test_observer_checked_reentrant_error():
     msg = "Re-entrancy detected"
-    n = 0
+    n = [0]
     
     def on_next(x):
         assert(False)
         
     def on_error(ex):
-        nonlocal n
-        n += 1
+        n[0] += 1
 
         try:
             o.on_next(9)
@@ -420,12 +398,12 @@ def test_observer_checked_reentrant_error():
 
     o = Observer(on_next, on_error, on_completed).checked()
     o.on_error(Exception('error'))
-    assert(1 == n)
+    assert(1 == n[0])
 
 
 def test_observer_checked_reentrant_completed():
     msg = "Re-entrancy detected"
-    n = 0
+    n = [0]
 
     def on_next(x):
         assert(False)
@@ -434,8 +412,7 @@ def test_observer_checked_reentrant_completed():
         assert(False)
 
     def on_completed():
-        nonlocal n
-        n += 1
+        n[0] += 1
         try:
             o.on_next(9)
         except Exception as e:
@@ -456,7 +433,7 @@ def test_observer_checked_reentrant_completed():
     o = Observer(on_next, on_error, on_completed).checked()
 
     o.on_completed()
-    assert(1 == n)
+    assert(1 == n[0])
 
 if __name__ == '__main__':
     test_to_notifier_forwards()

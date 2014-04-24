@@ -9,30 +9,28 @@ def test_timeout_now():
 
 def test_timeout_schedule_action():
     scheduler = TimeoutScheduler()
-    ran = False
+    ran = [False]
     
     def action(scheduler, state):
-        nonlocal ran
-        ran = True
+        ran[0] = True
 
     scheduler.schedule(action)
 
     sleep(0.1)
-    assert (ran == True)
+    assert (ran[0] == True)
 
 def test_thread_pool_schedule_action_due():
     scheduler = TimeoutScheduler()
     starttime = datetime.utcnow()
-    endtime = None
+    endtime = [None]
     
     def action(scheduler, state):
-        nonlocal endtime
-        endtime = datetime.utcnow()
+        endtime[0] = datetime.utcnow()
     
     scheduler.schedule_relative(timedelta(milliseconds=200), action)
 
     sleep(0.3)
-    diff = endtime-starttime
+    diff = endtime[0]-starttime
     assert(diff > timedelta(milliseconds=180))
     
 def test_timeout_schedule_action_cancel():

@@ -34,21 +34,20 @@ class Scheduler(object):
         """
 
         period /= 1000.0
-        timer = None
-        s = state
-        
-        def interval():
-            nonlocal timer, s
-            s = action(s)
-            
-            timer = Timer(period, interval)
-            timer.start()
+        timer = [None]
+        s = [state]
 
-        timer = Timer(period, interval)
-        timer.start()
+        def interval():
+            s[0] = action(s[0])
+            
+            timer[0] = Timer(period, interval)
+            timer[0].start()
+
+        timer[0] = Timer(period, interval)
+        timer[0].start()
         
         def dispose():
-            timer.cancel()
+            timer[0].cancel()
 
         return Disposable(dispose)
 
@@ -63,23 +62,21 @@ class Scheduler(object):
             def action2(state2=None):
                 #print "action2", state2
                 is_added = False
-                is_done = False
+                is_done = [False]
                 
                 def action(scheduler, state=None):
-                    nonlocal is_done
-
                     #print "action", scheduler1, state3
                     if is_added:
                         group.remove(d)
                     else:
-                        is_done = True
+                        is_done[0] = True
                     
                     recursive_action(state)
                     return Disposable.empty()
 
                 d = scheduler.schedule(action, state2)
                 
-                if not is_done:
+                if not is_done[0]:
                     group.add(d)
                     is_added = True
 
@@ -95,21 +92,20 @@ class Scheduler(object):
         
         def recursive_action(state1):
             def action1(state2, duetime1):
-                is_added, is_done = False, False
+                is_added = False
+                is_done = [False]
 
                 def action2(scheduler1, state3):
-                    nonlocal is_done
-
                     if is_added:
                         group.remove(d)
                     else:
-                        is_done = True
+                        is_done[0] = True
                     
                     recursive_action(state3)
                     return Disposable.empty()
                 
                 d = getattr(scheduler, method)(duetime1, action2, state2)
-                if not is_done:
+                if not is_done[0]:
                     group.add(d)
                     is_added = True
                 

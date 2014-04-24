@@ -9,14 +9,13 @@ def test_immediate_now():
 
 def test_immediate_scheduleaction():
     scheduler = ImmediateScheduler()
-    ran = False;
+    ran = [False]
 
     def action(scheduler, state=None):
-        nonlocal ran
-        ran = True
+        ran[0] = True
 
     scheduler.schedule(action)
-    assert ran
+    assert ran[0]
 
 def test_immediate_scheduleactionerror():
     scheduler = ImmediateScheduler()
@@ -34,94 +33,84 @@ def test_immediate_scheduleactionerror():
 
 def test_immediate_simple1():
     scheduler = ImmediateScheduler()
-    xx = 0
+    xx = [0]
 
     def action(scheduler, state=None):
-        nonlocal xx
-        xx = state
+        xx[0] = state
         return Disposable.empty()
 
     scheduler.schedule(action, 42)
-    assert xx == 42
+    assert xx[0] == 42
 
 def test_immediate_simple2():
     scheduler = ImmediateScheduler()
-    xx = 0
+    xx = [0]
     
     def action(scheduler, state=None):
-         nonlocal xx
-         xx = state
+         xx[0] = state
          return Disposable.empty()
 
-    scheduler.schedule_absolute(datetime.utcnow(), action, 42);
-    assert xx == 42
+    scheduler.schedule_absolute(datetime.utcnow(), action, 42)
+    assert xx[0] == 42
 
 def test_immediate_simple3():
     scheduler = ImmediateScheduler()
-    xx = 0
+    xx = [0]
     
     def action(scheduler, state=None):
-         nonlocal xx
-         xx = state
+         xx[0] = state
          return Disposable.empty()
 
-    scheduler.schedule_relative(timedelta(0), action, 42);
-    assert xx == 42
+    scheduler.schedule_relative(timedelta(0), action, 42)
+    assert xx[0] == 42
 
 def test_immediate_recursive1():
     scheduler = ImmediateScheduler()
-    xx = 0
-    yy = 0
+    xx = [0]
+    yy = [0]
     
     def action(scheduler, x=None):
-        nonlocal xx
-        
-        xx = x
+        xx[0] = x
         
         def inner_action(scheduler, y):
-            nonlocal yy
-            yy = y
+            yy[0] = y
             return Disposable.empty()
         
         return scheduler.schedule(inner_action, 43) 
 
     scheduler.schedule(action, 42)
-    assert xx == 42
-    assert yy == 43
+    assert xx[0] == 42
+    assert yy[0] == 43
 
 def test_immediate_recursive2():
     scheduler = ImmediateScheduler()
-    xx = 0
-    yy = 0
+    xx = [0]
+    yy = [0]
     
     def action(scheduler, state=None):
-        nonlocal xx
-        xx = state
+        xx[0] = state
         
         def inner_action(scheduler, state=None):
-            nonlocal yy
-            yy = state
+            yy[0] = state
             return Disposable.empty()
 
         return scheduler.schedule_absolute(datetime.utcnow(), inner_action, 43)
 
     scheduler.schedule_absolute(datetime.utcnow(), action, 42) 
 
-    assert xx == 42
-    assert yy == 43
+    assert xx[0] == 42
+    assert yy[0] == 43
 
 def test_immediate_recursive3():
     scheduler = ImmediateScheduler()
-    xx = 0
-    yy = 0
+    xx = [0]
+    yy = [0]
 
     def action(scheduler, state=None):
-        nonlocal xx
-        xx = state
+        xx[0] = state
 
         def inner_action(scheduler, state):
-            nonlocal yy
-            yy = state
+            yy[0] = state
             return Disposable.empty()
 
         return scheduler.schedule_relative(timedelta(0), inner_action, 43)
@@ -129,5 +118,5 @@ def test_immediate_recursive3():
     scheduler.schedule_relative(timedelta(0), action, 42) 
     
     
-    assert xx == 42
-    assert yy == 43
+    assert xx[0] == 42
+    assert yy[0] == 43

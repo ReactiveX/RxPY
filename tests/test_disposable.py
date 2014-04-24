@@ -17,16 +17,15 @@ def test_anonymousdisposable_create():
     assert disposable
 
 def test_anonymousdisposable_dispose():
-    disposed = False
+    disposed = [False]
     
     def action():
-        nonlocal disposed
-        disposed = True
+        disposed[0] = True
 
     d = Disposable(action)
-    assert not disposed
+    assert not disposed[0]
     d.dispose()
-    assert disposed
+    assert disposed[0]
 
 def test_emptydisposable():
     d = Disposable.empty()
@@ -48,40 +47,38 @@ def test_future_disposable_setnone():
 
 def test_futuredisposable_disposeafterset():
     d = SingleAssignmentDisposable()
-    disposed = False
+    disposed = [False]
     
     def action():
-        nonlocal disposed
-        disposed = True
+        disposed[0] = True
 
     dd = Disposable(action)
     d.disposable = dd
     assert dd == d.disposable
-    assert not disposed
+    assert not disposed[0]
     
     d.dispose()
-    assert disposed
+    assert disposed[0]
     d.dispose()
-    assert disposed
+    assert disposed[0]
 
 def test_futuredisposable_disposebeforeset():
-    disposed = False
+    disposed = [False]
 
     def dispose():
-        nonlocal disposed
-        disposed = True
+        disposed[0] = True
     
     d = SingleAssignmentDisposable()
     dd = Disposable(dispose)
     
-    assert not disposed
+    assert not disposed[0]
     d.dispose()
-    assert not disposed
+    assert not disposed[0]
     d.disposable = dd
     assert d.disposable == None
-    assert disposed
+    assert disposed[0]
     d.dispose()
-    assert disposed
+    assert disposed[0]
 
 def test_groupdisposable_contains():
     d1 = Disposable.empty()
@@ -106,42 +103,38 @@ def test_groupdisposable_add():
     assert g.contains(d2)
 
 def test_groupdisposable_addafterdispose():
-    disp1 = False
-    disp2 = False
+    disp1 = [False]
+    disp2 = [False]
 
     def action1():
-        nonlocal disp1
-        disp1 = True
+        disp1[0] = True
 
     d1 = Disposable(action1)
 
     def action2():
-        nonlocal disp2
-        disp2 = True
+        disp2[0] = True
 
     d2 = Disposable(action2)
 
     g = CompositeDisposable(d1)
     assert g.length == 1
     g.dispose()
-    assert disp1
+    assert disp1[0]
     assert g.length == 0
     g.add(d2)
-    assert disp2
+    assert disp2[0]
     assert g.length == 0
 
 def test_groupdisposable_remove():
-    disp1 = False
-    disp2 = False
+    disp1 = [False]
+    disp2 = [False]
     
     def action1():
-        nonlocal disp1
-        disp1 = True
+        disp1[0] = True
     d1 = Disposable(action1)
 
     def action2():
-        nonlocal disp2
-        disp2 = True
+        disp2[0] = True
     d2 = Disposable(action2)
 
     g = CompositeDisposable(d1, d2)
@@ -153,49 +146,45 @@ def test_groupdisposable_remove():
     assert g.length == 1
     assert not g.contains(d1)
     assert g.contains(d2)
-    assert disp1
+    assert disp1[0]
     assert g.remove(d2)
     assert not g.contains(d1)
     assert not g.contains(d2)
-    assert disp2
+    assert disp2[0]
 
-    disp3 = False;
+    disp3 = [False]
 
     def action3():
-        nonlocal disp3
-        disp3 = True
+        disp3[0] = True
     d3 = Disposable(action3)
     assert not g.remove(d3)
-    assert not disp3
+    assert not disp3[0]
 
 def test_groupdisposable_clear():
-    disp1 = False
-    disp2 = False
+    disp1 = [False]
+    disp2 = [False]
     def action1():
-        nonlocal disp1
-        disp1 = True
+        disp1[0] = True
     d1 = Disposable(action1)
 
     def action2():
-        nonlocal disp2
-        disp2 = True
+        disp2[0] = True
     d2 = Disposable(action2)
 
     g = CompositeDisposable(d1, d2)
     assert g.length == 2
 
     g.clear()
-    assert disp1
-    assert disp2
+    assert disp1[0]
+    assert disp2[0]
     assert not g.length
 
-    disp3 = False
+    disp3 = [False]
     def action3():
-        nonlocal disp3
-        disp3 = True
+        disp3[0] = True
     d3 = Disposable(action3)
     g.add(d3);
-    assert not disp3
+    assert not disp3[0]
     assert g.length == 1
 
 def test_mutabledisposable_ctor_prop():
@@ -203,67 +192,62 @@ def test_mutabledisposable_ctor_prop():
     assert not m.disposable
 
 def test_mutabledisposable_replacebeforedispose():
-    disp1 = False
-    disp2 = False
+    disp1 = [False]
+    disp2 = [False]
     m = SerialDisposable()
 
     def action1():
-        nonlocal disp1
-        disp1 = True
+        disp1[0] = True
     d1 = Disposable(action1)
     m.disposable = d1
 
     assert d1 == m.disposable
-    assert not disp1
+    assert not disp1[0]
 
     def action2():
-        nonlocal disp2
-        disp2 = True
+        disp2[0] = True
     d2 = Disposable(action2)
     m.disposable = d2
 
     assert d2 == m.disposable
-    assert disp1
-    assert not disp2
+    assert disp1[0]
+    assert not disp2[0]
 
 def test_mutabledisposable_replaceafterdispose():
-    disp1 = False
-    disp2 = False
+    disp1 = [False]
+    disp2 = [False]
     m = SerialDisposable()
     m.dispose()
 
     def action1():
-        nonlocal disp1
-        disp1 = True
+        disp1[0] = True
     d1 = Disposable(action1)
     m.disposable = d1
 
     assert m.disposable == None
-    assert disp1
+    assert disp1[0]
 
     def action2():
-        nonlocal disp2
-        disp2 = True
+        disp2[0] = True
     d2 = Disposable(action2)
     m.disposable = d2
 
-    m.disposable == None
-    assert disp2
+    assert m.disposable == None
+    assert disp2[0]
 
 def test_mutabledisposable_dispose():
-    disp = False
+    disp = [False]
     m = SerialDisposable()
     
     def action():
-        nonlocal disp
-        disp = True
+        disp[0] = True
     d = Disposable(action)
     m.disposable = d
 
     assert d == m.disposable
-    assert not disp
+    assert not disp[0]
     m.dispose()
-    assert disp
+    assert disp[0]
     assert m.disposable == None
 
 def test_refcountdisposable_singlereference():

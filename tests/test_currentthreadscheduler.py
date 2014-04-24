@@ -8,14 +8,13 @@ def test_currentthread_now():
 
 def test_currentthread_scheduleaction():
     scheduler = CurrentThreadScheduler()
-    ran = False
+    ran = [False]
 
     def action(scheduler, state=None):
-        nonlocal ran
-        ran = True
+        ran[0] = True
 
     scheduler.schedule(action)
-    assert ran == True
+    assert ran[0] == True
 
 def test_currentthread_scheduleactionerror():
     scheduler = CurrentThreadScheduler()
@@ -33,72 +32,65 @@ def test_currentthread_scheduleactionerror():
 
 def test_currentthread_scheduleactionnested():
     scheduler = CurrentThreadScheduler()
-    ran = False
+    ran = [False]
     
     def action(scheduler, state=None):
         def inner_action(scheduler, state=None):
-            nonlocal ran
-            ran = True
+            ran[0] = True
 
         return scheduler.schedule(inner_action)
     scheduler.schedule(action)
     
-    assert ran == True
+    assert ran[0] == True
 
 def test_currentthread_ensuretrampoline():
     scheduler = CurrentThreadScheduler()
-    ran1, ran2 = False, False
+    ran1, ran2 = [False], [False]
     
     def outer_action(scheduer, state=None):
         def action1(scheduler, state=None):
-            nonlocal ran1
-            ran1 = True
+            ran1[0] = True
 
         scheduler.schedule(action1)
 
         def action2(scheduler, state=None):
-            nonlocal ran2
-            ran2 = True
+            ran2[0] = True
 
         return scheduler.schedule(action2)
 
     scheduler.ensure_trampoline(outer_action)
-    assert ran1 == True
-    assert ran2 == True
+    assert ran1[0] == True
+    assert ran2[0] == True
 
 def test_currentthread_ensuretrampoline_nested():
     scheduler = CurrentThreadScheduler()
-    ran1, ran2 = False, False
+    ran1, ran2 = [False], [False]
 
     def outer_action(scheduler, state):
         def inner_action1(scheduler, state):
-            nonlocal ran1
-            ran1 = True
+            ran1[0] = True
         
         scheduler.ensure_trampoline(inner_action1)
         
         def inner_action2(scheduler, state):
-            nonlocal ran2
-            ran2 = True
+            ran2[0] = True
         
         return scheduler.ensure_trampoline(inner_action2)
 
     scheduler.ensure_trampoline(outer_action)
-    assert ran1 == True
-    assert ran2 == True
+    assert ran1[0] == True
+    assert ran2[0] == True
 
 def test_currentthread_ensuretrampoline_and_cancel():
     scheduler = CurrentThreadScheduler()
-    ran1, ran2 = False, False
+    ran1, ran2 = [False], [False]
 
     def outer_action(scheduler, state):
         def inner_action1(scheduler, state):
-            nonlocal ran1
-            ran1 = True
+            ran1[0] = True
 
             def inner_action2(scheduler, state):
-                nonlocal ran2
-                ran2 = True
+                ran2[0] = True
 
             d = scheduler.schedule(inner_action2)
             d.dispose()
@@ -106,21 +98,19 @@ def test_currentthread_ensuretrampoline_and_cancel():
         return scheduler.schedule(inner_action1)
 
     scheduler.ensure_trampoline(outer_action)
-    assert ran1 == True
-    assert ran2 == False
+    assert ran1[0] == True
+    assert ran2[0] == False
 
 def test_currentthread_ensuretrampoline_and_canceltimed():
     scheduler = CurrentThreadScheduler()
-    ran1, ran2 = False, False
+    ran1, ran2 = [False], [False]
     
     def outer_action(scheduler, state):
         def inner_action1(scheduler, state):
-            nonlocal ran1
-            ran1 = True
+            ran1[0] = True
 
             def inner_action2(scheduler, state):
-                nonlocal ran2
-                ran2 = True
+                ran2[0] = True
 
             d = scheduler.schedule_relative(timedelta(milliseconds=500), inner_action2)
             d.dispose()
@@ -128,5 +118,5 @@ def test_currentthread_ensuretrampoline_and_canceltimed():
         return scheduler.schedule(inner_action1)
 
     scheduler.ensure_trampoline(outer_action)
-    assert ran1 == True
-    assert ran2 == False
+    assert ran1[0] == True
+    assert ran2[0] == False

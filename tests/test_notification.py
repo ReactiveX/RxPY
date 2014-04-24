@@ -90,19 +90,18 @@ def test_on_next_accept_observer_with_result():
     assert('OK' == res)
 
 def test_on_next_accept_action():
-    obs = False
+    obs = [False]
     n1 = OnNext(42)
     def on_next(x):
-        nonlocal obs
-        obs = True
-        return obs
+        obs[0] = True
+        return obs[0]
     def on_error(err):
         assert(False)
     def on_completed():
         assert(False)
     n1.accept(on_next, on_error, on_completed)
         
-    assert(obs)
+    assert(obs[0])
 
 def test_on_next_accept_action_with_result():
     n1 = OnNext(42)
@@ -187,22 +186,21 @@ def test_on_error_accept_observer_with_result():
 
 def test_on_error_accept_action():
     ex = 'ex'
-    obs = False
+    obs = [False]
     n1 = OnError(ex)
 
     def on_next(x):
         assert(False)
         return None
     def on_error(ex):
-        nonlocal obs
-        obs = True
-        return obs
+        obs[0] = True
+        return obs[0]
     def on_completed():
         assert(False)
         return None
 
     n1.accept(on_next, on_error, on_completed)
-    assert(obs)
+    assert(obs[0])
 
 
 def test_on_error_accept_action_with_result():
@@ -279,7 +277,7 @@ def test_on_completed_accept_observer_with_result():
     assert('OK' == res)
 
 def test_on_completed_accept_action():
-    obs = False
+    obs = [False]
     n1 = OnCompleted()
 
     def on_next(x):
@@ -289,12 +287,11 @@ def test_on_completed_accept_action():
         assert(False)
         return None
     def on_completed():
-        nonlocal obs
-        obs = True
-        return obs
+        obs[0] = True
+        return obs[0]
 
     n1.accept(on_next, on_error, on_completed) 
-    assert(obs)
+    assert(obs[0])
 
 def test_on_completed_accept_action_with_result():
     n1 = OnCompleted()

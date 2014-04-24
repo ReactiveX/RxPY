@@ -21,11 +21,11 @@ def _raise(ex):
     raise RxException(ex)
 
 def test_infinite():
-    subscription = None
-    subscription1 = None
-    subscription2 = None
-    subscription3 = None
-    s = None
+    subscription = [None]
+    subscription1 = [None]
+    subscription2 = [None]
+    subscription3 = [None]
+    s = [None]
     scheduler = TestScheduler()
 
     xs = scheduler.create_hot_observable(
@@ -48,48 +48,43 @@ def test_infinite():
     results3 = scheduler.create_observer()
 
     def action1(scheduler, state=None):
-        nonlocal s
-        s = Subject()
+        s[0] = Subject()
     scheduler.schedule_absolute(100, action1)
     
     def action2(scheduler, state=None):
-        nonlocal subscription
-        subscription = xs.subscribe(s)
+        subscription[0] = xs.subscribe(s[0])
     scheduler.schedule_absolute(200, action2)
     
     def action3(scheduler, state=None):
-        subscription.dispose()
+        subscription[0].dispose()
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
-        nonlocal subscription1
-        subscription1 = s.subscribe(results1)
+        subscription1[0] = s[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):    
-        nonlocal subscription2
-        subscription2 = s.subscribe(results2)
+        subscription2[0] = s[0].subscribe(results2)
     scheduler.schedule_absolute(400, action5)
     
     def action6(scheduler, state=None):
-        nonlocal subscription3
-        subscription3 = s.subscribe(results3)
+        subscription3[0] = s[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
     
     def action7(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
     
     def action8(scheduler, state=None):
-        subscription2.dispose()
+        subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
     
     def action9(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
     
     def action10(scheduler, state=None):
-        subscription3.dispose()
+        subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
     
     scheduler.start()
@@ -110,11 +105,11 @@ def test_infinite():
 
 def test_finite():
     scheduler = TestScheduler()
-    subscription = None
-    subscription1 = None
-    subscription2 = None
-    subscription3 = None
-    s = None
+    subscription = [None]
+    subscription1 = [None]
+    subscription2 = [None]
+    subscription3 = [None]
+    s = [None]
     
     xs = scheduler.create_hot_observable(
         on_next(70, 1),
@@ -135,48 +130,43 @@ def test_finite():
     results3 = scheduler.create_observer()
 
     def action1(scheduler, state=None):
-        nonlocal s
-        s = Subject()
+        s[0] = Subject()
     scheduler.schedule_absolute(100, action1)
         
     def action2(scheduler, state=None):
-        nonlocal subscription
-        subscription = xs.subscribe(s)
+        subscription[0] = xs.subscribe(s[0])
     scheduler.schedule_absolute(200, action2)
     
     def action3(scheduler, state=None):
-        subscription.dispose()
+        subscription[0].dispose()
     scheduler.schedule_absolute(1000, action3)
         
     def action4(scheduler, state=None):
-        nonlocal subscription1
-        subscription1 = s.subscribe(results1)
+        subscription1[0] = s[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
     
     def action5(scheduler, state=None):
-        nonlocal subscription2
-        subscription2 = s.subscribe(results2)    
+        subscription2[0] = s[0].subscribe(results2)
     scheduler.schedule_absolute(400, action5)
     
     def action6(scheduler, state=None):
-        nonlocal subscription3
-        subscription3 = s.subscribe(results3)
+        subscription3[0] = s[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
     
     def action7(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
     
     def action8(scheduler, state=None):
-        subscription2.dispose()
+        subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
     
     def action9(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
     
     def action10(scheduler, state=None):
-        subscription3.dispose()
+        subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
     
     scheduler.start()
@@ -196,11 +186,11 @@ def test_finite():
     )
 
 def test_error():
-    s = None
-    subscription = None
-    subscription1 = None 
-    subscription2 = None
-    subscription3 = None
+    s = [None]
+    subscription = [None]
+    subscription1 = [None]
+    subscription2 = [None]
+    subscription3 = [None]
     ex = 'ex'
 
     scheduler = TestScheduler()
@@ -224,48 +214,43 @@ def test_error():
     results3 = scheduler.create_observer()
 
     def action(scheduler, state=None):
-        nonlocal s
-        s = Subject()
+        s[0] = Subject()
     scheduler.schedule_absolute(100, action)
     
     def action1(scheduler, state=None):
-        nonlocal subscription
-        subscription = xs.subscribe(s)
+        subscription[0] = xs.subscribe(s[0])
     scheduler.schedule_absolute(200, action1)
     
     def action2(scheduler, state=None):
-        subscription.dispose()
+        subscription[0].dispose()
     scheduler.schedule_absolute(1000, action2)
     
     def action3(scheduler, state=None):
-        nonlocal subscription1
-        subscription1 = s.subscribe(results1)
+        subscription1[0] = s[0].subscribe(results1)
     scheduler.schedule_absolute(300, action3)
     
     def action4(scheduler, state=None):
-        nonlocal subscription2
-        subscription2 = s.subscribe(results2)
+        subscription2[0] = s[0].subscribe(results2)
     scheduler.schedule_absolute(400, action4)
     
     def action5(scheduler, state=None):
-        nonlocal subscription3
-        subscription3 = s.subscribe(results3)
+        subscription3[0] = s[0].subscribe(results3)
     scheduler.schedule_absolute(900, action5)
     
     def action6(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(600, action6)
     
     def action7(scheduler, state=None):
-        subscription2.dispose()
+        subscription2[0].dispose()
     scheduler.schedule_absolute(700, action7)
     
     def action8(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(800, action8)
     
     def action9(scheduler, state=None):
-        subscription3.dispose()
+        subscription3[0].dispose()
     scheduler.schedule_absolute(950, action9)
     
     scheduler.start()
@@ -275,11 +260,11 @@ def test_error():
     results3.messages.assert_equal(on_error(900, ex))
 
 def test_canceled():
-    s = None 
-    subscription = None
-    subscription1 = None
-    subscription2 = None
-    subscription3 = None
+    s = [None]
+    subscription = [None]
+    subscription1 = [None]
+    subscription2 = [None]
+    subscription3 = [None]
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
@@ -294,48 +279,43 @@ def test_canceled():
     results3 = scheduler.create_observer()
 
     def action1(scheduler, state=None):
-        nonlocal s
-        s = Subject()
+        s[0] = Subject()
     scheduler.schedule_absolute(100, action1)
     
     def action2(scheduler, state=None):
-        nonlocal subscription
-        subscription = xs.subscribe(s)
+        subscription[0] = xs.subscribe(s[0])
     scheduler.schedule_absolute(200, action2)
     
     def action3(scheduler, state=None):
-        subscription.dispose()
+        subscription[0].dispose()
     scheduler.schedule_absolute(1000, action3)
     
     def action4(scheduler, state=None):
-        nonlocal subscription1
-        subscription1 = s.subscribe(results1)
+        subscription1[0] = s[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
     
     def action5(scheduler, state=None):
-        nonlocal subscription2
-        subscription2 = s.subscribe(results2)
+        subscription2[0] = s[0].subscribe(results2)
     scheduler.schedule_absolute(400, action5)
     
     def action6(scheduler, state=None):
-        nonlocal subscription3
-        subscription3 = s.subscribe(results3)
+        subscription3[0] = s[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
     
     def action7(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
     
     def action8(scheduler, state=None):
-        subscription2.dispose()
+        subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
     
     def action9(scheduler, state=None):
-        subscription1.dispose()
+        subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
     
     def action10(scheduler, state=None):
-        subscription3.dispose()
+        subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
     
     scheduler.start()
@@ -345,17 +325,15 @@ def test_canceled():
     results3.messages.assert_equal(on_completed(900))
 
 def test_subject_create():
-    _x = None 
-    _ex = None 
+    _x = [None]
+    _ex = [None]
     done = False
 
     def on_next(x):
-        nonlocal _x
-        _x = x
+        _x[0] = x
 
     def on_error(ex):
-        nonlocal _ex
-        _ex = ex
+        _ex[0] = ex
     
     def on_completed():
         done = True
@@ -367,17 +345,16 @@ def test_subject_create():
     s = Subject.create(v, o)
 
     def on_next2(x):
-        nonlocal _x
-        _x = x
+        _x[0] = x
     s.subscribe(on_next2)
 
-    assert(42 == _x)
+    assert(42 == _x[0])
     s.on_next(21)
 
     e = 'ex'
     s.on_error(e)
 
-    assert(e == _ex)
+    assert(e == _ex[0])
 
     s.on_completed()
     assert(not done)
