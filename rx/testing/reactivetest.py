@@ -9,7 +9,7 @@ def is_prime(i):
     if i <= 1:
         return False
     
-    max = math.floor(math.sqrt(i))
+    max = int(math.floor(math.sqrt(i)))
     for j in range(2, max+1):
         if not (i % j):
             return False
