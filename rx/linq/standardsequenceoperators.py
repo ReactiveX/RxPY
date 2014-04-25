@@ -47,17 +47,16 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         selector = adapt_call(selector)        
 
         def subscribe(observer):
-            count = 0
+            count = [0]
 
             def on_next(value):
-                nonlocal count
                 result = None
                 try:
-                    result = selector(value, count)
+                    result = selector(value, count[0])
                 except Exception as err:
                     observer.on_error(err)
                 else:
-                    count += 1
+                    count[0] += 1
                     observer.on_next(result)
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
@@ -288,15 +287,13 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         observable = self
 
         def subscribe(observer):
-            remaining = count
+            remaining = [count]
 
             def on_next(value):
-                nonlocal remaining
-
-                if remaining <= 0:
+                if remaining[0] <= 0:
                     observer.on_next(value)
                 else:
-                    remaining -= 1
+                    remaining[0] -= 1
                 
             return observable.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
@@ -321,20 +318,19 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            i, running = 0, False
+            i, running = [0], [False]
 
             def on_next(value):
-                nonlocal running, i
-                if not running:
+                if not running[0]:
                     try:
-                        running = not predicate(value, i)
+                        running[0] = not predicate(value, i[0])
                     except Exception as exn:
                         observer.on_error(exn)
                         return
                     else:
-                        i += 1
+                        i[0] += 1
         
-                if running:
+                if running[0]:
                     observer.on_next(value)
                 
             return source.subscribe(on_next, observer.on_error, observer.on_completed)
@@ -365,15 +361,13 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         
         observable = self
         def subscribe(observer):
-            remaining = count
+            remaining = [count]
 
             def on_next(value):
-                nonlocal remaining
-
-                if remaining > 0:
-                    remaining -= 1
+                if remaining[0] > 0:
+                    remaining[0] -= 1
                     observer.on_next(value)
-                    if not remaining:
+                    if not remaining[0]:
                         observer.on_completed()
                     
             return observable.subscribe(on_next, observer.on_error, observer.on_completed)
@@ -399,20 +393,19 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         predicate = adapt_call(predicate)
         observable = self
         def subscribe(observer):
-            running, i = True, 0
+            running, i = [True], [0]
 
             def on_next(value):
-                nonlocal running, i
-                if running:
+                if running[0]:
                     try:
-                        running = predicate(value, i)
+                        running[0] = predicate(value, i[0])
                     except Exception as exn:
                         observer.on_error(exn)
                         return
                     else:
-                        i += 1
+                        i[0] += 1
                     
-                    if running:
+                    if running[0]:
                         observer.on_next(value)
                     else:
                         observer.on_completed()
@@ -439,18 +432,17 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
         parent = self
         
         def subscribe(observer):
-            count = 0
+            count = [0]
 
             def on_next(value):
-                nonlocal count
                 should_run = False
                 try:
-                    should_run = predicate(value, count)
+                    should_run = predicate(value, count[0])
                 except Exception as ex:
                     observer.on_error(ex)
                     return
                 else:
-                    count += 1
+                    count[0] += 1
                 
                 if should_run:
                     observer.on_next(value)

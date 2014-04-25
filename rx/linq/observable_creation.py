@@ -81,14 +81,12 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or current_thread_scheduler
 
         def subscribe(observer):
-            count = 0
+            count = [0]
             
             def action(action1, state=None):
-                nonlocal count
-                
-                if count < len(array):
-                    observer.on_next(array[count])
-                    count += 1
+                if count[0] < len(array):
+                    observer.on_next(array[count[0]])
+                    count[0] += 1
                     action1(action)
                 else:
                     observer.on_completed()
@@ -119,23 +117,22 @@ class ObservableCreation(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or current_thread_scheduler
 
         def subscribe(observer):
-            first = True
-            state = initial_state
+            first = [True]
+            state = [initial_state]
             
             def action (action1, state1=None):
-                nonlocal first, state
                 has_result = False
                 result = None
 
                 try:
-                    if first:
-                        first = False
+                    if first[0]:
+                        first[0] = False
                     else:
-                        state = iterate(state)
+                        state[0] = iterate(state[0])
                     
-                    has_result = condition(state)
+                    has_result = condition(state[0])
                     if has_result:
-                        result = result_selector(state)
+                        result = result_selector(state[0])
                     
                 except Exception as exception:
                     observer.on_error(exception)

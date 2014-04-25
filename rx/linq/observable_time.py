@@ -88,20 +88,19 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         p = Scheduler.normalize(period)
 
         def subscribe(observer):
-            count = 0
-            d = duetime
+            count = [0]
+            d = [duetime]
 
             def action(scheduler, state):
-                nonlocal d, count
                 if p > 0:
                     now = scheduler.now()
-                    d = d + p
-                    if d <= now:
-                        d = now + p
+                    d[0] = d[0] + p
+                    if d[0] <= now:
+                        d[0] = now + p
                 
-                observer.on_next(count)
-                count += 1
-                self(d)
+                observer.on_next(count[0])
+                count[0] += 1
+                self(d[0])
             
             return scheduler.schedule_recursive(d, action)
         return AnonymousObservable(subscribe)
@@ -183,42 +182,40 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         
         def subscribe(observer):
             cancelable = SerialDisposable()
-            exception = None
-            active = False
-            running = False
+            exception = [None]
+            active = [False]
+            running = [False]
             q = []
 
             def on_next(notification):
                 log.debug("observable_delay_timespan:subscribe:on_next()")
-                nonlocal q, active, cancelable, exception, running
                 should_run = False
                 d = None
-                
+
                 if notification.value.kind == 'E':
-                    q = []
+                    del q[:]
                     q.append(notification)
-                    exception = notification.value.exception
-                    should_run = not running
+                    exception[0] = notification.value.exception
+                    should_run = not running[0]
                 else:
                     q.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
-                    should_run = not active
-                    active = True
+                    should_run = not active[0]
+                    active[0] = True
                 
                 if should_run:
-                    if exception:
-                        log.error("*** Exception: %s" % exception)
-                        observer.on_error(exception)
+                    if exception[0]:
+                        log.error("*** Exception: %s" % exception[0])
+                        observer.on_error(exception[0])
                     else:
                         d = SingleAssignmentDisposable()
                         cancelable.disposable = d
 
                         def action(self):
-                            nonlocal q, active, running
-                            if exception:
-                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s" % exception)
+                            if exception[0]:
+                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s" % exception[0])
                                 return
                             
-                            running = True
+                            running[0] = True
                             while True:
                                 result = None
                                 if len(q) and q[0].timestamp <= scheduler.now():
@@ -236,10 +233,10 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                                 should_recurse = True
                                 recurse_duetime = max(timedelta(0), q[0].timestamp - scheduler.now())
                             else:
-                                active = False
+                                active[0] = False
                             
-                            e = exception
-                            running = False
+                            e = exception[0]
+                            running[0] = False
                             if e:
                                 observer.on_error(e)
                             elif should_recurse:
@@ -291,46 +288,39 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
         def subscribe(observer):
             cancelable = SerialDisposable()
-            has_value = False
-            value = None
-            _id = 0
+            has_value = [False]
+            value = [None]
+            _id = [0]
             
             def on_next(x):
-                nonlocal _id, value, has_value, cancelable
-                
-                has_value = True
-                value = x
-                _id += 1
-                current_id = _id
+                has_value[0] = True
+                value[0] = x
+                _id[0] += 1
+                current_id = _id[0]
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
                 def action(scheduler, state=None):
-                    nonlocal has_value
-                    if has_value and _id == current_id:
-                        observer.on_next(value)   
-                    has_value = False
+                    if has_value[0] and _id[0] == current_id:
+                        observer.on_next(value[0])
+                    has_value[0] = False
                 
                 d.disposable = scheduler.schedule_relative(duetime, action)
 
             def on_error(exception):
-                nonlocal _id, has_value, cancelable
-
                 cancelable.dispose()
                 observer.on_error(exception)
-                has_value = False
-                _id += 1
+                has_value[0] = False
+                _id[0] += 1
 
             def on_completed():
-                nonlocal cancelable, has_value, _id
-
                 cancelable.dispose()
-                if has_value:
-                    observer.on_next(value)
+                if has_value[0]:
+                    observer.on_next(value[0])
                 
                 observer.on_completed()
-                has_value = False
-                _id += 1
+                has_value[0] = False
+                _id[0] += 1
             
             subscription = source.subscribe(on_next, on_error, on_completed) 
             return CompositeDisposable(subscription, cancelable)
@@ -352,13 +342,11 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
         def subscribe(observer):
             cancelable = SerialDisposable()
-            has_value = False
-            value = None
-            _id = 0
+            has_value = [False]
+            value = [None]
+            _id = [0]
 
             def on_next(x):
-                nonlocal value, has_value, _id
-
                 throttle = None
                 try:
                     throttle = throttle_duration_selector(x)
@@ -366,49 +354,43 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                     observer.on_error(e)
                     return
                 
-                has_value = True
-                value = x
-                _id += 1
-                current_id = _id
+                has_value[0] = True
+                value[0] = x
+                _id[0] += 1
+                current_id = _id[0]
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
                 def on_next(x):
-                    nonlocal has_value
-                    if has_value and _id == current_id:
-                        observer.on_next(value)
+                    if has_value[0] and _id[0] == current_id:
+                        observer.on_next(value[0])
                     
-                    has_value = False
+                    has_value[0] = False
                     d.dispose()
                 
                 def on_completed():
-                    nonlocal has_value
-                    if has_value and _id == current_id:
-                        observer.on_next(value)
+                    if has_value[0] and _id[0] == current_id:
+                        observer.on_next(value[0])
                     
-                    has_value = False
+                    has_value[0] = False
                     d.dispose()
                 
                 d.disposable = throttle.subscribe(on_next, observer.on_error, on_completed)
             
             def on_error(e):
-                nonlocal has_value, _id
-                
                 cancelable.dispose()
                 observer.on_error(e)
-                has_value = False
-                _id += 1
+                has_value[0] = False
+                _id[0] += 1
             
             def on_completed():
-                nonlocal has_value, _id
-
                 cancelable.dispose()
-                if has_value:
-                    observer.on_next(value)
+                if has_value[0]:
+                    observer.on_next(value[0])
                 
                 observer.on_completed()
-                has_value = False
-                _id += 1
+                has_value[0] = False
+                _id[0] += 1
 
             subscription = source.subscribe(on_next, on_error, on_completed)
             return CompositeDisposable(subscription, cancelable)
@@ -429,39 +411,37 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         
         def subscribe(observer):
             timerD = SerialDisposable()
-            next_shift = timeshift
-            next_span = timespan
-            total_time = timedelta(0)
+            next_shift = [timeshift]
+            next_span = [timespan]
+            total_time = [timedelta(0)]
             q = []
             
             group_disposable = CompositeDisposable(timerD)
             ref_count_disposable = RefCountDisposable(group_disposable)
             
             def create_timer():
-                nonlocal q, total_time, next_span, next_shift
-
                 m = SingleAssignmentDisposable()
                 timerD.disposable = m
                 is_span = False
                 is_shift = False
 
-                if next_span == next_shift:
+                if next_span[0] == next_shift[0]:
                     is_span = True
                     is_shift = True
-                elif next_span < next_shift:
+                elif next_span[0] < next_shift[0]:
                     is_span = True
                 else:
                     is_shift = True
                 
-                new_total_time = next_span if is_span else next_shift
+                new_total_time = next_span[0] if is_span else next_shift[0]
 
-                ts = new_total_time - total_time
-                total_time = new_total_time
+                ts = new_total_time - total_time[0]
+                total_time[0] = new_total_time
                 if is_span:
-                    next_span += timeshift
+                    next_span[0] += timeshift
                 
                 if is_shift:
-                    next_shift += timeshift
+                    next_shift[0] += timeshift
                 
                 def action(scheduler, state=None):
                     s = None
@@ -507,10 +487,10 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or timeout_scheduler
 
         def subscribe(observer):
-            n = 0
-            s = None
+            n = [0]
+            s = [None]
             timerD = SerialDisposable()
-            window_id = 0
+            window_id = [0]
             group_disposable = CompositeDisposable(timerD)
             ref_count_disposable = RefCountDisposable(group_disposable)
             
@@ -519,50 +499,47 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                 timerD.disposable = m
 
                 def action(scheduler, state):
-                    nonlocal n, s, window_id
-                    if _id != window_id:
+                    if _id != window_id[0]:
                         return
                     
-                    n = 0
-                    window_id += 1
-                    new_id = window_id
-                    s.on_completed()
-                    s = Subject()
-                    observer.on_next(add_ref(s, ref_count_disposable))
+                    n[0] = 0
+                    window_id[0] += 1
+                    new_id = window_id[0]
+                    s[0].on_completed()
+                    s[0] = Subject()
+                    observer.on_next(add_ref(s[0], ref_count_disposable))
                     create_timer(new_id)
         
                 m.disposable = scheduler.schedule_relative(timespan, action)
             
-            s = Subject()
-            observer.on_next(add_ref(s, ref_count_disposable))
+            s[0] = Subject()
+            observer.on_next(add_ref(s[0], ref_count_disposable))
             create_timer(0)
             
             def on_next(x):
-                nonlocal s, n, window_id
-                
                 new_window = False
                 new_id = 0
                 
-                s.on_next(x)
-                n += 1
-                if n == count:
+                s[0].on_next(x)
+                n[0] += 1
+                if n[0] == count:
                     new_window = True
-                    n = 0
-                    window_id += 1
-                    new_id = window_id
-                    s.on_completed()
-                    s = Subject()
-                    observer.on_next(add_ref(s, ref_count_disposable))
+                    n[0] = 0
+                    window_id[0] += 1
+                    new_id = window_id[0]
+                    s[0].on_completed()
+                    s[0] = Subject()
+                    observer.on_next(add_ref(s[0], ref_count_disposable))
                 
                 if new_window:
                     create_timer(new_id)
 
             def on_error(e):
-                s.on_error(e)
+                s[0].on_error(e)
                 observer.on_error(e)
 
             def on_completed():
-                s.on_completed()
+                s[0].on_completed()
                 observer.on_completed()
             
             group_disposable.add(source.subscribe(on_next, on_error, on_completed))
@@ -636,14 +613,12 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or timeout_scheduler
 
         def defer():
-            last = scheduler.now()
+            last = [scheduler.now()]
 
             def selector(x):
-                nonlocal last
-
-                now = scheduler.now() 
-                span = now - last
-                last = now
+                now = scheduler.now()
+                span = now - last[0]
+                last[0] = now
                 return TimeInterval(value=x, interval=span)
                 
             return source.select(selector)
@@ -671,30 +646,24 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            at_end = None
-            has_value = None
-            value = None
+            at_end = [None]
+            has_value = [None]
+            value = [None]
 
             def sample_subscribe(x):
-                nonlocal has_value
-
-                if has_value:
-                    has_value = False
-                    observer.on_next(value)
+                if has_value[0]:
+                    has_value[0] = False
+                    observer.on_next(value[0])
                 
-                if at_end:
+                if at_end[0]:
                     observer.on_completed()
 
             def on_next(new_value):
-                nonlocal value, has_value
-                
-                has_value = True
-                value = new_value
+                has_value[0] = True
+                value[0] = new_value
             
             def on_completed():
-                nonlocal at_end
-
-                at_end = True
+                at_end[0] = True
 
             return CompositeDisposable(
                 source.subscribe(on_next, observer.on_error, on_completed),
@@ -761,8 +730,8 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             scheduler_method = scheduler.schedule_relative
         
         def subscribe(observer):
-            switched = False
-            _id = 0
+            switched = [False]
+            _id = [0]
             
             original = SingleAssignmentDisposable()
             subscription = SerialDisposable()
@@ -770,13 +739,11 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             subscription.disposable = original
 
             def create_timer():
-                my_id = _id
+                my_id = _id[0]
 
                 def action(scheduler, state=None):
-                    nonlocal switched
-
-                    switched = (_id == my_id)
-                    timer_wins = switched
+                    switched[0] = (_id[0] == my_id)
+                    timer_wins = switched[0]
                     if timer_wins:
                         subscription.disposable = other.subscribe(observer)
                     
@@ -784,28 +751,22 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
 
             create_timer()
             def on_next(x):
-                nonlocal _id
-
-                on_next_wins = not switched
+                on_next_wins = not switched[0]
                 if on_next_wins:
-                    _id += 1
+                    _id[0] += 1
                     observer.on_next(x)
                     create_timer()
 
             def on_error(e):
-                nonlocal _id
-
-                on_error_wins = not switched
+                on_error_wins = not switched[0]
                 if on_error_wins:
-                    _id += 1
+                    _id[0] += 1
                     observer.on_error(e)
 
             def on_completed():
-                nonlocal _id
-                
-                on_completed_wins = not switched
+                on_completed_wins = not switched[0]
                 if on_completed_wins:
-                    _id += 1
+                    _id[0] += 1
                     observer.on_completed()
             
             original.disposable = source.subscribe(on_next, on_error, on_completed)
@@ -841,13 +802,13 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             subscription.disposable = original
 
             switched = False
-            _id = 0
+            _id = [0]
             
             def set_timer(timeout):
-                my_id = _id
+                my_id = _id[0]
 
                 def timer_wins():
-                    return _id == my_id;
+                    return _id[0] == my_id
                 
                 d = SingleAssignmentDisposable()
                 timer.disposable = d
@@ -871,11 +832,9 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
             set_timer(first_timeout)
             
             def observer_wins():
-                nonlocal _id
-
                 res = not switched
                 if res:
-                    _id += 1
+                    _id[0] += 1
                 
                 return res
 
@@ -929,34 +888,32 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         scheduler = scheduler or timeout_scheduler
         
         def subscribe(observer):
-            state = initial_state
-            has_result = False
-            result = None
-            first = True
+            state = [initial_state]
+            has_result = [False]
+            result = [None]
+            first = [True]
             time = None
             
             def action(this):
-                nonlocal state, first, has_result, result
-
-                if has_result:
-                    observer.on_next(result)
+                if has_result[0]:
+                    observer.on_next(result[0])
                 
                 try:
-                    if first:
-                        first = False
+                    if first[0]:
+                        first[0] = False
                     else:
-                        state = iterate(state)
+                        state[0] = iterate(state[0])
                     
-                    has_result = condition(state)
-                    if has_result:
-                        result = result_selector(state)
-                        time = time_selector(state)
+                    has_result[0] = condition(state[0])
+                    if has_result[0]:
+                        result[0] = result_selector(state[0])
+                        time = time_selector(state[0])
                     
                 except Exception as e:
                     observer.on_error(e)
                     return
                 
-                if has_result:
+                if has_result[0]:
                     this(time)
                 else:
                     observer.on_completed()
@@ -1007,10 +964,10 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
         
         def subscribe(observer):
             delays = CompositeDisposable() 
-            at_end = False 
+            at_end = [False]
 
             def done():
-                if (at_end and delays.length == 0):
+                if (at_end[0] and delays.length == 0):
                     observer.on_completed()
             
             subscription = SerialDisposable()
@@ -1039,9 +996,7 @@ class ObservableTime(Observable, metaclass=ObservableMeta):
                     d.disposable = delay.subscribe(on_next, observer.on_error, on_completed)
                 
                 def on_completed():
-                    nonlocal at_end
-                    
-                    at_end = True
+                    at_end[0] = True
                     subscription.dispose()
                     done()
                 

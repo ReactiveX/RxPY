@@ -9,19 +9,18 @@ class ObservableLeave(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            has_value = False
-            value = None
+            has_value = [False]
+            value = [None]
 
             def on_next(x):
-                nonlocal has_value, value
-                has_value = True
-                value = x
+                has_value[0] = True
+                value[0] = x
             
             def on_completed():
-                if not has_value:
+                if not has_value[0]:
                     observer.on_error(SequenceContainsNoElementsError())
                 else:
-                    observer.on_next(value)
+                    observer.on_next(value[0])
                     observer.on_completed()
     
             return source.subscribe(on_next, observer.on_error, on_completed)

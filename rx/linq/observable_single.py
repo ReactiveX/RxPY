@@ -11,13 +11,13 @@ from rx.internal import Enumerable
 def concat(sources):
     def subscribe(observer):
         e = iter(sources)
-        is_disposed = False
+        is_disposed = [False]
         subscription = SerialDisposable()
 
         def action(action1, state=None):
             current = None
             
-            if is_disposed:
+            if is_disposed[0]:
                 return
             try:
                 current = next(e)
@@ -37,33 +37,31 @@ def concat(sources):
         cancelable = immediate_scheduler.schedule_recursive(action)
         
         def dispose():
-            nonlocal is_disposed
-            is_disposed = True
+            is_disposed[0] = True
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return AnonymousObservable(subscribe)
 
 def catch_exception(sources):
     def subscribe(observer):
         e = iter(sources)
-        is_disposed = False
-        last_exception = None
+        is_disposed = [False]
+        last_exception = [None]
         subscription = SerialDisposable()
 
         def action(action1, state=None):
             current = None
             
             def on_error(exn):
-                nonlocal last_exception
-                last_exception = exn
+                last_exception[0] = exn
                 action1()
 
-            if is_disposed:
+            if is_disposed[0]:
                 return
             try:
                 current = next(e)
             except StopIteration:
-                if last_exception:
-                    observer.on_error(last_exception)
+                if last_exception[0]:
+                    observer.on_error(last_exception[0])
                 else:
                     observer.on_completed()    
             except Exception as ex:
@@ -81,8 +79,7 @@ def catch_exception(sources):
         cancelable = immediate_scheduler.schedule_recursive(action)
         
         def dispose():
-            nonlocal is_disposed
-            is_disposed = True
+            is_disposed[0] = True
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return AnonymousObservable(subscribe)
 
@@ -149,19 +146,17 @@ class ObservableSingle(Observable, metaclass=ObservableMeta):
         source = self
 
         def defer():
-            has_accumulation = False
-            accumulation = None
+            has_accumulation = [False]
+            accumulation = [None]
 
             def projection(x):
-                nonlocal accumulation, has_accumulation
-
-                if has_accumulation:
-                    accumulation = accumulator(accumulation, x)
+                if has_accumulation[0]:
+                    accumulation[0] = accumulator(accumulation[0], x)
                 else:
-                    accumulation =  accumulator(seed, x) if has_seed else x
-                    has_accumulation = True
+                    accumulation[0] =  accumulator(seed, x) if has_seed else x
+                    has_accumulation[0] = True
                 
-                return accumulation
+                return accumulation[0]
             return source.select(projection)
         return Observable.defer(defer)
 

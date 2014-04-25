@@ -90,26 +90,24 @@ class TestScheduler(VirtualTimeScheduler):
         disposed= disposed or ReactiveTest.disposed
         
         observer = self.create_observer()
-        subscription = None
-        source = None
+        subscription = [None]
+        source = [None]
 
         def action_create(scheduler, state):
             """Called at create time. Defaults to 100"""
-            nonlocal source
-            source = create()
+            source[0] = create()
             return Disposable.empty()
         self.schedule_absolute(created, action_create)
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            nonlocal subscription
-            subscription = source.subscribe(observer)
+            subscription[0] = source[0].subscribe(observer)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action_subscribe)
 
         def action_dispose(scheduler, state):
             """Called at dispose time. Defaults to 1000"""
-            subscription.dispose()
+            subscription[0].dispose()
             return Disposable.empty()
         self.schedule_absolute(disposed, action_dispose)
 

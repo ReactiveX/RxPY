@@ -27,57 +27,53 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         left_source = self
 
         def subscribe(observer):
-            choice = None
+            choice = [None]
             left_choice = 'L'
             right_choice = 'R',
             left_subscription = SingleAssignmentDisposable()
             right_subscription = SingleAssignmentDisposable()
 
             def choiceL():
-                nonlocal choice
-
-                if not choice:
-                    choice = left_choice
+                if not choice[0]:
+                    choice[0] = left_choice
                     right_subscription.dispose()
 
             def choiceR():
-                nonlocal choice
-
-                if not choice:
-                    choice = right_choice
+                if not choice[0]:
+                    choice[0] = right_choice
                     left_subscription.dispose()
 
             def on_left_next(left):
                 choiceL()
-                if choice == left_choice:
+                if choice[0] == left_choice:
                     observer.on_next(left)
             
             def on_left_error(err):
                 choiceL()
-                if choice == left_choice:
+                if choice[0] == left_choice:
                     observer.on_error(err)
                 
 
             def on_left_completed():
                 choiceL()
-                if choice == left_choice:
+                if choice[0] == left_choice:
                     observer.on_completed()
 
             left_subscription.disposable = left_source.subscribe(on_left_next, on_left_error, on_left_completed)
 
             def on_right_next(right):
                 choiceR()
-                if choice == right_choice:
+                if choice[0] == right_choice:
                     observer.on_next(right)
             
             def on_right_error(err):
                 choiceR()
-                if choice == right_choice:
+                if choice[0] == right_choice:
                     observer.on_error(err)
             
             def on_right_completed():
                 choiceR()
-                if choice == right_choice:
+                if choice[0] == right_choice:
                     observer.on_completed()
 
             right_subscription.disposable = right_source.subscribe(on_right_next, on_right_error, on_right_completed)
@@ -218,15 +214,14 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         def subscribe(observer):
             n = len(args)
             has_value = [False] * n
-            has_value_all = False
+            has_value_all = [False]
             is_done = [False] * n
             values = [None] * n
 
             def next(i):
-                nonlocal has_value_all
                 has_value[i] = True
                 
-                if has_value_all or all(has_value):
+                if has_value_all[0] or all(has_value):
                     try:
                         print("selector: ", values)
                         res = result_selector(*values)
@@ -238,7 +233,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 elif all([x for j, x in enumerate(is_done) if j != i]):
                     observer.on_completed()
 
-                has_value_all = all(has_value)
+                has_value_all[0] = all(has_value)
 
             def done(i):
                 print("done: ", i)
@@ -333,9 +328,9 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         sources = self
 
         def subscribe(observer):
-            active_count = 0
+            active_count = [0]
             group = CompositeDisposable()
-            is_stopped = False
+            is_stopped = [False]
             q = []
             
             def subscribe(xs):
@@ -343,33 +338,27 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 group.add(subscription)
                 
                 def on_completed():
-                    nonlocal active_count
-                    
                     group.remove(subscription)
                     if q.length > 0:
                         s = q.shift()
                         subscribe(s)
                     else:
-                        active_count -= 1
-                        if is_stopped and active_count == 0:
+                        active_count[0] -= 1
+                        if is_stopped[0] and active_count[0] == 0:
                             observer.on_completed()
                         
                 subscription.disposable = xs.subscribe(observer.on_next, observer.on_error, on_completed)
             
             def on_next(inner_source):
-                nonlocal active_count
-
-                if active_count < max_concurrent_or_other:
-                    active_count += 1
+                if active_count[0] < max_concurrent_or_other:
+                    active_count[0] += 1
                     subscribe(inner_source)
                 else:
                     q.append(inner_source)
 
             def on_completed():
-                nonlocal is_stopped
-
-                is_stopped = True
-                if active_count == 0:
+                is_stopped[0] = True
+                if active_count[0] == 0:
                     observer.on_completed()
             
             group.add(sources.subscribe(on_next, observer.on_error, on_completed))
@@ -456,7 +445,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         def subscribe(observer):
             m = SingleAssignmentDisposable()
             group = CompositeDisposable()
-            is_stopped = False
+            is_stopped = [False]
             group.add(m)
             
             def on_next(inner_source):
@@ -464,10 +453,8 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 group.add(inner_subscription)
 
                 def on_complete():
-                    nonlocal group
-                    
                     group.remove(inner_subscription)
-                    if is_stopped and group.length == 1:
+                    if is_stopped[0] and group.length == 1:
                         observer.on_completed()
                     
                 disposable = inner_source.subscribe(
@@ -478,9 +465,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
                 inner_subscription.disposable = disposable
             
             def on_complete():
-                nonlocal is_stopped
-
-                is_stopped = True
+                is_stopped[0] = True
                 if group.length == 1:
                     observer.on_completed()
             
@@ -523,14 +508,12 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
         def subscribe(observer):
             subscription = SerialDisposable()
-            pos = 0
+            pos = [0]
             
             def action(this, state=None):
-                nonlocal pos
-
-                if pos < len(sources):
-                    current = sources[pos]
-                    pos += 1
+                if pos[0] < len(sources):
+                    current = sources[pos[0]]
+                    pos[0] += 1
                     d = SingleAssignmentDisposable()
                     subscription.disposable = d
                     d.disposable = current.subscribe(observer.on_next, lambda ex: this(), lambda: this())
@@ -553,43 +536,37 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         sources = self
 
         def subscribe(observer):
-            has_latest = False
+            has_latest = [False]
             inner_subscription = SerialDisposable()
-            is_stopped = False
-            latest = 0
+            is_stopped = [False]
+            latest = [0]
 
             def on_next(inner_source):
-                nonlocal latest, has_latest
-
                 d = SingleAssignmentDisposable()
-                latest += 1
-                _id = latest
-                has_latest = True
+                latest[0] += 1
+                _id = latest[0]
+                has_latest[0] = True
                 inner_subscription.disposable = d
 
                 def on_next(x):
-                    if latest == _id:
+                    if latest[0] == _id:
                         observer.on_next(x)
                 
                 def on_error(e):
-                    if latest == _id:
+                    if latest[0] == _id:
                         observer.on_error(e)
                 
                 def on_completed():
-                    nonlocal has_latest
-
-                    if latest == _id:
-                        has_latest = False
-                        if is_stopped:
+                    if latest[0] == _id:
+                        has_latest[0] = False
+                        if is_stopped[0]:
                             observer.on_completed()
                         
                 d.disposable = inner_source.subscribe(on_next, on_error, on_completed)
             
             def on_completed():
-                nonlocal is_stopped
-
-                is_stopped = True
-                if not has_latest:
+                is_stopped[0] = True
+                if not has_latest[0]:
                     observer.on_completed()
                 
             subscription = sources.subscribe(on_next, observer.on_error, on_completed)
@@ -610,14 +587,14 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            is_open = False
+            is_open = [False]
 
             def on_next(left):
-                if is_open:
+                if is_open[0]:
                     observer.on_next(left)
             
             def on_completed():
-                if is_open:
+                if is_open[0]:
                     observer.on_completed()
             
             disposables = CompositeDisposable(source.subscribe(on_next, observer.on_error, on_completed))
@@ -626,9 +603,7 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
             disposables.add(right_subscription)
 
             def on_next2(x):
-                nonlocal is_open
-
-                is_open = True
+                is_open[0] = True
                 right_subscription.dispose()
             
             def on_completed2():
@@ -667,14 +642,12 @@ class ObservableMultiple(Observable, metaclass=ObservableMeta):
 
         def subscribe(observer):
             length = len(second)
-            index = 0
+            index = [0]
             
             def on_next(left):
-                nonlocal index
-
-                if index < length:
-                    right = second[index]
-                    index += 1
+                if index[0] < length:
+                    right = second[index[0]]
+                    index[0] += 1
                     try:
                         result = result_selector(left, right)
                     except Exception as e:
