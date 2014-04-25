@@ -1,5 +1,6 @@
 import math
 from datetime import datetime
+import six
 
 from rx.observable import Observable
 from rx.testing import TestScheduler, ReactiveTest
@@ -213,7 +214,7 @@ def test_group_by_inner_complete():
     
     def action3(scheduler, state):
         c["outer_subscription"].dispose()
-        for sub in c["inner_subscriptions"].values():
+        for sub in six.itervalues(c["inner_subscriptions"]):
             sub.dispose()
         
     scheduler.schedule_absolute(disposed, action3)
@@ -259,7 +260,7 @@ def test_group_by_inner_complete_all():
 
     def action3(scheduler, state):
         c["outer_subscription"].dispose()
-        for sub in inner_subscriptions.values():
+        for sub in six.itervalues(inner_subscriptions):
             sub.dispose()
     scheduler.schedule_absolute(disposed, action3)
         
@@ -310,7 +311,7 @@ def test_group_by_inner_error():
 
     def action4(scheduler, state):
         c["outer_subscription"].dispose();
-        for sub in inner_subscriptions.values():
+        for sub in six.itervalues(inner_subscriptions):
             sub.dispose()
     scheduler.schedule_absolute(disposed, action4)
 

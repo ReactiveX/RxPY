@@ -1,6 +1,6 @@
 import types
 from inspect import getargspec, getargvalues 
-from six import add_metaclass
+import six
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
@@ -23,7 +23,7 @@ def adapt_call(func):
     
     return func_wrapped
 
-@add_metaclass(ObservableMeta)
+@six.add_metaclass(ObservableMeta)
 class ObservableLinq(Observable):
     """Standard sequence operator extension methods. Note that we do some magic
     here by using a meta class to extend Observable with the methods in this
@@ -132,7 +132,7 @@ class ObservableLinq(Observable):
                 try:
                     key = key_selector(x)
                 except Exception as e:
-                    for w in mapping.values():
+                    for w in six.itervalues(mapping):
                         w.on_error(e)
                     
                     observer.on_error(e)
@@ -149,7 +149,7 @@ class ObservableLinq(Observable):
                         fire_new_map_entry = True
                     
                 except Exception as e:
-                    for w in mapping.values():
+                    for w in six.itervalues(mapping):
                         w.on_error(e)
                     
                     observer.on_error(e)
@@ -161,7 +161,7 @@ class ObservableLinq(Observable):
                     try:
                         duration = duration_selector(duration_group)
                     except Exception as e:
-                        for w in mapping.values():
+                        for w in six.itervalues(mapping):
                             w.on_error(e)
                         
                         observer.on_error(e)
@@ -183,7 +183,7 @@ class ObservableLinq(Observable):
 
                     def on_error(exn):
                         print ("on_error()", exn)
-                        for wr in mapping.values():
+                        for wr in six.itervalues(mapping):
                             wr.on_error(exn)
                         observer.on_error(exn)
 
@@ -195,7 +195,7 @@ class ObservableLinq(Observable):
                 try:
                     element = element_selector(x)
                 except Exception as e:
-                    for w in mapping.values():
+                    for w in six.itervalues(mapping):
                         w.on_error(e)
                     
                     observer.on_error(e)
@@ -205,13 +205,13 @@ class ObservableLinq(Observable):
             
             def on_error(ex):
                 print ("on_error(%s)" % ex)
-                for w in mapping.values():
+                for w in six.itervalues(mapping):
                     w.on_error(ex)
                 
                 observer.on_error(ex)
             
             def on_completed():
-                for w in mapping.values():
+                for w in six.itervalues(mapping):
                     w.on_completed()
                 
                 observer.on_completed()

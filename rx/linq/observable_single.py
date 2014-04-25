@@ -1,4 +1,4 @@
-from six import add_metaclass
+import six
 from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
@@ -21,7 +21,7 @@ def concat(sources):
             if is_disposed[0]:
                 return
             try:
-                current = next(e)
+                current = six.next(e)
             except StopIteration:
                 observer.on_completed()    
             except Exception as ex:
@@ -59,7 +59,7 @@ def catch_exception(sources):
             if is_disposed[0]:
                 return
             try:
-                current = next(e)
+                current = six.next(e)
             except StopIteration:
                 if last_exception[0]:
                     observer.on_error(last_exception[0])
@@ -85,7 +85,7 @@ def catch_exception(sources):
     return AnonymousObservable(subscribe)
 
 
-@add_metaclass(ObservableMeta)
+@six.add_metaclass(ObservableMeta)
 class ObservableSingle(Observable):
     
     def __init__(self, subscribe):

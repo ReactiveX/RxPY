@@ -1,6 +1,6 @@
 import logging
 from collections import OrderedDict
-from six import add_metaclass
+import six
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
@@ -11,7 +11,7 @@ from rx.disposables import SingleAssignmentDisposable, SerialDisposable, Composi
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ObservableMeta)
+@six.add_metaclass(ObservableMeta)
 class ObservableCoincidence(Observable):
 
     def join(self, right, left_duration_selector, right_duration_selector, result_selector):
@@ -74,7 +74,7 @@ class ObservableCoincidence(Observable):
                     return
                 
                 md.disposable = duration.take(1).subscribe(noop, observer.on_error, lambda: expire())
-                values = right_map.values()
+                values = six.itervalues(right_map)
                 for val in values:
                     try:
                         result = result_selector(value, val)
@@ -116,7 +116,7 @@ class ObservableCoincidence(Observable):
                     return
                 
                 md.disposable = duration.take(1).subscribe(noop, observer.on_error, lambda: expire())
-                values = left_map.values()
+                values = six.itervalues(left_map)
                 for val in values:
                     try:
                         result = result_selector(val, value)
@@ -225,7 +225,7 @@ class ObservableCoincidence(Observable):
                     expire)
             
             def on_error_left(e):
-                left_values = left_map.values()
+                left_values = six.itervalues(left_map)
                 for left_value in left_values:
                     left_value.on_error(e)
                 
@@ -273,7 +273,7 @@ class ObservableCoincidence(Observable):
                     left_values.on_next(value)
             
             def on_error_right(e):
-                left_values = left_map.values()
+                left_values = six.itervalues(left_map)
                 for left_value in left_values:
                     left_value.on_error(e)
                 
