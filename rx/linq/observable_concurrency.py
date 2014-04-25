@@ -1,9 +1,11 @@
+from six import add_metaclass
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
-class ObservableConcurrency(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableConcurrency(Observable):
     def observe_on(self, scheduler):
         """Wraps the source sequence in order to run its observer callbacks on 
         the specified scheduler.

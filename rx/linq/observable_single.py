@@ -1,3 +1,4 @@
+from six import add_metaclass
 from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
@@ -84,7 +85,8 @@ def catch_exception(sources):
     return AnonymousObservable(subscribe)
 
 
-class ObservableSingle(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSingle(Observable):
     
     def __init__(self, subscribe):
         self.repeat = self.__repeat # Stitch in instance method

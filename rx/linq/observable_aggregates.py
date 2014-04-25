@@ -1,9 +1,11 @@
+from six import add_metaclass
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
-class ObservableAggregates(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAggregates(Observable):
 
     def aggregate(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence, 

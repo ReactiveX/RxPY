@@ -1,5 +1,6 @@
 import logging
 from collections import OrderedDict
+from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
@@ -10,7 +11,8 @@ from rx.disposables import SingleAssignmentDisposable, SerialDisposable, Composi
 
 log = logging.getLogger("Rx")
 
-class ObservableCoincidence(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableCoincidence(Observable):
 
     def join(self, right, left_duration_selector, right_duration_selector, result_selector):
         """Correlates the elements of two sequences based on overlapping durations.

@@ -1,5 +1,6 @@
 import types
 from inspect import getargspec, getargvalues 
+from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
@@ -21,8 +22,9 @@ def adapt_call(func):
         func_wrapped = func1
     
     return func_wrapped
-        
-class ObservableLinq(Observable, metaclass=ObservableMeta):
+
+@add_metaclass(ObservableMeta)
+class ObservableLinq(Observable):
     """Standard sequence operator extension methods. Note that we do some magic
     here by using a meta class to extend Observable with the methods in this
     class"""

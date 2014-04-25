@@ -1,9 +1,11 @@
+from six import add_metaclass
 from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import SequenceContainsNoElementsError
 
-class ObservableLeave(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableLeave(Observable):
 
     def final_value(self):
         source = self

@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta
+from six import add_metaclass
 
 from rx.internal.utils import add_ref
 from rx.observable import Observable, ObservableMeta
@@ -35,7 +36,8 @@ class Timestamp(object):
     #def equals(other):
     #    return other.timestamp == self.timestamp and other.value == self.value
 
-class ObservableTime(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableTime(Observable):
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):

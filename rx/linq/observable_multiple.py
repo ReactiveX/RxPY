@@ -1,13 +1,14 @@
+from six import add_metaclass
 
 from rx.internal import Enumerable, noop
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
-
 from .observable_single import concat, catch_exception
 
-class ObservableMultiple(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableMultiple(Observable):
     def __init__(self, subscribe):
         self.concat = self.__concat # Stitch in instance method
         self.merge = self.__merge

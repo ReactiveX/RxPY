@@ -1,10 +1,12 @@
+from six import add_metaclass
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
 
-class ObservableCreation(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableCreation(Observable):
 
     @classmethod
     def create(cls, subscribe):
