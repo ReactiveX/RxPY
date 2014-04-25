@@ -1,4 +1,5 @@
 import sys, traceback
+import types
 
 from rx import Observable, AnonymousObservable
 
@@ -35,22 +36,22 @@ class AssertList(list):
         expected = list(expected)
         return are_elements_equal(expected, self, default_comparer)
 
-class ObservableTest(object):
-    # Observable.dump extension method
-    def dump(self, name = "test"):
-        def subscribe(observer):
-            def on_next(value):
-                print("{%s}-->{%s}" % (name, value))
-                observer.on_next(value)
-            def on_error(ex):
-                print("{%s} error -->{%s}" % (name, ex))    
-                traceback.print_exc(file=sys.stdout)
-                observer.on_error(ex)
-            def on_completed():
-                print("{%s} completed" % name)
-                observer.on_completed()
 
-            return self.subscribe(on_next, on_error, on_completed)
-        return AnonymousObservable(subscribe)
+# Observable.dump extension method
+def dump(self, name = "test"):
+    def subscribe(observer):
+        def on_next(value):
+            print("{%s}-->{%s}" % (name, value))
+            observer.on_next(value)
+        def on_error(ex):
+            print("{%s} error -->{%s}" % (name, ex))
+            traceback.print_exc(file=sys.stdout)
+            observer.on_error(ex)
+        def on_completed():
+            print("{%s} completed" % name)
+            observer.on_completed()
 
-Observable.dump = ObservableTest.dump
+        return self.subscribe(on_next, on_error, on_completed)
+    return AnonymousObservable(subscribe)
+
+Observable.dump = dump
