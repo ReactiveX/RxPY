@@ -226,7 +226,7 @@ def test_delay_datetime_offset_simple1_impl():
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
     def create():
-        dt = datetime.fromtimestamp(300/1000)
+        dt = datetime.fromtimestamp(300/1000.0)
         return xs.delay(dt, scheduler)
     
     results = scheduler.start(create)
@@ -249,7 +249,7 @@ def test_delay_datetime_offset_simple2_impl():
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
     
     def create():
-        return xs.delay(datetime.fromtimestamp(250/1000), scheduler)
+        return xs.delay(datetime.fromtimestamp(250/1000.0), scheduler)
     
     results = scheduler.start(create)
         
@@ -628,7 +628,7 @@ def test_throttle_duration_inner_done_throttle_behavior():
 class TimeInterval(object):
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
-            interval = int(interval.microseconds/1000)
+            interval = int(interval.microseconds/1000.0)
 
         self.value = value
         self.interval = interval
@@ -918,7 +918,7 @@ def test_timeout_datetime_offset_timeout_occurs():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
     
@@ -932,7 +932,7 @@ def test_timeout_datetime_offset_timeout_does_not_occur_completed():
     ys = scheduler.create_cold_observable(on_next(100, -1))
 
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_next(310, 1), on_completed(390))
@@ -946,7 +946,7 @@ def test_timeout_datetime_offset_timeout_does_not_occur_error():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
         
@@ -960,7 +960,7 @@ def test_timeout_datetime_offset_timeout_occur_2():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
         
@@ -974,7 +974,7 @@ def test_timeout_datetime_offset_timeout_occur_3():
     ys = scheduler.create_cold_observable()
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler)
     
     results = scheduler.start(create)
         

@@ -55,7 +55,7 @@ class TestScheduler(VirtualTimeScheduler):
         Returns corresponding DateTimeOffset value.
         """
             
-        return datetime.fromtimestamp(absolute/1000)
+        return datetime.fromtimestamp(absolute/1000.0)
     
     @classmethod
     def to_relative(cls, timespan):

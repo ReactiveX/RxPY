@@ -41,7 +41,7 @@ class TimeoutScheduler(Scheduler):
             log.info("TimeoutScheduler:schedule_relative.interval()")
             disposable.disposable = action(scheduler, state)
         
-        seconds = dt.seconds+dt.microseconds/1000000
+        seconds = dt.seconds+dt.microseconds/1000000.0
         log.info("timeout: %s" % seconds)
         self.timer = Timer(seconds, interval)
         self.timer.start()
