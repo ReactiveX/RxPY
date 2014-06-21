@@ -777,23 +777,27 @@ def test_join_op_normal_ii():
 #     results.messages.assert_equal(on_error(210, ex))
 # })
 
-# def test_Window_Closings_Basic():
-#     var scheduler, results, window, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             return Observable.timer(window++ * 100, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-#     xs.subscriptions.assert_equal(subscribe(200, 590))
-# })
+def test_window_closings_basic():
+    scheduler = TestScheduler()
+    xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+    window = 1
+    
+    def create():
+        def opening():
+            nonlocal window
+
+            curr = window
+            window += 1
+            return Observable.timer(curr * 100, scheduler=scheduler)
+            
+        def closing(w, i):
+            return w.select(lambda x: str(i) + ' ' + str(x))
+        
+        return xs.window(opening).select(closing).merge_observable()
+    
+    results = scheduler.start(create=create)
+    results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
+    xs.subscriptions.assert_equal(subscribe(200, 590))
 
 # def test_Window_Closings_Dispose():
 #     var results, scheduler, window, xs

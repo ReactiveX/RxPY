@@ -6,7 +6,8 @@ from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable
+from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
+from rx.subjects import Subject
 
 log = logging.getLogger("Rx")
 
@@ -51,9 +52,6 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
                 current_id = left_id
                 left_id += 1
                 md = SingleAssignmentDisposable()
-                
-                #log.debug("**** left_map[%s] = %s" % (current_id, value))
-                #log.debug(value.get_hash_code())
                 
                 left_map[current_id] = value
                 group.add(md)
@@ -321,7 +319,7 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
         Keyword arguments: 
         window_openings -- Observable sequence whose elements denote the 
             creation of windows.
-        closing_selector -- Or, a function invoked to define the boundaries of 
+        closing_selector -- A function invoked to define the boundaries of 
             the produced windows (a window is started when the previous one is 
             closed, resulting in non-overlapping windows).
         window_closing_selector -- [Optional] A function invoked to define the 
@@ -331,15 +329,15 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
         Returns an observable sequence of windows.
         """
         if window_openings and not window_closing_selector:
-            return observable_window_with_bounaries(self, window_ppenings_or_closingSelector)
+            return self.observable_window_with_bounaries(window_openings)
         
         if closing_selector:
-            return self.observable_window_with_closing_selector(closingSelector)
+            return self.observable_window_with_closing_selector(closing_selector)
         else:
             return self.observable_window_with_openings(window_openings, window_closing_selector)
     
-    def observable_window_with_openings(window_openings, window_closing_selector):
-        return self.window_openings.group_join(window_closing_selector, lambda: Observable.empty(), lambda _, window: window)
+    def observable_window_with_openings(self, window_openings, window_closing_selector):
+        return window_openings.group_join(window_closing_selector, lambda: Observable.empty(), lambda _, window: window)
     
     def observable_window_with_bounaries(self, window_boundaries):
         source = self
@@ -369,11 +367,10 @@ class ObservableCoincidence(Observable, metaclass=ObservableMeta):
                 window = Subject()
                 observer.on_next(add_ref(window, r))
             
-            d.add(window_boundaries.subscribe(on_next_observer, on_error, on_copleted))
+            d.add(window_boundaries.subscribe(on_next_observer, on_error, on_completed))
             return r
         return AnonymousObservable(subscribe)
     
-
     def observable_window_with_closing_selector(self, window_closing_selector):
         source = self
 
