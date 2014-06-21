@@ -10,8 +10,8 @@
     </SearchPath>
     <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
-    <InterpreterVersion>3.2</InterpreterVersion>
+    <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
+    <InterpreterVersion>3.4</InterpreterVersion>
     <Name>RxPY</Name>
     <RootNamespace>RxPY</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
@@ -41,6 +41,10 @@
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable\all.py" />
+    <Compile Include="rx\linq\observable\any.py" />
+    <Compile Include="rx\linq\observable\average.py" />
+    <Compile Include="rx\linq\observable\__init__.py" />
     <Compile Include="rx\linq\observable_aggregates.py" />
     <Compile Include="rx\linq\observable_coincidence.py" />
     <Compile Include="rx\linq\observable_concurrency.py" />
@@ -83,6 +87,9 @@
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
+    <Compile Include="tests\observable\test_all.py" />
+    <Compile Include="tests\observable\test_any.py" />
+    <Compile Include="tests\observable\__init__.py" />
     <Compile Include="tests\test_asyncsubject.py" />
     <Compile Include="tests\test_behaviorsubject.py" />
     <Compile Include="tests\test_group_join.py" />
@@ -117,10 +124,22 @@
     <Folder Include="rx\disposables" />
     <Folder Include="rx\linq" />
     <Folder Include="rx\internal\" />
+    <Folder Include="rx\linq\observable\" />
     <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
+    <Folder Include="tests\observable\" />
+    <Folder Include="tests\observable\__pycache__\" />
     <Folder Include="tests\test_standardqueryoperators\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.2" />
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tests\observable\__pycache__\test_all.cpython-34.pyc" />
+    <Content Include="tests\observable\__pycache__\test_any.cpython-34.pyc" />
+    <Content Include="tests\observable\__pycache__\__init__.cpython-34.pyc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

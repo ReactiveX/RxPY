@@ -16,5 +16,6 @@ class ObservableAll(Observable, metaclass=ObservableMeta):
         specified predicate."""
     
         return self.where(lambda v: not predicate(v), this).any().select(lambda b: not b)
-        
+       
+    # Alias for all
     every = all

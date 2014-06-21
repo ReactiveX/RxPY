@@ -27,80 +27,74 @@ def test_all_return():
     xs = scheduler.create_hot_observable(msgs)
 
     def create():
-    	return xs.all(lambda x: x > 0)
+        return xs.all(lambda x: x > 0)
 
     res = scheduler.start(create=create).messages
     res.assert_equal(on_next(250, True), on_completed(250))
 
-# def test_All_ReturnNotMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, False), on_completed(210))
+def test_all_return_not_natch():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, -2), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.all(lambda x: x > 0)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(210, False), on_completed(210))
 
+def test_all_some_none_match():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, -2), on_next(220, -3), on_next(230, -4), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.all(lambda x: x > 0)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(210, False), on_completed(210))
 
-# def test_All_SomeNoneMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, -3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, False), on_completed(210))
+def test_all_some_match():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, -2), on_next(220, 3), on_next(230, -4), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
 
+    def create():
+        return xs.all(lambda x: x > 0)
 
-# def test_All_SomeMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, 3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, False), on_completed(210))
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(210, False), on_completed(210))
 
+def test_all_some_all_match():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.all(lambda x: x > 0)
+    
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_next(250, True), on_completed(250))
 
-# def test_All_SomeAllMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, True), on_completed(250))
+def test_all_throw():
+    ex = 'ex'
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1), on_error(210, ex)]
+    xs = scheduler.create_hot_observable(msgs)
+    
+    def create():
+        return xs.all(lambda x: x > 0)
+    res = scheduler.start(create=create).messages
+    res.assert_equal(on_error(210, ex))
 
+def test_all_never():
+    scheduler = TestScheduler()
+    msgs = [on_next(150, 1)]
+    xs = scheduler.create_hot_observable(msgs)
 
-# def test_All_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
+    def create():
+        return xs.all(lambda x: x > 0)
 
-
-# def test_All_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal()
+    res = scheduler.start(create=create).messages
+    res.assert_equal()
 
