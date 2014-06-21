@@ -420,7 +420,7 @@ class ObservableLinq(Observable, metaclass=ObservableMeta):
             return observable.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
         
-    def where(self, predicate):
+    def where(self, predicate, this=None):
         """Filters the elements of an observable sequence based on a predicate 
         by incorporating the element's index.
         

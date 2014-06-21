@@ -7,3 +7,5 @@ from . import observable_concurrency
 from . import observable_leave
 from . import observable_aggregates
 from . import observable_coincidence
+
+from . import observable

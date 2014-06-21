@@ -241,228 +241,6 @@ def test_reduce_without_seed_return():
 #     res.assert_equal(on_next(260, 10), on_completed(260))
 
 
-# def test_Any_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any()
-#     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
-
-
-# def test_Any_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any()
-#     }).messages
-#     res.assert_equal(on_next(210, true), on_completed(210))
-
-
-# def test_Any_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any()
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-
-
-# def test_Any_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any()
-#     }).messages
-#     res.assert_equal()
-
-
-# def test_Any_Predicate_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
-
-
-# def test_Any_Predicate_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, true), on_completed(210))
-
-
-# def test_Any_Predicate_ReturnNotMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
-
-
-# def test_Any_Predicate_SomeNoneMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, -3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
-
-
-# def test_Any_Predicate_SomeMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, 3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(220, true), on_completed(220))
-
-
-# def test_Any_Predicate_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-
-
-# def test_Any_Predicate_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.any(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal()
-
-
-# def test_All_Empty():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, true), on_completed(250))
-
-
-# def test_All_Return():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, true), on_completed(250))
-
-
-# def test_All_ReturnNotMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, false), on_completed(210))
-
-
-# def test_All_SomeNoneMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, -3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, false), on_completed(210))
-
-
-# def test_All_SomeMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, -2), on_next(220, 3), on_next(230, -4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(210, false), on_completed(210))
-
-
-# def test_All_SomeAllMatch():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_next(250, true), on_completed(250))
-
-
-# def test_All_Throw():
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1), on_error(210, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-
-
-# def test_All_Never():
-#     scheduler = TestScheduler()
-#     msgs = [on_next(150, 1)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     res = scheduler.start(create=create)
-#         return xs.all(function (x) {
-#             return x > 0
-        
-#     }).messages
-#     res.assert_equal()
-
 
 # def test_Contains_Empty():
 #     scheduler = TestScheduler()
@@ -471,7 +249,7 @@ def test_reduce_without_seed_return():
 #     res = scheduler.start(create=create)
 #         return xs.contains(42)
 #     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
+#     res.assert_equal(on_next(250, False), on_completed(250))
 
 # def test_Contains_ReturnPositive():
 #     scheduler = TestScheduler()
@@ -480,7 +258,7 @@ def test_reduce_without_seed_return():
 #     res = scheduler.start(create=create)
 #         return xs.contains(2)
 #     }).messages
-#     res.assert_equal(on_next(210, true), on_completed(210))
+#     res.assert_equal(on_next(210, True), on_completed(210))
 
 
 # def test_Contains_ReturnNegative():
@@ -490,7 +268,7 @@ def test_reduce_without_seed_return():
 #     res = scheduler.start(create=create)
 #         return xs.contains(-2)
 #     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
+#     res.assert_equal(on_next(250, False), on_completed(250))
 
 
 # def test_Contains_SomePositive():
@@ -500,7 +278,7 @@ def test_reduce_without_seed_return():
 #     res = scheduler.start(create=create)
 #         return xs.contains(3)
 #     }).messages
-#     res.assert_equal(on_next(220, true), on_completed(220))
+#     res.assert_equal(on_next(220, True), on_completed(220))
 
 # def test_Contains_SomeNegative():
 #     scheduler = TestScheduler()
@@ -509,7 +287,7 @@ def test_reduce_without_seed_return():
 #     res = scheduler.start(create=create)
 #         return xs.contains(-3)
 #     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
+#     res.assert_equal(on_next(250, False), on_completed(250))
 
 
 # def test_Contains_Throw():
@@ -555,7 +333,7 @@ def test_reduce_without_seed_return():
 #             return a % 2 == b % 2
         
 #     }).messages
-#     res.assert_equal(on_next(220, true), on_completed(220))
+#     res.assert_equal(on_next(220, True), on_completed(220))
 
 
 # def test_Contains_ComparerDoesNotContainValue():
@@ -567,7 +345,7 @@ def test_reduce_without_seed_return():
 #             return a % 2 == b % 2
         
 #     }).messages
-#     res.assert_equal(on_next(250, false), on_completed(250))
+#     res.assert_equal(on_next(250, False), on_completed(250))
 
 
 def test_count_empty():
@@ -605,7 +383,7 @@ def test_count_never():
     res = scheduler.start(create=lambda: xs.count()).messages
     res.assert_equal()
 
-def test_count_predicate_empty_true():
+def test_count_predicate_empty_True():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
     
@@ -617,7 +395,7 @@ def test_count_predicate_empty_true():
     res.messages.assert_equal(on_next(250, 0), on_completed(250))
     xs.subscriptions.assert_equal(subscribe(200, 250))
 
-def test_count_predicate_empty_false():
+def test_count_predicate_empty_False():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
     
@@ -629,7 +407,7 @@ def test_count_predicate_empty_false():
     res.messages.assert_equal(on_next(250, 0), on_completed(250))
     xs.subscriptions.assert_equal(subscribe(200, 250))
 
-def test_count_predicate_return_true():
+def test_count_predicate_return_True():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
     
@@ -641,7 +419,7 @@ def test_count_predicate_return_true():
     res.messages.assert_equal(on_next(250, 1), on_completed(250))
     xs.subscriptions.assert_equal(subscribe(200, 250))
 
-def test_count_predicate_return_false():
+def test_count_predicate_return_False():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
     
@@ -689,7 +467,7 @@ def test_count_predicate_some_even():
     res.messages.assert_equal(on_next(250, 2), on_completed(250))
     xs.subscriptions.assert_equal(subscribe(200, 250))
 
-def test_count_predicate_throw_true():
+def test_count_predicate_throw_True():
     ex = 'ex'
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
@@ -702,7 +480,7 @@ def test_count_predicate_throw_true():
     res.messages.assert_equal(on_error(210, ex))
     xs.subscriptions.assert_equal(subscribe(200, 210))
 
-def test_count_predicate_throw_false():
+def test_count_predicate_throw_False():
     ex = 'ex'
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
@@ -2065,7 +1843,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return xs.sequenceEqual(ys)
     
-#     results.messages.assert_equal(on_next(490, false), on_completed(490))
+#     results.messages.assert_equal(on_next(490, False), on_completed(490))
 #     xs.subscriptions.assert_equal(subscribe(200, 490))
 #     ys.subscriptions.assert_equal(subscribe(200, 490))
 
@@ -2080,7 +1858,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return ys.sequenceEqual(xs)
     
-#     results.messages.assert_equal(on_next(490, false), on_completed(490))
+#     results.messages.assert_equal(on_next(490, False), on_completed(490))
 #     xs.subscriptions.assert_equal(subscribe(200, 490))
 #     ys.subscriptions.assert_equal(subscribe(200, 490))
 
@@ -2095,7 +1873,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return xs.sequenceEqual(ys)
     
-#     results.messages.assert_equal(on_next(420, false), on_completed(420))
+#     results.messages.assert_equal(on_next(420, False), on_completed(420))
 #     xs.subscriptions.assert_equal(subscribe(200, 420))
 #     ys.subscriptions.assert_equal(subscribe(200, 420))
 
@@ -2110,7 +1888,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return ys.sequenceEqual(xs)
     
-#     results.messages.assert_equal(on_next(420, false), on_completed(420))
+#     results.messages.assert_equal(on_next(420, False), on_completed(420))
 #     xs.subscriptions.assert_equal(subscribe(200, 420))
 #     ys.subscriptions.assert_equal(subscribe(200, 420))
 
@@ -2161,7 +1939,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return xs.sequenceEqual(ys)
     
-#     results.messages.assert_equal(on_next(310, false), on_completed(310))
+#     results.messages.assert_equal(on_next(310, False), on_completed(310))
 #     xs.subscriptions.assert_equal(subscribe(200, 310))
 #     ys.subscriptions.assert_equal(subscribe(200, 310))
 
@@ -2176,7 +1954,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     results = scheduler.start(create=create)
 #         return ys.sequenceEqual(xs)
     
-#     results.messages.assert_equal(on_next(310, false), on_completed(310))
+#     results.messages.assert_equal(on_next(310, False), on_completed(310))
 #     xs.subscriptions.assert_equal(subscribe(200, 310))
 #     ys.subscriptions.assert_equal(subscribe(200, 310))
 
@@ -2188,7 +1966,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.isEmpty()
 #     }).messages
-#     res.assert_equal(on_next(250, true), on_completed(250))
+#     res.assert_equal(on_next(250, True), on_completed(250))
 #     xs.subscriptions.assert_equal(subscribe(200, 250))
 
 
@@ -2199,7 +1977,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.isEmpty()
 #     }).messages
-#     res.assert_equal(on_next(210, false), on_completed(210))
+#     res.assert_equal(on_next(210, False), on_completed(210))
 #     xs.subscriptions.assert_equal(subscribe(200, 210))
 
 
@@ -2234,7 +2012,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3, 4, 5, 6, 7])
     
-#     res.messages.assert_equal(on_next(510, true), on_completed(510))
+#     res.messages.assert_equal(on_next(510, True), on_completed(510))
 #     xs.subscriptions.assert_equal(subscribe(200, 510))
 
 
@@ -2245,7 +2023,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3, 4, 9, 6, 7])
     
-#     res.messages.assert_equal(on_next(310, false), on_completed(310))
+#     res.messages.assert_equal(on_next(310, False), on_completed(310))
 #     xs.subscriptions.assert_equal(subscribe(200, 310))
 
 
@@ -2258,7 +2036,7 @@ def test_sequence_equal_not_equal_right_sym():
 #             return x % 2 == y % 2
         
     
-#     res.messages.assert_equal(on_next(510, true), on_completed(510))
+#     res.messages.assert_equal(on_next(510, True), on_completed(510))
 #     xs.subscriptions.assert_equal(subscribe(200, 510))
 
 
@@ -2271,7 +2049,7 @@ def test_sequence_equal_not_equal_right_sym():
 #             return x % 2 == y % 2
         
     
-#     res.messages.assert_equal(on_next(310, false), on_completed(310))
+#     res.messages.assert_equal(on_next(310, False), on_completed(310))
 #     xs.subscriptions.assert_equal(subscribe(200, 310))
 
 
@@ -2303,7 +2081,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3, 4, 5, 6, 7, 8])
     
-#     res.messages.assert_equal(on_next(510, false), on_completed(510))
+#     res.messages.assert_equal(on_next(510, False), on_completed(510))
 #     xs.subscriptions.assert_equal(subscribe(200, 510))
 
 
@@ -2314,7 +2092,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.sequenceEqual([3, 4, 5, 6])
     
-#     res.messages.assert_equal(on_next(450, false), on_completed(450))
+#     res.messages.assert_equal(on_next(450, False), on_completed(450))
 #     xs.subscriptions.assert_equal(subscribe(200, 450))
 
 
@@ -2521,7 +2299,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.first(function (x) {
 #             if (x < 4) {
-#                 return false
+#                 return False
 #             } else {
 #                 throw ex
 #             }
@@ -2625,7 +2403,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.firstOrDefault(function (x) {
 #             if (x < 4) {
-#                 return false
+#                 return False
 #             } else {
 #                 throw ex
 #             }
@@ -2961,7 +2739,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.single(function (x) {
 #             if (x < 4) {
-#                 return false
+#                 return False
 #             } else {
 #                 throw ex
 #             }
@@ -3096,7 +2874,7 @@ def test_sequence_equal_not_equal_right_sym():
 #     res = scheduler.start(create=create)
 #         return xs.singleOrDefault(function (x) {
 #             if (x < 4) {
-#                 return false
+#                 return False
 #             } else {
 #                 throw ex
 #             }
