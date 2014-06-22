@@ -1,14 +1,13 @@
-# The Reactive Extensions for Python 3
+# The Reactive Extensions for Python... #
+*...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3*
 
-...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3. 
-
-The main Rx repository can be found at [CodePlex](http://rx.codeplex.com/).
+This project is a mirror of the [CodePlex](http://rxpy.codeplex.com/) repository.
 
 ## About the Reactive Extensions
 
 The Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using LINQ operators, and parameterize the concurrency in the asynchronous data streams using Schedulers. Simply put, Rx = Observables + LINQ + Schedulers.
 
-Whether you are authoring a client-side or server-side application in Python, you have to deal with asynchronous and event-based programming as a matter of course. Although some patterns are emerging such as the Promise pattern, handling exceptions, cancellation, and synchronization is difficult and error-prone.
+Whether you are authoring a client-side or server-side application in Python, you have to deal with asynchronous and event-based programming as a matter of course. 
 
 Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.
 
@@ -19,3 +18,27 @@ Because observable sequences are data streams, you can query them using standard
 To install Rx:
 
 `pip install Rx`
+
+## Contributing ##
+
+There are lots of ways to [contribute](https://github.com/Reactive-Extensions/RxPy/wiki/Contributing) to the project, and we appreciate our [contributors](https://github.com/Reactive-Extensions/RxPy/wiki/Contributors).
+
+You can contribute by reviewing and sending feedback on code checkins, suggesting and trying out new features as they are implemented, submit bugs and help us verify fixes as they are checked in, as well as submit code fixes or code contributions of your own. Note that all code submissions will be rigorously reviewed and tested by the Rx Team, and only those that meet an extremely high bar for both quality and design/roadmap appropriateness will be merged into the source.
+
+## License ##
+
+Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.
+Microsoft Open Technologies would like to thank its contributors, a list
+of whom are at http://rx.codeplex.com/wikipage?title=Contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License. You may
+obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions
+and limitations under the License.

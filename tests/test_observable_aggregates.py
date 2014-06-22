@@ -1658,7 +1658,6 @@ def test_count_predicate_predicate_throws():
 #     }).messages
 #     res.assert_equal(on_error(220, ex))
 
-
 # def test_ToArray_Completed():
 #     var msgs, results, scheduler, xs
 #     scheduler = TestScheduler()

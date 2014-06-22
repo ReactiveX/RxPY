@@ -1,5 +1,7 @@
-from rx.disposables import Disposable, CompositeDisposable
+from threading import Timer
 from datetime import datetime, timedelta
+
+from rx.disposables import Disposable, CompositeDisposable
 
 class Scheduler(object):
     def schedule(self, action, state=None):
@@ -16,7 +18,40 @@ class Scheduler(object):
         
         action(self, state)
         return Disposable.empty()
+
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work by dynamically discovering the 
+        scheduler's capabilities. 
+     
+        Keyword parameters:
+        period -- Period for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first 
+            iteration.
+     
+        Returns the disposable object used to cancel the scheduled recurring 
+        action (best effort).
+        """
+
+        period /= 1000.0
+        timer = None
+        s = state
         
+        def interval():
+            nonlocal timer, s
+            s = action(s)
+            
+            timer = Timer(period, interval)
+            timer.start()
+
+        timer = Timer(period, interval)
+        timer.start()
+        
+        def dispose():
+            timer.cancel()
+
+        return Disposable(dispose)
+
     def invoke_rec_immediate(self, scheduler, pair):
         #print "invoke_rec_immediate", scheduler, pair
         state = pair.get('state')
