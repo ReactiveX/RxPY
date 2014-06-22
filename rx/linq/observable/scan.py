@@ -1,7 +1,10 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
-class ObservableAll(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAll(Observable):
     
     def scan(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence and 
@@ -25,18 +28,16 @@ class ObservableAll(Observable, metaclass=ObservableMeta):
         source = self
 
         def defer():
-            has_accumulation = False
-            accumulation = None
+            has_accumulation = [False]
+            accumulation = [None]
 
             def projection(x):
-                nonlocal accumulation, has_accumulation
-
-                if has_accumulation:
-                    accumulation = accumulator(accumulation, x)
+                if has_accumulation[0]:
+                    accumulation[0] = accumulator(accumulation[0], x)
                 else:
-                    accumulation =  accumulator(seed, x) if has_seed else x
-                    has_accumulation = True
+                    accumulation[0] =  accumulator(seed, x) if has_seed else x
+                    has_accumulation[0] = True
                 
-                return accumulation
+                return accumulation[0]
             return source.select(projection)
         return Observable.defer(defer)

@@ -134,12 +134,10 @@ def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_dispose
     scheduler = TestScheduler()
     l_msgs = [on_next(150, 1), on_error(215, 'ex'), on_completed(240)]
     r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-    source_not_disposed = False
+    source_not_disposed = [False]
 
     def action():
-        nonlocal source_not_disposed
-
-        source_not_disposed = True
+        source_not_disposed[0] = True
     l = scheduler.create_hot_observable(l_msgs).do_action(on_next=action)
     
     r = scheduler.create_hot_observable(r_msgs)
@@ -150,18 +148,17 @@ def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_dispose
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_completed(210))
-    assert(not source_not_disposed)
+    assert(not source_not_disposed[0])
 
 def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal():
     scheduler = TestScheduler()
     l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
     r_msgs = [on_next(150, 1), on_next(250, 2), on_completed(260)]
-    signal_not_disposed = False
+    signal_not_disposed = [False]
     l = scheduler.create_hot_observable(l_msgs)
 
     def action():
-        nonlocal signal_not_disposed
-        signal_not_disposed = True
+        signal_not_disposed[0] = True
     r = scheduler.create_hot_observable(r_msgs).do_action(on_next=action)
     
     def create():
@@ -169,4 +166,4 @@ def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal():
     
     results = scheduler.start(create)        
     results.messages.assert_equal(on_next(230, 2), on_completed(240))
-    assert(not signal_not_disposed)
+    assert(not signal_not_disposed[0])

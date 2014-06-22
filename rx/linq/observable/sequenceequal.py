@@ -1,24 +1,25 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable, CompositeDisposable
 from rx.internal import default_comparer
 
-class ObservableSequenceEqual(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSequenceEqual(Observable):
     @staticmethod
     def sequence_equal_array(first, second, comparer):
         def subscribe(observer):
-            count = 0
+            count = [0]
             length = len(second)
             
             def on_next(value):
-                nonlocal count
-
                 equal = False
                 try:
-                    if count < length:
-                        equal = comparer(value, second[count])
-                        count += 1
+                    if count[0] < length:
+                        equal = comparer(value, second[count[0]])
+                        count[0] += 1
                     
                 except Exception as ex:
                     observer.on_error(ex)
@@ -29,7 +30,7 @@ class ObservableSequenceEqual(Observable, metaclass=ObservableMeta):
                     observer.on_completed()
 
             def on_completed():
-                observer.on_next(count == length)
+                observer.on_next(count[0] == length)
                 observer.on_completed()
             
             return first.subscribe(on_next, observer.on_error, on_completed)
@@ -59,8 +60,8 @@ class ObservableSequenceEqual(Observable, metaclass=ObservableMeta):
             return ObservableAggregates.sequence_equal_array(first, second, comparer)
         
         def subscribe(observer):
-            donel = False
-            doner = False
+            donel = [False]
+            doner = [False]
             ql = []
             qr = []
             
@@ -77,21 +78,19 @@ class ObservableSequenceEqual(Observable, metaclass=ObservableMeta):
                         observer.on_next(False)
                         observer.on_completed()
                     
-                elif doner:
+                elif doner[0]:
                     observer.on_next(False)
                     observer.on_completed()
                 else:
                     ql.append(x)
 
             def on_completed1():
-                nonlocal donel
-
-                donel = True
+                donel[0] = True
                 if not len(ql):
                     if len(qr) > 0:
                         observer.on_next(False)
                         observer.on_completed()
-                    elif doner:
+                    elif doner[0]:
                         observer.on_next(True)
                         observer.on_completed()
 
@@ -108,21 +107,19 @@ class ObservableSequenceEqual(Observable, metaclass=ObservableMeta):
                         observer.on_next(False)
                         observer.on_completed()
                     
-                elif donel:
+                elif donel[0]:
                     observer.on_next(False)
                     observer.on_completed()
                 else:
                     qr.append(x)
 
             def on_completed2():
-                nonlocal doner
-
-                doner = True
+                doner[0] = True
                 if not len(qr):
                     if len(ql) > 0:
                         observer.on_next(False)
                         observer.on_completed()
-                    elif donel:
+                    elif donel[0]:
                         observer.on_next(True)
                         observer.on_completed()
 

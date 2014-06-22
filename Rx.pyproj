@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\observable\test_window.py</StartupFile>
+    <StartupFile>tests\test_observable\test_average.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>C:\Users\Dag\Documents\GitHub\RxPy\</WorkingDirectory>
@@ -95,15 +95,20 @@
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
-    <Compile Include="tests\observable\test_all.py" />
-    <Compile Include="tests\observable\test_any.py" />
-    <Compile Include="tests\observable\test_average.py" />
-    <Compile Include="tests\observable\test_window.py" />
-    <Compile Include="tests\observable\__init__.py" />
-    <Compile Include="tests\test_asyncsubject.py" />
-    <Compile Include="tests\test_behaviorsubject.py" />
+    <Compile Include="tests\test_concurrency\test_currentthreadscheduler.py" />
+    <Compile Include="tests\test_concurrency\test_immediatescheduler.py" />
+    <Compile Include="tests\test_concurrency\test_timeoutscheduler.py" />
+    <Compile Include="tests\test_disposables\test_disposable.py" />
     <Compile Include="tests\test_group_join.py" />
     <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable\test_all.py" />
+    <Compile Include="tests\test_observable\test_any.py" />
+    <Compile Include="tests\test_observable\test_average.py" />
+    <Compile Include="tests\test_observable\test_scan.py" />
+    <Compile Include="tests\test_observable\test_takeutil.py" />
+    <Compile Include="tests\test_observable\test_toarray.py" />
+    <Compile Include="tests\test_observable\test_window.py" />
+    <Compile Include="tests\test_observable\__init__.py" />
     <Compile Include="tests\test_observable_aggregates.py" />
     <Compile Include="tests\test_observable_concurrency.py" />
     <Compile Include="tests\test_observable_creation.py" />
@@ -111,10 +116,6 @@
     <Compile Include="tests\test_observable_multiple.py" />
     <Compile Include="tests\test_observable_time.py" />
     <Compile Include="tests\test_observer.py" />
-    <Compile Include="tests\test_currentthreadscheduler.py" />
-    <Compile Include="tests\test_disposable.py" />
-    <Compile Include="tests\test_immediatescheduler.py" />
-    <Compile Include="tests\test_replaysubject.py" />
     <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
     <Compile Include="tests\test_standardqueryoperators\test_select.py" />
     <Compile Include="tests\test_standardqueryoperators\test_select_many.py" />
@@ -124,8 +125,10 @@
     <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
     <Compile Include="tests\test_standardqueryoperators\test_where.py" />
     <Compile Include="tests\test_standardqueryoperators\__init__.py" />
-    <Compile Include="tests\test_subject.py" />
-    <Compile Include="tests\test_timeoutscheduler.py" />
+    <Compile Include="tests\test_subjects\test_asyncsubject.py" />
+    <Compile Include="tests\test_subjects\test_behaviorsubject.py" />
+    <Compile Include="tests\test_subjects\test_replaysubject.py" />
+    <Compile Include="tests\test_subjects\test_subject.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
@@ -138,18 +141,28 @@
     <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
-    <Folder Include="tests\observable\" />
-    <Folder Include="tests\observable\__pycache__\" />
+    <Folder Include="tests\test_concurrency\" />
+    <Folder Include="tests\test_concurrency\__pycache__\" />
+    <Folder Include="tests\test_disposables\" />
+    <Folder Include="tests\test_disposables\__pycache__\" />
+    <Folder Include="tests\test_observable\" />
     <Folder Include="tests\test_standardqueryoperators\" />
+    <Folder Include="tests\test_subjects\" />
+    <Folder Include="tests\test_subjects\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.2" />
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="tests\observable\__pycache__\test_all.cpython-34.pyc" />
-    <Content Include="tests\observable\__pycache__\test_any.cpython-34.pyc" />
-    <Content Include="tests\observable\__pycache__\__init__.cpython-34.pyc" />
+    <Content Include="tests\test_concurrency\__pycache__\test_currentthreadscheduler.cpython-34.pyc" />
+    <Content Include="tests\test_concurrency\__pycache__\test_immediatescheduler.cpython-34.pyc" />
+    <Content Include="tests\test_concurrency\__pycache__\test_timeoutscheduler.cpython-34.pyc" />
+    <Content Include="tests\test_disposables\__pycache__\test_disposable.cpython-34.pyc" />
+    <Content Include="tests\test_subjects\__pycache__\test_asyncsubject.cpython-34.pyc" />
+    <Content Include="tests\test_subjects\__pycache__\test_behaviorsubject.cpython-34.pyc" />
+    <Content Include="tests\test_subjects\__pycache__\test_replaysubject.cpython-34.pyc" />
+    <Content Include="tests\test_subjects\__pycache__\test_subject.cpython-34.pyc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

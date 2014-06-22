@@ -1,7 +1,10 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
-class ObservableAggregate(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAggregate(Observable):
 
     def aggregate(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence, 

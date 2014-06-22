@@ -4,6 +4,7 @@ import types
 from rx import Observable, AnonymousObservable
 
 def default_comparer(x, y):
+    print((x, y))
     if not hasattr(y, 'equals'):
         return x == y
     

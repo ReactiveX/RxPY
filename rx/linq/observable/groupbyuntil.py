@@ -1,4 +1,5 @@
 import six
+from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
@@ -8,8 +9,8 @@ from rx.internal.basic import default_key_serializer, identity
 
 from rx.linq.groupedobservable import GroupedObservable
 
-@six.add_metaclass(ObservableMeta)
-class ObservableGroupByUntil(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableGroupByUntil(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
 

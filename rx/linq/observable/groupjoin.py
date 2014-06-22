@@ -1,6 +1,8 @@
 import logging
 from collections import OrderedDict
 
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
@@ -11,7 +13,8 @@ from rx.subjects import Subject
 
 log = logging.getLogger("Rx")
 
-class ObservableGroupJoin(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableGroupJoin(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
 

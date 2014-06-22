@@ -1,3 +1,5 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
@@ -6,7 +8,8 @@ class AverageValue(object):
         self.sum = sum
         self.count = count
 
-class ObservableAverage(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAverage(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
 
@@ -35,7 +38,7 @@ class ObservableAverage(Observable, metaclass=ObservableMeta):
             if s.count == 0:
                 raise Exception('The input sequence was empty')
                 
-            return s.sum / s.count
+            return s.sum / float(s.count)
             
         seed = AverageValue(sum=0, count=0)
         return self.scan(accumulator, seed).final_value().select(selector)

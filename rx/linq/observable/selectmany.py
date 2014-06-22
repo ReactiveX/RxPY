@@ -1,7 +1,10 @@
+from six import add_metaclass
+
 from rx import Observable, AnonymousObservable
 from rx.observable import ObservableMeta
 
-class ObservableSelectMany(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSelectMany(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
 

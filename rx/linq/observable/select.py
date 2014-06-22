@@ -1,11 +1,11 @@
-import six
+from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.observable import ObservableMeta
 from rx.internal.utils import adapt_call
         
-@six.add_metaclass(ObservableMeta)
-class ObservableSelect(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSelect(Observable):
     """Standard sequence operator extension methods. Note that we do some magic
     here by using a meta class to extend Observable with the methods in this
     class"""

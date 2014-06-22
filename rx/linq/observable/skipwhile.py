@@ -1,8 +1,11 @@
+from six import add_metaclass
+
 from rx import Observable, AnonymousObservable
 from rx.observable import ObservableMeta
 from rx.internal.utils import adapt_call
 
-class ObservableSkip(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSkip(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
     
@@ -26,20 +29,19 @@ class ObservableSkip(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            i, running = 0, False
+            i, running = [0], [False]
 
             def on_next(value):
-                nonlocal running, i
-                if not running:
+                if not running[0]:
                     try:
-                        running = not predicate(value, i)
+                        running[0] = not predicate(value, i[0])
                     except Exception as exn:
                         observer.on_error(exn)
                         return
                     else:
-                        i += 1
+                        i[0] += 1
         
-                if running:
+                if running[0]:
                     observer.on_next(value)
                 
             return source.subscribe(on_next, observer.on_error, observer.on_completed)

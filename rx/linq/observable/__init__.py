@@ -19,3 +19,4 @@ from . import skipwhile
 from . import toarray
 from . import where
 from . import window
+from . import windowwithcount

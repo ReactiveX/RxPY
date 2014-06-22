@@ -1,7 +1,10 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
-class ObservableAny(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAny(Observable):
     def any(self, predicate=None, this=None):
         """Determines whether any element of an observable sequence satisfies a
         condition if present, else if any items are in the sequence.

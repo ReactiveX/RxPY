@@ -1,7 +1,10 @@
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
-class ObservableAll(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableAll(Observable):
     
     def all(self, predicate, this=None):
         """Determines whether all elements of an observable sequence satisfy a

@@ -1,6 +1,8 @@
 import logging
 from collections import OrderedDict
 
+from six import add_metaclass
+
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
@@ -11,7 +13,8 @@ from rx.subjects import Subject
 
 log = logging.getLogger("Rx")
 
-class ObservableWindow(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableWindow(Observable):
     def window(self, window_openings=None, closing_selector=None, window_closing_selector=None):
         """Projects each element of an observable sequence into zero or more 
         windows.
@@ -43,29 +46,29 @@ class ObservableWindow(Observable, metaclass=ObservableMeta):
         source = self
 
         def subscribe(observer):
-            window = Subject()
+            window = [Subject()]
             d = CompositeDisposable()
             r = RefCountDisposable(d)
 
-            observer.on_next(add_ref(window, r))
+            observer.on_next(add_ref(window[0], r))
 
             def on_next_window(x):
-                window.on_next(x)
+                window[0].on_next(x)
             
             def on_error(err):
-                window.on_error(err)
+                window[0].on_error(err)
                 observer.on_error(err)
             
             def on_completed():
-                window.on_completed()
+                window[0].on_completed()
                 observer.on_completed()
 
             d.add(source.subscribe(on_next_window, on_error, on_completed))
 
             def on_next_observer(w):
-                window.on_completed()
-                window = Subject()
-                observer.on_next(add_ref(window, r))
+                window[0].on_completed()
+                window[0] = Subject()
+                observer.on_next(add_ref(window[0], r))
             
             d.add(window_boundaries.subscribe(on_next_observer, on_error, on_completed))
             return r
@@ -78,19 +81,19 @@ class ObservableWindow(Observable, metaclass=ObservableMeta):
             m = SerialDisposable()
             d = CompositeDisposable(m)
             r = RefCountDisposable(d)
-            window = Subject()
+            window = [Subject()]
             
-            observer.on_next(add_ref(window, r))
+            observer.on_next(add_ref(window[0], r))
 
             def on_next(x):
-                window.on_next(x)
+                window[0].on_next(x)
             
             def on_error(ex):
-                window.on_error(ex)
+                window[0].on_error(ex)
                 observer.on_error(ex)
             
             def on_completed():
-                window.on_completed()
+                window[0].on_completed()
                 observer.on_completed()
             
             d.add(source.subscribe(on_next, on_error, on_completed))
@@ -104,11 +107,9 @@ class ObservableWindow(Observable, metaclass=ObservableMeta):
                     return
                 
                 def on_completed():
-                    nonlocal window
-                    
-                    window.on_completed()
-                    window = Subject()
-                    observer.on_next(add_ref(window, r))
+                    window[0].on_completed()
+                    window[0] = Subject()
+                    observer.on_next(add_ref(window[0], r))
                     create_window_close()
                 
                 m1 = SingleAssignmentDisposable()

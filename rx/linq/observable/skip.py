@@ -1,12 +1,12 @@
-import six
+from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.observable import ObservableMeta
 from rx.internal.basic import default_key_serializer, identity
 from rx.internal import ArgumentOutOfRangeException
 
-@six.add_metaclass(ObservableMeta)
-class ObservableSkip(Observable, metaclass=ObservableMeta):
+@add_metaclass(ObservableMeta)
+class ObservableSkip(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
     
@@ -22,7 +22,7 @@ class ObservableSkip(Observable, metaclass=ObservableMeta):
         after the specified index in the input sequence.
         """        
         
-       if count < 0:
+        if count < 0:
             raise ArgumentOutOfRangeException()
         
         observable = self

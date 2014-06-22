@@ -15,14 +15,12 @@ created = ReactiveTest.created
 def test_window_closings_basic():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    window = 1
+    window = [1]
     
     def create():
         def closing():
-            nonlocal window
-
-            curr = window
-            window += 1
+            curr = window[0]
+            window[0] += 1
             return Observable.timer(curr * 100, scheduler=scheduler)
             
         def selector(w, i):
