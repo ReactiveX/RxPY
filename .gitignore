@@ -17,6 +17,7 @@ develop-eggs
 .installed.cfg
 lib
 lib64
+*tmp_dir
 
 # Installer logs
 pip-log.txt
@@ -33,8 +34,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-<<<<<<< HEAD
-=======
 
 # Visual studio
 *.suo
@@ -42,4 +41,3 @@ nosetests.xml
 
 # Log files
 *.log
->>>>>>> 40571f4091103c01920119f2cd8332b56853732a

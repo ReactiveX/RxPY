@@ -3,11 +3,13 @@ from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.notification import OnNext, OnError, OnCompleted
+from rx.subjects import Subject
 
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
 from rx.concurrency import immediate_scheduler
 
-from rx.internal import Enumerable
+from rx.internal import Enumerable, ArgumentOutOfRangeException
+from rx.internal.utils import add_ref
 
 def concat(sources):
     def subscribe(observer):
@@ -267,8 +269,10 @@ class ObservableSingle(Observable):
      
         observer -- [Optional] Observer, or ... 
         on_next -- [Optional] Action to invoke for each element in the observable sequence.
-        on_error -- [Optional] Action to invoke upon exceptional termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
-        on_completed -- [Optional] Action to invoke upon graceful termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
+        on_error -- [Optional] Action to invoke upon exceptional termination 
+            of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
+        on_completed -- [Optional] Action to invoke upon graceful termination 
+            of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
      
         Returns the source sequence with the side-effecting behavior applied.   
         """
@@ -310,3 +314,75 @@ class ObservableSingle(Observable):
                     observer.on_completed()
             return source.subscribe(on_next, on_error, on_completed)
         return AnonymousObservable(subscribe)
+
+    def window_with_count(self, count, skip=None):
+        """Projects each element of an observable sequence into zero or more 
+        windows which are produced based on element count information.
+    
+        1 - xs.window_with_count(10);
+        2 - xs.window_with_count(10, 1);
+    
+        count -- Length of each window.
+        skip -- [Optional] Number of elements to skip between creation of 
+            consecutive windows. If not specified, defaults to the count.
+        
+        Returns an observable sequence of windows.
+        """
+        source = self
+        if count <= 0:
+            raise ArgumentOutOfRangeException()
+        
+        if skip is None:
+            skip = count
+        
+        if skip <= 0:
+            raise ArgumentOutOfRangeException()
+        
+        def subscribe(observer):
+            m = SingleAssignmentDisposable()
+            refCountDisposable = RefCountDisposable(m)
+            n = 0
+            q = []
+                
+            def create_window():
+                nonlocal q
+                
+                s = Subject()
+                q.append(s)
+                observer.on_next(add_ref(s, refCountDisposable))
+            
+            create_window()
+            
+            def on_next(x):
+                nonlocal q, n
+
+                for item in q:
+                    item.on_next(x)
+                
+                c = n - count + 1
+                if c >= 0 and c % skip == 0:
+                    s = q.pop(0);
+                    s.on_completed()
+                
+                n += 1
+                if (n % skip) == 0:
+                    create_window()
+                
+            def on_error(exception):
+                nonlocal q
+                
+                while len(q):
+                    q.pop(0).on_error(exception)
+                observer.on_error(exception)
+            
+            def on_completed():
+                nonlocal q
+
+                while len(q):
+                    q.pop(0).on_completed()
+                observer.on_completed()
+
+            m.disposable = source.subscribe(on_next, on_error, on_completed)
+            return refCountDisposable
+        return AnonymousObservable(subscribe)
+    

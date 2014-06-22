@@ -151,3 +151,14 @@ class VirtualTimeScheduler(Scheduler):
                 return next
         
         return None
+
+    def add(self, absolute, relative):
+        raise NotImplementedError
+
+    @classmethod
+    def to_datetime_offset(cls, absolute):
+        raise NotImplementedError
+
+    @classmethod
+    def to_relative(cls, timespan):
+        raise NotImplementedError
