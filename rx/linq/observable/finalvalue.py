@@ -4,6 +4,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.internal import SequenceContainsNoElementsError
 
 class ObservableFinalValue(Observable, metaclass=ObservableMeta):
+    """Note that we do some magic here by using a meta class to extend 
+    Observable with the methods in this class"""
+
     def final_value(self):
         source = self
 

@@ -1,7 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
-class ObservableCoincidence(Observable, metaclass=ObservableMeta):
+class ObservableBuffer(Observable, metaclass=ObservableMeta):
+    """Note that we do some magic here by using a meta class to extend 
+    Observable with the methods in this class"""
 
     def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_selector=None):
         """Projects each element of an observable sequence into zero or more 

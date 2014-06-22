@@ -7,6 +7,8 @@ class AverageValue(object):
         self.count = count
 
 class ObservableAverage(Observable, metaclass=ObservableMeta):
+    """Note that we do some magic here by using a meta class to extend 
+    Observable with the methods in this class"""
 
     def average(self, key_selector=None, this=None):
         """Computes the average of an observable sequence of values that are in

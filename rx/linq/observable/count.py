@@ -5,6 +5,9 @@ from rx.disposables import SingleAssignmentDisposable, SerialDisposable, Schedul
 from rx.internal import default_comparer
 
 class ObservableCount(Observable, metaclass=ObservableMeta):
+    """Note that we do some magic here by using a meta class to extend 
+    Observable with the methods in this class"""
+
     def count(self, predicate=None):
         """Returns an observable sequence containing a value that represents 
         how many elements in the specified observable sequence satisfy a 

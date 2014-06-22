@@ -2,9 +2,8 @@ from rx import Observable, AnonymousObservable
 from rx.observable import ObservableMeta
 
 class ObservableSelectMany(Observable, metaclass=ObservableMeta):
-    """Standard sequence operator extension methods. Note that we do some magic
-    here by using a meta class to extend Observable with the methods in this
-    class"""
+    """Note that we do some magic here by using a meta class to extend 
+    Observable with the methods in this class"""
 
     def select_many(self, selector, result_selector=None):
         """One of the Following:
