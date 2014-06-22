@@ -16,6 +16,8 @@ from . import selectmany
 from . import sequenceequal
 from . import skip
 from . import skipwhile
+from . import take
+from . import takewhile
 from . import toarray
 from . import where
 from . import window
