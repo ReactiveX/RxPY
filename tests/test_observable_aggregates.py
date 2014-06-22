@@ -1658,45 +1658,6 @@ def test_count_predicate_predicate_throws():
 #     }).messages
 #     res.assert_equal(on_error(220, ex))
 
-# def test_ToArray_Completed():
-#     var msgs, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5), on_completed(660)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create=create)
-#         return xs.toArray()
-#     }).messages
-#     equal(2, results.length)
-#     equal(660, results[0].time)
-#     equal('N', results[0].value.kind)
-#     results[0].value.value.assert_equal(2, 3, 4, 5)
-#     ok(on_completed(660).equals(results[1]))
-#     xs.subscriptions.assert_equal(subscribe(200, 660))
-
-
-# def test_ToArray_Error():
-#     var ex, msgs, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5), on_error(660, ex)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create=create)
-#         return xs.toArray()
-#     }).messages
-#     results.assert_equal(on_error(660, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 660))
-
-
-# def test_ToArray_Disposed():
-#     var msgs, results, scheduler, xs
-#     scheduler = TestScheduler()
-#     msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5)]
-#     xs = scheduler.create_hot_observable(msgs)
-#     results = scheduler.start(create=create)
-#         return xs.toArray()
-#     }).messages
-#     results.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 def test_sequence_equal_equal():
     scheduler = TestScheduler()

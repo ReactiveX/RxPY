@@ -2,6 +2,7 @@ from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
 class ObservableAll(Observable, metaclass=ObservableMeta):
+    
     def all(self, predicate, this=None):
         """Determines whether all elements of an observable sequence satisfy a
         condition.
