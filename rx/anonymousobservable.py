@@ -1,7 +1,11 @@
+import logging
+
 from rx.concurrency import current_thread_scheduler
 
 from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
+
+log = logging.getLogger("Rx")
 
 class AnonymousObservable(Observable):
     """Class to create an Observable instance from a delegate-based implementation
@@ -29,6 +33,8 @@ class AnonymousObservable(Observable):
                 try:
                     auto_detach_observer.disposable = subscribe(auto_detach_observer)
                 except Exception as ex:
+                    log.error("AnonymousObservable Exception: %s" % ex)
+                    
                     if not auto_detach_observer.fail(ex):
                         raise ex
 

@@ -5,10 +5,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_observable_time.py</StartupFile>
+    <StartupFile>tests\observable\test_window.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
+    <WorkingDirectory>C:\Users\Dag\Documents\GitHub\RxPy\</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>3.4</InterpreterVersion>
@@ -41,14 +41,22 @@
     <Compile Include="rx\internal\priorityqueue.py" />
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
+    <Compile Include="rx\linq\observable\aggregate.py" />
     <Compile Include="rx\linq\observable\all.py" />
     <Compile Include="rx\linq\observable\any.py" />
     <Compile Include="rx\linq\observable\average.py" />
+    <Compile Include="rx\linq\observable\count.py" />
+    <Compile Include="rx\linq\observable\finalvalue.py" />
+    <Compile Include="rx\linq\observable\reduce.py" />
+    <Compile Include="rx\linq\observable\scan.py" />
+    <Compile Include="rx\linq\observable\select.py" />
+    <Compile Include="rx\linq\observable\sequenceequal.py" />
+    <Compile Include="rx\linq\observable\toarray.py" />
+    <Compile Include="rx\linq\observable\where.py" />
+    <Compile Include="rx\linq\observable\window.py" />
     <Compile Include="rx\linq\observable\__init__.py" />
-    <Compile Include="rx\linq\observable_aggregates.py" />
     <Compile Include="rx\linq\observable_coincidence.py" />
     <Compile Include="rx\linq\observable_concurrency.py" />
-    <Compile Include="rx\linq\observable_leave.py" />
     <Compile Include="rx\linq\observable_multiple.py" />
     <Compile Include="rx\linq\observable_single.py" />
     <Compile Include="rx\linq\observable_time.py" />
@@ -89,6 +97,8 @@
     <Compile Include="rx\testing\__init__.py" />
     <Compile Include="tests\observable\test_all.py" />
     <Compile Include="tests\observable\test_any.py" />
+    <Compile Include="tests\observable\test_average.py" />
+    <Compile Include="tests\observable\test_window.py" />
     <Compile Include="tests\observable\__init__.py" />
     <Compile Include="tests\test_asyncsubject.py" />
     <Compile Include="tests\test_behaviorsubject.py" />
