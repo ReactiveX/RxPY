@@ -9,6 +9,7 @@ from . import groupby
 from . import groupbyuntil
 from . import groupjoin
 from . import join
+from . import observeon
 from . import reduce
 from . import scan
 from . import select
@@ -16,6 +17,7 @@ from . import selectmany
 from . import sequenceequal
 from . import skip
 from . import skipwhile
+from . import subscribeon
 from . import take
 from . import takewhile
 from . import toarray
