@@ -1,5 +1,5 @@
 # The Reactive Extensions for Python (RxPY) ... #
-*...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3*
+*...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
 This project is a mirror of the [CodePlex](http://rxpy.codeplex.com/) repository.
 
