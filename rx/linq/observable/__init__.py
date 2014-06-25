@@ -1,4 +1,5 @@
 from . import aggregate
+from . import amb
 from . import all
 from . import any
 from . import average
@@ -8,6 +9,7 @@ from . import finalvalue
 from . import groupby
 from . import groupbyuntil
 from . import groupjoin
+from . import interval
 from . import join
 from . import observeon
 from . import reduce
@@ -18,6 +20,7 @@ from . import sequenceequal
 from . import skip
 from . import skipwhile
 from . import subscribeon
+from . import switchlatest
 from . import take
 from . import takewhile
 from . import toarray

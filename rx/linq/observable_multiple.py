@@ -12,98 +12,9 @@ class ObservableMultiple(Observable):
     def __init__(self, subscribe):
         self.concat = self.__concat # Stitch in instance method
         self.merge = self.__merge
-        self.amb = self.__amb
         self.catch_exception = self.__catch_exception
         self.on_error_resume_next = self.__on_error_resume_next
         self.combine_latest = self.__combine_latest
-
-    def __amb(self, right_source):
-        """Propagates the observable sequence that reacts first.
-    
-        right_source Second observable sequence.
-        
-        returns an observable sequence that surfaces either of the given 
-        sequences, whichever reacted first.
-        """
-        left_source = self
-
-        def subscribe(observer):
-            choice = [None]
-            left_choice = 'L'
-            right_choice = 'R',
-            left_subscription = SingleAssignmentDisposable()
-            right_subscription = SingleAssignmentDisposable()
-
-            def choiceL():
-                if not choice[0]:
-                    choice[0] = left_choice
-                    right_subscription.dispose()
-
-            def choiceR():
-                if not choice[0]:
-                    choice[0] = right_choice
-                    left_subscription.dispose()
-
-            def on_left_next(left):
-                choiceL()
-                if choice[0] == left_choice:
-                    observer.on_next(left)
-            
-            def on_left_error(err):
-                choiceL()
-                if choice[0] == left_choice:
-                    observer.on_error(err)
-                
-
-            def on_left_completed():
-                choiceL()
-                if choice[0] == left_choice:
-                    observer.on_completed()
-
-            left_subscription.disposable = left_source.subscribe(on_left_next, on_left_error, on_left_completed)
-
-            def on_right_next(right):
-                choiceR()
-                if choice[0] == right_choice:
-                    observer.on_next(right)
-            
-            def on_right_error(err):
-                choiceR()
-                if choice[0] == right_choice:
-                    observer.on_error(err)
-            
-            def on_right_completed():
-                choiceR()
-                if choice[0] == right_choice:
-                    observer.on_completed()
-
-            right_subscription.disposable = right_source.subscribe(on_right_next, on_right_error, on_right_completed)
-            return CompositeDisposable(left_subscription, right_subscription)
-        return AnonymousObservable(subscribe)
-
-    @classmethod
-    def amb(cls, *args):
-        """Propagates the observable sequence that reacts first.
-    
-        E.g. winner = Rx.Observable.amb(xs, ys, zs)
-     
-        Returns an observable sequence that surfaces any of the given sequences, whichever reacted first.
-        """
-    
-        acc = Observable.never()
-
-        if isinstance(args[0], list):
-            items = args[0]
-        else:
-            items = list(args)
-        
-        def func(previous, current):
-            return previous.amb(current)
-        
-        for item in items:
-            acc = func(acc, item)
-        
-        return acc
 
     @staticmethod
     def catch_handler(source, handler):
@@ -127,7 +38,6 @@ class ObservableMultiple(Observable):
             d1.disposable = source.subscribe(observer.on_next, on_error, observer.on_completed)
             return subscription
         return AnonymousObservable(subscribe)
-    
 
     def __catch_exception(self, second=None, handler=None):
         """Continues an observable sequence that is terminated by an exception 
@@ -224,7 +134,6 @@ class ObservableMultiple(Observable):
                 
                 if has_value_all[0] or all(has_value):
                     try:
-                        print("selector: ", values)
                         res = result_selector(*values)
                     except Exception as ex:
                         observer.on_error(ex)
@@ -237,7 +146,6 @@ class ObservableMultiple(Observable):
                 has_value_all[0] = all(has_value)
 
             def done(i):
-                print("done: ", i)
                 is_done[i] = True
                 if all(is_done):
                     observer.on_completed()
@@ -247,12 +155,10 @@ class ObservableMultiple(Observable):
                 subscriptions[i] = SingleAssignmentDisposable()
                 
                 def on_next(x):
-                    print("on_next: ", x)
                     values[i] = x
                     next(i)
                 
                 def on_completed():
-                    print("on_completed")
                     done(i)
                 
                 subscriptions[i].disposable = args[i].subscribe(on_next, observer.on_error, on_completed)
@@ -523,55 +429,6 @@ class ObservableMultiple(Observable):
                 
             cancelable = immediate_scheduler.schedule_recursive(action)
             return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
-
-    def switch_latest(self):
-        """Transforms an observable sequence of observable sequences into an 
-        observable sequence producing values only from the most recent 
-        observable sequence.
-        
-        Returns the observable sequence that at any point in time produces the 
-        elements of the most recent inner observable sequence that has been received.  
-        """
-    
-        sources = self
-
-        def subscribe(observer):
-            has_latest = [False]
-            inner_subscription = SerialDisposable()
-            is_stopped = [False]
-            latest = [0]
-
-            def on_next(inner_source):
-                d = SingleAssignmentDisposable()
-                latest[0] += 1
-                _id = latest[0]
-                has_latest[0] = True
-                inner_subscription.disposable = d
-
-                def on_next(x):
-                    if latest[0] == _id:
-                        observer.on_next(x)
-                
-                def on_error(e):
-                    if latest[0] == _id:
-                        observer.on_error(e)
-                
-                def on_completed():
-                    if latest[0] == _id:
-                        has_latest[0] = False
-                        if is_stopped[0]:
-                            observer.on_completed()
-                        
-                d.disposable = inner_source.subscribe(on_next, on_error, on_completed)
-            
-            def on_completed():
-                is_stopped[0] = True
-                if not has_latest[0]:
-                    observer.on_completed()
-                
-            subscription = sources.subscribe(on_next, observer.on_error, on_completed)
-            return CompositeDisposable(subscription, inner_subscription)
         return AnonymousObservable(subscribe)
 
     def skip_until(self, other):
