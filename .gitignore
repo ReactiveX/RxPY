@@ -42,3 +42,4 @@ nosetests.xml
 # Log files
 *.log
 Rx.pyperf
+*.coverage
