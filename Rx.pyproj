@@ -54,6 +54,7 @@
     <Compile Include="rx\linq\observable\groupjoin.py" />
     <Compile Include="rx\linq\observable\interval.py" />
     <Compile Include="rx\linq\observable\join.py" />
+    <Compile Include="rx\linq\observable\materialize.py" />
     <Compile Include="rx\linq\observable\observeon.py" />
     <Compile Include="rx\linq\observable\reduce.py" />
     <Compile Include="rx\linq\observable\scan.py" />
@@ -114,6 +115,7 @@
     <Compile Include="tests\test_disposables\test_disposable.py" />
     <Compile Include="tests\test_group_join.py" />
     <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable\test_materialize.py" />
     <Compile Include="tests\test_observable\test_all.py" />
     <Compile Include="tests\test_observable\test_any.py" />
     <Compile Include="tests\test_observable\test_average.py" />

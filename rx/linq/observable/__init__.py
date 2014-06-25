@@ -11,6 +11,7 @@ from . import groupbyuntil
 from . import groupjoin
 from . import interval
 from . import join
+from . import materialize
 from . import observeon
 from . import reduce
 from . import scan

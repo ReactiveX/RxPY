@@ -1,4 +1,5 @@
 import six
+
 from rx.concurrency import Scheduler
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
@@ -128,42 +129,6 @@ class ObservableSingle(Observable):
     
         return catch_exception(Enumerable.repeat(self, retry_count))
 
-    def scan(self, accumulator, seed=None):
-        """Applies an accumulator function over an observable sequence and 
-        returns each intermediate result. The optional seed value is used as 
-        the initial accumulator value. For aggregation behavior with no 
-        intermediate results, see Observable.aggregate.
-        
-        1 - scanned = source.scan(lambda acc, x: acc + x)
-        2 - scanned = source.scan(0, lambda acc, x: acc + x)
-        
-        Keyword arguments:
-        seed -- [Optional] The initial accumulator value.
-        accumulator -- An accumulator function to be invoked on each element.
-        
-        Returns an observable sequence containing the accumulated values.        
-        """
-        has_seed = False
-        if not seed is None:
-            has_seed = True
-
-        source = self
-
-        def defer():
-            has_accumulation = [False]
-            accumulation = [None]
-
-            def projection(x):
-                if has_accumulation[0]:
-                    accumulation[0] = accumulator(accumulation[0], x)
-                else:
-                    accumulation[0] =  accumulator(seed, x) if has_seed else x
-                    has_accumulation[0] = True
-                
-                return accumulation[0]
-            return source.select(projection)
-        return Observable.defer(defer)
-
     def start_with(self, *args, **kw):
         """Prepends a sequence of values to an observable sequence with an 
         optional scheduler and an argument list of values to prepend.
@@ -184,30 +149,6 @@ class ObservableSingle(Observable):
         sequence = [Observable.from_array(args, scheduler), self]
         return concat(Enumerable.for_each(sequence))
 
-    def materialize(self):
-        """Materializes the implicit notifications of an observable sequence as
-        explicit notification values.
-        
-        Returns an observable sequence containing the materialized notification
-        values from the source sequence.
-        """
-        source = self
-
-        def subscribe(observer):
-            def on_next(value):
-                observer.on_next(OnNext(value))
-
-            def on_error(exception):
-                observer.on_next(OnError(exception))
-                observer.on_completed()
-            
-            def on_completed():
-                observer.on_next(OnCompleted())
-                observer.on_completed()
-            
-            return source.subscribe(on_next, on_error, on_completed)
-        return AnonymousObservable(subscribe)
-    
     def distinct_until_changed(self, key_selector, comparer):
         """Returns an observable sequence that contains only distinct 
         contiguous elements according to the key_selector and the comparer.
