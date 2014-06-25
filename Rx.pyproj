@@ -8,7 +8,7 @@
     <StartupFile>tests\test_observable\test_average.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\Dag\Documents\GitHub\RxPy\</WorkingDirectory>
+    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>3.4</InterpreterVersion>
@@ -43,20 +43,34 @@
     <Compile Include="rx\linq\groupedobservable.py" />
     <Compile Include="rx\linq\observable\aggregate.py" />
     <Compile Include="rx\linq\observable\all.py" />
+    <Compile Include="rx\linq\observable\amb.py" />
     <Compile Include="rx\linq\observable\any.py" />
     <Compile Include="rx\linq\observable\average.py" />
+    <Compile Include="rx\linq\observable\buffer.py" />
     <Compile Include="rx\linq\observable\count.py" />
     <Compile Include="rx\linq\observable\finalvalue.py" />
+    <Compile Include="rx\linq\observable\groupby.py" />
+    <Compile Include="rx\linq\observable\groupbyuntil.py" />
+    <Compile Include="rx\linq\observable\groupjoin.py" />
+    <Compile Include="rx\linq\observable\interval.py" />
+    <Compile Include="rx\linq\observable\join.py" />
+    <Compile Include="rx\linq\observable\observeon.py" />
     <Compile Include="rx\linq\observable\reduce.py" />
     <Compile Include="rx\linq\observable\scan.py" />
     <Compile Include="rx\linq\observable\select.py" />
+    <Compile Include="rx\linq\observable\selectmany.py" />
     <Compile Include="rx\linq\observable\sequenceequal.py" />
+    <Compile Include="rx\linq\observable\skip.py" />
+    <Compile Include="rx\linq\observable\skipwhile.py" />
+    <Compile Include="rx\linq\observable\subscribeon.py" />
+    <Compile Include="rx\linq\observable\switchlatest.py" />
+    <Compile Include="rx\linq\observable\take.py" />
+    <Compile Include="rx\linq\observable\takewhile.py" />
     <Compile Include="rx\linq\observable\toarray.py" />
     <Compile Include="rx\linq\observable\where.py" />
     <Compile Include="rx\linq\observable\window.py" />
+    <Compile Include="rx\linq\observable\windowwithcount.py" />
     <Compile Include="rx\linq\observable\__init__.py" />
-    <Compile Include="rx\linq\observable_coincidence.py" />
-    <Compile Include="rx\linq\observable_concurrency.py" />
     <Compile Include="rx\linq\observable_multiple.py" />
     <Compile Include="rx\linq\observable_single.py" />
     <Compile Include="rx\linq\observable_time.py" />
@@ -89,7 +103,6 @@
     <Compile Include="rx\disposables\singleassignmentdisposable.py" />
     <Compile Include="rx\disposables\__init__.py" />
     <Compile Include="rx\linq\observable_creation.py" />
-    <Compile Include="rx\linq\standardsequenceoperators.py" />
     <Compile Include="rx\linq\__init__.py" />
     <Compile Include="rx\testing\coldobservable.py" />
     <Compile Include="rx\testing\hotobservable.py" />
@@ -151,7 +164,6 @@
     <Folder Include="tests\test_subjects\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.2" />
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
