@@ -18,6 +18,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
     download_url = 'https://github.com/dbrattli/RxPY',
     install_requires=[
         'six',
+        'nose'
     ],
     zip_safe = True,
 

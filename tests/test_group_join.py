@@ -975,4 +975,4 @@ def test_join_op_normal_ii():
 # }(typeof global == 'object' && global || this))
 
 if __name__ == '__main__':
-    test_join_op_normal_i()
+    unittest.main()
