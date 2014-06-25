@@ -118,7 +118,7 @@
     <Compile Include="tests\test_observable\test_any.py" />
     <Compile Include="tests\test_observable\test_average.py" />
     <Compile Include="tests\test_observable\test_scan.py" />
-    <Compile Include="tests\test_observable\test_takeutil.py" />
+    <Compile Include="tests\test_observable\test_takeuntil.py" />
     <Compile Include="tests\test_observable\test_toarray.py" />
     <Compile Include="tests\test_observable\test_window.py" />
     <Compile Include="tests\test_observable\__init__.py" />
@@ -127,6 +127,7 @@
     <Compile Include="tests\test_observable_creation.py" />
     <Compile Include="tests\test_observable_imperative.py" />
     <Compile Include="tests\test_observable_multiple.py" />
+    <Compile Include="tests\test_observable_single.py" />
     <Compile Include="tests\test_observable_time.py" />
     <Compile Include="tests\test_observer.py" />
     <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
