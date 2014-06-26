@@ -43,3 +43,4 @@ nosetests.xml
 *.log
 Rx.pyperf
 *.coverage
+UpgradeLog.htm
