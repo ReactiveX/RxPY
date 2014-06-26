@@ -27,46 +27,46 @@ class ObservableMultiple(Observable):
             left_subscription = SingleAssignmentDisposable()
             right_subscription = SingleAssignmentDisposable()
 
-            def choiceL():
+            def choice_l():
                 if not choice[0]:
                     choice[0] = left_choice
                     right_subscription.dispose()
 
-            def choiceR():
+            def choice_r():
                 if not choice[0]:
                     choice[0] = right_choice
                     left_subscription.dispose()
 
             def on_left_next(left):
-                choiceL()
+                choice_l()
                 if choice[0] == left_choice:
                     observer.on_next(left)
             
             def on_left_error(err):
-                choiceL()
+                choice_l()
                 if choice[0] == left_choice:
                     observer.on_error(err)
                 
 
             def on_left_completed():
-                choiceL()
+                choice_l()
                 if choice[0] == left_choice:
                     observer.on_completed()
 
             left_subscription.disposable = left_source.subscribe(on_left_next, on_left_error, on_left_completed)
 
             def on_right_next(right):
-                choiceR()
+                choice_r()
                 if choice[0] == right_choice:
                     observer.on_next(right)
             
             def on_right_error(err):
-                choiceR()
+                choice_r()
                 if choice[0] == right_choice:
                     observer.on_error(err)
             
             def on_right_completed():
-                choiceR()
+                choice_r()
                 if choice[0] == right_choice:
                     observer.on_completed()
 

@@ -1,6 +1,6 @@
 from six import add_metaclass
 
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.observable import ObservableMeta
 
 class AverageValue(object):

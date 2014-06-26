@@ -1,7 +1,6 @@
 from six import add_metaclass
 
-from rx import Observable, AnonymousObservable
-from rx.subjects import Subject
+from rx import Observable
 from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)

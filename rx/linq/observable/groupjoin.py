@@ -55,7 +55,7 @@ class ObservableGroupJoin(Observable):
                 s = Subject()
                 _id = left_id
                 left_id += 1
-                left_map.add(_id, s)
+                left_map[_id] = s
                 
                 try:
                     result = result_selector(value, add_ref(s, r))
@@ -86,7 +86,7 @@ class ObservableGroupJoin(Observable):
                 try:
                     duration = left_duration_selector(value)
                 except Exception as e:
-                    left_values = left_map.getValues()
+                    left_values = left_map.values()
                     for left_value in left_values:
                         left_value.on_error(e)
                     
@@ -94,7 +94,7 @@ class ObservableGroupJoin(Observable):
                     return
                 
                 def on_error(e):
-                    left_values = left_map.getValues()
+                    left_values = left_map.values()
                     for left_value in left_values:
                         left_value.on_error(e)
                     

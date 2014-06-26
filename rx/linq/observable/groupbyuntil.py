@@ -107,7 +107,6 @@ class ObservableGroupByUntil(Observable):
                         pass
 
                     def on_error(exn):
-                        print ("on_error()", exn)
                         for wr in six.itervalues(mapping):
                             wr.on_error(exn)
                         observer.on_error(exn)
@@ -129,7 +128,6 @@ class ObservableGroupByUntil(Observable):
                 writer.on_next(element)
             
             def on_error(ex):
-                print ("on_error(%s)" % ex)
                 for w in six.itervalues(mapping):
                     w.on_error(ex)
                 

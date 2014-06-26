@@ -8,11 +8,12 @@ from .observable import Observable
 log = logging.getLogger("Rx")
 
 class AnonymousObservable(Observable):
-    """Class to create an Observable instance from a delegate-based implementation
-    of the Subscribe method."""
+    """Class to create an Observable instance from a delegate-based 
+    implementation of the Subscribe method."""
     
     def __init__(self, subscribe):
-        """Creates an observable sequence object from the specified subscription function.
+        """Creates an observable sequence object from the specified subscription 
+        function.
 
         Keyword arguments:
         subscribe -- Subscribe method implementation.

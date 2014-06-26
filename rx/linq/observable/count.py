@@ -1,10 +1,7 @@
 from six import add_metaclass
 
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.observable import ObservableMeta
-from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable, CompositeDisposable
-from rx.internal import default_comparer
 
 @add_metaclass(ObservableMeta)
 class ObservableCount(Observable):
