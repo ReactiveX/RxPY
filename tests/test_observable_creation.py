@@ -150,7 +150,7 @@ def test_empty_observer_throw_exception():
     except RxException:
         pass
     
-def test__subscribe_to_enumerable_finite():
+def test_subscribe_to_enumerable_finite():
     enumerable_finite = [1, 2, 3, 4, 5]
     scheduler = TestScheduler()
     

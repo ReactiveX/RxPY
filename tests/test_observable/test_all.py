@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class Test_all(unittest.TestCase):
+class TestAll(unittest.TestCase):
 
     def test_all_empty(self):
         scheduler = TestScheduler()

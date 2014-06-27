@@ -44,3 +44,5 @@ nosetests.xml
 Rx.pyperf
 *.coverage
 UpgradeLog.htm
+TestResults/Rx.TE.Tests.mdf
+TestResults/Rx.TE.Tests_log.ldf

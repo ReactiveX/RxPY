@@ -13,7 +13,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class Test_window(unittest.TestCase):
+class TestWindow(unittest.TestCase):
 
     def test_window_closings_basic(self):
         scheduler = TestScheduler()

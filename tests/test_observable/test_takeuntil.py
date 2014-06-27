@@ -19,7 +19,7 @@ class RxException(Exception):
 def _raise(ex):
     raise RxException(ex)
 
-class Test_takeuntil(unittest.TestCase):
+class TestTakeUntil(unittest.TestCase):
 
     def test_take_until_preempt_somedata_next(self):
         scheduler = TestScheduler()

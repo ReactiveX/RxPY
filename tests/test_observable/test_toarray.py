@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class Test_toarray(unittest.TestCase):
+class TestToArray(unittest.TestCase):
 
     def test_toarray_completed(self):
         scheduler = TestScheduler()

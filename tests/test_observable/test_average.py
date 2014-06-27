@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class Test_average(unittest.TestCase):
+class TestAverage(unittest.TestCase):
 
     def test_average_int32_empty(self):
         scheduler = TestScheduler()

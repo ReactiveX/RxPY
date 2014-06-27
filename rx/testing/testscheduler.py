@@ -25,7 +25,7 @@ class TestScheduler(VirtualTimeScheduler):
         """Schedules an action to be executed at the specified virtual time.
         
         Keyword arguments:
-        dueime -- Absolute virtual time at which to execute the action.
+        duetime -- Absolute virtual time at which to execute the action.
         action -- Action to be executed.
         state -- State passed to the action to be executed.
         

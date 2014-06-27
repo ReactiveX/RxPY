@@ -5,6 +5,7 @@ from . import any
 from . import average
 from . import buffer
 from . import count
+from . import dematerialize
 from . import finalvalue
 from . import groupby
 from . import groupbyuntil

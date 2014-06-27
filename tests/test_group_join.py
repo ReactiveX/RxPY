@@ -34,7 +34,7 @@ class TimeInterval(object):
     def get_hash_code(self):
         return self.value.get_hash_code() ^ self.interval.get_hash_code()
 
-class Test_groupjoin(unittest.Testcase):
+class TestGroupJoin(unittest.TestCase):
 
     def test_join_op_normal_i(self):
         scheduler = TestScheduler()
