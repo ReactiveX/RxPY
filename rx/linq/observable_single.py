@@ -117,8 +117,8 @@ class ObservableSingle(Observable):
         or until it successfully terminates. If the retry count is not 
         specified, it retries indefinitely.
      
-        1 - retried = retry.repeat();
-        2 - retried = retry.repeat(42);
+        1 - retried = retry.repeat()
+        2 - retried = retry.repeat(42)
     
         retry_count -- [Optional] Number of times to retry the sequence. If not
         provided, retry the sequence indefinitely.
@@ -153,9 +153,9 @@ class ObservableSingle(Observable):
         """Returns an observable sequence that contains only distinct 
         contiguous elements according to the key_selector and the comparer.
      
-        1 - var obs = observable.distinct_until_changed();
-        2 - var obs = observable.distinct_until_changed(function (x) { return x.id; });
-        3 - var obs = observable.distinct_until_changed(function (x) { return x.id; }, function (x, y) { return x === y; });
+        1 - obs = observable.distinct_until_changed();
+        2 - obs = observable.distinct_until_changed(lambda x: x.id)
+        3 - obs = observable.distinct_until_changed(lambda x: x.id, lambda x, y: x === y)
      
         key_selector -- [Optional] A function to compute the comparison key for
             each element. If not provided, it projects the value.
@@ -203,10 +203,10 @@ class ObservableSingle(Observable):
         etc. of query behavior by intercepting the message stream to run 
         arbitrary actions for messages on the pipeline.
     
-        1 - observable.do_action(observer);
-        2 - observable.do_action(on_next);
-        3 - observable.do_action(on_next, on_error);
-        4 - observable.do_action(on_next, on_error, on_eompleted);
+        1 - observable.do_action(observer)
+        2 - observable.do_action(on_next)
+        3 - observable.do_action(on_next, on_error)
+        4 - observable.do_action(on_next, on_error, on_eompleted)
      
         observer -- [Optional] Observer, or ... 
         on_next -- [Optional] Action to invoke for each element in the observable sequence.

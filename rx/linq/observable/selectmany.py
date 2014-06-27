@@ -14,7 +14,7 @@ class ObservableSelectMany(Observable):
         sequence and merges the resulting observable sequences into one 
         observable sequence.
         
-        1 - source.select_many(function (x) { return Rx.Observable.range(0, x); });
+        1 - source.select_many(lambda x: Observable.range(0, x))
         
         Or:
         Projects each element of an observable sequence to an observable 
@@ -22,14 +22,14 @@ class ObservableSelectMany(Observable):
         of the corresponding inner sequence's elements, and merges the results
         into one observable sequence.
         
-        1 - source.select_many(function (x) { return rx.Observable.range(0, x); }, function (x, y) { return x + y; });
+        1 - source.select_many(lambda x: Observable.range(0, x), lambda x, y: x + y)
         
         Or:
         Projects each element of the source observable sequence to the other
         observable sequence and merges the resulting observable sequences into
         one observable sequence.
         
-        1 - source.select_many(rx.Observable.from_array([1,2,3]));
+        1 - source.select_many(Observable.from_array([1,2,3]))
         
         Keyword arguments:
         selector -- A transform function to apply to each element or an 

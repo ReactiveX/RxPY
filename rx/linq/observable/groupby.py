@@ -13,9 +13,9 @@ class ObservableGroupBy(Observable):
         specified key selector function and comparer and selects the resulting
         elements by using a specified function.
         
-        1 - observable.group_by(function (x) { return x.id; });
-        2 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; });
-        3 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; }, function (x) { return x.toString(); });
+        1 - observable.group_by(lambda x: x.id)
+        2 - observable.group_by(lambda x: x.id, lambda x: x.name)
+        3 - observable.group_by(lambda x: x.id, lambda x: x.name, lambda x: str(x))
         
         Keyword arguments:
         key_selector -- A function to extract the key for each element.

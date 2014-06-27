@@ -141,5 +141,4 @@ class ObservableGroupByUntil(Observable):
             
             group_disposable.add(source.subscribe(on_next, on_error, on_completed))
             return ref_count_disposable
-
         return AnonymousObservable(subscribe)

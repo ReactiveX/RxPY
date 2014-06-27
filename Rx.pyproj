@@ -157,25 +157,12 @@
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
     <Folder Include="tests\test_concurrency\" />
-    <Folder Include="tests\test_concurrency\__pycache__\" />
     <Folder Include="tests\test_disposables\" />
-    <Folder Include="tests\test_disposables\__pycache__\" />
     <Folder Include="tests\test_observable\" />
     <Folder Include="tests\test_subjects\" />
-    <Folder Include="tests\test_subjects\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="tests\test_concurrency\__pycache__\test_currentthreadscheduler.cpython-34.pyc" />
-    <Content Include="tests\test_concurrency\__pycache__\test_immediatescheduler.cpython-34.pyc" />
-    <Content Include="tests\test_concurrency\__pycache__\test_timeoutscheduler.cpython-34.pyc" />
-    <Content Include="tests\test_disposables\__pycache__\test_disposable.cpython-34.pyc" />
-    <Content Include="tests\test_subjects\__pycache__\test_asyncsubject.cpython-34.pyc" />
-    <Content Include="tests\test_subjects\__pycache__\test_behaviorsubject.cpython-34.pyc" />
-    <Content Include="tests\test_subjects\__pycache__\test_replaysubject.cpython-34.pyc" />
-    <Content Include="tests\test_subjects\__pycache__\test_subject.cpython-34.pyc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

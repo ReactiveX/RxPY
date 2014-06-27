@@ -5,7 +5,7 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.internal import SequenceContainsNoElementsError
 
 @add_metaclass(ObservableMeta)
-class ObservableLeave(Observable):
+class ObservableFinalValue(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
 

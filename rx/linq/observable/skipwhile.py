@@ -5,7 +5,7 @@ from rx.observable import ObservableMeta
 from rx.internal.utils import adapt_call
 
 @add_metaclass(ObservableMeta)
-class ObservableSkip(Observable):
+class ObservableSkipWhile(Observable):
     """Note that we do some magic here by using a meta class to extend 
     Observable with the methods in this class"""
     

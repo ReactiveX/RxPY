@@ -40,10 +40,10 @@ class ObservableSequenceEqual(Observable):
         """Determines whether two sequences are equal by comparing the 
         elements pairwise using a specified equality comparer.
         
-        1 - res = source.sequence_equal([1,2,3]);
-        2 - res = source.sequence_equal([{ value: 42 }], function (x, y) { return x.value === y.value; });
-        3 - res = source.sequence_equal(Rx.Observable.returnValue(42));
-        4 - res = source.sequence_equal(Rx.Observable.returnValue({ value: 42 }), function (x, y) { return x.value === y.value; });
+        1 - res = source.sequence_equal([1,2,3])
+        2 - res = source.sequence_equal([{ "value": 42 }], lambda x, y: x.value == y.value)
+        3 - res = source.sequence_equal(Observable.return_value(42))
+        4 - res = source.sequence_equal(Observable.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
     
         second -- Second observable sequence or array to compare.
         comparer -- [Optional] Comparer used to compare elements of both sequences.

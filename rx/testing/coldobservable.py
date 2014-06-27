@@ -14,8 +14,7 @@ class ColdObservable(Observable):
         self.subscriptions = AssertList()
 
     def subscribe(self, on_next, on_error=None, on_completed=None):
-        print ("ColdObservable:subscribe()")
-
+        
         if isinstance(on_next, AbstractObserver):
             observer = on_next
         else: 
@@ -33,14 +32,12 @@ class ColdObservable(Observable):
 
         for message in self.messages:
             notification = message.value
-            print ("Notification: ", notification)
             
             # Don't make closures within a loop
             action = get_action(notification)
             disposable.add(self.scheduler.schedule_relative(message.time, action))
 
         def dispose():
-            print ("ColdObservable:dispose()")
             start = self.subscriptions[index].subscribe
             end = self.scheduler.clock
             self.subscriptions[index] = Subscription(start, end)

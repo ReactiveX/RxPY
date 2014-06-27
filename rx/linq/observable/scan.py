@@ -4,7 +4,7 @@ from rx import AnonymousObservable, Observable
 from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
-class ObservableAll(Observable):
+class ObservableScan(Observable):
     
     def scan(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence and 

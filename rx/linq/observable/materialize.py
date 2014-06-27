@@ -5,7 +5,7 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.notification import OnNext, OnError, OnCompleted
 
 @add_metaclass(ObservableMeta)
-class ObservableSingle(Observable):
+class ObservableMaterialize(Observable):
 
     def materialize(self):
         """Materializes the implicit notifications of an observable sequence as

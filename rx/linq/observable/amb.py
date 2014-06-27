@@ -6,7 +6,7 @@ from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisp
 from rx.concurrency import immediate_scheduler
 
 @add_metaclass(ObservableMeta)
-class ObservableMultiple(Observable):
+class ObservableAmb(Observable):
     def __init__(self, subscribe):
         self.amb = self.__amb
 

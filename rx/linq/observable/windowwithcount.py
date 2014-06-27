@@ -18,8 +18,8 @@ class ObservableWindowWithCount(Observable):
         """Projects each element of an observable sequence into zero or more 
         windows which are produced based on element count information.
     
-        1 - xs.window_with_count(10);
-        2 - xs.window_with_count(10, 1);
+        1 - xs.window_with_count(10)
+        2 - xs.window_with_count(10, 1)
     
         count -- Length of each window.
         skip -- [Optional] Number of elements to skip between creation of 
