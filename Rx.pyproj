@@ -66,6 +66,7 @@
     <Compile Include="rx\linq\observable\switchlatest.py" />
     <Compile Include="rx\linq\observable\take.py" />
     <Compile Include="rx\linq\observable\takewhile.py" />
+    <Compile Include="rx\linq\observable\timer.py" />
     <Compile Include="rx\linq\observable\toarray.py" />
     <Compile Include="rx\linq\observable\where.py" />
     <Compile Include="rx\linq\observable\window.py" />
