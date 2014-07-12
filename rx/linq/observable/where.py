@@ -6,9 +6,7 @@ from rx.internal.utils import adapt_call
 
 @add_metaclass(ObservableMeta)
 class ObservableWhere(Observable):
-    """Standard sequence operator extension methods. Note that we do some magic
-    here by using a meta class to extend Observable with the methods in this
-    class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def where(self, predicate, this=None):
         """Filters the elements of an observable sequence based on a predicate 

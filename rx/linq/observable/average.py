@@ -10,8 +10,7 @@ class AverageValue(object):
 
 @add_metaclass(ObservableMeta)
 class ObservableAverage(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def average(self, key_selector=None, this=None):
         """Computes the average of an observable sequence of values that are in

@@ -6,8 +6,7 @@ from rx.internal.utils import adapt_call
 
 @add_metaclass(ObservableMeta)
 class ObservableSkipWhile(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
     
     def skip_while(self, predicate):
         """Bypasses elements in an observable sequence as long as a specified 

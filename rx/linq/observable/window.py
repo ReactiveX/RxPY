@@ -15,6 +15,8 @@ log = logging.getLogger("Rx")
 
 @add_metaclass(ObservableMeta)
 class ObservableWindow(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def window(self, window_openings=None, closing_selector=None, window_closing_selector=None):
         """Projects each element of an observable sequence into zero or more 
         windows.

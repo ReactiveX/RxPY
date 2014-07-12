@@ -5,6 +5,7 @@ from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableAggregate(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def aggregate(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence, 

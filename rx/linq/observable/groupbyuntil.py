@@ -11,8 +11,7 @@ from rx.linq.groupedobservable import GroupedObservable
 
 @add_metaclass(ObservableMeta)
 class ObservableGroupByUntil(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def group_by_until(self, key_selector, element_selector, duration_selector, key_serializer=None):
         """Groups the elements of an observable sequence according to a 

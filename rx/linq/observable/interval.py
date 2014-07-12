@@ -5,6 +5,7 @@ from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
 
 @add_metaclass(ObservableMeta)
 class ObservableInterval(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
     
     @classmethod
     def interval(cls, period, scheduler=None):

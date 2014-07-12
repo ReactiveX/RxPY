@@ -5,8 +5,7 @@ from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableGroupBy(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def group_by(self, key_selector, element_selector=None, key_serializer=None):
         """Groups the elements of an observable sequence according to a 

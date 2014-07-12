@@ -1,19 +1,19 @@
 import logging
-from collections import OrderedDict
 
 from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.observable import ObservableMeta
-from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
 
 log = logging.getLogger("Rx")
 
 @add_metaclass(ObservableMeta)
 class ObservableWindowWithCount(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def window_with_count(self, count, skip=None):
         """Projects each element of an observable sequence into zero or more 
         windows which are produced based on element count information.

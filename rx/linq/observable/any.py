@@ -5,6 +5,8 @@ from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableAny(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def any(self, predicate=None, this=None):
         """Determines whether any element of an observable sequence satisfies a
         condition if present, else if any items are in the sequence.

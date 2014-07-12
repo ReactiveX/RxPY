@@ -6,6 +6,7 @@ from rx.disposables import SingleAssignmentDisposable, SerialDisposable, Schedul
 
 @add_metaclass(ObservableMeta)
 class ObservableSubscribeOn(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
   
     def subscribe_on(self, scheduler):
         """Wraps the source sequence in order to run its subscription and 

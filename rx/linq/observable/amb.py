@@ -7,6 +7,8 @@ from rx.concurrency import immediate_scheduler
 
 @add_metaclass(ObservableMeta)
 class ObservableAmb(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def __init__(self, subscribe):
         self.amb = self.__amb
 

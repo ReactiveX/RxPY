@@ -6,6 +6,8 @@ from rx.observeonobserver import ObserveOnObserver
 
 @add_metaclass(ObservableMeta)
 class ObservableObserveOn(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def observe_on(self, scheduler):
         """Wraps the source sequence in order to run its observer callbacks on 
         the specified scheduler.

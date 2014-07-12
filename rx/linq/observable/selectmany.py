@@ -1,12 +1,11 @@
 from six import add_metaclass
 
-from rx import Observable, AnonymousObservable
+from rx import Observable
 from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableSelectMany(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def select_many(self, selector, result_selector=None):
         """One of the Following:

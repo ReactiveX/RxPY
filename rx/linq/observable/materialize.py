@@ -6,6 +6,7 @@ from rx.notification import OnNext, OnError, OnCompleted
 
 @add_metaclass(ObservableMeta)
 class ObservableMaterialize(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def materialize(self):
         """Materializes the implicit notifications of an observable sequence as

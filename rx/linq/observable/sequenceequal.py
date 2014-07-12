@@ -8,6 +8,8 @@ from rx.internal import default_comparer
 
 @add_metaclass(ObservableMeta)
 class ObservableSequenceEqual(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     @staticmethod
     def sequence_equal_array(first, second, comparer):
         def subscribe(observer):

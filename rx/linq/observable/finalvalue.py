@@ -6,8 +6,7 @@ from rx.internal import SequenceContainsNoElementsError
 
 @add_metaclass(ObservableMeta)
 class ObservableFinalValue(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def final_value(self):
         source = self

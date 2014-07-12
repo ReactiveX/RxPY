@@ -6,9 +6,7 @@ from rx.internal.utils import adapt_call
         
 @add_metaclass(ObservableMeta)
 class ObservableSelect(Observable):
-    """Standard sequence operator extension methods. Note that we do some magic
-    here by using a meta class to extend Observable with the methods in this
-    class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def select(self, selector, this=None):
         """Projects each element of an observable sequence into a new form by

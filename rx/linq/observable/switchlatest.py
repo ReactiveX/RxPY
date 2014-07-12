@@ -6,6 +6,7 @@ from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisp
 
 @add_metaclass(ObservableMeta)
 class ObservableSwitchLatest(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def switch_latest(self):
         """Transforms an observable sequence of observable sequences into an 

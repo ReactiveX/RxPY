@@ -5,7 +5,8 @@ from rx.observable import ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableAll(Observable):
-    
+    """Uses a meta class to extend Observable with the methods in this class"""
+
     def all(self, predicate, this=None):
         """Determines whether all elements of an observable sequence satisfy a
         condition.

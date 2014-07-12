@@ -7,8 +7,7 @@ from rx.internal import ArgumentOutOfRangeException
 
 @add_metaclass(ObservableMeta)
 class ObservableSkip(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
     
     def skip(self, count):
         """Bypasses a specified number of elements in an observable sequence 

@@ -15,8 +15,7 @@ log = logging.getLogger("Rx")
 
 @add_metaclass(ObservableMeta)
 class ObservableJoin(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def join(self, right, left_duration_selector, right_duration_selector, result_selector):
         """Correlates the elements of two sequences based on overlapping durations.

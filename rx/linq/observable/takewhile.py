@@ -7,8 +7,7 @@ from rx.internal.utils import adapt_call
 
 @add_metaclass(ObservableMeta)
 class ObservableTakeWhile(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def take_while(self, predicate):
         """Returns elements from an observable sequence as long as a specified
