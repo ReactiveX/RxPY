@@ -6,9 +6,9 @@ from rx.internal.utils import add_ref
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
 from rx.subjects import Subject
-from rx.disposables import Disposable, CompositeDisposable, \
+from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
-from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
+from rx.concurrency import timeout_scheduler
 
 log = logging.getLogger("Rx")
 
@@ -39,128 +39,6 @@ class Timestamp(object):
 @add_metaclass(ObservableMeta)
 class ObservableTime(Observable):
 
-    @classmethod
-    def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
-        log.debug("ObservableTime.observable_timer_timespan_and_period()")
-        
-        if duetime == period:
-            def subscribe(observer):
-                def action(count):
-                    observer.on_next(count)
-                    count += 1
-                    return count
-
-                return scheduler.schedule_periodic(period, action, 0)
-            return AnonymousObservable(subscribe)
-
-        def deferred():
-            return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
-        return Observable.defer(deferred)
-
-    @staticmethod
-    def observable_timer_date(duetime, scheduler):
-        def subscribe(observer):
-            def action(scheduler, state):
-                observer.on_next(0)
-                observer.on_completed()
-            
-            return scheduler.schedule_absolute(duetime, action);
-        return AnonymousObservable(subscribe)
-
-    @staticmethod
-    def observable_timer_date_and_period(duetime, period, scheduler):
-        p = Scheduler.normalize(period)
-
-        def subscribe(observer):
-            count = [0]
-            d = [duetime]
-
-            def action(scheduler, state):
-                if p > 0:
-                    now = scheduler.now()
-                    d[0] = d[0] + p
-                    if d[0] <= now:
-                        d[0] = now + p
-                
-                observer.on_next(count[0])
-                count[0] += 1
-                self(d[0])
-            
-            return scheduler.schedule_recursive(d, action)
-        return AnonymousObservable(subscribe)
-
-    @staticmethod
-    def observable_timer_timespan(duetime, scheduler):
-        log.debug("observable_timer_timespan()")
-        d = Scheduler.normalize(duetime)
-
-        def subscribe(observer):
-            def action(scheduler, state):
-                log.debug("observable_timer_timespan:subscribe:action()")
-                observer.on_next(0)
-                observer.on_completed()
-        
-            return scheduler.schedule_relative(d, action)
-        return AnonymousObservable(subscribe)
-
-    @staticmethod
-    def observable_timer_timespan_and_period(duetime, period, scheduler):
-        if duetime == period:
-            def subscribe(observer):
-                def action(count):
-                    observer.on_next(count)
-                    return count + 1
-                
-                return scheduler.schedule_periodic(period, action, state=0)
-            return AnonymousObservable(subscribe)
-
-        def defer():
-            return observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
-        return Observable.defer(defer)
-
-    @classmethod
-    def timer(cls, duetime, period=None, scheduler=None):
-        """Returns an observable sequence that produces a value after duetime 
-        has elapsed and then after each period.
-        
-        1 - res = Observable.timer(new Date())
-        2 - res = Observable.timer(new Date(), 1000)
-        3 - res = Observable.timer(new Date(), Scheduler.timeout)
-        4 - res = Observable.timer(new Date(), 1000, Rx.Scheduler.timeout)
-        
-        5 - res = Observable.timer(5000)
-        6 - res = Observable.timer(5000, 1000)
-        7 - res = Observable.timer(5000, Scheduler.timeout)
-        8 - res = Observable.timer(5000, 1000, Scheduler.timeout)
-        
-        Keyword arguments:
-        duetime -- Absolute (specified as a Date object) or relative time 
-            (specified as an integer denoting milliseconds) at which to produce
-            the first value.</param>
-        period -- [Optional] Period to produce subsequent values (specified as 
-            an integer denoting milliseconds), or the scheduler to run the 
-            timer on. If not specified, the resulting timer is not recurring.
-        scheduler -- [Optional] Scheduler to run the timer on. If not 
-            specified, the timeout scheduler is used.
-        
-        Returns an observable sequence that produces a value after due time has
-        elapsed and then each period.
-        """
-        log.debug("Observable.timer(duetime=%s, period=%s)" % (duetime, period))
-        
-        scheduler = scheduler or timeout_scheduler
-        
-        if isinstance(duetime, datetime) and period is None:
-            return cls.observable_timer_date(duetime, scheduler);
-        
-        if isinstance(duetime, datetime) and period:
-            return cls.observable_timer_date_and_period(duetime, period, scheduler);
-        
-        if period is None:
-            return cls.observable_timer_timespan(duetime, scheduler)
-        
-        return cls.observable_timer_timespan_and_period(duetime, period, scheduler)
-
     def observable_delay_timespan(self, duetime, scheduler):
         source = self
         
@@ -188,7 +66,7 @@ class ObservableTime(Observable):
                 
                 if should_run:
                     if exception[0]:
-                        log.error("*** Exception: %s" % exception[0])
+                        log.error("*** Exception: %s", exception[0])
                         observer.on_error(exception[0])
                     else:
                         d = SingleAssignmentDisposable()
@@ -314,7 +192,7 @@ class ObservableTime(Observable):
         """Ignores values from an observable sequence which are followed by 
         another value within a computed throttle duration.
      
-        1 - res = source.delay_with_selector(function (x) { return Rx.Scheduler.timer(x + x); }); 
+        1 - res = source.delay_with_selector(lambda x: rx.Scheduler.timer(x + x)) 
      
         Keyword arguments:
         throttle_duration_selector -- Selector function to retrieve a sequence 
@@ -658,9 +536,9 @@ class ObservableTime(Observable):
     def sample(self, interval=None, sampler=None, scheduler=None):
         """Samples the observable sequence at each interval.
         
-        1 - res = source.sample(sampleObservable) // Sampler tick sequence
-        2 - res = source.sample(5000) // 5 seconds
-        2 - res = source.sample(5000, Rx.Scheduler.timeout) // 5 seconds
+        1 - res = source.sample(sample_observable) # Sampler tick sequence
+        2 - res = source.sample(5000) # 5 seconds
+        2 - res = source.sample(5000, rx.scheduler.timeout) # 5 seconds
      
         Keyword arguments:
         source -- Source sequence to sample.
@@ -682,8 +560,8 @@ class ObservableTime(Observable):
         Returns the source observable sequence or the other observable sequence
         if duetime elapses.
     
-        1 - res = source.timeout(new Date()); // As a date
-        2 - res = source.timeout(5000); // 5 seconds
+        1 - res = source.timeout(new Date()); # As a date
+        2 - res = source.timeout(5000); # 5 seconds
         3 - res = source.timeout(new Date(), Rx.Observable.returnValue(42)); // As a date and timeout observable
         4 - res = source.timeout(5000, Rx.Observable.returnValue(42)); // 5 seconds and timeout observable
         5 - res = source.timeout(new Date(), Rx.Observable.returnValue(42), Rx.Scheduler.timeout); // As a date and timeout observable
@@ -860,7 +738,8 @@ class ObservableTime(Observable):
         initial_state -- Initial state.
         condition -- Condition to terminate generation (upon returning false).
         iterate -- Iteration step function.
-        result_selector -- Selector function for results produced in the sequence.
+        result_selector -- Selector function for results produced in the 
+            sequence.
         time_selector -- Time selector function to control the speed of values 
             being produced each iteration, returning integer values denoting 
             milliseconds.
