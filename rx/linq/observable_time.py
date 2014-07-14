@@ -120,11 +120,11 @@ class ObservableTime(Observable):
         """Time shifts the observable sequence by duetime. The relative time 
         intervals between the values are preserved.
         
-        1 - res = Rx.Observable.delay(datetime())
-        2 - res = Rx.Observable.delay(datetime(), Scheduler.timeout)
+        1 - res = rx.Observable.delay(datetime())
+        2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
         
-        3 - res = Rx.Observable.delay(5000)
-        4 - res = Rx.Observable.delay(5000, 1000, Scheduler.timeout)
+        3 - res = rx.Observable.delay(5000)
+        4 - res = rx.Observable.delay(5000, 1000, Scheduler.timeout)
         
         Keyword arguments:
         duetime -- Absolute (specified as a datetime object) or relative time 
@@ -413,8 +413,8 @@ class ObservableTime(Observable):
         """Projects each element of an observable sequence into zero or more 
         buffers which are produced based on timing information.
         
-        1 - res = xs.bufferWithTime(1000 /*, scheduler */); // non-overlapping segments of 1 second
-        2 - res = xs.bufferWithTime(1000, 500 /*, scheduler */); // segments of 1 second with time shift 0.5 seconds
+        1 - res = xs.buffer_with_time(1000) # non-overlapping segments of 1 second
+        2 - res = xs.buffer_with_time(1000, 500) # segments of 1 second with time shift 0.5 seconds
         
         Keyword arguments:
         timespan -- Length of each buffer (specified as an integer denoting 
@@ -562,10 +562,10 @@ class ObservableTime(Observable):
     
         1 - res = source.timeout(new Date()); # As a date
         2 - res = source.timeout(5000); # 5 seconds
-        3 - res = source.timeout(new Date(), Rx.Observable.returnValue(42)); // As a date and timeout observable
-        4 - res = source.timeout(5000, Rx.Observable.returnValue(42)); // 5 seconds and timeout observable
-        5 - res = source.timeout(new Date(), Rx.Observable.returnValue(42), Rx.Scheduler.timeout); // As a date and timeout observable
-        6 - res = source.timeout(5000, Rx.Observable.returnValue(42), Rx.Scheduler.timeout); // 5 seconds and timeout observable
+        3 - res = source.timeout(new Date(), rx.Observable.return_value(42)) # As a date and timeout observable
+        4 - res = source.timeout(5000, rx.Observable.return_value(42)) # 5 seconds and timeout observable
+        5 - res = source.timeout(new Date(), rx.Observable.return_value(42), rx.Scheduler.timeout) # As a date and timeout observable
+        6 - res = source.timeout(5000, rx.Observable.return_value(42), rx.Scheduler.timeout) # 5 seconds and timeout observable
         
         duetime -- Absolute (specified as a datetime object) or relative time 
             (specified as an integer denoting milliseconds) when a timeout 
@@ -787,8 +787,8 @@ class ObservableTime(Observable):
     def delay_subscription(self, duetime, scheduler):
         """Time shifts the observable sequence by delaying the subscription.
     
-        1 - res = source.delay_subscription(5000) // 5s
-        2 - res = source.delay_subscription(5000, Scheduler.timeout) // 5 seconds
+        1 - res = source.delay_subscription(5000) # 5s
+        2 - res = source.delay_subscription(5000, Scheduler.timeout) # 5 seconds
     
         duetime -- Absolute or relative time to perform the subscription at.
         scheduler [Optional] Scheduler to run the subscription delay timer on. 
@@ -798,9 +798,9 @@ class ObservableTime(Observable):
         """
         scheduler = scheduler or timeout_scheduler
 
-        def selector(x):
+        def selector(_):
             return Observable.empty()
-        return this.delay_with_selector(Observable.timer(duetime, scheduler), selector)
+        return self.delay_with_selector(Observable.timer(duetime, scheduler), selector)
 
     def delay_with_selector(self, subscription_delay=None, delay_duration_selector=None):
         """Time shifts the observable sequence based on a subscription delay 
