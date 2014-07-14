@@ -1,7 +1,8 @@
+import types
 import logging
 
 from rx.concurrency import current_thread_scheduler
-
+from rx.disposables import Disposable
 from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
 
@@ -11,6 +12,17 @@ class AnonymousObservable(Observable):
     """Class to create an Observable instance from a delegate-based 
     implementation of the Subscribe method."""
     
+    @staticmethod
+    def fix_subscriber(subscriber):
+        """Fix subscriber to check for undefined or function returned to decorate as Disposable"""
+    
+        if subscriber is None:
+            subscriber = disposable.empty
+        elif type(subscriber) == types.FunctionType:
+            subscriber = Disposable(subscriber)
+
+        return subscriber
+
     def __init__(self, subscribe):
         """Creates an observable sequence object from the specified subscription 
         function.
@@ -25,14 +37,14 @@ class AnonymousObservable(Observable):
             if current_thread_scheduler.schedule_required():
                 def action(scheduler, state=None):
                     try:
-                        auto_detach_observer.disposable = subscribe(auto_detach_observer)
+                        auto_detach_observer.disposable = self.fix_subscriber(subscribe(auto_detach_observer))
                     except Exception as ex:
                         if not auto_detach_observer.fail(ex):
                             raise ex
                 current_thread_scheduler.schedule(action)
             else:
                 try:
-                    auto_detach_observer.disposable = subscribe(auto_detach_observer)
+                    auto_detach_observer.disposable = self.fix_subscriber(subscribe(auto_detach_observer))
                 except Exception as ex:
                     log.error("AnonymousObservable Exception: %s" % ex)
                     
