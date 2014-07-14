@@ -14,7 +14,6 @@ class ColdObservable(Observable):
         self.subscriptions = AssertList()
 
     def subscribe(self, on_next, on_error=None, on_completed=None):
-        
         if isinstance(on_next, AbstractObserver):
             observer = on_next
         else: 
