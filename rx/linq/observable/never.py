@@ -15,7 +15,7 @@ class ObservableNever(Observable):
      
         Returns an observable sequence whose observers will never get called.
         """
-        def subscribe(observer):
+        def subscribe(_):
             return Disposable.empty()
 
         return AnonymousObservable(subscribe)
