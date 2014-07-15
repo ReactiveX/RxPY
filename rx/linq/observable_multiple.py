@@ -10,7 +10,6 @@ from .observable_single import concat, catch_exception
 @add_metaclass(ObservableMeta)
 class ObservableMultiple(Observable):
     def __init__(self, subscribe):
-        self.concat = self.__concat # Stitch in instance method
         self.merge = self.__merge
         self.catch_exception = self.__catch_exception
         self.on_error_resume_next = self.__on_error_resume_next
@@ -168,42 +167,6 @@ class ObservableMultiple(Observable):
             return CompositeDisposable(subscriptions)
         return AnonymousObservable(subscribe)
 
-    def __concat(self, *args):
-        """Concatenates all the observable sequences. This takes in either an 
-        array or variable arguments to concatenate.
-     
-        1 - concatenated = xs.concat(ys, zs)
-        2 - concatenated = xs.concat([ys, zs])
-     
-        Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order. 
-        """
-        
-        if isinstance(args[0], list):
-            items = args[0]
-        else:
-            items = list(args)
-
-        items.insert(0, self)
-        return Observable.concat(items)
-    
-    @classmethod
-    def concat(cls, *args):
-        """Concatenates all the observable sequences.
-    
-        1 - res = Observable.concat(xs, ys, zs)
-        2 - res = Observable.concat([xs, ys, zs])
-     
-        Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order.
-        """
-        
-        if isinstance(args[0], list):
-            sources = args[0]
-        else:
-            sources = list(args)
-        
-        return concat(Enumerable.for_each(sources))
 
     def concat_all(self):
         """Concatenates an observable sequence of observable sequences.

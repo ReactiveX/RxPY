@@ -38,226 +38,6 @@ class Timestamp(object):
 
 @add_metaclass(ObservableMeta)
 class ObservableTime(Observable):
-
-    def observable_delay_timespan(self, duetime, scheduler):
-        source = self
-        
-        def subscribe(observer):
-            cancelable = SerialDisposable()
-            exception = [None]
-            active = [False]
-            running = [False]
-            q = []
-
-            def on_next(notification):
-                log.debug("observable_delay_timespan:subscribe:on_next()")
-                should_run = False
-                d = None
-
-                if notification.value.kind == 'E':
-                    del q[:]
-                    q.append(notification)
-                    exception[0] = notification.value.exception
-                    should_run = not running[0]
-                else:
-                    q.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
-                    should_run = not active[0]
-                    active[0] = True
-                
-                if should_run:
-                    if exception[0]:
-                        log.error("*** Exception: %s", exception[0])
-                        observer.on_error(exception[0])
-                    else:
-                        d = SingleAssignmentDisposable()
-                        cancelable.disposable = d
-
-                        def action(self):
-                            if exception[0]:
-                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s" % exception[0])
-                                return
-                            
-                            running[0] = True
-                            while True:
-                                result = None
-                                if len(q) and q[0].timestamp <= scheduler.now():
-                                    result = q.pop(0).value
-                                
-                                if result:
-                                    result.accept(observer)
-                                
-                                if not result:
-                                    break
-                            
-                            should_recurse = False
-                            recurse_duetime = 0
-                            if len(q) > 0:
-                                should_recurse = True
-                                recurse_duetime = max(timedelta(0), q[0].timestamp - scheduler.now())
-                            else:
-                                active[0] = False
-                            
-                            e = exception[0]
-                            running[0] = False
-                            if e:
-                                observer.on_error(e)
-                            elif should_recurse:
-                                self(recurse_duetime)
-
-                        d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
-            subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
-            return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
-
-    def observable_delay_date(self, duetime, scheduler):
-        def defer():
-            timespan = duetime - scheduler.now()
-            return self.observable_delay_timespan(timespan, scheduler)
-        
-        return Observable.defer(defer)
-
-    def delay(self, duetime, scheduler=None):
-        """Time shifts the observable sequence by duetime. The relative time 
-        intervals between the values are preserved.
-        
-        1 - res = rx.Observable.delay(datetime())
-        2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
-        
-        3 - res = rx.Observable.delay(5000)
-        4 - res = rx.Observable.delay(5000, 1000, Scheduler.timeout)
-        
-        Keyword arguments:
-        duetime -- Absolute (specified as a datetime object) or relative time 
-            (specified as an integer denoting milliseconds) by which to shift 
-            the observable sequence.
-        scheduler -- [Optional] Scheduler to run the delay timers on. If not 
-            specified, the timeout scheduler is used.
-        
-        Returns time-shifted sequence.
-        """
-        scheduler = scheduler or timeout_scheduler
-        if isinstance(duetime, datetime):
-            observable = self.observable_delay_date(duetime, scheduler)
-        else:
-            duetime = duetime if isinstance(duetime, timedelta) else timedelta(milliseconds=duetime)
-            observable = self.observable_delay_timespan(duetime, scheduler)
-
-        return observable
-
-    def throttle(self, duetime, scheduler):
-        scheduler = scheduler or timeout_scheduler
-        source = self
-
-        def subscribe(observer):
-            cancelable = SerialDisposable()
-            has_value = [False]
-            value = [None]
-            _id = [0]
-            
-            def on_next(x):
-                has_value[0] = True
-                value[0] = x
-                _id[0] += 1
-                current_id = _id[0]
-                d = SingleAssignmentDisposable()
-                cancelable.disposable = d
-
-                def action(scheduler, state=None):
-                    if has_value[0] and _id[0] == current_id:
-                        observer.on_next(value[0])
-                    has_value[0] = False
-                
-                d.disposable = scheduler.schedule_relative(duetime, action)
-
-            def on_error(exception):
-                cancelable.dispose()
-                observer.on_error(exception)
-                has_value[0] = False
-                _id[0] += 1
-
-            def on_completed():
-                cancelable.dispose()
-                if has_value[0]:
-                    observer.on_next(value[0])
-                
-                observer.on_completed()
-                has_value[0] = False
-                _id[0] += 1
-            
-            subscription = source.subscribe(on_next, on_error, on_completed) 
-            return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
-
-    def throttle_with_selector(self, throttle_duration_selector):
-        """Ignores values from an observable sequence which are followed by 
-        another value within a computed throttle duration.
-     
-        1 - res = source.delay_with_selector(lambda x: rx.Scheduler.timer(x + x)) 
-     
-        Keyword arguments:
-        throttle_duration_selector -- Selector function to retrieve a sequence 
-            indicating the throttle duration for each given element.
-        
-        Returns the throttled sequence.
-        """
-        source = self
-
-        def subscribe(observer):
-            cancelable = SerialDisposable()
-            has_value = [False]
-            value = [None]
-            _id = [0]
-
-            def on_next(x):
-                throttle = None
-                try:
-                    throttle = throttle_duration_selector(x)
-                except Exception as e:
-                    observer.on_error(e)
-                    return
-                
-                has_value[0] = True
-                value[0] = x
-                _id[0] += 1
-                current_id = _id[0]
-                d = SingleAssignmentDisposable()
-                cancelable.disposable = d
-
-                def on_next(x):
-                    if has_value[0] and _id[0] == current_id:
-                        observer.on_next(value[0])
-                    
-                    has_value[0] = False
-                    d.dispose()
-                
-                def on_completed():
-                    if has_value[0] and _id[0] == current_id:
-                        observer.on_next(value[0])
-                    
-                    has_value[0] = False
-                    d.dispose()
-                
-                d.disposable = throttle.subscribe(on_next, observer.on_error, on_completed)
-            
-            def on_error(e):
-                cancelable.dispose()
-                observer.on_error(e)
-                has_value[0] = False
-                _id[0] += 1
-            
-            def on_completed():
-                cancelable.dispose()
-                if has_value[0]:
-                    observer.on_next(value[0])
-                
-                observer.on_completed()
-                has_value[0] = False
-                _id[0] += 1
-
-            subscription = source.subscribe(on_next, on_error, on_completed)
-            return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
-
     def window_with_time(self, timespan, timeshift=None, scheduler=None):
         source = self
         
@@ -272,18 +52,18 @@ class ObservableTime(Observable):
         scheduler = scheduler or timeout_scheduler
         
         def subscribe(observer):
-            timerD = SerialDisposable()
+            timer_d = SerialDisposable()
             next_shift = [timeshift]
             next_span = [timespan]
             total_time = [timedelta(0)]
             q = []
             
-            group_disposable = CompositeDisposable(timerD)
+            group_disposable = CompositeDisposable(timer_d)
             ref_count_disposable = RefCountDisposable(group_disposable)
             
             def create_timer():
                 m = SingleAssignmentDisposable()
-                timerD.disposable = m
+                timer_d.disposable = m
                 is_span = False
                 is_shift = False
 
@@ -351,14 +131,14 @@ class ObservableTime(Observable):
         def subscribe(observer):
             n = [0]
             s = [None]
-            timerD = SerialDisposable()
+            timer_d = SerialDisposable()
             window_id = [0]
-            group_disposable = CompositeDisposable(timerD)
+            group_disposable = CompositeDisposable(timer_d)
             ref_count_disposable = RefCountDisposable(group_disposable)
             
             def create_timer(_id):
                 m = SingleAssignmentDisposable()
-                timerD.disposable = m
+                timer_d.disposable = m
 
                 def action(scheduler, state):
                     if _id != window_id[0]:
@@ -485,24 +265,6 @@ class ObservableTime(Observable):
                 
             return source.select(selector)
         return Observable.defer(defer)
-
-    def timestamp(self, scheduler=None):
-        """Records the timestamp for each value in an observable sequence.
-      
-        1 - res = source.timestamp(); // produces { value: x, timestamp: ts }
-        2 - res = source.timestamp(Rx.Scheduler.timeout);
-       
-        scheduler -- [Optional] Scheduler used to compute timestamps. If not 
-            specified, the timeout scheduler is used.
-    
-        Returns an observable sequence with timestamp information on values.
-        """
-        scheduler = scheduler or timeout_scheduler
-
-        def selector(x):
-          return Timestamp(value=x, timestamp=scheduler.now())
-
-        return self.select(selector)
 
     def sample_observable(self, sampler):
         source = self

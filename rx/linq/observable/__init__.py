@@ -6,9 +6,11 @@ from . import amb
 from . import any
 from . import average
 from . import buffer
+from . import concat
 from . import count
 from . import create
 from . import defer
+from . import delay
 from . import dematerialize
 from . import empty
 from . import finalvalue
@@ -36,8 +38,10 @@ from . import subscribeon
 from . import switchlatest
 from . import take
 from . import takewhile
+from . import throttle
 from . import throw
 from . import timer
+from . import timestamp
 from . import toarray
 from . import using
 from . import where
