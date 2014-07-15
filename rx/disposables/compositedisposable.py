@@ -1,6 +1,8 @@
 from .disposable import Disposable
 
 class CompositeDisposable(Disposable):
+    """Represents a group of disposable resources that are disposed together"""
+    
     def __init__(self, *args):
         if args and isinstance(args[0], list):
             self.disposables = args[0]

@@ -14,10 +14,10 @@ class AnonymousObservable(Observable):
     
     @staticmethod
     def fix_subscriber(subscriber):
-        """Fix subscriber to check for undefined or function returned to decorate as Disposable"""
+        """Fix subscriber to check for None or function returned to decorate as Disposable"""
     
         if subscriber is None:
-            subscriber = disposable.empty
+            subscriber = Disposable.empty()
         elif type(subscriber) == types.FunctionType:
             subscriber = Disposable(subscriber)
 

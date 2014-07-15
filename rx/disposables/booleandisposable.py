@@ -1,7 +1,7 @@
 from .disposable import Disposable
 
 class BooleanDisposable(Disposable):
-    def __init__(self, is_single):
+    def __init__(self, is_single=True):
         self.is_single = is_single
         self.is_disposed = False
         self.current = None

@@ -1,13 +1,6 @@
-from rx.disposables import Disposable, SingleAssignmentDisposable
+from rx.disposables import Disposable, BooleanDisposable, SingleAssignmentDisposable
 from rx.disposables import CompositeDisposable, SerialDisposable
 from rx.disposables import RefCountDisposable
-
-class BooleanDisposable(Disposable):
-    def __init__(self):
-        self.is_disposed = False
-        
-    def dispose(self):
-        self.is_disposed = True
 
 def test_anonymousdisposable_create():
     def action():
