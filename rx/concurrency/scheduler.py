@@ -14,8 +14,6 @@ class Scheduler(object):
         raise NotImplementedError
 
     def invoke_action(self, action, state=None):
-        #print("invoke_action", action, state)
-        
         action(self, state)
         return Disposable.empty()
 
