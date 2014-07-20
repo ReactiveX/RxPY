@@ -1,6 +1,6 @@
 import itertools
 
-from .basic import identity
+from rx.internal.basic import identity
 
 class Enumerable(object):
     def __init__(self, iterator):
@@ -52,3 +52,4 @@ class Enumerable(object):
     def for_each(cls, source, selector=None):
         selector = selector or identity
         return Enumerable(selector(value) for value in source)
+
