@@ -1,12 +1,16 @@
+import six
 from six import add_metaclass
 
-from rx.internal import Enumerable
+from rx import AnonymousObservable
+from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.concurrency import immediate_scheduler
+from rx.linq.enumerable import Enumerable
 from rx.observable import Observable, ObservableMeta
 
 @add_metaclass(ObservableMeta)
 class ObservableConcat(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
-        
+
     def __init__(self, subscribe):
         self.concat = self.__concat # Stitch in instance method
 
@@ -40,9 +44,41 @@ class ObservableConcat(Observable):
         sequence, in sequential order.
         """
         
-        if isinstance(args[0], list):
+        if isinstance(args[0], list) or isinstance(args[0], Enumerable):
             sources = args[0]
         else:
             sources = list(args)
+            
+        def subscribe(observer):
+            enum = iter(sources)
+            is_disposed = [False]
+            subscription = SerialDisposable()
+
+            def action(action1, state=None):
+                current = None
+                
+                if is_disposed[0]:
+                    return
+                try:
+                    current = six.next(enum)
+                except StopIteration:
+                    observer.on_completed()    
+                except Exception as ex:
+                    observer.on_error(ex)
+                else:
+                    d = SingleAssignmentDisposable()
+                    subscription.disposable = d
+                    d.disposable = current.subscribe(
+                        observer.on_next,
+                        observer.on_error,
+                        lambda: action1()
+                    )
+
+            cancelable = immediate_scheduler.schedule_recursive(action)
+            
+            def dispose():
+                is_disposed[0] = True
+            return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+        return AnonymousObservable(subscribe)
+
         
-        return concat(Enumerable.for_each(sources))

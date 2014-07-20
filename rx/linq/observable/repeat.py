@@ -1,12 +1,35 @@
 from six import add_metaclass
 from rx.observable import Observable, ObservableMeta
 
+from rx.linq.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
 
 @add_metaclass(ObservableMeta)
 class ObservableRepeat(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     
+    def __init__(self, subscribe):
+        self.repeat = self.__repeat # Stitch in instance method
+
+    # We do this to avoid overwriting the class method with the same name
+    def __repeat(self, repeat_count=None):
+        """Repeats the observable sequence a specified number of times. If the 
+        repeat count is not specified, the sequence repeats indefinitely.
+     
+        1 - repeated = source.repeat()
+        2 - repeated = source.repeat(42)
+    
+        Keyword arguments:
+        repeat_count -- Number of times to repeat the sequence. If not 
+            provided, repeats the sequence indefinitely.
+    
+        Returns the observable sequence producing the elements of the given 
+        sequence repeatedly.   
+        """
+
+        return Observable.concat(Enumerable.repeat(self, repeat_count))
+
+
     @classmethod
     def repeat(cls, value=None, repeat_count=None, scheduler=None):
         """Generates an observable sequence that repeats the given element the 
