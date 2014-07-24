@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from rx.disposables import Disposable, CompositeDisposable
 
 class Scheduler(object):
+    """Provides a set of static properties to access commonly used schedulers."""
+    
     def schedule(self, action, state=None):
         raise NotImplementedError
 
@@ -144,11 +146,7 @@ class Scheduler(object):
     @classmethod
     def normalize(cls, timespan):
         nospan = 0 if isinstance(timespan, int) else timedelta(0)
-        #timespan = timespan if isinstance(timespan, timedelta) else timedelta(milliseconds=timespan)
         if not timespan or timespan < nospan:
             timespan = nospan
         
         return timespan
-
-
-#Scheduler.immediate = immediatescheduler
