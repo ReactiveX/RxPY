@@ -9,17 +9,6 @@ class AnonymousObservable(Observable):
     """Class to create an Observable instance from a delegate-based 
     implementation of the Subscribe method."""
     
-    @staticmethod
-    def fix_subscriber(subscriber):
-        """Fix subscriber to check for None or function returned to decorate as Disposable"""
-    
-        if subscriber is None:
-            subscriber = Disposable.empty()
-        elif type(subscriber) == types.FunctionType:
-            subscriber = Disposable(subscriber)
-
-        return subscriber
-
     def __init__(self, subscribe):
         """Creates an observable sequence object from the specified subscription 
         function.
@@ -28,9 +17,20 @@ class AnonymousObservable(Observable):
         subscribe -- Subscribe method implementation.
         """
         def _subscribe(observer):
-            def set_disposable():
+            def fix_subscriber(subscriber):
+                """Fix subscriber t
+                o check for None or function returned to decorate as Disposable"""
+            
+                if subscriber is None:
+                    subscriber = Disposable.empty()
+                elif type(subscriber) == types.FunctionType:
+                    subscriber = Disposable(subscriber)
+
+                return subscriber
+
+            def set_disposable(scheduler=None, value=None):
                 try:
-                    auto_detach_observer.disposable = self.fix_subscriber(subscribe(auto_detach_observer))
+                    auto_detach_observer.disposable = fix_subscriber(subscribe(auto_detach_observer))
                 except Exception as ex:
                     if not auto_detach_observer.fail(ex):
                         raise ex
