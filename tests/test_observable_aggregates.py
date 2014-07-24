@@ -1085,51 +1085,6 @@ created = ReactiveTest.created
 
 
 
-# def test_IsEmpty_Empty():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.isEmpty()
-#     }).messages
-#     res.assert_equal(on_next(250, True), on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-
-# def test_IsEmpty_Return():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.isEmpty()
-#     }).messages
-#     res.assert_equal(on_next(210, False), on_completed(210))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-
-# def test_IsEmpty_Throw():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.isEmpty()
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-
-# def test_IsEmpty_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     res = scheduler.start(create=create)
-#         return xs.isEmpty()
-#     }).messages
-#     res.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
-
-
 # // SequenceEqual Array
 # def test_SequenceEqual_Enumerable_Equal():
 #     var res, scheduler, xs
