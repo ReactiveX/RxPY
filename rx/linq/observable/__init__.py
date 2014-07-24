@@ -30,6 +30,7 @@ from . import merge
 from . import never
 from . import observeon
 from . import onerrorresumenext
+from . import of
 from . import range
 from . import reduce
 from . import repeat
