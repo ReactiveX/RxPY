@@ -29,7 +29,7 @@ class TimeoutScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
-        log.info("TimeoutScheduler:schedule_relative(%s)" % duetime)
+        log.debug("TimeoutScheduler:schedule_relative(%s)" % duetime)
         
         scheduler = self
         dt = Scheduler.normalize(duetime)
@@ -42,7 +42,7 @@ class TimeoutScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
         
         seconds = dt.seconds+dt.microseconds/1000000.0
-        log.info("timeout: %s" % seconds)
+        log.debug("timeout: %s", seconds)
         self.timer = Timer(seconds, interval)
         self.timer.start()
 
@@ -53,7 +53,7 @@ class TimeoutScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
-        #print ("TimeoutScheduler:schedule_absolute(%s)" % duetime)
+        log.debug("TimeoutScheduler:schedule_absolute(%s)", duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
 timeout_scheduler = TimeoutScheduler()

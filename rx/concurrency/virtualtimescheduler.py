@@ -119,7 +119,7 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         time -- Relative time to advance the scheduler's clock by.
         """
-        log.debug("VirtualTimeScheduler.advance_by(time=%s)" % time)
+        log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
         dt = self.add(self.clock, time)
         if self.comparer(self.clock, dt) >= 0:
