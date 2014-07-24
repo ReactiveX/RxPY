@@ -10,67 +10,6 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-# def test_Sum_Int32_Empty():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.sum()
-#     }).messages
-#     res.assert_equal(on_next(250, 0), on_completed(250))
-
-# def test_Sum_Int32_Return():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.sum()
-#     }).messages
-#     res.assert_equal(on_next(250, 2), on_completed(250))
-
-
-# def test_Sum_Int32_Some():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.sum()
-#     }).messages
-#     res.assert_equal(on_next(250, 2 + 3 + 4), on_completed(250))
-
-
-# def test_Sum_Int32_Throw():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.sum()
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-
-
-# def test_Sum_Int32_Never():
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     res = scheduler.start(create=create)
-#         return xs.sum()
-#     }).messages
-#     res.assert_equal()
-
-
-# def test_Sum_Selector_Regular_Int32():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, "fo"), on_next(220, "b"), on_next(230, "qux"), on_completed(240))
-#     res = scheduler.start(create=create)
-#         return xs.sum(function (x) {
-#             return x.length
-        
-    
-#     res.messages.assert_equal(on_next(240, 6), on_completed(240))
-#     xs.subscriptions.assert_equal(subscribe(200, 240))
-
 
 # def test_Min_Int32_Empty():
 #     var res, scheduler, xs

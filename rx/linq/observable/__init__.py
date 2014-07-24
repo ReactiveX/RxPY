@@ -45,6 +45,7 @@ from . import skip
 from . import skipwhile
 from . import startswith
 from . import subscribeon
+from . import sum
 from . import switchlatest
 from . import take
 from . import takewhile
