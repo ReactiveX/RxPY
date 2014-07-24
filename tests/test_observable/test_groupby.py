@@ -250,7 +250,6 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-
             def on_next(group):
                 c["result"] = scheduler.create_observer()
                 inners[group.key] = group
@@ -283,13 +282,12 @@ class TestGroupBy(unittest.TestCase):
         results = {}
         c = {
             "outer_subscription": None,
-            "outer": None,
-            "result": None
+            "outer": None
         }
 
         def action1(scheduler, state):
             c["outer"] = xs.group_by(
-                lambda x: x.lower().strip(), 
+                lambda x: x.lower().strip(),
                 lambda x: x[::-1]
             )
             return c["outer"]
@@ -297,12 +295,12 @@ class TestGroupBy(unittest.TestCase):
 
         def action2(scheduler, state):
             def on_next(group):
-                c["result"] = scheduler.create_observer()
+                result = scheduler.create_observer()
                 inners[group.key] = group
-                results[group.key] = c["result"]
+                results[group.key] = result
 
                 def action3(scheduler, state):
-                    inner_subscriptions[group.key] = group.subscribe(c["result"])
+                    inner_subscriptions[group.key] = group.subscribe(result)
             
                 scheduler.schedule_relative(100, action3)
             c["outer_subscription"] = c["outer"].subscribe(on_next, lambda e: None)
@@ -317,9 +315,9 @@ class TestGroupBy(unittest.TestCase):
 
         scheduler.start()
         assert(len(inners) == 4)
-        #results['foo'].messages.assert_equal(on_next(470, " OOF"), on_next(530, "    oOf    "), on_error(570, ex))
-        #results['bar'].messages.assert_equal(on_next(390, "rab   "), on_next(420, "  RAB "), on_error(570, ex))
-        #results['baz'].messages.assert_equal(on_next(480, "  zab"), on_next(510, " ZAb "), on_error(570, ex))
+        results['foo'].messages.assert_equal(on_next(470, " OOF"), on_next(530, "    oOf    "), on_error(570, ex))
+        results['bar'].messages.assert_equal(on_next(390, "rab   "), on_next(420, "  RAB "), on_error(570, ex))
+        results['baz'].messages.assert_equal(on_next(480, "  zab"), on_next(510, " ZAb "), on_error(570, ex))
         results['qux'].messages.assert_equal(on_error(570, ex))
         xs.subscriptions.assert_equal(subscribe(200, 570))
 
