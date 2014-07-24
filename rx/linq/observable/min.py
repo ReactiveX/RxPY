@@ -25,8 +25,8 @@ class ObservableMin(Observable):
      
         comparer -- {Function} [Optional] Comparer used to compare elements.
         
-        Returns an observable sequence {Observable} containing a single element with the
-        minimum element in the source sequence."""
+        Returns an observable sequence {Observable} containing a single element
+        with the minimum element in the source sequence."""
 
         return self.min_by(identity, comparer).select(lambda x: first_only(x))
 
