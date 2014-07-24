@@ -1,14 +1,13 @@
 from six import add_metaclass
 
-from rx.internal import noop
 from rx.observable import Observable, ObservableMeta
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
+    SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.linq.enumerable import Enumerable
 
 @add_metaclass(ObservableMeta)
-class ObservableCombineLatest(Observable):
+class ObservableOnErrorResumeNext(Observable):
     def __init__(self, subscribe):
         self.on_error_resume_next = self.__on_error_resume_next
 
