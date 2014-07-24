@@ -633,7 +633,7 @@ class ObservableTime(Observable):
                 subscription.disposable(sub_delay.subscribe(
                     lambda _: start(),
                     observer.on_error,
-                    lambda: start()))
+                    start))
             
             return CompositeDisposable(subscription, delays)
         return AnonymousObservable(subscribe)
