@@ -8,6 +8,7 @@ from . import average
 from . import buffer
 from . import catch
 from . import concat
+from . import contains
 from . import combinelatest
 from . import count
 from . import create
