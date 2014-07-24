@@ -44,7 +44,7 @@ def extrema_by(source, key_selector, comparer):
     return AnonymousObservable(subscribe)
 
 @add_metaclass(ObservableMeta)
-class ObservableMin(Observable):
+class ObservableMinBy(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def min_by(self, key_selector, comparer=None):
