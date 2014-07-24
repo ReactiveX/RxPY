@@ -113,7 +113,7 @@ class ObservableGroupByUntil(Observable):
                     def on_completed():
                         expire()
 
-                    md.set_disposable(duration.take(1).subscribe(on_next, on_error, on_completed))
+                    md.disposable = duration.take(1).subscribe(on_next, on_error, on_completed)
                 
                 try:
                     element = element_selector(x)
