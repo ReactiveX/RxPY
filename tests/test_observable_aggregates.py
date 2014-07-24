@@ -11,58 +11,6 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-# def test_Min_Int32_Empty():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.min()
-#     }).messages
-#     equal(1, res.length)
-#     ok(res[0].value.kind == 'E' and res[0].value.exception != null)
-#     ok(res[0].time == 250)
-
-
-# def test_Min_Int32_Return():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.min()
-#     }).messages
-#     res.assert_equal(on_next(250, 2), on_completed(250))
-
-
-# def test_Min_Int32_Some():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-#     res = scheduler.start(create=create)
-#         return xs.min()
-#     }).messages
-#     res.assert_equal(on_next(250, 2), on_completed(250))
-
-
-# def test_Min_Int32_Throw():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-#     res = scheduler.start(create=create)
-#         return xs.min()
-#     }).messages
-#     res.assert_equal(on_error(210, ex))
-
-
-# def test_Min_Int32_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1))
-#     res = scheduler.start(create=create)
-#         return xs.min()
-#     }).messages
-#     res.assert_equal()
-
 
 # def test_MinOfT_Comparer_Empty():
 #     var comparer, res, scheduler, xs

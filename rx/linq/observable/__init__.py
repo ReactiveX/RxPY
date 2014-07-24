@@ -29,6 +29,8 @@ from . import isempty
 from . import join
 from . import materialize
 from . import merge
+from . import min
+from . import minby
 from . import never
 from . import observeon
 from . import onerrorresumenext
