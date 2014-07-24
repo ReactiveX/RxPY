@@ -63,7 +63,7 @@ class TestSum(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, "fo"), on_next(220, "b"), on_next(230, "qux"), on_completed(240))
         
         def create():
-            return xs.sum(len)
+            return xs.sum(lambda x: len(x))
         
         res = scheduler.start(create=create)
                 
