@@ -25,66 +25,6 @@ class BooleanDisposable(object):
         self.is_disposed = True
         return self.is_disposed
 
-def test_return_basic():
-    scheduler = TestScheduler()
-
-    def factory():
-        return Observable.return_value(42, scheduler)
-    
-    results = scheduler.start(factory)
-    results.messages.assert_equal(
-                        on_next(201, 42),
-                        on_completed(201))
-
-def test_return_disposed():
-    scheduler = TestScheduler()
-
-    def factory():
-        return Observable.return_value(42, scheduler)
-    
-    results = scheduler.start(factory, disposed=200)
-    results.messages.assert_equal()
-
-def test_return_disposed_after_next():
-    scheduler = TestScheduler()
-    d = SerialDisposable()
-    xs = Observable.return_value(42, scheduler)
-    results = scheduler.create_observer()
-
-    def action(scheduler, state):
-        def on_next(x):
-            d.dispose()
-            results.on_next(x)
-        def on_error(e):
-            results.on_error(e)
-        def on_completed():
-            results.on_completed()
-
-        d.disposable = xs.subscribe(on_next, on_error, on_completed)
-        return d.disposable
-    
-    scheduler.schedule_absolute(100, action)
-    scheduler.start()
-    results.messages.assert_equal(on_next(101, 42))
-
-def test_return_observer_throws():
-    scheduler1 = TestScheduler()
-    xs = Observable.return_value(1, scheduler1)
-    xs.subscribe(lambda x: _raise('ex'))
-    
-    try:
-        scheduler1.start()
-    except RxException:
-        pass
-    
-    scheduler2 = TestScheduler()
-    ys = Observable.return_value(1, scheduler2)
-    ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
-
-    try:
-        scheduler2.start()
-    except RxException:
-        pass
 
 def test_never_basic():
     scheduler = TestScheduler()
@@ -1030,51 +970,6 @@ def test_retry_observable_retry_count_throws():
         return xss.subscribe()
     except RxException:
         pass
-
-def test_repeat_value_count_zero():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.repeat(42, 0, scheduler)
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_completed(200))
-
-
-def test_repeat_value_count_one():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.repeat(42, 1, scheduler)
-    
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 42), on_completed(201))
-
-def test_repeat_value_count_ten():
-    scheduler = TestScheduler()
-    
-    def create():    
-        return Observable.repeat(42, 10, scheduler)
-    
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42), on_next(207, 42), on_next(208, 42), on_next(209, 42), on_next(210, 42), on_completed(210))
-
-def test_repeat_value_count_dispose():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.repeat(42, 10, scheduler)
-
-    results = scheduler.start(create, disposed=207)
-    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
-
-def test_repeat_value():
-    scheduler = TestScheduler()
-    def create():
-        return Observable.repeat(42, -1, scheduler)
-
-    results = scheduler.start(create, disposed=207)
-    results.messages.assert_equal(on_next(201, 42), on_next(202, 42), on_next(203, 42), on_next(204, 42), on_next(205, 42), on_next(206, 42))
 
 if __name__ == '__main__':
     test_using_throw_resource_usage()
