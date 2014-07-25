@@ -1,8 +1,7 @@
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import immediate_scheduler
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
