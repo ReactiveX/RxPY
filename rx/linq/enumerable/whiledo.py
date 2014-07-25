@@ -10,10 +10,10 @@ class EnumerableWhileDo(Enumerable):
     @classmethod
     def while_do(cls, condition, source):
         def next():
-            if condition:
-                return { "done": False, "value": source }
-            else:
-                return { "done": True, "value": None }
-        
-        return Enumerable(Enumerator(next))
+            while condition(source):
+                yield source
+            
+            raise StopIteration()
+        return Enumerable(next())
+
     

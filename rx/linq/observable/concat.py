@@ -6,7 +6,7 @@ from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisp
 from rx.concurrency import immediate_scheduler
 from rx.observable import Observable
 from rx.internal import ExtensionMethod
-from rx.internal import Enumerable
+from rx.internal import Enumerable, Enumerator
 
 @add_metaclass(ExtensionMethod)
 class ObservableConcat(Observable):

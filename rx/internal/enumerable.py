@@ -11,11 +11,11 @@ class Enumerable(object):
         return  self._iterator
 
     def where(self, predicate):
-        return Enumerator(value for value in self if predicate(value))
+        return Enumerable(value for value in self if predicate(value))
 
     def select(self, selector=None):
         selector = selector or identity
-        return Enumerator(selector(value) for value in self)
+        return Enumerable(selector(value) for value in self)
 
     def take(self, count):
         def next():
@@ -28,7 +28,7 @@ class Enumerable(object):
                 yield value
             
             raise StopIteration
-        return Enumerator(next())   
+        return Enumerable(next())
 
     @classmethod
     def range(cls, start, count):
@@ -41,16 +41,16 @@ class Enumerable(object):
                 n -= 1
 
             raise StopIteration
-        return Enumerator(next())
+        return Enumerable(next())
 
     @classmethod
     def repeat(cls, value, count=None):
         if not count is None:
-            return Enumerator(value for _ in range(count))
-        return Enumerator(itertools.repeat(value))
+            return Enumerable(value for _ in range(count))
+        return Enumerable(itertools.repeat(value))
 
     @classmethod
     def for_each(cls, source, selector=None):
         selector = selector or identity
-        return Enumerator(selector(value) for value in source)
+        return Enumerable(selector(value) for value in source)
 
