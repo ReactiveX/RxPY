@@ -1,12 +1,13 @@
-import six
+from six import add_metaclass
 
 from rx.concurrency import Scheduler
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 
 from rx.concurrency import immediate_scheduler
 #from rx.linq.enumerable import Enumerable
+from rx.internal import ExtensionMethod
 
-@six.add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableStartsWith(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     

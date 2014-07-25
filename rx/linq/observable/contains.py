@@ -1,10 +1,10 @@
 from six import add_metaclass
 
 from rx import Observable
-from rx.observable import ObservableMeta
 from rx.internal.basic import default_comparer
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableContains(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     

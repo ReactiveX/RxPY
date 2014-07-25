@@ -1,14 +1,14 @@
 from six import add_metaclass
 
 from rx import Observable
-from rx.observable import ObservableMeta
+from rx.internal import ExtensionMethod
 
 class AverageValue(object):
     def __init__(self, sum, count):
         self.sum = sum
         self.count = count
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableAverage(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

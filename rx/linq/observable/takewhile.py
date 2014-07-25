@@ -1,11 +1,11 @@
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.observable import ObservableMeta
 from rx.internal import ArgumentOutOfRangeException
 from rx.internal.utils import adapt_call
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableTakeWhile(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

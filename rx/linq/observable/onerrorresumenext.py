@@ -1,12 +1,13 @@
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
 from rx.concurrency import immediate_scheduler
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableOnErrorResumeNext(Observable):
     def __init__(self, subscribe):
         self.on_error_resume_next = self.__on_error_resume_next

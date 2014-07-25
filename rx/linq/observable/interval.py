@@ -1,9 +1,10 @@
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableInterval(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     

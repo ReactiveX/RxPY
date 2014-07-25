@@ -1,10 +1,11 @@
 from six import add_metaclass
-from rx.observable import Observable, ObservableMeta
+
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-
 from rx.concurrency import current_thread_scheduler
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableGenerate(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

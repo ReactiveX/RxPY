@@ -61,6 +61,7 @@ from . import timestamp
 from . import toarray
 from . import using
 from . import where
+from . import whiledo
 from . import window
 from . import windowwithcount
 from . import zip

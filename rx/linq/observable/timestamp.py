@@ -1,8 +1,9 @@
 import logging
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
@@ -11,7 +12,8 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ObservableMeta)
+
+@add_metaclass(ExtensionMethod)
 class ObservableTimestamp(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

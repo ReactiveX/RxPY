@@ -4,10 +4,11 @@ from six import add_metaclass
 from rx import AnonymousObservable
 from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.linq.enumerable import Enumerable
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
+from rx.internal import ExtensionMethod
+from rx.internal import Enumerable
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableConcat(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

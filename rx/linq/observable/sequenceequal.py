@@ -1,12 +1,12 @@
 from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
-from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable, CompositeDisposable
 from rx.internal import default_comparer
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableSequenceEqual(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

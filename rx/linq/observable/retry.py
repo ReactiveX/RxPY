@@ -1,10 +1,10 @@
-import six
+from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
+from rx.internal.enumerable import Enumerable
+from rx.internal import ExtensionMethod
 
-from rx.linq.enumerable import Enumerable
-
-@six.add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableRetry(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

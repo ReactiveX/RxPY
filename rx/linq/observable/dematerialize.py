@@ -1,9 +1,10 @@
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableDematerialize(Observable):
 
     def dematerialize(self):

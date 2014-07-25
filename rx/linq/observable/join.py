@@ -6,14 +6,14 @@ from six import add_metaclass
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
-from rx.observable import ObservableMeta
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableJoin(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

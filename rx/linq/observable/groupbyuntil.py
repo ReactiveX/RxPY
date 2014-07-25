@@ -3,13 +3,12 @@ from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
-from rx.observable import ObservableMeta
 from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import default_key_serializer, identity
-
 from rx.linq.groupedobservable import GroupedObservable
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableGroupByUntil(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

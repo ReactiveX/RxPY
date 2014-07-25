@@ -4,13 +4,14 @@ from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
-from rx.observable import ObservableMeta
+from rx.internal import ExtensionMethod
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableWindowWithCount(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

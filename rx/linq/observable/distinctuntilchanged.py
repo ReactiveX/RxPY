@@ -1,9 +1,11 @@
 import six
+from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
+from rx.internal import ExtensionMethod
 
-@six.add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableDistinctUntilChanged(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

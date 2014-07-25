@@ -1,11 +1,12 @@
 from six import add_metaclass
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableCreation(Observable):
 
     @classmethod

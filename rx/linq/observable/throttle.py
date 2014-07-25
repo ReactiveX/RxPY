@@ -2,15 +2,16 @@ import logging
 from datetime import timedelta
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableThrottle(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

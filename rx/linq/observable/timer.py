@@ -2,11 +2,12 @@ import logging
 from datetime import datetime
 from six import add_metaclass
 
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler, Scheduler
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
@@ -34,7 +35,8 @@ class Timestamp(object):
     #def equals(other):
     #    return other.timestamp == self.timestamp and other.value == self.value
 
-@add_metaclass(ObservableMeta)
+
+@add_metaclass(ExtensionMethod)
 class ObservableTimer(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

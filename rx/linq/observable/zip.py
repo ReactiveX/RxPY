@@ -1,13 +1,14 @@
 from six import add_metaclass
 
 from rx.internal import noop
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.linq.enumerable import Enumerable
+from rx.internal.enumerable import Enumerable
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableZip(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 

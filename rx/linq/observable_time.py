@@ -3,12 +3,13 @@ from datetime import datetime, timedelta
 from six import add_metaclass
 
 from rx.internal.utils import add_ref
-from rx.observable import Observable, ObservableMeta
+from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
 from rx.concurrency import timeout_scheduler
+from rx.internal import ExtensionMethod
 
 log = logging.getLogger("Rx")
 
@@ -36,7 +37,7 @@ class Timestamp(object):
     #def equals(other):
     #    return other.timestamp == self.timestamp and other.value == self.value
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableTime(Observable):
     def window_with_time(self, timespan, timeshift=None, scheduler=None):
         source = self

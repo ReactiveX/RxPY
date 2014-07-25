@@ -1,10 +1,11 @@
 from six import add_metaclass
-from rx.observable import Observable, ObservableMeta
 
-from rx.linq.enumerable import Enumerable
+from rx.observable import Observable
+from rx.internal.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
+from rx.internal import ExtensionMethod
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableRepeat(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     
@@ -28,7 +29,6 @@ class ObservableRepeat(Observable):
         """
 
         return Observable.concat(Enumerable.repeat(self, repeat_count))
-
 
     @classmethod
     def repeat(cls, value=None, repeat_count=None, scheduler=None):

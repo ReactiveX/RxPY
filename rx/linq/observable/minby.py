@@ -1,7 +1,7 @@
 from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
-from rx.observable import ObservableMeta
+from rx.internal import ExtensionMethod
 from rx.internal.basic import default_sub_comparer
 
 def extrema_by(source, key_selector, comparer):
@@ -43,7 +43,7 @@ def extrema_by(source, key_selector, comparer):
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
-@add_metaclass(ObservableMeta)
+@add_metaclass(ExtensionMethod)
 class ObservableMinBy(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
