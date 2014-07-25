@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class TestWhile(unittest.TestCase):
+class TestIfThen(unittest.TestCase):
 	def test_if_true(self):
 	    scheduler = TestScheduler()
 	    xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2), on_completed(300))
