@@ -45,12 +45,14 @@ from . import select
 from . import selectmany
 from . import sequenceequal
 from . import skip
+from . import skipuntil
 from . import skipwhile
 from . import startswith
 from . import subscribeon
 from . import sum
 from . import switchlatest
 from . import take
+from . import takeuntil
 from . import takewhile
 from . import throttle
 from . import throw
@@ -61,3 +63,5 @@ from . import using
 from . import where
 from . import window
 from . import windowwithcount
+from . import zip
+from . import ziparray

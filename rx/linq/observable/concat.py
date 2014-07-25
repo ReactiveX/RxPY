@@ -81,4 +81,10 @@ class ObservableConcat(Observable):
             return CompositeDisposable(subscription, cancelable, Disposable(dispose))
         return AnonymousObservable(subscribe)
 
+    def concat_all(self):
+        """Concatenates an observable sequence of observable sequences.
         
+        Returns an observable sequence that contains the elements of each 
+        observed inner sequence, in sequential order.
+        """
+        return self.merge(1)
