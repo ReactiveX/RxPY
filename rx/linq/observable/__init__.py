@@ -25,6 +25,7 @@ from . import groupby
 from . import groupbyuntil
 from . import groupjoin
 from . import ifthen
+from . import ignore_elements
 from . import interval
 from . import isempty
 from . import join
