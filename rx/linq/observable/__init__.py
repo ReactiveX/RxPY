@@ -17,6 +17,7 @@ from . import delay
 from . import dematerialize
 from . import distinctuntilchanged
 from . import doaction
+from . import dowhile
 from . import empty
 from . import finalvalue
 from . import fromarray
