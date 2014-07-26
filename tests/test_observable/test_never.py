@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class TestUsing(unittest.TestCase):
+class TestNever(unittest.TestCase):
 	def test_never_basic(self):
 	    scheduler = TestScheduler()
 	    xs = Observable.never()
