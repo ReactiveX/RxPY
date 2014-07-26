@@ -49,6 +49,7 @@
     <Compile Include="rx\linq\observable\any.py" />
     <Compile Include="rx\linq\observable\average.py" />
     <Compile Include="rx\linq\observable\buffer.py" />
+    <Compile Include="rx\linq\observable\case.py" />
     <Compile Include="rx\linq\observable\catch.py" />
     <Compile Include="rx\linq\observable\combinelatest.py" />
     <Compile Include="rx\linq\observable\concat.py" />
@@ -60,6 +61,7 @@
     <Compile Include="rx\linq\observable\dematerialize.py" />
     <Compile Include="rx\linq\observable\distinctuntilchanged.py" />
     <Compile Include="rx\linq\observable\doaction.py" />
+    <Compile Include="rx\linq\observable\dowhile.py" />
     <Compile Include="rx\linq\observable\empty.py" />
     <Compile Include="rx\linq\observable\finalvalue.py" />
     <Compile Include="rx\linq\observable\fromarray.py" />
@@ -67,6 +69,7 @@
     <Compile Include="rx\linq\observable\groupby.py" />
     <Compile Include="rx\linq\observable\groupbyuntil.py" />
     <Compile Include="rx\linq\observable\groupjoin.py" />
+    <Compile Include="rx\linq\observable\ifthen.py" />
     <Compile Include="rx\linq\observable\interval.py" />
     <Compile Include="rx\linq\observable\isempty.py" />
     <Compile Include="rx\linq\observable\join.py" />
@@ -88,6 +91,7 @@
     <Compile Include="rx\linq\observable\selectmany.py" />
     <Compile Include="rx\linq\observable\sequenceequal.py" />
     <Compile Include="rx\linq\observable\skip.py" />
+    <Compile Include="rx\linq\observable\skipuntil.py" />
     <Compile Include="rx\linq\observable\skipwhile.py" />
     <Compile Include="rx\linq\observable\startswith.py" />
     <Compile Include="rx\linq\observable\subscribeon.py" />
@@ -149,19 +153,27 @@
     <Compile Include="tests\test_group_join.py" />
     <Compile Include="tests\test_notification.py" />
     <Compile Include="tests\test_observable\test_aggregate.py" />
+    <Compile Include="tests\test_observable\test_amb.py" />
+    <Compile Include="tests\test_observable\test_case.py" />
     <Compile Include="tests\test_observable\test_catch.py" />
+    <Compile Include="tests\test_observable\test_combinelatest.py" />
+    <Compile Include="tests\test_observable\test_concat.py" />
     <Compile Include="tests\test_observable\test_contains.py" />
     <Compile Include="tests\test_observable\test_count.py" />
     <Compile Include="tests\test_observable\test_delay.py" />
+    <Compile Include="tests\test_observable\test_dowhile.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
+    <Compile Include="tests\test_observable\test_ifthen.py" />
     <Compile Include="tests\test_observable\test_isempty.py" />
     <Compile Include="tests\test_observable\test_materialize.py" />
     <Compile Include="tests\test_observable\test_all.py" />
     <Compile Include="tests\test_observable\test_any.py" />
     <Compile Include="tests\test_observable\test_average.py" />
+    <Compile Include="tests\test_observable\test_merge.py" />
     <Compile Include="tests\test_observable\test_min.py" />
     <Compile Include="tests\test_observable\test_observeon.py" />
     <Compile Include="tests\test_observable\test_of.py" />
+    <Compile Include="tests\test_observable\test_onerrorresumenext.py" />
     <Compile Include="tests\test_observable\test_reduce.py" />
     <Compile Include="tests\test_observable\test_repeat.py" />
     <Compile Include="tests\test_observable\test_returnvalue.py" />
@@ -170,6 +182,7 @@
     <Compile Include="tests\test_observable\test_selectmany.py" />
     <Compile Include="tests\test_observable\test_sequenceequal.py" />
     <Compile Include="tests\test_observable\test_skip.py" />
+    <Compile Include="tests\test_observable\test_skipuntil.py" />
     <Compile Include="tests\test_observable\test_skipwhile.py" />
     <Compile Include="tests\test_observable\test_subscribeon.py" />
     <Compile Include="tests\test_observable\test_sum.py" />
@@ -181,6 +194,7 @@
     <Compile Include="tests\test_observable\test_where.py" />
     <Compile Include="tests\test_observable\test_while.py" />
     <Compile Include="tests\test_observable\test_window.py" />
+    <Compile Include="tests\test_observable\test_zip.py" />
     <Compile Include="tests\test_observable\__init__.py" />
     <Compile Include="tests\test_observable_aggregates.py" />
     <Compile Include="tests\test_observable_creation.py" />
