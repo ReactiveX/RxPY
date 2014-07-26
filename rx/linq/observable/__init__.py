@@ -6,6 +6,7 @@ from . import amb
 from . import any
 from . import average
 from . import buffer
+from . import case
 from . import catch
 from . import concat
 from . import contains
