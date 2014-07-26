@@ -21,6 +21,7 @@ from . import doaction
 from . import dowhile
 from . import empty
 from . import finalvalue
+from . import forin
 from . import fromarray
 from . import generate
 from . import groupby
