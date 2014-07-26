@@ -8,10 +8,11 @@ from rx.concurrency import current_thread_scheduler
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableRepeat(Observable):
+class ObservableWhileDo(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
    
-    def while_do(condition, source):
+    @classmethod
+    def while_do(cls, condition, source):
         """Repeats source as long as condition holds emulating a while loop.
         
         Keyword arguments:
