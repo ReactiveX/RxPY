@@ -64,6 +64,7 @@
     <Compile Include="rx\linq\observable\dowhile.py" />
     <Compile Include="rx\linq\observable\empty.py" />
     <Compile Include="rx\linq\observable\finalvalue.py" />
+    <Compile Include="rx\linq\observable\forin.py" />
     <Compile Include="rx\linq\observable\fromarray.py" />
     <Compile Include="rx\linq\observable\generate.py" />
     <Compile Include="rx\linq\observable\groupby.py" />
@@ -160,6 +161,7 @@
     <Compile Include="tests\test_observable\test_concat.py" />
     <Compile Include="tests\test_observable\test_contains.py" />
     <Compile Include="tests\test_observable\test_count.py" />
+    <Compile Include="tests\test_observable\test_create.py" />
     <Compile Include="tests\test_observable\test_delay.py" />
     <Compile Include="tests\test_observable\test_dowhile.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
@@ -171,6 +173,7 @@
     <Compile Include="tests\test_observable\test_average.py" />
     <Compile Include="tests\test_observable\test_merge.py" />
     <Compile Include="tests\test_observable\test_min.py" />
+    <Compile Include="tests\test_observable\test_never.py" />
     <Compile Include="tests\test_observable\test_observeon.py" />
     <Compile Include="tests\test_observable\test_of.py" />
     <Compile Include="tests\test_observable\test_onerrorresumenext.py" />
@@ -184,6 +187,7 @@
     <Compile Include="tests\test_observable\test_skip.py" />
     <Compile Include="tests\test_observable\test_skipuntil.py" />
     <Compile Include="tests\test_observable\test_skipwhile.py" />
+    <Compile Include="tests\test_observable\test_startwith.py" />
     <Compile Include="tests\test_observable\test_subscribeon.py" />
     <Compile Include="tests\test_observable\test_sum.py" />
     <Compile Include="tests\test_observable\test_switch.py" />
@@ -191,6 +195,7 @@
     <Compile Include="tests\test_observable\test_takeuntil.py" />
     <Compile Include="tests\test_observable\test_takewhile.py" />
     <Compile Include="tests\test_observable\test_toarray.py" />
+    <Compile Include="tests\test_observable\test_using.py" />
     <Compile Include="tests\test_observable\test_where.py" />
     <Compile Include="tests\test_observable\test_while.py" />
     <Compile Include="tests\test_observable\test_window.py" />
