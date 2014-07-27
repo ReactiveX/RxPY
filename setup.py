@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.2.0',
+    version='0.2.1',
     description='Reactive Extensions for Python',
     long_description = """\
 is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
@@ -17,8 +17,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
     url='https://github.com/dbrattli/Rx',
     download_url = 'https://github.com/dbrattli/RxPY',
     install_requires=[
-        'six',
-        'nose'
+        'six'
     ],
     zip_safe = True,
 
@@ -35,6 +34,8 @@ is a set of libraries to compose asynchronous and event-based programs using obs
     ],
     test_suite='nose.collector',
 
-    packages=['rx', 'rx.internal', 'rx.linq', 'rx.testing', 'rx.concurrency', 'rx.disposables', 'rx.subjects' ],
+    packages=['rx', 'rx.internal',
+              'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
+              'rx.concurrency', 'rx.disposables', 'rx.subjects', 'rx.testing'],
     package_dir = { 'rx':'rx' }
 )
