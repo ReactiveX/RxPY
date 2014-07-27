@@ -12,7 +12,7 @@ def extrema_by(source, key_selector, comparer):
         
         def on_next(x):
             try:
-                key = key_selector(x);
+                key = key_selector(x)
             except Exception as ex:
                 observer.on_error(ex)
                 return
@@ -24,17 +24,18 @@ def extrema_by(source, key_selector, comparer):
                 last_key[0] = key
             else:
                 try:
-                    comparison = comparer(key, last_key[0]);
+                    comparison = comparer(key, last_key[0])
                 except Exception as ex1:
                     observer.on_error(ex1)
                     return
                 
             if comparison > 0:
                 last_key[0] = key
-                list.clear()
+                #list.clear()
+                list[:] = []
             
             if comparison >= 0:
-                list.insert(0, x)
+                list.append(x)
             
         def on_completed():
             observer.on_next(list)

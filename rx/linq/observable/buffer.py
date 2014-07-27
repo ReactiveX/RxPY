@@ -32,5 +32,28 @@ class ObservableBuffer(Observable):
         else:
             return self.observable_window_with_openings(closing_selector, buffer_closing_selector).select_many(lambda item: item.to_array())
     
-    
- 
+    def buffer_with_count(self, count, skip=None):
+        """Projects each element of an observable sequence into zero or more 
+        buffers which are produced based on element count information.
+   
+        Example:
+        res = xs.buffer_with_count(10)
+        res = xs.buffer_with_count(10, 1)
+   
+        Keyword parameters:
+        count -- {Number} Length of each buffer.
+        skip -- {Number} [Optional] Number of elements to skip between creation
+            of consecutive buffers. If not provided, defaults to the count.
+        
+        Returns an observable {Observable} sequence of buffers."""
+
+        if skip is None:
+            skip = count
+        
+        def selector(x):
+            return x.to_array()  
+
+        def predicate(x):
+            return len(x) > 0;
+
+        return self.window_with_count(count, skip).select_many(selector).where(predicate)
