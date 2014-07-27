@@ -34,6 +34,8 @@ from . import isempty
 from . import join
 from . import materialize
 from . import merge
+from . import max
+from . import maxby
 from . import min
 from . import minby
 from . import never
