@@ -17,6 +17,7 @@ develop-eggs
 .installed.cfg
 lib
 lib64
+*tmp_dir
 
 # Installer logs
 pip-log.txt
@@ -40,3 +41,12 @@ nosetests.xml
 
 # Log files
 *.log
+Rx.pyperf
+*.coverage
+UpgradeLog.htm
+TestResults/Rx.TE.Tests.mdf
+TestResults/Rx.TE.Tests_log.ldf
+*.user
+
+# Cloud9
+.c9

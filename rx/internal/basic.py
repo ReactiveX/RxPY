@@ -2,9 +2,11 @@ from datetime import datetime
 
 # Defaults
 def noop(*args, **kw):
-   pass
+    """No operation. Returns nothing"""
+    pass
 
 def identity(x):
+    """Returns argument x"""
     return x
 
 def default_now():

@@ -1,20 +1,20 @@
 # Collections
 class IndexedItem(object):
     def __init__(self, id, value):
-        self.id = id
+        self._id = id
         self.value = value
 
     def compare_to(self, other):
-        c = self.value.compare_to(other.value)
-        if not c:
-            c = self.id - other.id        
-        return c
+        ret = self.value.compare_to(other.value)
+        if not ret:
+            ret = self._id - other._id        
+        return ret
 
 class PriorityQueue(object):
     """ Priority Queue for Scheduling"""
     count = 0
 
-    def __init__(self, capacity):
+    def __init__(self, capacity=None):
         self.items = []
         self.length = 0
     
@@ -37,7 +37,7 @@ class PriorityQueue(object):
         
     def heapify(self, index=None):
         if index is None:
-            index = 0;
+            index = 0
         
         if index >= self.length or index < 0:
             return

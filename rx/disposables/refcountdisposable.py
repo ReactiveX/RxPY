@@ -1,7 +1,10 @@
 from .disposable import Disposable
 
 class RefCountDisposable(Disposable):
-
+    """Represents a disposable resource that only disposes its underlying 
+    disposable resource when all dependent disposable objects have been 
+    disposed."""
+    
     class InnerDisposable(Disposable):
         def __init__(self, disposable):
             self.disposable = disposable

@@ -209,166 +209,6 @@ def test_interval_timespan_observer_throws():
     except RxException:
         pass
 
-def test_delay_timespan_simple1():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        return xs.delay(100, scheduler=scheduler)
-    
-    results = scheduler.start(create)
-        
-    results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_datetime_offset_simple1_impl():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        dt = datetime.fromtimestamp(300/1000)
-        return xs.delay(dt, scheduler)
-    
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(350, 2), on_next(450, 3), on_next(550, 4), on_completed(650))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_timespan_simple2_impl():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        return xs.delay(50, scheduler)
-    
-    results = scheduler.start(create) 
-    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_datetime_offset_simple2_impl():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        return xs.delay(datetime.fromtimestamp(250/1000), scheduler)
-    
-    results = scheduler.start(create)
-        
-    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_completed(600))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_timespan_simple3_impl():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        return xs.delay(150, scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_datetime_offset_simple3_impl():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
-    
-    def create():
-        return xs.delay(datetime.fromtimestamp(0.350), scheduler)
-    
-    results = scheduler.start(create)
-        
-    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_next(600, 4), on_completed(700))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_timespan_error1_impl():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-    
-    def create():
-        return xs.delay(50, scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_datetime_offset_error1_impl():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-    
-    def create():
-        return xs.delay(datetime.fromtimestamp(0.250), scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_next(300, 2), on_next(400, 3), on_next(500, 4), on_error(550, ex))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_timespan_error2_impl():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-    
-    def create():
-        return xs.delay(150, scheduler)
-    
-    results = scheduler.start(create)
-        
-    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_datetime_offset_error2_impl():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
-    
-    def create():
-        return xs.delay(datetime.fromtimestamp(0.350), scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_next(400, 2), on_next(500, 3), on_error(550, ex))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_empty():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(550))
-    
-    def create():
-        return xs.delay(10, scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_completed(560))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_error():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_error(550, ex))
-    
-    def create():
-        return xs.delay(10, scheduler)
-    
-    results = scheduler.start(create)
-    
-    results.messages.assert_equal(on_error(550, ex))
-    xs.subscriptions.assert_equal(subscribe(200, 550))
-
-def test_delay_never():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1))
-    
-    def create():
-        return xs.delay(10, scheduler)
-    
-    results = scheduler.start(create)
-        
-    results.messages.assert_equal()
-    xs.subscriptions.assert_equal(subscribe(200, 1000))
-
 def test_throttle_timespan_allpass():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(200, 2), on_next(250, 3), on_next(300, 4), on_next(350, 5), on_next(400, 6), on_next(450, 7), on_next(500, 8), on_completed(550))
@@ -628,7 +468,7 @@ def test_throttle_duration_inner_done_throttle_behavior():
 class TimeInterval(object):
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
-            interval = int(interval.microseconds/1000)
+            interval = int(interval.microseconds/1000.0)
 
         self.value = value
         self.interval = interval
@@ -918,7 +758,7 @@ def test_timeout_datetime_offset_timeout_occurs():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
     
@@ -932,7 +772,7 @@ def test_timeout_datetime_offset_timeout_does_not_occur_completed():
     ys = scheduler.create_cold_observable(on_next(100, -1))
 
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     results = scheduler.start(create)
     
     results.messages.assert_equal(on_next(310, 1), on_completed(390))
@@ -946,7 +786,7 @@ def test_timeout_datetime_offset_timeout_does_not_occur_error():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
         
@@ -960,7 +800,7 @@ def test_timeout_datetime_offset_timeout_occur_2():
     ys = scheduler.create_cold_observable(on_next(100, -1))
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler=scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler=scheduler)
     
     results = scheduler.start(create)
         
@@ -974,7 +814,7 @@ def test_timeout_datetime_offset_timeout_occur_3():
     ys = scheduler.create_cold_observable()
     
     def create():
-        return xs.timeout(datetime.fromtimestamp(400/1000), ys, scheduler)
+        return xs.timeout(datetime.fromtimestamp(400/1000.0), ys, scheduler)
     
     results = scheduler.start(create)
         

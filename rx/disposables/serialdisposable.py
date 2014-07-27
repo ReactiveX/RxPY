@@ -1,7 +1,8 @@
 from .disposable import Disposable
 
-# Multiple assignment disposable
 class SerialDisposable(Disposable):
+    """Multiple assignment disposable"""
+    
     def __init__(self):
         self.is_disposed = False
         self.current = None

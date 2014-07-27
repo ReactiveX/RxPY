@@ -15,7 +15,7 @@ class DisposedException(Exception):
 class ReEntracyException(Exception):
 	def __init__(self, msg=None):
 		super(ReEntracyException, self).__init__(msg or 'Re-entrancy detected')
-       
+
 class CompletedException(Exception):
-	def __init__(self, msg=None):
-		super(CompletedException, self).__init__(msg or 'Observer completed')
+    def __init__(self, msg=None):
+        super(CompletedException, self).__init__(msg or 'Observer completed')

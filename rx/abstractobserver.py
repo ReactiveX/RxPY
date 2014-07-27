@@ -16,7 +16,7 @@ class AbstractObserver(object):
 
     def on_next(self, value):
         """Notifies the observer of a new element in the sequence.
-        
+
         Keyword arguments:
         value -- Next element in the sequence.
         """

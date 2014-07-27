@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67097cd8-8850-4bda-a138-ee95841442f2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tests\test_observable_time.py</StartupFile>
+    <StartupFile>tests\test_observable\test_average.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>C:\Users\dbrattli\Documents\GitHub\RxPy\</WorkingDirectory>
+    <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <InterpreterId>9a7a9026-48c1-4688-9d5d-e5699d47d074</InterpreterId>
-    <InterpreterVersion>3.2</InterpreterVersion>
+    <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
+    <InterpreterVersion>3.4</InterpreterVersion>
     <Name>RxPY</Name>
     <RootNamespace>RxPY</RootNamespace>
-    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,20 +32,89 @@
     <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
     <Compile Include="rx\concurrency\timeoutscheduler.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
+    <Compile Include="rx\disposables\booleandisposable.py" />
     <Compile Include="rx\disposables\scheduleddisposable.py" />
     <Compile Include="rx\internal\basic.py" />
     <Compile Include="rx\internal\enumerable.py" />
     <Compile Include="rx\internal\enumerator.py" />
     <Compile Include="rx\internal\exceptions.py" />
     <Compile Include="rx\internal\priorityqueue.py" />
+    <Compile Include="rx\internal\utils.py" />
     <Compile Include="rx\internal\__init__.py" />
+    <Compile Include="rx\linq\enumerable\whiledo.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
-    <Compile Include="rx\linq\observable_aggregates.py" />
-    <Compile Include="rx\linq\observable_coincidence.py" />
-    <Compile Include="rx\linq\observable_concurrency.py" />
-    <Compile Include="rx\linq\observable_leave.py" />
-    <Compile Include="rx\linq\observable_multiple.py" />
-    <Compile Include="rx\linq\observable_single.py" />
+    <Compile Include="rx\linq\observable\aggregate.py" />
+    <Compile Include="rx\linq\observable\all.py" />
+    <Compile Include="rx\linq\observable\amb.py" />
+    <Compile Include="rx\linq\observable\any.py" />
+    <Compile Include="rx\linq\observable\average.py" />
+    <Compile Include="rx\linq\observable\buffer.py" />
+    <Compile Include="rx\linq\observable\case.py" />
+    <Compile Include="rx\linq\observable\catch.py" />
+    <Compile Include="rx\linq\observable\combinelatest.py" />
+    <Compile Include="rx\linq\observable\concat.py" />
+    <Compile Include="rx\linq\observable\contains.py" />
+    <Compile Include="rx\linq\observable\count.py" />
+    <Compile Include="rx\linq\observable\create.py" />
+    <Compile Include="rx\linq\observable\defer.py" />
+    <Compile Include="rx\linq\observable\delay.py" />
+    <Compile Include="rx\linq\observable\dematerialize.py" />
+    <Compile Include="rx\linq\observable\distinctuntilchanged.py" />
+    <Compile Include="rx\linq\observable\doaction.py" />
+    <Compile Include="rx\linq\observable\dowhile.py" />
+    <Compile Include="rx\linq\observable\empty.py" />
+    <Compile Include="rx\linq\observable\finalvalue.py" />
+    <Compile Include="rx\linq\observable\forin.py" />
+    <Compile Include="rx\linq\observable\fromarray.py" />
+    <Compile Include="rx\linq\observable\generate.py" />
+    <Compile Include="rx\linq\observable\groupby.py" />
+    <Compile Include="rx\linq\observable\groupbyuntil.py" />
+    <Compile Include="rx\linq\observable\groupjoin.py" />
+    <Compile Include="rx\linq\observable\ifthen.py" />
+    <Compile Include="rx\linq\observable\interval.py" />
+    <Compile Include="rx\linq\observable\isempty.py" />
+    <Compile Include="rx\linq\observable\join.py" />
+    <Compile Include="rx\linq\observable\materialize.py" />
+    <Compile Include="rx\linq\observable\max.py" />
+    <Compile Include="rx\linq\observable\maxby.py" />
+    <Compile Include="rx\linq\observable\merge.py" />
+    <Compile Include="rx\linq\observable\min.py" />
+    <Compile Include="rx\linq\observable\minby.py" />
+    <Compile Include="rx\linq\observable\never.py" />
+    <Compile Include="rx\linq\observable\observeon.py" />
+    <Compile Include="rx\linq\observable\of.py" />
+    <Compile Include="rx\linq\observable\onerrorresumenext.py" />
+    <Compile Include="rx\linq\observable\range.py" />
+    <Compile Include="rx\linq\observable\reduce.py" />
+    <Compile Include="rx\linq\observable\repeat.py" />
+    <Compile Include="rx\linq\observable\retry.py" />
+    <Compile Include="rx\linq\observable\returnvalue.py" />
+    <Compile Include="rx\linq\observable\scan.py" />
+    <Compile Include="rx\linq\observable\select.py" />
+    <Compile Include="rx\linq\observable\selectmany.py" />
+    <Compile Include="rx\linq\observable\sequenceequal.py" />
+    <Compile Include="rx\linq\observable\skip.py" />
+    <Compile Include="rx\linq\observable\skipuntil.py" />
+    <Compile Include="rx\linq\observable\skipwhile.py" />
+    <Compile Include="rx\linq\observable\startswith.py" />
+    <Compile Include="rx\linq\observable\subscribeon.py" />
+    <Compile Include="rx\linq\observable\sum.py" />
+    <Compile Include="rx\linq\observable\switchlatest.py" />
+    <Compile Include="rx\linq\observable\take.py" />
+    <Compile Include="rx\linq\observable\takeuntil.py" />
+    <Compile Include="rx\linq\observable\takewhile.py" />
+    <Compile Include="rx\linq\observable\throttle.py" />
+    <Compile Include="rx\linq\observable\throw.py" />
+    <Compile Include="rx\linq\observable\timer.py" />
+    <Compile Include="rx\linq\observable\toarray.py" />
+    <Compile Include="rx\linq\observable\using.py" />
+    <Compile Include="rx\linq\observable\where.py" />
+    <Compile Include="rx\linq\observable\whiledo.py" />
+    <Compile Include="rx\linq\observable\window.py" />
+    <Compile Include="rx\linq\observable\windowwithcount.py" />
+    <Compile Include="rx\linq\observable\zip.py" />
+    <Compile Include="rx\linq\observable\ziparray.py" />
+    <Compile Include="rx\linq\observable\__init__.py" />
     <Compile Include="rx\linq\observable_time.py" />
     <Compile Include="rx\notification.py" />
     <Compile Include="rx\observeonobserver.py" />
@@ -76,39 +144,83 @@
     <Compile Include="rx\disposables\serialdisposable.py" />
     <Compile Include="rx\disposables\singleassignmentdisposable.py" />
     <Compile Include="rx\disposables\__init__.py" />
-    <Compile Include="rx\linq\observable_creation.py" />
-    <Compile Include="rx\linq\standardsequenceoperators.py" />
     <Compile Include="rx\linq\__init__.py" />
     <Compile Include="rx\testing\coldobservable.py" />
     <Compile Include="rx\testing\hotobservable.py" />
     <Compile Include="rx\testing\subscription.py" />
     <Compile Include="rx\testing\__init__.py" />
-    <Compile Include="tests\test_asyncsubject.py" />
-    <Compile Include="tests\test_behaviorsubject.py" />
+    <Compile Include="tests\test_concurrency\test_currentthreadscheduler.py" />
+    <Compile Include="tests\test_concurrency\test_immediatescheduler.py" />
+    <Compile Include="tests\test_concurrency\test_timeoutscheduler.py" />
+    <Compile Include="tests\test_disposables\test_disposable.py" />
     <Compile Include="tests\test_group_join.py" />
     <Compile Include="tests\test_notification.py" />
+    <Compile Include="tests\test_observable\test_aggregate.py" />
+    <Compile Include="tests\test_observable\test_amb.py" />
+    <Compile Include="tests\test_observable\test_buffercount.py" />
+    <Compile Include="tests\test_observable\test_case.py" />
+    <Compile Include="tests\test_observable\test_catch.py" />
+    <Compile Include="tests\test_observable\test_combinelatest.py" />
+    <Compile Include="tests\test_observable\test_concat.py" />
+    <Compile Include="tests\test_observable\test_contains.py" />
+    <Compile Include="tests\test_observable\test_count.py" />
+    <Compile Include="tests\test_observable\test_create.py" />
+    <Compile Include="tests\test_observable\test_delay.py" />
+    <Compile Include="tests\test_observable\test_dowhile.py" />
+    <Compile Include="tests\test_observable\test_empty.py" />
+    <Compile Include="tests\test_observable\test_forin.py" />
+    <Compile Include="tests\test_observable\test_generate.py" />
+    <Compile Include="tests\test_observable\test_groupby.py" />
+    <Compile Include="tests\test_observable\test_ifthen.py" />
+    <Compile Include="tests\test_observable\test_ignoreelements.py" />
+    <Compile Include="tests\test_observable\test_isempty.py" />
+    <Compile Include="tests\test_observable\test_materialize.py" />
+    <Compile Include="tests\test_observable\test_all.py" />
+    <Compile Include="tests\test_observable\test_any.py" />
+    <Compile Include="tests\test_observable\test_average.py" />
+    <Compile Include="tests\test_observable\test_merge.py" />
+    <Compile Include="tests\test_observable\test_min.py" />
+    <Compile Include="tests\test_observable\test_minby.py" />
+    <Compile Include="tests\test_observable\test_never.py" />
+    <Compile Include="tests\test_observable\test_observeon.py" />
+    <Compile Include="tests\test_observable\test_of.py" />
+    <Compile Include="tests\test_observable\test_onerrorresumenext.py" />
+    <Compile Include="tests\test_observable\test_reduce.py" />
+    <Compile Include="tests\test_observable\test_repeat.py" />
+    <Compile Include="tests\test_observable\test_retry.py" />
+    <Compile Include="tests\test_observable\test_returnvalue.py" />
+    <Compile Include="tests\test_observable\test_scan.py" />
+    <Compile Include="tests\test_observable\test_select.py" />
+    <Compile Include="tests\test_observable\test_selectmany.py" />
+    <Compile Include="tests\test_observable\test_sequenceequal.py" />
+    <Compile Include="tests\test_observable\test_skip.py" />
+    <Compile Include="tests\test_observable\test_skipuntil.py" />
+    <Compile Include="tests\test_observable\test_skipwhile.py" />
+    <Compile Include="tests\test_observable\test_startwith.py" />
+    <Compile Include="tests\test_observable\test_subscribeon.py" />
+    <Compile Include="tests\test_observable\test_sum.py" />
+    <Compile Include="tests\test_observable\test_switch.py" />
+    <Compile Include="tests\test_observable\test_take.py" />
+    <Compile Include="tests\test_observable\test_takeuntil.py" />
+    <Compile Include="tests\test_observable\test_takewhile.py" />
+    <Compile Include="tests\test_observable\test_toarray.py" />
+    <Compile Include="tests\test_observable\test_using.py" />
+    <Compile Include="tests\test_observable\test_where.py" />
+    <Compile Include="tests\test_observable\test_while.py" />
+    <Compile Include="tests\test_observable\test_window.py" />
+    <Compile Include="tests\test_observable\test_zip.py" />
+    <Compile Include="tests\test_observable\__init__.py" />
     <Compile Include="tests\test_observable_aggregates.py" />
-    <Compile Include="tests\test_observable_concurrency.py" />
     <Compile Include="tests\test_observable_creation.py" />
     <Compile Include="tests\test_observable_imperative.py" />
     <Compile Include="tests\test_observable_multiple.py" />
+    <Compile Include="tests\test_observable_single.py" />
     <Compile Include="tests\test_observable_time.py" />
     <Compile Include="tests\test_observer.py" />
-    <Compile Include="tests\test_currentthreadscheduler.py" />
-    <Compile Include="tests\test_disposable.py" />
-    <Compile Include="tests\test_immediatescheduler.py" />
-    <Compile Include="tests\test_replaysubject.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_group_by.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_select.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_select_many.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_skip.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_skip_while.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_take.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_take_while.py" />
-    <Compile Include="tests\test_standardqueryoperators\test_where.py" />
-    <Compile Include="tests\test_standardqueryoperators\__init__.py" />
-    <Compile Include="tests\test_subject.py" />
-    <Compile Include="tests\test_timeoutscheduler.py" />
+    <Compile Include="tests\test_subjects\test_asyncsubject.py" />
+    <Compile Include="tests\test_subjects\test_behaviorsubject.py" />
+    <Compile Include="tests\test_subjects\test_replaysubject.py" />
+    <Compile Include="tests\test_subjects\test_subject.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
@@ -117,10 +229,30 @@
     <Folder Include="rx\disposables" />
     <Folder Include="rx\linq" />
     <Folder Include="rx\internal\" />
+    <Folder Include="rx\linq\enumerable\" />
+    <Folder Include="rx\linq\observable\" />
     <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
-    <Folder Include="tests\test_standardqueryoperators\" />
+    <Folder Include="tests\test_concurrency\" />
+    <Folder Include="tests\test_disposables\" />
+    <Folder Include="tests\test_observable\" />
+    <Folder Include="tests\test_subjects\" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+  <ItemGroup>
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="authors.txt" />
+    <Content Include="LICENSE" />
+    <Content Include="license.txt" />
+    <Content Include="README.md" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <PtvsTargetsFile>$(VSToolsPath)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
+  <Import Condition="!Exists($(PtvsTargetsFile))" Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

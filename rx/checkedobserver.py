@@ -35,17 +35,18 @@ class CheckedObserver(Observer):
         if self._state == 0:
             self._state = 1
 
-    def checked(self):
-        """Checks access to the observer for grammar violations. This includes
-        checking for multiple OnError or OnCompleted calls, as well as 
-        reentrancy in any of the observer methods. If a violation is detected, 
-        an Error is thrown from the offending observer method call.
-        
-        Returns an observer that checks callbacks invocations against the 
-        observer grammar and, if the checks pass, forwards those to the 
-        specified observer.
-        """
-        return CheckedObserver(self)
 
-Observer.checked = CheckedObserver.checked
- 
+def checked(self):
+    """Checks access to the observer for grammar violations. This includes
+    checking for multiple OnError or OnCompleted calls, as well as
+    reentrancy in any of the observer methods. If a violation is detected,
+    an Error is thrown from the offending observer method call.
+
+    Returns an observer that checks callbacks invocations against the
+    observer grammar and, if the checks pass, forwards those to the
+    specified observer.
+    """
+    return CheckedObserver(self)
+
+CheckedObserver.checked = checked
+Observer.checked = checked

@@ -7,15 +7,19 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.1.3',
+    version='0.2.0',
     description='Reactive Extensions for Python',
     long_description = """\
-is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python 3""",
+is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
     author='Dag Brattli',
     author_email='dbrattli@microsoft.com',
     license='Apache License',
     url='https://github.com/dbrattli/Rx',
     download_url = 'https://github.com/dbrattli/RxPY',
+    install_requires=[
+        'six',
+        'nose'
+    ],
     zip_safe = True,
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -25,7 +29,8 @@ is a set of libraries to compose asynchronous and event-based programs using obs
         'Intended Audience :: Developers',
 	    'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     test_suite='nose.collector',

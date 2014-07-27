@@ -1,17 +1,19 @@
 import math
 import types
 
-from rx.notification import Notification, OnNext, OnError, OnCompleted
+from rx.notification import OnNext, OnError, OnCompleted
 from .recorded import Recorded
 from .subscription import Subscription
 
 def is_prime(i):
+    """Tests if number is prime or not"""
+
     if i <= 1:
         return False
     
-    max = math.floor(math.sqrt(i))
-    for j in range(2, max+1):
-        if not (i % j):
+    _max = int(math.floor(math.sqrt(i)))
+    for j in range(2, _max+1):
+        if not i % j:
             return False
 
     return True

@@ -1,3 +1,4 @@
+import unittest
 from datetime import timedelta
 
 from rx import Observable
@@ -32,59 +33,54 @@ class TimeInterval(object):
 
     def get_hash_code(self):
         return self.value.get_hash_code() ^ self.interval.get_hash_code()
-        
-def test_join_op_normal_i():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 300)), on_next(720, TimeInterval(8, 100)), on_next(830, TimeInterval(9, 10)), on_completed(900))
-    ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(800))
-    
-    def create():
-        return xs.join(ys, 
-                    lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                    lambda y: Observable.timer(y.interval, scheduler=scheduler),
-                    lambda x, y: "%s%s" % (x.value, y.value)
-        )
-    
-    results = scheduler.start(create=create)
-    #results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
-    results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "6man"), on_next(712, "7man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "6rat"), on_next(722, "7rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
 
-def test_join_op_normal_ii():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 200)), on_next(720, TimeInterval(8, 100)), on_completed(721))
-    ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(990))
-    
-    def create():
-        return xs.join(ys, 
-                    lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                    lambda y: Observable.timer(y.interval, scheduler=scheduler),
-                    lambda x, y: "%s%s" % (x.value, y.value)
-        )
-    
-    results = scheduler.start(create=create)
-    #results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(910))
-    results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "6man"), on_next(712, "7man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "6rat"), on_next(722, "7rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(910))
+class TestGroupJoin(unittest.TestCase):
 
-# def test_JoinOp_Normal_III():
-#     var results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 300)), on_next(720, TimeInterval(8, 100)), on_next(830, TimeInterval(9, 10)), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(800))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler).where(function () {
-#                 return false
-#             })
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler).where(function () {
-#                 return false
-#             })
-#         }, function (x, y) {
-#             return x.value + y.value
-#         })
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
-# })
+    def test_join_op_normal_i(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 300)), on_next(720, TimeInterval(8, 100)), on_next(830, TimeInterval(9, 10)), on_completed(900))
+        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(800))
+    
+        def create():
+            return xs.join(ys, 
+                        lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                        lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                        lambda x, y: "%s%s" % (x.value, y.value)
+            )
+    
+        results = scheduler.start(create=create)
+        #results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
+        results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "6man"), on_next(712, "7man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "6rat"), on_next(722, "7rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
+
+    def test_join_op_normal_ii(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 200)), on_next(720, TimeInterval(8, 100)), on_completed(721))
+        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(990))
+    
+        def create():
+            return xs.join(ys, 
+                        lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                        lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                        lambda x, y: "%s%s" % (x.value, y.value)
+            )
+    
+        results = scheduler.start(create=create)
+        #results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(910))
+        results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "6man"), on_next(712, "7man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "6rat"), on_next(722, "7rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(910))
+
+    def test_joinop_normal_iii(self):
+         scheduler = TestScheduler()
+         xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)), on_next(219, TimeInterval(1, 5)), on_next(240, TimeInterval(2, 10)), on_next(300, TimeInterval(3, 100)), on_next(310, TimeInterval(4, 80)), on_next(500, TimeInterval(5, 90)), on_next(700, TimeInterval(6, 25)), on_next(710, TimeInterval(7, 300)), on_next(720, TimeInterval(8, 100)), on_next(830, TimeInterval(9, 10)), on_completed(900))
+         ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)), on_next(217, TimeInterval("bat", 1)), on_next(290, TimeInterval("wag", 200)), on_next(300, TimeInterval("pig", 10)), on_next(305, TimeInterval("cup", 50)), on_next(600, TimeInterval("yak", 90)), on_next(702, TimeInterval("tin", 20)), on_next(712, TimeInterval("man", 10)), on_next(722, TimeInterval("rat", 200)), on_next(732, TimeInterval("wig", 5)), on_completed(800))
+     
+         def create():
+             return xs.join(ys, 
+                            lambda x: Observable.timer(x.interval, scheduler=scheduler).where(lambda _: False),
+                            lambda y: Observable.timer(y.interval, scheduler=scheduler).where(lambda _: False),
+                            lambda x, y: "%s%s" % (x.value, y.value)
+             )
+         results = scheduler.start(create=create)
+         #results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_next(830, "9rat"), on_completed(900))
 
 # def test_JoinOp_Normal_IV():
 #     var results, scheduler, xs, ys
@@ -777,416 +773,6 @@ def test_join_op_normal_ii():
 #     results.messages.assert_equal(on_error(210, ex))
 # })
 
-# def test_Window_Closings_Basic():
-#     var scheduler, results, window, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             return Observable.timer(window++ * 100, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-#     xs.subscriptions.assert_equal(subscribe(200, 590))
-# })
-
-# def test_Window_Closings_Dispose():
-#     var results, scheduler, window, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithDispose(function () {
-#         return xs.window(function () {
-#             return Observable.timer(window++ * 100, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     }, 400)
-#     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"))
-#     xs.subscriptions.assert_equal(subscribe(200, 400))
-# })
-
-# def test_Window_Closings_Error():
-#     var ex, results, scheduler, window, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_error(590, ex))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             return Observable.timer(window++ * 100, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 590))
-# })
-
-# def test_Window_Closings_Throw():
-#     var ex, results, scheduler, window, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             throw ex
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_error(200, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 200))
-# })
-
-# def test_Window_Closings_WindowClose_Error():
-#     var ex, results, scheduler, window, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             return Observable.throwException(ex, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_error(201, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 201))
-# })
-
-# def test_Window_Closings_Default():
-#     var results, scheduler, window, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     window = 1
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(function () {
-#             return Observable.timer(window++ * 100, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-#     xs.subscriptions.assert_equal(subscribe(200, 590))
-# })
-
-# def test_Window_OpeningClosings_Basic():
-#     var results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(ys, function (x) {
-#             return Observable.timer(x, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900))
-#     xs.subscriptions.assert_equal(subscribe(200, 900))
-#     ys.subscriptions.assert_equal(subscribe(200, 900))
-# })
-
-# def test_Window_OpeningClosings_Throw():
-#     var ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(ys, function (x) {
-#             throw ex
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_error(255, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 255))
-#     ys.subscriptions.assert_equal(subscribe(200, 255))
-# })
-
-# def test_Window_OpeningClosings_Dispose():
-#     var results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.window(ys, function (x) {
-#             return Observable.timer(x, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     }, 415)
-#     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"))
-#     xs.subscriptions.assert_equal(subscribe(200, 415))
-#     ys.subscriptions.assert_equal(subscribe(200, 415))
-# })
-
-# def test_Window_OpeningClosings_Data_Error():
-#     var ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_error(415, ex))
-#     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(ys, function (x) {
-#             return Observable.timer(x, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 415))
-#     ys.subscriptions.assert_equal(subscribe(200, 415))
-# })
-
-# def test_Window_OpeningClosings_Window_Error():
-#     var ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-#     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_error(415, ex))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.window(ys, function (x) {
-#             return Observable.timer(x, undefined, scheduler)
-#         }).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-#     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 415))
-#     ys.subscriptions.assert_equal(subscribe(200, 415))
-# })
-
-# def test_Window_Boundaries_Simple():
-#     var scheduler = TestScheduler()
-
-#     var xs = scheduler.create_hot_observable(
-#         on_next(90, 1),
-#         on_next(180, 2),
-#         on_next(250, 3),
-#         on_next(260, 4),
-#         on_next(310, 5),
-#         on_next(340, 6),
-#         on_next(410, 7),
-#         on_next(420, 8),
-#         on_next(470, 9),
-#         on_next(550, 10),
-#         on_completed(590)
-#     )
-
-#     var ys = scheduler.create_hot_observable(
-#         on_next(255, true),
-#         on_next(330, true),
-#         on_next(350, true),
-#         on_next(400, true),
-#         on_next(500, true),
-#         on_completed(900)
-#     )
-
-#     var res = scheduler.startWithCreate(function () {
-#         return xs.window(ys).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-
-#     res.messages.assert_equal(
-#         on_next(250, "0 3"),
-#         on_next(260, "1 4"),
-#         on_next(310, "1 5"),
-#         on_next(340, "2 6"),
-#         on_next(410, "4 7"),
-#         on_next(420, "4 8"),
-#         on_next(470, "4 9"),
-#         on_next(550, "5 10"),
-#         on_completed(590)
-#     )
-
-#     xs.subscriptions.assert_equal(
-#         subscribe(200, 590)
-#     )
-
-#     ys.subscriptions.assert_equal(
-#         subscribe(200, 590)
-#     )
-# })
-
-# def test_Window_Boundaries_on_completedBoundaries():
-#     var scheduler = TestScheduler()
-
-#     var xs = scheduler.create_hot_observable(
-#             on_next(90, 1),
-#             on_next(180, 2),
-#             on_next(250, 3),
-#             on_next(260, 4),
-#             on_next(310, 5),
-#             on_next(340, 6),
-#             on_next(410, 7),
-#             on_next(420, 8),
-#             on_next(470, 9),
-#             on_next(550, 10),
-#             on_completed(590)
-#     )
-
-#     var ys = scheduler.create_hot_observable(
-#             on_next(255, true),
-#             on_next(330, true),
-#             on_next(350, true),
-#             on_completed(400)
-#     )
-
-#     var res = scheduler.startWithCreate(function () {
-#         return xs.window(ys).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-
-#     res.messages.assert_equal(
-#             on_next(250, "0 3"),
-#             on_next(260, "1 4"),
-#             on_next(310, "1 5"),
-#             on_next(340, "2 6"),
-#             on_completed(400)
-#     )
-
-#     xs.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-
-#     ys.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-# })
-
-# def test_Window_Boundaries_on_errorSource():
-#     var ex = 'ex'
-#     var scheduler = TestScheduler()
-
-#     var xs = scheduler.create_hot_observable(
-#             on_next(90, 1),
-#             on_next(180, 2),
-#             on_next(250, 3),
-#             on_next(260, 4),
-#             on_next(310, 5),
-#             on_next(340, 6),
-#             on_next(380, 7),
-#             on_error(400, ex)
-#     )
-
-#     var ys = scheduler.create_hot_observable(
-#             on_next(255, true),
-#             on_next(330, true),
-#             on_next(350, true),
-#             on_completed(500)
-#     )
-
-#     var res = scheduler.startWithCreate(function () {
-#         return xs.window(ys).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-
-#     res.messages.assert_equal(
-#             on_next(250, "0 3"),
-#             on_next(260, "1 4"),
-#             on_next(310, "1 5"),
-#             on_next(340, "2 6"),
-#             on_next(380, "3 7"),
-#             on_error(400, ex)
-#     )
-
-#     xs.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-
-#     ys.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-# })
-
-# def test_Window_Boundaries_on_errorBoundaries():
-#     var ex = 'ex'
-#     var scheduler = TestScheduler()
-
-#     var xs = scheduler.create_hot_observable(
-#             on_next(90, 1),
-#             on_next(180, 2),
-#             on_next(250, 3),
-#             on_next(260, 4),
-#             on_next(310, 5),
-#             on_next(340, 6),
-#             on_next(410, 7),
-#             on_next(420, 8),
-#             on_next(470, 9),
-#             on_next(550, 10),
-#             on_completed(590)
-#     )
-
-#     var ys = scheduler.create_hot_observable(
-#             on_next(255, true),
-#             on_next(330, true),
-#             on_next(350, true),
-#             on_error(400, ex)
-#     )
-
-#     var res = scheduler.startWithCreate(function () {
-#         return xs.window(ys).select(function (w, i) {
-#             return w.select(function (x) {
-#                 return i.toString() + ' ' + x.toString()
-#             })
-#         }).mergeObservable()
-#     })
-
-#     res.messages.assert_equal(
-#             on_next(250, "0 3"),
-#             on_next(260, "1 4"),
-#             on_next(310, "1 5"),
-#             on_next(340, "2 6"),
-#             on_error(400, ex)
-#     )
-
-#     xs.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-
-#     ys.subscriptions.assert_equal(
-#         subscribe(200, 400)
-#     )
-# })
 
 # function arrayEqual (arr1, arr2) {
 #     if (arr1.length !== arr2.length) { return false }
@@ -1385,4 +971,4 @@ def test_join_op_normal_ii():
 # }(typeof global == 'object' && global || this))
 
 if __name__ == '__main__':
-    test_join_op_normal_i()
+    unittest.main()

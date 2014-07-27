@@ -25,7 +25,6 @@ class VirtualTimeScheduler(Scheduler):
         self.queue = PriorityQueue(1024)
         
     def now(self):
-        #return self.clock
         return self.to_datetime_offset(self.clock)
 
     def schedule(self, action, state=None):
@@ -74,7 +73,8 @@ class VirtualTimeScheduler(Scheduler):
                 if next:
                     if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
-                        log.info("VirtualTimeScheduler.start(), clock: %s" % self.clock)
+                        log.info("VirtualTimeScheduler.start(), clock: %s", 
+                                 self.clock)
                     #else:
                     #    print ("skipping", next.duetime, self.clock)
                     
@@ -94,7 +94,6 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         time -- Absolute time to advance the scheduler's clock to.
         """
-        print ("advance_to()")
         next = None
         if self.comparer(self.clock, time) >= 0:
             raise ArgumentOutOfRangeException()
@@ -120,7 +119,7 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         time -- Relative time to advance the scheduler's clock by.
         """
-        log.debug("VirtualTimeScheduler.advance_by(time=%s)" % time)
+        log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
         dt = self.add(self.clock, time)
         if self.comparer(self.clock, dt) >= 0:
@@ -151,3 +150,14 @@ class VirtualTimeScheduler(Scheduler):
                 return next
         
         return None
+
+    def add(self, absolute, relative):
+        raise NotImplementedError
+
+    @classmethod
+    def to_datetime_offset(cls, absolute):
+        raise NotImplementedError
+
+    @classmethod
+    def to_relative(cls, timespan):
+        raise NotImplementedError

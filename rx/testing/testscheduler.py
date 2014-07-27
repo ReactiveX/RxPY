@@ -25,7 +25,7 @@ class TestScheduler(VirtualTimeScheduler):
         """Schedules an action to be executed at the specified virtual time.
         
         Keyword arguments:
-        dueime -- Absolute virtual time at which to execute the action.
+        duetime -- Absolute virtual time at which to execute the action.
         action -- Action to be executed.
         state -- State passed to the action to be executed.
         
@@ -55,7 +55,7 @@ class TestScheduler(VirtualTimeScheduler):
         Returns corresponding DateTimeOffset value.
         """
             
-        return datetime.fromtimestamp(absolute/1000)
+        return datetime.fromtimestamp(absolute/1000.0)
     
     @classmethod
     def to_relative(cls, timespan):
@@ -90,26 +90,24 @@ class TestScheduler(VirtualTimeScheduler):
         disposed= disposed or ReactiveTest.disposed
         
         observer = self.create_observer()
-        subscription = None
-        source = None
+        subscription = [None]
+        source = [None]
 
         def action_create(scheduler, state):
             """Called at create time. Defaults to 100"""
-            nonlocal source
-            source = create()
+            source[0] = create()
             return Disposable.empty()
         self.schedule_absolute(created, action_create)
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            nonlocal subscription
-            subscription = source.subscribe(observer)
+            subscription[0] = source[0].subscribe(observer)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action_subscribe)
 
         def action_dispose(scheduler, state):
             """Called at dispose time. Defaults to 1000"""
-            subscription.dispose()
+            subscription[0].dispose()
             return Disposable.empty()
         self.schedule_absolute(disposed, action_dispose)
 
