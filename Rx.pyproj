@@ -75,6 +75,8 @@
     <Compile Include="rx\linq\observable\isempty.py" />
     <Compile Include="rx\linq\observable\join.py" />
     <Compile Include="rx\linq\observable\materialize.py" />
+    <Compile Include="rx\linq\observable\max.py" />
+    <Compile Include="rx\linq\observable\maxby.py" />
     <Compile Include="rx\linq\observable\merge.py" />
     <Compile Include="rx\linq\observable\min.py" />
     <Compile Include="rx\linq\observable\minby.py" />
@@ -155,6 +157,7 @@
     <Compile Include="tests\test_notification.py" />
     <Compile Include="tests\test_observable\test_aggregate.py" />
     <Compile Include="tests\test_observable\test_amb.py" />
+    <Compile Include="tests\test_observable\test_buffercount.py" />
     <Compile Include="tests\test_observable\test_case.py" />
     <Compile Include="tests\test_observable\test_catch.py" />
     <Compile Include="tests\test_observable\test_combinelatest.py" />
@@ -164,8 +167,12 @@
     <Compile Include="tests\test_observable\test_create.py" />
     <Compile Include="tests\test_observable\test_delay.py" />
     <Compile Include="tests\test_observable\test_dowhile.py" />
+    <Compile Include="tests\test_observable\test_empty.py" />
+    <Compile Include="tests\test_observable\test_forin.py" />
+    <Compile Include="tests\test_observable\test_generate.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
     <Compile Include="tests\test_observable\test_ifthen.py" />
+    <Compile Include="tests\test_observable\test_ignoreelements.py" />
     <Compile Include="tests\test_observable\test_isempty.py" />
     <Compile Include="tests\test_observable\test_materialize.py" />
     <Compile Include="tests\test_observable\test_all.py" />
@@ -173,12 +180,14 @@
     <Compile Include="tests\test_observable\test_average.py" />
     <Compile Include="tests\test_observable\test_merge.py" />
     <Compile Include="tests\test_observable\test_min.py" />
+    <Compile Include="tests\test_observable\test_minby.py" />
     <Compile Include="tests\test_observable\test_never.py" />
     <Compile Include="tests\test_observable\test_observeon.py" />
     <Compile Include="tests\test_observable\test_of.py" />
     <Compile Include="tests\test_observable\test_onerrorresumenext.py" />
     <Compile Include="tests\test_observable\test_reduce.py" />
     <Compile Include="tests\test_observable\test_repeat.py" />
+    <Compile Include="tests\test_observable\test_retry.py" />
     <Compile Include="tests\test_observable\test_returnvalue.py" />
     <Compile Include="tests\test_observable\test_scan.py" />
     <Compile Include="tests\test_observable\test_select.py" />
