@@ -18,8 +18,8 @@ class AnonymousObservable(Observable):
         """
         def _subscribe(observer):
             def fix_subscriber(subscriber):
-                """Fix subscriber t
-                o check for None or function returned to decorate as Disposable"""
+                """Fix subscriber to check for None or function returned to 
+                decorate as Disposable"""
             
                 if subscriber is None:
                     subscriber = Disposable.empty()
