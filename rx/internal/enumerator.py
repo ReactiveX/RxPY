@@ -1,7 +1,7 @@
 import six
 
 class Enumerator(object):
-    """For Python we just wrap the a generator"""
+    """For Python we just wrap the generator"""
     
     def __init__(self, next):
         self.generator = next
