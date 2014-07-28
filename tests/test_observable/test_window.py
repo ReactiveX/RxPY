@@ -19,18 +19,18 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
-    
+
         def create():
             def closing():
                 curr = window[0]
                 window[0] += 1
                 return Observable.timer(curr * 100, scheduler=scheduler)
-            
+
             def selector(w, i):
                 return w.select(lambda x: str(i) + ' ' + str(x))
-        
-            return xs.window(closing_selector=closing).select(selector).merge_observable()
-    
+
+            return xs.window(closing).select(selector).merge_observable()
+
         results = scheduler.start(create=create)
         results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
         xs.subscriptions.assert_equal(subscribe(200, 590))
@@ -39,20 +39,20 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
-    
+
         def create():
             def closing():
                 curr = window[0]
                 window[0] += 1
                 return Observable.timer(curr * 100, scheduler=scheduler)
-        
+
             def selector(w, i):
                 return w.select(lambda x: str(i) + ' ' + str(x))
-            
-            return xs.window(closing_selector=closing).select(selector).merge_observable()
+
+            return xs.window(closing).select(selector).merge_observable()
 
         results = scheduler.start(create=create, disposed=400)
-     
+
         results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"))
         xs.subscriptions.assert_equal(subscribe(200, 400))
 
@@ -68,14 +68,14 @@ class TestWindow(unittest.TestCase):
                 curr = window[0]
                 window[0] += 1
                 return Observable.timer(curr * 100, scheduler=scheduler)
-        
+
             def selector(w, i):
                 return w.select(lambda x: str(i) + ' ' + str(x))
-            
-            return xs.window(closing_selector=closing).select(selector).merge_observable()
+
+            return xs.window(closing).select(selector).merge_observable()
 
         results = scheduler.start(create=create)
-    
+
         results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex))
         xs.subscriptions.assert_equal(subscribe(200, 590))
 
@@ -88,353 +88,343 @@ class TestWindow(unittest.TestCase):
         def create():
             def closing():
                 raise Exception(ex)
-        
+
             def selector(w, i):
                 return w.select(lambda x: str(i) + ' ' + str(x))
-            
-            return xs.window(closing_selector=closing).select(selector).merge_observable()
+
+            return xs.window(closing).select(selector).merge_observable()
 
         results = scheduler.start(create=create)
 
         results.messages.assert_equal(on_error(200, ex))
         xs.subscriptions.assert_equal(subscribe(200, 200))
 
-    # def test_Window_Closings_WindowClose_Error():
-    #     var ex, results, scheduler, window, xs
-    #     ex = 'ex'
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     window = 1
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(function () {
-    #             return Observable.throwException(ex, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_error(201, ex))
-    #     xs.subscriptions.assert_equal(subscribe(200, 201))
-    # })
+    def test_window_closings_window_close_error(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        window = 1
 
-    # def test_Window_Closings_Default():
-    #     var results, scheduler, window, xs
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     window = 1
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(function () {
-    #             return Observable.timer(window++ * 100, undefined, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-    #     xs.subscriptions.assert_equal(subscribe(200, 590))
-    # })
+        def create():
+            def closing():
+                return Observable.throw_exception(ex, scheduler=scheduler)
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    # def test_Window_OpeningClosings_Basic():
-    #     var results, scheduler, xs, ys
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(ys, function (x) {
-    #             return Observable.timer(x, undefined, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900))
-    #     xs.subscriptions.assert_equal(subscribe(200, 900))
-    #     ys.subscriptions.assert_equal(subscribe(200, 900))
-    # })
+            return xs.window(closing).select(selector).merge_observable()
 
-    # def test_Window_OpeningClosings_Throw():
-    #     var ex, results, scheduler, xs, ys
-    #     ex = 'ex'
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(ys, function (x) {
-    #             throw ex
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_error(255, ex))
-    #     xs.subscriptions.assert_equal(subscribe(200, 255))
-    #     ys.subscriptions.assert_equal(subscribe(200, 255))
-    # })
+        results = scheduler.start(create=create)
 
-    # def test_Window_OpeningClosings_Dispose():
-    #     var results, scheduler, xs, ys
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-    #     results = scheduler.startWithDispose(function () {
-    #         return xs.window(ys, function (x) {
-    #             return Observable.timer(x, undefined, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     }, 415)
-    #     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"))
-    #     xs.subscriptions.assert_equal(subscribe(200, 415))
-    #     ys.subscriptions.assert_equal(subscribe(200, 415))
-    # })
+        results.messages.assert_equal(on_error(201, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 201))
 
-    # def test_Window_OpeningClosings_Data_Error():
-    #     var ex, results, scheduler, xs, ys
-    #     ex = 'ex'
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_error(415, ex))
-    #     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(ys, function (x) {
-    #             return Observable.timer(x, undefined, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-    #     xs.subscriptions.assert_equal(subscribe(200, 415))
-    #     ys.subscriptions.assert_equal(subscribe(200, 415))
-    # })
+    def test_window_closings_default(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        window = [1]
 
-    # def test_Window_OpeningClosings_Window_Error():
-    #     var ex, results, scheduler, xs, ys
-    #     ex = 'ex'
-    #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
-    #     ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_error(415, ex))
-    #     results = scheduler.startWithCreate(function () {
-    #         return xs.window(ys, function (x) {
-    #             return Observable.timer(x, undefined, scheduler)
-    #         }).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
-    #     results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-    #     xs.subscriptions.assert_equal(subscribe(200, 415))
-    #     ys.subscriptions.assert_equal(subscribe(200, 415))
-    # })
+        def create():
+            def closings():
+                w = window[0]
+                window[0] += 1
+                return Observable.timer(w * 100, scheduler=scheduler)
 
-    # def test_Window_Boundaries_Simple():
-    #     var scheduler = TestScheduler()
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    #     var xs = scheduler.create_hot_observable(
-    #         on_next(90, 1),
-    #         on_next(180, 2),
-    #         on_next(250, 3),
-    #         on_next(260, 4),
-    #         on_next(310, 5),
-    #         on_next(340, 6),
-    #         on_next(410, 7),
-    #         on_next(420, 8),
-    #         on_next(470, 9),
-    #         on_next(550, 10),
-    #         on_completed(590)
-    #     )
+            return xs.window(window_closing_selector=closings).select(selector).merge_observable()
 
-    #     var ys = scheduler.create_hot_observable(
-    #         on_next(255, true),
-    #         on_next(330, true),
-    #         on_next(350, true),
-    #         on_next(400, true),
-    #         on_next(500, true),
-    #         on_completed(900)
-    #     )
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
+        xs.subscriptions.assert_equal(subscribe(200, 590))
 
-    #     var res = scheduler.startWithCreate(function () {
-    #         return xs.window(ys).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
+    def test_window_opening_closings_basic(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
-    #     res.messages.assert_equal(
-    #         on_next(250, "0 3"),
-    #         on_next(260, "1 4"),
-    #         on_next(310, "1 5"),
-    #         on_next(340, "2 6"),
-    #         on_next(410, "4 7"),
-    #         on_next(420, "4 8"),
-    #         on_next(470, "4 9"),
-    #         on_next(550, "5 10"),
-    #         on_completed(590)
-    #     )
+        def create():
+            def closing(x):
+                return Observable.timer(x, scheduler=scheduler)
 
-    #     xs.subscriptions.assert_equal(
-    #         subscribe(200, 590)
-    #     )
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    #     ys.subscriptions.assert_equal(
-    #         subscribe(200, 590)
-    #     )
-    # })
+            return xs.window(ys, closing).select(selector).merge_observable()
 
-    # def test_Window_Boundaries_on_completedBoundaries():
-    #     var scheduler = TestScheduler()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900))
+        xs.subscriptions.assert_equal(subscribe(200, 900))
+        ys.subscriptions.assert_equal(subscribe(200, 900))
 
-    #     var xs = scheduler.create_hot_observable(
-    #             on_next(90, 1),
-    #             on_next(180, 2),
-    #             on_next(250, 3),
-    #             on_next(260, 4),
-    #             on_next(310, 5),
-    #             on_next(340, 6),
-    #             on_next(410, 7),
-    #             on_next(420, 8),
-    #             on_next(470, 9),
-    #             on_next(550, 10),
-    #             on_completed(590)
-    #     )
+    def test_window_opening_closings_throw(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
-    #     var ys = scheduler.create_hot_observable(
-    #             on_next(255, true),
-    #             on_next(330, true),
-    #             on_next(350, true),
-    #             on_completed(400)
-    #     )
+        def create():
+            def closing(x):
+                raise Exception(ex)
 
-    #     var res = scheduler.startWithCreate(function () {
-    #         return xs.window(ys).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    #     res.messages.assert_equal(
-    #             on_next(250, "0 3"),
-    #             on_next(260, "1 4"),
-    #             on_next(310, "1 5"),
-    #             on_next(340, "2 6"),
-    #             on_completed(400)
-    #     )
+            return xs.window(ys, closing).select(selector).merge_observable()
 
-    #     xs.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
+        results = scheduler.start(create=create)
 
-    #     ys.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
-    # })
+        results.messages.assert_equal(on_error(255, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 255))
+        ys.subscriptions.assert_equal(subscribe(200, 255))
 
-    # def test_Window_Boundaries_on_errorSource():
-    #     var ex = 'ex'
-    #     var scheduler = TestScheduler()
+    def test_window_opening_closings_dispose(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
-    #     var xs = scheduler.create_hot_observable(
-    #             on_next(90, 1),
-    #             on_next(180, 2),
-    #             on_next(250, 3),
-    #             on_next(260, 4),
-    #             on_next(310, 5),
-    #             on_next(340, 6),
-    #             on_next(380, 7),
-    #             on_error(400, ex)
-    #     )
+        def create():
+            def closing(x):
+                return Observable.timer(x, scheduler=scheduler)
 
-    #     var ys = scheduler.create_hot_observable(
-    #             on_next(255, true),
-    #             on_next(330, true),
-    #             on_next(350, true),
-    #             on_completed(500)
-    #     )
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    #     var res = scheduler.startWithCreate(function () {
-    #         return xs.window(ys).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
+            return xs.window(ys, closing).select(selector).merge_observable()
+        results = scheduler.start(create=create, disposed=415)
+        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"))
+        xs.subscriptions.assert_equal(subscribe(200, 415))
+        ys.subscriptions.assert_equal(subscribe(200, 415))
 
-    #     res.messages.assert_equal(
-    #             on_next(250, "0 3"),
-    #             on_next(260, "1 4"),
-    #             on_next(310, "1 5"),
-    #             on_next(340, "2 6"),
-    #             on_next(380, "3 7"),
-    #             on_error(400, ex)
-    #     )
+    def test_window_opening_closings_data_error(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_error(415, ex))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
-    #     xs.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
+        def create():
+            def closing(x):
+                return Observable.timer(x, scheduler=scheduler)
 
-    #     ys.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
-    # })
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    # def test_Window_Boundaries_on_errorBoundaries():
-    #     var ex = 'ex'
-    #     var scheduler = TestScheduler()
+            return xs.window(ys, closing).select(selector).merge_observable()
+        results = scheduler.start(create=create)
 
-    #     var xs = scheduler.create_hot_observable(
-    #             on_next(90, 1),
-    #             on_next(180, 2),
-    #             on_next(250, 3),
-    #             on_next(260, 4),
-    #             on_next(310, 5),
-    #             on_next(340, 6),
-    #             on_next(410, 7),
-    #             on_next(420, 8),
-    #             on_next(470, 9),
-    #             on_next(550, 10),
-    #             on_completed(590)
-    #     )
+        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 415))
+        ys.subscriptions.assert_equal(subscribe(200, 415))
 
-    #     var ys = scheduler.create_hot_observable(
-    #             on_next(255, true),
-    #             on_next(330, true),
-    #             on_next(350, true),
-    #             on_error(400, ex)
-    #     )
+    def test_window_opening_closings_window_error(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_error(415, ex))
+        def create():
+            def closing(x):
+                return Observable.timer(x, scheduler=scheduler)
 
-    #     var res = scheduler.startWithCreate(function () {
-    #         return xs.window(ys).select(function (w, i) {
-    #             return w.select(function (x) {
-    #                 return i.toString() + ' ' + x.toString()
-    #             })
-    #         }).mergeObservable()
-    #     })
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
 
-    #     res.messages.assert_equal(
-    #             on_next(250, "0 3"),
-    #             on_next(260, "1 4"),
-    #             on_next(310, "1 5"),
-    #             on_next(340, "2 6"),
-    #             on_error(400, ex)
-    #     )
+            return xs.window(ys, closing).select(selector).merge_observable()
+        results = scheduler.start(create=create)
 
-    #     xs.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
+        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 415))
+        ys.subscriptions.assert_equal(subscribe(200, 415))
 
-    #     ys.subscriptions.assert_equal(
-    #         subscribe(200, 400)
-    #     )
-    # })
+    def test_window_boundaries_simple(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(90, 1),
+            on_next(180, 2),
+            on_next(250, 3),
+            on_next(260, 4),
+            on_next(310, 5),
+            on_next(340, 6),
+            on_next(410, 7),
+            on_next(420, 8),
+            on_next(470, 9),
+            on_next(550, 10),
+            on_completed(590)
+        )
+
+        ys = scheduler.create_hot_observable(
+            on_next(255, True),
+            on_next(330, True),
+            on_next(350, True),
+            on_next(400, True),
+            on_next(500, True),
+            on_completed(900)
+        )
+
+        def create():
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
+            return xs.window(ys).select(selector).merge_observable()
+        res = scheduler.start(create=create)
+
+        res.messages.assert_equal(
+            on_next(250, "0 3"),
+            on_next(260, "1 4"),
+            on_next(310, "1 5"),
+            on_next(340, "2 6"),
+            on_next(410, "4 7"),
+            on_next(420, "4 8"),
+            on_next(470, "4 9"),
+            on_next(550, "5 10"),
+            on_completed(590)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 590)
+        )
+
+        ys.subscriptions.assert_equal(
+            subscribe(200, 590)
+        )
+
+    def test_window_boundaries_on_completed_boundaries(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(410, 7),
+                on_next(420, 8),
+                on_next(470, 9),
+                on_next(550, 10),
+                on_completed(590)
+        )
+
+        ys = scheduler.create_hot_observable(
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_completed(400)
+        )
+        
+        def create():
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
+            return xs.window(ys).select(selector).merge_observable()
+
+        res = scheduler.start(create=create)
+        
+        res.messages.assert_equal(
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_completed(400)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
+
+        ys.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
+
+    def test_window_boundaries_on_errorSource(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(380, 7),
+                on_error(400, ex)
+        )
+
+        ys = scheduler.create_hot_observable(
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_completed(500)
+        )
+
+        def create():
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
+            return xs.window(ys).select(selector).merge_observable()
+        res = scheduler.start(create=create)
+        
+        res.messages.assert_equal(
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_next(380, "3 7"),
+                on_error(400, ex)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
+
+        ys.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
+
+    def test_window_boundaries_on_error_boundaries(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(410, 7),
+                on_next(420, 8),
+                on_next(470, 9),
+                on_next(550, 10),
+                on_completed(590)
+        )
+
+        ys = scheduler.create_hot_observable(
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_error(400, ex)
+        )
+        def create():
+            def selector(w, i):
+                return w.select(lambda x: str(i) + ' ' + str(x))
+            return xs.window(ys).select(selector).merge_observable()
+
+        res = scheduler.start(create=create)
+
+        res.messages.assert_equal(
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_error(400, ex)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
+
+        ys.subscriptions.assert_equal(
+            subscribe(200, 400)
+        )
 
 if __name__ == '__main__':
     unittest.main()
