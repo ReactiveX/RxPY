@@ -60,8 +60,7 @@ class ObservableGroupJoin(Observable):
                     result = result_selector(value, add_ref(s, r))
                 except Exception as e:
                     log.error("*** Exception: %s" % e)
-                    left_values = left_map.values()
-                    for left_value in left_values:
+                    for left_value in left_map.values():
                         left_value.on_error(e)
 
                     observer.on_error(e)
@@ -69,15 +68,14 @@ class ObservableGroupJoin(Observable):
 
                 observer.on_next(result)
 
-                right_values = right_map.values()
-                for right_value in right_values:
+                for right_value in right_map.values():
                     s.on_next(right_value)
 
                 md = SingleAssignmentDisposable()
                 group.add(md)
 
                 def expire():
-                    if left_map.get(_id):
+                    if _id in left_map:
                         del left_map[_id]
                         s.on_completed()
 
@@ -86,16 +84,14 @@ class ObservableGroupJoin(Observable):
                 try:
                     duration = left_duration_selector(value)
                 except Exception as e:
-                    left_values = left_map.values()
-                    for left_value in left_values:
+                    for left_value in left_map.values():
                         left_value.on_error(e)
 
                     observer.on_error(e)
                     return
 
                 def on_error(e):
-                    left_values = left_map.values()
-                    for left_value in left_values:
+                    for left_value in left_map.values():
                         left_value.on_error(e)
 
                     observer.on_error(e)
@@ -106,8 +102,7 @@ class ObservableGroupJoin(Observable):
                     expire)
 
             def on_error_left(e):
-                left_values = left_map.values()
-                for left_value in left_values:
+                for left_value in left_map.values():
                     left_value.on_error(e)
 
                 observer.on_error(e)
@@ -129,16 +124,14 @@ class ObservableGroupJoin(Observable):
                 try:
                     duration = right_duration_selector(value)
                 except Exception as e:
-                    left_values = left_map.values()
-                    for left_value in left_values:
+                    for left_value in left_map.values():
                         left_value.on_error(e)
 
                     observer.on_error(e)
                     return
 
                 def on_error(e):
-                    left_values = left_map.values()
-                    for left_value in left_values:
+                    for left_value in left_map.values():
                         left_value.on_error(e)
 
                     observer.on_error(e)
@@ -148,13 +141,11 @@ class ObservableGroupJoin(Observable):
                     on_error,
                     expire)
 
-                left_values = left_map.values()
-                for left_value in left_values:
+                for left_value in left_map.values():
                     left_value.on_next(value)
 
             def on_error_right(e):
-                left_values = left_map.values()
-                for left_value in left_values:
+                for left_value in left_map.values():
                     left_value.on_error(e)
 
                 observer.on_error(e)
