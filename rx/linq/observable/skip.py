@@ -6,7 +6,6 @@ from rx.internal import ArgumentOutOfRangeException
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-
 class ObservableSkip(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     
