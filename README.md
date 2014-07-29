@@ -4,12 +4,10 @@
 The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
 There are currently mirrors at
 [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and
-[CodePlex](http://rxpy.codeplex.com/).
-
-Please register any issues to
-[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and your pull
-requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
-branch.
+[CodePlex](http://rxpy.codeplex.com/). Please register any issues to
+[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and make sure 
+your pull requests is made against the 
+[develop](https://github.com/dbrattli/RxPY/tree/develop) branch.
 
 ## About the Reactive Extensions
 
