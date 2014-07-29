@@ -1,37 +1,41 @@
 # The Reactive Extensions for Python (RxPY) ... #
 *...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY). 
-There are currently mirrors at 
-[Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and 
-[CodePlex](http://rxpy.codeplex.com/). Please submit your pull requests and 
-issues to dbrattli/RxPY. 
+The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
+There are currently mirrors at
+[Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and
+[CodePlex](http://rxpy.codeplex.com/).
+
+Please register any issues to
+[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and your pull
+requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
+branch.
 
 ## About the Reactive Extensions
 
-The Reactive Extensions for Python (RxPY) is a set of libraries for composing 
-asynchronous and event-based programs using observable sequences and LINQ-style 
-query operators in Python. Using Rx, developers represent asynchronous data 
-streams with Observables, query asynchronous data streams using LINQ operators, 
-and parameterize the concurrency in the asynchronous data streams using 
+The Reactive Extensions for Python (RxPY) is a set of libraries for composing
+asynchronous and event-based programs using observable sequences and LINQ-style
+query operators in Python. Using Rx, developers represent asynchronous data
+streams with Observables, query asynchronous data streams using LINQ operators,
+and parameterize the concurrency in the asynchronous data streams using
 Schedulers. Simply put, Rx = Observables + LINQ + Schedulers.
 
-Whether you are authoring a client-side or server-side application in Python, 
-you have to deal with asynchronous and event-based programming as a matter of 
-course. 
+Whether you are authoring a client-side or server-side application in Python,
+you have to deal with asynchronous and event-based programming as a matter of
+course.
 
-Using Rx, you can represent multiple asynchronous data streams (that come from 
-diverse sources, e.g., stock quote, tweets, computer events, web service 
-requests, etc.), and subscribe to the event stream using the Observer object. 
-The Observable notifies the subscribed Observer instance whenever an event 
+Using Rx, you can represent multiple asynchronous data streams (that come from
+diverse sources, e.g., stock quote, tweets, computer events, web service
+requests, etc.), and subscribe to the event stream using the Observer object.
+The Observable notifies the subscribed Observer instance whenever an event
 occurs.
 
-Because observable sequences are data streams, you can query them using standard 
-LINQ query operators implemented by the Observable type. Thus you can filter, 
-project, aggregate, compose and perform time-based operations on multiple events 
-easily by using these static LINQ operators. In addition, there are a number of 
-other reactive stream specific operators that allow powerful queries to be 
-written. Cancellation, exceptions, and synchronization are also handled 
+Because observable sequences are data streams, you can query them using standard
+LINQ query operators implemented by the Observable type. Thus you can filter,
+project, aggregate, compose and perform time-based operations on multiple events
+easily by using these static LINQ operators. In addition, there are a number of
+other reactive stream specific operators that allow powerful queries to be
+written. Cancellation, exceptions, and synchronization are also handled
 gracefully by using the methods on the Observable object.
 
 ## Install
@@ -42,13 +46,13 @@ To install RxPY:
 
 ## Contributing ##
 
-You can contribute by reviewing and sending feedback on code checkins, 
-suggesting and trying out new features as they are implemented, register issues 
-and help us verify fixes as they are checked in, as well as submit code fixes or 
-code contributions of your own. 
+You can contribute by reviewing and sending feedback on code checkins,
+suggesting and trying out new features as they are implemented, register issues
+and help us verify fixes as they are checked in, as well as submit code fixes or
+code contributions of your own.
 
-Note that the master branch is for releases only, so please submit any pull 
-requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop) 
+Note that the master branch is for releases only, so please submit any pull
+requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
 branch.
 
 ## License ##
