@@ -1,7 +1,7 @@
 # The Reactive Extensions for Python (RxPY) ... #
 *...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-This project is a mirror of the [CodePlex](http://rxpy.codeplex.com/) repository.
+The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY). There are mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/).
 
 ## About the Reactive Extensions
 
@@ -17,7 +17,7 @@ Because observable sequences are data streams, you can query them using standard
 
 To install Rx:
 
-`pip install Rx`
+`pip install rx`
 
 ## Contributing ##
 
