@@ -54,6 +54,7 @@ from . import sequenceequal
 from . import skip
 from . import skipuntil
 from . import skipwhile
+from . import skipwithtime
 from . import startswith
 from . import subscribeon
 from . import sum
