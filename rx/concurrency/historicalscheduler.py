@@ -10,6 +10,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
         """Creates a new historical scheduler with the specified initial clock
         value.
 
+        Keyword arguments:
         initial_clock -- {Number} Initial value for the clock.
         comparer -- {Function} Comparer to determine causality of events based
             on absolute time."""
@@ -23,7 +24,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
     def add(absolute, relative):
         """Adds a relative time value to an absolute time value.
 
-        Keyword parameters:
+        Keyword arguments:
         absolute -- {Number} Absolute virtual time value.
         relative -- {Number} Relative virtual time value to add.
 
@@ -38,6 +39,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
     def to_relative(self, time_span):
         """Converts the Timespan value to a relative virtual time value.
 
+        Keyword arguments:
         time_span -- {Number} Time_span value to convert.
 
         Returns corresponding relative virtual time value."""
