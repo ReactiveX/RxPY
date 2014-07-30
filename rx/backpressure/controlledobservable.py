@@ -1,6 +1,8 @@
 from rx import AnonymousObservable, Observable
 
-class GroupedObservable(Observable):
+from .controlledsubject import ControlledSubject
+
+class ControlledObservable(Observable):
 
     def __init__(source, enable_queue):
         super(Observable, self).__init__(self.subscribe)

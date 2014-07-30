@@ -21,38 +21,37 @@ class WindowedObserver(Observer):
         def on_error(self, error):
             check_disposed(self)
             self.observer.on_error(error)
-            self.dispose();
+            self.dispose()
 
-        def on_next(value):
+        def on_next(self, value):
             check_disposed(self)
             self.observer.on_next(value)
 
+            def action(scheduler, state):
+                log.debug('requested size', self.observable.window_size)
+                self.observable.source.request(self.observable.window_size)
+
             self.received = (self.received+1) % self.observable.window_size
             if self.received == 0:
-                this = self
-                this.scheduler.schedule(function () {
-                log.debug('requested size', this.observable.window_size)
-                this.observable.source.request(this.observable.window_size)
-
+                self.scheduler.schedule(action)
+                
         def dispose(self):
-            this.observer = None
-            if not this.cancel:
-              this.cancel.dispose()
-              this.cancel = None
+            self.observer = None
+            if not self.cancel:
+                self.cancel.dispose()
+                self.cancel = None
 
-            this.is_disposed = True
+            self.is_disposed = True
 
 class WindowedObservable(Observable):
     def subscribe(self, observer):
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
         self.subscription = self.source.subscribe(observer)
 
-        this = self;
-
         def action(scheduler, state):
-            this.source.request(this.window_wize);
+            self.source.request(self.window_wize)
 
-        this.scheduler.schedule(action)
+        self.scheduler.schedule(action)
         return self.subscription
 
     def __init__(self, source, window_size, scheduler):

@@ -27,3 +27,8 @@ def adapt_call(func):
             func_wrapped = func2
     
     return func_wrapped
+
+object_disposed = 'Object has been disposed'
+def check_disposed(this):
+    if this.is_disposed:
+        raise Exception(object_disposed)
