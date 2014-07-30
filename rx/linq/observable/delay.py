@@ -105,7 +105,7 @@ class ObservableDelay(Observable):
         2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
         
         3 - res = rx.Observable.delay(5000)
-        4 - res = rx.Observable.delay(5000, 1000, Scheduler.timeout)
+        4 - res = rx.Observable.delay(5000, Scheduler.timeout)
         
         Keyword arguments:
         duetime -- Absolute (specified as a datetime object) or relative time 
