@@ -14,7 +14,8 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 class TimeSpan(object):
-    def from_ticks(self, value):
+    @classmethod
+    def from_ticks(cls, value):
         return value
 
 class TimeInterval(object):
@@ -196,287 +197,576 @@ class TestGroup_join(unittest.TestCase):
     def test_group_join_op_normal_iii(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(210, TimeInterval(0, 10)), 
-            on_next(219, TimeInterval(1, 5)), 
-            on_next(240, TimeInterval(2, 10)), 
-            on_next(300, TimeInterval(3, 100)), 
-            on_next(310, TimeInterval(4, 80)), 
-            on_next(500, TimeInterval(5, 90)), 
-            on_next(700, TimeInterval(6, 25)), 
-            on_next(710, TimeInterval(7, 280)), 
-            on_next(720, TimeInterval(8, 100)), 
-            on_next(830, TimeInterval(9, 10)), 
+            on_next(210, TimeInterval(0, 10)),
+            on_next(219, TimeInterval(1, 5)),
+            on_next(240, TimeInterval(2, 10)),
+            on_next(300, TimeInterval(3, 100)),
+            on_next(310, TimeInterval(4, 80)),
+            on_next(500, TimeInterval(5, 90)),
+            on_next(700, TimeInterval(6, 25)),
+            on_next(710, TimeInterval(7, 280)),
+            on_next(720, TimeInterval(8, 100)),
+            on_next(830, TimeInterval(9, 10)),
             on_completed(900))
         ys = scheduler.create_hot_observable(
-            on_next(215, TimeInterval("hat", 20)), 
-            on_next(217, TimeInterval("bat", 1)), 
-            on_next(290, TimeInterval("wag", 200)), 
-            on_next(300, TimeInterval("pig", 10)), 
-            on_next(305, TimeInterval("cup", 50)), 
-            on_next(600, TimeInterval("yak", 90)), 
-            on_next(702, TimeInterval("tin", 20)), 
-            on_next(712, TimeInterval("man", 10)), 
-            on_next(722, TimeInterval("rat", 200)), 
-            on_next(732, TimeInterval("wig", 5)), 
+            on_next(215, TimeInterval("hat", 20)),
+            on_next(217, TimeInterval("bat", 1)),
+            on_next(290, TimeInterval("wag", 200)),
+            on_next(300, TimeInterval("pig", 10)),
+            on_next(305, TimeInterval("cup", 50)),
+            on_next(600, TimeInterval("yak", 90)),
+            on_next(702, TimeInterval("tin", 20)),
+            on_next(712, TimeInterval("man", 10)),
+            on_next(722, TimeInterval("rat", 200)),
+            on_next(732, TimeInterval("wig", 5)),
             on_completed(800))
-        
+
         def create():
-            return xs.group_join(ys, 
+            return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval, scheduler=scheduler).where(lambda _: False),
                 lambda y: Observable.timer(y.interval, scheduler=scheduler).where(lambda _: False),
                 lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
             ).merge_observable()
-        
+
         results = scheduler.start(create=create)
-        
+
         results.messages.assert_equal(
-            on_next(215, "0hat"), 
-            on_next(217, "0bat"), 
-            on_next(219, "1hat"), 
-            on_next(300, "3wag"), 
-            on_next(300, "3pig"), 
-            on_next(305, "3cup"), 
-            on_next(310, "4wag"), 
-            on_next(310, "4pig"), 
-            on_next(310, "4cup"), 
-            on_next(702, "6tin"), 
-            on_next(710, "7tin"), 
-            on_next(712, "6man"), 
-            on_next(712, "7man"), 
-            on_next(720, "8tin"), 
-            on_next(720, "8man"), 
-            on_next(722, "6rat"), 
-            on_next(722, "7rat"), 
-            on_next(722, "8rat"), 
-            on_next(732, "7wig"), 
-            on_next(732, "8wig"), 
-            on_next(830, "9rat"), 
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_next(722, "6rat"),
+            on_next(722, "7rat"),
+            on_next(722, "8rat"),
+            on_next(732, "7wig"),
+            on_next(732, "8wig"),
+            on_next(830, "9rat"),
             on_completed(990))
 
-# def test_Group_joinOp_Normal_IV():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(200))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_completed(990))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(980))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(990))
-# })
+    def test_group_join_op_normal_iv(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(200))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_completed(990))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(980))
 
-# def test_Group_joinOp_Normal_V():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(200))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_completed(990))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(900))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(990))
-# })
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
 
-# def test_Group_joinOp_Normal_VI():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(30))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(200))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(850))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(20))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(900))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_next(732, "7wig"), on_next(732, "8wig"), on_completed(920))
-# })
+        results = scheduler.start(create=create)
 
-# def test_Group_joinOp_Normal_VII():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_completed(210))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(20))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(900))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_completed(210))
-# })
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_next(722, "6rat"),
+            on_next(722, "7rat"),
+            on_next(722, "8rat"),
+            on_next(732, "7wig"),
+            on_next(732, "8wig"),
+            on_completed(990))
 
-# def test_Group_joinOp_Normal_VIII():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(200))))
-#     ys = scheduler.create_hot_observable(on_next(220, TimeInterval("hat", TimeSpan.fromTicks(100))), on_completed(230))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(220, "0hat"))
-# })
+    def test_group_join_op_normal_v(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(200))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_completed(990))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(900))
 
-# def test_Group_joinOp_Normal_IX():
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
-#     results = scheduler.startWithDispose(function () {
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     }, 713)
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"))
-# })
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
 
-# def test_Group_joinOp_Error_I():
+        results = scheduler.start(create=create)
+
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_next(722, "6rat"),
+            on_next(722, "7rat"),
+            on_next(722, "8rat"),
+            on_next(732, "7wig"),
+            on_next(732, "8wig"),
+            on_completed(990))
+
+    def test_group_join_op_normal_vi(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(30))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(200))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(850))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(20))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(900))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_next(722, "6rat"),
+            on_next(722, "7rat"),
+            on_next(722, "8rat"),
+            on_next(732, "7wig"),
+            on_next(732, "8wig"),
+            on_completed(920))
+
+    def test_group_join_op_normal_vii(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_completed(210))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(20))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(900))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler).where(lambda _: False),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler).where(lambda _: False),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(on_completed(210))
+
+    def test_group_join_op_normal_viii(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.from_ticks(200))))
+        ys = scheduler.create_hot_observable(
+            on_next(220, TimeInterval("hat", TimeSpan.from_ticks(100))),
+            on_completed(230))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(on_next(220, "0hat"))
+
+    def test_group_join_op_normal_ix(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(900))
+        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+        on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+        on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+        on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+        on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+        on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+        on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+        on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+        on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+        on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+        on_completed(800))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create, disposed=713)
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"))
+
+    def test_group_join_op_error_i(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_error(310, ex))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(800))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_error(310, ex))
+
+    def test_group_join_op_error_ii(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(900))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_error(722, ex))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_error(722, ex))
+
+    def test_group_join_op_error_iii(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(900))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(800))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler).select_many(Observable.throw_exception(ex) if x.value==6 else Observable.empty()),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_next(722, "6rat"),
+            on_next(722, "7rat"),
+            on_next(722, "8rat"),
+            on_error(725, ex))
+
+    def test_group_join_op_error_iv(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(900))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(19))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(800))
+
+        def create():
+            return xs.group_join(ys,
+                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval, scheduler=scheduler).select_many(Observable.throw_exception(ex) if y.value=="tin" else Observable.empty()),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+
+        results.messages.assert_equal(
+            on_next(215, "0hat"),
+            on_next(217, "0bat"),
+            on_next(219, "1hat"),
+            on_next(300, "3wag"),
+            on_next(300, "3pig"),
+            on_next(305, "3cup"),
+            on_next(310, "4wag"),
+            on_next(310, "4pig"),
+            on_next(310, "4cup"),
+            on_next(702, "6tin"),
+            on_next(710, "7tin"),
+            on_next(712, "6man"),
+            on_next(712, "7man"),
+            on_next(720, "8tin"),
+            on_next(720, "8man"),
+            on_error(721, ex))
+
+    def test_group_join_op_error_v(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+            on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))),
+            on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))),
+            on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))),
+            on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))),
+            on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))),
+            on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))),
+            on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))),
+            on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
+            on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
+            on_completed(900))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(800))
+
+        def create():
+            def left_duration_selector(x):
+                if x.value >= 0:
+                    raise Exception(ex)
+                else:
+                    return Observable.empty()
+
+            return xs.group_join(ys,
+                left_duration_selector,
+                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x, yy: yy.select(lambda y: str(x.value) + y.value)
+            ).merge_observable()
+        results = scheduler.start(create=create)
+        results.messages.assert_equal(on_error(210, ex))
+
+# def test_Group_join_Op_Error_VI():
 #     ex, results, scheduler, xs, ys
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_error(310, ex))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_error(310, ex))
-# })
-
-# def test_Group_joinOp_Error_II():
-#     ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_error(722, ex))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_error(722, ex))
-# })
-
-# def test_Group_joinOp_Error_III():
-#     ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler).selectMany(x.value === 6 ? Observable.throwException(ex) : Observable.empty())
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_next(722, "7rat"), on_next(722, "6rat"), on_next(722, "8rat"), on_error(725, ex))
-# })
-
-# def test_Group_joinOp_Error_IV():
-#     ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(19))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             return Observable.timer(x.interval, undefined, scheduler)
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler).selectMany(y.value === "tin" ? Observable.throwException(ex) : Observable.empty())
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_next(215, "0hat"), on_next(217, "0bat"), on_next(219, "1hat"), on_next(300, "3wag"), on_next(300, "3pig"), on_next(305, "3cup"), on_next(310, "4wag"), on_next(310, "4pig"), on_next(310, "4cup"), on_next(702, "6tin"), on_next(710, "7tin"), on_next(712, "7man"), on_next(712, "6man"), on_next(720, "8tin"), on_next(720, "8man"), on_error(721, ex))
-# })
-
-# def test_Group_joinOp_Error_V():
-#     ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
-#     results = scheduler.start(create=create)
-#         return xs.group_join(ys, function (x) {
-#             if (x.value >= 0) {
-#                 throw ex
-#             } else {
-#                 return Observable.empty()
-#             }
-#         }, function (y) {
-#             return Observable.timer(y.interval, undefined, scheduler)
-#         }, function (x, yy) {
-#             return yy.select(function (y) {
-#                 return x.value + y.value
-#             })
-#         }).merge_observable()
-#     })
-#     results.messages.assert_equal(on_error(210, ex))
-# })
-
-# def test_Group_joinOp_Error_VI():
-#     ex, results, scheduler, xs, ys
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
+#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))),
+#on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))), on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))), on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))), on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))), on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))), on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))), on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))), on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))), on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))), on_completed(900))
+#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))), on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))), on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))), on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))), on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))), on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))), on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))), on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))), on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))), on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))), on_completed(800))
 #     results = scheduler.start(create=create)
 #         return xs.group_join(ys, function (x) {
 #             return Observable.timer(x.interval, undefined, scheduler)
@@ -495,12 +785,12 @@ class TestGroup_join(unittest.TestCase):
 #     results.messages.assert_equal(on_error(215, ex))
 # })
 
-# def test_Group_joinOp_Error_VII():
+# def test_Group_join_Op_Error_VII():
 #     ex, results, scheduler, xs, ys
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(215, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(210, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
+#     xs = scheduler.create_hot_observable(on_next(215, TimeInterval(0, TimeSpan.from_ticks(10))), on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))), on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))), on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))), on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))), on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))), on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))), on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))), on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))), on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))), on_completed(900))
+#     ys = scheduler.create_hot_observable(on_next(210, TimeInterval("hat", TimeSpan.from_ticks(20))), on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))), on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))), on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))), on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))), on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))), on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))), on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))), on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))), on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))), on_completed(800))
 #     results = scheduler.start(create=create)
 #         return xs.group_join(ys, function (x) {
 #             return Observable.timer(x.interval, undefined, scheduler)
@@ -519,12 +809,12 @@ class TestGroup_join(unittest.TestCase):
 #     results.messages.assert_equal(on_error(215, ex))
 # })
 
-# def test_Group_joinOp_Error_VIII():
+# def test_Group_join_Op_Error_VIII():
 #     ex, results, scheduler, xs, ys
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.fromTicks(10))), on_next(219, TimeInterval(1, TimeSpan.fromTicks(5))), on_next(240, TimeInterval(2, TimeSpan.fromTicks(10))), on_next(300, TimeInterval(3, TimeSpan.fromTicks(100))), on_next(310, TimeInterval(4, TimeSpan.fromTicks(80))), on_next(500, TimeInterval(5, TimeSpan.fromTicks(90))), on_next(700, TimeInterval(6, TimeSpan.fromTicks(25))), on_next(710, TimeInterval(7, TimeSpan.fromTicks(300))), on_next(720, TimeInterval(8, TimeSpan.fromTicks(100))), on_next(830, TimeInterval(9, TimeSpan.fromTicks(10))), on_completed(900))
-#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.fromTicks(20))), on_next(217, TimeInterval("bat", TimeSpan.fromTicks(1))), on_next(290, TimeInterval("wag", TimeSpan.fromTicks(200))), on_next(300, TimeInterval("pig", TimeSpan.fromTicks(10))), on_next(305, TimeInterval("cup", TimeSpan.fromTicks(50))), on_next(600, TimeInterval("yak", TimeSpan.fromTicks(90))), on_next(702, TimeInterval("tin", TimeSpan.fromTicks(20))), on_next(712, TimeInterval("man", TimeSpan.fromTicks(10))), on_next(722, TimeInterval("rat", TimeSpan.fromTicks(200))), on_next(732, TimeInterval("wig", TimeSpan.fromTicks(5))), on_completed(800))
+#     xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, TimeSpan.from_ticks(10))), on_next(219, TimeInterval(1, TimeSpan.from_ticks(5))), on_next(240, TimeInterval(2, TimeSpan.from_ticks(10))), on_next(300, TimeInterval(3, TimeSpan.from_ticks(100))), on_next(310, TimeInterval(4, TimeSpan.from_ticks(80))), on_next(500, TimeInterval(5, TimeSpan.from_ticks(90))), on_next(700, TimeInterval(6, TimeSpan.from_ticks(25))), on_next(710, TimeInterval(7, TimeSpan.from_ticks(300))), on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))), on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))), on_completed(900))
+#     ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))), on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))), on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))), on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))), on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))), on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))), on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))), on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))), on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))), on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))), on_completed(800))
 #     results = scheduler.start(create=create)
 #         return xs.group_join(ys, function (x) {
 #             return Observable.timer(x.interval, undefined, scheduler)
