@@ -13,8 +13,9 @@ from .reactivetest import ReactiveTest
 log = logging.getLogger("Rx")
 
 class TestScheduler(VirtualTimeScheduler):
-    """Virtual time scheduler used for testing applications and libraries
-    built using Reactive Extensions."""
+    """Test time scheduler used for testing applications and libraries
+    built using Reactive Extensions. All time, both absolute and relative is
+    specified as integer ticks"""
 
     def __init__(self):
         def comparer(a, b):
@@ -47,7 +48,7 @@ class TestScheduler(VirtualTimeScheduler):
 
     @classmethod
     def to_datetime_offset(cls, absolute):
-        """Converts the absolute virtual time value to a DateTimeOffset value.
+        """Converts the absolute virtual time value to a datetime value.
 
         Keyword arguments:
         absolute -- Absolute virtual time value to convert.
@@ -158,4 +159,3 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         return MockObserver(self)
-

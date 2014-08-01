@@ -1,12 +1,14 @@
 from datetime import datetime
 
+from rx.internal.basic import default_sub_comparer
+
 from .virtualtimescheduler import VirtualTimeScheduler
 
 class HistoricalScheduler(VirtualTimeScheduler):
-    """Provides a virtual time scheduler that uses Date for absolute time and
-    number for relative time."""
+    """Provides a virtual time scheduler that uses datetime for absolute time
+    and timedelta for relative time."""
 
-    def __init__(self, initial_clock, comparer):
+    def __init__(self, initial_clock=None, comparer=None):
         """Creates a new historical scheduler with the specified initial clock
         value.
 
@@ -15,33 +17,43 @@ class HistoricalScheduler(VirtualTimeScheduler):
         comparer -- {Function} Comparer to determine causality of events based
             on absolute time."""
 
-        clock = 0 if not initial_clock else initial_clock
-        cmp = comparer or default_sub_comparer
+        def compare_datetimes(a, b):
+            return (a > b) - (a < b)
 
-        super(HistoricalScheduler, self).__init__(clock, cmp)
+        clock = initial_clock or datetime.fromtimestamp(0)
+        comparer = comparer or compare_datetimes
+
+        super(HistoricalScheduler, self).__init__(clock, comparer)
+
+    def now(self):
+        return self.clock
+
 
     @staticmethod
     def add(absolute, relative):
         """Adds a relative time value to an absolute time value.
 
         Keyword arguments:
-        absolute -- {Number} Absolute virtual time value.
-        relative -- {Number} Relative virtual time value to add.
+        absolute -- {datetime} Absolute virtual time value.
+        relative -- {timedelta} Relative virtual time value to add.
 
         Returns resulting absolute virtual time sum value."""
 
         return absolute + relative
 
-    @staticmethod
-    def to_datetime_offset(absolute):
-        return datetime.from_timestamp(absolute)
+    def to_datetime_offset(self, absolute):
+        """Converts the absolute time value to a datetime value."""
 
-    def to_relative(self, time_span):
-        """Converts the Timespan value to a relative virtual time value.
+        # datetime -> datetime
+        return absolute
+
+    def to_relative(self, timespan):
+        """Converts the timespan value to a relative virtual time value.
 
         Keyword arguments:
-        time_span -- {Number} Time_span value to convert.
+        timespan -- {timedelta} Time_span value to convert.
 
         Returns corresponding relative virtual time value."""
 
-        return time_span
+        # timedelta -> timedelta
+        return timespan
