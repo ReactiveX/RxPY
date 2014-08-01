@@ -72,7 +72,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         
         results.messages.assert_equal(on_next(215, 2), on_next(225, 3), on_next(230, 4), on_next(245, 5), on_completed(250))
 
-    def test_on_error_resume_next_empty_return_throw_and_more(self):
+    def test_on_error_resume_next_empty_return_throw_and_more_ii(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(220)]
