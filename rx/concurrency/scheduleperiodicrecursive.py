@@ -33,6 +33,7 @@ class SchedulePeriodicRecursive(object):
         
         dis = SingleAssignmentDisposable()
         self._cancel = dis
-        dis.disposable = self._scheduler.schedule_recursive_relative(self._period, self.tick, 0)
+        #dis.disposable = self._scheduler.schedule_recursive_relative(self._period, self.tick, 0)
+        dis.disposable = self._scheduler.schedule_recursive_with_relative_and_state(self._period, self.tick, 0)
 
         return dis

@@ -2,6 +2,7 @@ from threading import Timer
 from datetime import datetime, timedelta
 
 from rx.disposables import Disposable, CompositeDisposable
+from rx.internal.basic import default_now
 
 class Scheduler(object):
     """Provides a set of static properties to access commonly used schedulers."""
@@ -52,7 +53,7 @@ class Scheduler(object):
         return Disposable(dispose)
 
     def invoke_rec_immediate(self, scheduler, pair):
-        #print "invoke_rec_immediate", scheduler, pair
+        #print("invoke_rec_immediate", scheduler, pair)
         state = pair.get('state')
         action = pair.get('action')
         group = CompositeDisposable()
@@ -60,12 +61,10 @@ class Scheduler(object):
         def recursive_action(state1):
             # FIXME: need a better name for this function
             def action2(state2=None):
-                #print "action2", state2
                 is_added = False
                 is_done = [False]
 
                 def action(scheduler, state=None):
-                    #print "action", scheduler1, state3
                     if is_added:
                         group.remove(d)
                     else:
@@ -104,7 +103,7 @@ class Scheduler(object):
                     recursive_action(state3)
                     return Disposable.empty()
 
-                d = getattr(scheduler, method)(duetime1, action2, state2)
+                d = getattr(scheduler, method)(duetime=duetime1, action=action2, state=state2)
                 if not is_done[0]:
                     group.add(d)
                     is_added = True
@@ -114,33 +113,107 @@ class Scheduler(object):
         return group
 
     def schedule_recursive(self, action, state=None):
+        """Schedules an action to be executed recursively.
+
+        Keyword parameters:
+        action -- {Function} Action to execute recursively. The parameter passed
+            to the action is used to trigger recursive scheduling of the action.
+        Returns the disposable {Disposable} object used to cancel the scheduled
+        action (best effort)."""
+
         def action2(scheduler, pair):
             return self.invoke_rec_immediate(scheduler, pair)
 
         return self.schedule(action2, dict(state=state, action=action))
 
-    def schedule_recursive_relative(self, duetime, action, state=None):
-        def action1(s, p):
-            print ("Scheduler:schedule_recursive_relative:action()")
-            return self.invoke_rec_date(s, p, 'schedule_relative')
-        return self.schedule_relative(duetime, action1, state={ "first": state, "second": action })
-
     def schedule_recursive_with_relative(self, duetime, action):
+        """Schedules an action to be executed recursively after a specified 
+        relative due time.     
+        
+        Keyword arguments:
+        action -- {Function} Action to execute recursively. The parameter passed 
+            to the action is used to trigger recursive scheduling of the action 
+            at the specified relative time.
+         duetime - {Number} Relative time after which to execute the action for 
+            the first time.
+        
+        Returns the disposable {Disposable} object used to cancel the scheduled 
+        action (best effort)."""
+        
         def action1(_action, this=None):
             def func(dt):
                 this(_action, dt)
             _action(func)
-        return self.schedule_recursive_with_relative_and_state(action, duetime, action1)
+        return self.schedule_recursive_with_relative_and_state(duetime, action1, state=action)
 
-    def schedule_recursive_with_relative_and_state(self, state, duetime, action):
+    def schedule_recursive_with_relative_and_state(self, duetime, action, state):
+        """Schedules an action to be executed recursively after a specified
+        relative due time.
+
+        Keyword arguments:
+        state  -- {Mixed} State passed to the action to be executed.
+        action -- {Function} Action to execute recursively. The last parameter
+            passed to the action is used to trigger recursive scheduling of the
+            action, passing in the recursive due time and invocation state.
+        duetime - {Number} Relative time after which to execute the action for
+            the first time.
+
+        Returns the disposable {Disposable} object used to cancel the scheduled
+        action (best effort)."""
+
         def action1(s, p):
             return self.invoke_rec_date(s, p, 'schedule_relative')
 
         return self.schedule_relative(duetime, action1, state={ "first": state, "second": action })
 
+    def schedule_recursive_with_absolute(self, duetime, action):
+        """Schedules an action to be executed recursively at a specified
+        absolute due time.
+
+        Keyword arguments:
+        action -- {Function} Action to execute recursively. The parameter
+            passed to the action is used to trigger recursive scheduling of
+            the action at the specified absolute time.
+        duetime {Number} Absolute time at which to execute the action for
+            the first time.
+
+        Returns the disposable {Disposable} object used to cancel the
+        scheduled action (best effort)."""
+
+        def action1(_action, this=None):
+            def func(dt):
+                this(_action, dt)
+            _action(func)
+        return self.schedule_recursive_with_absolute_and_state(duetime=duetime, action=action1, state=action)
+
+    def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
+        """Schedules an action to be executed recursively at a specified
+        absolute due time.
+
+        Keyword arguments:
+        state -- {Mixed} State passed to the action to be executed.
+        action -- {Function} Action to execute recursively. The last parameter
+            passed to the action is used to trigger recursive scheduling of the
+            action, passing in the recursive due time and invocation state.
+        duetime -- {Number} Absolute time at which to execute the action for the
+            first time.
+        Returns the disposable {Disposable} object used to cancel the scheduled
+        action (best effort)."""
+
+        def action2(scheduler, pair):
+            return self.invoke_rec_date(scheduler, pair, method='schedule_absolute')
+
+        return self.schedule_absolute(
+            duetime=duetime, action=action2,
+            state={ "first": state, "second": action })
+
     @classmethod
     def now(cls):
-        return datetime.utcnow()
+        return cls.default_now()
+
+    @classmethod
+    def default_now(cls):
+        return default_now()
 
     @classmethod
     def normalize(cls, timespan):
