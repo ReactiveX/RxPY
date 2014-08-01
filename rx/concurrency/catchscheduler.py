@@ -1,8 +1,15 @@
-from rx.disposables import SingleAssignmentDisposable
+from rx.disposables import Disposable, SingleAssignmentDisposable
 
 from .scheduler import Scheduler
 
 class CatchScheduler(Scheduler):
+    def __init__(self, scheduler, handler):
+        self._scheduler = scheduler
+        self._handler = handler
+        self._recursive_original = None
+        self._recursive_wrapper = None
+
+        super(CatchScheduler, self).__init__()
 
     def local_now(self):
         return self._scheduler.now()
@@ -10,18 +17,11 @@ class CatchScheduler(Scheduler):
     def schedule_now(self, state, action):
         return self._scheduler.scheduleWithState(state, self._wrap(action))
 
-    def schedule_relative(state, due_time, action):
+    def schedule_relative(self, state, due_time, action):
         return self._scheduler.schedule_relative(due_time, self._wrap(action), state=state)
 
-    def schedule_absolute(state, due_time, action):
+    def schedule_absolute(self, state, due_time, action):
         return self._scheduler.schedule_absolute(due_time, self._wrap(action), state=state)
-
-    def __init__(self, scheduler, handler):
-        self._scheduler = scheduler
-        self._handler = handler
-        self._recursive_original = None
-        self._recursive_wrapper = None
-        super(CatchScheduler, self).__init__(local_now, schedule_now, schedule_relative, schedule_absolute)
 
     def _clone(self, scheduler):
         return CatchScheduler(scheduler, self._handler)
@@ -31,7 +31,7 @@ class CatchScheduler(Scheduler):
 
         def wrapped_action(self, state):
             try:
-                return action(parent._getRecursive_wrapper(self), state)
+                return action(parent._get_recursive_wrapper(self), state)
             except Exception as ex:
                 if not parent._handler(ex):
                     raise Exception(ex)
@@ -50,16 +50,16 @@ class CatchScheduler(Scheduler):
 
     def schedule_periodic(self, period, action, state=None):
         d = SingleAssignmentDisposable()
-        failed = False
+        failed = [False]
 
         def action(state1):
-            if failed:
+            if failed[0]:
                 return None
             try:
                 return action(state1)
             except Exception as ex:
-                failed = True
-                if not self._handler(e):
+                failed[0] = True
+                if not self._handler(ex):
                     raise Exception(ex)
                 d.dispose()
                 return None

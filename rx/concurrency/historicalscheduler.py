@@ -28,7 +28,6 @@ class HistoricalScheduler(VirtualTimeScheduler):
     def now(self):
         return self.clock
 
-
     @staticmethod
     def add(absolute, relative):
         """Adds a relative time value to an absolute time value.
