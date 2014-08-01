@@ -1,8 +1,10 @@
 from six import add_metaclass
 
-from rx import Observable
+from rx import Observable, AnonymousObservable
 from rx.internal import ExtensionMethod
+from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
+from rx.internal.basic import identity
 
 def combine_latest_source(source, subject, result_selector):
     def subscribe(observer):
@@ -19,14 +21,14 @@ def combine_latest_source(source, subject, result_selector):
             has_value_all = has_value_all or has_value.every(identity)
             if has_value_all:
                 try:
-                    res = result_selector(null, values)
+                    res = result_selector(None, values)
                 except Exception as ex:
                     observer.on_error(ex)
                     return
 
                 observer.on_next(res)
             elif is_done:
-              observer.on_completed()
+                observer.on_completed()
 
         def on_next(x):
             next(x, 0)
@@ -43,26 +45,32 @@ def combine_latest_source(source, subject, result_selector):
 
 class PausableBufferedObservable(Observable):
 
+    def __init__(self, source, subject=None):
+        self.source = source
+        self.subject = subject or Subject()
+        self.is_paused = True
+        super(PausableBufferedObservable, self).__init__(subscribe)
+
     def subscribe(self, observer):
-        previous = True
+        previous = [True]
         q = []
 
         def result_selector(data, should_fire):
             return { "data": data, "should_fire": should_fire }
 
         def on_next(results):
-            if results.should_fire and previous:
+            if results.should_fire and previous[0]:
                 observer.on_next(results.data)
 
-            if results.should_fire and not previous:
+            if results.should_fire and not previous[0]:
                 while len(q):
                   observer.on_next(q.shift())
 
-                previous = True
-            elif not results.should_fire and not previous:
-                q.push(results.data)
-            elif not results.should_fire and previous:
-                previous = False
+                previous[0] = True
+            elif not results.should_fire and not previous[0]:
+                q.append(results.data)
+            elif not results.should_fire and previous[0]:
+                previous[0] = False
 
         def on_error(err):
             # Empty buffer before sending error
@@ -84,12 +92,6 @@ class PausableBufferedObservable(Observable):
 
         self.subject.on_next(False)
         return subscription
-
-    def __init__(source, subject=None):
-        self.source = source
-        self.subject = subject or Subject()
-        self.is_paused = True
-        super(PausableBufferedObservable, self).__init__(subscribe)
 
     def pause(self):
         if self.is_paused:

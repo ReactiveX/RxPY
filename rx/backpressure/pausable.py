@@ -2,14 +2,15 @@ from six import add_metaclass
 
 from rx import Observable
 from rx.internal import ExtensionMethod
-from rx.disposables import CompositeDisposable
+from rx.disposables import CompositeDisposable, Disposable
+from rx.subjects import Subject
 
 class PausableObservable(Observable):
     def __init__(self, source, subject=None):
         self.source = source
         self.subject = subject or Subject()
-        self.is_paused = True;
-        super(PausableObservable, self).__init__(self, subscribe)
+        self.is_paused = True
+        super(PausableObservable, self).__init__(self, self.subscribe)
 
     def subscribe(self, observer):
         conn = self.source.publish()
@@ -18,10 +19,10 @@ class PausableObservable(Observable):
 
         def on_next(b):
             if b:
-              connection = conn.connect()
+                connection = conn.connect()
             else:
-              connection.dispose()
-              connection = Disposable.empty()
+                connection.dispose()
+                connection = Disposable.empty()
 
         pausable = self.subject.distinct_until_changed().subscribe(on_next)
         return CompositeDisposable(subscription, connection, pausable)

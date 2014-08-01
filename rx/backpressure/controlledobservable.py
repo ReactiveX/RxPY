@@ -4,11 +4,11 @@ from .controlledsubject import ControlledSubject
 
 class ControlledObservable(Observable):
 
-    def __init__(source, enable_queue):
-        super(Observable, self).__init__(self.subscribe)
+    def __init__(self, source, enable_queue):
+        super(ControlledObservable, self).__init__(self.subscribe)
         
         self.subject = ControlledSubject(enable_queue)
-        self.source = source.multicast(this.subject).ref_count()
+        self.source = source.multicast(self.subject).ref_count()
     
     def subscribe(self, observer):
         return self.source.subscribe(observer)

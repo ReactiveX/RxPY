@@ -1,6 +1,7 @@
 import logging
 
 from rx import Observer, Observable
+from rx.internal.utils import check_disposed
 
 log = logging.getLogger('Rx')
 
@@ -28,7 +29,7 @@ class WindowedObserver(Observer):
             self.observer.on_next(value)
 
             def action(scheduler, state):
-                log.debug('requested size', self.observable.window_size)
+                log.debug('requested size: %s', self.observable.window_size)
                 self.observable.source.request(self.observable.window_size)
 
             self.received = (self.received+1) % self.observable.window_size
@@ -44,20 +45,21 @@ class WindowedObserver(Observer):
             self.is_disposed = True
 
 class WindowedObservable(Observable):
-    def subscribe(self, observer):
-        observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
-        self.subscription = self.source.subscribe(observer)
+    def __init__(self, source, window_size, scheduler):
+        super(WindowedObservable, self).__init__(self.subscribe)
 
+        self.source = source
+        self.window_size = window_size
+        self.scheduler = scheduler
+        self.is_disposed = False
+
+    def subscribe(self, observer):
+        self.subscription = self.source.subscribe(observer)
+        observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
+        
         def action(scheduler, state):
-            self.source.request(self.window_wize)
+            self.source.request(self.window_size)
 
         self.scheduler.schedule(action)
         return self.subscription
 
-    def __init__(self, source, window_size, scheduler):
-        super(WindowedObservable, self).__init__(subscribe)
-
-        self.source = source
-        self.windowSize = window_size
-        self.scheduler = scheduler
-        self.is_disposed = False

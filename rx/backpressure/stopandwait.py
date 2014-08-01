@@ -1,10 +1,10 @@
 from six import add_metaclass
 
-from rx import AnonymousObservable, Observable
+from rx.concurrency import current_thread_scheduler
 from rx.internal import ExtensionMethod
 
 from .controlledobservable import ControlledObservable
-from .windowedobservable import WindowedObservable
+from .stopandwaitobservable import StopAndWaitObservable
 
 @add_metaclass(ExtensionMethod)
 class ControlledObservableStopAndWait(ControlledObservable):
