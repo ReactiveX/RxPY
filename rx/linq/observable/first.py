@@ -2,7 +2,6 @@ from six import add_metaclass
 
 from rx import Observable
 from rx.internal import ExtensionMethod
-from rx.internal import Enumerable
 
 from .firstordefault import first_or_default_async
 
@@ -28,5 +27,5 @@ class ObservableFirst(Observable):
         observable sequence that satisfies the condition in the predicate if 
         provided, else the first item in the sequence."""
 
-        return self.where(predicate, this).first() if predicate else first_or_default_async(this, False)
+        return self.where(predicate, this).first() if predicate else first_or_default_async(self, False)
 
