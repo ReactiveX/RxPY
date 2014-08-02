@@ -207,12 +207,10 @@ class Scheduler(object):
             duetime=duetime, action=action2,
             state={ "first": state, "second": action })
 
-    @classmethod
-    def now(cls):
-        return cls.default_now()
+    def now(self):
+        return self.default_now()
 
-    @classmethod
-    def default_now(cls):
+    def default_now(self):
         return default_now()
 
     @classmethod
