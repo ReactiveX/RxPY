@@ -59,7 +59,7 @@ class ObservableSequenceEqual(Observable):
         first = self
         comparer = comparer or default_comparer
         if isinstance(second, list):
-            return ObservableAggregates.sequence_equal_array(first, second, comparer)
+            return Observable.sequence_equal_array(first, second, comparer)
         
         def subscribe(observer):
             donel = [False]
