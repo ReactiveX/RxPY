@@ -70,7 +70,7 @@ class TestMin(unittest.TestCase):
         assert(res[0].value.kind == 'E' and res[0].value.exception != None)
         assert(res[0].time == 250)
 
-    def test_min_of_t_comparer_empty(self):
+    def test_min_of_t_comparer_empty_ii(self):
         scheduler = TestScheduler()
         def comparer(a, b):
             if a > b:
