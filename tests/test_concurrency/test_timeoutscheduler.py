@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from time import sleep
 from rx.concurrency import TimeoutScheduler
 
-def test_timeout_now():
-    res = TimeoutScheduler.now() - datetime.utcnow()
-    assert res < timedelta(microseconds=1000)
-
 class TestTimeoutScheduler(unittest.TestCase):
+    def test_timeout_now(self):
+        scheduler = TimeoutScheduler()
+        res = scheduler.now() - datetime.utcnow()
+        assert res < timedelta(microseconds=1000)
+    
     def test_timeout_schedule_action(self):
         scheduler = TimeoutScheduler()
         ran = [False]

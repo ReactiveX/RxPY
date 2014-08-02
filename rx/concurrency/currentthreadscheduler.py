@@ -12,8 +12,9 @@ from .scheduleditem import ScheduledItem
 log = logging.getLogger('Rx')
 
 class Trampoline(object):
-    def __init__(self):
+    def __init__(self, scheduler):
         self.queue = PriorityQueue(4)
+        self.scheduler = scheduler
 
     def enqueue(self, item):
         return self.queue.enqueue(item)
@@ -25,12 +26,12 @@ class Trampoline(object):
         while self.queue.length > 0:
             item = self.queue.dequeue()
             if not item.is_cancelled():
-                diff = item.duetime - Scheduler.now()
+                diff = item.duetime - self.scheduler.now()
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
                     log.info("Trampoline:run(), Sleeping: %s" % seconds)
                     time.sleep(seconds)
-                    diff = item.duetime - Scheduler.now()
+                    diff = item.duetime - self.scheduler.now()
                 
                 if not item.is_cancelled():
                     item.invoke()
@@ -49,7 +50,7 @@ class CurrentThreadScheduler(Scheduler):
         si = ScheduledItem(self, state, action, dt)
         
         if not self.queue:
-            self.queue = Trampoline()
+            self.queue = Trampoline(self)
             try:
                 self.queue.enqueue(si)
                 self.queue.run()
