@@ -6,7 +6,8 @@ from rx.concurrency import Scheduler, CurrentThreadScheduler
 class TestCurrentThreadScheduler(unittest.TestCase):
     
     def test_currentthread_now(self):
-        res = Scheduler.now() - datetime.utcnow()
+        scheduler = CurrentThreadScheduler()
+        res = scheduler.now() - datetime.utcnow()
         assert res < timedelta(milliseconds=1000)
     
     def test_currentthread_scheduleaction(self):

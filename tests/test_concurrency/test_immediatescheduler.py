@@ -6,7 +6,8 @@ from rx.disposables import Disposable
 
 class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_now(self):
-        res = Scheduler.now() - datetime.utcnow()
+        scheduler = ImmediateScheduler()
+        res = scheduler.now() - datetime.utcnow()
         assert res < timedelta(milliseconds=1000)
 
     def test_immediate_scheduleaction(self):

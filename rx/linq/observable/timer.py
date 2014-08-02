@@ -42,8 +42,6 @@ class ObservableTimer(Observable):
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
-        log.debug("ObservableTime.observable_timer_timespan_and_period()")
-        
         if duetime == period:
             def subscribe(observer):
                 def action(count):
@@ -92,12 +90,10 @@ class ObservableTimer(Observable):
 
     @staticmethod
     def observable_timer_timespan(duetime, scheduler):
-        log.debug("observable_timer_timespan()")
         d = Scheduler.normalize(duetime)
 
         def subscribe(observer):
             def action(scheduler, state):
-                log.debug("observable_timer_timespan:subscribe:action()")
                 observer.on_next(0)
                 observer.on_completed()
         
