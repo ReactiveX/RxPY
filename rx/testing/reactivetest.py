@@ -10,7 +10,7 @@ def is_prime(i):
 
     if i <= 1:
         return False
-    
+
     _max = int(math.floor(math.sqrt(i)))
     for j in range(2, _max+1):
         if not i % j:
@@ -23,12 +23,12 @@ class OnNextPredicate(object):
     def __init__(self, predicate):
         self.predicate = predicate
 
-    def equals(self, other):
+    def __eq__(self, other):
         if other == self:
             return True
         if other == None:
             return False
-        if other.kind != 'N': 
+        if other.kind != 'N':
             return False
         return self.predicate(other.value)
 
@@ -36,12 +36,12 @@ class OnErrorPredicate(object):
     def __init__(self, predicate):
         self.predicate = predicate
 
-    def equals(self, other):
+    def __eq__(self, other):
         if other == self:
             return True
-        if other == None: 
+        if other == None:
             return False
-        if other.kind != 'E': 
+        if other.kind != 'E':
             return False
         return self.predicate(other.exception)
 
@@ -54,20 +54,20 @@ class ReactiveTest(object):
     def on_next(cls, ticks, value):
         if type(value) == types.FunctionType:
             return Recorded(ticks, OnNextPredicate(value))
-        
+
         return Recorded(ticks, OnNext(value))
-    
+
     @classmethod
     def on_error(cls, ticks, exception):
         if type(exception) == types.FunctionType:
             return Recorded(ticks, OnErrorPredicate(exception))
-        
+
         return Recorded(ticks, OnError(exception))
-    
+
     @classmethod
     def on_completed(cls, ticks):
         return Recorded(ticks, OnCompleted())
-    
+
     @classmethod
     def subscribe(cls, start, end):
         return Subscription(start, end)
