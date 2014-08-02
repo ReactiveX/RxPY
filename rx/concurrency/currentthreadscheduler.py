@@ -22,7 +22,6 @@ class Trampoline(object):
         self.queue = None
 
     def run(self):
-        #print "Trampoline:run"
         while self.queue.length > 0:
             item = self.queue.dequeue()
             if not item.is_cancelled():
@@ -34,7 +33,6 @@ class Trampoline(object):
                     diff = item.duetime - Scheduler.now()
                 
                 if not item.is_cancelled():
-                    #print("item.invoke")
                     item.invoke()
 
 class CurrentThreadScheduler(Scheduler):    
