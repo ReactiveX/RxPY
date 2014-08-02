@@ -21,6 +21,8 @@ from . import doaction
 from . import dowhile
 from . import empty
 from . import finalvalue
+from . import first
+from . import firstordefault
 from . import forin
 from . import fromarray
 from . import generate
