@@ -67,6 +67,7 @@ from . import takewhile
 from . import throttle
 from . import throw
 from . import timer
+from . import timeout
 from . import timestamp
 from . import toarray
 from . import using
