@@ -9,6 +9,8 @@ from .scheduler import Scheduler
 log = logging.getLogger("Rx")
 
 class TimeoutScheduler(Scheduler):
+    """A scheduler that schedules work via a timed callback based upon platform."""
+    
     def __init__(self):
         self.timer = None
 
