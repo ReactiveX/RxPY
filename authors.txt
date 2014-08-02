@@ -1,4 +1,4 @@
-Dag Brattli <dbrattli@microsoft.com>
+Dag Brattli <dag@brattli.net>
 
 Matthew Podwysocki <matthewp@microsoft.com>
 Bart de Smet <bartde@microsoft.com>

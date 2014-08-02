@@ -18,7 +18,8 @@ class ObservableJoin(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def join(self, right, left_duration_selector, right_duration_selector, result_selector):
-        """Correlates the elements of two sequences based on overlapping durations.
+        """Correlates the elements of two sequences based on overlapping 
+        durations.
     
         Keyword arguments:
         right -- The right observable sequence to join elements for.
@@ -74,8 +75,8 @@ class ObservableJoin(Observable):
                     return
                 
                 md.disposable = duration.take(1).subscribe(noop, observer.on_error, lambda: expire())
-                values = right_map.values()
-                for val in values:
+                
+                for val in right_map.values():
                     try:
                         result = result_selector(value, val)
                     except Exception as exception:
@@ -116,8 +117,8 @@ class ObservableJoin(Observable):
                     return
                 
                 md.disposable = duration.take(1).subscribe(noop, observer.on_error, lambda: expire())
-                values = left_map.values()
-                for val in values:
+                
+                for val in left_map.values():
                     try:
                         result = result_selector(val, value)
                     except Exception as exception:
@@ -134,5 +135,4 @@ class ObservableJoin(Observable):
                 
             group.add(right.subscribe(on_next_right, observer.on_error, on_completed_right))
             return group
-        
         return AnonymousObservable(subscribe)

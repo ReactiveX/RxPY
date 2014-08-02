@@ -87,7 +87,7 @@ class TestRetry(unittest.TestCase):
         results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2))
         xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
 
-    def test_retry_observable_retry_count_dispose(self):
+    def test_retry_observable_retry_count_dispose_ii(self):
         scheduler = TestScheduler()
         ex = 'ex'
         xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3))
@@ -96,7 +96,7 @@ class TestRetry(unittest.TestCase):
         results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3))
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-    def test_retry_observable_retry_count_dispose(self):
+    def test_retry_observable_retry_count_dispose_iii(self):
         scheduler = TestScheduler()
         ex = 'ex'
         xs = scheduler.create_cold_observable(on_next(100, 1), on_next(150, 2), on_next(200, 3), on_completed(250))

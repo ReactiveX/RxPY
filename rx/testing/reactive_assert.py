@@ -2,13 +2,7 @@ import sys, traceback
 import types
 
 from rx import Observable, AnonymousObservable
-
-def default_comparer(x, y):
-    print((x, y))
-    if not hasattr(y, 'equals'):
-        return x == y
-    
-    return x.equals(y)
+from rx.internal.basic import default_comparer
 
 def create_message(actual, expected):
     return '\r\n\tExpected: [%s]\r\n\tActual:   [%s]' % (str(expected), str(actual))
@@ -20,12 +14,12 @@ def are_elements_equal(expected, actual, comparer=None, message=None):
         msg = 'Not equal length. Expected: %s Actual: %s' % (len(expected), len(actual))
         assert False, msg
         return
-    
+
     for i, ex in enumerate(expected):
         is_ok = comparer(ex, actual[i])
         if not is_ok:
             break
-        
+
     assert is_ok, message or create_message(actual, expected)
 
 def assert_equal(expected, *actual):

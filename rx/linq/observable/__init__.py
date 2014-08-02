@@ -21,6 +21,8 @@ from . import doaction
 from . import dowhile
 from . import empty
 from . import finalvalue
+from . import first
+from . import firstordefault
 from . import forin
 from . import fromarray
 from . import generate
@@ -54,6 +56,7 @@ from . import sequenceequal
 from . import skip
 from . import skipuntil
 from . import skipwhile
+from . import skipwithtime
 from . import startswith
 from . import subscribeon
 from . import sum
@@ -64,6 +67,7 @@ from . import takewhile
 from . import throttle
 from . import throw
 from . import timer
+from . import timeout
 from . import timestamp
 from . import toarray
 from . import using

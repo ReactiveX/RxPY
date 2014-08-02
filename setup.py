@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.2.2',
+    version='0.3.0',
     description='Reactive Extensions for Python',
     long_description = """\
 is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
@@ -36,6 +36,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
 
     packages=['rx', 'rx.internal',
               'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
-              'rx.concurrency', 'rx.disposables', 'rx.subjects', 'rx.testing'],
+              'rx.concurrency', 'rx.disposables', 'rx.subjects',
+              'rx.backpressure', 'rx.testing'],
     package_dir = { 'rx':'rx' }
 )
