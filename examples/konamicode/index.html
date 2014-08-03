@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rx Python in action</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        background: url(http://todomvc.com/architecture-examples/backbone/bower_components/todomvc-common/bg.png) repeat;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    <center>
+    <h1>Konami Code</h1>
+    <div id="chat">
+      <input type="text" class="form-control" id="chat-input" style="width:200px; display:inline-block" placeholder="Please enter some input">
+      <button type="button" class="btn btn-primary">Enter</button>
+    </div>
+    </center>
+    </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      var msg = $("#chat #chat-input");
+
+      var ws;
+
+      var do_login = function(){
+        $('#chat input').focus();
+
+        var loc = window.location, new_uri;
+        if (loc.protocol === "https:") {
+          new_uri = "wss:";
+        } else {
+          new_uri = "ws:";
+        }
+        new_uri += "//" + loc.host;
+        new_uri += loc.pathname + "ws/chat";
+
+        ws = new WebSocket(new_uri);
+        ws.onmessage = function(e) {
+          var win = $("#chat .chat-window");
+          win.append('<div>' + e.data + '</div>');
+          win.animate({ scrollTop: win[0].scrollHeight}, 1000);
+        }
+      }
+      do_login();
+      $('#login-form').on('keypress', 'input', function(e) {
+        if (e.which == 13){
+          do_login();
+        }
+      });
+      var say_it = function() {
+        var message = msg.val();
+        msg.val('');
+        if (message == '') {
+          msg.focus();
+          return;
+        }
+        ws.send(message);
+      }
+      $('#chat').on('click', 'button', say_it);
+      $('#chat').on('keypress', 'input', function(e) {
+        if (e.which == 13){
+          say_it();
+        }
+      });
+    });
+  </script>
+  </body>
+</html>
