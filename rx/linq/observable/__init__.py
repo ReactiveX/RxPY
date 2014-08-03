@@ -20,6 +20,7 @@ from . import distinctuntilchanged
 from . import doaction
 from . import dowhile
 from . import empty
+from . import finallyaction
 from . import finalvalue
 from . import first
 from . import firstordefault
