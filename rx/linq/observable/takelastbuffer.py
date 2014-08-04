@@ -4,10 +4,10 @@ from rx import Observable, AnonymousObservable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableTakeLast(Observable):
-    def take_last(self, count):
-        """Returns a specified number of contiguous elements from the end of an
-        observable sequence.
+class ObservableTakeLastBuffer(Observable):
+    def take_last_buffer(self, count):
+        """Returns an array with the specified number of contiguous elements
+        from the end of an observable sequence.
 
         Example:
         res = source.take_last(5)
@@ -19,11 +19,12 @@ class ObservableTakeLast(Observable):
         delayed.
 
         Keyword arguments:
-        count -- {Number} Number of elements to take from the end of the source 
+        count -- {Number} Number of elements to take from the end of the source
             sequence.
 
-        Returns an observable {Observable} sequence containing the specified
-        number of elements from the end of the source sequence."""
+        Returns an observable {Observable} sequence containing a single array
+        with the specified number of elements from the end of the source
+        sequence."""
 
         source = self
 
@@ -35,8 +36,7 @@ class ObservableTakeLast(Observable):
                     q.pop(0)
 
             def on_completed():
-                while len(q):
-                    observer.on_next(q.pop(0))
+                observer.on_next(q)
                 observer.on_completed()
 
             return source.subscribe(on_next, observer.on_error, on_completed)
