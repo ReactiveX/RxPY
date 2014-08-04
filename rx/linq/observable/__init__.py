@@ -55,6 +55,7 @@ from . import select
 from . import selectmany
 from . import sequenceequal
 from . import skip
+from . import skiplast
 from . import skipuntil
 from . import skipwhile
 from . import skipwithtime
