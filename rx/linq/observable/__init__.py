@@ -22,6 +22,7 @@ from . import distinctuntilchanged
 from . import doaction
 from . import dowhile
 from . import empty
+from . import exclusive
 from . import finallyaction
 from . import finalvalue
 from . import first
