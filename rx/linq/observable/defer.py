@@ -7,19 +7,20 @@ from rx.concurrency import immediate_scheduler, current_thread_scheduler
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableCreation(Observable):
+class ObservableDefer(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     @classmethod
     def defer(cls, observable_factory):
-        """Returns an observable sequence that invokes the specified factory 
+        """Returns an observable sequence that invokes the specified factory
         function whenever a new observer subscribes.
-     
-        1 - res = rx.Observable.defer(lambda: rx.Observable.from_array([1,2,3]))    
-    
-        observable_factory -- Observable factory function to invoke for each 
+
+        1 - res = rx.Observable.defer(lambda: rx.Observable.from_array([1,2,3]))
+
+        observable_factory -- Observable factory function to invoke for each
             observer that subscribes to the resulting sequence.
-    
-        Returns an observable sequence whose observers trigger an invocation 
+
+        Returns an observable sequence whose observers trigger an invocation
         of the given observable factory function.
         """
 
@@ -29,6 +30,6 @@ class ObservableCreation(Observable):
                 result = observable_factory()
             except Exception as ex:
                 return Observable.throw_exception(ex).subscribe(observer)
-            
+
             return result.subscribe(observer)
         return AnonymousObservable(subscribe)
