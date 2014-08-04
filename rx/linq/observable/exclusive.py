@@ -6,7 +6,7 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableDefer(Observable):
+class ObservableExclusive(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def exclusive(self):
