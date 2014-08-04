@@ -63,6 +63,7 @@ from . import subscribeon
 from . import sum
 from . import switchlatest
 from . import take
+from . import takelast
 from . import takeuntil
 from . import takewhile
 from . import throttle
