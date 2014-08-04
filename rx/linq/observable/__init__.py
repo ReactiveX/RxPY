@@ -16,6 +16,7 @@ from . import create
 from . import defer
 from . import delay
 from . import dematerialize
+from . import distinct
 from . import distinctuntilchanged
 from . import doaction
 from . import dowhile
