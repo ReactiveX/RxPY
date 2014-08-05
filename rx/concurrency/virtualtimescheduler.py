@@ -81,17 +81,12 @@ class VirtualTimeScheduler(Scheduler):
         if not self.is_enabled:
             self.is_enabled = True
             while self.is_enabled:
-                print (self.clock)
                 next = self.get_next()
                 if next:
                     if self.comparer(next.duetime, self.clock) > 0:
                         self.clock = next.duetime
                         log.info("VirtualTimeScheduler.start(), clock: %s",
                                  self.clock)
-                    #else:
-                    #    print ("skipping", next.duetime, self.clock)
-
-                    #print ("Invoke: ", self.clock, next.action)
                     next.invoke()
                 else:
                     self.is_enabled = False
