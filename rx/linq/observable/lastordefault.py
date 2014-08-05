@@ -27,16 +27,16 @@ def last_or_default_async(source, has_default=False, default_value=None):
 class ObservableLast(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def last_or_default(self, predicate, default_value=None):
+    def last_or_default(self, predicate=None, default_value=None):
         """Returns the last element of an observable sequence that satisfies the
         condition in the predicate, or a default value if no such element
         exists.
 
         Example:
         res = source.last_or_default()
-        res = source.last_or_default(function (x) { return x > 3 })
-        res = source.last_or_default(function (x) { return x > 3 }, 0)
-        res = source.last_or_default(null, 0)
+        res = source.last_or_default(lambda x: x > 3)
+        res = source.last_or_default(lambda x: x > 3, 0)
+        res = source.last_or_default(None, 0)
 
         predicate -- {Function} [Optional] A predicate function to evaluate for
             elements in the source sequence.
