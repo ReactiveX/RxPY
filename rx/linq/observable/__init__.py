@@ -4,6 +4,7 @@ from . import aggregate
 from . import all
 from . import amb
 from . import any
+from . import asobservable
 from . import average
 from . import buffer
 from . import case
