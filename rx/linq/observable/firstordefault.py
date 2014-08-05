@@ -3,7 +3,6 @@ from six import add_metaclass
 from rx import Observable, AnonymousObservable
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import ExtensionMethod
-from rx.internal import Enumerable
 
 def first_or_default_async(source, has_default=False, default_value=None):
     def subscribe(observer):
