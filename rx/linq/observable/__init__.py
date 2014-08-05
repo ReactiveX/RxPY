@@ -60,6 +60,8 @@ from . import scan
 from . import select
 from . import selectmany
 from . import sequenceequal
+from . import single
+from . import singleordefault
 from . import skip
 from . import skiplast
 from . import takelastbuffer
