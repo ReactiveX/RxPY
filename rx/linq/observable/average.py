@@ -12,7 +12,7 @@ class AverageValue(object):
 class ObservableAverage(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def average(self, key_selector=None, this=None):
+    def average(self, key_selector=None):
         """Computes the average of an observable sequence of values that are in
         the sequence or obtained by invoking a transform function on each 
         element of the input sequence if present.
@@ -22,13 +22,12 @@ class ObservableAverage(Observable):
         res = source.average(lambda x: x.value)
      
         key_selector -- A transform function to apply to each element.
-        this -- Object to use as self when executing callback.        
         
         Returns an observable sequence containing a single element with the 
         average of the sequence of values."""
         
         if key_selector:
-            return self.select(key_selector, this).average()
+            return self.select(key_selector).average()
         
         def accumulator(prev, cur):
             return AverageValue(sum=prev.sum+cur, count=prev.count+1)

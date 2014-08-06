@@ -8,7 +8,7 @@ from rx.internal import ExtensionMethod
 class ObservableWhere(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def where(self, predicate, this=None):
+    def where(self, predicate):
         """Filters the elements of an observable sequence based on a predicate 
         by incorporating the element's index.
         
