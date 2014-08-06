@@ -52,6 +52,8 @@ from . import never
 from . import observeon
 from . import onerrorresumenext
 from . import of
+from . import pairwise
+from . import pluck
 from . import range
 from . import reduce
 from . import repeat
@@ -65,7 +67,6 @@ from . import single
 from . import singleordefault
 from . import skip
 from . import skiplast
-from . import takelastbuffer
 from . import skipuntil
 from . import skipwhile
 from . import skipwithtime
@@ -75,6 +76,7 @@ from . import sum
 from . import switchlatest
 from . import take
 from . import takelast
+from . import takelastbuffer
 from . import takeuntil
 from . import takewhile
 from . import throttle
