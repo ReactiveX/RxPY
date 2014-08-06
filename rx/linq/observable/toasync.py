@@ -10,7 +10,7 @@ class ObservableToArray(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     @classmethod
-    def to_async(cls, func, context=None, scheduler=None):
+    def to_async(cls, func, scheduler=None):
         """Converts the function into an asynchronous function. Each invocation
         of the resulting asynchronous function causes an invocation of the
         original synchronous function on the specified scheduler.
@@ -23,9 +23,7 @@ class ObservableToArray(Observable):
         func -- {Function} Function to convert to an asynchronous function.
         scheduler -- {Scheduler} [Optional] Scheduler to run the function on. If
             not specified, defaults to Scheduler.timeout.
-        context -- {Mixed} [Optional] The context for the func parameter to be
-            executed.  If not specified, defaults to None.
-
+        
         Returns {Function} Asynchronous function."""
 
         scheduler =  scheduler or timeout_scheduler
@@ -35,7 +33,7 @@ class ObservableToArray(Observable):
 
             def action(scheduler, state):
                 try:
-                    result = func(context, *args)
+                    result = func(*args)
                 except Exception as ex:
                     subject.on_error(ex)
                     return

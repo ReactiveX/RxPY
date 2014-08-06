@@ -14,15 +14,17 @@ created = ReactiveTest.created
 
 class TestToAsync(unittest.TestCase):
     def test_to_async_context(self):
-        context = { "value": 42 }
+        class Context:
+            def __init__(self):
+                self.value = 42
+            def func(self, x):
+                return self.value + x
 
         scheduler = TestScheduler()
 
         def create():
-            def func(context, x):
-                return context["value"] + x
-
-            return Observable.to_async(func, context, scheduler)(42)
+            context = Context()
+            return Observable.to_async(context.func, scheduler)(42)
 
         res = scheduler.start(create)
 
@@ -35,10 +37,10 @@ class TestToAsync(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def func(context):
+            def func():
                 return 0
 
-            return Observable.to_async(func, None, scheduler)()
+            return Observable.to_async(func, scheduler)()
 
         res = scheduler.start(create)
 
@@ -51,10 +53,10 @@ class TestToAsync(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def func(context, x):
+            def func(x):
                 return x
 
-            return Observable.to_async(func, None, scheduler)(1)
+            return Observable.to_async(func, scheduler)(1)
 
         res = scheduler.start(create)
 
@@ -63,20 +65,21 @@ class TestToAsync(unittest.TestCase):
             on_completed(200)
          )
 
-# def test_to_async2(self):
-#   scheduler = TestScheduler()
-
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (x, y) {
-#         return x + y
-#     }, null, scheduler)(1, 2)
-#   })
-
-#   res.messages.assert_equal(
-#     on_next(200, 3),
-#     on_completed(200)
-#   )
-# })
+    def test_to_async2(self):
+        scheduler = TestScheduler()
+    
+        def create():
+            def func(x, y):
+                return x + y
+        
+            return Observable.to_async(func, scheduler)(1, 2)
+      
+        res = scheduler.start(create)
+        
+        res.messages.assert_equal(
+            on_next(200, 3),
+            on_completed(200)
+        )
 
 # def test_to_async3(self):
 #   scheduler = TestScheduler()
