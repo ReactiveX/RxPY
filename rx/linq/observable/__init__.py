@@ -4,6 +4,7 @@ from . import aggregate
 from . import all
 from . import amb
 from . import any
+from . import asobservable
 from . import average
 from . import buffer
 from . import case
@@ -13,13 +14,18 @@ from . import contains
 from . import combinelatest
 from . import count
 from . import create
+from . import defaultifempty
 from . import defer
 from . import delay
 from . import dematerialize
+from . import distinct
 from . import distinctuntilchanged
 from . import doaction
 from . import dowhile
 from . import empty
+from . import exclusive
+from . import expand
+from . import finallyaction
 from . import finalvalue
 from . import first
 from . import firstordefault
@@ -34,6 +40,8 @@ from . import ignoreelements
 from . import interval
 from . import isempty
 from . import join
+from . import last
+from . import lastordefault
 from . import materialize
 from . import merge
 from . import max
@@ -44,6 +52,8 @@ from . import never
 from . import observeon
 from . import onerrorresumenext
 from . import of
+from . import pairwise
+from . import pluck
 from . import range
 from . import reduce
 from . import repeat
@@ -53,7 +63,10 @@ from . import scan
 from . import select
 from . import selectmany
 from . import sequenceequal
+from . import single
+from . import singleordefault
 from . import skip
+from . import skiplast
 from . import skipuntil
 from . import skipwhile
 from . import skipwithtime
@@ -62,6 +75,8 @@ from . import subscribeon
 from . import sum
 from . import switchlatest
 from . import take
+from . import takelast
+from . import takelastbuffer
 from . import takeuntil
 from . import takewhile
 from . import throttle
@@ -70,6 +85,7 @@ from . import timer
 from . import timeout
 from . import timestamp
 from . import toarray
+from . import toasync
 from . import using
 from . import where
 from . import whiledo

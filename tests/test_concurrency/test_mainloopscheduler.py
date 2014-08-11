@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 from time import sleep
 from rx.concurrency import MainloopScheduler
 
-# def test_timeout_now():
-#     res = MainloopScheduler.now() - datetime.utcnow()
-#     assert res < timedelta(microseconds=1000)
-
 class TestMainloopScheduler(unittest.TestCase):
+
+    def test_mainloop_schedule_now(self):
+        loop = asyncio.get_event_loop()
+        scheduler = MainloopScheduler(loop)
+        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        assert(res < timedelta(seconds=1))
 
     def test_mainloop_schedule_action(self):
         loop = asyncio.get_event_loop()
@@ -50,18 +52,22 @@ class TestMainloopScheduler(unittest.TestCase):
             assert(diff > 0.18)
 
         loop.run_until_complete(go())
-        loop.close()
-
 
     def test_timeout_schedule_action_cancel(self):
-        ran = False
-        scheduler = TimeoutScheduler()
+        loop = asyncio.get_event_loop()
 
-        def action(scheduler, state):
-            nonlocal ran
-            ran = True
-        d = scheduler.schedule_relative(0.01, action)
-        d.dispose()
+        @asyncio.coroutine
+        def go():
+            ran = False
+            scheduler = MainloopScheduler(loop)
 
-        yield from asyncio.sleep(0.1, loop=loop)
-        assert (not ran)
+            def action(scheduler, state):
+                nonlocal ran
+                ran = True
+            d = scheduler.schedule_relative(0.01, action)
+            d.dispose()
+
+            yield from asyncio.sleep(0.1, loop=loop)
+            assert(not ran)
+
+        loop.run_until_complete(go())

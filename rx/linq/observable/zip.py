@@ -13,33 +13,33 @@ class ObservableZip(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def zip(self, *args):
-        """Merges the specified observable sequences into one observable 
-        sequence by using the selector function whenever all of the observable 
+        """Merges the specified observable sequences into one observable
+        sequence by using the selector function whenever all of the observable
         sequences or an array have produced an element at a corresponding index.
-        
-        The last element in the arguments must be a function to invoke for each 
+
+        The last element in the arguments must be a function to invoke for each
         series of elements at corresponding indexes in the sources.
-        
+
         1 - res = obs1.zip(obs2, fn)
-        2 - res = x1.zip([1,2,3], fn)  
-     
-        Returns an observable sequence containing the result of combining 
-        elements of the sources using the specified result selector function. 
+        2 - res = x1.zip([1,2,3], fn)
+
+        Returns an observable sequence containing the result of combining
+        elements of the sources using the specified result selector function.
         """
 
-        if args and isinstance(args[0], list):
-            return self.zip_array(list(args))
-        
         parent = self
         sources = list(args)
         result_selector = sources.pop()
         sources.insert(0, parent)
-        
+
+        if args and isinstance(args[0], list):
+            return self.zip_array(*args)
+
         def subscribe(observer):
             n = len(sources)
             queues = [[] for _ in range(n)]
             is_done = [False] * n
-            
+
             def next(i):
                 if all([len(q) for q in queues]):
                     try:
@@ -48,11 +48,11 @@ class ObservableZip(Observable):
                     except Exception as ex:
                         observer.on_error(ex)
                         return
-                    
+
                     observer.on_next(res)
                 elif all([x for j, x in enumerate(is_done) if j != i]):
                     observer.on_completed()
-                
+
             def done(i):
                 is_done[i] = True
                 if all(is_done):
@@ -66,9 +66,9 @@ class ObservableZip(Observable):
                 def on_next(x):
                     queues[i].append(x)
                     next(i)
-                
+
                 subscriptions[i].disposable = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
-                
+
             for idx in range(n):
                 func(idx)
             return CompositeDisposable(subscriptions)

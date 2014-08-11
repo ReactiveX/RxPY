@@ -22,8 +22,8 @@ class ObservableBuffer(Observable):
             closing of each produced window. If a closing selector function is 
             specified for the first parameter, self parameter is ignored.
         
-        Returns an observable sequence of windows.    
-        """
+        Returns an observable sequence of windows."""
+        
         if buffer_openings and not buffer_closing_selector:
             return self.observable_window_with_bounaries(buffer_openings).select_many(lambda item: item.to_array())
         
@@ -54,6 +54,6 @@ class ObservableBuffer(Observable):
             return x.to_array()  
 
         def predicate(x):
-            return len(x) > 0;
+            return len(x) > 0
 
         return self.window_with_count(count, skip).select_many(selector).where(predicate)

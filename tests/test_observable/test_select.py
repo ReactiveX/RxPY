@@ -47,7 +47,7 @@ def test_select_throws():
 
     try:
         Observable.create(subscribe) \
-            .select(lambda x: x).dump() \
+            .select(lambda x: x) \
             .subscribe()
     except RxException:
         pass

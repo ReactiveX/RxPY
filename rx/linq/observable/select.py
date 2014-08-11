@@ -8,7 +8,7 @@ from rx.internal import ExtensionMethod
 class ObservableSelect(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def select(self, selector, this=None):
+    def select(self, selector):
         """Projects each element of an observable sequence into a new form by
         incorporating the element's index.
         
@@ -19,22 +19,20 @@ class ObservableSelect(Observable):
         selector -- A transform function to apply to each source element; the
             second parameter of the function represents the index of the source 
             element.
-        this -- [Optional] Object to use as self when executing callback.
         
         Returns an observable sequence whose elements are the result of 
         invoking the transform function on each element of source.
         """
         
         selector = adapt_call(selector)        
-        parent = this
-
+        
         def subscribe(observer):
             count = [0]
 
             def on_next(value):
                 result = None
                 try:
-                    result = selector(value, count[0], parent)
+                    result = selector(value, count[0])
                 except Exception as err:
                     observer.on_error(err)
                 else:

@@ -8,6 +8,11 @@ class ObservableToArray(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def to_array(self):
+        """Creates a list from an observable sequence.
+        
+        Returns an observable sequence containing a single element with a list 
+        containing all the elements of the source sequence."""
+        
         def accumulator(res, i):
             res.append(i)
             return res[:]

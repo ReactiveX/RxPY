@@ -7,7 +7,7 @@ from rx.internal import ExtensionMethod
 class ObservableAny(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def any(self, predicate=None, this=None):
+    def any(self, predicate=None):
         """Determines whether any element of an observable sequence satisfies a
         condition if present, else if any items are in the sequence.
         
@@ -32,6 +32,6 @@ class ObservableAny(Observable):
                 observer.on_completed()
             return source.subscribe(on_next, observer.on_error, on_error)
 
-        return source.where(predicate, this).any() if predicate else AnonymousObservable(subscribe)
+        return source.where(predicate).any() if predicate else AnonymousObservable(subscribe)
             
     some = any
