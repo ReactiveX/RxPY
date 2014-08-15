@@ -74,9 +74,11 @@
     <Compile Include="rx\linq\observable\defer.py" />
     <Compile Include="rx\linq\observable\delay.py" />
     <Compile Include="rx\linq\observable\dematerialize.py" />
+    <Compile Include="rx\linq\observable\distinct.py" />
     <Compile Include="rx\linq\observable\distinctuntilchanged.py" />
     <Compile Include="rx\linq\observable\doaction.py" />
     <Compile Include="rx\linq\observable\dowhile.py" />
+    <Compile Include="rx\linq\observable\dump.py" />
     <Compile Include="rx\linq\observable\empty.py" />
     <Compile Include="rx\linq\observable\exclusive.py" />
     <Compile Include="rx\linq\observable\expand.py" />
@@ -136,7 +138,9 @@
     <Compile Include="rx\linq\observable\takewhile.py" />
     <Compile Include="rx\linq\observable\throttle.py" />
     <Compile Include="rx\linq\observable\throw.py" />
+    <Compile Include="rx\linq\observable\timeout.py" />
     <Compile Include="rx\linq\observable\timer.py" />
+    <Compile Include="rx\linq\observable\timestamp.py" />
     <Compile Include="rx\linq\observable\toarray.py" />
     <Compile Include="rx\linq\observable\toasync.py" />
     <Compile Include="rx\linq\observable\using.py" />
@@ -204,6 +208,7 @@
     <Compile Include="tests\test_observable\test_contains.py" />
     <Compile Include="tests\test_observable\test_count.py" />
     <Compile Include="tests\test_observable\test_create.py" />
+    <Compile Include="tests\test_observable\test_defaultifempty.py" />
     <Compile Include="tests\test_observable\test_defer.py" />
     <Compile Include="tests\test_observable\test_delay.py" />
     <Compile Include="tests\test_observable\test_distinct.py" />
