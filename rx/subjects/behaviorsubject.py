@@ -50,9 +50,8 @@ class BehaviorSubject(Observable, AbstractObserver):
     def on_completed(self):
         self.check_disposed()
         if not self.is_stopped:
-            os = self.observers[:]
             self.is_stopped = True
-            for o in os:
+            for o in self.observers[:]:
                 o.on_completed()
 
             self.observers = []
@@ -60,11 +59,10 @@ class BehaviorSubject(Observable, AbstractObserver):
     def on_error(self, error):
         self.check_disposed()
         if not self.is_stopped:
-            os = self.observers[:]
             self.is_stopped = True
             self.exception = error
 
-            for o in os:
+            for o in self.observers[:]:
                 o.on_error(error)
 
             self.observers = []
@@ -73,8 +71,7 @@ class BehaviorSubject(Observable, AbstractObserver):
         self.check_disposed()
         if not self.is_stopped:
             self.value = value
-            os = self.observers[:]
-            for o in os:
+            for o in self.observers[:]:
                 o.on_next(value)
     
     def dispose(self):

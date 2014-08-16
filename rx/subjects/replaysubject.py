@@ -92,7 +92,7 @@ class ReplaySubject(Observable, AbstractObserver):
             self.q.append(dict(interval=now, value=value))
             self._trim(now)
 
-            for observer in self.observers:
+            for observer in self.observers[:]:
                 observer.on_next(value)
                 observer.ensure_active()
     
@@ -105,7 +105,7 @@ class ReplaySubject(Observable, AbstractObserver):
             now = self.scheduler.now()
             self._trim(now)
             
-            for observer in self.observers:
+            for observer in self.observers[:]:
                 observer.on_error(error)
                 observer.ensure_active()
             
@@ -117,7 +117,7 @@ class ReplaySubject(Observable, AbstractObserver):
             self.is_stopped = True
             now = self.scheduler.now()
             self._trim(now)
-            for observer in self.observers:
+            for observer in self.observers[:]:
                 observer.on_completed()
                 observer.ensure_active()
             
