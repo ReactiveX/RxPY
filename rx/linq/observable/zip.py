@@ -12,7 +12,10 @@ from rx.internal import ExtensionMethod
 class ObservableZip(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def zip(self, *args):
+    def __init__(self, subscribe):
+        self.zip = self.__zip # Stitch in instance method
+
+    def __zip(self, *args):
         """Merges the specified observable sequences into one observable
         sequence by using the selector function whenever all of the observable
         sequences or an array have produced an element at a corresponding index.
@@ -73,3 +76,22 @@ class ObservableZip(Observable):
                 func(idx)
             return CompositeDisposable(subscriptions)
         return AnonymousObservable(subscribe)
+
+    @classmethod
+    def zip(cls, *args):
+        """Merges the specified observable sequences into one observable 
+        sequence by using the selector function whenever all of the observable 
+        sequences have produced an element at a corresponding index.
+        
+        The last element in the arguments must be a function to invoke for each
+        series of elements at corresponding indexes in the sources.
+
+        Arguments:
+        args -- Observable sources.
+     
+        Returns an observable {Observable} sequence containing the result of 
+        combining elements of the sources using the specified result selector 
+        function."""
+        
+        first = args.pop(0);
+        return first.zip(*args)
