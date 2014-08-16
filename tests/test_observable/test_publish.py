@@ -116,7 +116,6 @@ class TestPublish(unittest.TestCase):
         assert(subject.disposed)
 
     def test_ref_count_notconnected(self):
-        #var dis1, dis2, dis3, refd
         disconnected = [False]
         count = [0]
 
@@ -154,7 +153,6 @@ class TestPublish(unittest.TestCase):
         assert(not disconnected[0])
         dis3.dispose()
         assert(disconnected[0])
-
 
 # def test_publish_Basic(self):
 #     var connection, results, scheduler, subscription, xs, ys
