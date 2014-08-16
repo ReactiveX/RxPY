@@ -48,12 +48,15 @@ from . import max
 from . import maxby
 from . import min
 from . import minby
+from . import multicast
 from . import never
 from . import observeon
 from . import onerrorresumenext
 from . import of
 from . import pairwise
+from . import partition
 from . import pluck
+from . import publish
 from . import range
 from . import reduce
 from . import repeat
