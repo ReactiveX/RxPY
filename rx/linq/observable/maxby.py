@@ -10,7 +10,7 @@ from .minby import extrema_by
 
 @add_metaclass(ExtensionMethod)
 class ObservableMaxBy(Observable):
-    def max_by(self, key_selector, comparer):
+    def max_by(self, key_selector, comparer=None):
         """Returns the elements in an observable sequence with the maximum 
         key value according to the specified comparer.
         
