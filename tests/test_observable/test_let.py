@@ -11,7 +11,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class TestMaterialize(unittest.TestCase):
+class TestLet(unittest.TestCase):
     def test_let_calls_function_immediately(self):
         called = [False]
 
