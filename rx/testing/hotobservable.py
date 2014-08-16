@@ -23,30 +23,30 @@ class HotObservable(Observable):
 
         def get_action(notification):
             def action(scheduler, state):
-                for observer in observable.observers:
-                    notification.accept(observer)            
+                for observer in observable.observers[:]:
+                    notification.accept(observer)
                 return Disposable.empty()
             return action
-            
+
         for message in self.messages:
             notification = message.value
 
             # Warning: Don't make closures within a loop
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
-    
+
     def subscribe(self, on_next, on_error=None, on_completed=None):
         log.debug("HotObservable:subscribe()")
 
         if isinstance(on_next, AbstractObserver):
             observer = on_next
-        else: 
+        else:
             observer = Observer(on_next, on_error, on_completed)
-            
+
         observable = self
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
-        index = len(self.subscriptions) - 1 
+        index = len(self.subscriptions) - 1
 
         def dispose_action():
             log.debug("HotObservable:subscribe:dispose_action(%s)" % self.scheduler.clock)
@@ -57,4 +57,3 @@ class HotObservable(Observable):
 
         return Disposable(dispose_action)
 
-    

@@ -3,3 +3,4 @@ from .anonymousobservable import AnonymousObservable
 from .observer import Observer
 from . import checkedobserver
 from . import linq
+from . import backpressure

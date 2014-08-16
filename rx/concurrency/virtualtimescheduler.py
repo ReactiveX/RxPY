@@ -59,10 +59,7 @@ class VirtualTimeScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        log.debug("VirtualTimeScheduler.schedule_absolute(duetime=%s, state=%s)" % (duetime, state))
-
         def run(scheduler, state1):
-            #print ("VirtualTimeScheduler:schedule_absolute:run(%s)" % repr(state1))
             self.queue.remove(si)
 
             return action(scheduler, state1)

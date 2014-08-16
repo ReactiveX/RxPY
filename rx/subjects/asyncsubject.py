@@ -6,16 +6,16 @@ from rx.abstractobserver import AbstractObserver
 from .innersubscription import InnerSubscription
 
 class AsyncSubject(Observable, AbstractObserver):
-    """Represents the result of an asynchronous operation. The last value 
-    before the on_completed notification, or the error received through on_error, 
+    """Represents the result of an asynchronous operation. The last value
+    before the on_completed notification, or the error received through on_error,
     is sent to all subscribed observers.
-    """  
+    """
 
     def __init__(self):
-        """Creates a subject that can only receive one value and that value is 
+        """Creates a subject that can only receive one value and that value is
         cached for all future observations.
         """
-    
+
         super(AsyncSubject, self).__init__(self.__subscribe)
 
         self.is_disposed = False
@@ -24,7 +24,7 @@ class AsyncSubject(Observable, AbstractObserver):
         self.has_value = False
         self.observers = []
         self.exception = None
-    
+
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
@@ -34,7 +34,7 @@ class AsyncSubject(Observable, AbstractObserver):
         if not self.is_stopped:
             self.observers.append(observer)
             return InnerSubscription(self, observer)
-        
+
         ex = self.exception
         hv = self.has_value
         v = self.value
@@ -45,7 +45,7 @@ class AsyncSubject(Observable, AbstractObserver):
             observer.on_completed()
         else:
             observer.on_completed()
-        
+
         return Disposable.empty()
 
     def on_completed(self):
@@ -56,32 +56,32 @@ class AsyncSubject(Observable, AbstractObserver):
             hv = self.has_value
 
             if hv:
-                for o in self.observers:
+                for o in self.observers[:]:
                     o.on_next(v)
                     o.on_completed()
             else:
-                for o in self.observers:
+                for o in self.observers[:]:
                     o.on_completed()
-                
+
             self.observers = []
-        
+
     def on_error(self, exception):
         self.check_disposed()
         if not self.is_stopped:
             self.is_stopped = True
             self.exception = exception
 
-            for o in self.observers:
+            for o in self.observers[:]:
                 o.on_error(exception)
-            
+
             self.observers = []
-    
+
     def on_next(self, value):
         self.check_disposed()
         if not self.is_stopped:
             self.value = value
             self.has_value = True
-        
+
     def dispose(self):
         self.is_disposed = True
         self.observers = None

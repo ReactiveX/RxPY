@@ -9,21 +9,20 @@ def combine_latest_source(source, subject, result_selector):
     def subscribe(observer):
         has_value = [False, False]
         has_value_all = [False]
+        values = [None, None]
         is_done = [False]
-        values = dict()
-        
+
         def next(x, i):
-            values[i] = x
             has_value[i] = True
+            values[i] = x
 
             has_value_all[0] = has_value_all[0] or all(has_value)
             if has_value_all[0]:
                 try:
-                    res = result_selector(None, values)
+                    res = result_selector(*values)
                 except Exception as ex:
                     observer.on_error(ex)
                     return
-
                 observer.on_next(res)
             elif is_done[0]:
                 observer.on_completed()
@@ -36,7 +35,7 @@ def combine_latest_source(source, subject, result_selector):
             observer.on_completed()
 
         return CompositeDisposable(
-            source.subscribe(on_next,observer.on_error, on_completed),
+            source.subscribe(on_next, observer.on_error, on_completed),
             subject.subscribe(lambda x: next(x, 1), observer.on_error)
         )
     return AnonymousObservable(subscribe)
@@ -47,27 +46,29 @@ class PausableBufferedObservable(Observable):
         self.source = source
         self.subject = subject or Subject()
         self.is_paused = True
-        super(PausableBufferedObservable, self).__init__(self.subscribe)
 
-    def subscribe(self, observer):
+        super(PausableBufferedObservable, self).__init__(self.__subscribe)
+
+    def __subscribe(self, observer):
         previous = [True]
         queue = []
 
-        def result_selector(data, should_fire):
+        def result_selector(data, should_fire=False):
             return {"data": data, "should_fire": should_fire}
 
         def on_next(results):
-            if results.should_fire and previous[0]:
-                observer.on_next(results.data)
+            if results.get("should_fire") and previous[0]:
+                    observer.on_next(results["data"])
 
-            if results.should_fire and not previous[0]:
+            if results.get("should_fire") and not previous[0]:
                 while len(queue):
-                    observer.on_next(queue.pop(0))
+                    b = queue.pop(0)
+                    observer.on_next(b)
 
                 previous[0] = True
-            elif not results.should_fire and not previous[0]:
-                queue.append(results.data)
-            elif not results.should_fire and previous[0]:
+            elif not results.get("should_fire") and not previous[0]:
+                queue.append(results["data"])
+            elif not results.get("should_fire") and previous[0]:
                 previous[0] = False
 
         def on_error(err):
