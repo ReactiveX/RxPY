@@ -195,55 +195,6 @@ def test_oneshot_timer_timespan_observer_throws():
 #     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(270, "0 4"), on_next(270, "1 4"), on_next(300, "0 end"), on_next(320, "1 5"), on_next(320, "2 5"), on_next(350, "1 end"), on_next(360, "2 6"), on_next(360, "3 6"), on_next(390, "2 7"), on_next(390, "3 7"), on_next(400, "2 end"), on_next(410, "3 8"), on_next(410, "4 8"), on_next(450, "3 end"), on_next(460, "4 9"), on_next(460, "5 9"), on_next(470, "4 10"), on_next(470, "5 10"), on_next(490, "4 end"), on_next(490, "5 end"), on_completed(490))
 #     xs.subscriptions.assert_equal(subscribe(200, 490))
 
-
-def test_sample_regular():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_next(380, 7), on_completed(390))
-
-    def create():
-        return xs.sample(50, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(250, 3), on_next(300, 5), on_next(350, 6), on_next(400, 7), on_completed(400))
-
-def test_sample_error_in_flight():
-    ex = 'ex'
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(310, 6), on_error(330, ex))
-
-    def create():
-        return xs.sample(50, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(250, 3), on_next(300, 5), on_error(330, ex))
-
-def test_sample_empty():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.empty(scheduler=scheduler).sample(0, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_completed(201))
-
-def test_sample_error():
-    ex = 'ex'
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.throw_exception(ex, scheduler=scheduler).sample(0, scheduler=scheduler)
-    results = scheduler.start(create)
-
-    results.messages.assert_equal(on_error(201, ex))
-
-def test_sample_never():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.never().sample(0, scheduler=scheduler)
-    results = scheduler.start(create)
-    results.messages.assert_equal()
-
 def test_timeout_duration_simple_never():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))

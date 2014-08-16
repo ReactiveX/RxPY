@@ -154,110 +154,137 @@ class TestPublish(unittest.TestCase):
         dis3.dispose()
         assert(disconnected[0])
 
-# def test_publish_Basic(self):
-#     var connection, results, scheduler, subscription, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(110, 7),
-        # on_next(220, 3),
-        # on_next(280, 4),
-        # on_next(290, 1),
-        # on_next(340, 8),
-        # on_next(360, 5),
-        # on_next(370, 6),
-        # on_next(390, 7),
-        # on_next(410, 13),
-        # on_next(430, 2),
-        # on_next(450, 9),
-        # on_next(520, 11),
-        # on_next(560, 20), on_completed(600))
-#     ys = null
-#     subscription = null
-#     connection = null
-#     results = scheduler.createObserver()
-#     scheduler.scheduleAbsolute(created, function () {
-#         ys = xs.publish()
+    def test_publish_basic(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(110, 7),
+            on_next(220, 3),
+            on_next(280, 4),
+            on_next(290, 1),
+            on_next(340, 8),
+            on_next(360, 5),
+            on_next(370, 6),
+            on_next(390, 7),
+            on_next(410, 13),
+            on_next(430, 2),
+            on_next(450, 9),
+            on_next(520, 11),
+            on_next(560, 20),
+            on_completed(600)
+        )
+        ys = [None]
+        subscription = [None]
+        connection = [None]
+        results = scheduler.create_observer()
 
-#     scheduler.scheduleAbsolute(subscribed, function () {
-#         subscription = ys.subscribe(results)
+        def action0(scheduler, state):
+            ys[0] = xs.publish()
+        scheduler.schedule_absolute(created, action0)
 
-#     scheduler.scheduleAbsolute(disposed, function () {
-#         subscription.dispose()
+        def action1(scheduler, state):
+            subscription[0] = ys[0].subscribe(results)
+        scheduler.schedule_absolute(subscribed, action1)
 
-#     scheduler.scheduleAbsolute(300, function () {
-#         connection = ys.connect()
+        def action2(scheduler, state):
+            subscription[0].dispose()
+        scheduler.schedule_absolute(disposed, action2)
 
-#     scheduler.scheduleAbsolute(400, function () {
-#         connection.dispose()
+        def action3(scheduler, state):
+            connection[0] = ys[0].connect()
+        scheduler.schedule_absolute(300, action3)
 
-#     scheduler.scheduleAbsolute(500, function () {
-#         connection = ys.connect()
+        def action4(scheduler, state):
+            connection[0].dispose()
+        scheduler.schedule_absolute(400, action4)
 
-#     scheduler.scheduleAbsolute(550, function () {
-#         connection.dispose()
+        def action5(scheduler, state):
+            connection[0] = ys[0].connect()
+        scheduler.schedule_absolute(500, action5)
 
-#     scheduler.scheduleAbsolute(650, function () {
-#         connection = ys.connect()
+        def action6(scheduler, state):
+            connection[0].dispose()
+        scheduler.schedule_absolute(550, action6)
 
-#     scheduler.scheduleAbsolute(800, function () {
-#         connection.dispose()
+        def action7(scheduler, state):
+            connection[0] = ys[0].connect()
+        scheduler.schedule_absolute(650, action7)
 
-#     scheduler.start()
-#     results.messages.assert_equal(on_next(340, 8),
-# on_next(360, 5),
-# on_next(370, 6),
-# on_next(390, 7),
-# on_next(520, 11))
-#     xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 550), subscribe(650, 800))
+        def action8(scheduler, state):
+            connection[0].dispose()
+        scheduler.schedule_absolute(800, action8)
 
+        scheduler.start()
+        results.messages.assert_equal(
+            on_next(340, 8),
+            on_next(360, 5),
+            on_next(370, 6),
+            on_next(390, 7),
+            on_next(520, 11)
+        )
+        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 550), subscribe(650, 800))
 
-# def test_publish_error(self):
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(
-        # on_next(110, 7),
-        # on_next(220, 3),
-        # on_next(280, 4),
-        # on_next(290, 1),
-        # on_next(340, 8),
-        # on_next(360, 5),
-        # on_next(370, 6),
-        # on_next(390, 7),
-        # on_next(410, 13),
-        # on_next(430, 2),
-        # on_next(450, 9),
-        # on_next(520, 11),
-        # on_next(560, 20),
-        # on_error(600, ex))
-#     results = scheduler.createObserver()
-#     scheduler.scheduleAbsolute(created, function () {
-#         ys = xs.publish()
-
-#     scheduler.scheduleAbsolute(subscribed, function () {
-#         subscription = ys.subscribe(results)
-
-#     scheduler.scheduleAbsolute(disposed, function () {
-#         subscription.dispose()
-
-#     scheduler.scheduleAbsolute(300, function () {
-#         connection = ys.connect()
-
-#     scheduler.scheduleAbsolute(400, function () {
-#         connection.dispose()
-
-#     scheduler.scheduleAbsolute(500, function () {
-#         connection = ys.connect()
-
-#     scheduler.scheduleAbsolute(800, function () {
-#         connection.dispose()
-
-#     scheduler.start()
-#     results.messages.assert_equal(on_next(340, 8),
-# on_next(360, 5),
-# on_next(370, 6),
-# on_next(390, 7),
-# on_next(520, 11),
-# on_next(560, 20), on_error(600, ex))
-#     xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
+    def test_publish_error(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(110, 7),
+            on_next(220, 3),
+            on_next(280, 4),
+            on_next(290, 1),
+            on_next(340, 8),
+            on_next(360, 5),
+            on_next(370, 6),
+            on_next(390, 7),
+            on_next(410, 13),
+            on_next(430, 2),
+            on_next(450, 9),
+            on_next(520, 11),
+            on_next(560, 20),
+            on_error(600, ex))
+        
+        ys = [None]
+        subscription = [None]
+        connection = [None]
+        results = scheduler.create_observer()
+        
+        def action0(scheduler, state):
+            ys[0] = xs.publish()
+        scheduler.schedule_absolute(created, action0)
+        
+        def action1(scheduler, state):
+            subscription[0] = ys[0].subscribe(results)
+        scheduler.schedule_absolute(subscribed, action1)
+        
+        def action2(scheduler, state):
+            subscription[0].dispose()
+        scheduler.schedule_absolute(disposed, action2)
+        
+        def action3(scheduler, state):
+            connection[0] = ys[0].connect()
+        scheduler.schedule_absolute(300, action3)
+        
+        def action4(scheduler, state):
+            connection[0].dispose()
+        scheduler.schedule_absolute(400, action4)
+            
+        def action5(scheduler, state):
+            connection[0] = ys[0].connect()
+        scheduler.schedule_absolute(500, action5)
+    
+        def action6(scheduler, state):
+            connection[0].dispose()
+        scheduler.schedule_absolute(800, action6)
+    
+        scheduler.start()
+        results.messages.assert_equal(
+            on_next(340, 8),
+            on_next(360, 5),
+            on_next(370, 6),
+            on_next(390, 7),
+            on_next(520, 11),
+            on_next(560, 20), 
+            on_error(600, ex))
+        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
 
 
 # def test_publish_Complete(self):
@@ -276,26 +303,26 @@ class TestPublish(unittest.TestCase):
 # on_next(450, 9),
 # on_next(520, 11),
 # on_next(560, 20), on_completed(600))
-#     results = scheduler.createObserver()
-#     scheduler.scheduleAbsolute(created, function () {
+#     results = scheduler.create_observer()
+#     scheduler.schedule_absolute(created, action0)
 #         ys = xs.publish()
 
-#     scheduler.scheduleAbsolute(subscribed, function () {
+#     scheduler.schedule_absolute(subscribed, function () {
 #         subscription = ys.subscribe(results)
 
-#     scheduler.scheduleAbsolute(disposed, function () {
+#     scheduler.schedule_absolute(disposed, function () {
 #         subscription.dispose()
 
-#     scheduler.scheduleAbsolute(300, function () {
+#     scheduler.schedule_absolute(300, function () {
 #         connection = ys.connect()
 
-#     scheduler.scheduleAbsolute(400, function () {
+#     scheduler.schedule_absolute(400, function () {
 #         connection.dispose()
 
-#     scheduler.scheduleAbsolute(500, function () {
+#     scheduler.schedule_absolute(500, function () {
 #         connection = ys.connect()
 
-#     scheduler.scheduleAbsolute(800, function () {
+#     scheduler.schedule_absolute(800, function () {
 #         connection.dispose()
 
 #     scheduler.start()
@@ -324,32 +351,32 @@ class TestPublish(unittest.TestCase):
 # on_next(450, 9),
 # on_next(520, 11),
 # on_next(560, 20), on_completed(600))
-#     results = scheduler.createObserver()
-#     scheduler.scheduleAbsolute(created, function () {
+#     results = scheduler.create_observer()
+#     scheduler.schedule_absolute(created, function () {
 #         ys = xs.publish()
 
-#     scheduler.scheduleAbsolute(subscribed, function () {
+#     scheduler.schedule_absolute(subscribed, function () {
 #         subscription = ys.subscribe(results)
 
-#     scheduler.scheduleAbsolute(350, function () {
+#     scheduler.schedule_absolute(350, function () {
 #         subscription.dispose()
 
-#     scheduler.scheduleAbsolute(300, function () {
+#     scheduler.schedule_absolute(300, function () {
 #         connection = ys.connect()
 
-#     scheduler.scheduleAbsolute(400, function () {
+#     scheduler.schedule_absolute(400, function () {
 #         connection.dispose()
 
-#     scheduler.scheduleAbsolute(500, function () {
+#     scheduler.schedule_absolute(500, function () {
 #         connection = ys.connect()
 
-#     scheduler.scheduleAbsolute(550, function () {
+#     scheduler.schedule_absolute(550, function () {
 #         connection.dispose()
 
-#     scheduler.scheduleAbsolute(650, function () {
+#     scheduler.schedule_absolute(650, function () {
 #         connection = ys.connect()
 
-#     scheduler.scheduleAbsolute(800, function () {
+#     scheduler.schedule_absolute(800, function () {
 #         connection.dispose()
 
 #     scheduler.start()
