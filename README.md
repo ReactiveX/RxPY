@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/dbrattli/RxPY/badge.png)](https://coveralls.io/r/dbrattli/RxPY)
+
 # The Reactive Extensions for Python (RxPY) ... #
 *...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
@@ -5,8 +7,8 @@ The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
 There are currently mirrors at
 [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and
 [CodePlex](http://rxpy.codeplex.com/). Please register any issues to
-[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and make sure 
-your pull requests is made against the 
+[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and make sure
+your pull requests is made against the
 [develop](https://github.com/dbrattli/RxPY/tree/develop) branch.
 
 ## About the Reactive Extensions
@@ -57,8 +59,8 @@ branch at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
 
 ## Differences from RxJS and .NET
 
-RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all 
-function and method names are lowercase with words separated by underscores as 
+RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
+function and method names are lowercase with words separated by underscores as
 necessary to improve readability
 
 ## License ##
