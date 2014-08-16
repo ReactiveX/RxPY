@@ -9,23 +9,23 @@ class ObservableWhere(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def where(self, predicate):
-        """Filters the elements of an observable sequence based on a predicate 
+        """Filters the elements of an observable sequence based on a predicate
         by incorporating the element's index.
-        
+
         1 - source.where(lambda value: value < 10)
         2 - source.where(lambda value, index: value < 10 or index < 10)
-        
+
         Keyword arguments:
         predicate -- A function to test each source element for a conditio; the
-            second parameter of the function represents the index of the source 
+            second parameter of the function represents the index of the source
             element.
-        
-        Returns an observable sequence that contains elements from the input 
+
+        Returns an observable sequence that contains elements from the input
         sequence that satisfy the condition.
         """
         predicate = adapt_call(predicate)
         parent = self
-        
+
         def subscribe(observer):
             count = [0]
 
@@ -38,9 +38,11 @@ class ObservableWhere(Observable):
                     return
                 else:
                     count[0] += 1
-                
+
                 if should_run:
                     observer.on_next(value)
-                
+
             return parent.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
+
+    filter = where
