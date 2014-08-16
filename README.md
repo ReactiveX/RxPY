@@ -42,6 +42,8 @@ To install RxPY:
 
 `pip install rx`
 
+Note that `pip` may be called `pip3` if your're using Python3.
+
 ## Contributing ##
 
 You can contribute by reviewing and sending feedback on code checkins,
@@ -51,7 +53,13 @@ code contributions of your own.
 
 Note that the master branch is for releases only, so please submit any pull
 requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
-branch.
+branch at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
+
+## Differences from RxJS and .NET
+
+RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all 
+function and method names are lowercase with words separated by underscores as 
+necessary to improve readability
 
 ## License ##
 
