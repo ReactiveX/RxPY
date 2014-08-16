@@ -163,38 +163,6 @@ def test_oneshot_timer_timespan_observer_throws():
     except RxException:
         pass
 
-
-
-# def test_window_time_basic():
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(240, 3), on_next(270, 4), on_next(320, 5), on_next(360, 6), on_next(390, 7), on_next(410, 8), on_next(460, 9), on_next(470, 10), on_completed(490))
-
-#     def create():
-#         def selector(ys, i):
-#             def proj(y):
-#                 return "%s %s" % (i, y)
-#             return ys.select(proj).concat(Observable.return_value('%s end' % i))
-#         return xs.window_with_time(100, scheduler=scheduler).select(selector).merge_observable()
-
-#     results = scheduler.start(create)
-
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(270, "0 4"), on_next(300, "0 end"), on_next(320, "1 5"), on_next(360, "1 6"), on_next(390, "1 7"), on_next(400, "1 end"), on_next(410, "2 8"), on_next(460, "2 9"), on_next(470, "2 10"), on_next(490, "2 end"), on_completed(490))
-#     xs.subscriptions.assert_equal(subscribe(200, 490))
-
-# def test_Window_Time_Basic_Both():
-#     , xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(240, 3), on_next(270, 4), on_next(320, 5), on_next(360, 6), on_next(390, 7), on_next(410, 8), on_next(460, 9), on_next(470, 10), on_completed(490))
-#     results = scheduler.start(create)
-#         return xs.window_with_time(100, 50, scheduler).select(function (ys, i) {
-#             return ys.select(function (y) {
-#                 return i + " " + y
-#             }).concat(Observable.returnValue(i + " end"))
-#         }).merge_observable()
-
-#     results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(270, "0 4"), on_next(270, "1 4"), on_next(300, "0 end"), on_next(320, "1 5"), on_next(320, "2 5"), on_next(350, "1 end"), on_next(360, "2 6"), on_next(360, "3 6"), on_next(390, "2 7"), on_next(390, "3 7"), on_next(400, "2 end"), on_next(410, "3 8"), on_next(410, "4 8"), on_next(450, "3 end"), on_next(460, "4 9"), on_next(460, "5 9"), on_next(470, "4 10"), on_next(470, "5 10"), on_next(490, "4 end"), on_next(490, "5 end"), on_completed(490))
-#     xs.subscriptions.assert_equal(subscribe(200, 490))
-
 def test_timeout_duration_simple_never():
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
@@ -615,90 +583,6 @@ def test_buffer_with_time_basic_same():
 
     results.messages.assert_equal(on_next(300, "2,3,4"), on_next(400, "5,6,7"), on_next(500, "8,9"), on_next(600, ""), on_completed(600))
     xs.subscriptions.assert_equal(subscribe(200, 600))
-
-# Delay with selector
-def test_delay_duration_simple1():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 10), on_next(220, 30), on_next(230, 50), on_next(240, 35), on_next(250, 20), on_completed(260))
-
-    def create():
-        def selector(x):
-            return scheduler.create_cold_observable(on_next(x, '!'))
-
-        return xs.delay_with_selector(selector)
-
-    results = scheduler.start(create)
-
-    results.messages.assert_equal(on_next(210 + 10, 10), on_next(220 + 30, 30), on_next(250 + 20, 20), on_next(240 + 35, 35), on_next(230 + 50, 50), on_completed(280))
-    xs.subscriptions.assert_equal(subscribe(200, 260))
-
-def test_delay_duration_simple2():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-    ys = scheduler.create_cold_observable(on_next(10, '!'))
-
-    def create():
-        return xs.delay_with_selector(lambda _: ys)
-
-    results = scheduler.start(create)
-
-    results.messages.assert_equal(on_next(210 + 10, 2), on_next(220 + 10, 3), on_next(230 + 10, 4), on_next(240 + 10, 5), on_next(250 + 10, 6), on_completed(300))
-    xs.subscriptions.assert_equal(subscribe(200, 300))
-    ys.subscriptions.assert_equal(subscribe(210, 220), subscribe(220, 230), subscribe(230, 240), subscribe(240, 250), subscribe(250, 260))
-
-def test_delay_duration_simple3():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-    ys = scheduler.create_cold_observable(on_next(100, '!'))
-
-    def create():
-        return xs.delay_with_selector(lambda _: ys)
-
-    results = scheduler.start(create)
-
-    results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
-    xs.subscriptions.assert_equal(subscribe(200, 300))
-    ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
-
-def test_delay_duration_simple4_inner_empty():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-    ys = scheduler.create_cold_observable(on_completed(100))
-
-    def create():
-        return xs.delay_with_selector(lambda _: ys)
-
-    results = scheduler.start(create)
-
-    results.messages.assert_equal(on_next(210 + 100, 2), on_next(220 + 100, 3), on_next(230 + 100, 4), on_next(240 + 100, 5), on_next(250 + 100, 6), on_completed(350))
-    xs.subscriptions.assert_equal(subscribe(200, 300))
-    ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
-
-def test_delay_duration_dispose1():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_next(250, 6), on_completed(300))
-    ys = scheduler.create_cold_observable(on_next(200, '!'))
-
-    def create():
-        return xs.delay_with_selector(lambda _: ys)
-
-    results = scheduler.start(create, disposed=425)
-    results.messages.assert_equal(on_next(210 + 200, 2), on_next(220 + 200, 3))
-    xs.subscriptions.assert_equal(subscribe(200, 300))
-    ys.subscriptions.assert_equal(subscribe(210, 410), subscribe(220, 420), subscribe(230, 425), subscribe(240, 425), subscribe(250, 425))
-
-def test_delay_duration_dispose2():
-    scheduler = TestScheduler()
-    xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(400, 3), on_completed(500))
-    ys = scheduler.create_cold_observable(on_next(50, '!'))
-
-    def create():
-        return xs.delay_with_selector(lambda _: ys)
-
-    results = scheduler.start(create, disposed=300)
-    results.messages.assert_equal(on_next(210 + 50, 2))
-    xs.subscriptions.assert_equal(subscribe(200, 300))
-    ys.subscriptions.assert_equal(subscribe(210, 260))
 
 
 # // TakeLastBuffer
@@ -1278,9 +1162,4 @@ def test_delay_duration_dispose2():
 #     xs.subscriptions.assert_equal(subscribe(200, 235))
 
 if __name__ == '__main__':
-    #test_delay_timespan_simple1()
-    #test_delay_datetime_offset_simple1_impl()
-    #test_window_time_basic()
-
-    #test_timeout_timeout_not_occurs_error()
     test_buffer_with_time_or_count_basic()
