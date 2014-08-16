@@ -8,7 +8,7 @@ class AutoDetachObserver(AbstractObserver):
 
     def __init__(self, observer):
         super(AutoDetachObserver, self).__init__()
-        
+
         self.observer = observer
         self.m = SingleAssignmentDisposable()
 
@@ -18,25 +18,24 @@ class AutoDetachObserver(AbstractObserver):
         except Exception as ex:
             traceback.print_exc(file=sys.stdout)
             self.dispose()
-        
+
     def error(self, exn):
         try:
             self.observer.on_error(exn)
         finally:
             self.dispose()
-        
+
     def completed(self):
         try:
             self.observer.on_completed()
         finally:
             self.dispose()
-    
+
     def set_disposable(self, value):
         self.m.disposable = value
-    
+
     disposable = property(fset=set_disposable)
 
     def dispose(self):
         super(AutoDetachObserver, self).dispose()
         self.m.dispose()
-    

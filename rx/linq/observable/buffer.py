@@ -5,8 +5,7 @@ from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
 class ObservableBuffer(Observable):
-    """Note that we do some magic here by using a meta class to extend 
-    Observable with the methods in this class"""
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_selector=None):
         """Projects each element of an observable sequence into zero or more 
