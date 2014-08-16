@@ -10,22 +10,22 @@ class PausableObservable(Observable):
         self.source = source
         self.subject = subject or Subject()
         self.is_paused = True
-        super(PausableObservable, self).__init__(self, self.subscribe)
+        super(PausableObservable, self).__init__(self.subscribe)
 
     def subscribe(self, observer):
         conn = self.source.publish()
         subscription = conn.subscribe(observer)
-        connection = Disposable.empty()
+        connection = [Disposable.empty()]
 
         def on_next(b):
             if b:
-                connection = conn.connect()
+                connection[0] = conn.connect()
             else:
-                connection.dispose()
-                connection = Disposable.empty()
+                connection[0].dispose()
+                connection[0] = Disposable.empty()
 
         pausable = self.subject.distinct_until_changed().subscribe(on_next)
-        return CompositeDisposable(subscription, connection, pausable)
+        return CompositeDisposable(subscription, connection[0], pausable)
 
     def pause(self):
         if self.is_paused:
