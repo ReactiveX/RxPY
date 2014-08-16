@@ -33,8 +33,6 @@ class TestScheduler(VirtualTimeScheduler):
         Returns disposable object used to cancel the scheduled action (best effort).
         """
 
-        log.debug("TestScheduler.schedule_absolute(duetime=%s, state=%s)" % (duetime, state))
-
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
 
         if duetime <= self.clock:
