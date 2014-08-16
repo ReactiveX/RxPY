@@ -25,3 +25,7 @@ class Disposable(object):
     @classmethod
     def empty(cls):
         return cls(noop)
+        
+    @classmethod
+    def create(cls, action):
+        return cls(action)
