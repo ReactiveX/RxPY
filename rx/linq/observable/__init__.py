@@ -41,6 +41,7 @@ from . import interval
 from . import isempty
 from . import join
 from . import last
+from . import let
 from . import lastordefault
 from . import materialize
 from . import merge
