@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/dbrattli/RxPY.svg?branch=master)](https://travis-ci.org/dbrattli/RxPY)
 [![Coverage Status](https://coveralls.io/repos/dbrattli/RxPY/badge.png)](https://coveralls.io/r/dbrattli/RxPY)
 
 # The Reactive Extensions for Python (RxPY) ... #
