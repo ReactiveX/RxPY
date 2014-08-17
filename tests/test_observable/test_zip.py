@@ -394,76 +394,79 @@ class TestZip(unittest.TestCase):
 
         results.messages.assert_equal()
         n1.subscriptions.assert_equal(subscribe(200, 1000))
-#
-# def test_zip_with_enumerable_NonEmptyNonEmpty():
-#     var n1, n2, results, scheduler
-#     scheduler = TestScheduler()
-#     n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_completed(230))
-#     n2 = [3]
-#     results = scheduler.start(create)
-#         return n1.zip(n2, function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_next(215, 2 + 3), on_completed(230))
-#     n1.subscriptions.assert_equal(subscribe(200, 230))
-#
-# def test_zip_with_enumerable_ErrorEmpty():
-#     var ex, n1, n2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     n1 = scheduler.create_hot_observable(on_next(150, 1), on_error(220, ex))
-#     n2 = []
-#     results = scheduler.start(create)
-#         return n1.zip(n2, function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_error(220, ex))
-#     n1.subscriptions.assert_equal(subscribe(200, 220))
-#
 
-# def test_zip_with_enumerable_ErrorSome():
-#     var ex, n1, n2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     n1 = scheduler.create_hot_observable(on_next(150, 1), on_error(220, ex))
-#     n2 = [2]
-#     results = scheduler.start(create)
-#         return n1.zip(n2, function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_error(220, ex))
-#     n1.subscriptions.assert_equal(subscribe(200, 220))
-#
-# def test_zip_with_enumerable_SomeDataBothSides():
-#     var n1, n2, results, scheduler
-#     scheduler = TestScheduler()
-#     n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5))
-#     n2 = [5, 4, 3, 2]
-#     results = scheduler.start(create)
-#         return n1.zip(n2, function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_next(210, 7), on_next(220, 7), on_next(230, 7), on_next(240, 7))
-#     n1.subscriptions.assert_equal(subscribe(200, 1000))
-#
-# def test_zip_with_enumerable_SelectorThrows():
-#     var ex, n1, n2, results, scheduler
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(240))
-#     n2 = [3, 5]
-#     results = scheduler.start(create)
-#         return n1.zip(n2, function (x, y) {
-#             if (y == 5) {
-#                 throw ex
-#             }
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_next(215, 2 + 3), on_error(225, ex))
-#     n1.subscriptions.assert_equal(subscribe(200, 225))
-#
+    def test_zip_with_enumerable_non_empty_non_empty(self):
+        scheduler = TestScheduler()
+        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_completed(230))
+        n2 = [3]
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return n1.zip(n2, selector)
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_next(215, 2 + 3), on_completed(230))
+        n1.subscriptions.assert_equal(subscribe(200, 230))
+
+    def test_zip_with_enumerable_error_empty(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        n1 = scheduler.create_hot_observable(on_next(150, 1), on_error(220, ex))
+        n2 = []
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return n1.zip(n2, selector)
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_error(220, ex))
+        n1.subscriptions.assert_equal(subscribe(200, 220))
+
+    def test_zip_with_enumerable_error_some(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        n1 = scheduler.create_hot_observable(on_next(150, 1), on_error(220, ex))
+        n2 = [2]
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return n1.zip(n2, selector)
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_error(220, ex))
+        n1.subscriptions.assert_equal(subscribe(200, 220))
+
+    def test_zip_with_enumerable_some_data_both_sides(self):
+        scheduler = TestScheduler()
+        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5))
+        n2 = [5, 4, 3, 2]
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return n1.zip(n2, selector)
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_next(210, 7), on_next(220, 7), on_next(230, 7), on_next(240, 7))
+        n1.subscriptions.assert_equal(subscribe(200, 1000))
+
+    def test_zip_with_enumerable_selectorthrows(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(240))
+        n2 = [3, 5]
+
+        def create():
+            def selector(x, y):
+                if y == 5:
+                    raise Exception(ex)
+                return x + y
+            return n1.zip(n2, selector)
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_next(215, 2 + 3), on_error(225, ex))
+        n1.subscriptions.assert_equal(subscribe(200, 225))
+
