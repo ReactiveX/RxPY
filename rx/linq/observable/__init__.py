@@ -22,6 +22,8 @@ from . import distinct
 from . import distinctuntilchanged
 from . import doaction
 from . import dowhile
+from . import elementat
+from . import elementatordefault
 from . import empty
 from . import exclusive
 from . import expand
