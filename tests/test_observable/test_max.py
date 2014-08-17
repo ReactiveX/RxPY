@@ -12,7 +12,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class TestMin(unittest.TestCase):
+class TestMax(unittest.TestCase):
     def test_max_int32_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
