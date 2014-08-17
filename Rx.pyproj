@@ -201,7 +201,6 @@
     <Compile Include="tests\test_core\test_notification.py" />
     <Compile Include="tests\test_core\test_observer.py" />
     <Compile Include="tests\test_disposables\test_disposable.py" />
-    <Compile Include="tests\test_notification.py" />
     <Compile Include="tests\test_observable\test_aggregate.py" />
     <Compile Include="tests\test_observable\test_amb.py" />
     <Compile Include="tests\test_observable\test_asobservable.py" />
@@ -297,10 +296,8 @@
     <Compile Include="tests\test_observable\test_windowwithcount.py" />
     <Compile Include="tests\test_observable\test_zip.py" />
     <Compile Include="tests\test_observable\__init__.py" />
-    <Compile Include="tests\test_observable_aggregates.py" />
     <Compile Include="tests\test_observable_multiple.py" />
     <Compile Include="tests\test_observable_time.py" />
-    <Compile Include="tests\test_observer.py" />
     <Compile Include="tests\test_subjects\test_asyncsubject.py" />
     <Compile Include="tests\test_subjects\test_behaviorsubject.py" />
     <Compile Include="tests\test_subjects\test_replaysubject.py" />
@@ -329,6 +326,8 @@
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".coveralls.yml" />
+    <Content Include=".travis.yml" />
     <Content Include="authors.txt" />
     <Content Include="LICENSE" />
     <Content Include="license.txt" />
