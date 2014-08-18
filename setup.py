@@ -12,7 +12,7 @@ setup(
     long_description = """\
 is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
     author='Dag Brattli',
-    author_email='dbrattli@microsoft.com',
+    author_email='dag@brattli.net',
     license='Apache License',
     url='https://github.com/dbrattli/Rx',
     download_url = 'https://github.com/dbrattli/RxPY',
