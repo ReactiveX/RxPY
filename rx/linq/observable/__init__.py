@@ -29,6 +29,8 @@ from . import exclusive
 from . import expand
 from . import finallyaction
 from . import finalvalue
+from . import find
+from . import findindex
 from . import first
 from . import firstordefault
 from . import forin
