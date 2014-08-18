@@ -11,4 +11,4 @@ install:
 # command to run tests, e.g. python setup.py test
 script:  coverage run --source=rx setup.py test
 after_success:
-  coveralls debug
+  coveralls
