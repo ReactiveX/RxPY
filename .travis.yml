@@ -6,6 +6,7 @@ python:
 install:
   - python setup.py install
   - pip install coveralls
+  - pip install coverage
   - pip install nose
 # command to run tests, e.g. python setup.py test
 script:  coverage run --source=rx setup.py test
