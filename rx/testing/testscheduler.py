@@ -34,7 +34,6 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
-
         if duetime <= self.clock:
             duetime = self.clock + 1
 
@@ -64,6 +63,7 @@ class TestScheduler(VirtualTimeScheduler):
             timespan = timespan - datetime.fromtimestamp(0)
         if isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
+
         return timespan
 
     def start(self, create=None, created=None, subscribed=None, disposed=None):
