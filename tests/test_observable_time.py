@@ -1098,68 +1098,6 @@ def test_buffer_with_time_basic_same():
 #     xs.subscriptions.assert_equal(subscribe(200, 270))
 
 
-# // TakeUntil
-# def test_TakeUntil_Zero():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(0), scheduler)
-
-#     res.messages.assert_equal(on_completed(201))
-#     xs.subscriptions.assert_equal(subscribe(200, 201))
-
-# def test_TakeUntil_Late():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_TakeUntil_Error():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_error(210, ex))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-
-# def test_TakeUntil_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable()
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-# def test_TakeUntil_Twice1():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(255), scheduler).takeUntilWithTime(Date(235), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
-
-# def test_TakeUntil_Twice2():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(235), scheduler).takeUntilWithTime(Date(255), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
 
 if __name__ == '__main__':
     test_buffer_with_time_or_count_basic()

@@ -86,7 +86,9 @@ from . import take
 from . import takelast
 from . import takelastbuffer
 from . import takeuntil
+from . import takeuntilwithtime
 from . import takewhile
+from . import sample
 from . import throttle
 from . import throw
 from . import timer
@@ -99,5 +101,6 @@ from . import where
 from . import whiledo
 from . import window
 from . import windowwithcount
+from . import windowwithtime
 from . import zip
 from . import ziparray
