@@ -19,7 +19,7 @@ class ConnectableObservable(Observable):
 
             def dispose():
                 self.has_subscription = False
-                
+
             disposable = self.source.subscribe(self.subject)
             self.subscription = CompositeDisposable(disposable, Disposable.create(dispose))
 
