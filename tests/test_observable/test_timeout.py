@@ -20,7 +20,7 @@ class RxException(Exception):
 def _raise(ex):
     raise RxException(ex)
 
-class TestThrottle(unittest.TestCase):
+class TestTimeout(unittest.TestCase):
     def test_timeout_in_time(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))

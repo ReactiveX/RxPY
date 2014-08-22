@@ -108,60 +108,6 @@ def test_buffer_with_time_or_count_disposed():
     results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"))
     xs.subscriptions.assert_equal(subscribe(200, 370))
 
-def test_oneshot_timer_timespan_basic():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(duetime=300, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(500, 0), on_completed(500))
-
-def test_oneshot_timer_timespan_zero():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(0, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 0), on_completed(201))
-
-def test_oneshot_timer_timespan_negative():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(-1, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 0), on_completed(201))
-
-def test_oneshot_timer_timespan_disposed():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(1000, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal()
-
-def test_oneshot_timer_timespan_observer_throws():
-    scheduler1 = TestScheduler()
-    xs = Observable.timer(1, scheduler=scheduler1)
-    xs.subscribe(lambda x: _raise("ex"))
-
-    try:
-        return scheduler1.start()
-    except RxException:
-        pass
-
-    scheduler2 = TestScheduler()
-    ys = Observable.timer(1, period=None, scheduler=scheduler2)
-    ys.subscribe(on_completed=lambda: _raise("ex"))
-
-    try:
-        return scheduler2.start()
-    except RxException:
-        pass
 
 def test_timeout_duration_simple_never():
     scheduler = TestScheduler()
