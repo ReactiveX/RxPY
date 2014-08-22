@@ -10,3 +10,8 @@ try:
     from .mainloopscheduler import MainloopScheduler
 except ImportError:
     pass
+
+try:
+    from .ioloopscheduler import IOLoopScheduler
+except ImportError:
+    pass
