@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 import gevent
+import gevent.core
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
@@ -72,8 +73,8 @@ class GEventScheduler(Scheduler):
 
         return self.schedule_relative(duetime - self.now(), action, state)
 
-    #def default_now(self):
-    #    return datetime.utc
+    def default_now(self):
+        return gevent.core.time()
 
     @classmethod
     def normalize(cls, timespan):
