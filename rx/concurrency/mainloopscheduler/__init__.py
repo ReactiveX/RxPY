@@ -22,6 +22,6 @@ else:
 try:
     import twisted
 except ImportError:
-    TwisterScheduler = None
+    TwistedScheduler = None
 else:
     from .twistedscheduler import TwistedScheduler

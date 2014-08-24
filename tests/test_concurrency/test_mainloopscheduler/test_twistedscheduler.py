@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from nose import SkipTest
 try:
     import twisted
-    from twisted.internet import reactor, defer
-    from twisted.trial import unittest
 except ImportError:
     raise SkipTest("Twisted not installed")
+
+from twisted.internet import reactor, defer
+from twisted.trial import unittest
 
 from rx.concurrency import TwistedScheduler
 
