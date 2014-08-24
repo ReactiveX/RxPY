@@ -10,3 +10,4 @@ from .catchscheduler import CatchScheduler
 from .mainloopscheduler import AsyncIOScheduler
 from .mainloopscheduler import IOLoopScheduler
 from .mainloopscheduler import GEventScheduler
+from .mainloopscheduler import TwistedScheduler
