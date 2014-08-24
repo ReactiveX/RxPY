@@ -27,7 +27,7 @@ class TestTakeUntil(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_next(225, 99), on_completed(230)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
 
@@ -41,7 +41,7 @@ class TestTakeUntil(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_error(225, ex)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
         results = scheduler.start(create)
@@ -53,24 +53,23 @@ class TestTakeUntil(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_completed(225)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
-    
-        results = scheduler.start(create)    
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
     def test_take_until_nopreempt_somedata_never(self):
         scheduler = TestScheduler()
         l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
         l = scheduler.create_hot_observable(l_msgs)
         r = Observable.never()
-    
+
         def create():
             return l.take_until(r)
-    
-        results = scheduler.start(create)    
+
+        results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
     def test_take_until_preempt_never_next(self):
@@ -91,10 +90,10 @@ class TestTakeUntil(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_error(225, ex)]
         l = Observable.never()
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(225, ex))
 
@@ -103,10 +102,10 @@ class TestTakeUntil(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_completed(225)]
         l = Observable.never()
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -114,23 +113,23 @@ class TestTakeUntil(unittest.TestCase):
         scheduler = TestScheduler()
         l = Observable.never()
         r = Observable.never()
-    
+
         def create():
             return l.take_until(r)
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
-    def test_take_until_Preempt_BeforeFirstProduced(self):
+    def test_take_until_preempt_beforefirstproduced(self):
         scheduler = TestScheduler()
         l_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
         r_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(210))
 
@@ -143,14 +142,14 @@ class TestTakeUntil(unittest.TestCase):
         def action():
             source_not_disposed[0] = True
         l = scheduler.create_hot_observable(l_msgs).do_action(on_next=action)
-    
+
         r = scheduler.create_hot_observable(r_msgs)
-    
+
         def create():
             return l.take_until(r)
-    
+
         results = scheduler.start(create)
-    
+
         results.messages.assert_equal(on_completed(210))
         assert(not source_not_disposed[0])
 
@@ -164,10 +163,11 @@ class TestTakeUntil(unittest.TestCase):
         def action():
             signal_not_disposed[0] = True
         r = scheduler.create_hot_observable(r_msgs).do_action(on_next=action)
-    
+
         def create():
             return l.take_until(r)
-    
-        results = scheduler.start(create)        
+
+        results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 2), on_completed(240))
         assert(not signal_not_disposed[0])
+

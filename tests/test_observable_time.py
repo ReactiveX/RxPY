@@ -108,60 +108,6 @@ def test_buffer_with_time_or_count_disposed():
     results.messages.assert_equal(on_next(240, "1,2,3"), on_next(310, "4"), on_next(370, "5,6,7"))
     xs.subscriptions.assert_equal(subscribe(200, 370))
 
-def test_oneshot_timer_timespan_basic():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(duetime=300, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(500, 0), on_completed(500))
-
-def test_oneshot_timer_timespan_zero():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(0, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 0), on_completed(201))
-
-def test_oneshot_timer_timespan_negative():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(-1, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal(on_next(201, 0), on_completed(201))
-
-def test_oneshot_timer_timespan_disposed():
-    scheduler = TestScheduler()
-
-    def create():
-        return Observable.timer(1000, scheduler=scheduler)
-
-    results = scheduler.start(create)
-    results.messages.assert_equal()
-
-def test_oneshot_timer_timespan_observer_throws():
-    scheduler1 = TestScheduler()
-    xs = Observable.timer(1, scheduler=scheduler1)
-    xs.subscribe(lambda x: _raise("ex"))
-
-    try:
-        return scheduler1.start()
-    except RxException:
-        pass
-
-    scheduler2 = TestScheduler()
-    ys = Observable.timer(1, period=None, scheduler=scheduler2)
-    ys.subscribe(on_completed=lambda: _raise("ex"))
-
-    try:
-        return scheduler2.start()
-    except RxException:
-        pass
 
 def test_timeout_duration_simple_never():
     scheduler = TestScheduler()
@@ -962,77 +908,6 @@ def test_buffer_with_time_basic_same():
 #     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 
-# // Skiplast
-# def test_SkipLast_Zero1():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(0, scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipLast_Zero2():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(0, scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipLast_Some1():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(15, scheduler)
-
-#     res.messages.assert_equal(on_next(230, 1), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipLast_Some2():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_next(270, 7), on_next(280, 8), on_next(290, 9), on_completed(300))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(45, scheduler)
-
-#     res.messages.assert_equal(on_next(260, 1), on_next(270, 2), on_next(280, 3), on_next(290, 4), on_next(300, 5), on_completed(300))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
-
-# def test_SkipLast_All():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(45, scheduler)
-
-#     res.messages.assert_equal(on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipLast_Error():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_error(210, ex))
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(45, scheduler)
-
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-# def test_SkipLast_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable()
-#     res = scheduler.start(create)
-#         return xs.skipLastWithTime(50, scheduler)
-
-#     res.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 
 # // SkipUntil
@@ -1098,68 +973,6 @@ def test_buffer_with_time_basic_same():
 #     xs.subscriptions.assert_equal(subscribe(200, 270))
 
 
-# // TakeUntil
-# def test_TakeUntil_Zero():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(0), scheduler)
-
-#     res.messages.assert_equal(on_completed(201))
-#     xs.subscriptions.assert_equal(subscribe(200, 201))
-
-# def test_TakeUntil_Late():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_TakeUntil_Error():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_error(210, ex))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-
-# def test_TakeUntil_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable()
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_completed(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
-
-# def test_TakeUntil_Twice1():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(255), scheduler).takeUntilWithTime(Date(235), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
-
-# def test_TakeUntil_Twice2():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.takeUntilWithTime(Date(235), scheduler).takeUntilWithTime(Date(255), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
 
 if __name__ == '__main__':
     test_buffer_with_time_or_count_basic()

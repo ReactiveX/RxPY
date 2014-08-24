@@ -17,6 +17,8 @@ from . import create
 from . import defaultifempty
 from . import defer
 from . import delay
+from . import delaysubscription
+from . import delaywithselector
 from . import dematerialize
 from . import distinct
 from . import distinctuntilchanged
@@ -75,6 +77,7 @@ from . import single
 from . import singleordefault
 from . import skip
 from . import skiplast
+from . import skiplastwithtime
 from . import skipuntil
 from . import skipwhile
 from . import skipwithtime
@@ -86,7 +89,9 @@ from . import take
 from . import takelast
 from . import takelastbuffer
 from . import takeuntil
+from . import takeuntilwithtime
 from . import takewhile
+from . import sample
 from . import throttle
 from . import throw
 from . import timer
@@ -99,5 +104,7 @@ from . import where
 from . import whiledo
 from . import window
 from . import windowwithcount
+from . import windowwithtime
+from . import windowwithtimeorcount
 from . import zip
 from . import ziparray

@@ -1,16 +1,19 @@
-import asyncio
 import logging
 from datetime import datetime, timedelta
 
+from tornado import ioloop
+
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
-
-from .scheduler import Scheduler
+from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
 
-class MainloopScheduler(Scheduler):
-    """A scheduler that schedules work via the asyncio mainloop."""
+class IOLoopScheduler(Scheduler):
+    """A scheduler that schedules work via the Tornado I/O main event loop.
+
+    http://tornado.readthedocs.org/en/latest/ioloop.html
+    """
 
     def __init__(self, loop):
         self.handle = None
@@ -23,10 +26,10 @@ class MainloopScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.handle = self.loop.call_soon(interval)
+        self.handle = self.loop.add_callback(interval)
 
         def dispose():
-            self.handle.cancel()
+            self.loop.remove_timeout(self.handle)
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -41,7 +44,7 @@ class MainloopScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = MainloopScheduler.normalize(duetime)
+        seconds = IOLoopScheduler.normalize(duetime)
         if seconds == 0:
             return scheduler.schedule(action, state)
 
@@ -53,7 +56,7 @@ class MainloopScheduler(Scheduler):
         self.handle = self.loop.call_later(seconds, interval)
 
         def dispose():
-            self.handle.cancel()
+            self.loop.remove_timeout(self.handle)
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -78,7 +81,7 @@ class MainloopScheduler(Scheduler):
         nospan = 0
 
         if isinstance(timespan, timedelta):
-            seconds = dt.seconds+dt.microseconds/1000000.0
+            seconds = timespan.seconds+timespan.microseconds/1000000.0
 
         elif isinstance(timespan, datetime):
             seconds = timespan.totimestamp()
