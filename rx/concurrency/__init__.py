@@ -15,3 +15,8 @@ try:
     from .ioloopscheduler import IOLoopScheduler
 except ImportError:
     pass
+
+try:
+    from .geventscheduler import GEventScheduler
+except ImportError:
+    pass

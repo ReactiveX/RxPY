@@ -22,6 +22,6 @@ class ObservableFindIndex(Observable):
 
         Returns an observable {Observable} sequence with the zero-based index of
         the first occurrence of an element that matches the conditions defined
-        by match, if found; otherwise, –1."""
+        by match, if found; otherwise, -1."""
 
         return ObservableFind._find_value(self, predicate, True)
