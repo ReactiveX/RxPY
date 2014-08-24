@@ -36,7 +36,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
 
     packages=['rx', 'rx.internal',
               'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
-              'rx.concurrency', 'rx.disposables', 'rx.subjects',
-              'rx.backpressure', 'rx.testing'],
+              'rx.concurrency', 'rx.concurrency.mainloop', 'rx.disposables', 
+              'rx.subjects', 'rx.backpressure', 'rx.testing'],
     package_dir = { 'rx':'rx' }
 )

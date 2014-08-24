@@ -1,7 +1,11 @@
 import unittest
 from datetime import datetime, timedelta
 
-from tornado import ioloop, gen
+from nose import SkipTest
+try:
+    from tornado import ioloop, gen
+except ImportError:
+    raise SkipTest("Tornado not installed")
 
 from rx.concurrency import IOLoopScheduler
 
@@ -66,5 +70,5 @@ class TestIOLoopScheduler(unittest.TestCase):
             assert(not ran[0])
             loop.stop()
         loop.call_later(0.1, done)
-        
+
         loop.start()

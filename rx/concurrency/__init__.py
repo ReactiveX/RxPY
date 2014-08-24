@@ -6,17 +6,7 @@ from .virtualtimescheduler import VirtualTimeScheduler
 from .timeoutscheduler import TimeoutScheduler, timeout_scheduler
 from .historicalscheduler import HistoricalScheduler
 from .catchscheduler import CatchScheduler
-try:
-    from .mainloopscheduler import MainloopScheduler
-except ImportError:
-    pass
 
-try:
-    from .ioloopscheduler import IOLoopScheduler
-except ImportError:
-    pass
-
-try:
-    from .geventscheduler import GEventScheduler
-except ImportError:
-    pass
+from .mainloopscheduler import AsyncIOScheduler
+from .mainloopscheduler import IOLoopScheduler
+from .mainloopscheduler import GEventScheduler

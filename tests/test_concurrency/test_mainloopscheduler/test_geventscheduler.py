@@ -1,12 +1,16 @@
 import unittest
 from datetime import datetime, timedelta
 
-import gevent
+from nose import SkipTest
+try:
+    import gevent
+except ImportError:
+    raise SkipTest("GEvent not installed")
 
 from rx.concurrency import GEventScheduler
 
 class TestGEventScheduler(unittest.TestCase):
-
+        
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler()
         print(scheduler.now(), datetime.utcnow())

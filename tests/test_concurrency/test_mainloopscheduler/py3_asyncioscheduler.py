@@ -1,15 +1,19 @@
-import asyncio
+try:
+    import asyncio
+except ImportError:
+    raise SkipTest("asyncio not available")
+
 import unittest
 
 from datetime import datetime, timedelta
 from time import sleep
-from rx.concurrency import MainloopScheduler
+from rx.concurrency import AsyncIOScheduler
 
-class TestMainloopScheduler(unittest.TestCase):
+class TestAsyncIOScheduler(unittest.TestCase):
 
     def test_mainloop_schedule_now(self):
         loop = asyncio.get_event_loop()
-        scheduler = MainloopScheduler(loop)
+        scheduler = AsyncIOScheduler(loop)
         res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
@@ -18,7 +22,7 @@ class TestMainloopScheduler(unittest.TestCase):
 
         @asyncio.coroutine
         def go():
-            scheduler = MainloopScheduler(loop)
+            scheduler = AsyncIOScheduler(loop)
             ran = False
 
             def action(scheduler, state):
@@ -30,14 +34,13 @@ class TestMainloopScheduler(unittest.TestCase):
             assert(ran == True)
 
         loop.run_until_complete(go())
-        #loop.close()
 
     def test_timeout_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
         def go():
-            scheduler = MainloopScheduler(loop)
+            scheduler = AsyncIOScheduler(loop)
             starttime = loop.time()
             endtime = None
 
@@ -59,7 +62,7 @@ class TestMainloopScheduler(unittest.TestCase):
         @asyncio.coroutine
         def go():
             ran = False
-            scheduler = MainloopScheduler(loop)
+            scheduler = AsyncIOScheduler(loop)
 
             def action(scheduler, state):
                 nonlocal ran
