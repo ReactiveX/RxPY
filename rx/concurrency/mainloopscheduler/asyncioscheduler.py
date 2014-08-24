@@ -77,7 +77,7 @@ class AsyncIOScheduler(Scheduler):
         nospan = 0
 
         if isinstance(timespan, timedelta):
-            seconds = dt.seconds+dt.microseconds/1000000.0
+            seconds = timespan.seconds+timespan.microseconds/1000000.0
 
         elif isinstance(timespan, datetime):
             seconds = timespan.totimestamp()
