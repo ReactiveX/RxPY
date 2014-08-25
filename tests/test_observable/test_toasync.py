@@ -67,122 +67,128 @@ class TestToAsync(unittest.TestCase):
 
     def test_to_async2(self):
         scheduler = TestScheduler()
-    
+
         def create():
             def func(x, y):
                 return x + y
-        
+
             return Observable.to_async(func, scheduler)(1, 2)
-      
+
         res = scheduler.start(create)
-        
+
         res.messages.assert_equal(
             on_next(200, 3),
             on_completed(200)
         )
 
-# def test_to_async3(self):
-#   scheduler = TestScheduler()
+    def test_to_async3(self):
+        scheduler = TestScheduler()
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (x, y, z) {
-#       return x + y + z
-#     }, null, scheduler)(1, 2, 3)
-#   })
+        def create():
+            def func(x, y, z):
+                return x + y + z
 
-#   res.messages.assert_equal(
-#     on_next(200, 6),
-#     on_completed(200)
-#   )
-# })
+            return Observable.to_async(func, scheduler)(1, 2, 3)
 
-# def test_to_async4(self):
-#   scheduler = TestScheduler()
+        res = scheduler.start(create)
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (a, b, c, d) {
-#       return a + b + c + d
-#     }, null, scheduler)(1, 2, 3, 4)
-#   })
 
-#   res.messages.assert_equal(
-#     on_next(200, 10),
-#     on_completed(200)
-#   )
-# })
+        res.messages.assert_equal(
+            on_next(200, 6),
+            on_completed(200)
+        )
 
-# def test_to_async_Error0(self):
-#   ex = Error()
+    def test_to_async4(self):
+        scheduler = TestScheduler()
 
-#   scheduler = TestScheduler()
+        def create():
+            def func(a, b, c, d):
+                return a + b + c + d
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function () {
-#       throw ex
-#     }, null, scheduler)()
-#   })
+            return Observable.to_async(func, scheduler)(1, 2, 3, 4)
+        res = scheduler.start(create)
 
-#   res.messages.assert_equal(
-#     onError(200, ex)
-#   )
-# })
+        res.messages.assert_equal(
+            on_next(200, 10),
+            on_completed(200)
+        )
 
-# def test_to_async_Error1(self):
-#   ex = Error()
+    def test_to_async_error0(self):
+        ex = Exception()
 
-#   scheduler = TestScheduler()
+        scheduler = TestScheduler()
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (a) {
-#       throw ex
-#     }, null, scheduler)(1)
-#   })
+        def create():
+            def func():
+                raise ex
+            return Observable.to_async(func, scheduler)()
 
-#   res.messages.assert_equal(
-#     onError(200, ex)
-#   )
-# })
+        res = scheduler.start(create)
 
-# def test_to_async_Error2(self):
-#   ex = Error();
+        res.messages.assert_equal(
+            on_error(200, ex)
+        )
 
-#   scheduler = TestScheduler();
+    def test_to_async_error1(self):
+        ex = Exception()
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (a, b) {
-#       throw ex;
-#     }, null, scheduler)(1, 2);
-#   });
+        scheduler = TestScheduler()
 
-#   res.messages.assert_equal(onError(200, ex));
-# });
+        def create():
+            def func(a):
+                raise ex
+            return Observable.to_async(func, scheduler)(1)
 
-# def test_to_async_Error3(self):
-#   ex = Error();
+        res = scheduler.start(create)
 
-#   scheduler = TestScheduler();
+        res.messages.assert_equal(
+            on_error(200, ex)
+        )
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (a, b, c) {
-#       throw ex;
-#     }, null, scheduler)(1, 2, 3);
-#   });
+    def test_to_async_error2(self):
+        ex = Exception()
 
-#   res.messages.assert_equal(onError(200, ex));
-# });
+        scheduler = TestScheduler()
 
-# def test_to_async_Error4(self):
-#   ex = Error();
+        def create():
+            def func(a, b):
+                raise ex
+            return Observable.to_async(func, scheduler)(1, 2)
 
-#   scheduler = TestScheduler();
+        res = scheduler.start(create)
 
-#   res = scheduler.start(create)
-#     return Observable.to_async(function (a, b, c, d) {
-#       throw ex;
-#     }, null, scheduler)(1, 2, 3, 4);
-#   });
+        res.messages.assert_equal(
+            on_error(200, ex)
+        )
 
-#   res.messages.assert_equal(
-#     onError(200, ex)
-#   );
-# });
+    def test_to_async_error0(self):
+        ex = Exception()
+
+        scheduler = TestScheduler()
+
+        def create():
+            def func(a, b, c):
+                raise ex
+            return Observable.to_async(func, scheduler)(1, 2, 3)
+
+        res = scheduler.start(create)
+
+        res.messages.assert_equal(
+            on_error(200, ex)
+        )
+
+    def test_to_async_error0(self):
+        ex = Exception()
+
+        scheduler = TestScheduler()
+
+        def create():
+            def func(a, b, c, d):
+                raise ex
+            return Observable.to_async(func, scheduler)(1, 2, 3, 4)
+
+        res = scheduler.start(create)
+
+        res.messages.assert_equal(
+            on_error(200, ex)
+        )

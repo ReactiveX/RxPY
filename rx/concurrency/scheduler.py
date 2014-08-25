@@ -1,5 +1,5 @@
 from threading import Timer
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.internal.basic import default_now
@@ -53,7 +53,6 @@ class Scheduler(object):
         return Disposable(dispose)
 
     def invoke_rec_immediate(self, scheduler, pair):
-        #print("invoke_rec_immediate", scheduler, pair)
         state = pair.get('state')
         action = pair.get('action')
         group = CompositeDisposable()

@@ -1,20 +1,19 @@
-import asyncio
 import logging
 from datetime import datetime, timedelta
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
-
-from .scheduler import Scheduler
+from rx.concurrency.scheduler import Scheduler
+from rx.internal.basic import default_now
 
 log = logging.getLogger("Rx")
 
-class MainloopScheduler(Scheduler):
+class TwistedScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
 
-    def __init__(self, loop):
+    def __init__(self, reactor):
         self.handle = None
-        self.loop = loop
+        self.reactor = reactor
 
     def schedule(self, action, state=None):
         scheduler = self
@@ -23,7 +22,7 @@ class MainloopScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.handle = self.loop.call_soon(interval)
+        self.handle = self.reactor.callLater(0, interval)
 
         def dispose():
             self.handle.cancel()
@@ -41,7 +40,7 @@ class MainloopScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = MainloopScheduler.normalize(duetime)
+        seconds = TwistedScheduler.normalize(duetime)
         if seconds == 0:
             return scheduler.schedule(action, state)
 
@@ -50,7 +49,7 @@ class MainloopScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.handle = self.loop.call_later(seconds, interval)
+        self.handle = self.reactor.callLater(seconds, interval)
 
         def dispose():
             self.handle.cancel()
@@ -70,15 +69,15 @@ class MainloopScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def default_now(self):
-        return self.loop.time()
-
+        return self.reactor.seconds()
+        
     @classmethod
     def normalize(cls, timespan):
         """Eventloop operates with seconds as floats"""
         nospan = 0
 
         if isinstance(timespan, timedelta):
-            seconds = dt.seconds+dt.microseconds/1000000.0
+            seconds = timespan.seconds+timespan.microseconds/1000000.0
 
         elif isinstance(timespan, datetime):
             seconds = timespan.totimestamp()
