@@ -48,6 +48,22 @@ To install RxPY:
 
 Note that `pip` may be called `pip3` if your're using Python3.
 
+## Differences from RxJS and .NET
+
+RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
+function and method names are lowercase with words separated by underscores as
+necessary to improve readability.
+
+RxPY also has a number of Python specific mainloop schedulers to make it easier 
+for you to use RxPY with your favorite Python framework.
+
+* `AsyncIOScheduler` for use with [AsyncIO](https://docs.python.org/3/library/asyncio.html). 
+  (Python 3.4 only).
+* `IOLoopScheduler` for use with [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). 
+* `GEventScheduler` for use with [GEvent](http://www.gevent.org/). 
+  (Python 2.7 only).
+* `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
+
 ## Contributing ##
 
 You can contribute by reviewing and sending feedback on code checkins,
@@ -58,12 +74,6 @@ code contributions of your own.
 Note that the master branch is for releases only, so please submit any pull
 requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
 branch at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
-
-## Differences from RxJS and .NET
-
-RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
-function and method names are lowercase with words separated by underscores as
-necessary to improve readability
 
 ## License ##
 
