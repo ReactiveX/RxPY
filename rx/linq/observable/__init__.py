@@ -8,6 +8,7 @@ from . import asobservable
 from . import average
 from . import buffer
 from . import bufferwithtime
+from . import bufferwithtimeorcount
 from . import case
 from . import catch
 from . import concat
