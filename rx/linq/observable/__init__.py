@@ -7,6 +7,7 @@ from . import any
 from . import asobservable
 from . import average
 from . import buffer
+from . import bufferwithtime
 from . import case
 from . import catch
 from . import concat
@@ -96,6 +97,7 @@ from . import throttle
 from . import throw
 from . import timer
 from . import timeout
+from . import timeoutwithselector
 from . import timestamp
 from . import toarray
 from . import toasync
