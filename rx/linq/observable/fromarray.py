@@ -10,7 +10,7 @@ class ObservableCreation(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
     
     @classmethod
-    def from_array(cls, array, scheduler=None):
+    def from_list(cls, array, scheduler=None):
         """Converts an array to an observable sequence, using an optional 
         scheduler to enumerate the array.
     
@@ -40,3 +40,5 @@ class ObservableCreation(Observable):
                 
             return scheduler.schedule_recursive(action)
         return AnonymousObservable(subscribe)
+    
+    from_array = from_list # RxJS compatibility

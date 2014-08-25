@@ -1,23 +1,19 @@
 import logging
 from datetime import datetime, timedelta
 
-import gevent
-import gevent.core
-
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
+from rx.internal.basic import default_now
 
 log = logging.getLogger("Rx")
 
-class GEventScheduler(Scheduler):
-    """A scheduler that schedules work via the GEvent event loop.
+class TwistedScheduler(Scheduler):
+    """A scheduler that schedules work via the asyncio mainloop."""
 
-    http://www.gevent.org/
-    """
-
-    def __init__(self):
-        self.timer = None
+    def __init__(self, reactor):
+        self.handle = None
+        self.reactor = reactor
 
     def schedule(self, action, state=None):
         scheduler = self
@@ -26,10 +22,10 @@ class GEventScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.timer = gevent.spawn(interval)
+        self.handle = self.reactor.callLater(0, interval)
 
         def dispose():
-            self.timer.kill()
+            self.handle.cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -44,20 +40,19 @@ class GEventScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = GEventScheduler.normalize(duetime)
+        seconds = TwistedScheduler.normalize(duetime)
         if seconds == 0:
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
-
         def interval():
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.timer = gevent.spawn_later(seconds, interval)
+        self.handle = self.reactor.callLater(seconds, interval)
 
         def dispose():
-            self.timer.kill()
+            self.handle.cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -74,11 +69,11 @@ class GEventScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def default_now(self):
-        return gevent.core.time()
-
+        return self.reactor.seconds()
+        
     @classmethod
     def normalize(cls, timespan):
-        """GEvent operates with seconds as floats"""
+        """Eventloop operates with seconds as floats"""
         nospan = 0
 
         if isinstance(timespan, timedelta):

@@ -11,13 +11,13 @@ from rx.concurrency import AsyncIOScheduler
 
 class TestAsyncIOScheduler(unittest.TestCase):
 
-    def test_mainloop_schedule_now(self):
+    def test_asyncio_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
         res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
-    def test_mainloop_schedule_action(self):
+    def test_asyncio_schedule_action(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
@@ -35,7 +35,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         loop.run_until_complete(go())
 
-    def test_timeout_schedule_action_due(self):
+    def test_asyncio_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
@@ -56,7 +56,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         loop.run_until_complete(go())
 
-    def test_timeout_schedule_action_cancel(self):
+    def test_asyncio_schedule_action_cancel(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
