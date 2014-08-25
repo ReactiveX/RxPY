@@ -416,7 +416,7 @@ class ObservableTime(Observable):
             lambda x: True, 
             lambda x: x + 1, 
             lambda x: x, 
-            lambda x: 500
+            lambda x: 500)
     
         initial_state -- Initial state.
         condition -- Condition to terminate generation (upon returning false).
