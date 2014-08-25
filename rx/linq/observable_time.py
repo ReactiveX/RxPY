@@ -211,13 +211,13 @@ class ObservableTime(Observable):
     def generate_with_relative_time(cls, initial_state, condition, iterate, result_selector, time_selector, scheduler=None):
         """Generates an observable sequence by iterating a state from an
         initial state until the condition fails.
-
-        res = source.generate_with_relative_time(0,
-            lambda x: True,
-            lambda x: x + 1,
-            lambda x: x,
-            lambda x: 500
-
+        
+        res = source.generate_with_relative_time(0, 
+            lambda x: True, 
+            lambda x: x + 1, 
+            lambda x: x, 
+            lambda x: 500)
+    
         initial_state -- Initial state.
         condition -- Condition to terminate generation (upon returning false).
         iterate -- Iteration step function.
