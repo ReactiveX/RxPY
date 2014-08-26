@@ -32,13 +32,13 @@ class Trampoline(object):
                     log.info("Trampoline:run(), Sleeping: %s" % seconds)
                     time.sleep(seconds)
                     diff = item.duetime - self.scheduler.now()
-                
+
                 if not item.is_cancelled():
                     item.invoke()
 
-class CurrentThreadScheduler(Scheduler):    
+class CurrentThreadScheduler(Scheduler):
     def __init__(self):
-        self.queue = 0 # Must be different from None, FIXME: 
+        self.queue = 0 # Must be different from None, FIXME:
 
     def schedule(self, action, state=None):
         log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
@@ -48,7 +48,7 @@ class CurrentThreadScheduler(Scheduler):
         log.debug("CurrentThreadScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
-        
+
         if not self.queue:
             self.queue = Trampoline(self)
             try:
@@ -56,10 +56,10 @@ class CurrentThreadScheduler(Scheduler):
                 self.queue.run()
             finally:
                 self.queue.dispose()
-                self.queue = None            
+                self.queue = None
         else:
             self.queue.enqueue(si)
-        
+
         return si.disposable
 
     def schedule_absolute(self, duetime, action, state=None):
@@ -67,11 +67,11 @@ class CurrentThreadScheduler(Scheduler):
 
     def schedule_required(self):
         return self.queue is None
-    
+
     def ensure_trampoline(self, action):
         if self.queue is None:
             return self.schedule(action)
         else:
             return action(self, None)
 
-current_thread_scheduler = CurrentThreadScheduler()
+Scheduler.current_thread = current_thread_scheduler = CurrentThreadScheduler()

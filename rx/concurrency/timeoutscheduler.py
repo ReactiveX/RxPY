@@ -49,4 +49,4 @@ class TimeoutScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         return self.schedule_relative(duetime - self.now(), action, state)
 
-timeout_scheduler = TimeoutScheduler()
+Scheduler.timeout = timeout_scheduler = TimeoutScheduler()
