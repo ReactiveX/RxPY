@@ -54,6 +54,16 @@ RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
 function and method names are lowercase with words separated by underscores as
 necessary to improve readability.
 
+Thus .NET code such as:
+```c#
+var group = source.GroupBy(i => i % 3);
+```
+
+need to be written with an `_` in Python:
+```python
+group = source.group_by(lambda i: i % 3)
+```
+
 With RxPY you should use named 
 [keyword arguments](https://docs.python.org/2/glossary.html) instead of 
 positional arguments when an operator has multiple optional arguments. RxPY will 
