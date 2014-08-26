@@ -1,73 +1,13 @@
-import logging
-from datetime import datetime, timedelta
 from six import add_metaclass
 
-from rx.internal.utils import add_ref
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.subjects import Subject
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable, RefCountDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import ExtensionMethod
 
-log = logging.getLogger("Rx")
-
-# Rx Utils
-class TimeInterval(object):
-    def __init__(self, value, interval):
-        self.value = value
-        self.interval = interval
-
-    #def __str__(self):
-    #    return "%s@%s" % (self.value, self.interval)
-
-    #def equals(other):
-    #    return other.interval == self.interval and other.value == self.value
-
-
-class Timestamp(object):
-    def __init__(self, value, timestamp):
-        self.value = value
-        self.timestamp = timestamp
-
-    #def __str__(self):
-    #    return "%s@%s" % (self.value, self.timestamp)
-
-    #def equals(other):
-    #    return other.timestamp == self.timestamp and other.value == self.value
-
 @add_metaclass(ExtensionMethod)
-class ObservableTime(Observable):
-
-    def time_interval(self, scheduler):
-        """Records the time interval between consecutive values in an
-        observable sequence.
-
-        1 - res = source.time_interval();
-        2 - res = source.time_interval(Scheduler.timeout)
-
-        Keyword arguments:
-        scheduler -- [Optional] Scheduler used to compute time intervals. If
-            not specified, the timeout scheduler is used.
-
-        Return An observable sequence with time interval information on values.
-        """
-        source = self
-        scheduler = scheduler or timeout_scheduler
-
-        def defer():
-            last = [scheduler.now()]
-
-            def selector(x):
-                now = scheduler.now()
-                span = now - last[0]
-                last[0] = now
-                return TimeInterval(value=x, interval=span)
-
-            return source.select(selector)
-        return Observable.defer(defer)
-
+class ObservableGenerateWithRelativeTime(Observable):
+    """Uses a meta class to extend Observable with the methods in this class"""
 
     @classmethod
     def generate_with_relative_time(cls, initial_state, condition, iterate, result_selector, time_selector, scheduler=None):

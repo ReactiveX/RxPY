@@ -40,6 +40,7 @@ from . import firstordefault
 from . import forin
 from . import fromarray
 from . import generate
+from . import generatewithrelativetime
 from . import groupby
 from . import groupbyuntil
 from . import groupjoin
@@ -96,6 +97,7 @@ from . import takewhile
 from . import sample
 from . import throttle
 from . import throw
+from . import timeinterval
 from . import timer
 from . import timeout
 from . import timeoutwithselector
