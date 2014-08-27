@@ -3,7 +3,8 @@ from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
-from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
+from rx.disposables import CompositeDisposable, RefCountDisposable, \
+    SingleAssignmentDisposable
 from rx.internal.basic import default_key_serializer, identity
 from rx.linq.groupedobservable import GroupedObservable
 from rx.internal import ExtensionMethod
@@ -20,9 +21,21 @@ class ObservableGroupByUntil(Observable):
         as a reclaimed group occurs, the group will be reborn with a new 
         lifetime request.
         
-        1 - observable.group_by_until(function (x) { return x.id; }, null,  function () { return Rx.Observable.never(); });
-        2 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; },  function () { return Rx.Observable.never(); });
-        3 - observable.group_by(function (x) { return x.id; }), function (x) { return x.name; },  function () { return Rx.Observable.never(); }, function (x) { return x.toString(); });
+        1 - observable.group_by_until(
+                lambda x: x.id, 
+                None, 
+                lambda : Rx.Observable.never()
+            )
+        2 - observable.group_by_until(
+                lambda x: x.id,
+                lambda x: x.name, 
+                lambda: Rx.Observable.never()
+            )
+        3 - observable.group_by_until(
+                lambda x: x.id, 
+                lambda x: x.name,
+                lambda:  Rx.Observable.never(),
+                lambda x: str(x))
         
         Keyword arguments:
         key_selector -- A function to extract the key for each element.

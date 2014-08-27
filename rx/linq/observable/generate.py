@@ -15,14 +15,22 @@ class ObservableGenerate(Observable):
         producing the sequence's elements, using the specified scheduler to 
         send out observer messages.
      
-        1 - res = rx.Observable.generate(0, function (x) { return x < 10; }, function (x) { return x + 1; }, function (x) { return x; });
-        2 - res = rx.Observable.generate(0, function (x) { return x < 10; }, function (x) { return x + 1; }, function (x) { return x; }, Rx.Scheduler.timeout);
+        1 - res = rx.Observable.generate(0, 
+            lambda x: x < 10, 
+            lambda x: x + 1, 
+            lambda x x)
+        2 - res = rx.Observable.generate(0, 
+            lambda x: x < 10, 
+            lambda x: x + 1, 
+            lambda x: x, 
+            Rx.Scheduler.timeout)
         
         Keyword arguments:
         initial_state -- Initial state.
-        condition -- Condition to terminate generation (upon returning false).
+        condition -- Condition to terminate generation (upon returning False).
         iterate -- Iteration step function.
-        result_selector -- Selector function for results produced in the sequence.
+        result_selector -- Selector function for results produced in the 
+            sequence.
         scheduler -- [Optional] Scheduler on which to run the generator loop. 
             If not provided, defaults to CurrentThreadScheduler.
     
