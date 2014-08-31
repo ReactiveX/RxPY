@@ -10,7 +10,8 @@ class ObservableGenerate(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     @classmethod
-    def generate(cls, initial_state, condition, iterate, result_selector, scheduler=None):
+    def generate(cls, initial_state, condition, iterate, result_selector, 
+                 scheduler=None):
         """Generates an observable sequence by running a state-driven loop 
         producing the sequence's elements, using the specified scheduler to 
         send out observer messages.

@@ -23,8 +23,8 @@ class ObservableGroupBy(Observable):
         key_selector -- A function to extract the key for each element.
         element_selector -- [Optional] A function to map each source element to
             an element in an observable group.
-        key_serializer -- [Optional] Used to serialize the given object into a 
-            string for object comparison.
+        comparer -- {Function} [Optional] Used to determine whether the objects 
+            are equal.
         
         Returns a sequence of observable groups, each of which corresponds to a 
         unique key value, containing all elements that share that same key 
