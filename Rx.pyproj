@@ -24,6 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="rx\abstractobserver.py" />
     <Compile Include="rx\anonymousobservable.py" />
     <Compile Include="rx\anonymousobserver.py" />
@@ -175,7 +176,6 @@
     <Compile Include="rx\linq\observable\zip.py" />
     <Compile Include="rx\linq\observable\ziparray.py" />
     <Compile Include="rx\linq\observable\__init__.py" />
-    <Compile Include="rx\linq\observable_time.py" />
     <Compile Include="rx\notification.py" />
     <Compile Include="rx\observeonobserver.py" />
     <Compile Include="rx\scheduledobserver.py" />
@@ -231,6 +231,7 @@
     <Compile Include="tests\test_observable\test_buffer.py" />
     <Compile Include="tests\test_observable\test_buffercount.py" />
     <Compile Include="tests\test_observable\test_bufferwithcount.py" />
+    <Compile Include="tests\test_observable\test_bufferwithtime.py" />
     <Compile Include="tests\test_observable\test_case.py" />
     <Compile Include="tests\test_observable\test_catch.py" />
     <Compile Include="tests\test_observable\test_combinelatest.py" />
@@ -341,6 +342,8 @@
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="examples\" />
+    <Folder Include="examples\konamicode\" />
     <Folder Include="rx" />
     <Folder Include="rx\backpressure\" />
     <Folder Include="rx\concurrency" />
@@ -367,6 +370,8 @@
     <Content Include=".coveralls.yml" />
     <Content Include=".travis.yml" />
     <Content Include="authors.txt" />
+    <Content Include="examples\konamicode\index.html" />
+    <Content Include="examples\konamicode\konamicode.js" />
     <Content Include="LICENSE" />
     <Content Include="license.txt" />
     <Content Include="README.md" />

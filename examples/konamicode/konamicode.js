@@ -1,14 +1,14 @@
 $(function () {
     var result = $('#result');
-    var ws = new WebSocket("wss://localhost/ws");
+    var ws = new WebSocket("ws://localhost:8080/ws");
 
     $(document).keyup(function(ev) {
-        console.log(ev.keyCode);
-        msg = { key: ev.keyCode };
-        ws.send(msg);
+        msg = { keycode: ev.keyCode };
+        ws.send(JSON.stringify(msg));
     });
 
     ws.onmessage = function(msg) {
-        result.html('KONAMI!').fadeOut(2000);   // print the result
+        console.log("KONAMI");
+        result.html('KONAMI!').show().fadeOut(2000);   // print the result
     };
 });
