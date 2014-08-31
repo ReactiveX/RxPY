@@ -8,7 +8,6 @@ $(function () {
     });
 
     ws.onmessage = function(msg) {
-        console.log("KONAMI");
-        result.html('KONAMI!').show().fadeOut(2000);   // print the result
+        result.html(msg.data).show().fadeOut(2000);   // print the result
     };
 });
