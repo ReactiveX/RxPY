@@ -74,6 +74,7 @@ from . import retry
 from . import returnvalue
 from . import scan
 from . import select
+from . import selectswitch
 from . import selectmany
 from . import sequenceequal
 from . import single
