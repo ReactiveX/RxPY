@@ -1,3 +1,5 @@
+import os
+
 import tornado
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
@@ -23,25 +25,22 @@ class WSHandler(WebSocketHandler):
     def open(self):
         print("WebSocket opened")
 
-        # A Subject is both an observable and observer, so we can both subscribe to it
-        # and also feed it with values
+        # A Subject is both an observable and observer, so we can both subscribe 
+        # to it and also feed (on_next) it with new values
         self.subject = Subject()
 
-        # Now we take on our magic glasses and project the stream of bytes into a ...    
+        # Now we take on our magic glasses and project the stream of bytes into 
+        # a ...    
         query = self.subject.select(
-                # 1. stream of keycodes
-               lambda obj: obj["keycode"]
+                lambda obj: obj["keycode"] # 1. stream of keycodes
             ).window_with_count(
-                # 2. stream of windows (10 ints long)
-                10, 1
+                10, 1 # 2. stream of windows (10 ints long)
             ).select_many(
                 # 3. stream of booleans, True or False
                 lambda win: win.sequence_equal(codes)
             ).where(
-                # 4. stream of Trues
-                lambda equal: equal
+                lambda equal: equal # 4. stream of Trues
             )
-
         # 4. we then subscribe to the Trues, and signal Konami! if we see any
         query.subscribe(lambda x: self.write_message("Konami!"))
 
@@ -57,7 +56,7 @@ class MainHandler(RequestHandler):
         self.render("index.html")
 
 def main():
-    port = 8080
+    port = os.environ.get("PORT", 8080)
     app = Application([
         url(r"/", MainHandler),
         (r'/ws', WSHandler),
