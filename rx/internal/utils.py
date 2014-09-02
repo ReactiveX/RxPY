@@ -32,3 +32,6 @@ object_disposed = 'Object has been disposed'
 def check_disposed(this):
     if this.is_disposed:
         raise Exception(object_disposed)
+
+def is_future(p):
+    return callable(getattr(p, "add_done_callback", None))

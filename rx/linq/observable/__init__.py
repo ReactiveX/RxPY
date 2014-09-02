@@ -39,6 +39,7 @@ from . import first
 from . import firstordefault
 from . import forin
 from . import fromarray
+from . import fromfuture
 from . import generate
 from . import generatewithrelativetime
 from . import groupby
