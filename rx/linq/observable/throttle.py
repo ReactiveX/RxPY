@@ -15,7 +15,21 @@ log = logging.getLogger("Rx")
 class ObservableThrottle(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def throttle(self, duetime, scheduler):
+    def throttle(self, duetime, scheduler=None):
+        """Ignores values from an observable sequence which are followed by 
+        another value before duetime.
+    
+        Example:
+        1 - res = source.throttle(5000) # 5 seconds
+        2 - res = source.throttle(5000, scheduler)        
+   
+        duetime -- {Number} Duration of the throttle period for each value 
+            (specified as an integer denoting milliseconds).
+        scheduler -- {Scheduler} [Optional]  Scheduler to run the throttle 
+            timers on. If not specified, the timeout scheduler is used.
+        
+        Returns {Observable} The throttled sequence."""
+
         scheduler = scheduler or timeout_scheduler
         source = self
 
