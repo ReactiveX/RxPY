@@ -1,13 +1,11 @@
 (function (global, $, undefined) {
-    alert("got here");
     function main() {
-        alert("Running main");
         var $input = $('#textInput'),
             $results = $('#results');
-        var ws = new WebSocket("wss://localhost:8080/ws");
+        var ws = new WebSocket("ws://localhost:8080/ws");
 
         $input.keyup(function(ev) {
-            msg = { query: ev.target.value };
+            msg = { term: ev.target.value };
             ws.send(JSON.stringify(msg));
         });
 
