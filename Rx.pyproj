@@ -24,6 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="examples\autocomplete\autocomplete.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="rx\abstractobserver.py" />
     <Compile Include="rx\anonymousobservable.py" />
@@ -41,7 +42,6 @@
     <Compile Include="rx\checkedobserver.py" />
     <Compile Include="rx\concurrency\catchscheduler.py" />
     <Compile Include="rx\concurrency\historicalscheduler.py" />
-    <Compile Include="rx\concurrency\mainloopscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\asyncioscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\geventscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\ioloopscheduler.py" />
@@ -103,6 +103,7 @@
     <Compile Include="rx\linq\observable\firstordefault.py" />
     <Compile Include="rx\linq\observable\forin.py" />
     <Compile Include="rx\linq\observable\fromarray.py" />
+    <Compile Include="rx\linq\observable\fromfuture.py" />
     <Compile Include="rx\linq\observable\generate.py" />
     <Compile Include="rx\linq\observable\groupby.py" />
     <Compile Include="rx\linq\observable\groupbyuntil.py" />
@@ -343,6 +344,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="examples\" />
+    <Folder Include="examples\autocomplete\" />
     <Folder Include="examples\konamicode\" />
     <Folder Include="rx" />
     <Folder Include="rx\backpressure\" />
@@ -370,6 +372,8 @@
     <Content Include=".coveralls.yml" />
     <Content Include=".travis.yml" />
     <Content Include="authors.txt" />
+    <Content Include="examples\autocomplete\autocomplete.js" />
+    <Content Include="examples\autocomplete\index.html" />
     <Content Include="examples\konamicode\index.html" />
     <Content Include="examples\konamicode\konamicode.js" />
     <Content Include="LICENSE" />
