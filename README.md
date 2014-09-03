@@ -48,6 +48,50 @@ To install RxPY:
 
 Note that `pip` may be called `pip3` if your're using Python3.
 
+## Python Port of Rx and Differences from .NET and RxJS
+
+RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
+function and method names are lowercase with words separated by underscores as
+necessary to improve readability.
+
+Thus .NET code such as:
+```c#
+var group = source.GroupBy(i => i % 3);
+```
+
+need to be written with an `_` in Python:
+```python
+group = source.group_by(lambda i: i % 3)
+```
+
+With RxPY you should use named 
+[keyword arguments](https://docs.python.org/2/glossary.html) instead of 
+positional arguments when an operator has multiple optional arguments. RxPY will 
+not try to detect which arguments you are giving to the operator (or not). 
+
+```python
+res = Observable.timer(5000) # Yes
+res = Observable.timer(5000, 1000) # Yes
+res = Observable.timer(5000, 1000, Scheduler.timeout) # Yes
+res = Observable.timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
+
+res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
+```
+
+Thus when an operator like `Observable.timeout` has multiple optional arguments 
+you should name your arguments. At least the arguments marked as optional.
+
+RxPY also has a number of Python specific mainloop schedulers to make it easier 
+for you to use RxPY with your favorite Python framework.
+
+* `AsyncIOScheduler` for use with 
+  [AsyncIO](https://docs.python.org/3/library/asyncio.html). (Python 3.4 only).
+* `IOLoopScheduler` for use with 
+  [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). 
+* `GEventScheduler` for use with [GEvent](http://www.gevent.org/). 
+  (Python 2.7 only).
+* `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
+
 ## Contributing ##
 
 You can contribute by reviewing and sending feedback on code checkins,
@@ -58,12 +102,6 @@ code contributions of your own.
 Note that the master branch is for releases only, so please submit any pull
 requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
 branch at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
-
-## Differences from RxJS and .NET
-
-RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
-function and method names are lowercase with words separated by underscores as
-necessary to improve readability
 
 ## License ##
 

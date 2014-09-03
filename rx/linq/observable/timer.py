@@ -120,14 +120,14 @@ class ObservableTimer(Observable):
         """Returns an observable sequence that produces a value after duetime 
         has elapsed and then after each period.
         
-        1 - res = Observable.timer(new Date())
-        2 - res = Observable.timer(new Date(), 1000)
-        3 - res = Observable.timer(new Date(), Scheduler.timeout)
-        4 - res = Observable.timer(new Date(), 1000, rx.Scheduler.timeout)
+        1 - res = Observable.timer(datetime(...))
+        2 - res = Observable.timer(datetime(...), 1000)
+        3 - res = Observable.timer(datetime(...), Scheduler.timeout)
+        4 - res = Observable.timer(datetime(...), 1000, Scheduler.timeout)
         
         5 - res = Observable.timer(5000)
         6 - res = Observable.timer(5000, 1000)
-        7 - res = Observable.timer(5000, Scheduler.timeout)
+        7 - res = Observable.timer(5000, scheduler=Scheduler.timeout)
         8 - res = Observable.timer(5000, 1000, Scheduler.timeout)
         
         Keyword arguments:

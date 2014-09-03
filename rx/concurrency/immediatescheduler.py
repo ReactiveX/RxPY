@@ -18,4 +18,4 @@ class ImmediateScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         return self.schedule_relative(duetime - self.now(), action, state)
 
-immediate_scheduler = ImmediateScheduler()
+Scheduler.immediate = immediate_scheduler = ImmediateScheduler()

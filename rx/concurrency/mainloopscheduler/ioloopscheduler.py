@@ -15,9 +15,9 @@ class IOLoopScheduler(Scheduler):
     http://tornado.readthedocs.org/en/latest/ioloop.html
     """
 
-    def __init__(self, loop):
+    def __init__(self, loop=None):
         self.handle = None
-        self.loop = loop
+        self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
         scheduler = self

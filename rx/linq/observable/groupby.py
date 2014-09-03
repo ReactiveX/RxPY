@@ -14,17 +14,21 @@ class ObservableGroupBy(Observable):
         
         1 - observable.group_by(lambda x: x.id)
         2 - observable.group_by(lambda x: x.id, lambda x: x.name)
-        3 - observable.group_by(lambda x: x.id, lambda x: x.name, lambda x: str(x))
+        3 - observable.group_by(
+            lambda x: x.id, 
+            lambda x: x.name, 
+            lambda x: str(x))
         
         Keyword arguments:
         key_selector -- A function to extract the key for each element.
         element_selector -- [Optional] A function to map each source element to
             an element in an observable group.
-        key_serializer -- [Optional] Used to serialize the given object into a 
-            string for object comparison.
+        comparer -- {Function} [Optional] Used to determine whether the objects 
+            are equal.
         
         Returns a sequence of observable groups, each of which corresponds to a 
-        unique key value, containing all elements that share that same key value.        
+        unique key value, containing all elements that share that same key 
+        value.        
         """
 
         def duration_selector(x):

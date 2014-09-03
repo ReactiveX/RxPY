@@ -7,6 +7,8 @@ from . import any
 from . import asobservable
 from . import average
 from . import buffer
+from . import bufferwithtime
+from . import bufferwithtimeorcount
 from . import case
 from . import catch
 from . import concat
@@ -37,7 +39,9 @@ from . import first
 from . import firstordefault
 from . import forin
 from . import fromarray
+from . import fromfuture
 from . import generate
+from . import generatewithrelativetime
 from . import groupby
 from . import groupbyuntil
 from . import groupjoin
@@ -71,6 +75,7 @@ from . import retry
 from . import returnvalue
 from . import scan
 from . import select
+from . import selectswitch
 from . import selectmany
 from . import sequenceequal
 from . import single
@@ -94,8 +99,10 @@ from . import takewhile
 from . import sample
 from . import throttle
 from . import throw
+from . import timeinterval
 from . import timer
 from . import timeout
+from . import timeoutwithselector
 from . import timestamp
 from . import toarray
 from . import toasync
