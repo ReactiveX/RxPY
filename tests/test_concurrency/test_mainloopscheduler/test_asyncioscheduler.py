@@ -4,4 +4,4 @@ try:
 except ImportError:
     raise SkipTest("asyncio not available")
 
-from py3_asyncioscheduler import *
+from .py3_asyncioscheduler import *
