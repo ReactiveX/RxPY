@@ -10,7 +10,7 @@
         });
 
         ws.onmessage = function(msg) {
-            var data = msg.data;
+            var data = JSON.parse(msg.data);
             var res = data[1];
 
             // Append the results
@@ -19,6 +19,7 @@
             $.each(res, function (_, value) {
               $('<li>' + value + '</li>').appendTo($results);
             });
+            $results.show();
         }
     }
     main();
