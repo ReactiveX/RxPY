@@ -28,9 +28,9 @@ class ObservableCreation(Observable):
                 else:
                     observer.on_next(value)
                     observer.on_completed()
-                    
+
             future.add_done_callback(done)
-            
+
             def dispose():
                 if future and future.cancel:
                   future.cancel()
