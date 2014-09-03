@@ -214,6 +214,14 @@ class Scheduler(object):
 
     @classmethod
     def normalize(cls, timespan):
+        """Normalizes the specified Timespan value to a positive value.
+        
+        Keyword Arguments:
+        timeSpan -- {Number} The time span value to normalize.
+        
+        Returns {Number} The specified Timespan value if it is zero or positive; 
+            otherwise, 0"""
+    
         nospan = 0 if isinstance(timespan, int) else timedelta(0)
         if not timespan or timespan < nospan:
             timespan = nospan
