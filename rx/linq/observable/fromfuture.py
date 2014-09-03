@@ -14,14 +14,16 @@ class ObservableCreation(Observable):
         Keyword Arguments:
         future -- {Future} A Python 3 compatible future.
             https://docs.python.org/3/library/asyncio-task.html#future
+            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
         Returns {Observable} An Observable sequence which wraps the existing
         future success and failure."""
 
         def subscribe(observer):
-            def done():
+            def done(future):
                 try:
                     value = future.result()
+                    print("Got value!!")
                 except Exception as ex:
                     observer.on_error(ex)
                 else:
@@ -32,7 +34,7 @@ class ObservableCreation(Observable):
             
             def dispose():
                 if future and future.cancel:
-                  promise.cancel()
+                  future.cancel()
             return dispose
 
         return AnonymousObservable(subscribe)
