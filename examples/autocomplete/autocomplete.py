@@ -1,10 +1,8 @@
 import os
-from collections import OrderedDict
 
-import tornado
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
-from tornado.httpclient import AsyncHTTPClient, HTTPClient, HTTPRequest
+from tornado.httpclient import AsyncHTTPClient
 from tornado.httputil import url_concat
 from tornado.escape import json_encode, json_decode
 from tornado import ioloop
@@ -14,9 +12,8 @@ from rx.concurrency import IOLoopScheduler
 
 scheduler = IOLoopScheduler()
 
-# Search Wikipedia for a given term
-
 def search_wikipedia(term):
+    """Search Wikipedia for a given term"""
     url = 'http://en.wikipedia.org/w/api.php'
     
     params = {

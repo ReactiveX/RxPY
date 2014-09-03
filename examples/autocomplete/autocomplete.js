@@ -17,7 +17,7 @@
             $results.empty();
 
             $.each(res, function (_, value) {
-              $('<li>' + value + '</li>').appendTo($results);
+              $('<li><a tabindex="-1" href="#">' + value + '</a></li>').appendTo($results);
             });
             $results.show();
         }
