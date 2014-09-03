@@ -23,7 +23,6 @@ class ObservableCreation(Observable):
             def done(future):
                 try:
                     value = future.result()
-                    print("Got value!!")
                 except Exception as ex:
                     observer.on_error(ex)
                 else:
