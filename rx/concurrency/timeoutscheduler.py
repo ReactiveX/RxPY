@@ -36,7 +36,10 @@ class TimeoutScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        seconds = dt.seconds+dt.microseconds/1000000.0
+        if isinstance(dt, int):
+            seconds = dt/1000.0
+        else:
+            seconds = dt.seconds+dt.microseconds/1000000.0
         log.debug("timeout: %s", seconds)
         self.timer = Timer(seconds, interval)
         self.timer.start()
