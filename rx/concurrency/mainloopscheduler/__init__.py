@@ -18,10 +18,17 @@ except ImportError:
     GEventScheduler = None
 else:
     from .geventscheduler import GEventScheduler
-    
+
 try:
     import twisted
 except ImportError:
     TwistedScheduler = None
 else:
     from .twistedscheduler import TwistedScheduler
+
+try:
+    import tkinter
+except ImportError:
+    TkinterScheduler = None
+else:
+    from .tkinterscheduler import TkinterScheduler
