@@ -1,25 +1,21 @@
 import logging
 from datetime import datetime, timedelta
 
-gevent = None
-
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
 
-class GEventScheduler(Scheduler):
-    """A scheduler that schedules work via the GEvent event loop.
+class TkinterScheduler(Scheduler):
+    """A scheduler that schedules work via the Tkinter main event loop.
 
-    http://www.gevent.org/
+    http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html
+    http://effbot.org/tkinterbook/widget.htm
     """
 
-    def __init__(self):
-        # Lazy import gevent
-        global gevent
-        import gevent
-        import gevent.core
+    def __init__(self, master):
+        self.master = master
 
     def schedule(self, action, state=None):
         scheduler = self
@@ -28,10 +24,11 @@ class GEventScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        timer = [gevent.spawn(interval)]
+        alarm = [self.master.after_idle(interval)]
 
         def dispose():
-            timer[0].kill()
+            # nonlocal alarm
+            self.master.after_cancel(alarm[0])
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -46,21 +43,20 @@ class GEventScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = GEventScheduler.normalize(duetime)
-        if seconds == 0:
+        msecs = TkinterScheduler.normalize(duetime)
+        if msecs == 0:
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
-
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        log.debug("timeout: %s", seconds)
-        timer = [gevent.spawn_later(seconds, interval)]
+        log.debug("timeout: %s", msecs)
+        alarm = [self.master.after(msecs, interval)]
 
         def dispose():
-            # nonlocal timer
-            timer[0].kill()
+            # nonlocal alarm
+            self.master.after_cancel(alarm[0])
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -76,24 +72,24 @@ class GEventScheduler(Scheduler):
 
         return self.schedule_relative(duetime - self.now(), action, state)
 
-    def default_now(self):
-        return gevent.core.time()
+    #def default_now(self):
+    #    return self.loop.time()
 
     @classmethod
     def normalize(cls, timespan):
-        """GEvent operates with seconds as floats"""
+        """Eventloop operates with milliseconds"""
         nospan = 0
 
         if isinstance(timespan, timedelta):
-            seconds = timespan.seconds+timespan.microseconds/1000000.0
+            msecs = timespan.seconds+timespan.microseconds/1000.0
 
         elif isinstance(timespan, datetime):
-            seconds = timespan.totimestamp()
+            msecs = timespan.totimestamp()*1000
         else:
-            seconds = timespan
+            msecs = timespan
 
-        if not timespan or timespan < nospan:
-            seconds = nospan
+        if not timespan:
+            msecs = nospan
 
-        return seconds
+        return int(msecs)
 

@@ -10,9 +10,6 @@ log = logging.getLogger("Rx")
 
 class TimeoutScheduler(Scheduler):
     """A scheduler that schedules work via a timed callback based upon platform."""
-    
-    def __init__(self):
-        self.timer = None
 
     def schedule(self, action, state=None):
         scheduler = self
@@ -20,10 +17,12 @@ class TimeoutScheduler(Scheduler):
 
         def interval():
             disposable.disposable = action(scheduler, state)
-        self.timer = Timer(0, interval)
-        self.timer.start()
+        timer = [Timer(0, interval)]
+        timer[0].start()
+
         def dispose():
-            self.timer.cancel()
+            # nonlocal timer
+            timer[0].cancel()
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
@@ -41,11 +40,12 @@ class TimeoutScheduler(Scheduler):
         else:
             seconds = dt.seconds+dt.microseconds/1000000.0
         log.debug("timeout: %s", seconds)
-        self.timer = Timer(seconds, interval)
-        self.timer.start()
+        timer = [Timer(seconds, interval)]
+        timer[0].start()
 
         def dispose():
-            self.timer.cancel()
+            # nonlocal timer
+            timer[0].cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 

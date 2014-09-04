@@ -1,8 +1,6 @@
 import logging
 from datetime import datetime, timedelta
 
-from tornado import ioloop
-
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
@@ -16,7 +14,7 @@ class IOLoopScheduler(Scheduler):
     """
 
     def __init__(self, loop=None):
-        self.handle = None
+        from tornado import ioloop # Lazy import
         self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
@@ -26,10 +24,11 @@ class IOLoopScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.handle = self.loop.add_callback(interval)
+        handle = [self.loop.add_callback(interval)]
 
         def dispose():
-            self.loop.remove_timeout(self.handle)
+            # nonlocal handle
+            self.loop.remove_timeout(handle[0])
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -53,10 +52,10 @@ class IOLoopScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.handle = self.loop.call_later(seconds, interval)
+        handle = [self.loop.call_later(seconds, interval)]
 
         def dispose():
-            self.loop.remove_timeout(self.handle)
+            self.loop.remove_timeout(handle[0])
 
         return CompositeDisposable(disposable, Disposable(dispose))
 

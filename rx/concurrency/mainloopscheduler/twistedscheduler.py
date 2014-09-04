@@ -12,23 +12,11 @@ class TwistedScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
 
     def __init__(self, reactor):
-        self.handle = None
         self.reactor = reactor
 
     def schedule(self, action, state=None):
-        scheduler = self
-        disposable = SingleAssignmentDisposable()
-
-        def interval():
-            disposable.disposable = action(scheduler, state)
-
-        self.handle = self.reactor.callLater(0, interval)
-
-        def dispose():
-            self.handle.cancel()
-
-        return CompositeDisposable(disposable, Disposable(dispose))
-
+        return self.schedule_relative(0, action, state)
+        
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
 
@@ -41,18 +29,16 @@ class TwistedScheduler(Scheduler):
 
         scheduler = self
         seconds = TwistedScheduler.normalize(duetime)
-        if seconds == 0:
-            return scheduler.schedule(action, state)
-
+        
         disposable = SingleAssignmentDisposable()
         def interval():
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.handle = self.reactor.callLater(seconds, interval)
+        handle = [self.reactor.callLater(seconds, interval)]
 
         def dispose():
-            self.handle.cancel()
+            handle[0].cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 

@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="examples\autocomplete\autocomplete.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
+    <Compile Include="examples\timeflies\timeflies.py" />
     <Compile Include="rx\abstractobserver.py" />
     <Compile Include="rx\anonymousobservable.py" />
     <Compile Include="rx\anonymousobserver.py" />
@@ -45,6 +46,7 @@
     <Compile Include="rx\concurrency\mainloopscheduler\asyncioscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\geventscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\ioloopscheduler.py" />
+    <Compile Include="rx\concurrency\mainloopscheduler\tkinterscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\twistedscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\__init__.py" />
     <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
@@ -105,6 +107,7 @@
     <Compile Include="rx\linq\observable\fromarray.py" />
     <Compile Include="rx\linq\observable\fromfuture.py" />
     <Compile Include="rx\linq\observable\generate.py" />
+    <Compile Include="rx\linq\observable\generatewithrelativetime.py" />
     <Compile Include="rx\linq\observable\groupby.py" />
     <Compile Include="rx\linq\observable\groupbyuntil.py" />
     <Compile Include="rx\linq\observable\groupjoin.py" />
@@ -140,6 +143,7 @@
     <Compile Include="rx\linq\observable\scan.py" />
     <Compile Include="rx\linq\observable\select.py" />
     <Compile Include="rx\linq\observable\selectmany.py" />
+    <Compile Include="rx\linq\observable\selectswitch.py" />
     <Compile Include="rx\linq\observable\sequenceequal.py" />
     <Compile Include="rx\linq\observable\single.py" />
     <Compile Include="rx\linq\observable\singleordefault.py" />
@@ -161,6 +165,7 @@
     <Compile Include="rx\linq\observable\takewhile.py" />
     <Compile Include="rx\linq\observable\throttle.py" />
     <Compile Include="rx\linq\observable\throw.py" />
+    <Compile Include="rx\linq\observable\timeinterval.py" />
     <Compile Include="rx\linq\observable\timeout.py" />
     <Compile Include="rx\linq\observable\timeoutwithselector.py" />
     <Compile Include="rx\linq\observable\timer.py" />
@@ -220,12 +225,14 @@
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_asyncioscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_geventscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_ioloopscheduler.py" />
+    <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_tkinterscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_twistedscheduler.py" />
     <Compile Include="tests\test_concurrency\test_timeoutscheduler.py" />
     <Compile Include="tests\test_concurrency\test_virtualtimescheduler.py" />
     <Compile Include="tests\test_core\test_notification.py" />
     <Compile Include="tests\test_core\test_observer.py" />
     <Compile Include="tests\test_disposables\test_disposable.py" />
+    <Compile Include="tests\test_observable\py3_fromfuture.py" />
     <Compile Include="tests\test_observable\test_aggregate.py" />
     <Compile Include="tests\test_observable\test_amb.py" />
     <Compile Include="tests\test_observable\test_asobservable.py" />
@@ -258,6 +265,7 @@
     <Compile Include="tests\test_observable\test_firstordefault.py" />
     <Compile Include="tests\test_observable\test_forin.py" />
     <Compile Include="tests\test_observable\test_fromarray.py" />
+    <Compile Include="tests\test_observable\test_fromfuture.py" />
     <Compile Include="tests\test_observable\test_generate.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
     <Compile Include="tests\test_observable\test_groupjoin.py" />
@@ -346,6 +354,7 @@
     <Folder Include="examples\" />
     <Folder Include="examples\autocomplete\" />
     <Folder Include="examples\konamicode\" />
+    <Folder Include="examples\timeflies\" />
     <Folder Include="rx" />
     <Folder Include="rx\backpressure\" />
     <Folder Include="rx\concurrency" />
