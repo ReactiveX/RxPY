@@ -28,7 +28,7 @@ class TkinterScheduler(Scheduler):
 
         def dispose():
             # nonlocal alarm
-            self.master.after_cancle(alarm[0])
+            self.master.after_cancel(alarm[0])
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -88,8 +88,8 @@ class TkinterScheduler(Scheduler):
         else:
             msecs = timespan
 
-        if not timespan or timespan < nospan:
+        if not timespan:
             msecs = nospan
 
-        return msecs
+        return int(msecs)
 
