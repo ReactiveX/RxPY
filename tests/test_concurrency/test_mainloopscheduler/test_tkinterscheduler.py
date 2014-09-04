@@ -13,67 +13,59 @@ except Exception:
     raise SkipTest("No display, skipping")
 
 from rx.concurrency import TkinterScheduler
-
-class TkinterScheduler(unittest.TestCase):
+        
+class TestTkinterScheduler(unittest.TestCase):
 
     def test_tkinter_schedule_now(self):
-        root = tkinter.Tk()
-
         scheduler = TkinterScheduler(root)
-        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        res = scheduler.now() - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
-    # def test_tkinter_schedule_action(self):
-    #     loop = ioloop.IOLoop.instance()
+    def test_tkinter_schedule_action(self):
+        scheduler = TkinterScheduler(root)
+        ran = [False]
 
-    #     scheduler = TkinterScheduler(loop)
-    #     ran = [False]
+        def action(scheduler, state):
+            ran[0] = True
+        scheduler.schedule(action)
 
-    #     def action(scheduler, state):
-    #         ran[0] = True
-    #     scheduler.schedule(action)
+        def done():
+            assert(ran[0] == True)
+            root.quit()
+        
+        root.after_idle(done)
+        root.mainloop()
 
-    #     def done():
-    #         assert(ran[0] == True)
-    #         loop.stop()
-    #     loop.call_later(0.1, done)
+    def test_tkinter_schedule_action_due(self):
+        scheduler = TkinterScheduler(root)
+        starttime = datetime.utcnow()
+        endtime = [None]
 
-    #     loop.start()
+        def action(scheduler, state):
+            endtime[0] = datetime.utcnow()
 
-    # def test_tkinter_schedule_action_due(self):
-    #     loop = ioloop.IOLoop.instance()
+        scheduler.schedule_relative(200, action)
 
-    #     scheduler = TkinterScheduler(loop)
-    #     starttime = loop.time()
-    #     endtime = [None]
+        def done():
+            root.quit()
+            diff = endtime[0]-starttime
+            assert(diff > timedelta(milliseconds=180))
 
-    #     def action(scheduler, state):
-    #         endtime[0] = loop.time()
+        root.after(300, done)
+        root.mainloop()
 
-    #     scheduler.schedule_relative(0.2, action)
+    def test_tkinter_schedule_action_cancel(self):
+        ran = [False]
+        scheduler = TkinterScheduler(root)
 
-    #     def done():
-    #         diff = endtime[0]-starttime
-    #         assert(diff > 0.18)
-    #         loop.stop()
-    #     loop.call_later(0.3, done)
+        def action(scheduler, state):
+            ran[0] = True
+        d = scheduler.schedule_relative(100, action)
+        d.dispose()
 
-    #     loop.start()
-
-    # def test_tkinter_schedule_action_cancel(self):
-    #     loop = ioloop.IOLoop.instance()
-
-    #     ran = [False]
-    #     scheduler = TkinterScheduler(loop)
-
-    #     def action(scheduler, state):
-    #         ran[0] = True
-    #     d = scheduler.schedule_relative(0.01, action)
-    #     d.dispose()
-
-    #     def done():
-    #         assert(not ran[0])
-    #         loop.stop()
-    #     loop.call_later(0.1, done)
-
-    #     loop.start()
+        def done():
+            root.quit()
+            assert(not ran[0])
+            
+        root.after(300, done)
+        root.mainloop()
