@@ -1,8 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
-import gevent
-import gevent.core
+gevent = None
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
@@ -15,6 +14,12 @@ class GEventScheduler(Scheduler):
 
     http://www.gevent.org/
     """
+
+    def __init__(self):
+        # Lazy import gevent
+        global gevent
+        import gevent
+        import gevent.core
 
     def schedule(self, action, state=None):
         scheduler = self

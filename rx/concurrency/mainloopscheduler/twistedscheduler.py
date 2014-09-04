@@ -29,9 +29,7 @@ class TwistedScheduler(Scheduler):
 
         scheduler = self
         seconds = TwistedScheduler.normalize(duetime)
-        if seconds == 0:
-            return scheduler.schedule(action, state)
-
+        
         disposable = SingleAssignmentDisposable()
         def interval():
             disposable.disposable = action(scheduler, state)

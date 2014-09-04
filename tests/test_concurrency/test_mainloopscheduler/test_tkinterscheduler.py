@@ -7,6 +7,11 @@ try:
 except ImportError:
     raise SkipTest("Tkinter not installed")
 
+try:
+    root = tkinter.Tk()
+except Exception:
+    raise SkipTest("No display, skipping")
+
 from rx.concurrency import TkinterScheduler
 
 class TkinterScheduler(unittest.TestCase):

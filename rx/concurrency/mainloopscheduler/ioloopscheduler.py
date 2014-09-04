@@ -1,8 +1,6 @@
 import logging
 from datetime import datetime, timedelta
 
-from tornado import ioloop
-
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
@@ -16,6 +14,7 @@ class IOLoopScheduler(Scheduler):
     """
 
     def __init__(self, loop=None):
+        from tornado import ioloop # Lazy import
         self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
