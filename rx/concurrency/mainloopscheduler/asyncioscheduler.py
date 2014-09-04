@@ -12,7 +12,6 @@ class AsyncIOScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
 
     def __init__(self, loop):
-        self.handle = None
         self.loop = loop
 
     def schedule(self, action, state=None):
@@ -22,10 +21,11 @@ class AsyncIOScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.handle = self.loop.call_soon(interval)
+        handle = [self.loop.call_soon(interval)]
 
         def dispose():
-            self.handle.cancel()
+            # nonlocal handle
+            handle[0].cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -49,10 +49,11 @@ class AsyncIOScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.handle = self.loop.call_later(seconds, interval)
+        handle = [self.loop.call_later(seconds, interval)]
 
         def dispose():
-            self.handle.cancel()
+            # nonlocal handle
+            handle[0].cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 

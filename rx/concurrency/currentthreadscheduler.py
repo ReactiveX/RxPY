@@ -37,7 +37,10 @@ class Trampoline(object):
                     item.invoke()
 
 class CurrentThreadScheduler(Scheduler):
+    """Represents an object that schedules units of work on the current thread."""
+
     def __init__(self):
+        """Gets a scheduler that schedules work as soon as possible on the current thread."""
         self.queue = 0 # Must be different from None, FIXME:
 
     def schedule(self, action, state=None):
@@ -69,6 +72,8 @@ class CurrentThreadScheduler(Scheduler):
         return self.queue is None
 
     def ensure_trampoline(self, action):
+        """Method for testing the CurrentThreadScheduler"""
+        
         if self.queue is None:
             return self.schedule(action)
         else:

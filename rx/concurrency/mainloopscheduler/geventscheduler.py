@@ -16,9 +16,6 @@ class GEventScheduler(Scheduler):
     http://www.gevent.org/
     """
 
-    def __init__(self):
-        self.timer = None
-
     def schedule(self, action, state=None):
         scheduler = self
         disposable = SingleAssignmentDisposable()
@@ -26,10 +23,10 @@ class GEventScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        self.timer = gevent.spawn(interval)
+        timer = [gevent.spawn(interval)]
 
         def dispose():
-            self.timer.kill()
+            timer[0].kill()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -54,10 +51,11 @@ class GEventScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        self.timer = gevent.spawn_later(seconds, interval)
+        timer = [gevent.spawn_later(seconds, interval)]
 
         def dispose():
-            self.timer.kill()
+            # nonlocal timer
+            timer[0].kill()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
