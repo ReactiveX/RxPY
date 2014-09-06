@@ -94,8 +94,9 @@ for you to use RxPY with your favorite Python framework.
 * `GEventScheduler` for use with [GEvent](http://www.gevent.org/). 
   (Python 2.7 only).
 * `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
-* `TkinterScheudler` for use with [Tkinter](https://wiki.python.org/moin/TkInter). 
-  See the [timeflies] example for howto use RxPY with your Tkinter application.
+* `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter). 
+  See the [timeflies](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies) 
+  example for howto use RxPY with your Tkinter application.
 
 ## Contributing ##
 
