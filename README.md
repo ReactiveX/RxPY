@@ -87,10 +87,15 @@ for you to use RxPY with your favorite Python framework.
 * `AsyncIOScheduler` for use with 
   [AsyncIO](https://docs.python.org/3/library/asyncio.html). (Python 3.4 only).
 * `IOLoopScheduler` for use with 
-  [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). 
+  [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the 
+  [autocomplete](https://github.com/dbrattli/RxPY/tree/master/examples/autocomplete)
+  and [konamicode](https://github.com/dbrattli/RxPY/tree/master/examples/konamicode)
+  examples for howto use RxPY with your Tonado application.
 * `GEventScheduler` for use with [GEvent](http://www.gevent.org/). 
   (Python 2.7 only).
 * `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
+* `TkinterScheudler` for use with [Tkinter](https://wiki.python.org/moin/TkInter). 
+  See the [timeflies] example for howto use RxPY with your Tkinter application.
 
 ## Contributing ##
 
