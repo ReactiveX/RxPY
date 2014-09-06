@@ -38,7 +38,8 @@ from . import findindex
 from . import first
 from . import firstordefault
 from . import forin
-from . import fromarray
+from . import fromiterable
+from . import fromcallback
 from . import fromfuture
 from . import generate
 from . import generatewithrelativetime
