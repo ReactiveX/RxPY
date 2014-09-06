@@ -40,6 +40,8 @@ class ObservableTimer(Observable):
         source = self
 
         other = other or Observable.throw_exception(Exception("Timeout"))
+        other = Observable.from_future(other)
+        
         scheduler = scheduler or timeout_scheduler
 
         if isinstance(duetime, datetime):
@@ -64,6 +66,7 @@ class ObservableTimer(Observable):
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
+                        
                         subscription.disposable = other.subscribe(observer)
 
                 timer.disposable = scheduler_method(duetime, action)
