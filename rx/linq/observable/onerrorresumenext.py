@@ -50,7 +50,7 @@ class ObservableOnErrorResumeNext(Observable):
             
             def action(this, state=None):
                 if pos[0] < len(sources):
-                    current = sources[pos[0]]
+                    current = Observable.from_future(sources[pos[0]])
                     pos[0] += 1
                     d = SingleAssignmentDisposable()
                     subscription.disposable = d

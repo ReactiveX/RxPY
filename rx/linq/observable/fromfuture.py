@@ -2,6 +2,7 @@ from six import add_metaclass
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
+from rx.internal.utils import is_future
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -36,4 +37,4 @@ class ObservableCreation(Observable):
                   future.cancel()
             return dispose
 
-        return AnonymousObservable(subscribe)
+        return AnonymousObservable(subscribe) if is_future(future) else future

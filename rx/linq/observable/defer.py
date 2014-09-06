@@ -31,5 +31,6 @@ class ObservableDefer(Observable):
             except Exception as ex:
                 return Observable.throw_exception(ex).subscribe(observer)
 
+            result = Observable.from_future(result)
             return result.subscribe(observer)
         return AnonymousObservable(subscribe)

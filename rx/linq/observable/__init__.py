@@ -38,7 +38,8 @@ from . import findindex
 from . import first
 from . import firstordefault
 from . import forin
-from . import fromarray
+from . import fromiterable
+from . import fromcallback
 from . import fromfuture
 from . import generate
 from . import generatewithrelativetime
@@ -106,6 +107,7 @@ from . import timeoutwithselector
 from . import timestamp
 from . import toarray
 from . import toasync
+from . import tofuture
 from . import using
 from . import where
 from . import whiledo

@@ -64,14 +64,16 @@ class ObservableZip(Observable):
             subscriptions = [None]*n
 
             def func(i):
-                subscriptions[i] = SingleAssignmentDisposable()
-
+                source = sources[i]
+                sad = SingleAssignmentDisposable()
+                source = Observable.from_future(source)
+          
                 def on_next(x):
                     queues[i].append(x)
                     next(i)
 
-                subscriptions[i].disposable = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
-
+                sad.disposable = source.subscribe(on_next, observer.on_error, lambda: done(i))
+                subscriptions[i] = sad
             for idx in range(n):
                 func(idx)
             return CompositeDisposable(subscriptions)

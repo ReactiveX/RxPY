@@ -12,23 +12,24 @@ class ObservableAmb(Observable):
     def case(cls, selector, sources, default_source=None, scheduler=None):
         """Uses selector to determine which source in sources to use.
         There is an alias 'switch_case'.
-         
-        Eexample
+
+        Example:
         1 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 })
         2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
-        3 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, scheduler=scheduler)
+        3 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 },
+                                     scheduler=scheduler)
 
         Keyword arguments:
-        selector -- {Function} The function which extracts the value for to 
+        selector -- {Function} The function which extracts the value for to
             test in a case statement.
         sources -- {Array} A object which has keys which correspond to the case
             statement labels.
-        default_source-- {Observable} [Optional] The observable sequence or 
+        default_source-- {Observable} [Optional] The observable sequence or
             Promise that will be run if the sources are not matched. If this is
-            not provided, it defaults to Rx.Observabe.empty with the specified 
+            not provided, it defaults to Rx.Observabe.empty with the specified
             scheduler.
-          
-        Returns an observable {Observable} sequence which is determined by a 
+
+        Returns an observable {Observable} sequence which is determined by a
         case statement."""
 
         default_source = default_source or Observable.empty(scheduler=scheduler)
@@ -38,7 +39,9 @@ class ObservableAmb(Observable):
                 result = sources[selector()]
             except KeyError:
                 result = default_source
-            #isPromise(result) && (result = observableFromPromise(result));
+
+            result = Observable.from_future(result)
+
             return result
         return Observable.defer(factory)
 

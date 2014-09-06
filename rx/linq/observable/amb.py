@@ -20,6 +20,7 @@ class ObservableAmb(Observable):
         sequences, whichever reacted first.
         """
         left_source = self
+        right_source = Observable.from_future(right_source)
 
         def subscribe(observer):
             choice = [None]

@@ -22,8 +22,10 @@ class ObservableTakeUntil(Observable):
         sequence up to the point the other sequence interrupted further propagation.
         """
         source = self
+        other = Observable.from_future(other)
 
         def subscribe(observer):
+            
             def on_completed(x):
                 observer.on_completed()
 
