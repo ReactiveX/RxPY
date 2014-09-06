@@ -21,6 +21,7 @@ class ObservableSkipUntil(Observable):
         """
     
         source = self
+        other = Observable.from_future(other)
 
         def subscribe(observer):
             is_open = [False]
@@ -34,7 +35,7 @@ class ObservableSkipUntil(Observable):
                     observer.on_completed()
             
             disposables = CompositeDisposable(source.subscribe(on_next, observer.on_error, on_completed))
-
+            
             right_subscription = SingleAssignmentDisposable()
             disposables.add(right_subscription)
 

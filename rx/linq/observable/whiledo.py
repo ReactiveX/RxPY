@@ -23,5 +23,6 @@ class ObservableWhileDo(Observable):
    
         Returns an observable {Observable} sequence which is repeated as long 
         as the condition holds."""
- 
+        
+        source = Observable.from_future(source)
         return Observable.concat(Enumerable.while_do(condition, source))    

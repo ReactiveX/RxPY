@@ -31,6 +31,8 @@ class ObservableExclusive(Observable):
                 if not has_current[0]:
                     has_current[0] = True
 
+                    inner_source = Observable.from_future(inner_source)
+
                     inner_subscription = SingleAssignmentDisposable()
                     g.add(inner_subscription)
 

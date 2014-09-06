@@ -1,7 +1,7 @@
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call        
+from rx.internal.utils import adapt_call
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -11,21 +11,21 @@ class ObservableSelect(Observable):
     def select(self, selector):
         """Projects each element of an observable sequence into a new form by
         incorporating the element's index.
-        
+
         1 - source.select(lambda value: value * value)
         2 - source.select(lambda value, index: value * value + index)
-        
+
         Keyword arguments:
         selector -- A transform function to apply to each source element; the
-            second parameter of the function represents the index of the source 
+            second parameter of the function represents the index of the source
             element.
-        
-        Returns an observable sequence whose elements are the result of 
+
+        Returns an observable sequence whose elements are the result of
         invoking the transform function on each element of source.
         """
-        
-        selector = adapt_call(selector)        
-        
+
+        selector = adapt_call(selector)
+
         def subscribe(observer):
             count = [0]
 
@@ -41,3 +41,5 @@ class ObservableSelect(Observable):
 
             return self.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
+
+    map = select

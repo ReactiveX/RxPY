@@ -3,7 +3,6 @@ from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.internal.utils import is_future
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -35,8 +34,7 @@ class ObservableSwitchLatest(Observable):
                 inner_subscription.disposable = d
 
                 # Check if Future or Observable
-                if is_future(inner_source):
-                    inner_source = Observable.from_future(inner_source)
+                inner_source = Observable.from_future(inner_source)
 
                 def on_next(x):
                     if latest[0] == _id:

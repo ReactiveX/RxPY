@@ -31,10 +31,11 @@ class ObservableIfThen(Observable):
         then_source or else_source."""
         
         else_source = else_source or Observable.empty(scheduler=scheduler)
-
+        
+        then_source = Observable.from_future(then_source)
+        else_source = Observable.from_future(else_source)
+        
         def factory():
-            #isPromise(thenSource) && (thenSource = observableFromPromise(thenSource));
-            #isPromise(elseSourceOrScheduler) && (elseSourceOrScheduler = observableFromPromise(elseSourceOrScheduler));
             
             return then_source if condition() else else_source
         return Observable.defer(factory)
