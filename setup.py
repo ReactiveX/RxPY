@@ -23,6 +23,7 @@ is a set of libraries to compose asynchronous and event-based programs using obs
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers = [
+        # 'Development Status :: 5 - Production/Stable',
         'Development Status :: 4 - Beta',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
