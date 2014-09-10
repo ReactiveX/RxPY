@@ -32,7 +32,8 @@ class Observable(object):
             observer = on_next
         else:
             observer = Observer(on_next, on_error, on_completed)
-            
+        observer = on_next if isinstance(on_next, AbstractObserver) else Observer(on_next, on_error, on_completed)
+        
         return self._subscribe(observer)
 
 

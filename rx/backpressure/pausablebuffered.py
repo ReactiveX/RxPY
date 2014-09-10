@@ -47,9 +47,9 @@ class PausableBufferedObservable(Observable):
         self.subject = subject or Subject()
         self.is_paused = True
 
-        super(PausableBufferedObservable, self).__init__(self.__subscribe)
+        super(PausableBufferedObservable, self).__init__(self._subscribe)
 
-    def __subscribe(self, observer):
+    def _subscribe(self, observer):
         previous = [True]
         queue = []
 

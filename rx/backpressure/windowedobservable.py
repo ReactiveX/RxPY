@@ -46,14 +46,14 @@ class WindowedObserver(Observer):
 
 class WindowedObservable(Observable):
     def __init__(self, source, window_size, scheduler):
-        super(WindowedObservable, self).__init__(self.subscribe)
+        super(WindowedObservable, self).__init__(self._subscribe)
 
         self.source = source
         self.window_size = window_size
         self.scheduler = scheduler
         self.is_disposed = False
 
-    def subscribe(self, observer):
+    def _subscribe(self, observer):
         self.subscription = self.source.subscribe(observer)
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
         

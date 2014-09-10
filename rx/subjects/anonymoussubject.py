@@ -2,12 +2,12 @@ from rx import Observable
 
 class AnonymousSubject(Observable):
     def __init__(self, observer, observable):
-        super(AnonymousSubject, self).__init__(self.subscribe)
+        super(AnonymousSubject, self).__init__(self._subscribe)
         
         self.observer = observer
         self.observable = observable
 
-    def subscribe(self, observer):
+    def _subscribe(self, observer):
         return self.observable.subscribe(observer)
 
     def on_completed(self):

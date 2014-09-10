@@ -3,7 +3,7 @@ from rx.disposables import CompositeDisposable
 
 class GroupedObservable(Observable):
     def __init__(self, key, underlying_observable, merged_disposable=None):
-        super(GroupedObservable, self).__init__(self.subscribe)
+        super(GroupedObservable, self).__init__(self._subscribe)
         self.key = key
 
         def subscribe(observer):
@@ -11,7 +11,7 @@ class GroupedObservable(Observable):
 
         self.underlying_observable = underlying_observable if not merged_disposable else AnonymousObservable(subscribe)
     
-    def subscribe(self, observer):
+    def _subscribe(self, observer):
         return self.underlying_observable.subscribe(observer)
 
     
