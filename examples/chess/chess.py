@@ -6,23 +6,22 @@ from rx.concurrency import PyGameScheduler
 
 import pygame
 
-FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
-#logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)
-logging.basicConfig(format=FORMAT, level=logging.DEBUG)
-log = logging.getLogger('Rx')
+#FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
+#logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+#log = logging.getLogger('Rx')
 
 def main():
     pygame.init()
 
     size = width, height = 500, 500
     screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("Rx for Python rocks")
+    
     black = 0, 0, 0
-
     background = pygame.Surface(screen.get_size())
     background.fill((0, 0, 0))         # fill the background black
     background = background.convert()  # prepare for faster blitting
 
-    #root.title("Rx for Python rocks")
     scheduler = PyGameScheduler()
 
     mousemove = Subject()
@@ -59,7 +58,7 @@ def main():
             print("Got error: %s" % err)
             sys.exit()
 
-        mousemove.delay(i*100, scheduler=scheduler).subscribe(on_next, on_error=on_error)
+        mousemove.delay(i*1000, scheduler=scheduler).subscribe(on_next, on_error=on_error)
         
     for i, image in enumerate(images):
         handle_image(i, image)
