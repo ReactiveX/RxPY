@@ -85,7 +85,6 @@ class PyGameScheduler(Scheduler):
         if isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
 
-        print(timespan)
         return timespan
 
     @classmethod
