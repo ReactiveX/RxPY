@@ -10,8 +10,6 @@ class GroupedObservable(Observable):
             return CompositeDisposable(merged_disposable.disposable, underlying_observable.subscribe(observer))
 
         self.underlying_observable = underlying_observable if not merged_disposable else AnonymousObservable(subscribe)
-    
-    def subscribe(self, observer):
-        return self.underlying_observable.subscribe(observer)
 
-    
+    def subscribe(self, on_next=None, on_error=None, on_completed=None):
+        return self.underlying_observable.subscribe(on_next, on_error, on_completed)
