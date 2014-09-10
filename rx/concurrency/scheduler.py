@@ -207,6 +207,9 @@ class Scheduler(object):
             state={ "first": state, "second": action })
 
     def now(self):
+        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        on a scheduler will adhere to the time denoted by this property."""
+        
         return self.default_now()
 
     def default_now(self):
