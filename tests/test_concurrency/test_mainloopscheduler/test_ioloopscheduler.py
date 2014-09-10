@@ -15,7 +15,7 @@ class TestIOLoopScheduler(unittest.TestCase):
         loop = ioloop.IOLoop.instance()
 
         scheduler = IOLoopScheduler(loop)
-        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        res = datetime.fromtimestamp(scheduler.now()) - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_ioloop_schedule_action(self):

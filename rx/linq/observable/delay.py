@@ -74,7 +74,9 @@ class ObservableDelay(Observable):
                             recurse_duetime = 0
                             if len(q) :
                                 should_recurse = True
-                                recurse_duetime = max(0, q[0].timestamp - scheduler.now())
+                                diff = q[0].timestamp - scheduler.now()
+                                zero = timedelta(0) if isinstance(diff, timedelta) else 0
+                                recurse_duetime = max(zero, diff)
                             else:
                                 active[0] = False
                             
