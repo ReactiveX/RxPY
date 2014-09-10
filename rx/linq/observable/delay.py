@@ -122,7 +122,6 @@ class ObservableDelay(Observable):
         if isinstance(duetime, datetime):
             observable = self.observable_delay_date(duetime, scheduler)
         else:
-            duetime = duetime if isinstance(duetime, timedelta) else timedelta(milliseconds=duetime)
             observable = self.observable_delay_timespan(duetime, scheduler)
 
         return observable
