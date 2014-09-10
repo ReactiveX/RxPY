@@ -53,7 +53,7 @@ class ObservableDelay(Observable):
                         d = SingleAssignmentDisposable()
                         cancelable.disposable = d
 
-                        def action(self):
+                        def action(this):
                             if exception[0]:
                                 log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                                 return
@@ -72,18 +72,18 @@ class ObservableDelay(Observable):
                             
                             should_recurse = False
                             recurse_duetime = 0
-                            if len(q) > 0:
+                            if len(q) :
                                 should_recurse = True
-                                recurse_duetime = max(timedelta(0), q[0].timestamp - scheduler.now())
+                                recurse_duetime = max(0, q[0].timestamp - scheduler.now())
                             else:
                                 active[0] = False
                             
-                            e = exception[0]
+                            ex = exception[0]
                             running[0] = False
-                            if e:
-                                observer.on_error(e)
+                            if ex:
+                                observer.on_error(ex)
                             elif should_recurse:
-                                self(recurse_duetime)
+                                this(recurse_duetime)
 
                         d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
             subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
