@@ -64,7 +64,6 @@ def main():
         handle_image(i, image)
     
     while True:
-        #pygame.time.wait(10)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
                 pos = event.__dict__["pos"]
