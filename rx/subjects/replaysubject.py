@@ -20,28 +20,26 @@ class RemovableDisposable(object):
         self.observer.dispose()
         if not self.subject.is_disposed and self.observer in self.subject.observers:
             self.subject.observers.remove(self.observer)
-            
+
 # Replay Subject
 class ReplaySubject(Observable, AbstractObserver):
-    """Represents an object that is both an observable sequence as well as an 
-    observer. Each notification is broadcasted to all subscribed and future 
+    """Represents an object that is both an observable sequence as well as an
+    observer. Each notification is broadcasted to all subscribed and future
     observers, subject to buffer trimming policies.
-    """ 
-    
+    """
+
     def __init__(self, buffer_size=None, window=None, scheduler=None):
-        """Initializes a new instance of the ReplaySubject class with the 
+        """Initializes a new instance of the ReplaySubject class with the
         specified buffer size, window and scheduler.
-     
+
         Keyword arguments:
         buffer_size -- [Optional] Maximum element count of the replay buffer.
         window [Optional] -- Maximum time length of the replay buffer.
         scheduler -- [Optional] Scheduler the observers are invoked on.
         """
-    
+
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
-        self.window = timedelta.max if window is None else window
-        if not isinstance(self.window, timedelta):
-            self.window = timedelta(milliseconds=self.window)
+        self.window = scheduler.normalize(timedelta.max) if window is None else window
         self.scheduler = scheduler or current_thread_scheduler
         self.q = []
         self.observers = []
@@ -77,11 +75,11 @@ class ReplaySubject(Observable, AbstractObserver):
 
         so.ensure_active() # n)
         return subscription
-    
+
     def _trim(self, now):
         while len(self.q) > self.buffer_size:
             self.q.pop(0)
-        
+
         while len(self.q) > 0 and (now - self.q[0]['interval']) > self.window:
             self.q.pop(0)
 
@@ -95,7 +93,7 @@ class ReplaySubject(Observable, AbstractObserver):
             for observer in self.observers[:]:
                 observer.on_next(value)
                 observer.ensure_active()
-    
+
     def on_error(self, error):
         self.check_disposed()
         if not self.is_stopped:
@@ -104,13 +102,13 @@ class ReplaySubject(Observable, AbstractObserver):
             self.has_error = True
             now = self.scheduler.now()
             self._trim(now)
-            
+
             for observer in self.observers[:]:
                 observer.on_error(error)
                 observer.ensure_active()
-            
+
             self.observers = []
-        
+
     def on_completed(self):
         self.check_disposed()
         if not self.is_stopped:
@@ -120,10 +118,10 @@ class ReplaySubject(Observable, AbstractObserver):
             for observer in self.observers[:]:
                 observer.on_completed()
                 observer.ensure_active()
-            
+
             self.observers = []
-        
+
     def dispose(self):
         self.is_disposed = True
         self.observers = None
-    
+
