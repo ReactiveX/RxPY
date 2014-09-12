@@ -107,6 +107,7 @@ from . import timeoutwithselector
 from . import timestamp
 from . import toarray
 from . import toasync
+from . import todict
 from . import tofuture
 from . import using
 from . import where
