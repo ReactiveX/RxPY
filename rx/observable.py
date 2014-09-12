@@ -9,13 +9,15 @@ class Observable(object):
     def __init__(self, subscribe):
         self._subscribe = subscribe
         
-        # Run exension method initializers added by meta class
+        # Run extension method initializers added by meta class
         for init in self.initializers:
             init(self, subscribe)
 
-    def subscribe(self, on_next=None, on_error=None, on_completed=None):
+    def subscribe(self, on_next=None, on_error=None, on_completed=None, 
+                  observer=None):
         """Subscribes an observer to the observable sequence. Returns the source
-        sequence whose subscriptions and unsubscriptions happen on the specified scheduler.
+        sequence whose subscriptions and unsubscriptions happen on the specified 
+        scheduler.
         
         1 - source.subscribe()
         2 - source.subscribe(observer)
@@ -24,15 +26,23 @@ class Observable(object):
         5 - source.subscribe(on_next, on_error, on_completed)
         
         Keyword arguments:
-        observer_or_on_next -- [Optional] The object that is to receive notifications or an action to invoke for each element in the observable sequence.
-        on_error -- [Optional] Action to invoke upon exceptional termination of the observable sequence.
-        on_completed -- [Optional] Action to invoke upon graceful termination of the observable sequence.
-        """
+        on_next -- [Optional] Action to invoke for each element in the 
+            observable sequence.
+        on_error -- [Optional] Action to invoke upon exceptional termination of 
+            the observable sequence.
+        on_completed -- [Optional] Action to invoke upon graceful termination of 
+            the observable sequence.
+        observer -- [Optional] The object that is to receive notifications. You
+            may subscribe using an observer or callbacks, not both.
+
+        Returns {Diposable} the source sequence whose subscriptions and 
+        unsubscriptions happen on the specified scheduler."""
+
+        # Be forgiving and accept an un-named observer as first parameter
         if isinstance(on_next, AbstractObserver):
             observer = on_next
-        else:
+        elif not observer:
             observer = Observer(on_next, on_error, on_completed)
-        observer = on_next if isinstance(on_next, AbstractObserver) else Observer(on_next, on_error, on_completed)
         
         return self._subscribe(observer)
 
