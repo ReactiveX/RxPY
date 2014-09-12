@@ -82,7 +82,8 @@ class ObservableAmb(Observable):
     
         E.g. winner = Rx.Observable.amb(xs, ys, zs)
      
-        Returns an observable sequence that surfaces any of the given sequences, whichever reacted first.
+        Returns an observable sequence that surfaces any of the given sequences, 
+        whichever reacted first.
         """
     
         acc = Observable.never()
