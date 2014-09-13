@@ -106,7 +106,7 @@ Python framework.
 * `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter).
   See the [timeflies](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your Tkinter application.
-* `PyGameScheduler* for use with [PyGame](http://www.pygame.org/). See the 
+* `PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the 
   [chess](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your PyGame application.
 
