@@ -111,6 +111,7 @@ from . import tolist
 from . import toasync
 from . import todict
 from . import tofuture
+from . import toset
 from . import using
 from . import where
 from . import whiledo
