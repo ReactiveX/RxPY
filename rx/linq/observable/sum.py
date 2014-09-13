@@ -17,7 +17,8 @@ class ObservableSum(Observable):
         res = source.sum()
         res = source.sum(lambda x: x.value)
  
-        key_selector -- {Function} [Optional] A transform function to apply to each element.
+        key_selector -- {Function} [Optional] A transform function to apply to 
+            each element.
         
         Returns an observable {Observable} sequence containing a single element
         with the sum of the values in the source sequence."""
@@ -25,4 +26,5 @@ class ObservableSum(Observable):
         if key_selector:
             return self.select(key_selector).sum()  
         else:
-            return self.aggregate(seed=0, accumulator=lambda prev, curr: prev + curr)
+            return self.aggregate(seed=0, 
+                                  accumulator=lambda prev, curr: prev + curr)

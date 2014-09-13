@@ -55,6 +55,11 @@ class TestScheduler(VirtualTimeScheduler):
 
         return datetime.fromtimestamp(absolute/1000.0)
 
+    def now(self):
+        """Gets the scheduler's absolute time clock value as ticks."""
+
+        return self.clock
+
     @classmethod
     def to_relative(cls, timespan):
         """Converts timespan to from datetime/timedelta to milliseconds"""
@@ -157,3 +162,31 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         return MockObserver(self)
+
+    @classmethod
+    def normalize(cls, timespan):
+        """TestScheduler operates with ticks in milliseconds"""
+        print("TestScheduler:normalize(%s)" % timespan)
+
+        nospan = 0
+
+        if isinstance(timespan, timedelta):
+            msecs = int(timespan.seconds+timespan.microseconds/1000)
+
+        elif isinstance(timespan, datetime):
+            if hasattr(timespan, "timestamp"):
+                # Python 3
+                timestamp = timespan.timestamp()
+            else:
+                # Python2
+                timestamp = (timespan - datetime.fromtimestamp(0)).total_seconds()
+            print(timestamp)
+            msecs = int(timestamp*1000)
+            print(msecs)
+        else:
+            msecs = int(timespan)
+
+        if not msecs or msecs < nospan:
+            msecs = nospan
+
+        return msecs

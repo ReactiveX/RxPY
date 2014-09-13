@@ -89,8 +89,9 @@ res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 Thus when an operator like `Observable.timeout` has multiple optional arguments
 you should name your arguments. At least the arguments marked as optional.
 
-RxPY also has a number of Python specific mainloop schedulers to make it easier
-for you to use RxPY with your favorite Python framework.
+RxPY also comes with batteries included, and has a number of Python specific 
+mainloop schedulers to make it easier for you to use RxPY with your favorite 
+Python framework.
 
 * `AsyncIOScheduler` for use with
   [AsyncIO](https://docs.python.org/3/library/asyncio.html). (Python 3.4 only).
@@ -105,6 +106,9 @@ for you to use RxPY with your favorite Python framework.
 * `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter).
   See the [timeflies](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your Tkinter application.
+* `PyGameScheduler* for use with [PyGame](http://www.pygame.org/). See the 
+  [chess](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
+  example for howto use RxPY with your PyGame application.
 
 ## Contributing ##
 

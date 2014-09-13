@@ -12,34 +12,34 @@ class Notification(object):
     def __init__(self):
         """Default constructor used by derived types."""
         self.has_value = False
-    
+
     def accept(self, on_next, on_error=None, on_completed=None):
-        """Invokes the delegate corresponding to the notification or an 
-        observer and returns the produced result. 
-        
+        """Invokes the delegate corresponding to the notification or an
+        observer and returns the produced result.
+
         1 - notification.accept(observer)
         2 - notification.accept(on_next, on_error, on_completed)
-        
+
         Keyword arguments:
         on_next -- Delegate to invoke for an OnNext notification.
         on_error -- [Optional] Delegate to invoke for an OnError notification.
         on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
-        
+
         Returns result produced by the observation.
         """
         if isinstance(on_next, AbstractObserver):
             return self._accept_observable(on_next)
         else:
             return self._accept(on_next, on_error, on_completed)
-            
+
     def to_observable(self, scheduler=None):
         """Returns an observable sequence with a single notification, using the
-        specified scheduler, else the immediate scheduler. 
+        specified scheduler, else the immediate scheduler.
 
         Keyword arguments:
         scheduler -- [Optional] Scheduler to send out the notification calls on.
-        
-        Returnes an observable sequence that surfaces the behavior of the 
+
+        Returnes an observable sequence that surfaces the behavior of the
         notification upon subscription.
         """
         notification = self
@@ -50,21 +50,21 @@ class Notification(object):
                 notification._accept_observable(observer)
                 if notification.kind == 'N':
                     observer.on_completed()
-                
+
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
 
     @classmethod
     def observer_from_notifier(cls, handler):
         """Creates an observer from a notification callback.
-        
+
         Keyword arguments:
         handler -- Action that handles a notification.
-        
-        Returns the observer object that invokes the specified handler using a 
+
+        Returns the observer object that invokes the specified handler using a
         notification corresponding to each message it receives.
         """
-        
+
         def _on_next(value):
             return handler(OnNext(value))
         def _on_error(ex):
@@ -81,13 +81,13 @@ class Notification(object):
 
     def __eq__(self, other):
         return self.equals(other)
-    
+
 class OnNext(Notification):
     """Represents an OnNext notification to an observer."""
-    
+
     def __init__(self, value):
         """Constructs a notification of a new value."""
-        
+
         super(OnNext, self).__init__()
         self.value = value
         self.has_value = True
@@ -95,13 +95,13 @@ class OnNext(Notification):
 
     def _accept(self, on_next, on_error=None, on_completed=None):
         return on_next(self.value)
-    
+
     def _accept_observable(self, observer):
         return observer.on_next(self.value)
-    
+
     def __str__(self):
         return "OnNext(%s)" % self.value
-    
+
 class OnError(Notification):
     """Represents an OnError notification to an observer."""
 
@@ -114,10 +114,10 @@ class OnError(Notification):
 
     def _accept(self, on_next, on_error, on_completed):
         return on_error(self.exception)
-    
+
     def _accept_observable(self, observer):
         return observer.on_error(self.exception)
-    
+
     def __str__(self):
         return "OnError(%s)" % self.exception
 
@@ -126,16 +126,16 @@ class OnCompleted(Notification):
 
     def __init__(self):
         """Constructs a notification of the end of a sequence."""
-        
+
         super(OnCompleted, self).__init__()
         self.kind = 'C'
 
     def _accept(self, on_next, on_error, on_completed):
         return on_completed()
-    
+
     def _accept_observable(self, observer):
         return observer.on_completed()
-    
+
     def __str__(self):
         return "OnCompleted()"
 

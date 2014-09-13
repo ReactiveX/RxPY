@@ -12,7 +12,7 @@ log = logging.getLogger("Rx")
 class HotObservable(Observable):
     def __init__(self, scheduler, messages):
         log.debug("HotObservable.__init__()")
-        Observable.__init__(self, self.subscribe)
+        Observable.__init__(self, self._subscribe)
 
         self.scheduler = scheduler
         self.messages = messages
@@ -35,7 +35,7 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def subscribe(self, on_next, on_error=None, on_completed=None):
+    def _subscribe(self, on_next=None, on_error=None, on_completed=None):
         log.debug("HotObservable:subscribe()")
 
         if isinstance(on_next, AbstractObserver):

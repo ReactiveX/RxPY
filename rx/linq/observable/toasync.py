@@ -18,12 +18,13 @@ class ObservableToArray(Observable):
         Example:
         res = Observable.to_async(lambda x, y: x + y)(4, 3)
         res = Observable.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
-        res = Observable.to_async(lambda x: log.debug(x), Scheduler.timeout)('hello')
+        res = Observable.to_async(lambda x: log.debug(x),
+                                  Scheduler.timeout)('hello')
 
         func -- {Function} Function to convert to an asynchronous function.
         scheduler -- {Scheduler} [Optional] Scheduler to run the function on. If
             not specified, defaults to Scheduler.timeout.
-        
+
         Returns {Function} Asynchronous function."""
 
         scheduler =  scheduler or timeout_scheduler

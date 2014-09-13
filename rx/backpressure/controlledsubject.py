@@ -5,7 +5,7 @@ from rx.internal.utils import check_disposed
 
 class ControlledSubject(Observable):
     def __init__(self, enable_queue=True):
-        super(ControlledSubject, self).__init__(self.subscribe)
+        super(ControlledSubject, self).__init__(self._subscribe)
 
         self.subject = Subject()
         self.enable_queue = enable_queue
@@ -17,7 +17,7 @@ class ControlledSubject(Observable):
         self.has_completed = False
         self.controlled_disposable = Disposable.empty()
 
-    def subscribe(self, observer):
+    def _subscribe(self, observer):
         return self.subject.subscribe(observer)
 
     def on_completed(self):

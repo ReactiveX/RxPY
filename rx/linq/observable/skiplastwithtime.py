@@ -36,16 +36,12 @@ class ObservableSkipLastWithTime(Observable):
         scheduler = scheduler or timeout_scheduler
         source = self
 
-        if isinstance(duration, int):
-            duration = timedelta(milliseconds=duration)
-
         def subscribe(observer):
             q = []
 
             def on_next(x):
                 now = scheduler.now()
                 q.append({ "interval": now, "value": x })
-                print(now, q[0], duration)
                 while len(q) and now - q[0]["interval"] >= duration:
                     observer.on_next(q.pop(0)["value"])
 

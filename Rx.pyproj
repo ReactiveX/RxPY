@@ -25,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="examples\autocomplete\autocomplete.py" />
+    <Compile Include="examples\chess\chess.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="examples\timeflies\timeflies.py" />
     <Compile Include="rx\abstractobserver.py" />
@@ -46,6 +47,7 @@
     <Compile Include="rx\concurrency\mainloopscheduler\asyncioscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\geventscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\ioloopscheduler.py" />
+    <Compile Include="rx\concurrency\mainloopscheduler\pygamescheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\tkinterscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\twistedscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\__init__.py" />
@@ -64,6 +66,7 @@
     <Compile Include="rx\internal\__init__.py" />
     <Compile Include="rx\linq\connectableobservable.py" />
     <Compile Include="rx\linq\enumerable\whiledo.py" />
+    <Compile Include="rx\linq\enumerable\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
     <Compile Include="rx\linq\observable\aggregate.py" />
     <Compile Include="rx\linq\observable\all.py" />
@@ -104,8 +107,9 @@
     <Compile Include="rx\linq\observable\first.py" />
     <Compile Include="rx\linq\observable\firstordefault.py" />
     <Compile Include="rx\linq\observable\forin.py" />
-    <Compile Include="rx\linq\observable\fromarray.py" />
+    <Compile Include="rx\linq\observable\fromcallback.py" />
     <Compile Include="rx\linq\observable\fromfuture.py" />
+    <Compile Include="rx\linq\observable\fromiterable.py" />
     <Compile Include="rx\linq\observable\generate.py" />
     <Compile Include="rx\linq\observable\generatewithrelativetime.py" />
     <Compile Include="rx\linq\observable\groupby.py" />
@@ -153,6 +157,8 @@
     <Compile Include="rx\linq\observable\skipuntil.py" />
     <Compile Include="rx\linq\observable\skipwhile.py" />
     <Compile Include="rx\linq\observable\skipwithtime.py" />
+    <Compile Include="rx\linq\observable\start.py" />
+    <Compile Include="rx\linq\observable\startasync.py" />
     <Compile Include="rx\linq\observable\startswith.py" />
     <Compile Include="rx\linq\observable\subscribeon.py" />
     <Compile Include="rx\linq\observable\sum.py" />
@@ -170,8 +176,11 @@
     <Compile Include="rx\linq\observable\timeoutwithselector.py" />
     <Compile Include="rx\linq\observable\timer.py" />
     <Compile Include="rx\linq\observable\timestamp.py" />
-    <Compile Include="rx\linq\observable\toarray.py" />
     <Compile Include="rx\linq\observable\toasync.py" />
+    <Compile Include="rx\linq\observable\todict.py" />
+    <Compile Include="rx\linq\observable\tofuture.py" />
+    <Compile Include="rx\linq\observable\tolist.py" />
+    <Compile Include="rx\linq\observable\toset.py" />
     <Compile Include="rx\linq\observable\using.py" />
     <Compile Include="rx\linq\observable\where.py" />
     <Compile Include="rx\linq\observable\whiledo.py" />
@@ -227,12 +236,16 @@
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_ioloopscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_tkinterscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_twistedscheduler.py" />
+    <Compile Include="tests\test_concurrency\test_mainloopscheduler\__init__.py" />
     <Compile Include="tests\test_concurrency\test_timeoutscheduler.py" />
     <Compile Include="tests\test_concurrency\test_virtualtimescheduler.py" />
     <Compile Include="tests\test_core\test_notification.py" />
     <Compile Include="tests\test_core\test_observer.py" />
+    <Compile Include="tests\test_core\__init__.py" />
     <Compile Include="tests\test_disposables\test_disposable.py" />
     <Compile Include="tests\test_observable\py3_fromfuture.py" />
+    <Compile Include="tests\test_observable\py3_start.py" />
+    <Compile Include="tests\test_observable\py3_tofuture.py" />
     <Compile Include="tests\test_observable\test_aggregate.py" />
     <Compile Include="tests\test_observable\test_amb.py" />
     <Compile Include="tests\test_observable\test_asobservable.py" />
@@ -265,6 +278,7 @@
     <Compile Include="tests\test_observable\test_firstordefault.py" />
     <Compile Include="tests\test_observable\test_forin.py" />
     <Compile Include="tests\test_observable\test_fromarray.py" />
+    <Compile Include="tests\test_observable\test_fromcallback.py" />
     <Compile Include="tests\test_observable\test_fromfuture.py" />
     <Compile Include="tests\test_observable\test_generate.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
@@ -315,6 +329,7 @@
     <Compile Include="tests\test_observable\test_skipuntil.py" />
     <Compile Include="tests\test_observable\test_skipwhile.py" />
     <Compile Include="tests\test_observable\test_skipwithtime.py" />
+    <Compile Include="tests\test_observable\test_start.py" />
     <Compile Include="tests\test_observable\test_startwith.py" />
     <Compile Include="tests\test_observable\test_subscribeon.py" />
     <Compile Include="tests\test_observable\test_sum.py" />
@@ -334,6 +349,9 @@
     <Compile Include="tests\test_observable\test_timestamp.py" />
     <Compile Include="tests\test_observable\test_toarray.py" />
     <Compile Include="tests\test_observable\test_toasync.py" />
+    <Compile Include="tests\test_observable\test_todict.py" />
+    <Compile Include="tests\test_observable\test_tofuture.py" />
+    <Compile Include="tests\test_observable\test_toset.py" />
     <Compile Include="tests\test_observable\test_using.py" />
     <Compile Include="tests\test_observable\test_where.py" />
     <Compile Include="tests\test_observable\test_while.py" />
@@ -348,11 +366,13 @@
     <Compile Include="tests\test_subjects\test_behaviorsubject.py" />
     <Compile Include="tests\test_subjects\test_replaysubject.py" />
     <Compile Include="tests\test_subjects\test_subject.py" />
+    <Compile Include="tests\test_subjects\__init__.py" />
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="examples\" />
     <Folder Include="examples\autocomplete\" />
+    <Folder Include="examples\chess\" />
     <Folder Include="examples\konamicode\" />
     <Folder Include="examples\timeflies\" />
     <Folder Include="rx" />
@@ -383,6 +403,18 @@
     <Content Include="authors.txt" />
     <Content Include="examples\autocomplete\autocomplete.js" />
     <Content Include="examples\autocomplete\index.html" />
+    <Content Include="examples\chess\chess_bishop.png" />
+    <Content Include="examples\chess\chess_bishop_white.png" />
+    <Content Include="examples\chess\chess_horse.png" />
+    <Content Include="examples\chess\chess_horse_white.png" />
+    <Content Include="examples\chess\chess_king.png" />
+    <Content Include="examples\chess\chess_king_white.png" />
+    <Content Include="examples\chess\chess_pawn.png" />
+    <Content Include="examples\chess\chess_pawn_white.png" />
+    <Content Include="examples\chess\chess_queen.png" />
+    <Content Include="examples\chess\chess_queen_white.png" />
+    <Content Include="examples\chess\chess_tower.png" />
+    <Content Include="examples\chess\chess_tower_white.png" />
     <Content Include="examples\konamicode\index.html" />
     <Content Include="examples\konamicode\konamicode.js" />
     <Content Include="LICENSE" />

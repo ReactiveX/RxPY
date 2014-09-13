@@ -19,10 +19,12 @@ class ObservableTimer(Observable):
 
         1 - res = source.timeout(new Date()); # As a date
         2 - res = source.timeout(5000); # 5 seconds
-        3 - res = source.timeout(new Date(), rx.Observable.return_value(42)) # As a date and timeout observable
+        3 - res = source.timeout(datetime(), rx.Observable.return_value(42)) # As a date and timeout observable
         4 - res = source.timeout(5000, rx.Observable.return_value(42)) # 5 seconds and timeout observable
-        5 - res = source.timeout(new Date(), rx.Observable.return_value(42), rx.Scheduler.timeout) # As a date and timeout observable
-        6 - res = source.timeout(5000, rx.Observable.return_value(42), rx.Scheduler.timeout) # 5 seconds and timeout observable
+        5 - res = source.timeout(datetime(), rx.Observable.return_value(42), 
+                                 rx.Scheduler.timeout) # As a date and timeout observable
+        6 - res = source.timeout(5000, rx.Observable.return_value(42), 
+                                 rx.Scheduler.timeout) # 5 seconds and timeout observable
 
         duetime -- Absolute (specified as a datetime object) or relative time
             (specified as an integer denoting milliseconds) when a timeout

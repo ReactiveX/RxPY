@@ -45,11 +45,11 @@ class StopAndWaitObserver(Observer):
 class StopAndWaitObservable(Observable):
 
     def __init__(self, source, scheduler):
-        super(StopAndWaitObservable, self).__init__(self.subscribe)
+        super(StopAndWaitObservable, self).__init__(self._subscribe)
         self.scheduler = scheduler
         self.source = source
 
-    def subscribe(self, observer):
+    def _subscribe(self, observer):
         self.subscription = self.source.subscribe(observer)
         observer = StopAndWaitObserver(observer, self, self.subscription, self.scheduler)
         

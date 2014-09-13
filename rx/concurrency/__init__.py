@@ -12,3 +12,4 @@ from .mainloopscheduler import IOLoopScheduler
 from .mainloopscheduler import GEventScheduler
 from .mainloopscheduler import TwistedScheduler
 from .mainloopscheduler import TkinterScheduler
+from .mainloopscheduler import PyGameScheduler

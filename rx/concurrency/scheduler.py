@@ -24,7 +24,7 @@ class Scheduler(object):
         """Schedules a periodic piece of work by dynamically discovering the
         scheduler's capabilities.
 
-        Keyword parameters:
+        Keyword arguments:
         period -- Period for running the work periodically.
         action -- Action to be executed.
         state -- [Optional] Initial state passed to the action upon the first
@@ -114,7 +114,7 @@ class Scheduler(object):
     def schedule_recursive(self, action, state=None):
         """Schedules an action to be executed recursively.
 
-        Keyword parameters:
+        Keyword arguments:
         action -- {Function} Action to execute recursively. The parameter passed
             to the action is used to trigger recursive scheduling of the action.
         Returns the disposable {Disposable} object used to cancel the scheduled
@@ -207,6 +207,9 @@ class Scheduler(object):
             state={ "first": state, "second": action })
 
     def now(self):
+        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        on a scheduler will adhere to the time denoted by this property."""
+        
         return self.default_now()
 
     def default_now(self):

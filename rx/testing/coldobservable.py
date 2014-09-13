@@ -7,13 +7,13 @@ from .reactive_assert import AssertList
 
 class ColdObservable(Observable):
     def __init__(self, scheduler, messages):
-        super(ColdObservable, self).__init__(self.subscribe)
+        super(ColdObservable, self).__init__(self._subscribe)
         
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions = AssertList()
 
-    def subscribe(self, on_next, on_error=None, on_completed=None):
+    def _subscribe(self, on_next, on_error=None, on_completed=None):
         if isinstance(on_next, AbstractObserver):
             observer = on_next
         else: 
