@@ -1,7 +1,8 @@
 import six
 from six import add_metaclass
 
-from rx.observable import Observable, Observer
+from rx import Observable
+from rx.observer import Observer, AbstractObserver
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import ExtensionMethod
 
@@ -9,7 +10,8 @@ from rx.internal import ExtensionMethod
 class ObservableDoAction(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def do_action(self, observer=None, on_next=None, on_error=None, on_completed=None):
+    def do_action(self, on_next=None, on_error=None, on_completed=None,
+                  observer=None):
         """Invokes an action for each element in the observable sequence and
         invokes an action upon graceful or exceptional termination of the
         observable sequence. This method can be used for debugging, logging,
@@ -32,13 +34,14 @@ class ObservableDoAction(Observable):
         Returns the source sequence with the side-effecting behavior applied.
         """
         source = self
-        if not observer is None:
-            if isinstance(observer, Observer):
-                on_next = observer.on_next
-                on_error = observer.on_error
-                on_completed = observer.on_completed
-            else:
-                on_next = observer
+        if isinstance(observer, AbstractObserver):
+            on_next = observer.on_next
+            on_error = observer.on_error
+            on_completed = observer.on_completed
+        elif isinstance(on_next, AbstractObserver):
+            on_error = on_next.on_error
+            on_completed = on_next.on_completed
+            on_next = on_next.on_next
 
         def subscribe(observer):
             def _on_next(x):
@@ -72,3 +75,5 @@ class ObservableDoAction(Observable):
                     observer.on_completed()
             return source.subscribe(_on_next, _on_error, _on_completed)
         return AnonymousObservable(subscribe)
+
+    tap = do_action # Alias

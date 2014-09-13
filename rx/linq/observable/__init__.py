@@ -54,6 +54,7 @@ from . import join
 from . import last
 from . import let
 from . import lastordefault
+from . import manyselect
 from . import materialize
 from . import merge
 from . import max
