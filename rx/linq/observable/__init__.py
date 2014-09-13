@@ -70,6 +70,7 @@ from . import pairwise
 from . import partition
 from . import pluck
 from . import publish
+from . import publishvalue
 from . import range
 from . import reduce
 from . import repeat
