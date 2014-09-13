@@ -54,9 +54,9 @@ Note that `pip` may be called `pip3` if your're using Python3.
 ## Differences from .NET and RxJS
 
 RxPY is a fairly complete implementation of [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-with more than 116 query operators, and over 1020 passing unit-tests. RxPY is a 
+v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY is a 
 line-by-line direct port of RxJS so it's actually possible to single-step both implementations in a 
-debugger if get any problems.
+debugger to trace any problems.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
 function and method names are lowercase with words separated by underscores as

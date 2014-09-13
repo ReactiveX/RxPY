@@ -67,7 +67,7 @@ class ObservableZip(Observable):
                 source = sources[i]
                 sad = SingleAssignmentDisposable()
                 source = Observable.from_future(source)
-          
+
                 def on_next(x):
                     queues[i].append(x)
                     next(i)
@@ -81,19 +81,19 @@ class ObservableZip(Observable):
 
     @classmethod
     def zip(cls, *args):
-        """Merges the specified observable sequences into one observable 
-        sequence by using the selector function whenever all of the observable 
+        """Merges the specified observable sequences into one observable
+        sequence by using the selector function whenever all of the observable
         sequences have produced an element at a corresponding index.
-        
+
         The last element in the arguments must be a function to invoke for each
         series of elements at corresponding indexes in the sources.
 
         Arguments:
         args -- Observable sources.
-     
-        Returns an observable {Observable} sequence containing the result of 
-        combining elements of the sources using the specified result selector 
+
+        Returns an observable {Observable} sequence containing the result of
+        combining elements of the sources using the specified result selector
         function."""
-        
-        first = args.pop(0);
-        return first.zip(*args)
+
+        first = args[0]
+        return first.zip(*args[1:])
