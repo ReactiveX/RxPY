@@ -166,7 +166,6 @@ class TestScheduler(VirtualTimeScheduler):
     @classmethod
     def normalize(cls, timespan):
         """TestScheduler operates with ticks in milliseconds"""
-        print("TestScheduler:normalize(%s)" % timespan)
 
         nospan = 0
 
@@ -180,9 +179,7 @@ class TestScheduler(VirtualTimeScheduler):
             else:
                 # Python2
                 timestamp = (timespan - datetime.fromtimestamp(0)).total_seconds()
-            print(timestamp)
             msecs = int(timestamp*1000)
-            print(msecs)
         else:
             msecs = int(timespan)
 
