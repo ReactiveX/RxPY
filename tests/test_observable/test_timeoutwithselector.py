@@ -76,7 +76,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 300))
         zs.subscriptions.assert_equal()
 
-    def test_timeout_duration_simple_timeoutlater(self):
+    def test_timeout_duration_simple_timeout_later(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
@@ -94,7 +94,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 310))
         zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
 
-    def test_timeout_duration_simple_timeoutbycompletion(self):
+    def test_timeout_duration_simple_timeout_by_completion(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
@@ -112,7 +112,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 310))
         zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
 
-    def test_timeout_duration_simple_timeoutbycompletion(self):
+    def test_timeout_duration_simple_timeout_by_completion(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
@@ -140,7 +140,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 310))
         zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 420))
 
-    def test_timeout_duration_simple_innerthrows(self):
+    def test_timeout_duration_simple_inner_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
@@ -156,7 +156,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 310))
         zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
 
-    def test_timeout_duration_simple_firstthrows(self):
+    def test_timeout_duration_simple_first_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
@@ -172,7 +172,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys.subscriptions.assert_equal(subscribe(200, 250))
         zs.subscriptions.assert_equal()
 
-    def test_timeout_Duration_Simple_SourceThrows(self):
+    def test_timeout_duration_simple_source_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_error(450, ex))
