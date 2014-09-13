@@ -35,7 +35,7 @@ def to_dict(source, map_type, key_selector, element_selector):
 class ObservableToDict(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def to_dict(self, key_selector, element_selector):
+    def to_dict(self, key_selector, element_selector=None):
         """Converts the observable sequence to a Map if it exists.
 
         Keyword arguments:

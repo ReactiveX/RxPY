@@ -4,7 +4,6 @@ from rx.concurrency import Scheduler
 from rx.observable import Observable
 
 from rx.concurrency import immediate_scheduler
-#from rx.linq.enumerable import Enumerable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -31,4 +30,3 @@ class ObservableStartsWith(Observable):
 
         sequence = [Observable.from_array(args, scheduler), self]
         return Observable.concat(sequence)
-        #return Observable.concat(Enumerable.for_each(sequence))
