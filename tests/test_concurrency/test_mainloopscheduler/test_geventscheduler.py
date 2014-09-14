@@ -13,7 +13,7 @@ class TestGEventScheduler(unittest.TestCase):
         
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler()
-        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        res = scheduler.now() - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
     def test_gevent_schedule_action(self):

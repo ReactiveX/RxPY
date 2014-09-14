@@ -46,7 +46,7 @@ class GEventScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = GEventScheduler.normalize(duetime)
+        seconds = self.to_relative(duetime)*1000
         if seconds == 0:
             return scheduler.schedule(action, state)
 
@@ -74,6 +74,7 @@ class GEventScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
