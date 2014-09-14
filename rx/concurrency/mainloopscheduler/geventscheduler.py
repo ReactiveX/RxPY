@@ -46,8 +46,8 @@ class GEventScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = self.to_relative(duetime)*1000
-        if seconds == 0:
+        seconds = self.to_relative(duetime)/1000.0
+        if not seconds:
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()

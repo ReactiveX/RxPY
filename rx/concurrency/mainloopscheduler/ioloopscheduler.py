@@ -46,7 +46,7 @@ class IOLoopScheduler(Scheduler):
 
         scheduler = self
         seconds = scheduler.to_relative(duetime)/1000.0
-        if seconds == 0:
+        if not seconds:
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
