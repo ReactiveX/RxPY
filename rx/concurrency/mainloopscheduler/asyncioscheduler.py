@@ -1,5 +1,9 @@
+# Same example as autocomplete.py but instead using the asyncio mainloop
+# and the AsyncIOScheduler
+
 import logging
 from datetime import datetime, timedelta
+asyncio = None
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
@@ -10,8 +14,10 @@ log = logging.getLogger("Rx")
 class AsyncIOScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
 
-    def __init__(self, loop):
-        self.loop = loop
+    def __init__(self, loop=None):
+        global asyncio
+        import asyncio
+        self.loop = loop or asyncio.get_event_loop()
 
     def schedule(self, action, state=None):
         scheduler = self
