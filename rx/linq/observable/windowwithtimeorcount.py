@@ -9,7 +9,7 @@ from rx.subjects import Subject
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableWindowWithTime(Observable):
+class ObservableWindowWithTimeOrCount(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def window_with_time_or_count(self, timespan, count, scheduler=None):

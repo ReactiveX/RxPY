@@ -98,6 +98,7 @@ from . import switchlatest
 from . import take
 from . import takelast
 from . import takelastbuffer
+from . import takelastwithtime
 from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
