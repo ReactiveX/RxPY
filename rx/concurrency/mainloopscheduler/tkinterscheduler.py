@@ -43,7 +43,7 @@ class TkinterScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        msecs = TkinterScheduler.normalize(duetime)
+        msecs = self.to_relative(duetime)
         if msecs == 0:
             return scheduler.schedule(action, state)
 
@@ -70,26 +70,5 @@ class TkinterScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        duetime = self.to_absolute(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
-
-    #def default_now(self):
-    #    return self.loop.time()
-
-    @classmethod
-    def normalize(cls, timespan):
-        """Eventloop operates with milliseconds"""
-        nospan = 0
-
-        if isinstance(timespan, timedelta):
-            msecs = timespan.seconds+timespan.microseconds/1000.0
-
-        elif isinstance(timespan, datetime):
-            msecs = timespan.totimestamp()*1000
-        else:
-            msecs = timespan
-
-        if not timespan:
-            msecs = nospan
-
-        return int(msecs)
-

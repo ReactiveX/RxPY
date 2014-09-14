@@ -49,7 +49,6 @@ class ObservableTimer(Observable):
         if isinstance(duetime, datetime):
             scheduler_method = scheduler.schedule_absolute
         else:
-            duetime = duetime if isinstance(duetime, timedelta) else timedelta(milliseconds=duetime)
             scheduler_method = scheduler.schedule_relative
 
         def subscribe(observer):

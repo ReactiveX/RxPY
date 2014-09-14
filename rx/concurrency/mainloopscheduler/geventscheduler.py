@@ -80,23 +80,5 @@ class GEventScheduler(Scheduler):
         """Represents a notion of time for this scheduler. Tasks being scheduled 
         on a scheduler will adhere to the time denoted by this property."""
         
-        return gevent.core.time()
-
-    @classmethod
-    def normalize(cls, timespan):
-        """GEvent operates with seconds as floats"""
-        nospan = 0
-
-        if isinstance(timespan, timedelta):
-            seconds = timespan.seconds+timespan.microseconds/1000000.0
-
-        elif isinstance(timespan, datetime):
-            seconds = timespan.totimestamp()
-        else:
-            seconds = timespan
-
-        if not timespan or timespan < nospan:
-            seconds = nospan
-
-        return seconds
+        return self.to_datetime(gevent.core.time())
 

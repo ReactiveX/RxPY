@@ -34,6 +34,7 @@ class ObservableSkipLastWithTime(Observable):
         during the specified duration from the end of the source sequence."""
 
         scheduler = scheduler or timeout_scheduler
+        duration = scheduler.to_timedelta(duration)
         source = self
 
         def subscribe(observer):

@@ -40,7 +40,7 @@ class ReplaySubject(Observable, AbstractObserver):
 
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
         self.scheduler = scheduler or current_thread_scheduler
-        self.window = self.scheduler.normalize(timedelta.max) if window is None else window
+        self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
         self.q = []
         self.observers = []
         self.is_stopped = False
