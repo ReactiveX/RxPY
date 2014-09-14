@@ -3,22 +3,23 @@ RxPY example running a Tornado server doing search queries against Wikipedia to
 populate the autocomplete dropdown in the web UI. Start using 
 `python autocomplete.py` and navigate your web browser to http://localhost:8080
 
-Uses the RxPY IOLoopScheduler (works on both Python 2.7 and 3.4)
+Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 """
 
 import os
+import asyncio
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httputil import url_concat
 from tornado.escape import json_encode, json_decode
-from tornado import ioloop
+from tornado.platform.asyncio import AsyncIOMainLoop
 
 from rx.subjects import Subject
-from rx.concurrency import IOLoopScheduler
+from rx.concurrency import AsyncIOScheduler
 
-scheduler = IOLoopScheduler()
+scheduler = AsyncIOScheduler()
 
 def search_wikipedia(term):
     """Search Wikipedia for a given term"""
@@ -77,6 +78,8 @@ class MainHandler(RequestHandler):
         self.render("index.html")
 
 def main():
+    AsyncIOMainLoop().install()
+    
     port = os.environ.get("PORT", 8080)
     app = Application([
         url(r"/", MainHandler),
@@ -85,7 +88,7 @@ def main():
     ])
     print("Starting server at port: %s" % port)
     app.listen(port)
-    ioloop.IOLoop.current().start()
+    asyncio.get_event_loop().run_forever()
 
 if __name__ == '__main__':
     main()

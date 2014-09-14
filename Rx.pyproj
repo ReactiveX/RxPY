@@ -25,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="examples\autocomplete\autocomplete.py" />
+    <Compile Include="examples\autocomplete\autocomplete_asyncio.py" />
     <Compile Include="examples\chess\chess.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="examples\timeflies\timeflies.py" />
