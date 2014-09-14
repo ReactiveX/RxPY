@@ -1,5 +1,5 @@
 from threading import Timer
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.internal.basic import default_now
@@ -216,8 +216,48 @@ class Scheduler(object):
         return default_now()
 
     @classmethod
+    def to_relative(cls, timespan):
+        """Converts time value to milliseconds"""
+
+        if isinstance(timespan, datetime):
+            timespan = timespan - datetime.fromtimestamp(0)
+            timespan = int(timespan.total_seconds()*1000)
+        elif isinstance(timespan, timedelta):
+            timespan = int(timespan.total_seconds()*1000)
+        elif isinstance(timespan, float):
+            timespan = timespan * 1000
+
+        return int(timespan)
+
+    @classmethod
+    def to_datetime(cls, duetime):
+        """Converts time value to datetime"""
+
+        if isinstance(duetime, int):
+            duetime = datetime.fromtimestamp(duetime/1000.0)
+        elif isinstance(duetime, float):
+            duetime = datetime.fromtimestamp(duetime)
+        elif isinstance(duetime, timedelta):
+            duetime = datetime.fromtimestamp(0) + duetime
+
+        return duetime
+
+    @classmethod
+    def to_timedelta(cls, timespan):
+        """Converts time value to timedelta"""
+
+        if isinstance(timespan, int):
+            timespan = timedelta(milliseconds=timespan)
+        elif isinstance(timespan, float):
+            timespan = timedelta(seconds=timespan)
+        elif isinstance(timespan, datetime):
+            timespan = timespan - datetime.fromtimestamp(0)
+
+        return timespan
+
+    @classmethod
     def normalize(cls, timespan):
-        """Normalizes the specified Timespan value to a positive value.
+        """Normalizes the specified timespan value to a positive value.
         
         Keyword Arguments:
         timeSpan -- {Number} The time span value to normalize.

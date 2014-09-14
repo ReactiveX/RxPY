@@ -25,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="examples\autocomplete\autocomplete.py" />
+    <Compile Include="examples\autocomplete\autocomplete_asyncio.py" />
     <Compile Include="examples\chess\chess.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="examples\timeflies\timeflies.py" />
@@ -123,6 +124,7 @@
     <Compile Include="rx\linq\observable\last.py" />
     <Compile Include="rx\linq\observable\lastordefault.py" />
     <Compile Include="rx\linq\observable\let.py" />
+    <Compile Include="rx\linq\observable\manyselect.py" />
     <Compile Include="rx\linq\observable\materialize.py" />
     <Compile Include="rx\linq\observable\max.py" />
     <Compile Include="rx\linq\observable\maxby.py" />
@@ -138,6 +140,7 @@
     <Compile Include="rx\linq\observable\partition.py" />
     <Compile Include="rx\linq\observable\pluck.py" />
     <Compile Include="rx\linq\observable\publish.py" />
+    <Compile Include="rx\linq\observable\publishvalue.py" />
     <Compile Include="rx\linq\observable\range.py" />
     <Compile Include="rx\linq\observable\reduce.py" />
     <Compile Include="rx\linq\observable\repeat.py" />
@@ -166,6 +169,7 @@
     <Compile Include="rx\linq\observable\take.py" />
     <Compile Include="rx\linq\observable\takelast.py" />
     <Compile Include="rx\linq\observable\takelastbuffer.py" />
+    <Compile Include="rx\linq\observable\takelastwithtime.py" />
     <Compile Include="rx\linq\observable\takeuntil.py" />
     <Compile Include="rx\linq\observable\takeuntilwithtime.py" />
     <Compile Include="rx\linq\observable\takewhile.py" />
@@ -253,6 +257,7 @@
     <Compile Include="tests\test_observable\test_buffercount.py" />
     <Compile Include="tests\test_observable\test_bufferwithcount.py" />
     <Compile Include="tests\test_observable\test_bufferwithtime.py" />
+    <Compile Include="tests\test_observable\test_bufferwithtimeorcount.py" />
     <Compile Include="tests\test_observable\test_case.py" />
     <Compile Include="tests\test_observable\test_catch.py" />
     <Compile Include="tests\test_observable\test_combinelatest.py" />
@@ -281,6 +286,7 @@
     <Compile Include="tests\test_observable\test_fromcallback.py" />
     <Compile Include="tests\test_observable\test_fromfuture.py" />
     <Compile Include="tests\test_observable\test_generate.py" />
+    <Compile Include="tests\test_observable\test_generatewithrelativetime.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
     <Compile Include="tests\test_observable\test_groupjoin.py" />
     <Compile Include="tests\test_observable\test_ifthen.py" />
@@ -291,6 +297,7 @@
     <Compile Include="tests\test_observable\test_last.py" />
     <Compile Include="tests\test_observable\test_lastordefault.py" />
     <Compile Include="tests\test_observable\test_let.py" />
+    <Compile Include="tests\test_observable\test_manyselect.py" />
     <Compile Include="tests\test_observable\test_materialize.py" />
     <Compile Include="tests\test_observable\test_all.py" />
     <Compile Include="tests\test_observable\test_any.py" />
@@ -337,6 +344,7 @@
     <Compile Include="tests\test_observable\test_take.py" />
     <Compile Include="tests\test_observable\test_takelast.py" />
     <Compile Include="tests\test_observable\test_takelastbuffer.py" />
+    <Compile Include="tests\test_observable\test_takelastwithtime.py" />
     <Compile Include="tests\test_observable\test_takeuntil.py" />
     <Compile Include="tests\test_observable\test_takeuntilwithtime.py" />
     <Compile Include="tests\test_observable\test_takewhile.py" />
@@ -358,6 +366,7 @@
     <Compile Include="tests\test_observable\test_window.py" />
     <Compile Include="tests\test_observable\test_windowwithcount.py" />
     <Compile Include="tests\test_observable\test_windowwithtime.py" />
+    <Compile Include="tests\test_observable\test_windowwithtimeorcount.py" />
     <Compile Include="tests\test_observable\test_zip.py" />
     <Compile Include="tests\test_observable\__init__.py" />
     <Compile Include="tests\test_observable_multiple.py" />

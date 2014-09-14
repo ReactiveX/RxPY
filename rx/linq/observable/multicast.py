@@ -19,7 +19,8 @@ class ObservableMulticast(Observable):
         
         Example:
         1 - res = source.multicast(observable)
-        2 - res = source.multicast(lambda: Subject(), lambda x: x)
+        2 - res = source.multicast(subject_selector=lambda: Subject(), 
+                                   selector=lambda x: x)
      
         Keyword arguments:
         subject_selector -- {Function} Factory function to create an 

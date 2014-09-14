@@ -37,7 +37,6 @@ class ObservableTakeUntilWithTime(Observable):
         else:
             scheduler_method = scheduler.schedule_relative
 
-        print(scheduler_method)
         def subscribe(observer):
             def action(scheduler, state):
                 observer.on_completed()

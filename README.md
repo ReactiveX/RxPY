@@ -3,7 +3,7 @@
 [![Downloads](https://pypip.in/download/Rx/badge.svg)](https://pypi.python.org/pypi/Rx/)
 
 # The Reactive Extensions for Python (RxPY) ... #
-*...is a set of libraries to compose asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
+*...is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
 The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
 There are currently mirrors at
@@ -42,7 +42,7 @@ gracefully by using the methods on the Observable object.
 
 ## Install
 
-RxPy runs on [Python](http://www.python.org/) 2.7, 3.4 and 
+RxPy runs on [Python](http://www.python.org/) 2.7, 3.4 and
 [PyPy](http://pypy.org/)
 
 To install RxPY:
@@ -54,8 +54,8 @@ Note that `pip` may be called `pip3` if your're using Python3.
 ## Differences from .NET and RxJS
 
 RxPY is a fairly complete implementation of [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY is a 
-line-by-line direct port of RxJS so it's actually possible to single-step both implementations in a 
+v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY is a
+line-by-line direct port of RxJS so it's actually possible to single-step both implementations in a
 debugger to trace any problems.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
@@ -89,8 +89,8 @@ res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 Thus when an operator like `Observable.timeout` has multiple optional arguments
 you should name your arguments. At least the arguments marked as optional.
 
-RxPY also comes with batteries included, and has a number of Python specific 
-mainloop schedulers to make it easier for you to use RxPY with your favorite 
+RxPY also comes with batteries included, and has a number of Python specific
+mainloop schedulers to make it easier for you to use RxPY with your favorite
 Python framework.
 
 * `AsyncIOScheduler` for use with
@@ -106,7 +106,11 @@ Python framework.
 * `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter).
   See the [timeflies](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your Tkinter application.
+<<<<<<< HEAD
 * `PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the 
+=======
+* `PyGameScheduler* for use with [PyGame](http://www.pygame.org/). See the
+>>>>>>> release/0.9.2
   [chess](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your PyGame application.
 

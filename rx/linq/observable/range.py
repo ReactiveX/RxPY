@@ -31,12 +31,10 @@ class ObservableRange(Observable):
         
         def subscribe(observer):
             def action(scheduler, i):
-                #print("Observable:range:subscribe:action", scheduler, i)
                 if i < count:
                     observer.on_next(start + i)
                     scheduler(i + 1)
                 else:
-                    #print "completed"
                     observer.on_completed()
                 
             return scheduler.schedule_recursive(action, 0)

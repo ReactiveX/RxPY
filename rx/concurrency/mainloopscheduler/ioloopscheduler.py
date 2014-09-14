@@ -20,15 +20,17 @@ class IOLoopScheduler(Scheduler):
     def schedule(self, action, state=None):
         scheduler = self
         disposable = SingleAssignmentDisposable()
+        disposed = [False]
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            if not disposed[0]:
+                disposable.disposable = action(scheduler, state)
 
-        handle = [self.loop.add_callback(interval)]
+        self.loop.add_callback(interval)
 
         def dispose():
             # nonlocal handle
-            self.loop.remove_timeout(handle[0])
+            disposed[0] = True
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -43,8 +45,8 @@ class IOLoopScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = IOLoopScheduler.normalize(duetime)
-        if seconds == 0:
+        seconds = scheduler.to_relative(duetime)/1000.0
+        if not seconds:
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
@@ -69,29 +71,12 @@ class IOLoopScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled 
         on a scheduler will adhere to the time denoted by this property."""
         
-        return self.loop.time()
-
-    @classmethod
-    def normalize(cls, timespan):
-        """Eventloop operates with seconds as floats"""
-        nospan = 0
-
-        if isinstance(timespan, timedelta):
-            seconds = timespan.seconds+timespan.microseconds/1000000.0
-
-        elif isinstance(timespan, datetime):
-            seconds = timespan.totimestamp()
-        else:
-            seconds = timespan
-
-        if not timespan or timespan < nospan:
-            seconds = nospan
-
-        return seconds
+        return self.to_datetime(self.loop.time())
 

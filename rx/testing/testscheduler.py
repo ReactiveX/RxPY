@@ -43,34 +43,6 @@ class TestScheduler(VirtualTimeScheduler):
         log.debug("TestScheduler.add(absolute=%s, relative=%s)" % (absolute, relative))
         return absolute + relative
 
-    @classmethod
-    def to_datetime_offset(cls, absolute):
-        """Converts the absolute virtual time value to a datetime value.
-
-        Keyword arguments:
-        absolute -- Absolute virtual time value to convert.
-
-        Returns corresponding DateTimeOffset value.
-        """
-
-        return datetime.fromtimestamp(absolute/1000.0)
-
-    def now(self):
-        """Gets the scheduler's absolute time clock value as ticks."""
-
-        return self.clock
-
-    @classmethod
-    def to_relative(cls, timespan):
-        """Converts timespan to from datetime/timedelta to milliseconds"""
-
-        if isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
-        if isinstance(timespan, timedelta):
-            timespan = int(timespan.total_seconds()*1000)
-
-        return timespan
-
     def start(self, create=None, created=None, subscribed=None, disposed=None):
         """Starts the test scheduler and uses the specified virtual times to
         invoke the factory function, subscribe to the resulting sequence, and
@@ -162,31 +134,3 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         return MockObserver(self)
-
-    @classmethod
-    def normalize(cls, timespan):
-        """TestScheduler operates with ticks in milliseconds"""
-        print("TestScheduler:normalize(%s)" % timespan)
-
-        nospan = 0
-
-        if isinstance(timespan, timedelta):
-            msecs = int(timespan.seconds+timespan.microseconds/1000)
-
-        elif isinstance(timespan, datetime):
-            if hasattr(timespan, "timestamp"):
-                # Python 3
-                timestamp = timespan.timestamp()
-            else:
-                # Python2
-                timestamp = (timespan - datetime.fromtimestamp(0)).total_seconds()
-            print(timestamp)
-            msecs = int(timestamp*1000)
-            print(msecs)
-        else:
-            msecs = int(timespan)
-
-        if not msecs or msecs < nospan:
-            msecs = nospan
-
-        return msecs

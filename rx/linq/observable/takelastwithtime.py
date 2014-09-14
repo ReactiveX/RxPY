@@ -1,22 +1,17 @@
-from datetime import timedelta
-
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.internal.basic import default_key_serializer, identity
-from rx.internal import ArgumentOutOfRangeException
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableSkipLastWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+class ObservableTakeLastBuffer(Observable):
+    def take_last_with_time(self, duration, scheduler=None):
+        """Returns elements within the specified duration from the end of the
+        observable source sequence, using the specified schedulers to run timers
+        and to drain the collected elements.
 
-    def skip_last_with_time(self, duration, scheduler):
-        """Skips elements for the specified duration from the end of the
-        observable source sequence, using the specified scheduler to run timers.
-
-        1 - res = source.skip_last_with_time(5000)
-        2 - res = source.skip_last_with_time(5000, scheduler)
+        Example:
+        res = source.take_last_with_time(5000, scheduler)
 
         Description:
         This operator accumulates a queue with a length enough to store elements
@@ -26,17 +21,18 @@ class ObservableSkipLastWithTime(Observable):
         delayed with duration.
 
         Keyword arguments:
-        duration -- {Number} Duration for skipping elements from the end of the
+        duration -- {Number} Duration for taking elements from the end of the
             sequence.
-        scheduler -- {Scheduler} [Optional]  Scheduler to run the timer on. If
-            not specified, defaults to Rx.Scheduler.timeout
-        Returns an observable {Observable} sequence with the elements skipped
+        scheduler -- {Scheduler} [Optional] Scheduler to run the timer on. If
+            not specified, defaults to rx.Scheduler.timeout.
+
+        Returns {Observable} An observable sequence with the elements taken
         during the specified duration from the end of the source sequence."""
 
+        source = self    
         scheduler = scheduler or timeout_scheduler
         duration = scheduler.to_timedelta(duration)
-        source = self
-
+        
         def subscribe(observer):
             q = []
 
@@ -44,14 +40,17 @@ class ObservableSkipLastWithTime(Observable):
                 now = scheduler.now()
                 q.append({ "interval": now, "value": x })
                 while len(q) and now - q[0]["interval"] >= duration:
-                    observer.on_next(q.pop(0)["value"])
+                    q.pop(0)
 
             def on_completed():
                 now = scheduler.now()
-                while len(q) and now - q[0]["interval"] >= duration:
-                    observer.on_next(q.pop(0)["value"])
+                while len(q):
+                    next = q.pop(0)
+                    if now - next["interval"] <= duration:
+                        observer.on_next(next["value"])
 
                 observer.on_completed()
 
             return source.subscribe(on_next, observer.on_error, on_completed)
         return AnonymousObservable(subscribe)
+

@@ -54,6 +54,7 @@ from . import join
 from . import last
 from . import let
 from . import lastordefault
+from . import manyselect
 from . import materialize
 from . import merge
 from . import max
@@ -69,6 +70,7 @@ from . import pairwise
 from . import partition
 from . import pluck
 from . import publish
+from . import publishvalue
 from . import range
 from . import reduce
 from . import repeat
@@ -85,6 +87,7 @@ from . import skip
 from . import skiplast
 from . import skiplastwithtime
 from . import skipuntil
+from . import skipuntilwithtime
 from . import skipwhile
 from . import skipwithtime
 from . import start
@@ -96,6 +99,7 @@ from . import switchlatest
 from . import take
 from . import takelast
 from . import takelastbuffer
+from . import takelastwithtime
 from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile

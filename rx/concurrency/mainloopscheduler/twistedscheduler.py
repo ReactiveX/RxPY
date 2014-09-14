@@ -16,7 +16,7 @@ class TwistedScheduler(Scheduler):
 
     def schedule(self, action, state=None):
         return self.schedule_relative(0, action, state)
-        
+
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
 
@@ -28,8 +28,8 @@ class TwistedScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = TwistedScheduler.normalize(duetime)
-        
+        seconds = self.to_relative(duetime)/1000.0
+
         disposable = SingleAssignmentDisposable()
         def interval():
             disposable.disposable = action(scheduler, state)
@@ -52,29 +52,12 @@ class TwistedScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
-        
-        return self.reactor.seconds()
-        
-    @classmethod
-    def normalize(cls, timespan):
-        """Eventloop operates with seconds as floats"""
-        nospan = 0
 
-        if isinstance(timespan, timedelta):
-            seconds = timespan.seconds+timespan.microseconds/1000000.0
-
-        elif isinstance(timespan, datetime):
-            seconds = timespan.totimestamp()
-        else:
-            seconds = timespan
-
-        if not timespan or timespan < nospan:
-            seconds = nospan
-
-        return seconds
+        return self.to_datetime(int(self.reactor.seconds()*1000))
 
