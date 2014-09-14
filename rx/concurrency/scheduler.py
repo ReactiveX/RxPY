@@ -227,7 +227,6 @@ class Scheduler(object):
         elif isinstance(timespan, float):
             timespan = timespan * 1000
 
-        print(type(timespan))
         return int(timespan)
 
     @classmethod

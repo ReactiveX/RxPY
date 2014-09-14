@@ -54,7 +54,6 @@ class IOLoopScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        print(seconds)
         handle = [self.loop.call_later(seconds, interval)]
 
         def dispose():
