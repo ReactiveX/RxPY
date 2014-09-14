@@ -29,7 +29,7 @@ class VirtualTimeScheduler(Scheduler):
         super(VirtualTimeScheduler, self).__init__()
 
     def local_now(self):
-        return self.to_datetime_offset(self.clock)
+        return self.to_datetime(self.clock)
 
     def schedule_now(self, state, action):
         return self.schedule_absolute_with_state(state, self.clock, action)
@@ -37,7 +37,7 @@ class VirtualTimeScheduler(Scheduler):
     def now(self):
         """Gets the scheduler's absolute time clock value as datetime offset."""
 
-        return self.to_datetime_offset(self.clock)
+        return self.to_datetime(self.clock)
 
     def schedule(self, action, state=None):
         return self.schedule_absolute(self.clock, action, state)
@@ -161,14 +161,4 @@ class VirtualTimeScheduler(Scheduler):
         return None
 
     def add(self, absolute, relative):
-        raise NotImplementedError
-
-    def to_datetime_offset(self, absolute):
-        """Converts the absolute time value to a datetime value."""
-
-        raise NotImplementedError
-
-    def to_relative(self, timespan):
-        """Converts the TimeSpan value to a relative time value."""
-
         raise NotImplementedError

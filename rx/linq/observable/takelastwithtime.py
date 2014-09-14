@@ -29,9 +29,10 @@ class ObservableTakeLastBuffer(Observable):
         Returns {Observable} An observable sequence with the elements taken
         during the specified duration from the end of the source sequence."""
 
-        source = self
+        source = self    
         scheduler = scheduler or timeout_scheduler
-
+        duration = scheduler.to_timedelta(duration)
+        
         def subscribe(observer):
             q = []
 
