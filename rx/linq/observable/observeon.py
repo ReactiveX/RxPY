@@ -13,14 +13,14 @@ class ObservableObserveOn(Observable):
         the specified scheduler.
         
         Keyword arguments:
-        scheduler -- Scheduler to notify observers on.</param>
+        scheduler -- Scheduler to notify observers on.
         
         Returns the source sequence whose observations happen on the specified 
         scheduler.
 
         This only invokes observer callbacks on a scheduler. In case the 
         subscription and/or unsubscription actions have side-effects
-        that require to be run on a scheduler, use subscribeOn.
+        that require to be run on a scheduler, use subscribe_on.
         """        
         source = self
 
