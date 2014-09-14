@@ -87,6 +87,7 @@ from . import skip
 from . import skiplast
 from . import skiplastwithtime
 from . import skipuntil
+from . import skipuntilwithtime
 from . import skipwhile
 from . import skipwithtime
 from . import start

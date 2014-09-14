@@ -218,69 +218,6 @@ def _raise(ex):
 
 # // TakeLast
 
-# // SkipUntil
-# def test_SkipUntil_Zero():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(0), scheduler)
-
-#     res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipUntil_Late():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_completed(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
-
-# def test_SkipUntil_Error():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_error(210, ex))
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal(on_error(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
-
-# def test_SkipUntil_Never():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable()
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(250), scheduler)
-
-#     res.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
-
-# def test_SkipUntil_Twice1():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(215), scheduler).skipUntilWithTime(Date(230), scheduler)
-
-#     res.messages.assert_equal(on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     xs.subscriptions.assert_equal(subscribe(200, 270))
-
-# def test_SkipUntil_Twice2():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     res = scheduler.start(create)
-#         return xs.skipUntilWithTime(Date(230), scheduler).skipUntilWithTime(Date(215), scheduler)
-
-#     res.messages.assert_equal(on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-#     xs.subscriptions.assert_equal(subscribe(200, 270))
-
-
 
 if __name__ == '__main__':
     test_buffer_with_time_or_count_basic()
