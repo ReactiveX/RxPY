@@ -36,5 +36,4 @@ class ObservableReturnValue(Observable):
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
 
-#ObservableReturnValue.setattr("return", ObservableReturnValue.return_value)
-
+    just = return_value # Alias
