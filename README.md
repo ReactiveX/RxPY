@@ -9,7 +9,7 @@ The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY).
 There are currently outdated mirrors at
 [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and
 [CodePlex](http://rxpy.codeplex.com/). Please register any issues to
-[dbrattli/RxPY/issues](https://github.com/ReactiveX/RxPY/issues), and make sure
+[ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues), and make sure
 your pull requests is made against the
 [develop](https://github.com/ReactiveX/RxPY/tree/develop) branch.
 
@@ -53,10 +53,10 @@ Note that `pip` may be called `pip3` if your're using Python3.
 
 ## Differences from .NET and RxJS
 
-RxPY is a fairly complete implementation of 
+RxPY is a fairly complete implementation of
 [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY 
-is a direct port of RxJS, so it's actually possible to single-step both 
+v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY
+is a direct port of RxJS, so it's actually possible to single-step both
 implementations in a debugger to trace any problems.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
@@ -90,11 +90,11 @@ res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 Thus when an operator like `Observable.timeout` has multiple optional arguments
 you should name your arguments. At least the arguments marked as optional.
 
-For time and scheduler handing you will need to supply 
-[datetime](https://docs.python.org/2/library/datetime.html) for absolute time 
-values and 
+For time and scheduler handing you will need to supply
+[datetime](https://docs.python.org/2/library/datetime.html) for absolute time
+values and
 [timedelta](https://docs.python.org/2/library/datetime.html#timedelta-objects)
-for relative time. For relative time values you may also use `int` to represent 
+for relative time. For relative time values you may also use `int` to represent
 milliseconds, or `float` to represent seconds.
 
 RxPY also comes with batteries included, and has a number of Python specific
