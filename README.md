@@ -5,13 +5,13 @@
 # The Reactive Extensions for Python (RxPY) ... #
 *...is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-The main repository is at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
-There are currently mirrors at
+The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY).
+There are currently outdated mirrors at
 [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and
 [CodePlex](http://rxpy.codeplex.com/). Please register any issues to
-[dbrattli/RxPY/issues](https://github.com/dbrattli/RxPY/issues), and make sure
+[ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues), and make sure
 your pull requests is made against the
-[develop](https://github.com/dbrattli/RxPY/tree/develop) branch.
+[develop](https://github.com/ReactiveX/RxPY/tree/develop) branch.
 
 ## About the Reactive Extensions
 
@@ -53,10 +53,11 @@ Note that `pip` may be called `pip3` if your're using Python3.
 
 ## Differences from .NET and RxJS
 
-RxPY is a fairly complete implementation of [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY is a
-line-by-line direct port of RxJS so it's actually possible to single-step both implementations in a
-debugger to trace any problems.
+RxPY is a fairly complete implementation of
+[Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
+v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY
+is a direct port of RxJS, so it's actually possible to single-step both
+implementations in a debugger to trace any problems.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
 function and method names are lowercase with words separated by underscores as
@@ -89,6 +90,13 @@ res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 Thus when an operator like `Observable.timeout` has multiple optional arguments
 you should name your arguments. At least the arguments marked as optional.
 
+For time and scheduler handing you will need to supply
+[datetime](https://docs.python.org/2/library/datetime.html) for absolute time
+values and
+[timedelta](https://docs.python.org/2/library/datetime.html#timedelta-objects)
+for relative time. For relative time values you may also use `int` to represent
+milliseconds, or `float` to represent seconds.
+
 RxPY also comes with batteries included, and has a number of Python specific
 mainloop schedulers to make it easier for you to use RxPY with your favorite
 Python framework.
@@ -97,17 +105,17 @@ Python framework.
   [AsyncIO](https://docs.python.org/3/library/asyncio.html). (Python 3.4 only).
 * `IOLoopScheduler` for use with
   [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the
-  [autocomplete](https://github.com/dbrattli/RxPY/tree/master/examples/autocomplete)
-  and [konamicode](https://github.com/dbrattli/RxPY/tree/master/examples/konamicode)
+  [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete)
+  and [konamicode](https://github.com/ReactiveX/RxPY/tree/master/examples/konamicode)
   examples for howto use RxPY with your Tonado application.
 * `GEventScheduler` for use with [GEvent](http://www.gevent.org/).
   (Python 2.7 only).
 * `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
 * `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter).
-  See the [timeflies](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
+  See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
   example for howto use RxPY with your Tkinter application.
 * `PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the
-  [chess](https://github.com/dbrattli/RxPY/tree/master/examples/timeflies)
+  [chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess)
   example for howto use RxPY with your PyGame application.
 
 ## Contributing ##
@@ -118,8 +126,8 @@ and help us verify fixes as they are checked in, as well as submit code fixes or
 code contributions of your own.
 
 Note that the master branch is for releases only, so please submit any pull
-requests against the [develop](https://github.com/dbrattli/RxPY/tree/develop)
-branch at [dbrattli/RxPY](https://github.com/dbrattli/RxPY).
+requests against the [develop](https://github.com/ReactiveX/RxPY/tree/develop)
+branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY).
 
 ## License ##
 
