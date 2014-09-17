@@ -77,6 +77,7 @@ from . import repeat
 from . import retry
 from . import returnvalue
 from . import scan
+from . import sample
 from . import select
 from . import selectswitch
 from . import selectmany
@@ -103,7 +104,7 @@ from . import takelastwithtime
 from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
-from . import sample
+from . import takewithtime
 from . import throttle
 from . import throw
 from . import timeinterval
