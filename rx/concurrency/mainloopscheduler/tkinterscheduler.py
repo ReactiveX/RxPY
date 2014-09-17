@@ -24,11 +24,11 @@ class TkinterScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        alarm = [self.master.after_idle(interval)]
+        alarm = self.master.after_idle(interval)
 
         def dispose():
             # nonlocal alarm
-            self.master.after_cancel(alarm[0])
+            self.master.after_cancel(alarm)
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -52,11 +52,11 @@ class TkinterScheduler(Scheduler):
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", msecs)
-        alarm = [self.master.after(msecs, interval)]
+        alarm = self.master.after(msecs, interval)
 
         def dispose():
             # nonlocal alarm
-            self.master.after_cancel(alarm[0])
+            self.master.after_cancel(alarm)
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
