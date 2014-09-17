@@ -1,5 +1,6 @@
 import logging
 from threading import Timer
+from datetime import timedelta
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
@@ -27,18 +28,15 @@ class TimeoutScheduler(Scheduler):
 
     def schedule_relative(self, duetime, action, state=None):
         scheduler = self
-        dt = Scheduler.normalize(duetime)
-        if dt == 0:
+        timespan = self.to_timedelta(duetime)
+        if timespan == timedelta(0):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        if isinstance(dt, int):
-            seconds = dt/1000.0
-        else:
-            seconds = dt.seconds+dt.microseconds/1000000.0
+        seconds = timespan.total_seconds()
         log.debug("timeout: %s", seconds)
         timer = [Timer(seconds, interval)]
         timer[0].start()
@@ -50,6 +48,7 @@ class TimeoutScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
 Scheduler.timeout = timeout_scheduler = TimeoutScheduler()

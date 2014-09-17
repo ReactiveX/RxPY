@@ -4,7 +4,7 @@ from rx import AnonymousObservable, Observable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableAggregate(Observable):
+class ObservableDefaultIfEmpty(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def default_if_empty(self, default_value=None):

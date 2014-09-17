@@ -13,7 +13,7 @@ class TestGEventScheduler(unittest.TestCase):
         
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler()
-        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        res = scheduler.now() - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_gevent_schedule_action(self):
@@ -29,11 +29,11 @@ class TestGEventScheduler(unittest.TestCase):
 
     def test_gevent_schedule_action_due(self):
         scheduler = GEventScheduler()
-        starttime = datetime.utcnow()
+        starttime = datetime.now()
         endtime = [None]
 
         def action(scheduler, state):
-            endtime[0] = datetime.utcnow()
+            endtime[0] = datetime.now()
 
         scheduler.schedule_relative(0.2, action)
 

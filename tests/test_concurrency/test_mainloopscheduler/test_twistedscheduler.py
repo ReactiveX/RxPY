@@ -15,7 +15,7 @@ class TestTwistedScheduler(unittest.TestCase):
 
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
-        res = datetime.fromtimestamp(scheduler.now()) - datetime.utcnow()
+        res = scheduler.now() - datetime.now()
         assert(res < timedelta(seconds=1))
 
     @defer.inlineCallbacks

@@ -4,7 +4,7 @@ from rx.observable import Observable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableToArray(Observable):
+class ObservableToFuture(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
 

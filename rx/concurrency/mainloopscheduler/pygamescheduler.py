@@ -35,7 +35,7 @@ class PyGameScheduler(Scheduler):
         while self.queue.length:
             item = self.queue.peek()
             diff = item.duetime - self.now()
-            if diff > 0:
+            if diff > timedelta(0):
                 break
             
             item = self.queue.dequeue()
@@ -54,7 +54,7 @@ class PyGameScheduler(Scheduler):
 
         #log.debug("PyGameScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
         
-        dt = self.now() + PyGameScheduler.normalize(duetime)
+        dt = self.now() + self.to_timedelta(duetime)
         si = ScheduledItem(self, state, action, dt)
 
         self.queue.enqueue(si)
@@ -77,36 +77,5 @@ class PyGameScheduler(Scheduler):
         """Represents a notion of time for this scheduler. Tasks being scheduled 
         on a scheduler will adhere to the time denoted by this property."""
         
-        return pygame.time.get_ticks()
-
-    @classmethod
-    def to_relative(cls, timespan):
-        """Converts timespan to from datetime/timedelta to milliseconds"""
-
-        if isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
-        if isinstance(timespan, timedelta):
-            timespan = int(timespan.total_seconds()*1000)
-
-        return timespan
-
-    @classmethod
-    def normalize(cls, timespan):
-        """PyGame operates with milliseconds"""
-        nospan = 0
-
-        msecs = 0
-        if isinstance(timespan, timedelta):
-            msecs = timespan.seconds+timespan.microseconds/1000.0
-
-        elif isinstance(timespan, datetime):
-            msecs = timespan.totimestamp()*1000
-        else:
-            msecs = timespan
-
-        if not timespan or timespan < nospan:
-            msecs = nospan
-
-        return msecs
-
+        return self.to_datetime(pygame.time.get_ticks())
 

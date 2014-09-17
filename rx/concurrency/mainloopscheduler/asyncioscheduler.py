@@ -45,7 +45,7 @@ class AsyncIOScheduler(Scheduler):
         action (best effort)."""
 
         scheduler = self
-        seconds = AsyncIOScheduler.normalize(duetime)
+        seconds = self.to_relative(duetime)/1000.0
         if seconds == 0:
             return scheduler.schedule(action, state)
 
@@ -72,29 +72,12 @@ class AsyncIOScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled 
         on a scheduler will adhere to the time denoted by this property."""
         
-        return self.loop.time()
-
-    @classmethod
-    def normalize(cls, timespan):
-        """Eventloop operates with seconds as floats"""
-        nospan = 0
-
-        if isinstance(timespan, timedelta):
-            seconds = timespan.seconds+timespan.microseconds/1000000.0
-
-        elif isinstance(timespan, datetime):
-            seconds = timespan.totimestamp()
-        else:
-            seconds = timespan
-
-        if not timespan or timespan < nospan:
-            seconds = nospan
-
-        return seconds
+        return self.to_datetime(self.loop.time())
 

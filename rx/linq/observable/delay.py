@@ -21,8 +21,9 @@ class ObservableDelay(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def observable_delay_timespan(self, duetime, scheduler):
+        duetime = scheduler.to_timedelta(duetime)
         source = self
-
+            
         def subscribe(observer):
             cancelable = SerialDisposable()
             exception = [None]
@@ -94,7 +95,7 @@ class ObservableDelay(Observable):
 
     def observable_delay_date(self, duetime, scheduler):
         def defer():
-            timespan = scheduler.normalize(duetime) - scheduler.now()
+            timespan = scheduler.to_datetime(duetime) - scheduler.now()
             return self.observable_delay_timespan(timespan, scheduler)
 
         return Observable.defer(defer)
@@ -116,8 +117,8 @@ class ObservableDelay(Observable):
         scheduler -- [Optional] Scheduler to run the delay timers on. If not
             specified, the timeout scheduler is used.
 
-        Returns time-shifted sequence.
-        """
+        Returns time-shifted sequence."""
+
         scheduler = scheduler or timeout_scheduler
         if isinstance(duetime, datetime):
             observable = self.observable_delay_date(duetime, scheduler)
