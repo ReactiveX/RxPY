@@ -13,20 +13,23 @@ class TimeoutScheduler(Scheduler):
     """A scheduler that schedules work via a timed callback based upon platform."""
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
             disposable.disposable = action(scheduler, state)
-        timer = [Timer(0, interval)]
-        timer[0].start()
+        timer = Timer(0, interval)
+        timer.start()
 
         def dispose():
-            # nonlocal timer
-            timer[0].cancel()
+            timer.cancel()
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
+        """Schedules an action to be executed after duetime."""
+
         scheduler = self
         timespan = self.to_timedelta(duetime)
         if timespan == timedelta(0):
@@ -38,16 +41,17 @@ class TimeoutScheduler(Scheduler):
 
         seconds = timespan.total_seconds()
         log.debug("timeout: %s", seconds)
-        timer = [Timer(seconds, interval)]
-        timer[0].start()
+        timer = Timer(seconds, interval)
+        timer.start()
 
         def dispose():
-            # nonlocal timer
-            timer[0].cancel()
+            timer.cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
+        """Schedules an action to be executed after duetime."""
+
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 

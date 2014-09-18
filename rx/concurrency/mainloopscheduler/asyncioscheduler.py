@@ -20,6 +20,8 @@ class AsyncIOScheduler(Scheduler):
         self.loop = loop or asyncio.get_event_loop()
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         scheduler = self
         disposable = SingleAssignmentDisposable()
 

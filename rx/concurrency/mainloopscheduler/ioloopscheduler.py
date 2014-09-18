@@ -18,6 +18,8 @@ class IOLoopScheduler(Scheduler):
         self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         scheduler = self
         disposable = SingleAssignmentDisposable()
         disposed = [False]
@@ -75,8 +77,8 @@ class IOLoopScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
-        
+
         return self.to_datetime(self.loop.time())
 

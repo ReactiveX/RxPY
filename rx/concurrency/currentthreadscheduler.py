@@ -44,10 +44,14 @@ class CurrentThreadScheduler(Scheduler):
         self.queue = 0 # Must be different from None, FIXME:
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
         return self.schedule_relative(timedelta(0), action, state)
 
     def schedule_relative(self, duetime, action, state=None):
+        """Schedules an action to be executed after duetime."""
+
         log.debug("CurrentThreadScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
@@ -66,6 +70,8 @@ class CurrentThreadScheduler(Scheduler):
         return si.disposable
 
     def schedule_absolute(self, duetime, action, state=None):
+        """Schedules an action to be executed after duetime."""
+
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
@@ -73,7 +79,7 @@ class CurrentThreadScheduler(Scheduler):
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler"""
-        
+
         if self.queue is None:
             return self.schedule(action)
         else:

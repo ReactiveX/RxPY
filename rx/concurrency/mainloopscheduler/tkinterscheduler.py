@@ -18,6 +18,8 @@ class TkinterScheduler(Scheduler):
         self.master = master
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         scheduler = self
         disposable = SingleAssignmentDisposable()
 

@@ -15,6 +15,8 @@ class TwistedScheduler(Scheduler):
         self.reactor = reactor
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         return self.schedule_relative(0, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
