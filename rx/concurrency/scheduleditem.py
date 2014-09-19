@@ -1,4 +1,3 @@
-from datetime import timedelta
 from rx.disposables import SingleAssignmentDisposable
 
 def default_sub_comparer(x, y):

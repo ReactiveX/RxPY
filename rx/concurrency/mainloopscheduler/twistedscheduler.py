@@ -1,10 +1,9 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
-from rx.internal.basic import default_now
 
 log = logging.getLogger("Rx")
 

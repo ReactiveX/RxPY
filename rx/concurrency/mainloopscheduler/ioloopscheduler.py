@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
@@ -31,7 +31,7 @@ class IOLoopScheduler(Scheduler):
         self.loop.add_callback(interval)
 
         def dispose():
-            # nonlocal handle
+            # nonlocal
             disposed[0] = True
 
         return CompositeDisposable(disposable, Disposable(dispose))
