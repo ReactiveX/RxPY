@@ -35,13 +35,8 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe(self, on_next=None, on_error=None, on_completed=None):
+    def _subscribe(self, observer):
         log.debug("HotObservable:subscribe()")
-
-        if isinstance(on_next, AbstractObserver):
-            observer = on_next
-        else:
-            observer = Observer(on_next, on_error, on_completed)
 
         observable = self
         self.observers.append(observer)
