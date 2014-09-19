@@ -28,7 +28,7 @@ class NewThreadScheduler(Scheduler):
         t.start()
 
         def dispose():
-            disponsed[0] = True
+            disposed[0] = True
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -50,7 +50,6 @@ class NewThreadScheduler(Scheduler):
         timer.start()
 
         def dispose():
-            # nonlocal timer
             timer.cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
