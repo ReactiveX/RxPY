@@ -28,7 +28,7 @@ class ObservableMerge(Observable):
         sequences."""
 
         if not isinstance(max_concurrent_or_other, int):
-            return Observable.merge(max_concurrent_or_other)
+            return Observable.merge(self, max_concurrent_or_other)
 
         sources = self
 
