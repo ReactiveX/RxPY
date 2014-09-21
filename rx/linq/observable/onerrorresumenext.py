@@ -17,9 +17,11 @@ class ObservableOnErrorResumeNext(Observable):
         an exception with the next observable sequence.
     
         Keyword arguments:
-        second -- Second observable sequence used to produce results after the first sequence terminates.
+        second -- Second observable sequence used to produce results after the 
+            first sequence terminates.
      
-        Returns an observable sequence that concatenates the first and second sequence, even if the first sequence terminates exceptionally.
+        Returns an observable sequence that concatenates the first and second 
+            sequence, even if the first sequence terminates exceptionally.
         """
     
         if not second:
@@ -54,7 +56,11 @@ class ObservableOnErrorResumeNext(Observable):
                     pos[0] += 1
                     d = SingleAssignmentDisposable()
                     subscription.disposable = d
-                    d.disposable = current.subscribe(observer.on_next, lambda ex: this(), lambda: this())
+                    d.disposable = current.subscribe(
+                            observer.on_next, 
+                            lambda ex: this(), 
+                            lambda: this()
+                        )
                 else:
                     observer.on_completed()
                 
