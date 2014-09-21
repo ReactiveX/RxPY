@@ -3,7 +3,7 @@ from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import Scheduler, immediate_scheduler
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -18,16 +18,16 @@ class ObservableMerge(Observable):
         observable sequence.
 
         1 - merged = sources.merge(1)
-        2 - merged = source.merge(otherSource)
+        2 - merged = source.merge(other_source)
 
         max_concurrent_or_other [Optional] Maximum number of inner observable
             sequences being subscribed to concurrently or the second
             observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences.
-        """
-        if isinstance(max_concurrent_or_other, int):
+        sequences."""
+
+        if not isinstance(max_concurrent_or_other, int):
             return Observable.merge(max_concurrent_or_other)
 
         sources = self
@@ -81,18 +81,18 @@ class ObservableMerge(Observable):
         3 - merged = rx.Observable.merge(scheduler, xs, ys, zs)
         4 - merged = rx.Observable.merge(scheduler, [xs, ys, zs])
 
-        Returns the observable sequence that merges the elements of the observable sequences.
-        """
+        Returns the observable sequence that merges the elements of the
+        observable sequences."""
 
         if not args[0]:
             scheduler = immediate_scheduler
             sources = args[1:]
-        elif args[0].now:
+        elif isinstance(args[0], Scheduler):
             scheduler = args[0]
             sources = args[1:]
         else:
             scheduler = immediate_scheduler
-            sources = args[0]
+            sources = args[:]
 
         if isinstance(sources[0], list):
             sources = sources[0]
@@ -104,8 +104,8 @@ class ObservableMerge(Observable):
         observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences.
-        """
+        sequences."""
+
         sources = self
 
         def subscribe(observer):
