@@ -1,10 +1,9 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
-from rx.internal.basic import default_now
 
 log = logging.getLogger("Rx")
 
@@ -15,6 +14,8 @@ class TwistedScheduler(Scheduler):
         self.reactor = reactor
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         return self.schedule_relative(0, action, state)
 
     def schedule_relative(self, duetime, action, state=None):

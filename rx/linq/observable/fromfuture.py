@@ -6,7 +6,7 @@ from rx.internal.utils import is_future
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableCreation(Observable):
+class ObservableFromFuture(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def from_future(future):

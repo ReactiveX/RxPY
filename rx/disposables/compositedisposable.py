@@ -8,42 +8,79 @@ class CompositeDisposable(Disposable):
             self.disposables = args[0]
         else:
             self.disposables = list(args)
-        self.is_disposed = False
+
+        super(CompositeDisposable, self).__init__()
 
     def add(self, item):
-        if self.is_disposed:
+        """Adds a disposable to the CompositeDisposable or disposes the
+        disposable if the CompositeDisposable is disposed
+
+        Keyword arguments:
+        item -- Disposable to add."""
+
+        should_dispose = False
+        with self.lock:
+            if self.is_disposed:
+                should_dispose = True
+            else:
+                self.disposables.append(item)
+
+        if should_dispose:
             item.dispose()
-        else:
-            self.disposables.append(item)
 
     def remove(self, item):
+        """Removes and disposes the first occurrence of a disposable from the
+        CompositeDisposable."""
+
+        if self.is_disposed:
+            return
+
         should_dispose = False
-        if not self.is_disposed and item in self.disposables:
-            self.disposables.remove(item)
-            should_dispose = True
+        with self.lock:
+            if item in self.disposables:
+                self.disposables.remove(item)
+                should_dispose = True
+
+        if should_dispose:
             item.dispose()
 
         return should_dispose
 
     def dispose(self):
+        """Disposes all disposables in the group and removes them from the
+        group."""
+
         if self.is_disposed:
             return
 
-        self.is_disposed = True
-        current_disposables = self.disposables[:]
-        self.disposables = []
+        with self.lock:
+            self.is_disposed = True
+            current_disposables = self.disposables[:]
+            self.disposables = []
 
         for disposable in current_disposables:
             disposable.dispose()
 
     def clear(self):
-        current_disposables = self.disposables[:]
-        self.disposables = []
+        """Removes and disposes all disposables from the CompositeDisposable,
+        but does not dispose the CompositeDisposable."""
+
+        with self.lock:
+            current_disposables = self.disposables[:]
+            self.disposables = []
 
         for disposable in current_disposables:
             disposable.dispose()
 
     def contains(self, item):
+        """Determines whether the CompositeDisposable contains a specific
+        disposable.
+
+        Keyword arguments:
+        item -- Disposable to search for
+
+        Returns True if the disposable was found; otherwise, False"""
+
         return item in self.disposables
 
     def to_array(self):

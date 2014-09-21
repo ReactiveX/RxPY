@@ -4,13 +4,17 @@ class ScheduledDisposable(Disposable):
     def __init__(self, scheduler, disposable):
         self.scheduler = scheduler
         self.disposable = disposable
-        self.is_disposed = False
-
+        super(ScheduledDisposable, self).__init__()
+        
     def dispose(self):
         parent = self
+
         def action(scheduler, state):
-            if not parent.is_disposed:
-                parent.is_disposed = True
-                parent.disposable.dispose()
+            should_dispose = False
+            with self.lock:
+                if not parent.is_disposed:
+                    parent.is_disposed = True
+                    should_dispose = True
+            parent.disposable.dispose()
 
         self.scheduler.schedule(action)

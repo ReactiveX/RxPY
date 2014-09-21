@@ -15,6 +15,8 @@ class CatchScheduler(Scheduler):
         return self._scheduler.now()
 
     def schedule_now(self, state, action):
+        """Schedules an action to be executed."""
+
         return self._scheduler.scheduleWithState(state, self._wrap(action))
 
     def schedule_relative(self, state, due_time, action):

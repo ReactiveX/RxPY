@@ -1,3 +1,5 @@
+import threading
+
 from rx.observable import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
@@ -18,35 +20,41 @@ class Subject(Observable, AbstractObserver):
         self.observers = []
         self.exception = None
 
+        self.lock = threading.Lock()
+
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
     def _subscribe(self, observer):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.observers.append(observer)
-            return InnerSubscription(self, observer)
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                self.observers.append(observer)
+                return InnerSubscription(self, observer)
 
-        if self.exception:
-            observer.on_error(self.exception)
+            if self.exception:
+                observer.on_error(self.exception)
+                return Disposable.empty()
+
+            observer.on_completed()
+
             return Disposable.empty()
-
-        observer.on_completed()
-
-        return Disposable.empty()
 
     def on_completed(self):
         """Notifies all subscribed observers of the end of the sequence."""
 
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
 
-            for os in self.observers[:]:
-                os.on_completed()
-
-            self.observers = []
+        if os:
+            for observer in os:
+                observer.on_completed()
 
     def on_error(self, exception):
         """Notifies all subscribed observers with the exception.
@@ -54,14 +62,19 @@ class Subject(Observable, AbstractObserver):
         Keyword arguments:
         error -- The exception to send to all subscribed observers.
         """
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
-            self.exception = exception
-            for os in self.observers[:]:
-                os.on_error(exception)
 
-            self.observers = []
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                self.exception = exception
+
+        if os:
+            for observer in os:
+                observer.on_error(exception)
 
     def on_next(self, value):
         """Notifies all subscribed observers with the value.
@@ -69,16 +82,23 @@ class Subject(Observable, AbstractObserver):
         Keyword arguments:
         value -- The value to send to all subscribed observers.
         """
-        self.check_disposed()
-        if not self.is_stopped:
-            for os in self.observers[:]:
-                os.on_next(value)
+
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+
+        if os:
+            for observer in os:
+                observer.on_next(value)
 
     def dispose(self):
         """Unsubscribe all observers and release resources."""
 
-        self.is_disposed = True
-        self.observers = None
+        with self.lock:
+            self.is_disposed = True
+            self.observers = None
 
     @classmethod
     def create(cls, observer, observable):
