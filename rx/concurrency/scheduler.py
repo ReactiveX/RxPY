@@ -39,7 +39,9 @@ class Scheduler(object):
         s = [state]
 
         def interval():
-            s[0] = action(s[0])
+            new_state = action(s[0])
+            if not new_state is None: # Update state if other than None
+                s[0] = new_state
 
             timer[0] = Timer(period, interval)
             timer[0].start()
@@ -126,19 +128,19 @@ class Scheduler(object):
         return self.schedule(action2, dict(state=state, action=action))
 
     def schedule_recursive_with_relative(self, duetime, action):
-        """Schedules an action to be executed recursively after a specified 
-        relative due time.     
-        
+        """Schedules an action to be executed recursively after a specified
+        relative due time.
+
         Keyword arguments:
-        action -- {Function} Action to execute recursively. The parameter passed 
-            to the action is used to trigger recursive scheduling of the action 
+        action -- {Function} Action to execute recursively. The parameter passed
+            to the action is used to trigger recursive scheduling of the action
             at the specified relative time.
-         duetime - {Number} Relative time after which to execute the action for 
+         duetime - {Number} Relative time after which to execute the action for
             the first time.
-        
-        Returns the disposable {Disposable} object used to cancel the scheduled 
+
+        Returns the disposable {Disposable} object used to cancel the scheduled
         action (best effort)."""
-        
+
         def action1(_action, this=None):
             def func(dt):
                 this(_action, dt)
@@ -207,9 +209,9 @@ class Scheduler(object):
             state={ "first": state, "second": action })
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
-        
+
         return self.default_now()
 
     def default_now(self):
@@ -258,13 +260,13 @@ class Scheduler(object):
     @classmethod
     def normalize(cls, timespan):
         """Normalizes the specified timespan value to a positive value.
-        
+
         Keyword Arguments:
         timeSpan -- {Number} The time span value to normalize.
-        
-        Returns {Number} The specified Timespan value if it is zero or positive; 
+
+        Returns {Number} The specified Timespan value if it is zero or positive;
             otherwise, 0"""
-    
+
         nospan = 0 if isinstance(timespan, int) else timedelta(0)
         if not timespan or timespan < nospan:
             timespan = nospan

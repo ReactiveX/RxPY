@@ -21,10 +21,13 @@ class SchedulePeriodicRecursive(object):
     def tick(self, command, recurse):
         recurse(0, self._period)
         try:
-            self._state = self._action(self._state)
+            new_state = self._action(self._state)
         except Exception as exn:
             self._cancel.dispose()
             raise
+        else:
+            if not new_state is None: # Update state if other than None
+                self._state = new_state
 
     def start(self):
         """Returns the disposable object used to cancel the scheduled recurring
