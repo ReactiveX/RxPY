@@ -395,3 +395,25 @@ class TestMerge(unittest.TestCase):
 
         results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_error(490, ex))
         xs.subscriptions.assert_equal(subscribe(200, 490))
+
+    def test_merge_112233(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(250, 1), on_next(300, 2), on_next(350, 3), on_completed(360))
+        ys = scheduler.create_hot_observable(
+            on_next(250, 1), on_next(300, 2), on_next(320, 3), on_completed(340))
+
+        def create():
+            return xs.merge(ys)
+
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(
+            on_next(250, 1),
+            on_next(250, 1),
+            on_next(300, 2),
+            on_next(300, 2),
+            on_next(320, 3),
+            on_next(350, 3),
+            on_completed(360))
+        xs.subscriptions.assert_equal(subscribe(200, 360))
