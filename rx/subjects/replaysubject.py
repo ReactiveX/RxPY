@@ -1,4 +1,5 @@
 import sys
+import threading
 from datetime import timedelta
 
 from rx.observable import Observable
@@ -21,7 +22,6 @@ class RemovableDisposable(object):
         if not self.subject.is_disposed and self.observer in self.subject.observers:
             self.subject.observers.remove(self.observer)
 
-# Replay Subject
 class ReplaySubject(Observable, AbstractObserver):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed and future
@@ -41,12 +41,14 @@ class ReplaySubject(Observable, AbstractObserver):
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
         self.scheduler = scheduler or current_thread_scheduler
         self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
-        self.q = []
+        self.queue = []
         self.observers = []
         self.is_stopped = False
         self.is_disposed = False
         self.has_error = False
         self.error = None
+
+        self.lock = threading.Lock()
 
         super(ReplaySubject, self).__init__(self.__subscribe)
 
@@ -57,71 +59,92 @@ class ReplaySubject(Observable, AbstractObserver):
     def __subscribe(self, observer):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
-        self.check_disposed()
-        self._trim(self.scheduler.now())
-        self.observers.append(so)
 
-        n = len(self.q)
+        with self.lock:
+            self.check_disposed()
+            self._trim(self.scheduler.now())
+            self.observers.append(so)
 
-        for item in self.q:
-            so.on_next(item['value'])
+            for item in self.queue:
+                so.on_next(item['value'])
 
-        if self.has_error:
-            n += 1
-            so.on_error(self.error)
-        elif self.is_stopped:
-            n += 1
-            so.on_completed()
+            if self.has_error:
+                so.on_error(self.error)
+            elif self.is_stopped:
+                so.on_completed()
 
-        so.ensure_active() # n)
+        so.ensure_active()
         return subscription
 
     def _trim(self, now):
-        while len(self.q) > self.buffer_size:
-            self.q.pop(0)
+        while len(self.queue) > self.buffer_size:
+            self.queue.pop(0)
 
-        while len(self.q) > 0 and (now - self.q[0]['interval']) > self.window:
-            self.q.pop(0)
+        while len(self.queue) > 0 and (now - self.queue[0]['interval']) > self.window:
+            self.queue.pop(0)
 
     def on_next(self, value):
-        self.check_disposed()
-        if not self.is_stopped:
-            now = self.scheduler.now()
-            self.q.append(dict(interval=now, value=value))
-            self._trim(now)
+        """Notifies all subscribed observers with the value."""
 
-            for observer in self.observers[:]:
-                observer.on_next(value)
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                now = self.scheduler.now()
+                self.queue.append(dict(interval=now, value=value))
+                self._trim(now)
+
+                for observer in os:
+                    observer.on_next(value)
+        if os:
+            for observer in os:
                 observer.ensure_active()
 
     def on_error(self, error):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
-            self.error = error
-            self.has_error = True
-            now = self.scheduler.now()
-            self._trim(now)
+        """Notifies all subscribed observers with the exception."""
 
-            for observer in self.observers[:]:
-                observer.on_error(error)
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                self.error = error
+                self.has_error = True
+                now = self.scheduler.now()
+                self._trim(now)
+
+                for observer in os:
+                    observer.on_error(error)
+        if os:
+            for observer in os:
                 observer.ensure_active()
-
-            self.observers = []
 
     def on_completed(self):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
-            now = self.scheduler.now()
-            self._trim(now)
-            for observer in self.observers[:]:
-                observer.on_completed()
+        """Notifies all subscribed observers of the end of the sequence."""
+
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                now = self.scheduler.now()
+                self._trim(now)
+                for observer in os:
+                    observer.on_completed()
+        if os:
+            for observer in os:
                 observer.ensure_active()
 
-            self.observers = []
-
     def dispose(self):
-        self.is_disposed = True
-        self.observers = None
+        """Releases all resources used by the current instance of the
+        ReplaySubject class and unsubscribe all observers."""
 
+        with self.lock:
+            self.is_disposed = True
+            self.observers = None
+            self.queue = []

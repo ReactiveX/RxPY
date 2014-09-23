@@ -3,7 +3,7 @@ from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import Scheduler, immediate_scheduler
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
@@ -11,25 +11,27 @@ class ObservableMerge(Observable):
     def __init__(self, subscribe):
         self.merge = self.__merge
 
-    def __merge(self, max_concurrent_or_other):
+    def __merge(self, *args, **kwargs):
         """Merges an observable sequence of observable sequences into an
         observable sequence, limiting the number of concurrent subscriptions
         to inner sequences. Or merges two observable sequences into a single
         observable sequence.
 
         1 - merged = sources.merge(1)
-        2 - merged = source.merge(otherSource)
+        2 - merged = source.merge(other_source)
 
         max_concurrent_or_other [Optional] Maximum number of inner observable
             sequences being subscribed to concurrently or the second
             observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences.
-        """
-        if isinstance(max_concurrent_or_other, int):
-            return Observable.merge(max_concurrent_or_other)
+        sequences."""
 
+        if not isinstance(args[0], int):
+            args = args + tuple([self])
+            return Observable.merge(*args, **kwargs)
+
+        max_concurrent = args[0]
         sources = self
 
         def subscribe(observer):
@@ -44,8 +46,8 @@ class ObservableMerge(Observable):
 
                 def on_completed():
                     group.remove(subscription)
-                    if q.length > 0:
-                        s = q.shift()
+                    if len(q):
+                        s = q.pop(0)
                         subscribe(s)
                     else:
                         active_count[0] -= 1
@@ -55,7 +57,7 @@ class ObservableMerge(Observable):
                 subscription.disposable = xs.subscribe(observer.on_next, observer.on_error, on_completed)
 
             def on_next(inner_source):
-                if active_count[0] < max_concurrent_or_other:
+                if active_count[0] < max_concurrent:
                     active_count[0] += 1
                     subscribe(inner_source)
                 else:
@@ -81,22 +83,22 @@ class ObservableMerge(Observable):
         3 - merged = rx.Observable.merge(scheduler, xs, ys, zs)
         4 - merged = rx.Observable.merge(scheduler, [xs, ys, zs])
 
-        Returns the observable sequence that merges the elements of the observable sequences.
-        """
+        Returns the observable sequence that merges the elements of the
+        observable sequences."""
 
         if not args[0]:
             scheduler = immediate_scheduler
             sources = args[1:]
-        elif args[0].now:
+        elif isinstance(args[0], Scheduler):
             scheduler = args[0]
             sources = args[1:]
         else:
             scheduler = immediate_scheduler
-            sources = args[0]
+            sources = args[:]
 
         if isinstance(sources[0], list):
             sources = sources[0]
-
+        
         return Observable.from_array(sources, scheduler).merge_observable()
 
     def merge_all(self):
@@ -104,8 +106,8 @@ class ObservableMerge(Observable):
         observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences.
-        """
+        sequences."""
+
         sources = self
 
         def subscribe(observer):

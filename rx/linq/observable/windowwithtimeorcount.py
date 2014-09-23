@@ -1,6 +1,7 @@
 from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
+from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.internal import ExtensionMethod
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \

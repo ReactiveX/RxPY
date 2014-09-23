@@ -13,12 +13,7 @@ class ColdObservable(Observable):
         self.messages = messages
         self.subscriptions = AssertList()
 
-    def _subscribe(self, on_next, on_error=None, on_completed=None):
-        if isinstance(on_next, AbstractObserver):
-            observer = on_next
-        else: 
-            observer = Observer(on_next, on_error, on_completed)
-            
+    def _subscribe(self, observer):
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
         disposable = CompositeDisposable()
