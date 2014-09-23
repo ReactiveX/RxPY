@@ -9,7 +9,8 @@ from rx.internal import ExtensionMethod
 class ObservableFromFuture(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def from_future(future):
+    @classmethod
+    def from_future(cls, future):
         """Converts a Future to an Observable sequence
 
         Keyword Arguments:
