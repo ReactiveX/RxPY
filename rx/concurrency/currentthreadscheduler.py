@@ -37,10 +37,13 @@ class Trampoline(object):
                     item.invoke()
 
 class CurrentThreadScheduler(Scheduler):
-    """Represents an object that schedules units of work on the current thread."""
+    """Represents an object that schedules units of work on the current 
+    thread."""
 
     def __init__(self):
-        """Gets a scheduler that schedules work as soon as possible on the current thread."""
+        """Gets a scheduler that schedules work as soon as possible on the 
+        current thread."""
+        
         self.queue = 0 # Must be different from None, FIXME:
 
     def schedule(self, action, state=None):
@@ -52,7 +55,6 @@ class CurrentThreadScheduler(Scheduler):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        log.debug("CurrentThreadScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
 

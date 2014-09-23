@@ -54,7 +54,9 @@ class ObservableMerge(Observable):
                         if is_stopped[0] and active_count[0] == 0:
                             observer.on_completed()
 
-                subscription.disposable = xs.subscribe(observer.on_next, observer.on_error, on_completed)
+                subscription.disposable = xs.subscribe(observer.on_next,
+                                                       observer.on_error,
+                                                       on_completed)
 
             def on_next(inner_source):
                 if active_count[0] < max_concurrent:
@@ -68,7 +70,8 @@ class ObservableMerge(Observable):
                 if active_count[0] == 0:
                     observer.on_completed()
 
-            group.add(sources.subscribe(on_next, observer.on_error, on_completed))
+            group.add(sources.subscribe(on_next, observer.on_error,
+                                        on_completed))
             return group
         return AnonymousObservable(subscribe)
 
@@ -98,7 +101,7 @@ class ObservableMerge(Observable):
 
         if isinstance(sources[0], list):
             sources = sources[0]
-        
+
         return Observable.from_array(sources, scheduler).merge_observable()
 
     def merge_all(self):
@@ -130,14 +133,17 @@ class ObservableMerge(Observable):
                     if is_stopped and group.length == 1:
                         observer.on_completed()
 
-                inner_subscription.disposable = inner_source.subscribe(on_next, observer.on_error, on_completed)
+                disposable = inner_source.subscribe(on_next, observer.on_error,
+                                                    on_completed)
+                inner_subscription.disposable = disposable
 
             def on_completed():
                 is_stopped = True
                 if len(group) == 1:
                     observer.on_completed()
 
-            m.disposable = sources.subscribe(on_next, observer.on_error, on_completed)
+            m.disposable = sources.subscribe(on_next, observer.on_error,
+                                             on_completed)
             return group
 
         return AnonymousObservable(subscribe)
@@ -180,7 +186,7 @@ class ObservableMerge(Observable):
                 if group.length == 1:
                     observer.on_completed()
 
-            m.disposable = sources.subscribe(on_next, observer.on_error, on_complete)
+            m.disposable = sources.subscribe(on_next, observer.on_error,
+                                             on_complete)
             return group
-
         return AnonymousObservable(subscribe)

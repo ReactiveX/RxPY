@@ -20,10 +20,16 @@ class CatchScheduler(Scheduler):
         return self._scheduler.scheduleWithState(state, self._wrap(action))
 
     def schedule_relative(self, state, due_time, action):
-        return self._scheduler.schedule_relative(due_time, self._wrap(action), state=state)
+        """Schedules an action to be executed after duetime."""
+
+        return self._scheduler.schedule_relative(due_time, self._wrap(action),
+                                                 state=state)
 
     def schedule_absolute(self, state, due_time, action):
-        return self._scheduler.schedule_absolute(due_time, self._wrap(action), state=state)
+        """Schedules an action to be executed after duetime."""
+
+        return self._scheduler.schedule_absolute(due_time, self._wrap(action),
+                                                 state=state)
 
     def _clone(self, scheduler):
         return CatchScheduler(scheduler, self._handler)

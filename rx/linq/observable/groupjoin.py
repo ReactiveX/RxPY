@@ -7,7 +7,8 @@ from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
+from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
+    CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
 from rx.internal import ExtensionMethod
 
@@ -17,7 +18,8 @@ log = logging.getLogger("Rx")
 class ObservableGroupJoin(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def group_join(self, right, left_duration_selector, right_duration_selector, result_selector):
+    def group_join(self, right, left_duration_selector, right_duration_selector,
+                   result_selector):
         """Correlates the elements of two sequences based on overlapping
         durations, and groups the results.
 
@@ -107,7 +109,8 @@ class ObservableGroupJoin(Observable):
 
                 observer.on_error(e)
 
-            group.add(left.subscribe(on_next_left, on_error_left, observer.on_completed))
+            group.add(left.subscribe(on_next_left, on_error_left, 
+                      observer.on_completed))
 
             def on_next_right(value):
                 _id = right_id[0]
