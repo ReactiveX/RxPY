@@ -18,7 +18,7 @@ class AsyncSubject(Observable, AbstractObserver):
         cached for all future observations.
         """
 
-        super(AsyncSubject, self).__init__(self.__subscribe)
+        super(AsyncSubject, self).__init__(self._subscribe)
 
         self.is_disposed = False
         self.is_stopped = False
@@ -33,7 +33,7 @@ class AsyncSubject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
 
-    def __subscribe(self, observer):
+    def _subscribe(self, observer):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

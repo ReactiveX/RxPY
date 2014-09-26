@@ -26,6 +26,9 @@ class HistoricalScheduler(VirtualTimeScheduler):
         super(HistoricalScheduler, self).__init__(clock, comparer)
 
     def now(self):
+        """Represents a notion of time for this scheduler. Tasks being scheduled
+        on a scheduler will adhere to the time denoted by this property."""
+
         return self.clock
 
     @staticmethod

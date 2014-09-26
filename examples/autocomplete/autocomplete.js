@@ -5,7 +5,7 @@
         var ws = new WebSocket("ws://localhost:8080/ws");
 
         $input.keyup(function(ev) {
-            msg = { term: ev.target.value };
+            var msg = { term: ev.target.value };
             ws.send(JSON.stringify(msg));
         });
 

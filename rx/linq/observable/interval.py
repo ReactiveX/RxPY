@@ -10,7 +10,10 @@ class ObservableInterval(Observable):
     
     @classmethod
     def interval(cls, period, scheduler=None):
-        """Returns an observable sequence that produces a value after each period.
+        """Returns an observable sequence that produces a value after each 
+        period.
+        
+        Example:
         1 - res = rx.Observable.interval(1000)
         2 - res = rx.Observable.interval(1000, rx.Scheduler.timeout)
         

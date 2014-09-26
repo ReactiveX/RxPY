@@ -31,11 +31,16 @@ class ObservableCatch(Observable):
                     observer.on_error(ex)
                     return
                 
+                result = Observable.from_future(result)
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
                 d.disposable = result.subscribe(observer)
             
-            d1.disposable = source.subscribe(observer.on_next, on_error, observer.on_completed)
+            d1.disposable = source.subscribe(
+                observer.on_next, 
+                on_error, 
+                observer.on_completed
+            )
             return subscription
         return AnonymousObservable(subscribe)
 
@@ -47,8 +52,8 @@ class ObservableCatch(Observable):
         2 - xs.catch_exception(lambda ex: ys(ex))
     
         Keyword arguments:
-        handler -- Exception handler function that returns an observable sequence 
-            given the error that occurred in the first sequence.
+        handler -- Exception handler function that returns an observable 
+            sequence  given the error that occurred in the first sequence.
         second -- Second observable sequence used to produce results when an 
             error occurred in the first sequence.
     

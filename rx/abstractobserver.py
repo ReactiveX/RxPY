@@ -1,4 +1,3 @@
-
 class AbstractObserver(object):
     """Abstract Observer"""
 
@@ -25,27 +24,27 @@ class AbstractObserver(object):
 
     def on_error(self, error):
         """Notifies the observer that an exception has occurred.
-        
+
         Keyword arguments:
         error -- The error that has occurred.
         """
         if not self.is_stopped:
             self.is_stopped = True
             self.error(error)
-    
+
     def on_completed(self):
         """Notifies the observer of the end of the sequence."""
 
         if not self.is_stopped:
             self.is_stopped = True
             self.completed()
-    
+
     def dispose(self):
-        """Disposes the observer, causing it to transition to the stopped 
+        """Disposes the observer, causing it to transition to the stopped
         state."""
 
         self.is_stopped = True
-    
+
     def fail(self, exn):
         if not self.is_stopped:
             self.is_stopped = True

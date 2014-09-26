@@ -1,5 +1,7 @@
 from six import add_metaclass
 
+import threading
+
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import ExtensionMethod
@@ -11,12 +13,14 @@ class ObservableAmb(Observable):
     def __init__(self, subscribe):
         self.amb = self.__amb
 
+        self.lock = threading.Lock()
+
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
-    
+
         right_source Second observable sequence.
-        
-        returns an observable sequence that surfaces either of the given 
+
+        returns an observable sequence that surfaces either of the given
         sequences, whichever reacted first.
         """
         left_source = self
@@ -50,7 +54,7 @@ class ObservableAmb(Observable):
                     choice_left()
                 if choice[0] == left_choice:
                     observer.on_error(err)
-                
+
             def on_completed_left():
                 with self.lock:
                     choice_left()
@@ -72,7 +76,7 @@ class ObservableAmb(Observable):
                     choice_right()
                 if choice[0] == right_choice:
                     observer.on_error(err)
-            
+
             def on_completed_right():
                 with self.lock:
                     choice_right()
@@ -88,24 +92,24 @@ class ObservableAmb(Observable):
     @classmethod
     def amb(cls, *args):
         """Propagates the observable sequence that reacts first.
-    
+
         E.g. winner = Rx.Observable.amb(xs, ys, zs)
-     
-        Returns an observable sequence that surfaces any of the given sequences, 
+
+        Returns an observable sequence that surfaces any of the given sequences,
         whichever reacted first.
         """
-    
+
         acc = Observable.never()
 
         if isinstance(args[0], list):
             items = args[0]
         else:
             items = list(args)
-        
+
         def func(previous, current):
             return previous.amb(current)
-        
+
         for item in items:
             acc = func(acc, item)
-        
+
         return acc
