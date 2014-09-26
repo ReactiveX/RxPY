@@ -40,7 +40,6 @@ class ScheduledObserver(AbstractObserver):
                 else:
                     parent.is_acquired = False
                     return
-
                 try:
                     work()
                 except Exception as ex:
