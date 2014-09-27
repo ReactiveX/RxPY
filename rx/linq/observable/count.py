@@ -31,3 +31,7 @@ class ObservableCount(Observable):
             return self.aggregate(lambda count, _: count + 1, seed=0)
 
     
+    def __len__(self):
+        """Pythonc version of count"""
+        
+        return self.count()

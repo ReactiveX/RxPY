@@ -8,54 +8,62 @@ from rx.internal import ExtensionMethod
 @add_metaclass(ExtensionMethod)
 class ObservableRepeat(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
-    
+
     def __init__(self, subscribe):
         self.repeat = self.__repeat # Stitch in instance method
 
     # We do this to avoid overwriting the class method with the same name
     def __repeat(self, repeat_count=None):
-        """Repeats the observable sequence a specified number of times. If the 
+        """Repeats the observable sequence a specified number of times. If the
         repeat count is not specified, the sequence repeats indefinitely.
-     
+
         1 - repeated = source.repeat()
         2 - repeated = source.repeat(42)
-    
+
         Keyword arguments:
-        repeat_count -- Number of times to repeat the sequence. If not 
+        repeat_count -- Number of times to repeat the sequence. If not
             provided, repeats the sequence indefinitely.
-    
-        Returns the observable sequence producing the elements of the given 
-        sequence repeatedly.   
-        """
+
+        Returns the observable sequence producing the elements of the given
+        sequence repeatedly."""
 
         return Observable.concat(Enumerable.repeat(self, repeat_count))
 
+    def __mul__(self, b):
+        """Pythonic version of repeat
+        
+        Example:
+        yx = xs * 5
+        
+        Returns self.repeat(b)"""
+        
+        assert isinstance(b, int)
+        return self.repeat(b)        
+
     @classmethod
     def repeat(cls, value=None, repeat_count=None, scheduler=None):
-        """Generates an observable sequence that repeats the given element the 
-        specified number of times, using the specified scheduler to send out 
+        """Generates an observable sequence that repeats the given element the
+        specified number of times, using the specified scheduler to send out
         observer messages.
-    
-        1 - res = Rx.Observable.repeat(42)
-        2 - res = Rx.Observable.repeat(42, 4)
-        3 - res = Rx.Observable.repeat(42, 4, Rx.Scheduler.timeout)
-        4 - res = Rx.Observable.repeat(42, None, Rx.Scheduler.timeout)
-    
+
+        1 - res = rx.Observable.repeat(42)
+        2 - res = rx.Observable.repeat(42, 4)
+        3 - res = rx.Observable.repeat(42, 4, Rx.Scheduler.timeout)
+        4 - res = rx.Observable.repeat(42, None, Rx.Scheduler.timeout)
+
         Keyword arguments:
         value -- Element to repeat.
-        repeat_count -- [Optiona] Number of times to repeat the element. If not 
+        repeat_count -- [Optiona] Number of times to repeat the element. If not
             specified, repeats indefinitely.
-        scheduler -- Scheduler to run the producer loop on. If not specified, 
+        scheduler -- Scheduler to run the producer loop on. If not specified,
             defaults to ImmediateScheduler.
-    
-        Returns an observable sequence that repeats the given element the 
-        specified number of times.
-        """
+
+        Returns an observable sequence that repeats the given element the
+        specified number of times."""
 
         scheduler = scheduler or current_thread_scheduler
         if repeat_count == -1:
             repeat_count = None
-        
+
         xs = cls.return_value(value, scheduler)
-        ret = xs.repeat(repeat_count)
-        return ret
+        return xs.repeat(repeat_count)
