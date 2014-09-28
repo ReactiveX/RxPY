@@ -1,3 +1,5 @@
+import threading
+
 from rx.observable import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
@@ -7,8 +9,8 @@ from .innersubscription import InnerSubscription
 
 class AsyncSubject(Observable, AbstractObserver):
     """Represents the result of an asynchronous operation. The last value
-    before the on_completed notification, or the error received through on_error,
-    is sent to all subscribed observers.
+    before the on_completed notification, or the error received through
+    on_error, is sent to all subscribed observers.
     """
 
     def __init__(self):
@@ -16,7 +18,7 @@ class AsyncSubject(Observable, AbstractObserver):
         cached for all future observations.
         """
 
-        super(AsyncSubject, self).__init__(self.__subscribe)
+        super(AsyncSubject, self).__init__(self._subscribe)
 
         self.is_disposed = False
         self.is_stopped = False
@@ -25,19 +27,23 @@ class AsyncSubject(Observable, AbstractObserver):
         self.observers = []
         self.exception = None
 
+        self.lock = threading.Lock()
+
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def __subscribe(self, observer):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.observers.append(observer)
-            return InnerSubscription(self, observer)
+    def _subscribe(self, observer):
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                self.observers.append(observer)
+                return InnerSubscription(self, observer)
 
-        ex = self.exception
-        hv = self.has_value
-        v = self.value
+            ex = self.exception
+            hv = self.has_value
+            v = self.value
+
         if ex:
             observer.on_error(ex)
         elif hv:
@@ -49,42 +55,54 @@ class AsyncSubject(Observable, AbstractObserver):
         return Disposable.empty()
 
     def on_completed(self):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
-            v = self.value
-            hv = self.has_value
+        os = None
 
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+
+                self.is_stopped = True
+                v = self.value
+                hv = self.has_value
+
+        if os:
             if hv:
-                for o in self.observers[:]:
+                for o in os:
                     o.on_next(v)
                     o.on_completed()
             else:
-                for o in self.observers[:]:
+                for o in os:
                     o.on_completed()
 
-            self.observers = []
 
     def on_error(self, exception):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.is_stopped = True
-            self.exception = exception
+        os = None
 
-            for o in self.observers[:]:
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                self.exception = exception
+
+        if os:
+            for o in os:
                 o.on_error(exception)
 
-            self.observers = []
-
     def on_next(self, value):
-        self.check_disposed()
-        if not self.is_stopped:
-            self.value = value
-            self.has_value = True
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                self.value = value
+                self.has_value = True
 
     def dispose(self):
-        self.is_disposed = True
-        self.observers = None
-        self.exception = None
-        self.value = None
+        with self.lock:
+            self.is_disposed = True
+            self.observers = None
+            self.exception = None
+            self.value = None
 

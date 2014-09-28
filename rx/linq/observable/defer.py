@@ -15,8 +15,10 @@ class ObservableDefer(Observable):
         """Returns an observable sequence that invokes the specified factory
         function whenever a new observer subscribes.
 
+        Example:
         1 - res = rx.Observable.defer(lambda: rx.Observable.from_array([1,2,3]))
 
+        Keyword arguments:
         observable_factory -- Observable factory function to invoke for each
             observer that subscribes to the resulting sequence.
 

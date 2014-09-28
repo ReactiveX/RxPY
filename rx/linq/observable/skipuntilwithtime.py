@@ -50,7 +50,6 @@ class ObservableSkipUntilWithTime(Observable):
                                             observer.on_completed)
 
             def action(scheduler, state):
-                print("Open: %s" % scheduler.now())
                 open[0] = True
             disposable = getattr(scheduler, scheduler_method)(start_time, action)
             return CompositeDisposable(disposable, subscription)
