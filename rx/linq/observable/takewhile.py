@@ -24,8 +24,8 @@ class ObservableTakeWhile(Observable):
 
         Returns an observable sequence that contains the elements from the 
         input sequence that occur before the element at which the test no 
-        longer passes.        
-        """
+        longer passes."""
+        
         predicate = adapt_call(predicate)
         observable = self
         def subscribe(observer):
