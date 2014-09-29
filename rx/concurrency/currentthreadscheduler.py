@@ -29,7 +29,6 @@ class Trampoline(object):
                 diff = item.duetime - self.scheduler.now()
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
-                    print("Trampoline:run(), Sleeping: %s" % seconds)
                     log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
                     diff = item.duetime - self.scheduler.now()
