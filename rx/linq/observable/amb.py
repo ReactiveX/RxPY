@@ -37,12 +37,12 @@ class ObservableAmb(Observable):
                 if not choice[0]:
                     choice[0] = left_choice
                     right_subscription.dispose()
-                
+
             def choice_right():
                 if not choice[0]:
                     choice[0] = right_choice
                     left_subscription.dispose()
-                
+
             def on_next_left(value):
                 with self.lock:
                     choice_left()
@@ -61,8 +61,8 @@ class ObservableAmb(Observable):
                 if choice[0] == left_choice:
                     observer.on_completed()
 
-            ld = left_source.subscribe(on_next_left, on_error_left, 
-                                    on_completed_left)
+            ld = left_source.subscribe(on_next_left, on_error_left,
+                                       on_completed_left)
             left_subscription.disposable = ld
 
             def on_next_right(value):
@@ -70,7 +70,7 @@ class ObservableAmb(Observable):
                     choice_right()
                 if choice[0] == right_choice:
                     observer.on_next(value)
-    
+
             def on_error_right(err):
                 with self.lock:
                     choice_right()
@@ -83,7 +83,7 @@ class ObservableAmb(Observable):
                 if choice[0] == right_choice:
                     observer.on_completed()
 
-            rd = right_source.subscribe(on_next_right, on_error_right, 
+            rd = right_source.subscribe(on_next_right, on_error_right,
                                         on_completed_right)
             right_subscription.disposable = rd
             return CompositeDisposable(left_subscription, right_subscription)

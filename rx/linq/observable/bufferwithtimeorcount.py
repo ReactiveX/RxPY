@@ -13,8 +13,8 @@ class ObservableBufferWithTime(Observable):
         is completed when either it's full or a given amount of time has
         elapsed.
 
-        1 - res = source.bufferWithTimeOrCount(5000, 50); # 5s or 50 items in an array
-        2 - res = source.bufferWithTimeOrCount(5000, 50, Scheduler.timeout); # 5s or 50 items in an array
+        1 - res = source.buffer_with_time_or_count(5000, 50) # 5s or 50 items in an array
+        2 - res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout) # 5s or 50 items in an array
 
         Keyword arguments:
         timespan -- Maximum time length of a buffer.
@@ -22,8 +22,8 @@ class ObservableBufferWithTime(Observable):
         scheduler -- [Optional] Scheduler to run bufferin timers on. If not
             specified, the timeout scheduler is used.
 
-        Returns an observable sequence of buffers.
-        """
+        Returns an observable sequence of buffers."""
+        
         scheduler = scheduler or timeout_scheduler
         return self.window_with_time_or_count(timespan, count, scheduler) \
             .select_many(lambda x: x.to_array())

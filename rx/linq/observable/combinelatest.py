@@ -56,6 +56,7 @@ class ObservableCombineLatest(Observable):
             args = list(args)
 
         result_selector = args.pop()
+        parent = args[0]
 
         def subscribe(observer):
             n = len(args)
@@ -90,11 +91,13 @@ class ObservableCombineLatest(Observable):
                 subscriptions[i] = SingleAssignmentDisposable()
 
                 def on_next(x):
-                    values[i] = x
-                    next(i)
+                    with parent.lock:
+                        values[i] = x
+                        next(i)
 
                 def on_completed():
-                    done(i)
+                    with parent.lock:
+                        done(i)
 
                 subscriptions[i].disposable = args[i].subscribe(on_next, observer.on_error, on_completed)
 
