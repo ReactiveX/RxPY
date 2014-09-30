@@ -1,5 +1,7 @@
 from six import add_metaclass
 
+import threading
+
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import ExtensionMethod
@@ -11,12 +13,14 @@ class ObservableAmb(Observable):
     def __init__(self, subscribe):
         self.amb = self.__amb
 
+        self.lock = threading.Lock()
+
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
-    
+
         right_source Second observable sequence.
-        
-        returns an observable sequence that surfaces either of the given 
+
+        returns an observable sequence that surfaces either of the given
         sequences, whichever reacted first.
         """
         left_source = self
@@ -29,74 +33,83 @@ class ObservableAmb(Observable):
             left_subscription = SingleAssignmentDisposable()
             right_subscription = SingleAssignmentDisposable()
 
-            def choice_l():
+            def choice_left():
                 if not choice[0]:
                     choice[0] = left_choice
                     right_subscription.dispose()
 
-            def choice_r():
+            def choice_right():
                 if not choice[0]:
                     choice[0] = right_choice
                     left_subscription.dispose()
 
-            def on_left_next(left):
-                choice_l()
+            def on_next_left(value):
+                with self.lock:
+                    choice_left()
                 if choice[0] == left_choice:
-                    observer.on_next(left)
-            
-            def on_left_error(err):
-                choice_l()
+                    observer.on_next(value)
+
+            def on_error_left(err):
+                with self.lock:
+                    choice_left()
                 if choice[0] == left_choice:
                     observer.on_error(err)
-                
 
-            def on_left_completed():
-                choice_l()
+            def on_completed_left():
+                with self.lock:
+                    choice_left()
                 if choice[0] == left_choice:
                     observer.on_completed()
 
-            left_subscription.disposable = left_source.subscribe(on_left_next, on_left_error, on_left_completed)
+            ld = left_source.subscribe(on_next_left, on_error_left,
+                                       on_completed_left)
+            left_subscription.disposable = ld
 
-            def on_right_next(right):
-                choice_r()
+            def on_next_right(value):
+                with self.lock:
+                    choice_right()
                 if choice[0] == right_choice:
-                    observer.on_next(right)
-            
-            def on_right_error(err):
-                choice_r()
+                    observer.on_next(value)
+
+            def on_error_right(err):
+                with self.lock:
+                    choice_right()
                 if choice[0] == right_choice:
                     observer.on_error(err)
-            
-            def on_right_completed():
-                choice_r()
+
+            def on_completed_right():
+                with self.lock:
+                    choice_right()
                 if choice[0] == right_choice:
                     observer.on_completed()
 
-            right_subscription.disposable = right_source.subscribe(on_right_next, on_right_error, on_right_completed)
+            rd = right_source.subscribe(on_next_right, on_error_right,
+                                        on_completed_right)
+            right_subscription.disposable = rd
             return CompositeDisposable(left_subscription, right_subscription)
         return AnonymousObservable(subscribe)
 
     @classmethod
     def amb(cls, *args):
         """Propagates the observable sequence that reacts first.
-    
+
         E.g. winner = Rx.Observable.amb(xs, ys, zs)
-     
-        Returns an observable sequence that surfaces any of the given sequences, 
+
+        Returns an observable sequence that surfaces any of the given sequences,
         whichever reacted first.
         """
-    
+
         acc = Observable.never()
 
         if isinstance(args[0], list):
             items = args[0]
         else:
             items = list(args)
-        
+
         def func(previous, current):
             return previous.amb(current)
-        
+
         for item in items:
             acc = func(acc, item)
-        
+
         return acc

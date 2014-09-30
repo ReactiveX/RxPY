@@ -126,3 +126,6 @@ class TestAggregate(unittest.TestCase):
         
         res = scheduler.start(create=create).messages
         res.assert_equal(on_next(260, 10), on_completed(260))
+
+if __name__ == '__main__':
+    unittest.main()

@@ -23,6 +23,7 @@ class ObservableThrottle(Observable):
         1 - res = source.throttle(5000) # 5 seconds
         2 - res = source.throttle(5000, scheduler)        
    
+        Keyword arguments:
         duetime -- {Number} Duration of the throttle period for each value 
             (specified as an integer denoting milliseconds).
         scheduler -- {Scheduler} [Optional]  Scheduler to run the throttle 

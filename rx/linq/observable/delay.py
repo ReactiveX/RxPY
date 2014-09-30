@@ -23,28 +23,28 @@ class ObservableDelay(Observable):
     def observable_delay_timespan(self, duetime, scheduler):
         duetime = scheduler.to_timedelta(duetime)
         source = self
-            
+
         def subscribe(observer):
             cancelable = SerialDisposable()
             exception = [None]
             active = [False]
             running = [False]
-            q = []
+            queue = []
 
             def on_next(notification):
                 log.debug("observable_delay_timespan:subscribe:on_next()")
                 should_run = False
-                d = None
-
-                if notification.value.kind == 'E':
-                    del q[:]
-                    q.append(notification)
-                    exception[0] = notification.value.exception
-                    should_run = not running[0]
-                else:
-                    q.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
-                    should_run = not active[0]
-                    active[0] = True
+                
+                with self.lock:
+                    if notification.value.kind == 'E':
+                        del queue[:]
+                        queue.append(notification)
+                        exception[0] = notification.value.exception
+                        should_run = not running[0]
+                    else:
+                        queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
+                        should_run = not active[0]
+                        active[0] = True
 
                 if should_run:
                     if exception[0]:
@@ -58,31 +58,33 @@ class ObservableDelay(Observable):
                             if exception[0]:
                                 log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                                 return
-
-                            running[0] = True
-                            while True:
-                                result = None
-                                if len(q) and q[0].timestamp <= scheduler.now():
-                                    result = q.pop(0).value
-
-                                if result:
-                                    result.accept(observer)
-
-                                if not result:
-                                    break
-
-                            should_recurse = False
-                            recurse_duetime = 0
-                            if len(q) :
-                                should_recurse = True
-                                diff = q[0].timestamp - scheduler.now()
-                                zero = timedelta(0) if isinstance(diff, timedelta) else 0
-                                recurse_duetime = max(zero, diff)
-                            else:
-                                active[0] = False
-
-                            ex = exception[0]
-                            running[0] = False
+                            
+                            with self.lock:
+                                running[0] = True
+                                while True:
+                                    result = None
+                                    if len(queue) and queue[0].timestamp <= scheduler.now():
+                                        result = queue.pop(0).value
+    
+                                    if result:
+                                        result.accept(observer)
+    
+                                    if not result:
+                                        break
+    
+                                should_recurse = False
+                                recurse_duetime = 0
+                                if len(queue) :
+                                    should_recurse = True
+                                    diff = queue[0].timestamp - scheduler.now()
+                                    zero = timedelta(0) if isinstance(diff, timedelta) else 0
+                                    recurse_duetime = max(zero, diff)
+                                else:
+                                    active[0] = False
+    
+                                ex = exception[0]
+                                running[0] = False
+                            
                             if ex:
                                 observer.on_error(ex)
                             elif should_recurse:

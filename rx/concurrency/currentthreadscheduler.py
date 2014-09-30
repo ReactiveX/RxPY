@@ -29,7 +29,7 @@ class Trampoline(object):
                 diff = item.duetime - self.scheduler.now()
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
-                    log.info("Trampoline:run(), Sleeping: %s" % seconds)
+                    log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
                     diff = item.duetime - self.scheduler.now()
 
@@ -37,11 +37,15 @@ class Trampoline(object):
                     item.invoke()
 
 class CurrentThreadScheduler(Scheduler):
-    """Represents an object that schedules units of work on the current thread."""
+    """Represents an object that schedules units of work on the current
+    thread. You never want to schedule timeouts using the CurrentThreadScheduler
+    since it will block the current thread while waiting."""
 
     def __init__(self):
-        """Gets a scheduler that schedules work as soon as possible on the current thread."""
-        self.queue = 0 # Must be different from None, FIXME:
+        """Gets a scheduler that schedules work as soon as possible on the
+        current thread."""
+
+        self.queue = None
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
@@ -52,7 +56,8 @@ class CurrentThreadScheduler(Scheduler):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        log.debug("CurrentThreadScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
+        duetime = self.to_timedelta(duetime)
+
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
 
@@ -72,6 +77,7 @@ class CurrentThreadScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):

@@ -23,8 +23,7 @@ class ObservableConcat(Observable):
         2 - concatenated = xs.concat([ys, zs])
      
         Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order. 
-        """
+        sequence, in sequential order. """
         
         if isinstance(args[0], list):
             items = args[0]
@@ -33,6 +32,25 @@ class ObservableConcat(Observable):
 
         items.insert(0, self)
         return Observable.concat(items)
+
+    def __add__(self, other):
+        """Pythonic version of concat
+        
+        Example:
+        zs = xs + ys
+        Returns self.concat(other)"""
+        
+        return self.concat(other)
+    
+    def __iadd__(self, other):
+        """Pythonic use of concat
+        
+        Example:
+        xs += ys
+        
+        Returns self.concat(self, other)"""
+        
+        return self.concat(self, other)
     
     @classmethod
     def concat(cls, *args):

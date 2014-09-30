@@ -1,4 +1,6 @@
 import six
+import threading
+
 from .observer import Observer, AbstractObserver
 
 class Observable(object):
@@ -8,6 +10,7 @@ class Observable(object):
 
     def __init__(self, subscribe):
         self._subscribe = subscribe
+        self.lock = threading.Lock()
         
         # Run extension method initializers added by meta class
         for init in self.initializers:

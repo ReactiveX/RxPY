@@ -7,7 +7,8 @@ from rx.internal import ExtensionMethod
 class ObservableGroupBy(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def group_by(self, key_selector, element_selector=None, key_serializer=None):
+    def group_by(self, key_selector, element_selector=None, 
+                 key_serializer=None):
         """Groups the elements of an observable sequence according to a 
         specified key selector function and comparer and selects the resulting
         elements by using a specified function.

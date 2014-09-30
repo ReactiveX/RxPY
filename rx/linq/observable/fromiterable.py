@@ -25,12 +25,12 @@ class ObservableFromIterable(Observable):
         given enumerable sequence."""
 
         scheduler = scheduler or current_thread_scheduler
-        it = iter(iterable)
+        iterator = iter(iterable)
 
         def subscribe(observer):
             def action(action1, state=None):
                 try:
-                    item = next(it)
+                    item = next(iterator)
                 except StopIteration:
                     observer.on_completed()
                 else:

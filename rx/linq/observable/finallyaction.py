@@ -13,11 +13,11 @@ class ObservableForIn(Observable):
         terminates gracefully or exceptionally.
 
         Example:
-        res = observable.finally(function () { console.log('sequence ended'; });
+        res = observable.finally(lambda: print('sequence ended')
 
         Keyword arguments:
-        action -- {Function} Action to invoke after the source observable sequence
-            terminates.
+        action -- {Function} Action to invoke after the source observable
+            sequence terminates.
         Returns {Observable} Source sequence with the action-invoking
         termination behavior applied."""
 

@@ -14,7 +14,8 @@ class ColdObservable(Observable):
         self.subscriptions = AssertList()
 
     def _subscribe(self, observer):
-        self.subscriptions.append(Subscription(self.scheduler.clock))
+        clock = self.scheduler.to_relative(self.scheduler.now())
+        self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
         disposable = CompositeDisposable()
         
@@ -33,7 +34,7 @@ class ColdObservable(Observable):
 
         def dispose():
             start = self.subscriptions[index].subscribe
-            end = self.scheduler.clock
+            end = self.scheduler.to_relative(self.scheduler.now())
             self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 
