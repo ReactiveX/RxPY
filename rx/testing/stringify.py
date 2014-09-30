@@ -76,9 +76,9 @@ class ObservableAggregate(Observable):
 
     def to_string(self, scheduler=None):
         """Converts an observable sequence into a marble diagram string
-        
+
         Keyword arguments:
-        scheduler -- [Optional] The scheduler that was used to run the the input 
+        scheduler -- [Optional] The scheduler that was used to run the the input
             sequence on.
 
         Returns marble string"""
@@ -106,11 +106,13 @@ class ObservableAggregate(Observable):
                 add_timespan()
                 result.append(exception)
                 observer.on_next("".join(str(n) for n in result))
+                observer.on_completed()
 
             def on_completed():
                 add_timespan()
                 result.append("|")
                 observer.on_next("".join(str(n) for n in result))
+                observer.on_completed()
 
-            return source.subscribe(on_next, observer.on_error, on_completed)
+            return source.subscribe(on_next, on_error, on_completed)
         return AnonymousObservable(subscribe)
