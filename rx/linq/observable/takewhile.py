@@ -32,7 +32,10 @@ class ObservableTakeWhile(Observable):
             running, i = [True], [0]
 
             def on_next(value):
-                if running[0]:
+                with self.lock:
+                    if not running[0]:
+                        return
+                    
                     try:
                         running[0] = predicate(value, i[0])
                     except Exception as exn:
@@ -41,10 +44,10 @@ class ObservableTakeWhile(Observable):
                     else:
                         i[0] += 1
                     
-                    if running[0]:
-                        observer.on_next(value)
-                    else:
-                        observer.on_completed()
+                if running[0]:
+                    observer.on_next(value)
+                else:
+                    observer.on_completed()
     
             return observable.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
