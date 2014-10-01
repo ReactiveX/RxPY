@@ -1,3 +1,4 @@
+import re
 from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
@@ -14,6 +15,9 @@ on_error = ReactiveTest.on_error
 @add_metaclass(ExtensionMethod)
 class ObservableAggregate(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
+
+    _pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
+    _tokens = re.compile(_pattern)
 
     @classmethod
     def from_string(cls, string, scheduler=None):
@@ -62,12 +66,13 @@ class ObservableAggregate(Observable):
         specials = {
             '-' : handle_timespan,
             'x' : handle_on_error,
+            'X' : handle_on_error,
             '|' : handle_on_completed
         }
 
-        for char in string:
-            func = specials.get(char, handle_on_next)
-            func(char)
+        for token in cls._tokens.findall(string):
+            func = specials.get(token, handle_on_next)
+            func(token)
 
         if not completed[0]:
             messages.append(on_completed(timespan[0]))
