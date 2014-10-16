@@ -74,6 +74,7 @@ from . import publishvalue
 from . import range
 from . import reduce
 from . import repeat
+from . import replay
 from . import retry
 from . import returnvalue
 from . import scan
