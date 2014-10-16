@@ -13,7 +13,7 @@ on_completed = ReactiveTest.on_completed
 on_error = ReactiveTest.on_error
 
 @add_metaclass(ExtensionMethod)
-class ObservableAggregate(Observable):
+class ObservableStringify(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     _pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
