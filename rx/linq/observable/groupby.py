@@ -29,8 +29,7 @@ class ObservableGroupBy(Observable):
         
         Returns a sequence of observable groups, each of which corresponds to a 
         unique key value, containing all elements that share that same key 
-        value.        
-        """
+        value."""
 
         def duration_selector(x):
             return Observable.never()
