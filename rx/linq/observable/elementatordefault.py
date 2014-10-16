@@ -17,11 +17,16 @@ class ObservableElementAtOrDefault(Observable):
             i = [index]
 
             def on_next(x):
-                if not i[0]:
+                found = False
+                with source.lock:
+                    if i[0]:
+                        i[0] -= 1
+                    else:
+                        found = True
+                
+                if found:
                     observer.on_next(x)
                     observer.on_completed()
-
-                i[0] -= 1
 
             def on_completed():
                 if not has_default:
