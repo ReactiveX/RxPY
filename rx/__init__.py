@@ -1,3 +1,5 @@
+from threading import Lock
+
 from .observable import Observable
 from .anonymousobservable import AnonymousObservable
 from .observer import Observer
@@ -12,5 +14,6 @@ except ImportError:
 
 # Rx configuration dictionary
 config = {
-    "Future" : Future
+    "Future" : Future,
+    "Lock" : Lock
 }
