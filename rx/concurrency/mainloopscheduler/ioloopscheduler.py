@@ -10,8 +10,7 @@ log = logging.getLogger("Rx")
 class IOLoopScheduler(Scheduler):
     """A scheduler that schedules work via the Tornado I/O main event loop.
 
-    http://tornado.readthedocs.org/en/latest/ioloop.html
-    """
+    http://tornado.readthedocs.org/en/latest/ioloop.html"""
 
     def __init__(self, loop=None):
         from tornado import ioloop # Lazy import

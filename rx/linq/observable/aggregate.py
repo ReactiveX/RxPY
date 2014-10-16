@@ -16,16 +16,16 @@ class ObservableAggregate(Observable):
         For aggregation behavior with incremental intermediate results, see 
         Observable.scan.
      
+        Example:
         1 - res = source.aggregate(lambda acc, x: acc + x)
-        2 - res = source.aggregate(0, lambda acc, x: acc + x, seed=0)
+        2 - res = source.aggregate(lambda acc, x: acc + x, seed=0)
 
         Keyword arguments:
         accumulator -- An accumulator function to be invoked on each element.
         seed -- [Optional] The initial accumulator value.
         
         Returns an observable sequence containing a single element with the 
-        final accumulator value.
-        """
+        final accumulator value."""
 
         if not seed is None:
             return self.scan(accumulator, seed=seed).start_with(seed).final_value()

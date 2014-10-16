@@ -15,8 +15,7 @@ class PyGameScheduler(Scheduler):
     """A scheduler that schedules works for PyGame.
 
     http://www.pygame.org/docs/ref/time.html
-    http://www.pygame.org/docs/ref/event.html   
-    """
+    http://www.pygame.org/docs/ref/event.html"""
 
     def __init__(self, event_id=None):
         global pygame
@@ -54,8 +53,6 @@ class PyGameScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
-        #log.debug("PyGameScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
-        
         dt = self.now() + self.to_timedelta(duetime)
         si = ScheduledItem(self, state, action, dt)
 

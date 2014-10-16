@@ -11,8 +11,7 @@ class TkinterScheduler(Scheduler):
     """A scheduler that schedules work via the Tkinter main event loop.
 
     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html
-    http://effbot.org/tkinterbook/widget.htm
-    """
+    http://effbot.org/tkinterbook/widget.htm"""
 
     def __init__(self, master):
         self.master = master
@@ -72,5 +71,5 @@ class TkinterScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
-        duetime = self.to_absolute(duetime)
+        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)

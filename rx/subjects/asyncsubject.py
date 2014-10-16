@@ -76,7 +76,6 @@ class AsyncSubject(Observable, AbstractObserver):
                 for o in os:
                     o.on_completed()
 
-
     def on_error(self, exception):
         os = None
 
