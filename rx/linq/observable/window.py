@@ -7,7 +7,8 @@ from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
+from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
+    CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
 from rx.internal import ExtensionMethod
 
@@ -35,13 +36,13 @@ class ObservableWindow(Observable):
         if not isinstance(window_openings, Observable) and callable(window_openings):
             window_closing_selector = window_openings
             window_openings = None
-        
+
         if window_openings and not window_closing_selector:
             return self.observable_window_with_bounaries(window_openings)
 
         if not window_openings and window_closing_selector:
             return self.observable_window_with_closing_selector(window_closing_selector)
-        
+
         return self.observable_window_with_openings(window_openings, window_closing_selector)
 
     def observable_window_with_openings(self, window_openings, window_closing_selector):
