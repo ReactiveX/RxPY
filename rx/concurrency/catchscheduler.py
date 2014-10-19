@@ -26,7 +26,7 @@ class CatchScheduler(Scheduler):
                                                  state=state)
 
     def schedule_absolute(self, state, due_time, action):
-        """Schedules an action to be executed after duetime."""
+        """Schedules an action to be executed at duetime."""
 
         return self._scheduler.schedule_absolute(due_time, self._wrap(action),
                                                  state=state)

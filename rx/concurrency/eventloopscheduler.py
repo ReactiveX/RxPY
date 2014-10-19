@@ -1,10 +1,9 @@
 import logging
 import threading
 from threading import Timer
-from datetime import timedelta
 
 from rx.concurrency import ScheduledItem
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
+from rx.disposables import Disposable
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
@@ -23,6 +22,7 @@ class EventLoopScheduler(Scheduler, Disposable):
 
         self.thread_factory = thread_factory or default_factory
         self.thread = None
+        self.timer = None
         self.condition = threading.Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list = []
@@ -33,13 +33,11 @@ class EventLoopScheduler(Scheduler, Disposable):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        log.debug("EventLoopScheduler.schedule(state=%s)", state)
-
-        si = ScheduledItem(self, state, action, None)
-
         if self.is_disposed:
             raise DisposedException()
 
+        si = ScheduledItem(self, state, action, None)
+        
         with self.condition:
             self.ready_list.append(si)
             self.condition.notify() # signal that a new item is available
@@ -137,7 +135,7 @@ class EventLoopScheduler(Scheduler, Disposable):
 
         with self.condition:
             if not self.is_disposed:
-                self.disposed = True
+                self.is_disposed = True
 
     def tick(self, item):
         with self.condition:
