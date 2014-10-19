@@ -23,7 +23,7 @@ class Trampoline(object):
         self.queue = None
 
     def run(self):
-        while self.queue.length > 0:
+        while len(self.queue):
             item = self.queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - self.scheduler.now()
@@ -75,7 +75,7 @@ class CurrentThreadScheduler(Scheduler):
         return si.disposable
 
     def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state=None)

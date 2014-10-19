@@ -36,7 +36,7 @@ class IOLoopScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at duetime.
+        """Schedules an action to be executed after duetime.
 
         Keyword arguments:
         duetime -- {timedelta} Relative time after which to execute the action.
