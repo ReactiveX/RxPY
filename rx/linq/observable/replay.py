@@ -8,7 +8,7 @@ from rx.internal import ExtensionMethod
 class ObservableRetry(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def replay(self, selector, buffer_size, window, scheduler):
+    def replay(self, selector, buffer_size=None, window=None, scheduler=None):
         """Returns an observable sequence that is the result of invoking the
         selector on a connectable observable sequence that shares a single
         subscription to the underlying sequence replaying notifications subject
@@ -40,7 +40,8 @@ class ObservableRetry(Observable):
         if callable(selector):
             def subject_selector():
                 return ReplaySubject(buffer_size, window, scheduler)
-            return self.multicast(subject_selector, selector)
+            return self.multicast(subject_selector=subject_selector, 
+                                 selector=selector)
         else:
             return self.multicast(ReplaySubject(buffer_size, window, scheduler))
 
