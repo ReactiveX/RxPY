@@ -37,13 +37,13 @@ class TestNewThreadScheduler(unittest.TestCase):
         assert(diff > timedelta(milliseconds=180))
 
     def test_new_thread_schedule_action_cancel(self):
-        ran = False
+        ran = [False]
         scheduler = NewThreadScheduler()
 
         def action(scheduler, state):
-            ran = True
+            ran[0] = True
         d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
         d.dispose()
 
         sleep(0.1)
-        assert (not ran)
+        assert (not ran[0])

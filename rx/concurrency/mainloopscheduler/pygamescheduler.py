@@ -20,31 +20,31 @@ class PyGameScheduler(Scheduler):
     def __init__(self, event_id=None):
         global pygame
         import pygame
-        
+
         self.timer = None
         self.event_id = event_id or pygame.USEREVENT
-        
+
         self.queue = PriorityQueue()
-        
+
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
-        
+
         log.debug("PyGameScheduler.schedule(state=%s)", state)
         return self.schedule_relative(0, action, state)
- 
+
     def run(self):
         while self.queue.length:
             item = self.queue.peek()
             diff = item.duetime - self.now()
             if diff > timedelta(0):
                 break
-            
+
             item = self.queue.dequeue()
             if not item.is_cancelled():
                 item.invoke()
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at duetime.
+        """Schedules an action to be executed after duetime.
 
         Keyword arguments:
         duetime -- {timedelta} Relative time after which to execute the action.
@@ -73,8 +73,8 @@ class PyGameScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled 
+        """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
-        
+
         return self.to_datetime(pygame.time.get_ticks())
 
