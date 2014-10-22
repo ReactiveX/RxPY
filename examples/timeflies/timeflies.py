@@ -1,7 +1,12 @@
 from rx.subjects import Subject
 from rx.concurrency import TkinterScheduler
 
-from tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    # In python 2 tkinter is capitalized
+    from Tkinter import *
+
 
 def main():
     root = Tk()
