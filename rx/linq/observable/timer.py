@@ -86,8 +86,8 @@ class ObservableTimer(Observable):
             return scheduler.schedule_relative(d, action)
         return AnonymousObservable(subscribe)
 
-    @staticmethod
-    def observable_timer_timespan_and_period(duetime, period, scheduler):
+    @classmethod
+    def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
         if duetime == period:
             def subscribe(observer):
                 def action(count):
