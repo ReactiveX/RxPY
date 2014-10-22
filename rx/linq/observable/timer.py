@@ -98,7 +98,7 @@ class ObservableTimer(Observable):
             return AnonymousObservable(subscribe)
 
         def defer():
-            return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
+            return cls.observable_timer_date_and_period(scheduler.now() + scheduler.to_timedelta(duetime), period, scheduler)
         return Observable.defer(defer)
 
     @classmethod
