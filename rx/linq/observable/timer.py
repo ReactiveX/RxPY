@@ -71,7 +71,7 @@ class ObservableTimer(Observable):
                 count[0] += 1
                 state(d[0])
 
-            return scheduler.schedule_recursive(d, action)
+            return scheduler.schedule_recursive_with_absolute(d[0], action)
         return AnonymousObservable(subscribe)
 
     @staticmethod
