@@ -110,35 +110,35 @@ class TestReplay(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(110, 7), on_next(220, 3), on_next(280, 4), on_next(290, 1), on_next(340, 8), on_next(360, 5), on_next(370, 6), on_next(390, 7), on_next(410, 13), on_next(430, 2), on_next(450, 9), on_next(520, 11), on_next(560, 20), on_completed(600))
         results = scheduler.create_observer()
-        
+
         def action0(scheduler, state):
             ys[0] = xs.replay(None, 3, None, scheduler)
         scheduler.schedule_absolute(created, action0)
-        
+
         def action1(scehduler, state):
             subscription[0] = ys[0].subscribe(results)
         scheduler.schedule_absolute(450, action1)
-        
+
         def action2(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(disposed, action2)
-        
+
         def action3(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(300, action3)
-        
+
         def action4(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(400, action4)
-        
+
         def action5(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(500, action5)
-        
+
         def action(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(800, action)
-        
+
         scheduler.start()
         results.messages.assert_equal(on_next(451, 5), on_next(452, 6), on_next(453, 7), on_next(521, 11), on_next(561, 20), on_completed(601))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
@@ -150,43 +150,43 @@ class TestReplay(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(110, 7), on_next(220, 3), on_next(280, 4), on_next(290, 1), on_next(340, 8), on_next(360, 5), on_next(370, 6), on_next(390, 7), on_next(410, 13), on_next(430, 2), on_next(450, 9), on_next(520, 11), on_next(560, 20), on_completed(600))
         results = scheduler.create_observer()
-        
+
         def action0(scheduler, state):
             ys[0] = xs.replay(None, 3, None, scheduler)
         scheduler.schedule_absolute(created, action0)
-        
+
         def action1(scheduler, state):
             subscription[0] = ys[0].subscribe(results)
         scheduler.schedule_absolute(450, action1)
-        
+
         def action2(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(475, action2)
-        
+
         def action3(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(300, action3)
-        
+
         def action4(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(400, action4)
-        
+
         def action5(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(500, action5)
-        
+
         def action6(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(550, action6)
-        
+
         def action7(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(650, action7)
-        
+
         def action8(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(800, action8)
-        
+
         scheduler.start()
         results.messages.assert_equal(on_next(451, 5), on_next(452, 6), on_next(453, 7))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 550), subscribe(650, 800))
@@ -205,29 +205,31 @@ class TestReplay(unittest.TestCase):
     def test_replayCountLambda_Zip_Complete(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(110, 7), on_next(220, 3), on_next(280, 4), on_next(290, 1), on_next(340, 8), on_next(360, 5), on_next(370, 6), on_next(390, 7), on_next(410, 13), on_next(430, 2), on_next(450, 9), on_next(520, 11), on_next(560, 20), on_completed(600))
-        
+
         def action():
             def selector(_xs):
                 return _xs.take(6).repeat()
             return xs.replay(selector, 3, None, scheduler)
-        
+
         results = scheduler.start(action, disposed=610)
         results.messages.assert_equal(on_next(221, 3), on_next(281, 4), on_next(291, 1), on_next(341, 8), on_next(361, 5), on_next(371, 6), on_next(372, 8), on_next(373, 5), on_next(374, 6), on_next(391, 7), on_next(411, 13), on_next(431, 2), on_next(432, 7), on_next(433, 13), on_next(434, 2), on_next(451, 9), on_next(521, 11), on_next(561, 20), on_next(562, 9), on_next(563, 11), on_next(564, 20), on_next(602, 9), on_next(603, 11), on_next(604, 20), on_next(606, 9), on_next(607, 11), on_next(608, 20))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
-# def test_replayCountLambda_Zip_Error(self):
-#     var ex, results, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(110, 7), on_next(220, 3), on_next(280, 4), on_next(290, 1), on_next(340, 8), on_next(360, 5), on_next(370, 6), on_next(390, 7), on_next(410, 13), on_next(430, 2), on_next(450, 9), on_next(520, 11), on_next(560, 20), on_error(600, ex))
-#     results = scheduler.startWithCreate(function () {
-#         return xs.replay(function (_xs) {
-#             return _xs.take(6).repeat()
-#         }, 3, None, scheduler)
+    def test_replayCountLambda_Zip_Error(self):
+        ex = 'ex'
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(110, 7), on_next(220, 3), on_next(280, 4), on_next(290, 1), on_next(340, 8), on_next(360, 5), on_next(370, 6), on_next(390, 7), on_next(410, 13), on_next(430, 2), on_next(450, 9), on_next(520, 11), on_next(560, 20), on_error(600, ex))
 
-#     results.messages.assert_equal(on_next(221, 3), on_next(281, 4), on_next(291, 1), on_next(341, 8), on_next(361, 5), on_next(371, 6), on_next(372, 8), on_next(373, 5), on_next(374, 6), on_next(391, 7), on_next(411, 13), on_next(431, 2), on_next(432, 7), on_next(433, 13), on_next(434, 2), on_next(451, 9), on_next(521, 11), on_next(561, 20), on_next(562, 9), on_next(563, 11), on_next(564, 20), on_error(601, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 600))
+        def create():
+            def selector(_xs):
+                return _xs.take(6).repeat()
 
+            return xs.replay(selector, 3, None, scheduler)
+
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(on_next(221, 3), on_next(281, 4), on_next(291, 1), on_next(341, 8), on_next(361, 5), on_next(371, 6), on_next(372, 8), on_next(373, 5), on_next(374, 6), on_next(391, 7), on_next(411, 13), on_next(431, 2), on_next(432, 7), on_next(433, 13), on_next(434, 2), on_next(451, 9), on_next(521, 11), on_next(561, 20), on_next(562, 9), on_next(563, 11), on_next(564, 20), on_error(601, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 600))
 
 # def test_replayCountLambda_Zip_Dispose(self):
 #     scheduler = TestScheduler()
