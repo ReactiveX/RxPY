@@ -5,7 +5,7 @@ from rx.subjects import ReplaySubject
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableRetry(Observable):
+class ObservableReplay(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def replay(self, selector, buffer_size=None, window=None, scheduler=None):
