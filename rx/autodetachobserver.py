@@ -12,20 +12,20 @@ class AutoDetachObserver(AbstractObserver):
         self.observer = observer
         self.m = SingleAssignmentDisposable()
 
-    def next(self, value):
+    def _next(self, value):
         try:
             self.observer.on_next(value)
         except Exception as ex:
             traceback.print_exc(file=sys.stdout)
             self.dispose()
 
-    def error(self, exn):
+    def _error(self, exn):
         try:
             self.observer.on_error(exn)
         finally:
             self.dispose()
 
-    def completed(self):
+    def _completed(self):
         try:
             self.observer.on_completed()
         finally:
