@@ -3,7 +3,8 @@ from rx.disposables import SerialDisposable
 
 class ScheduledObserver(AbstractObserver):
     def __init__(self, scheduler, observer):
-        super(ScheduledObserver, self).__init__()
+        super(ScheduledObserver, self).__init__(self._next, self._error, self._completed)
+
         self.scheduler = scheduler
         self.observer = observer
         self.is_acquired = False

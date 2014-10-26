@@ -1,26 +1,17 @@
+from rx.internal import noop, default_error
+
 class AbstractObserver(object):
     """Abstract Observer"""
 
-    def __init__(self):
+    def __init__(self, on_next=None, on_error=None, on_completed=None):
         self.is_stopped = False
 
-    def _next(self, value):
-        raise NotImplementedError
+        # on_next now uses fast path and will be nooped when stopped
+        if not hasattr(self, "on_next"):
+            self.on_next = on_next or noop
 
-    def _error(self, error):
-        raise NotImplementedError
-
-    def _completed(self):
-        raise NotImplementedError
-
-    def on_next(self, value):
-        """Notifies the observer of a new element in the sequence.
-
-        Keyword arguments:
-        value -- Next element in the sequence."""
-
-        if not self.is_stopped:
-            self._next(value)
+        self._error = on_error or default_error
+        self._completed = on_completed or noop
 
     def on_error(self, error):
         """Notifies the observer that an exception has occurred.
@@ -29,25 +20,26 @@ class AbstractObserver(object):
         error -- The error that has occurred."""
 
         if not self.is_stopped:
-            self.is_stopped = True
+            AbstractObserver.dispose(self)
             self._error(error)
 
     def on_completed(self):
         """Notifies the observer of the end of the sequence."""
 
         if not self.is_stopped:
-            self.is_stopped = True
+            AbstractObserver.dispose(self)
             self._completed()
 
     def dispose(self):
         """Disposes the observer, causing it to transition to the stopped
         state."""
 
+        self.on_next = noop
         self.is_stopped = True
 
     def fail(self, exn):
         if not self.is_stopped:
-            self.is_stopped = True
+            AbstractObserver.dispose(self)
             self._error(exn)
             return True
 

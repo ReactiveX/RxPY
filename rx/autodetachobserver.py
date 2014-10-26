@@ -7,7 +7,7 @@ from .abstractobserver import AbstractObserver
 class AutoDetachObserver(AbstractObserver):
 
     def __init__(self, observer):
-        super(AutoDetachObserver, self).__init__()
+        super(AutoDetachObserver, self).__init__(self._next, self._error, self._completed)
 
         self.observer = observer
         self.m = SingleAssignmentDisposable()
