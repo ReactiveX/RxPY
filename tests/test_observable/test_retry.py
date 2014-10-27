@@ -12,6 +12,13 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+class RxException(Exception):
+    pass
+
+# Helper function for raising exceptions within lambdas
+def _raise(ex):
+    raise RxException(ex)
+
 class TestRetry(unittest.TestCase):
     def test_retry_observable_basic(self):
         scheduler = TestScheduler()
@@ -116,7 +123,7 @@ class TestRetry(unittest.TestCase):
             pass
 
         scheduler2 = TestScheduler()
-        ys = Observable.throwException('ex', scheduler2).retry(100)
+        ys = Observable.throw_exception('ex', scheduler2).retry(100)
         d = ys.subscribe(on_error=lambda ex: _raise('ex'))
         
         scheduler2.schedule_absolute(10, lambda: d.dispose())

@@ -12,6 +12,13 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+class RxException(Exception):
+    pass
+
+# Helper function for raising exceptions within lambdas
+def _raise(ex):
+    raise RxException(ex)
+
 class TestRepeat(unittest.TestCase):
     def test_repeat_value_count_zero(self):
         scheduler = TestScheduler()

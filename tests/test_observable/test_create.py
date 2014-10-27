@@ -128,7 +128,7 @@ class TestCreate(unittest.TestCase):
             o.on_completed()
             return lambda: None
         try:
-            return Observable.create(subscribe3).subscribe(on_complete=lambda: _raise('ex'))
+            return Observable.create(subscribe3).subscribe(on_completed=lambda: _raise('ex'))
         except RxException:
             pass
 
