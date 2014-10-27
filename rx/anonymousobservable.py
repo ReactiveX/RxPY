@@ -14,12 +14,12 @@ class AnonymousObservable(Observable):
         function.
 
         Keyword arguments:
-        subscribe -- Subscribe method implementation.
-        """
+        subscribe -- Subscribe method implementation."""
+        
         def _subscribe(observer):
             def fix_subscriber(subscriber):
-                """Fix subscriber to check for None or function returned to 
-                decorate as Disposable"""
+                """Fixes subscriber to make sure it returns a Disposable instead
+                of None or a dispose function"""
             
                 if subscriber is None:
                     subscriber = Disposable.empty()
