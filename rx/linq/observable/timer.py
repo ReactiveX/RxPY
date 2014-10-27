@@ -60,10 +60,10 @@ class ObservableTimer(Observable):
             count = [0]
             d = [duetime]
 
-            def action(scheduler, state):
+            def action(state):
                 if p > 0:
                     now = scheduler.now()
-                    d[0] = d[0] + p
+                    d[0] = d[0] + scheduler.to_timedelta(p)
                     if d[0] <= now:
                         d[0] = now + p
 
