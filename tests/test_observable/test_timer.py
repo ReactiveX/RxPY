@@ -75,3 +75,21 @@ class TestTimer(unittest.TestCase):
             return scheduler2.start()
         except RxException:
             pass
+
+    def test_periodic_timer_basic(self):
+        scheduler = TestScheduler()
+
+        def create():
+            return Observable.timer(duetime=300, period=400, scheduler=scheduler)
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(500, 0), on_next(900, 1))
+
+    def test_periodic_timer_equal_time_and_period(self):
+        scheduler = TestScheduler()
+
+        def create():
+            return Observable.timer(duetime=300, period=300, scheduler=scheduler)
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(500, 0), on_next(800, 1))
