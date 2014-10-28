@@ -60,10 +60,10 @@ class ObservableTimer(Observable):
             count = [0]
             d = [duetime]
 
-            def action(scheduler, state):
+            def action(state):
                 if p > 0:
                     now = scheduler.now()
-                    d[0] = d[0] + p
+                    d[0] = d[0] + scheduler.to_timedelta(p)
                     if d[0] <= now:
                         d[0] = now + p
 
@@ -71,7 +71,7 @@ class ObservableTimer(Observable):
                 count[0] += 1
                 state(d[0])
 
-            return scheduler.schedule_recursive(d, action)
+            return scheduler.schedule_recursive_with_absolute(d[0], action)
         return AnonymousObservable(subscribe)
 
     @staticmethod
@@ -86,8 +86,8 @@ class ObservableTimer(Observable):
             return scheduler.schedule_relative(d, action)
         return AnonymousObservable(subscribe)
 
-    @staticmethod
-    def observable_timer_timespan_and_period(duetime, period, scheduler):
+    @classmethod
+    def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
         if duetime == period:
             def subscribe(observer):
                 def action(count):
@@ -98,7 +98,7 @@ class ObservableTimer(Observable):
             return AnonymousObservable(subscribe)
 
         def defer():
-            return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
+            return cls.observable_timer_date_and_period(scheduler.now() + scheduler.to_timedelta(duetime), period, scheduler)
         return Observable.defer(defer)
 
     @classmethod
