@@ -62,20 +62,14 @@ class TestTimer(unittest.TestCase):
         xs = Observable.timer(1, scheduler=scheduler1)
         xs.subscribe(lambda x: _raise("ex"))
 
-        try:
-            return scheduler1.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler1.start)
+        
         scheduler2 = TestScheduler()
         ys = Observable.timer(1, period=None, scheduler=scheduler2)
         ys.subscribe(on_completed=lambda: _raise("ex"))
 
-        try:
-            return scheduler2.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler2.start)
+        
     def test_periodic_timer_basic(self):
         scheduler = TestScheduler()
 

@@ -67,16 +67,11 @@ class TestReturnValue(unittest.TestCase):
         xs = Observable.return_value(1, scheduler1)
         xs.subscribe(lambda x: _raise('ex'))
 
-        try:
-            scheduler1.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler1.start)
+        
         scheduler2 = TestScheduler()
         ys = Observable.return_value(1, scheduler2)
         ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
-        try:
-            scheduler2.start()
-        except RxException:
-            pass
+        self.assertRaises(RxException, scheduler2.start)
+        

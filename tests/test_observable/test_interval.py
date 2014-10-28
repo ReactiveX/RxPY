@@ -63,7 +63,6 @@ class TestTimeInterval(unittest.TestCase):
         xs = Observable.interval(1, scheduler=scheduler)
         xs.subscribe(lambda x: _raise("ex"))
     
-        try:
-            return scheduler.start()
-        except RxException:
-            pass
+        with self.assertRaises(RxException):
+            scheduler.start()
+        

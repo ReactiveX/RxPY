@@ -112,33 +112,27 @@ class TestRepeat(unittest.TestCase):
         xs = Observable.return_value(1, scheduler1).repeat()
         xs.subscribe(lambda x: _raise('ex'))
         
-        try:
-            return scheduler1.start()
-        except RxException:
-            pass
-
+        with self.assertRaises(RxException):
+            scheduler1.start()
+        
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex', scheduler2).repeat()
         ys.subscribe(lambda ex: _raise('ex'))
         
-        try:
-            return scheduler2.start()
-        except RxException:
-            pass
-
+        with self.assertRaises(Exception):
+            scheduler2.start()
+        
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).repeat()
-        d = zs.subscribe(lambda: _raise('ex'))
+        d = zs.subscribe(on_completed=lambda: _raise('ex'))
         
-        scheduler3.schedule_absolute(210, lambda: d.dispose())
-        
+        scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()
-        xss = Observable.create(lambda o: _raise('ex')).repeat()
-        try:
-            return xss.subscribe()
-        except RxException:
-            pass
 
+        xss = Observable.create(lambda o: _raise('ex')).repeat()
+        with self.assertRaises(RxException):
+            xss.subscribe()
+        
     def test_repeat_observable_repeat_count_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
@@ -171,35 +165,29 @@ class TestRepeat(unittest.TestCase):
         results.messages.assert_equal(on_next(300, 1), on_next(350, 2), on_next(400, 3), on_error(450, ex))
         return xs.subscriptions.assert_equal(subscribe(200, 450))
 
-
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1).repeat(3)
         xs.subscribe(lambda x: _raise('ex'))
         
-        try:
-            return scheduler1.start()
-        except RxException:
-            pass
-
-        scheduler2 = TestScheduler()
-        ys = Observable.throwException('ex1', scheduler2).repeat(3)
-        ys.subscribe(lambda ex: _raise('ex2'))
+        with self.assertRaises(RxException):
+            scheduler1.start()
         
-        try:
-            return scheduler2.start()
-        except RxException:
-            pass
-
+        scheduler2 = TestScheduler()
+        ys = Observable.throw_exception('ex1', scheduler2).repeat(3)
+        ys.subscribe(on_error=lambda ex: _raise('ex2'))
+        
+        with self.assertRaises(RxException):
+            scheduler2.start()
+        
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).repeat(100)
-        d = zs.subscribe(on_complete=lambda: _raise('ex3'))
+        d = zs.subscribe(on_completed=lambda: _raise('ex3'))
         
-        scheduler3.schedule_absolute(10, lambda: d.dispose())
-        
+        scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())
         scheduler3.start()
+
         xss = Observable.create(lambda o: _raise('ex4')).repeat(3)
-        try:
-            return xss.subscribe()
-        except RxException:
-            pass
+        with self.assertRaises(RxException):
+            xss.subscribe()
+        

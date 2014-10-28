@@ -24,37 +24,29 @@ def _raise(ex):
 class TestSelect(unittest.TestCase):
     
     def test_select_throws(self):
-        try:
+        with self.assertRaises(RxException):
             Observable.return_value(1) \
                 .select(lambda x, y: x) \
                 .subscribe(lambda x: _raise("ex"))
-        except RxException:
-            pass
-    
-        try:
+        
+        with self.assertRaises(RxException):
             Observable.throw_exception('ex') \
                 .select(lambda x, y: x) \
                 .subscribe(on_error=lambda ex: _raise(ex))
-        except RxException:
-            pass
-    
-        try:
+        
+        with self.assertRaises(RxException):
             Observable.empty() \
                 .select(lambda x, y: x) \
                 .subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
-        except RxException:
-            pass
-    
+        
         def subscribe(observer):
             _raise('ex')
     
-        try:
+        with self.assertRaises(RxException):
             Observable.create(subscribe) \
                 .select(lambda x: x) \
                 .subscribe()
-        except RxException:
-            pass
-    
+        
     def test_select_disposeinsideselector(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(100, 1), on_next(200, 2), on_next(500, 3), on_next(600, 4))
@@ -172,34 +164,26 @@ class TestSelect(unittest.TestCase):
         assert invoked[0] == 3
     
     def test_select_with_index_throws(self):
-        try:
+        with self.assertRaises(RxException):
             return Observable.return_value(1) \
                 .select(lambda x, index: x) \
                 .subscribe(lambda x: _raise('ex'))
-        except RxException:
-            pass
-    
-        try:
+        
+        with self.assertRaises(RxException):
             return Observable.throw_exception('ex') \
                 .select(lambda x, index: x) \
                 .subscribe(lambda x: x, lambda ex: _raise(ex))
-        except RxException:
-            pass
-    
-        try:
+        
+        with self.assertRaises(RxException):
             return Observable.empty() \
                 .select(lambda x, index: x) \
                 .subscribe(lambda x: x, lambda ex: _, lambda : _raise('ex'))
-        except RxException:
-            pass
-    
-        try:
+        
+        with self.assertRaises(RxException):
             return Observable.create(lambda o: _raise('ex')) \
                 .select(lambda x, index: x) \
                 .subscribe()
-        except RxException:
-            pass
-    
+        
     def test_select_with_index_dispose_inside_selector(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(100, 4), on_next(200, 3), on_next(500, 2), on_next(600, 1))

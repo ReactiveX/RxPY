@@ -43,7 +43,5 @@ class TestThrow(unittest.TestCase):
         xs = Observable.throw_exception('ex', scheduler)
         xs.subscribe(lambda x: None, lambda ex: _raise('ex'), lambda: None)
         
-        try:
-            return scheduler.start()
-        except RxException:
-            pass
+        self.assertRaises(RxException, scheduler.start)
+        
