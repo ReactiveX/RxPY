@@ -27,7 +27,7 @@ class ObservableFromCallback(Observable):
             arguments = list(args)
             def subscribe(observer):
                 def handler(*args):
-                    results = args
+                    results = list(args)
                     if selector:
                         try:
                             results = selector(args)
