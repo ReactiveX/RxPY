@@ -62,7 +62,6 @@ class VirtualTimeScheduler(Scheduler):
 
         def run(scheduler, state1):
             self.queue.remove(si)
-
             return action(scheduler, state1)
 
         si = ScheduledItem(self, state, run, duetime, self.comparer)

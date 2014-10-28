@@ -20,8 +20,7 @@ class ObservableRetry(Observable):
         provided, retry the sequence indefinitely.
         
         Returns an observable sequence producing the elements of the given 
-        sequence repeatedly until it terminates successfully. 
-        """
+        sequence repeatedly until it terminates successfully. """
     
         return Observable.catch_exception(Enumerable.repeat(self, retry_count))
 
