@@ -1,8 +1,6 @@
 from six import add_metaclass
 
-import threading
-
-from rx import Observable, AnonymousObservable
+from rx import Lock, Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import ExtensionMethod
 
@@ -13,7 +11,7 @@ class ObservableAmb(Observable):
     def __init__(self, subscribe):
         self.amb = self.__amb
 
-        self.lock = threading.Lock()
+        self.lock = Lock()
 
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
@@ -21,8 +19,8 @@ class ObservableAmb(Observable):
         right_source Second observable sequence.
 
         returns an observable sequence that surfaces either of the given
-        sequences, whichever reacted first.
-        """
+        sequences, whichever reacted first."""
+        
         left_source = self
         right_source = Observable.from_future(right_source)
 

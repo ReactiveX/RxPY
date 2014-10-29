@@ -1,4 +1,7 @@
-from threading import Lock
+try:
+	from threading import Lock
+except ImportError:
+	from rx.internal.concurrency import NoLock as Lock
 
 try:
     from asyncio import Future
