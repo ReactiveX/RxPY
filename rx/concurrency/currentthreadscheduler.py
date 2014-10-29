@@ -81,6 +81,10 @@ class CurrentThreadScheduler(Scheduler):
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
+        """Gets a value indicating whether the caller must call a schedule 
+        method. If the trampoline is active, then it returns False; otherwise, 
+        if  the trampoline is not active, then it returns True."""
+        
         return self.queue is None
 
     def ensure_trampoline(self, action):
