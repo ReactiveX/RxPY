@@ -1,12 +1,6 @@
-try:
-	from threading import Lock
-except ImportError:
-	from rx.internal.concurrency import NoLock as Lock
+from rx.internal.concurrency import NoLock as Lock
 
-try:
-    from asyncio import Future
-except ImportError:
-    Future = None
+Future = None
 
 # Rx configuration dictionary
 config = {
