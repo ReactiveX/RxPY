@@ -20,8 +20,8 @@ class ObservableScan(Observable):
         accumulator -- An accumulator function to be invoked on each element.
         seed -- [Optional] The initial accumulator value.
         
-        Returns an observable sequence containing the accumulated values.        
-        """
+        Returns an observable sequence containing the accumulated values."""
+        
         has_seed = False
         if not seed is None:
             has_seed = True

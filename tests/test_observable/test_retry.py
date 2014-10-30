@@ -12,6 +12,13 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+class RxException(Exception):
+    pass
+
+# Helper function for raising exceptions within lambdas
+def _raise(ex):
+    raise RxException(ex)
+
 class TestRetry(unittest.TestCase):
     def test_retry_observable_basic(self):
         scheduler = TestScheduler()
@@ -42,33 +49,24 @@ class TestRetry(unittest.TestCase):
         xs = Observable.return_value(1, scheduler1).retry()
         xs.subscribe(lambda x: _raise('ex'))
         
-        try:
-            return scheduler1.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler1.start)
+        
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex', scheduler2).retry()
         d = ys.subscribe(on_error=lambda ex: _raise('ex'))
         
-        scheduler2.schedule_absolute(210, lambda: d.dispose())
+        scheduler2.schedule_absolute(210, lambda sc, st: d.dispose())
         
         scheduler2.start()
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).retry()
         zs.subscribe(on_completed=lambda: _raise('ex'))
         
-        try:
-            return scheduler3.start()
-        except RxException:
-            pass
+        self.assertRaises(RxException, scheduler3.start)
 
         xss = Observable.create(lambda o: _raise('ex')).retry()
-        try:
-            return xss.subscribe()
-        except RxException:
-            pass
-
+        self.assertRaises(Exception, xss.subscribe)
+        
     def test_retry_observable_retry_count_basic(self):
         scheduler = TestScheduler()
         ex = 'ex'
@@ -77,7 +75,6 @@ class TestRetry(unittest.TestCase):
         
         results.messages.assert_equal(on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_error(260, ex))
         xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
-
 
     def test_retry_observable_retry_count_dispose(self):
         scheduler = TestScheduler()
@@ -110,29 +107,23 @@ class TestRetry(unittest.TestCase):
         xs = Observable.return_value(1, scheduler1).retry(3)
         xs.subscribe(lambda x: _raise('ex'))
         
-        try:
-            return scheduler1.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler1.start)
+        
         scheduler2 = TestScheduler()
-        ys = Observable.throwException('ex', scheduler2).retry(100)
+        ys = Observable.throw_exception('ex', scheduler2).retry(100)
         d = ys.subscribe(on_error=lambda ex: _raise('ex'))
         
-        scheduler2.schedule_absolute(10, lambda: d.dispose())
+        scheduler2.schedule_absolute(10, lambda sc, st: d.dispose())
         
         scheduler2.start()
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).retry(100)
-        zs.subscribe(on_complete=lambda: _raise('ex'))
+        zs.subscribe(on_completed=lambda: _raise('ex'))
         
-        try:
-            return scheduler3.start()
-        except RxException:
-            pass
-
+        self.assertRaises(RxException, scheduler3.start)
+        
         xss = Observable.create(lambda o: _raise('ex')).retry(100)
-        try:
-            return xss.subscribe()
-        except RxException:
-            pass
+        self.assertRaises(Exception, xss.subscribe)
+        
+if __name__ == '__main__':
+    unittest.main()

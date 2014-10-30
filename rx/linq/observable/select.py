@@ -21,8 +21,7 @@ class ObservableSelect(Observable):
             element.
 
         Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of source.
-        """
+        invoking the transform function on each element of source."""
 
         selector = adapt_call(selector)
 

@@ -18,10 +18,11 @@ class VirtualTimeScheduler(Scheduler):
 
         Keyword arguments:
         initial_clock -- Initial value for the clock.
-        comparer -- Comparer to determine causality of events based on absolute time.
-        """
+        comparer -- Comparer to determine causality of events based on absolute
+            time."""
 
         self.clock = initial_clock
+
         self.comparer = comparer
         self.is_enabled = False
         self.queue = PriorityQueue(1024)
@@ -49,8 +50,8 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         due_time -- Relative time after which to execute the action.
         action -- Action to be executed.
-        state -- [Optional] State passed to the action to be executed.
-        """
+        state -- [Optional] State passed to the action to be executed."""
+
         log.debug("VirtualTimeScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
 
         runat = self.add(self.clock, self.to_relative(duetime))
@@ -61,7 +62,6 @@ class VirtualTimeScheduler(Scheduler):
 
         def run(scheduler, state1):
             self.queue.remove(si)
-
             return action(scheduler, state1)
 
         si = ScheduledItem(self, state, run, duetime, self.comparer)
@@ -74,6 +74,7 @@ class VirtualTimeScheduler(Scheduler):
 
     def start(self):
         """Starts the virtual time scheduler."""
+
         next = None
         if not self.is_enabled:
             self.is_enabled = True
@@ -90,6 +91,7 @@ class VirtualTimeScheduler(Scheduler):
 
     def stop(self):
         """Stops the virtual time scheduler."""
+
         self.is_enabled = False
 
     def advance_to(self, time):
@@ -97,8 +99,8 @@ class VirtualTimeScheduler(Scheduler):
         work til that point.
 
         Keyword arguments:
-        time -- Absolute time to advance the scheduler's clock to.
-        """
+        time -- Absolute time to advance the scheduler's clock to."""
+
         next = None
 
         due_to_clock = self.comparer(self.clock, time)
@@ -127,8 +129,8 @@ class VirtualTimeScheduler(Scheduler):
         running all work scheduled for that timespan.
 
         Keyword arguments:
-        time -- Relative time to advance the scheduler's clock by.
-        """
+        time -- Relative time to advance the scheduler's clock by."""
+
         log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
         dt = self.add(self.clock, time)
@@ -140,8 +142,8 @@ class VirtualTimeScheduler(Scheduler):
         """Advances the scheduler's clock by the specified relative time.
 
         Keyword arguments:
-        time -- Relative time to advance the scheduler's clock by.
-        """
+        time -- Relative time to advance the scheduler's clock by."""
+
         dt = self.add(self.clock, time)
 
         if self.comparer(self.clock, dt) >= 0:
@@ -151,7 +153,8 @@ class VirtualTimeScheduler(Scheduler):
 
     def get_next(self):
         """Returns the next scheduled item to be executed."""
-        while self.queue.length > 0:
+
+        while len(self.queue):
             next = self.queue.peek()
             if next.is_cancelled():
                 self.queue.dequeue()

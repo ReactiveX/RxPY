@@ -23,8 +23,8 @@ class ObservableSubscribeOn(Observable):
 
         This only performs the side-effects of subscription and unsubscription 
         on the specified scheduler. In order to invoke observer callbacks on a 
-        scheduler, use observe_on.
-        """
+        scheduler, use observe_on."""
+        
         source = self
 
         def subscribe(observer):

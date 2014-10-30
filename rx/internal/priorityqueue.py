@@ -1,88 +1,56 @@
-# Collections
-class IndexedItem(object):
-    def __init__(self, id, value):
-        self._id = id
-        self.value = value
+import heapq
 
-    def compare_to(self, other):
-        ret = self.value.compare_to(other.value)
-        if not ret:
-            ret = self._id - other._id        
-        return ret
+import rx
 
 class PriorityQueue(object):
-    """ Priority Queue for Scheduling"""
-    count = 0
+    """ Priority queue for scheduling"""
 
     def __init__(self, capacity=None):
         self.items = []
-        self.length = 0
-    
-    def is_higher_priority(self, left, right):
-        return self.items[left].compare_to(self.items[right]) < 0
+        self.count = 0 # Monotonic increasing for sort stability
 
-    def percolate(self, index):
-        if index >= self.length or index < 0:
-            return
-        
-        parent = index - 1 >> 1
-        if parent < 0 or parent == index:
-            return
-        
-        if self.is_higher_priority(index, parent):
-            temp = self.items[index]
-            self.items[index] = self.items[parent]
-            self.items[parent] = temp
-            self.percolate(parent)
-        
-    def heapify(self, index=None):
-        if index is None:
-            index = 0
-        
-        if index >= self.length or index < 0:
-            return
-        
-        left = 2 * index + 1
-        right = 2 * index + 2
-        first = index
-        
-        if left < self.length and self.is_higher_priority(left, first):
-            first = left
-        
-        if right < self.length and self.is_higher_priority(right, first):
-            first = right
-        
-        if first != index:
-            temp = self.items[index]
-            self.items[index] = self.items[first]
-            self.items[first] = temp
-            self.heapify(first)
+        self.lock = rx.config.get("Lock")()
+
+    def __len__(self):
+        """Returns length of queue"""
+
+        return len(self.items)
 
     def peek(self):
-        return self.items[0].value
-    
+        """Returns first item in queue without removing it"""
+
+        return self.items[0][0]
+
     def remove_at(self, index):
-        self.length -= 1
-        self.items[index] = self.items[self.length]
-        del self.items[self.length]
-        self.heapify()
-    
+        """Removes item at given index"""
+
+        with self.lock:
+            item = self.items.pop(index)[0]
+            heapq.heapify(self.items)
+        return item
+
     def dequeue(self):
-        result = self.peek()
-        self.remove_at(0)
-        return result
-    
+        """Returns and removes item with lowest priority from queue"""
+
+        with self.lock:
+            item = heapq.heappop(self.items)[0]
+        return item
+
     def enqueue(self, item):
-        index = self.length
-        self.length += 1
-        self.items.append(IndexedItem(PriorityQueue.count, item))
-        PriorityQueue.count += 1
-        self.percolate(index)
-    
+        """Adds item to queue"""
+
+        with self.lock:
+            heapq.heappush(self.items, (item, self.count))
+            self.count += 1
+
     def remove(self, item):
-        for index, _item in enumerate(self.items):
-            if _item.value == item:
-                self.remove_at(index)
-                return True
-        
+        """Remove given item from queue"""
+
+        with self.lock:
+            for index, _item in enumerate(heapq.nsmallest(len(self.items), self.items)):
+                if _item[0] == item:
+                    item = self.items.pop(index)
+                    heapq.heapify(self.items)
+                    return True
+
         return False

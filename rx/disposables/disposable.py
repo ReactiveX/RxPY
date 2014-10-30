@@ -1,5 +1,4 @@
-import threading
-
+from rx import Lock
 from rx.internal import noop
 
 class Disposable(object):
@@ -15,9 +14,9 @@ class Disposable(object):
         Returns the disposable object that runs the given action upon disposal.
         """
         self.is_disposed = False
-        self.action = action
+        self.action = action or noop
 
-        self.lock = threading.Lock()
+        self.lock = Lock()
 
     def dispose(self):
         """Performs the task of cleaning up resources."""
@@ -28,7 +27,7 @@ class Disposable(object):
                 dispose = True
                 self.is_disposed = True
                 
-        if dispose and self.action:
+        if dispose:
             self.action()
 
     def __enter__(self):

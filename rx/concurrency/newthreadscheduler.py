@@ -55,7 +55,7 @@ class NewThreadScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        """Schedules an action to be executed at duetime."""
 
         return self.schedule_relative(duetime - self.now(), action, state=None)
 

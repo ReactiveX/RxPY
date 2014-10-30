@@ -41,6 +41,7 @@ class TestFromCallback(unittest.TestCase):
             self.assertEqual(r, 'file.txt')
 
         def on_error(err):
+            print(err)
             assert(False)
 
         def on_completed():

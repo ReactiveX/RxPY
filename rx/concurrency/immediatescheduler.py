@@ -21,7 +21,7 @@ class ImmediateScheduler(Scheduler):
         return self.invoke_action(action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)

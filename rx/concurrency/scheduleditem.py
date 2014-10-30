@@ -11,13 +11,19 @@ class ScheduledItem(object):
         self.duetime = duetime
         self.comparer = comparer or default_sub_comparer
         self.disposable = SingleAssignmentDisposable()
-    
+
     def invoke(self):
         self.disposable.disposable = self.invoke_core()
-    
+
     def compare_to(self, other):
         return self.comparer(self.duetime, other.duetime)
-    
+
+    def cancel(self):
+        """Cancels the work item by disposing the resource returned by
+        invoke_core as soon as possible."""
+
+        self.disposable.dispose()
+
     def is_cancelled(self):
         return self.disposable.is_disposed
 
@@ -29,6 +35,6 @@ class ScheduledItem(object):
 
     def __gt__(self, other):
         return self.compare_to(other) > 0
-    
+
     def __eq__(self, other):
         return self.compare_to(other) == 0

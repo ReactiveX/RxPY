@@ -1,5 +1,4 @@
-import threading
-
+from rx import Lock
 from rx.observable import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
@@ -20,7 +19,7 @@ class Subject(Observable, AbstractObserver):
         self.observers = []
         self.exception = None
 
-        self.lock = threading.Lock()
+        self.lock = Lock()
 
     def check_disposed(self):
         if self.is_disposed:

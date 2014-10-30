@@ -21,8 +21,8 @@ class ObservableWhere(Observable):
             element.
 
         Returns an observable sequence that contains elements from the input
-        sequence that satisfy the condition.
-        """
+        sequence that satisfy the condition."""
+        
         predicate = adapt_call(predicate)
         parent = self
 

@@ -4,15 +4,15 @@ class ObserveOnObserver(ScheduledObserver):
     def __init__(self, scheduler, observer):
         super(ObserveOnObserver, self).__init__(scheduler, observer)
 
-    def next(self, value):
-        super(ObserveOnObserver, self).next(value);
+    def _next(self, value):
+        super(ObserveOnObserver, self)._next(value);
         self.ensure_active()
     
-    def error(self, e):
-        super(ObserveOnObserver, self).error(e)
+    def _error(self, e):
+        super(ObserveOnObserver, self)._error(e)
         self.ensure_active()
     
-    def completed(self):
-        super(ObserveOnObserver, self).completed()
+    def _completed(self):
+        super(ObserveOnObserver, self)._completed()
         self.ensure_active()
     

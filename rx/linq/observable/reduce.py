@@ -28,9 +28,8 @@ class ObservableReduce(Observable):
         Returns {Observable} An observable sequence containing a single element 
         with the final accumulator value."""
         
-        if not seed is None: 
+        if not seed is None:
             return self.scan(accumulator, seed=seed).start_with(seed).final_value()
         else:
             return self.scan(accumulator).final_value()
-    
-    
+        
