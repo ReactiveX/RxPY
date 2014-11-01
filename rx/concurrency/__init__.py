@@ -1,9 +1,9 @@
-from .scheduler import Scheduler
+from rx.concurrency.scheduler import Scheduler
 
-from .scheduleditem import ScheduledItem
+from rx.concurrency.scheduleditem import ScheduledItem
 
-from .immediatescheduler import ImmediateScheduler, immediate_scheduler
-from .currentthreadscheduler import CurrentThreadScheduler, current_thread_scheduler
-from .virtualtimescheduler import VirtualTimeScheduler
-from .historicalscheduler import HistoricalScheduler
-from .catchscheduler import CatchScheduler
+from rx.concurrency.immediatescheduler import ImmediateScheduler, immediate_scheduler
+from rx.concurrency.currentthreadscheduler import CurrentThreadScheduler, current_thread_scheduler
+from rx.concurrency.virtualtimescheduler import VirtualTimeScheduler
+from rx.concurrency.historicalscheduler import HistoricalScheduler
+from rx.concurrency.catchscheduler import CatchScheduler

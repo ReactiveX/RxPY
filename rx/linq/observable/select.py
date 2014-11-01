@@ -1,11 +1,6 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableSelect(Observable):
+class ObservableSelect:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def select(self, selector):
@@ -23,14 +18,14 @@ class ObservableSelect(Observable):
         Returns an observable sequence whose elements are the result of
         invoking the transform function on each element of source."""
 
-        selector = adapt_call(selector)
-
         def subscribe(observer):
             count = [0]
 
             def on_next(value):
                 result = None
                 try:
+                    result = selector(value)
+                except TypeError:
                     result = selector(value, count[0])
                 except Exception as err:
                     observer.on_error(err)
@@ -42,3 +37,6 @@ class ObservableSelect(Observable):
         return AnonymousObservable(subscribe)
 
     map = select
+
+Observable.select = ObservableSelect.select
+Observable.map = ObservableSelect.map

@@ -1,15 +1,12 @@
 # Current Thread Scheduler
 
+import pyb
 import time
-import logging
-from datetime import timedelta
 
 from rx.internal import PriorityQueue
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
-
-log = logging.getLogger('Rx')
 
 class Trampoline(object):
     def __init__(self, scheduler):
@@ -27,9 +24,8 @@ class Trampoline(object):
             item = self.queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - self.scheduler.now()
-                while diff > timedelta(0):
+                while diff > 0:
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
-                    log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
                     diff = item.duetime - self.scheduler.now()
 
@@ -50,13 +46,10 @@ class CurrentThreadScheduler(Scheduler):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
-        return self.schedule_relative(timedelta(0), action, state)
+        return self.schedule_relative(0, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
-
-        duetime = self.to_timedelta(duetime)
 
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
@@ -77,7 +70,6 @@ class CurrentThreadScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
     def schedule_required(self):
@@ -94,5 +86,8 @@ class CurrentThreadScheduler(Scheduler):
             return self.schedule(action)
         else:
             return action(self, None)
+
+    def default_now(self):
+        return pyb.millis()
 
 Scheduler.current_thread = current_thread_scheduler = CurrentThreadScheduler()

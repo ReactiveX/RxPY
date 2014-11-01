@@ -1,9 +1,6 @@
-from six import add_metaclass
-
 from rx.internal import Enumerable, Enumerator
 from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
 class EnumerableWhileDo(Enumerable):
     """Uses a meta class to extend Enumerable with the methods in this class"""
     
@@ -16,4 +13,4 @@ class EnumerableWhileDo(Enumerable):
             raise StopIteration()
         return Enumerable(next())
 
-    
+Enumerable.while_do = EnumerableWhileDo.while_do

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from rx.internal.basic import default_sub_comparer
 
 from .virtualtimescheduler import VirtualTimeScheduler

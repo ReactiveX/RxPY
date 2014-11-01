@@ -1,5 +1,3 @@
-import six
-
 from rx import Lock
 from .observer import Observer, AbstractObserver
 

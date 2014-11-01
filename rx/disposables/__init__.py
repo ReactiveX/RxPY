@@ -1,8 +1,8 @@
-from .disposable import Disposable
+from rx.disposables.disposable import Disposable
 
-from .booleandisposable import BooleanDisposable
-from .compositedisposable import CompositeDisposable
-from .singleassignmentdisposable import SingleAssignmentDisposable
-from .serialdisposable import SerialDisposable
-from .refcountdisposable import RefCountDisposable
-from .scheduleddisposable import ScheduledDisposable
+from rx.disposables.booleandisposable import BooleanDisposable
+from rx.disposables.compositedisposable import CompositeDisposable
+from rx.disposables.singleassignmentdisposable import SingleAssignmentDisposable
+from rx.disposables.serialdisposable import SerialDisposable
+from rx.disposables.refcountdisposable import RefCountDisposable
+from rx.disposables.scheduleddisposable import ScheduledDisposable

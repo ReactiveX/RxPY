@@ -1,4 +1,4 @@
-import itertools
+#import itertools
 
 from .basic import identity
 from .enumerator import Enumerator
@@ -43,11 +43,11 @@ class Enumerable(object):
             raise StopIteration
         return Enumerable(next())
 
-    @classmethod
-    def repeat(cls, value, count=None):
-        if not count is None:
-            return Enumerable(value for _ in range(count))
-        return Enumerable(itertools.repeat(value))
+    # @classmethod
+    # def repeat(cls, value, count=None):
+    #     if not count is None:
+    #         return Enumerable(value for _ in range(count))
+    #     return Enumerable(itertools.repeat(value))
 
     @classmethod
     def for_each(cls, source, selector=None):

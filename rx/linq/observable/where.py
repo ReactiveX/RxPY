@@ -1,11 +1,6 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableWhere(Observable):
+class ObservableWhere:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def where(self, predicate):
@@ -23,7 +18,6 @@ class ObservableWhere(Observable):
         Returns an observable sequence that contains elements from the input
         sequence that satisfy the condition."""
         
-        predicate = adapt_call(predicate)
         parent = self
 
         def subscribe(observer):
@@ -32,6 +26,8 @@ class ObservableWhere(Observable):
             def on_next(value):
                 should_run = False
                 try:
+                    should_run = predicate(value)
+                except TypeError:
                     should_run = predicate(value, count[0])
                 except Exception as ex:
                     observer.on_error(ex)
@@ -46,3 +42,6 @@ class ObservableWhere(Observable):
         return AnonymousObservable(subscribe)
 
     filter = where
+
+Observable.where = ObservableWhere.where
+Observable.filter = ObservableWhere.filter

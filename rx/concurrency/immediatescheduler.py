@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from .scheduler import Scheduler
 
 # Immediate Scheduler
@@ -14,8 +12,7 @@ class ImmediateScheduler(Scheduler):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        duetime = self.to_timedelta(duetime)
-        if duetime > timedelta(0):
+        if duetime > 0:
             raise Exception(SCHEDULER_NO_BLOCK_ERROR)
 
         return self.invoke_action(action, state)
@@ -23,7 +20,6 @@ class ImmediateScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
 Scheduler.immediate = immediate_scheduler = ImmediateScheduler()

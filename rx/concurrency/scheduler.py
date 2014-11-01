@@ -1,7 +1,4 @@
-from datetime import datetime, timedelta
-
 from rx.disposables import Disposable, CompositeDisposable
-from rx.internal.basic import default_now
 
 class Scheduler(object):
     """Provides a set of static properties to access commonly used schedulers."""
@@ -180,47 +177,7 @@ class Scheduler(object):
         return self.default_now()
 
     def default_now(self):
-        return default_now()
-
-    @classmethod
-    def to_relative(cls, timespan):
-        """Converts time value to milliseconds"""
-
-        if isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
-            timespan = int(timespan.total_seconds()*1000)
-        elif isinstance(timespan, timedelta):
-            timespan = int(timespan.total_seconds()*1000)
-        elif isinstance(timespan, float):
-            timespan = timespan * 1000
-
-        return int(timespan)
-
-    @classmethod
-    def to_datetime(cls, duetime):
-        """Converts time value to datetime"""
-
-        if isinstance(duetime, int):
-            duetime = datetime.fromtimestamp(duetime/1000.0)
-        elif isinstance(duetime, float):
-            duetime = datetime.fromtimestamp(duetime)
-        elif isinstance(duetime, timedelta):
-            duetime = datetime.fromtimestamp(0) + duetime
-
-        return duetime
-
-    @classmethod
-    def to_timedelta(cls, timespan):
-        """Converts time value to timedelta"""
-
-        if isinstance(timespan, int):
-            timespan = timedelta(milliseconds=timespan)
-        elif isinstance(timespan, float):
-            timespan = timedelta(seconds=timespan)
-        elif isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
-
-        return timespan
+        raise NotImplementedError()
 
     @classmethod
     def normalize(cls, timespan):
@@ -232,7 +189,7 @@ class Scheduler(object):
         Returns {Number} The specified Timespan value if it is zero or positive;
             otherwise, 0"""
 
-        nospan = 0 if isinstance(timespan, int) else timedelta(0)
+        nospan = 0
         if not timespan or timespan < nospan:
             timespan = nospan
 

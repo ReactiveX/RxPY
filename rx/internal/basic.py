@@ -1,5 +1,3 @@
-from datetime import datetime
-
 # Defaults
 def noop(*args, **kw):
     """No operation. Returns nothing"""
@@ -9,8 +7,8 @@ def identity(x):
     """Returns argument x"""
     return x
 
-def default_now():
-    return datetime.utcnow()
+#def default_now():
+#    return datetime.utcnow()
 
 def default_comparer(x, y):
     return x == y

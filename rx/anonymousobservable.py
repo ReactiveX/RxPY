@@ -1,8 +1,7 @@
-import types
-
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import Disposable
 from .autodetachobserver import AutoDetachObserver
+from .abstractobserver import AbstractObserver
 from .observable import Observable
 
 class AnonymousObservable(Observable):
@@ -25,10 +24,9 @@ class AnonymousObservable(Observable):
                 of None or a dispose function"""
             
                 if subscriber is None:
-                    subscriber = Disposable.empty()
-                elif type(subscriber) == types.FunctionType:
+                    subscriber = Disposable()
+                elif not hasattr(subscriber, "dispose"):
                     subscriber = Disposable(subscriber)
-
                 return subscriber
 
             def set_disposable(scheduler=None, value=None):

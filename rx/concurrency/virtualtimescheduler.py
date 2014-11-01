@@ -1,12 +1,8 @@
-import logging
-
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
 from .scheduleperiodicrecursive import SchedulePeriodicRecursive
-
-log = logging.getLogger("Rx")
 
 class VirtualTimeScheduler(Scheduler):
     """Virtual Scheduler. This scheduler should work with either

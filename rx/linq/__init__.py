@@ -1,3 +1,3 @@
-from . import observable
-from . import enumerable
+from rx.linq import observable
+from rx.linq import enumerable
 
