@@ -23,7 +23,7 @@ from rx.linq.observable import delay
 # from . import delaywithselector
 # from . import dematerialize
 # from . import distinct
-# from . import distinctuntilchanged
+from rx.linq.observable import distinctuntilchanged
 # from . import doaction
 # from . import dowhile
 # from . import elementat
@@ -78,7 +78,7 @@ from rx.linq.observable import range
 # from . import retry
 # from . import returnvalue
 # from . import scan
-# from . import sample
+from rx.linq.observable import sample
 from rx.linq.observable import select
 # from . import selectswitch
 # from . import selectmany
@@ -106,7 +106,7 @@ from rx.linq.observable import select
 # from . import takeuntilwithtime
 # from . import takewhile
 # from . import takewithtime
-# from . import throttle
+from rx.linq.observable import throttle
 # from . import throw
 # from . import timeinterval
 # from . import timer

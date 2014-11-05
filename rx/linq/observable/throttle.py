@@ -2,10 +2,9 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import timeout_scheduler
 
 class ObservableThrottle:
-    def throttle(self, duetime, scheduler=None):
+    def throttle(self, duetime, scheduler):
         """Ignores values from an observable sequence which are followed by 
         another value before duetime.
     
@@ -21,7 +20,6 @@ class ObservableThrottle:
         
         Returns {Observable} The throttled sequence."""
 
-        scheduler = scheduler or timeout_scheduler
         source = self
 
         def subscribe(observer):
@@ -135,3 +133,4 @@ class ObservableThrottle:
         return AnonymousObservable(subscribe)
 
 Observable.throttle = ObservableThrottle.throttle
+Observable.throttle_with_selector = ObservableThrottle.throttle_with_selector

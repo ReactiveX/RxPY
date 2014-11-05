@@ -1,13 +1,8 @@
-import six
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import identity, default_comparer
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableDistinctUntilChanged(Observable):
+class ObservableDistinctUntilChanged:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def distinct_until_changed(self, key_selector=None, comparer=None):
@@ -24,8 +19,8 @@ class ObservableDistinctUntilChanged(Observable):
             not provided, defaults to an equality comparer function.
     
         Return An observable sequence only containing the distinct contiguous 
-        elements, based on a computed key value, from the source sequence.
-        """
+        elements, based on a computed key value, from the source sequence."""
+
         source = self
         key_selector = key_selector or identity
         comparer = comparer or default_comparer
@@ -56,3 +51,5 @@ class ObservableDistinctUntilChanged(Observable):
             
             return source.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)
+        
+Observable.distinct_until_changed = ObservableDistinctUntilChanged.distinct_until_changed
