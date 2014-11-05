@@ -1,20 +1,12 @@
-import logging
-from six import add_metaclass
-
 from rx.observable import Observable
-from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
-
-log = logging.getLogger("Rx")
+from rx.concurrency import current_thread_scheduler
 
 class Timestamp(object):
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
 
-
-@add_metaclass(ExtensionMethod)
-class ObservableTimestamp(Observable):
+class ObservableTimestamp:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def timestamp(self, scheduler=None):
@@ -28,9 +20,12 @@ class ObservableTimestamp(Observable):
     
         Returns an observable sequence with timestamp information on values.
         """
+
         scheduler = scheduler or timeout_scheduler
 
         def selector(x):
             return Timestamp(value=x, timestamp=scheduler.now())
 
         return self.select(selector)
+
+Observable.timestamp = ObservableTimestamp.timestamp

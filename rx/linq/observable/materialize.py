@@ -1,14 +1,8 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.notification import OnNext, OnError, OnCompleted
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableMaterialize(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
-
+class ObservableMaterialize:
     def materialize(self):
         """Materializes the implicit notifications of an observable sequence as
         explicit notification values.
@@ -33,3 +27,4 @@ class ObservableMaterialize(Observable):
             return source.subscribe(on_next, on_error, on_completed)
         return AnonymousObservable(subscribe)
     
+Observable.materialize = ObservableMaterialize.materialize

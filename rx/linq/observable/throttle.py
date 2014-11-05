@@ -1,20 +1,10 @@
-import logging
-from datetime import timedelta
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
 
-log = logging.getLogger("Rx")
-
-@add_metaclass(ExtensionMethod)
-class ObservableThrottle(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
-
+class ObservableThrottle:
     def throttle(self, duetime, scheduler=None):
         """Ignores values from an observable sequence which are followed by 
         another value before duetime.
@@ -84,8 +74,8 @@ class ObservableThrottle(Observable):
         throttle_duration_selector -- Selector function to retrieve a sequence 
             indicating the throttle duration for each given element.
         
-        Returns the throttled sequence.
-        """
+        Returns the throttled sequence."""
+        
         source = self
 
         def subscribe(observer):
@@ -143,3 +133,5 @@ class ObservableThrottle(Observable):
             subscription = source.subscribe(on_next, on_error, on_completed)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
+
+Observable.throttle = ObservableThrottle.throttle

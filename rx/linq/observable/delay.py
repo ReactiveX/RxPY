@@ -1,27 +1,16 @@
-import logging
-from datetime import datetime, timedelta
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
-
-log = logging.getLogger("Rx")
+from rx.concurrency import current_thread_scheduler
 
 class Timestamp(object):
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ExtensionMethod)
-class ObservableDelay(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
-
+class ObservableDelay:
     def observable_delay_timespan(self, duetime, scheduler):
-        duetime = scheduler.to_timedelta(duetime)
         source = self
 
         def subscribe(observer):
@@ -32,7 +21,6 @@ class ObservableDelay(Observable):
             queue = []
 
             def on_next(notification):
-                log.debug("observable_delay_timespan:subscribe:on_next()")
                 should_run = False
                 
                 with self.lock:
@@ -48,7 +36,6 @@ class ObservableDelay(Observable):
 
                 if should_run:
                     if exception[0]:
-                        log.error("*** Exception: %s", exception[0])
                         observer.on_error(exception[0])
                     else:
                         d = SingleAssignmentDisposable()
@@ -56,7 +43,6 @@ class ObservableDelay(Observable):
 
                         def action(this):
                             if exception[0]:
-                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                                 return
                             
                             with self.lock:
@@ -77,7 +63,7 @@ class ObservableDelay(Observable):
                                 if len(queue) :
                                     should_recurse = True
                                     diff = queue[0].timestamp - scheduler.now()
-                                    zero = timedelta(0) if isinstance(diff, timedelta) else 0
+                                    zero = 0
                                     recurse_duetime = max(zero, diff)
                                 else:
                                     active[0] = False
@@ -97,12 +83,12 @@ class ObservableDelay(Observable):
 
     def observable_delay_date(self, duetime, scheduler):
         def defer():
-            timespan = scheduler.to_datetime(duetime) - scheduler.now()
+            timespan = duetime - scheduler.now()
             return self.observable_delay_timespan(timespan, scheduler)
 
         return Observable.defer(defer)
 
-    def delay(self, duetime, scheduler=None):
+    def delay(self, after=None, at=None, scheduler=None):
         """Time shifts the observable sequence by duetime. The relative time
         intervals between the values are preserved.
 
@@ -121,10 +107,14 @@ class ObservableDelay(Observable):
 
         Returns time-shifted sequence."""
 
-        scheduler = scheduler or timeout_scheduler
-        if isinstance(duetime, datetime):
-            observable = self.observable_delay_date(duetime, scheduler)
+        scheduler = scheduler or current_thread_scheduler
+        if at:
+            observable = self.observable_delay_date(at, scheduler)
         else:
-            observable = self.observable_delay_timespan(duetime, scheduler)
+            observable = self.observable_delay_timespan(after, scheduler)
 
         return observable
+
+Observable.delay = ObservableDelay.delay
+Observable.observable_delay_date = ObservableDelay.observable_delay_date
+Observable.observable_delay_timespan = ObservableDelay.observable_delay_timespan

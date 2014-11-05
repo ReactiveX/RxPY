@@ -1,4 +1,4 @@
-from rx.internal.concurrency import NoLock as Lock
+from rx.internal.concurrency import Lock
 
 Future = None
 

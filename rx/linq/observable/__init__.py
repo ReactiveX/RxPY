@@ -18,7 +18,7 @@ from rx.linq.observable import aggregate
 # from . import create
 # from . import defaultifempty
 # from . import defer
-# from . import delay
+from rx.linq.observable import delay
 # from . import delaysubscription
 # from . import delaywithselector
 # from . import dematerialize
@@ -55,7 +55,7 @@ from rx.linq.observable import aggregate
 # from . import let
 # from . import lastordefault
 # from . import manyselect
-# from . import materialize
+from rx.linq.observable import materialize
 # from . import merge
 # from . import max
 # from . import maxby
@@ -112,7 +112,7 @@ from rx.linq.observable import select
 # from . import timer
 # from . import timeout
 # from . import timeoutwithselector
-# from . import timestamp
+from rx.linq.observable import timestamp
 # from . import tolist
 # from . import toasync
 # from . import todict
