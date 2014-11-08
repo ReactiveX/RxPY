@@ -28,4 +28,4 @@ class ObservableReduce:
         else:
             return self.scan(accumulator).final_value()
 
-observable.reduce = ObservableReduce.reduce
+observable.reduce = Observable.aggregate = ObservableReduce.reduce
