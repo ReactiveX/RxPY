@@ -1,6 +1,6 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.concurrency import current_thread_scheduler
+from rx.concurrency import pyboard_scheduler
 
 class ObservableRange:
     """Uses a meta class to extend Observable with the methods in this class"""

@@ -2,7 +2,7 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import current_thread_scheduler
+from rx.concurrency import pyboard_scheduler
 
 class Timestamp(object):
     def __init__(self, value, timestamp):
@@ -12,7 +12,7 @@ class Timestamp(object):
 class ObservableDelay:
     def observable_delay_timespan(self, duetime, scheduler):
         source = self
-
+        
         def subscribe(observer):
             cancelable = SerialDisposable()
             exception = [None]
@@ -107,7 +107,7 @@ class ObservableDelay:
 
         Returns time-shifted sequence."""
 
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or pyboard_scheduler
         if at:
             observable = self.observable_delay_date(at, scheduler)
         else:

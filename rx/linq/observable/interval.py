@@ -1,12 +1,8 @@
-from six import add_metaclass
-
 from rx.observable import Observable
-from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
+from rx.concurrency import pyboard_scheduler
 from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableInterval(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+class ObservableInterval:
     
     @classmethod
     def interval(cls, period, scheduler=None):
@@ -26,5 +22,7 @@ class ObservableInterval(Observable):
         Returns an observable sequence that produces a value after each period.
         """
         
-        scheduler = scheduler or TimeoutScheduler()
-        return cls.observable_timer_timespan_and_period(period, period, scheduler)
+        scheduler = scheduler or pyboard_scheduler
+        return Observable.observable_timer_timespan_and_period(period, period, scheduler)
+
+Observable.interval = ObservableInterval.interval

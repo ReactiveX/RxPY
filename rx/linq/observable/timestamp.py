@@ -1,5 +1,5 @@
 from rx.observable import Observable
-from rx.concurrency import current_thread_scheduler
+from rx.concurrency import pyboard_scheduler
 
 class Timestamp(object):
     def __init__(self, value, timestamp):
@@ -21,7 +21,7 @@ class ObservableTimestamp:
         Returns an observable sequence with timestamp information on values.
         """
 
-        scheduler = scheduler or timeout_scheduler
+        scheduler = scheduler or pyboard_scheduler
 
         def selector(x):
             return Timestamp(value=x, timestamp=scheduler.now())

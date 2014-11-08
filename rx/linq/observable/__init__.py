@@ -48,7 +48,7 @@ from rx.linq.observable import distinctuntilchanged
 # from . import groupjoin
 # from . import ifthen
 # from . import ignoreelements
-# from . import interval
+from rx.linq.observable import interval
 # from . import isempty
 # from . import join
 # from . import last
@@ -109,7 +109,7 @@ from rx.linq.observable import select
 from rx.linq.observable import throttle
 # from . import throw
 # from . import timeinterval
-# from . import timer
+from rx.linq.observable import timer
 # from . import timeout
 # from . import timeoutwithselector
 from rx.linq.observable import timestamp

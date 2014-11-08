@@ -1,15 +1,8 @@
-import logging
-from datetime import datetime
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import timeout_scheduler, Scheduler
-from rx.internal import ExtensionMethod
-
-log = logging.getLogger("Rx")
+from rx.concurrency import pyboard_scheduler, Scheduler
 
 # Rx Utils
 class TimeInterval(object):
@@ -22,10 +15,8 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ExtensionMethod)
-class ObservableTimer(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
-
+class ObservableTimer:
+    
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
         if duetime == period:
@@ -131,7 +122,7 @@ class ObservableTimer(Observable):
         """
         log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
-        scheduler = scheduler or timeout_scheduler
+        scheduler = scheduler or pyboard_scheduler
 
         if isinstance(duetime, datetime) and period is None:
             return cls.observable_timer_date(duetime, scheduler)
@@ -143,3 +134,8 @@ class ObservableTimer(Observable):
             return cls.observable_timer_timespan(duetime, scheduler)
 
         return cls.observable_timer_timespan_and_period(duetime, period, scheduler)
+
+Observable.observable_timer_timespan = ObservableTimer.observable_timer_timespan
+Observable.observable_timer_timespan_and_period = ObservableTimer.observable_timer_timespan_and_period
+Observable.observable_timer_date_and_period = ObservableTimer.observable_timer_date_and_period
+Observable.observable_timer_date = ObservableTimer.observable_timer_date

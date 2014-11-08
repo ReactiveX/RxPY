@@ -1,32 +1,41 @@
 import pyb
 
 from rx.internal import PriorityQueue
+from rx.disposables import Disposable
 from rx.concurrency.scheduler import Scheduler
 from rx.concurrency.scheduleditem import ScheduledItem
 
-class PybScheduler(Scheduler):
-    """A scheduler that schedules work via the pyboard Timers."""
+class _PyboardScheduler(Scheduler):
+    """A scheduler that schedules work via a pyboard mainloop that kicks it 
+    regularly using the run() method. The scheduler uses the pyboard timers
+    to signlal the mainloop for wakeup so WFI instructions may be used."""
 
-    def __init__(self):
+    def __init__(self, timer=None):
         """Gets a scheduler that schedules work on the pyboard."""
 
+        DEFAULT_TIMER = 4
+
         self.queue = PriorityQueue()
-        self.timer = pyb.Timer(4)
+        self.timer = pyb.Timer(timer or DEFAULT_TIMER)
         #self.fired = False
+
+    def __call__(self):
+        """Simple singleton handling"""
+        return self
 
     def run(self):
         while self.queue.length:
             item = self.queue.peek()
             diff = item.duetime - self.now()
             if diff > 0:
-                print("msecs=%d" % diff)
+                #print("msecs=%d" % diff)
                 self.start_timer(1000/diff)
                 break
 
             item = self.queue.dequeue()
-            print("dequeue")
+            #print("dequeue")
             if not item.is_cancelled():
-                print("invoke()")
+                #print("invoke()")
                 item.invoke()
         else:
             self.stop_timer()
@@ -52,7 +61,7 @@ class PybScheduler(Scheduler):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        print("schedule_relative(duetime=%s, action=%s, state=%s)" % (duetime, repr(action), state))
+        #print("schedule_relative(duetime=%s, action=%s, state=%s)" % (duetime, repr(action), state))
         dt = self.now() + Scheduler.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
 
@@ -64,20 +73,38 @@ class PybScheduler(Scheduler):
 
         return self.schedule_relative(duetime - self.now(), action, state=None)
 
-    def schedule_required(self):
-        """Gets a value indicating whether the caller must call a schedule 
-        method. If the trampoline is active, then it returns False; otherwise, 
-        if  the trampoline is not active, then it returns True."""
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work by dynamically discovering the
+        scheduler's capabilities.
+
+        Keyword arguments:
+        period -- Period for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first
+            iteration.
+
+        Returns the disposable object used to cancel the scheduled recurring
+        action (best effort)."""
+
+        timer = [None]
+        s = [state]
+
+        def interval(scheduler, state=None):
+            new_state = action(s[0])
+            if not new_state is None: # Update state if other than None
+                s[0] = new_state
+
+            timer[0] = self.schedule_relative(period, interval)
+        timer[0] = self.schedule_relative(period, interval)
         
-        return self.queue is None
+        def dispose():
+            timer[0].dispose()
 
-    def ensure_trampoline(self, action):
-        """Method for testing the Scheduler"""
-
-        if self.queue is None:
-            return self.schedule(action)
-        else:
-            return action(self, None)
+        return Disposable(dispose)
 
     def now(self):
         return pyb.millis()
+
+# Singleton. There shall be only one
+PyboardScheduler = _PyboardScheduler()
+Scheduler.pyboard = pyboard_scheduler = PyboardScheduler()

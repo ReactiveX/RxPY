@@ -29,7 +29,7 @@ class ObservableTake(Observable):
             raise ArgumentOutOfRangeException()
         
         if not count:
-            return Observable.Empty(scheduler)
+            return Observable.empty(scheduler)
         
         observable = self
         def subscribe(observer):

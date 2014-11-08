@@ -2,9 +2,10 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
+from rx.concurrency import pyboard_scheduler
 
 class ObservableThrottle:
-    def throttle(self, duetime, scheduler):
+    def throttle(self, duetime, scheduler=None):
         """Ignores values from an observable sequence which are followed by 
         another value before duetime.
     
@@ -21,6 +22,7 @@ class ObservableThrottle:
         Returns {Observable} The throttled sequence."""
 
         source = self
+        scheduler = scheduler or pyboard_scheduler
 
         def subscribe(observer):
             cancelable = SerialDisposable()

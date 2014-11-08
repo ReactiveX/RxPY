@@ -1,13 +1,9 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.concurrency import pyboard_scheduler
 
-@add_metaclass(ExtensionMethod)
-class ObservableSample(Observable):
+class ObservableSample:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def _sample_observable(self, sampler):
@@ -39,7 +35,6 @@ class ObservableSample(Observable):
             )
         return AnonymousObservable(subscribe)
 
-
     def sample(self, interval=None, sampler=None, scheduler=None):
         """Samples the observable sequence at each interval.
 
@@ -54,10 +49,14 @@ class ObservableSample(Observable):
         scheduler -- [Optional] Scheduler to run the sampling timer on. If not
             specified, the timeout scheduler is used.
 
-        Returns sampled observable sequence.
-        """
-        scheduler = scheduler or timeout_scheduler
+        Returns sampled observable sequence."""
+
+        scheduler = scheduler or pyboard_scheduler
+
         if not interval is None:
             return self._sample_observable(Observable.interval(interval, scheduler=scheduler))
 
         return self.sample_observable(sampler)
+
+Observable.sample = ObservableSample.sample
+Observable._sample_observable = ObservableSample._sample_observable
