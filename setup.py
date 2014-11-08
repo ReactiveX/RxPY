@@ -1,26 +1,20 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup
+import sys
+# Remove current dir from sys.path, otherwise setuptools will peek up our
+# module instead of system.
+sys.path.pop(0)
+from setuptools import setup
 
-setup(
-    name='Rx',
-    version='0.11.0',
-    description='Reactive Extensions for Python',
-    long_description = """\
-is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
+setup(name='micropython-rx',
+    version='0.11.1',
+    description='ReactiveX for MicroPython',
+    long_description='is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python',
+    url='https://github.com/reactivex/rxpy',
     author='Dag Brattli',
     author_email='dag@brattli.net',
+    maintainer='Dag Brattli',
+    maintainer_email='dag@brattli.net',
     license='Apache License',
-    url='https://github.com/ReactiveX/RxPY',
-    download_url = 'https://github.com/ReactiveX/RxPY',
-    install_requires=[
-        'six>=1.5'
-    ],
-    zip_safe = True,
-
+    
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers = [
         # 'Development Status :: 5 - Production/Stable',
@@ -29,15 +23,14 @@ is a library for composing asynchronous and event-based programs using observabl
         'Intended Audience :: Developers',
 	    'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    test_suite='nose.collector',
-
+    
+    #py_modules=['rx'],
     packages=['rx', 'rx.internal',
               'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
-              'rx.concurrency', 'rx.concurrency.mainloopscheduler',
-              'rx.disposables', 'rx.subjects', 'rx.backpressure', 'rx.testing'],
+              'rx.concurrency',
+              'rx.disposables', 'rx.subjects', 'rx.testing'],
     package_dir = { 'rx':'rx' }
 )
