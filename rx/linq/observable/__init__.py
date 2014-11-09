@@ -3,7 +3,7 @@
 from . import aggregate
 from . import all
 from . import amb
-from . import any
+from . import some
 from . import asobservable
 from . import average
 from . import buffer
@@ -16,6 +16,7 @@ from . import contains
 from . import combinelatest
 from . import count
 from . import create
+from . import debounce
 from . import defaultifempty
 from . import defer
 from . import delay
@@ -106,7 +107,6 @@ from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
 from . import takewithtime
-from . import debounce
 from . import throw
 from . import timeinterval
 from . import timer
