@@ -1,7 +1,11 @@
 from .disposable import Disposable
 
 class BooleanDisposable(Disposable):
+    """Represents a Disposable that can be checked for status."""
+
     def __init__(self, is_single=True):
+        """Initializes a new instance of the BooleanDisposable class."""
+
         self.is_single = is_single
         self.is_disposed = False
         self.current = None

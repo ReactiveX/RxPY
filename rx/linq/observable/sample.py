@@ -61,3 +61,5 @@ class ObservableSample(Observable):
             return self._sample_observable(Observable.interval(interval, scheduler=scheduler))
 
         return self.sample_observable(sampler)
+
+    throttle_last = sample
