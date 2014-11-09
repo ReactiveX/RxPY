@@ -3,6 +3,7 @@ from rx.internal import noop
 
 class Disposable(object):
     """Main disposable class"""
+    
     def __init__(self, action=None):
         """Creates a disposable object that invokes the specified action when
         disposed.
@@ -13,6 +14,7 @@ class Disposable(object):
 
         Returns the disposable object that runs the given action upon disposal.
         """
+
         self.is_disposed = False
         self.action = action or noop
 
@@ -26,18 +28,18 @@ class Disposable(object):
             if not self.is_disposed:
                 dispose = True
                 self.is_disposed = True
-                
+
         if dispose:
             self.action()
 
     def __enter__(self):
         """Context management protocol"""
-        
+
         pass
-    
+
     def __exit__(self, type, value, traceback):
         """Context management protocol"""
-        
+
         self.dispose()
 
     @classmethod
