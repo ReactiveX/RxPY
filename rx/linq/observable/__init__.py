@@ -33,7 +33,6 @@ from . import empty
 from . import exclusive
 from . import expand
 from . import finallyaction
-from . import finalvalue
 from . import find
 from . import findindex
 from . import first
