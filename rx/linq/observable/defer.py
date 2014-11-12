@@ -1,13 +1,10 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableDefer(Observable):
+class ObservableDefer:
     """Uses a meta class to extend Observable with the methods in this class"""
 
     @classmethod
@@ -23,8 +20,7 @@ class ObservableDefer(Observable):
             observer that subscribes to the resulting sequence.
 
         Returns an observable sequence whose observers trigger an invocation
-        of the given observable factory function.
-        """
+        of the given observable factory function."""
 
         def subscribe(observer):
             result = None
@@ -36,3 +32,5 @@ class ObservableDefer(Observable):
             result = Observable.from_future(result)
             return result.subscribe(observer)
         return AnonymousObservable(subscribe)
+
+Observable.defer = ObservableDefer.defer
