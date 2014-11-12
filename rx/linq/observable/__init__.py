@@ -1,6 +1,5 @@
 """Import all the LINQ observable extension methods"""
 
-from rx.linq.observable import aggregate
 # from . import all
 # from . import amb
 # from . import any
@@ -72,7 +71,7 @@ from rx.linq.observable import materialize
 # from . import publish
 # from . import publishvalue
 from rx.linq.observable import range
-# from . import reduce
+from rx.linq.observable import reduce
 # from . import repeat
 # from . import replay
 # from . import retry
