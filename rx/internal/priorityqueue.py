@@ -47,7 +47,7 @@ class PriorityQueue(object):
         """Remove given item from queue"""
 
         with self.lock:
-            for index, _item in enumerate(heapq.nsmallest(len(self.items), self.items)):
+            for index, _item in enumerate(self.items):
                 if _item[0] == item:
                     item = self.items.pop(index)
                     heapq.heapify(self.items)
