@@ -24,7 +24,7 @@ class _PyboardScheduler(Scheduler):
         return self
 
     def run(self):
-        while self.queue.length:
+        while len(self.queue):
             item = self.queue.peek()
             diff = item.duetime - self.now()
             if diff > 0:
