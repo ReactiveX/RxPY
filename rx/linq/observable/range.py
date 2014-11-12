@@ -23,7 +23,7 @@ class ObservableRange:
         Returns an observable sequence that contains a range of sequential
         integral numbers.
         """
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or pyboard_scheduler
 
         def subscribe(observer):
             def action(scheduler, i):
