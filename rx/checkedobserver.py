@@ -36,7 +36,7 @@ class CheckedObserver(Observer):
         if self._state == 0:
             self._state = 1
 
-class ObserverChecked(Observer):
+class ObserverChecked:
     def checked(self):
         """Checks access to the observer for grammar violations. This includes
         checking for multiple OnError or OnCompleted calls, as well as
