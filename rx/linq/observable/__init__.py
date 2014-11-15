@@ -106,6 +106,7 @@ from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
 from . import takewithtime
+from . import throttlefirst
 from . import throw
 from . import timeinterval
 from . import timer
