@@ -10,5 +10,4 @@
 - Bugfix for `take()` when no count given
 - Removed internal operator `final_value()` which did exactly the same as `last()`
 - Added `to_iterable()` as alias to `to_list()`
-- Added `throttle_first()`
-- 
+- Added `throttle_first()` 
