@@ -43,8 +43,6 @@ class TestEmpty(unittest.TestCase):
         xs = Observable.empty(scheduler)
         xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'))
         
-        try:
-            return scheduler.start()
-        except RxException:
-            pass
+        with self.assertRaises(RxException):
+            scheduler.start()
         

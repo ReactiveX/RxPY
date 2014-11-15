@@ -25,8 +25,8 @@ class Notification(object):
         on_error -- [Optional] Delegate to invoke for an OnError notification.
         on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
 
-        Returns result produced by the observation.
-        """
+        Returns result produced by the observation."""
+        
         if isinstance(on_next, AbstractObserver):
             return self._accept_observable(on_next)
         else:
@@ -62,8 +62,7 @@ class Notification(object):
         handler -- Action that handles a notification.
 
         Returns the observer object that invokes the specified handler using a
-        notification corresponding to each message it receives.
-        """
+        notification corresponding to each message it receives."""
 
         def _on_next(value):
             return handler(OnNext(value))
@@ -76,6 +75,7 @@ class Notification(object):
 
     def equals(self, other):
         """Indicates whether this instance and a specified object are equal."""
+
         other_string = '' if not other else str(other)
         return str(self) == other_string
 

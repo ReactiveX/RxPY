@@ -19,13 +19,13 @@ class RxException(Exception):
 def _raise(ex):
     raise RxException(ex)
 
-class TestSkipWhile(unittest.TestCase):
+class TestReturnValue(unittest.TestCase):
     def test_return_basic(self):
         scheduler = TestScheduler()
 
         def factory():
             return Observable.return_value(42, scheduler)
-        
+
         results = scheduler.start(factory)
         results.messages.assert_equal(
                             on_next(201, 42),
@@ -36,7 +36,7 @@ class TestSkipWhile(unittest.TestCase):
 
         def factory():
             return Observable.return_value(42, scheduler)
-        
+
         results = scheduler.start(factory, disposed=200)
         results.messages.assert_equal()
 
@@ -57,7 +57,7 @@ class TestSkipWhile(unittest.TestCase):
 
             d.disposable = xs.subscribe(on_next, on_error, on_completed)
             return d.disposable
-        
+
         scheduler.schedule_absolute(100, action)
         scheduler.start()
         results.messages.assert_equal(on_next(101, 42))
@@ -66,17 +66,12 @@ class TestSkipWhile(unittest.TestCase):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1)
         xs.subscribe(lambda x: _raise('ex'))
-        
-        try:
-            scheduler1.start()
-        except RxException:
-            pass
+
+        self.assertRaises(RxException, scheduler1.start)
         
         scheduler2 = TestScheduler()
         ys = Observable.return_value(1, scheduler2)
         ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
-        try:
-            scheduler2.start()
-        except RxException:
-            pass
+        self.assertRaises(RxException, scheduler2.start)
+        

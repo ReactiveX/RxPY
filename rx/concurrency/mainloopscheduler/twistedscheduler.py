@@ -19,7 +19,7 @@ class TwistedScheduler(Scheduler):
         return self.schedule_relative(0, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at duetime.
+        """Schedules an action to be executed after duetime.
 
         Keyword arguments:
         duetime -- {timedelta} Relative time after which to execute the action.

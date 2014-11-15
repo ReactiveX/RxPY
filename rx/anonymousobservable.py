@@ -1,29 +1,28 @@
-import types
-
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import Disposable
 from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
 
 class AnonymousObservable(Observable):
-    """Class to create an Observable instance from a delegate-based 
+    """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
-    
+
     def __init__(self, subscribe):
-        """Creates an observable sequence object from the specified subscription 
+        """Creates an observable sequence object from the specified subscription
         function.
 
         Keyword arguments:
-        subscribe -- Subscribe method implementation.
-        """
+        subscribe -- Subscribe method implementation."""
+
         def _subscribe(observer):
+            """Decorator for subscribe. It wraps the observer in an
+            AutoDetachObserver and fixes the returned disposable"""
+
             def fix_subscriber(subscriber):
-                """Fix subscriber to check for None or function returned to 
-                decorate as Disposable"""
-            
-                if subscriber is None:
-                    subscriber = Disposable.empty()
-                elif type(subscriber) == types.FunctionType:
+                """Fixes subscriber to make sure it returns a Disposable instead
+                of None or a dispose function"""
+
+                if not hasattr(subscriber, "dispose"):
                     subscriber = Disposable(subscriber)
 
                 return subscriber
@@ -37,11 +36,19 @@ class AnonymousObservable(Observable):
 
             auto_detach_observer = AutoDetachObserver(observer)
 
+            # Subscribe needs to set up the trampoline before for subscribing.
+            # Actually, the first call to Subscribe creates the trampoline so
+            # that it may assign its disposable before any observer executes
+            # OnNext over the CurrentThreadScheduler. This enables single-
+            # threaded cancellation
+            # https://social.msdn.microsoft.com/Forums/en-US/eb82f593-9684-4e27-
+            # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
+            # dulerschedulerequired-behaves?forum=rx
             if current_thread_scheduler.schedule_required():
                 current_thread_scheduler.schedule(set_disposable)
             else:
                 set_disposable()
 
             return auto_detach_observer
-        
+
         super(AnonymousObservable, self).__init__(_subscribe)

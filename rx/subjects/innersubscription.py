@@ -1,11 +1,11 @@
-import threading
+from rx import Lock
 
 class InnerSubscription(object):
     def __init__(self, subject, observer):
         self.subject = subject
         self.observer = observer
 
-        self.lock = threading.Lock()
+        self.lock = Lock()
 
     def dispose(self):
         with self.lock:

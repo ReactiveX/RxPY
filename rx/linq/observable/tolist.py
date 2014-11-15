@@ -17,6 +17,6 @@ class ObservableToArray(Observable):
             res.append(i)
             return res[:]
 
-        return self.scan(accumulator, seed=[]).start_with([]).final_value()
+        return self.scan(accumulator, seed=[]).start_with([]).last()
 
-    to_array = to_list
+    to_array = to_iterable = to_list

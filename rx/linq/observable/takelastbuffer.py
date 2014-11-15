@@ -31,9 +31,10 @@ class ObservableTakeLastBuffer(Observable):
         def subscribe(observer):
             q = []
             def on_next(x):
-                q.append(x)
-                if len(q) > count:
-                    q.pop(0)
+                with self.lock:
+                    q.append(x)
+                    if len(q) > count:
+                        q.pop(0)
 
             def on_completed():
                 observer.on_next(q)

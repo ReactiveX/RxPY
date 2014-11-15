@@ -1,7 +1,7 @@
 import sys
-import threading
 from datetime import timedelta
 
+from rx import Lock
 from rx.observable import Observable
 from rx.internal import DisposedException
 from rx.disposables import Disposable
@@ -48,7 +48,7 @@ class ReplaySubject(Observable, AbstractObserver):
         self.has_error = False
         self.error = None
 
-        self.lock = threading.Lock()
+        self.lock = Lock()
 
         super(ReplaySubject, self).__init__(self.__subscribe)
 

@@ -1,5 +1,4 @@
-import threading
-
+from rx import Lock
 from .disposable import Disposable
 
 class RefCountDisposable(Disposable):
@@ -10,7 +9,7 @@ class RefCountDisposable(Disposable):
     class InnerDisposable(Disposable):
         def __init__(self, parent):
             self.parent = parent
-            self.lock = threading.Lock()
+            self.lock = Lock()
             
         def dispose(self):
             with self.lock:

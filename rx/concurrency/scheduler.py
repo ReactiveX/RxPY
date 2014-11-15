@@ -31,8 +31,7 @@ class Scheduler(object):
             iteration.
 
         Returns the disposable object used to cancel the scheduled recurring
-        action (best effort).
-        """
+        action (best effort)."""
 
         period /= 1000.0
         timer = [None]

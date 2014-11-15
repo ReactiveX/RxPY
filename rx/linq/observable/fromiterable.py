@@ -14,8 +14,8 @@ class ObservableFromIterable(Observable):
         """Converts an array to an observable sequence, using an optional
         scheduler to enumerate the array.
 
-        1 - res = rx.Observable.from_array([1,2,3])
-        2 - res = rx.Observable.from_array([1,2,3], rx.Scheduler.timeout)
+        1 - res = rx.Observable.from_iterable([1,2,3])
+        2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
         Keyword arguments:
         scheduler -- [Optional] Scheduler to run the enumeration of the input
@@ -40,4 +40,4 @@ class ObservableFromIterable(Observable):
             return scheduler.schedule_recursive(action)
         return AnonymousObservable(subscribe)
 
-    from_array = from_list = from_iterable # Compatibility
+    from_array = from_list = from_iterable # from is a reserved word in Python

@@ -10,8 +10,7 @@ log = logging.getLogger("Rx")
 class IOLoopScheduler(Scheduler):
     """A scheduler that schedules work via the Tornado I/O main event loop.
 
-    http://tornado.readthedocs.org/en/latest/ioloop.html
-    """
+    http://tornado.readthedocs.org/en/latest/ioloop.html"""
 
     def __init__(self, loop=None):
         from tornado import ioloop # Lazy import
@@ -37,7 +36,7 @@ class IOLoopScheduler(Scheduler):
         return CompositeDisposable(disposable, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed at duetime.
+        """Schedules an action to be executed after duetime.
 
         Keyword arguments:
         duetime -- {timedelta} Relative time after which to execute the action.
