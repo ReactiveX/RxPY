@@ -14,7 +14,7 @@ is a library for composing asynchronous and event-based programs using observabl
     author='Dag Brattli',
     author_email='dag@brattli.net',
     license='Apache License',
-    url='https://github.com/ReactiveX/RxPY',
+    url='http://reactivex.io',
     download_url = 'https://github.com/ReactiveX/RxPY',
     install_requires=[
         'six>=1.5'
