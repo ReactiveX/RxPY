@@ -4,24 +4,24 @@ from rx import AnonymousObservable, Observable
 from rx.internal import ExtensionMethod
 
 @add_metaclass(ExtensionMethod)
-class ObservableAny(Observable):
+class ObservableSome(Observable):
     """Uses a meta class to extend Observable with the methods in this class"""
 
-    def any(self, predicate=None):
-        """Determines whether any element of an observable sequence satisfies a
-        condition if present, else if any items are in the sequence.
-        
+    def some(self, predicate=None):
+        """Determines whether some element of an observable sequence satisfies a
+        condition if present, else if some items are in the sequence.
+
         Example:
-        result = source.any()
-        result = source.any(lambda x: x > 3)
+        result = source.some()
+        result = source.some(lambda x: x > 3)
 
         predicate -- A function to test each element for a condition.
-     
+
         Returns {Observable} an observable sequence containing a single element
-        determining whether any elements in the source sequence pass the test 
-        in the specified predicate if given, else if any items are in the 
+        determining whether some elements in the source sequence pass the test
+        in the specified predicate if given, else if some items are in the
         sequence."""
-    
+
         source = self
         def subscribe(observer):
             def on_next(_):
@@ -32,6 +32,5 @@ class ObservableAny(Observable):
                 observer.on_completed()
             return source.subscribe(on_next, observer.on_error, on_error)
 
-        return source.where(predicate).any() if predicate else AnonymousObservable(subscribe)
-            
-    some = any
+        return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)
+

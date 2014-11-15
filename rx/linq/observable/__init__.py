@@ -3,7 +3,7 @@
 from . import aggregate
 from . import all
 from . import amb
-from . import any
+from . import some
 from . import asobservable
 from . import average
 from . import buffer
@@ -16,6 +16,7 @@ from . import contains
 from . import combinelatest
 from . import count
 from . import create
+from . import debounce
 from . import defaultifempty
 from . import defer
 from . import delay
@@ -32,7 +33,6 @@ from . import empty
 from . import exclusive
 from . import expand
 from . import finallyaction
-from . import finalvalue
 from . import find
 from . import findindex
 from . import first
@@ -106,7 +106,7 @@ from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
 from . import takewithtime
-from . import debounce
+from . import throttlefirst
 from . import throw
 from . import timeinterval
 from . import timer
