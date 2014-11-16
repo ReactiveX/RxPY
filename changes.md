@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14
+
+- Made ScheduledObserver thread safe
+
 ## 0.13
 
 - Aligning throttle type operator naming with RxJS and RxJava

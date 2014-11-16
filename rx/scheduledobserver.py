@@ -1,3 +1,4 @@
+from rx import Lock
 from rx.abstractobserver import AbstractObserver
 from rx.disposables import SerialDisposable
 
@@ -7,10 +8,15 @@ class ScheduledObserver(AbstractObserver):
 
         self.scheduler = scheduler
         self.observer = observer
+
+        self.lock = Lock()
         self.is_acquired = False
         self.has_faulted = False
         self.queue = []
         self.disposable = SerialDisposable()
+
+        # Note to self: list append is thread safe
+        # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
     def _next(self, value):
         def func():
@@ -28,28 +34,36 @@ class ScheduledObserver(AbstractObserver):
         self.queue.append(func)
 
     def ensure_active(self):
-        is_owner, parent = False, self
-        if not self.has_faulted and len(self.queue):
-            is_owner = not self.is_acquired
-            self.is_acquired = True
+        is_owner = False
+
+        with self.lock:
+            if not self.has_faulted and len(self.queue):
+                is_owner = not self.is_acquired
+                self.is_acquired = True
 
         if is_owner:
-            def action(action1, state):
-                work = None
-                if len(parent.queue):
-                    work = parent.queue.pop(0)
-                else:
-                    parent.is_acquired = False
-                    return
-                try:
-                    work()
-                except Exception as ex:
-                    parent.queue = []
-                    parent.has_faulted = True
-                    raise ex
+            self.disposable.disposable = self.scheduler.schedule_recursive(self.run)
 
-                action1()
-            self.disposable.disposable = self.scheduler.schedule_recursive(action)
+    def run(self, recurse, state):
+        parent = self
+        work = None
+
+        with self.lock:
+            if len(parent.queue):
+                work = parent.queue.pop(0)
+            else:
+                parent.is_acquired = False
+                return
+
+        try:
+            work()
+        except Exception as ex:
+            with self.lock:
+                parent.queue = []
+                parent.has_faulted = True
+            raise ex
+
+        recurse()
 
     def dispose(self):
         super(ScheduledObserver, self).dispose()
