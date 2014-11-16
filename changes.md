@@ -2,7 +2,8 @@
 
 ## 0.14
 
-- Made ScheduledObserver thread safe
+- Made `ScheduledObserver` thread safe
+- Thread safe handling for `take_while` and `group_join`
 
 ## 0.13
 
@@ -14,4 +15,4 @@
 - Bugfix for `take()` when no count given
 - Removed internal operator `final_value()` which did exactly the same as `last()`
 - Added `to_iterable()` as alias to `to_list()`
-- Added `throttle_first()` 
+- Added `throttle_first()`
