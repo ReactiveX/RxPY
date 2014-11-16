@@ -1,12 +1,20 @@
 from .disposable import Disposable
 
 class ScheduledDisposable(Disposable):
+    """Represents a disposable resource whose disposal invocation will be
+    scheduled on the specified Scheduler"""
+
     def __init__(self, scheduler, disposable):
+        """Initializes a new instance of the ScheduledDisposable class that uses
+        a Scheduler on which to dispose the disposable."""
+
         self.scheduler = scheduler
         self.disposable = disposable
         super(ScheduledDisposable, self).__init__()
-        
+
     def dispose(self):
+        """ Disposes the wrapped disposable on the provided scheduler."""
+
         parent = self
 
         def action(scheduler, state):

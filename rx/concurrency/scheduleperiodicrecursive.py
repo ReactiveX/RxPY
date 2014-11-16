@@ -10,8 +10,8 @@ class SchedulePeriodicRecursive(object):
         Keyword arguments:
         state -- Initial state passed to the action upon the first iteration.
         period -- Period for running the work periodically.
-        action -- Action to be executed, potentially updating the state.
-        """
+        action -- Action to be executed, potentially updating the state."""
+
         self._scheduler = scheduler
         self._state = state
         self._period = period
