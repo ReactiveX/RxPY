@@ -1,13 +1,12 @@
 import logging
 from datetime import datetime, timedelta
-from six import add_metaclass
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
@@ -16,9 +15,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ExtensionMethod)
-class ObservableDelay(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Delay(object):
+
 
     def observable_delay_timespan(self, duetime, scheduler):
         duetime = scheduler.to_timedelta(duetime)
@@ -34,7 +33,7 @@ class ObservableDelay(Observable):
             def on_next(notification):
                 log.debug("observable_delay_timespan:subscribe:on_next()")
                 should_run = False
-                
+
                 with self.lock:
                     if notification.value.kind == 'E':
                         del queue[:]
@@ -58,20 +57,20 @@ class ObservableDelay(Observable):
                             if exception[0]:
                                 log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                                 return
-                            
+
                             with self.lock:
                                 running[0] = True
                                 while True:
                                     result = None
                                     if len(queue) and queue[0].timestamp <= scheduler.now():
                                         result = queue.pop(0).value
-    
+
                                     if result:
                                         result.accept(observer)
-    
+
                                     if not result:
                                         break
-    
+
                                 should_recurse = False
                                 recurse_duetime = 0
                                 if len(queue) :
@@ -81,10 +80,10 @@ class ObservableDelay(Observable):
                                     recurse_duetime = max(zero, diff)
                                 else:
                                     active[0] = False
-    
+
                                 ex = exception[0]
                                 running[0] = False
-                            
+
                             if ex:
                                 observer.on_error(ex)
                             elif should_recurse:
@@ -119,7 +118,8 @@ class ObservableDelay(Observable):
         scheduler -- [Optional] Scheduler to run the delay timers on. If not
             specified, the timeout scheduler is used.
 
-        Returns time-shifted sequence."""
+        Returns time-shifted sequence.
+        """
 
         scheduler = scheduler or timeout_scheduler
         if isinstance(duetime, datetime):

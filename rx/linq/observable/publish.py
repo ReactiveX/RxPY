@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.subjects import Subject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservablePublish(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Publish(object):
+
 
     def publish(self, selector=None):
         """Returns an observable sequence that is the result of invoking the

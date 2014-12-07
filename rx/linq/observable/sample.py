@@ -1,14 +1,12 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSample(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Sample(object):
+
 
     def _sample_observable(self, sampler):
         source = self
@@ -56,6 +54,7 @@ class ObservableSample(Observable):
 
         Returns sampled observable sequence.
         """
+
         scheduler = scheduler or timeout_scheduler
         if not interval is None:
             return self._sample_observable(Observable.interval(interval, scheduler=scheduler))

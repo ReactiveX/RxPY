@@ -1,15 +1,14 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.exceptions import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableElementAtOrDefault(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ElementAtOrDefault(object):
+
 
     @staticmethod
-    def _element_at_or_default(source, index, has_default=False, default_value=None):
+    def _element_at_or_default(source, index, has_default=False,
+                               default_value=None):
         if index < 0:
             raise ArgumentOutOfRangeException()
 
@@ -23,7 +22,7 @@ class ObservableElementAtOrDefault(Observable):
                         i[0] -= 1
                     else:
                         found = True
-                
+
                 if found:
                     observer.on_next(x)
                     observer.on_completed()
@@ -50,9 +49,11 @@ class ObservableElementAtOrDefault(Observable):
         index -- {Number} The zero-based index of the element to retrieve.
         default_value -- [Optional] The default value if the index is outside
             the bounds of the source sequence.
+
         Returns an observable {Observable} sequence that produces the element at
             the specified position in the source sequence, or a default value if
-            the index is outside the bounds of the source sequence."""
+            the index is outside the bounds of the source sequence.
+        """
 
         return self._element_at_or_default(self, index, True, default_value)
 

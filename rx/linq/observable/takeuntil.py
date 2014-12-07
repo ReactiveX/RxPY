@@ -1,14 +1,12 @@
-from six import add_metaclass
-
 from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeUntil(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ObservableTakeUntil(object):
+
 
     def take_until(self, other):
         """Returns the values from the source observable sequence until the

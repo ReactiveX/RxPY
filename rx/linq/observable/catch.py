@@ -1,17 +1,14 @@
-import six
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
 from rx.internal import Enumerable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableCatch(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable, needs_init=True)
+class Catch(object):
+
 
     def __init__(self, subscribe):
         self.catch_exception = self.__catch_exception
@@ -102,7 +99,7 @@ class ObservableCatch(Observable):
                 if is_disposed[0]:
                     return
                 try:
-                    current = six.next(e)
+                    current = next(e)
                 except StopIteration:
                     if last_exception[0]:
                         observer.on_error(last_exception[0])
@@ -126,6 +123,3 @@ class ObservableCatch(Observable):
                 is_disposed[0] = True
             return CompositeDisposable(subscription, cancelable, Disposable(dispose))
         return AnonymousObservable(subscribe)
-
-
-

@@ -1,30 +1,31 @@
 from datetime import datetime, timedelta
 
-from six import add_metaclass
-
 from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTimer(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Timeout(object):
+
 
     def timeout(self, duetime, other=None, scheduler=None):
-        """
-        Returns the source observable sequence or the other observable sequence
-        if duetime elapses.
+        """Returns the source observable sequence or the other observable
+        sequence if duetime elapses.
 
         1 - res = source.timeout(new Date()); # As a date
         2 - res = source.timeout(5000); # 5 seconds
-        3 - res = source.timeout(datetime(), rx.Observable.return_value(42)) # As a date and timeout observable
-        4 - res = source.timeout(5000, rx.Observable.return_value(42)) # 5 seconds and timeout observable
-        5 - res = source.timeout(datetime(), rx.Observable.return_value(42), 
-                                 rx.Scheduler.timeout) # As a date and timeout observable
-        6 - res = source.timeout(5000, rx.Observable.return_value(42), 
-                                 rx.Scheduler.timeout) # 5 seconds and timeout observable
+        # As a date and timeout observable
+        3 - res = source.timeout(datetime(), rx.Observable.return_value(42))
+        # 5 seconds and timeout observable
+        4 - res = source.timeout(5000, rx.Observable.return_value(42))
+        # As a date and timeout observable
+        5 - res = source.timeout(datetime(), rx.Observable.return_value(42),
+                                 rx.Scheduler.timeout)
+        # 5 seconds and timeout observable
+        6 - res = source.timeout(5000, rx.Observable.return_value(42),
+                                 rx.Scheduler.timeout)
 
         duetime -- Absolute (specified as a datetime object) or relative time
             (specified as an integer denoting milliseconds) when a timeout
@@ -43,7 +44,7 @@ class ObservableTimer(Observable):
 
         other = other or Observable.throw_exception(Exception("Timeout"))
         other = Observable.from_future(other)
-        
+
         scheduler = scheduler or timeout_scheduler
 
         if isinstance(duetime, datetime):
@@ -67,7 +68,7 @@ class ObservableTimer(Observable):
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
-                        
+
                         subscription.disposable = other.subscribe(observer)
 
                 timer.disposable = scheduler_method(duetime, action)

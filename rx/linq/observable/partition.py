@@ -1,13 +1,10 @@
-from six import add_metaclass
-
-from rx.linq.observable import dump
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 from rx.internal.utils import adapt_call
 
-@add_metaclass(ExtensionMethod)
-class ObservablePartition(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Partition(object):
+
 
     def partition(self, predicate):
         """Returns two observables which partition the observations of the

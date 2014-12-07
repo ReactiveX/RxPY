@@ -1,16 +1,14 @@
-from six import add_metaclass
-
 from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
 from rx.internal.enumerable import Enumerable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableZip(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable, needs_init=True)
+class Zip(object):
+
 
     def __init__(self, subscribe):
         self.zip = self.__zip # Stitch in instance method
@@ -93,7 +91,8 @@ class ObservableZip(Observable):
 
         Returns an observable {Observable} sequence containing the result of
         combining elements of the sources using the specified result selector
-        function."""
+        function.
+        """
 
         first = args[0]
         return first.zip(*args[1:])

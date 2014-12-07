@@ -1,14 +1,12 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-from .find import ObservableFind
+from .find import Find
 
-@add_metaclass(ExtensionMethod)
-class ObservableFindIndex(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class FindIndex(object):
+
 
     def find_index(predicate):
         """Searches for an element that matches the conditions defined by the
@@ -22,6 +20,7 @@ class ObservableFindIndex(Observable):
 
         Returns an observable {Observable} sequence with the zero-based index of
         the first occurrence of an element that matches the conditions defined
-        by match, if found; otherwise, -1."""
+        by match, if found; otherwise, -1.
+        """
 
-        return ObservableFind._find_value(self, predicate, True)
+        return Find._find_value(self, predicate, True)

@@ -1,8 +1,6 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 # Rx Utils
 class TimeInterval(object):
@@ -15,8 +13,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ExtensionMethod)
-class ObservableTimeInteval(Observable):
+@extends(Observable)
+class TimeInteval(object):
+
 
     def time_interval(self, scheduler):
         """Records the time interval between consecutive values in an
@@ -31,6 +30,7 @@ class ObservableTimeInteval(Observable):
 
         Return An observable sequence with time interval information on values.
         """
+
         source = self
         scheduler = scheduler or timeout_scheduler
 

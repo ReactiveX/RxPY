@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableRange(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Range(object):
+
 
     @classmethod
     def range(cls, start, count, scheduler=None):
@@ -27,6 +25,7 @@ class ObservableRange(Observable):
         Returns an observable sequence that contains a range of sequential
         integral numbers.
         """
+
         scheduler = scheduler or current_thread_scheduler
 
         def subscribe(observer):

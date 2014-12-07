@@ -1,14 +1,11 @@
-import six
-from six import add_metaclass
-
 from rx import Observable
 from rx.observer import Observer, AbstractObserver
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDoAction(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class DoAction(object):
+
 
     def do_action(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):
@@ -33,7 +30,9 @@ class ObservableDoAction(Observable):
 
         Returns the source sequence with the side-effecting behavior applied.
         """
+
         source = self
+
         if isinstance(observer, AbstractObserver):
             on_next = observer.on_next
             on_error = observer.on_error

@@ -1,15 +1,13 @@
 from datetime import timedelta
 
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.basic import default_key_serializer, identity
 from rx.internal import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkipLastWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class SkipLastWithTime(object):
+
 
     def skip_last_with_time(self, duration, scheduler):
         """Skips elements for the specified duration from the end of the
@@ -31,7 +29,8 @@ class ObservableSkipLastWithTime(Observable):
         scheduler -- {Scheduler} [Optional]  Scheduler to run the timer on. If
             not specified, defaults to Rx.Scheduler.timeout
         Returns an observable {Observable} sequence with the elements skipped
-        during the specified duration from the end of the source sequence."""
+        during the specified duration from the end of the source sequence.
+        """
 
         scheduler = scheduler or timeout_scheduler
         duration = scheduler.to_timedelta(duration)

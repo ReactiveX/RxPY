@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 class ChainObservable(Observable):
     def _subscribe(self, observer):
@@ -34,9 +32,9 @@ class ChainObservable(Observable):
         self.tail.on_next(v)
         self.tail.on_completed()
 
-@add_metaclass(ExtensionMethod)
-class ObservableManySelect(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ManySelect(object):
+
 
     def many_select(self, selector, scheduler=None):
         """Comonadic bind operator.
@@ -47,7 +45,8 @@ class ObservableManySelect(Observable):
             operation. If not specified, defaults to the ImmediateScheduler.
 
         Returns {Observable} An observable sequence which results from the
-        comonadic bind operation."""
+        comonadic bind operation.
+        """
 
         scheduler = scheduler or immediate_scheduler
         source = self

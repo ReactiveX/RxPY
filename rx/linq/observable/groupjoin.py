@@ -1,8 +1,6 @@
 import logging
 from collections import OrderedDict
 
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
@@ -10,13 +8,13 @@ from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
     CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ExtensionMethod)
-class ObservableGroupJoin(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class GroupJoin(object):
+
 
     def group_join(self, right, left_duration_selector, right_duration_selector,
                    result_selector):
@@ -41,6 +39,7 @@ class ObservableGroupJoin(Observable):
         Returns an observable sequence that contains result elements computed
         from source elements that have an overlapping duration.
         """
+
         left = self
 
         def subscribe(observer):
@@ -140,7 +139,7 @@ class ObservableGroupJoin(Observable):
                     with self.lock:
                         for left_value in left_map.values():
                             left_value.on_error(e)
-    
+
                         observer.on_error(e)
 
                 md.disposable = duration.take(1).subscribe(

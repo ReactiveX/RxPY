@@ -1,10 +1,10 @@
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeLast(Observable):
+@extends(Observable)
+class TakeLast(object):
     def take_last(self, count):
         """Returns a specified number of contiguous elements from the end of an
         observable sequence.
@@ -19,11 +19,12 @@ class ObservableTakeLast(Observable):
         delayed.
 
         Keyword arguments:
-        count -- {Number} Number of elements to take from the end of the source 
+        count -- {Number} Number of elements to take from the end of the source
             sequence.
 
         Returns an observable {Observable} sequence containing the specified
-        number of elements from the end of the source sequence."""
+        number of elements from the end of the source sequence.
+        """
 
         source = self
 

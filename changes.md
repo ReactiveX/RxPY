@@ -4,6 +4,7 @@
 
 - Made `ScheduledObserver` thread safe
 - Thread safe handling for `take_while` and `group_join`
+- Removed dependecy on six
 
 ## 0.13
 

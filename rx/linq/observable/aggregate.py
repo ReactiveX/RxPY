@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal.extensionmethod import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableAggregate(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Aggregate(object):
+
 
     def aggregate(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence,
@@ -25,7 +23,8 @@ class ObservableAggregate(Observable):
         seed -- [Optional] The initial accumulator value.
 
         Returns an observable sequence containing a single element with the
-        final accumulator value."""
+        final accumulator value.
+        """
 
         if not seed is None:
             return self.scan(accumulator, seed=seed).start_with(seed).last()

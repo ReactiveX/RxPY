@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx.observable import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableToArray(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ToList(object):
+
 
     def to_list(self):
         """Creates a list from an observable sequence.

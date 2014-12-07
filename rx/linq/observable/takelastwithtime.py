@@ -1,10 +1,10 @@
 from six import add_metaclass
 
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeLastBuffer(Observable):
+@extends(Observable)
+class TakeLastBuffer(object):
     def take_last_with_time(self, duration, scheduler=None):
         """Returns elements within the specified duration from the end of the
         observable source sequence, using the specified schedulers to run timers
@@ -27,12 +27,13 @@ class ObservableTakeLastBuffer(Observable):
             not specified, defaults to rx.Scheduler.timeout.
 
         Returns {Observable} An observable sequence with the elements taken
-        during the specified duration from the end of the source sequence."""
+        during the specified duration from the end of the source sequence.
+        """
 
-        source = self    
+        source = self
         scheduler = scheduler or timeout_scheduler
         duration = scheduler.to_timedelta(duration)
-        
+
         def subscribe(observer):
             q = []
 

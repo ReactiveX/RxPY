@@ -1,15 +1,13 @@
 from datetime import datetime
 
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkipUntilWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class SkipUntilWithTime(object):
+
 
     def skip_until_with_time(self, start_time, scheduler):
         """Skips elements from the observable source sequence until the
@@ -29,7 +27,8 @@ class ObservableSkipUntilWithTime(Observable):
             to rx.Scheduler.timeout.
 
         Returns {Observable} An observable sequence with the elements skipped
-        until the specified start time."""
+        until the specified start time.
+        """
 
         scheduler = scheduler or timeout_scheduler
 

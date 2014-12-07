@@ -1,8 +1,6 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.exceptions import SequenceContainsNoElementsError
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 def single_or_default_async(source, has_default=False, default_value=None):
     def subscribe(observer):
@@ -27,8 +25,8 @@ def single_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-@add_metaclass(ExtensionMethod)
-class ObservableLast(Observable):
+@extends(Observable)
+class SingleOrDefault(object):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def single_or_default(self, predicate, default_value):
@@ -51,6 +49,7 @@ class ObservableLast(Observable):
 
         Returns {Observable} Sequence containing the single element in the
         observable sequence that satisfies the condition in the predicate, or a
-        default value if no such element exists."""
+        default value if no such element exists.
+        """
 
         return self.where(predicate).single_or_default(None, default_value) if predicate else single_or_default_async(self, True, default_value)

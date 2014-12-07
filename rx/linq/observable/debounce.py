@@ -1,19 +1,18 @@
 import logging
 from datetime import timedelta
-from six import add_metaclass
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ExtensionMethod)
-class ObservableDebounce(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Debounce(object):
+
 
     def debounce(self, duetime, scheduler=None):
         """Ignores values from an observable sequence which are followed by
@@ -29,7 +28,8 @@ class ObservableDebounce(Observable):
         scheduler -- {Scheduler} [Optional]  Scheduler to run the throttle
             timers on. If not specified, the timeout scheduler is used.
 
-        Returns {Observable} The debounced sequence."""
+        Returns {Observable} The debounced sequence.
+        """
 
         scheduler = scheduler or timeout_scheduler
         source = self
@@ -84,7 +84,8 @@ class ObservableDebounce(Observable):
         throttle_duration_selector -- Selector function to retrieve a sequence
             indicating the throttle duration for each given element.
 
-        Returns the throttled sequence."""
+        Returns the throttled sequence.
+        """
 
         source = self
 

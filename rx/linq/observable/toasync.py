@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableToArray(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ToAsync(object):
+
 
     @classmethod
     def to_async(cls, func, scheduler=None):
@@ -25,7 +23,8 @@ class ObservableToArray(Observable):
         scheduler -- {Scheduler} [Optional] Scheduler to run the function on. If
             not specified, defaults to Scheduler.timeout.
 
-        Returns {Function} Asynchronous function."""
+        Returns {Function} Asynchronous function.
+        """
 
         scheduler =  scheduler or timeout_scheduler
 

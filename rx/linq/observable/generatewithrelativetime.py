@@ -1,25 +1,25 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableGenerateWithRelativeTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class GenerateWithRelativeTime(object):
+
 
     @classmethod
-    def generate_with_relative_time(cls, initial_state, condition, iterate, result_selector, time_selector, scheduler=None):
+    def generate_with_relative_time(cls, initial_state, condition, iterate,
+                                    result_selector, time_selector,
+                                    scheduler=None):
         """Generates an observable sequence by iterating a state from an
         initial state until the condition fails.
-        
-        res = source.generate_with_relative_time(0, 
-            lambda x: True, 
-            lambda x: x + 1, 
-            lambda x: x, 
+
+        res = source.generate_with_relative_time(0,
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
             lambda x: 500)
-    
+
         initial_state -- Initial state.
         condition -- Condition to terminate generation (upon returning false).
         iterate -- Iteration step function.
@@ -33,6 +33,7 @@ class ObservableGenerateWithRelativeTime(Observable):
 
         Returns the generated sequence.
         """
+
         scheduler = scheduler or timeout_scheduler
 
         def subscribe(observer):

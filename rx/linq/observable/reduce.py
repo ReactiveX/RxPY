@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableReduce(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ObservableReduce(object):
+
 
     def reduce(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence,
@@ -26,7 +24,8 @@ class ObservableReduce(Observable):
         seed -- {Any} [Optional] The initial accumulator value.
 
         Returns {Observable} An observable sequence containing a single element
-        with the final accumulator value."""
+        with the final accumulator value.
+        """
 
         if not seed is None:
             return self.scan(accumulator, seed=seed).start_with(seed).last()

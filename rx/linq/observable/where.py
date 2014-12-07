@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableWhere(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Where(object):
+
 
     def where(self, predicate):
         """Filters the elements of an observable sequence based on a predicate
@@ -21,8 +19,9 @@ class ObservableWhere(Observable):
             element.
 
         Returns an observable sequence that contains elements from the input
-        sequence that satisfy the condition."""
-        
+        sequence that satisfy the condition.
+        """
+
         predicate = adapt_call(predicate)
         parent = self
 

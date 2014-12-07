@@ -16,9 +16,6 @@ is a library for composing asynchronous and event-based programs using observabl
     license='Apache License',
     url='http://reactivex.io',
     download_url = 'https://github.com/ReactiveX/RxPY',
-    install_requires=[
-        'six>=1.5'
-    ],
     zip_safe = True,
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers

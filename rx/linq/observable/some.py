@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSome(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Some(object):
+
 
     def some(self, predicate=None):
         """Determines whether some element of an observable sequence satisfies a

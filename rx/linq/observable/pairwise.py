@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservablePairwise(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Pairwise(object):
+
 
     def pairwise(self):
         """Returns a new observable that triggers on the second and subsequent
@@ -15,7 +13,8 @@ class ObservablePairwise(Observable):
         internal state until the Nth triggering occurs.
 
         Returns an observable {Observable} that triggers on successive pairs of
-        observations from the input observable as an array."""
+        observations from the input observable as an array.
+        """
 
         source = self
 

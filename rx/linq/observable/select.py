@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSelect(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Select(object):
+
 
     def select(self, selector):
         """Projects each element of an observable sequence into a new form by
@@ -21,7 +19,8 @@ class ObservableSelect(Observable):
             element.
 
         Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of source."""
+        invoking the transform function on each element of source.
+        """
 
         selector = adapt_call(selector)
 

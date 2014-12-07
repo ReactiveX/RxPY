@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableCombineLatest(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable, needs_init=True)
+class CombineLatest(object):
+
 
     def __init__(self, subscribe):
         self.combine_latest = self.__combine_latest

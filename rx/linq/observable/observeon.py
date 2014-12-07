@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 from rx.observeonobserver import ObserveOnObserver
 
-@add_metaclass(ExtensionMethod)
-class ObservableObserveOn(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ObserveOn(object):
+
 
     def observe_on(self, scheduler):
         """Wraps the source sequence in order to run its observer callbacks on
@@ -20,7 +18,8 @@ class ObservableObserveOn(Observable):
 
         This only invokes observer callbacks on a scheduler. In case the
         subscription and/or unsubscription actions have side-effects
-        that require to be run on a scheduler, use subscribe_on."""
+        that require to be run on a scheduler, use subscribe_on.
+        """
 
         source = self
 

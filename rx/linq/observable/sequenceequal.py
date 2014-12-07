@@ -1,14 +1,13 @@
 import collections
-from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
 from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable, CompositeDisposable
 from rx.internal import default_comparer
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSequenceEqual(Observable):
+@extends(Observable)
+class SequenceEqual(object):
     """Uses a meta class to extend Observable with the methods in this class"""
 
     def sequence_equal(self, second, comparer=None):

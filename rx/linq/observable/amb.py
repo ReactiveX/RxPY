@@ -1,17 +1,13 @@
-from six import add_metaclass
-
-from rx import Lock, Observable, AnonymousObservable
+from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableAmb(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable, needs_init=True)
+class Amb(object):
+
 
     def __init__(self, subscribe):
         self.amb = self.__amb
-
-        self.lock = Lock()
 
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
@@ -19,8 +15,9 @@ class ObservableAmb(Observable):
         right_source Second observable sequence.
 
         returns an observable sequence that surfaces either of the given
-        sequences, whichever reacted first."""
-        
+        sequences, whichever reacted first.
+        """
+
         left_source = self
         right_source = Observable.from_future(right_source)
 

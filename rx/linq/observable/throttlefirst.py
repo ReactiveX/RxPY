@@ -1,14 +1,12 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal.exceptions import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDebounce(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ThrottleFirst(object):
+
 
     def throttle_first(self, window_duration, scheduler=None):
         """Returns an Observable that emits only the first item emitted by the
@@ -37,7 +35,7 @@ class ObservableDebounce(Observable):
             def on_next(x):
                 emit = False
                 now = scheduler.now()
-                
+
                 with self.lock:
                     if not last_on_next[0] or now - last_on_next[0] >= duration:
                         last_on_next[0] = now

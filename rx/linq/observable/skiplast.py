@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal.basic import default_key_serializer, identity
 from rx.internal import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkipLast(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class SkipLast(object):
+
 
     def skip_last(self, count):
         """Bypasses a specified number of elements at the end of an observable
@@ -23,7 +21,8 @@ class ObservableSkipLast(Observable):
         count -- Number of elements to bypass at the end of the source sequence.
 
         Returns an observable {Observable} sequence containing the source
-        sequence elements except for the bypassed ones at the end."""
+        sequence elements except for the bypassed ones at the end.
+        """
 
         source = self
 

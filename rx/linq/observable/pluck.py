@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservablePluck(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Pluck(object):
+
 
     def pluck(self, property):
         """Retrieves the value of a specified property from all elements in the
@@ -14,6 +12,7 @@ class ObservablePluck(Observable):
         Keyword arguments:
         property {String} The property to pluck.
 
-        Returns a new Observable {Observable} sequence of property values."""
+        Returns a new Observable {Observable} sequence of property values.
+        """
 
         return self.select(lambda x: x[property])

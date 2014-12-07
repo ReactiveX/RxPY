@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal.utils import is_future
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableFromFuture(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class FromFuture(object):
+
 
     @classmethod
     def from_future(cls, future):
@@ -19,7 +17,8 @@ class ObservableFromFuture(Observable):
             http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
         Returns {Observable} An Observable sequence which wraps the existing
-        future success and failure."""
+        future success and failure.
+        """
 
         def subscribe(observer):
             def done(future):

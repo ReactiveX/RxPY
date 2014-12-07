@@ -1,7 +1,5 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
 
@@ -106,9 +104,9 @@ class PausableBufferedObservable(Observable):
         self.is_paused = False
         self.subject.on_next(True)
 
-@add_metaclass(ExtensionMethod)
-class ObservablePausable(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class PausableBuffered(object):
+
 
     def pausable_buffered(self, subject):
         """Pauses the underlying observable sequence based upon the observable

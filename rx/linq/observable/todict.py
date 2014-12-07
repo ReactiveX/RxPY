@@ -1,7 +1,5 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 def to_dict(source, map_type, key_selector, element_selector):
     def subscribe(observer):
@@ -31,9 +29,9 @@ def to_dict(source, map_type, key_selector, element_selector):
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
-@add_metaclass(ExtensionMethod)
-class ObservableToDict(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ToDict(object):
+
 
     def to_dict(self, key_selector, element_selector=None):
         """Converts the observable sequence to a Map if it exists.
@@ -45,7 +43,8 @@ class ObservableToDict(Observable):
             produces the element for the Map. If not present, defaults to the
             value from the observable sequence.
         Returns {Observable} An observable sequence with a single value of a Map
-        containing the values from the observable sequence."""
+        containing the values from the observable sequence.
+        """
 
         return to_dict(self, dict, key_selector, element_selector)
 

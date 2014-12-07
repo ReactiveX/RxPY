@@ -1,10 +1,7 @@
-import six
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import identity, default_comparer
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 # Swap out for Array.findIndex
 def array_index_of_comparer(array, item, comparer):
@@ -23,9 +20,9 @@ class HashSet(object):
         ret_value and self.set.append(value)
         return ret_value
 
-@add_metaclass(ExtensionMethod)
-class ObservableDistinct(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Distinct(object):
+
 
     def distinct(self, key_selector=None, comparer=None):
         """Returns an observable sequence that contains only distinct elements
@@ -45,7 +42,8 @@ class ObservableDistinct(Observable):
             collection.
 
         Returns an observable {Observable} sequence only containing the distinct
-        elements, based on a computed key value, from the source sequence."""
+        elements, based on a computed key value, from the source sequence.
+        """
 
         source = self
         comparer = comparer or default_comparer
@@ -64,5 +62,6 @@ class ObservableDistinct(Observable):
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe(on_next, observer.on_error, observer.on_completed)
+            return source.subscribe(on_next, observer.on_error,
+                                    observer.on_completed)
         return AnonymousObservable(subscribe)

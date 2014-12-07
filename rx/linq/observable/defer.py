@@ -1,14 +1,13 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDefer(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Defer(object):
+
 
     @classmethod
     def defer(cls, observable_factory):

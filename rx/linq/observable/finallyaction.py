@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.disposables import Disposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableForIn(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class ObservableForIn(object):
+
 
     def finally_action(self, action):
         """Invokes a specified action after the source observable sequence
@@ -19,7 +17,8 @@ class ObservableForIn(Observable):
         action -- {Function} Action to invoke after the source observable
             sequence terminates.
         Returns {Observable} Source sequence with the action-invoking
-        termination behavior applied."""
+        termination behavior applied.
+        """
 
         source = self
 

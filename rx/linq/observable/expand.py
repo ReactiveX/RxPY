@@ -1,14 +1,14 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
-from rx.disposables import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
+from rx.disposables import SerialDisposable, CompositeDisposable, \
+    SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableExpand(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Expand(object):
+
 
     def expand(self, selector, scheduler=None):
         """Expands an observable sequence by recursively invoking selector.
@@ -21,7 +21,8 @@ class ObservableExpand(Observable):
             scheduler.
 
         Returns an observable {Observable} sequence containing all the elements
-        produced by the recursive expansion."""
+        produced by the recursive expansion.
+        """
 
         scheduler = scheduler or immediate_scheduler
         source = self
