@@ -3,12 +3,9 @@ from rx.internal.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Repeat(object):
 
-
-    def __init__(self, subscribe):
-        self.repeat = self.__repeat # Stitch in instance method
 
     # We do this to avoid overwriting the class method with the same name
     def __repeat(self, repeat_count=None):

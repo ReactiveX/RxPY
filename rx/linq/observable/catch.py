@@ -6,12 +6,9 @@ from rx.concurrency import immediate_scheduler
 from rx.internal import Enumerable
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Catch(object):
 
-
-    def __init__(self, subscribe):
-        self.catch_exception = self.__catch_exception
 
     @staticmethod
     def catch_handler(source, handler):

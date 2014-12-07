@@ -2,12 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Amb(object):
 
-
-    def __init__(self, subscribe):
-        self.amb = self.__amb
 
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
@@ -88,7 +85,7 @@ class Amb(object):
     def amb(cls, *args):
         """Propagates the observable sequence that reacts first.
 
-        E.g. winner = Rx.Observable.amb(xs, ys, zs)
+        E.g. winner = rx.Observable.amb(xs, ys, zs)
 
         Returns an observable sequence that surfaces any of the given sequences,
         whichever reacted first.

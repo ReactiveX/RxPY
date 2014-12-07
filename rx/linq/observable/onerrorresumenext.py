@@ -5,12 +5,9 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
 from rx.concurrency import immediate_scheduler
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class OnErrorResumeNext(object):
 
-
-    def __init__(self, subscribe):
-        self.on_error_resume_next = self.__on_error_resume_next
 
     def __on_error_resume_next(self, second):
         """Continues an observable sequence that is terminated normally or by

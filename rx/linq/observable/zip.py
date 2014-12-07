@@ -6,12 +6,9 @@ from rx.concurrency import immediate_scheduler
 from rx.internal.enumerable import Enumerable
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Zip(object):
 
-
-    def __init__(self, subscribe):
-        self.zip = self.__zip # Stitch in instance method
 
     def __zip(self, *args):
         """Merges the specified observable sequences into one observable

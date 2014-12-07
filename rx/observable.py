@@ -10,9 +10,9 @@ class Observable(object):
         self._subscribe = subscribe
         self.lock = Lock()
 
-        # Run extension method initializers added by meta class
-        for init in self.initializers:
-            init(self, subscribe)
+        # Add instance methods with same name as class methods
+        for name, method in self.initializers:
+            setattr(self, name, method)
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):

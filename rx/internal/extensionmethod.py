@@ -1,4 +1,4 @@
-def extends(base, needs_init=False):
+def extends(base):
     """Class decorator that extends base with methods from the decorated
     class.
 
@@ -11,10 +11,10 @@ def extends(base, needs_init=False):
 
     def inner(cls):
         for name, value in cls.__dict__.items():
-            iscallable = callable(getattr(cls, name))
-            if iscallable and not name.startswith("__"):
+            iscallable = callable(getattr(cls, name)) 
+            if iscallable and not name.endswith("__"):
                 setattr(base, name, value)
-            elif needs_init and name == "__init__":
-                base.initializers.append(value)
+                if name.startswith("__"):
+                    base.initializers.append(name[2:], value)
         return cls
     return inner

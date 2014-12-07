@@ -2,11 +2,9 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class ZipArray(object):
 
-    def __init__(self, subscribe):
-        self.zip_array = self.__zip_array # Stitch in instance method
 
     def __zip_array(self, second, result_selector):
         first = self

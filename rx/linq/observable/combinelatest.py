@@ -3,12 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class CombineLatest(object):
 
-
-    def __init__(self, subscribe):
-        self.combine_latest = self.__combine_latest
 
     def __combine_latest(self, *args):
         """Merges the specified observable sequences into one observable

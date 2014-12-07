@@ -4,12 +4,9 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import Scheduler, immediate_scheduler
 from rx.internal import extends
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Merge(object):
 
-
-    def __init__(self, subscribe):
-        self.merge = self.__merge
 
     def __merge(self, *args, **kwargs):
         """Merges an observable sequence of observable sequences into an

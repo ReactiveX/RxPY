@@ -5,12 +5,9 @@ from rx.observable import Observable
 from rx.internal import extends
 from rx.internal import Enumerable, Enumerator
 
-@extends(Observable, needs_init=True)
+@extends(Observable)
 class Concat(object):
 
-
-    def __init__(self, subscribe):
-        self.concat = self.__concat # Stitch in instance method
 
     def __concat(self, *args):
         """Concatenates all the observable sequences. This takes in either an
