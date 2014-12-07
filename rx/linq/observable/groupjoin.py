@@ -1,8 +1,6 @@
 import logging
 from collections import OrderedDict
 
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
@@ -10,13 +8,13 @@ from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
     CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
-@add_metaclass(ExtensionMethod)
-class ObservableGroupJoin(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class GroupJoin(object):
 
     def group_join(self, right, left_duration_selector, right_duration_selector,
                    result_selector):
@@ -41,6 +39,7 @@ class ObservableGroupJoin(Observable):
         Returns an observable sequence that contains result elements computed
         from source elements that have an overlapping duration.
         """
+
         left = self
 
         def subscribe(observer):
@@ -54,9 +53,11 @@ class ObservableGroupJoin(Observable):
 
             def on_next_left(value):
                 s = Subject()
-                _id = left_id[0]
-                left_id[0] += 1
-                left_map[_id] = s
+
+                with self.lock:
+                    _id = left_id[0]
+                    left_id[0] += 1
+                    left_map[_id] = s
 
                 try:
                     result = result_selector(value, add_ref(s, r))
@@ -109,13 +110,14 @@ class ObservableGroupJoin(Observable):
 
                 observer.on_error(e)
 
-            group.add(left.subscribe(on_next_left, on_error_left, 
+            group.add(left.subscribe(on_next_left, on_error_left,
                       observer.on_completed))
 
             def on_next_right(value):
-                _id = right_id[0]
-                right_id[0] += 1
-                right_map[_id] = value
+                with self.lock:
+                    _id = right_id[0]
+                    right_id[0] += 1
+                    right_map[_id] = value
 
                 md = SingleAssignmentDisposable()
                 group.add(md)
@@ -134,18 +136,20 @@ class ObservableGroupJoin(Observable):
                     return
 
                 def on_error(e):
-                    for left_value in left_map.values():
-                        left_value.on_error(e)
+                    with self.lock:
+                        for left_value in left_map.values():
+                            left_value.on_error(e)
 
-                    observer.on_error(e)
+                        observer.on_error(e)
 
                 md.disposable = duration.take(1).subscribe(
                     nothing,
                     on_error,
                     expire)
 
-                for left_value in left_map.values():
-                    left_value.on_next(value)
+                with self.lock:
+                    for left_value in left_map.values():
+                        left_value.on_next(value)
 
             def on_error_right(e):
                 for left_value in left_map.values():

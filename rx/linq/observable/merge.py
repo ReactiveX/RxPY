@@ -1,15 +1,12 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import Scheduler, immediate_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableMerge(Observable):
-    def __init__(self, subscribe):
-        self.merge = self.__merge
+
+@extends(Observable)
+class Merge(object):
 
     def __merge(self, *args, **kwargs):
         """Merges an observable sequence of observable sequences into an
@@ -25,7 +22,8 @@ class ObservableMerge(Observable):
             observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences."""
+        sequences.
+        """
 
         if not isinstance(args[0], int):
             args = args + tuple([self])
@@ -87,7 +85,8 @@ class ObservableMerge(Observable):
         4 - merged = rx.Observable.merge(scheduler, [xs, ys, zs])
 
         Returns the observable sequence that merges the elements of the
-        observable sequences."""
+        observable sequences.
+        """
 
         if not args[0]:
             scheduler = immediate_scheduler
@@ -109,7 +108,8 @@ class ObservableMerge(Observable):
         observable sequence.
 
         Returns the observable sequence that merges the elements of the inner
-        sequences."""
+        sequences.
+        """
 
         sources = self
 
@@ -155,6 +155,7 @@ class ObservableMerge(Observable):
         Returns the observable sequence that merges the elements of the inner
         sequences.
         """
+
         sources = self
 
         def subscribe(observer):

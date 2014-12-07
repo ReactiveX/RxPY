@@ -1,15 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableZipArray(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
 
-    def __init__(self, subscribe):
-        self.zip_array = self.__zip_array # Stitch in instance method
+@extends(Observable)
+class ZipArray(object):
 
     def __zip_array(self, second, result_selector):
         first = self
@@ -44,7 +39,8 @@ class ObservableZipArray(Observable):
         args -- Observable sources.
 
         Returns an observable {Observable} sequence containing lists of elements
-        at corresponding indexes."""
+        at corresponding indexes.
+        """
 
         sources = args
 

@@ -1,13 +1,9 @@
-from six import add_metaclass
-
-from rx.concurrency import Scheduler
 from rx.observable import Observable
+from rx.internal import extends
 
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableStartsAsync(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class StartsAsync(object):
 
     @classmethod
     def start_async(cls, function_async):
@@ -19,7 +15,8 @@ class ObservableStartsAsync(Observable):
             Future to run.
 
         Returns {Observable} An observable sequence exposing the function's
-        result value, or an exception."""
+        result value, or an exception.
+        """
 
         try:
             future = function_async()

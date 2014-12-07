@@ -1,17 +1,14 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
-from rx.internal import ExtensionMethod
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
     RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableWindowWithTimeOrCount(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class WindowWithTimeOrCount(object):
 
     def window_with_time_or_count(self, timespan, count, scheduler=None):
         source = self

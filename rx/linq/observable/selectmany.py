@@ -1,8 +1,6 @@
-from six import add_metaclass
-
 from rx import Observable
 from rx.internal.utils import adapt_call
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 def _flat_map(source, selector):
     def projection(x, i):
@@ -11,9 +9,9 @@ def _flat_map(source, selector):
 
     return source.map(projection).merge_observable()
 
-@add_metaclass(ExtensionMethod)
-class ObservableSelectMany(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class SelectMany(object):
 
     def select_many(self, selector, result_selector=None):
         """One of the Following:

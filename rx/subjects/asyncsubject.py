@@ -6,16 +6,15 @@ from rx.abstractobserver import AbstractObserver
 
 from .innersubscription import InnerSubscription
 
+
 class AsyncSubject(Observable, AbstractObserver):
     """Represents the result of an asynchronous operation. The last value
     before the on_completed notification, or the error received through
-    on_error, is sent to all subscribed observers.
-    """
+    on_error, is sent to all subscribed observers."""
 
     def __init__(self):
         """Creates a subject that can only receive one value and that value is
-        cached for all future observations.
-        """
+        cached for all future observations."""
 
         super(AsyncSubject, self).__init__(self._subscribe)
 
@@ -54,7 +53,9 @@ class AsyncSubject(Observable, AbstractObserver):
         return Disposable.empty()
 
     def on_completed(self):
+        value = None
         os = None
+        hv = None
 
         with self.lock:
             self.check_disposed()
@@ -63,13 +64,13 @@ class AsyncSubject(Observable, AbstractObserver):
                 self.observers = []
 
                 self.is_stopped = True
-                v = self.value
+                value = self.value
                 hv = self.has_value
 
         if os:
             if hv:
                 for o in os:
-                    o.on_next(v)
+                    o.on_next(value)
                     o.on_completed()
             else:
                 for o in os:

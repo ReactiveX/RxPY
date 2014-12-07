@@ -1,13 +1,9 @@
-from six import add_metaclass
-
-from rx.concurrency import Scheduler
 from rx.observable import Observable
+from rx.internal import extends
 
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableStart(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Start(object):
 
     @classmethod
     def start(cls, func, scheduler=None):
@@ -29,6 +25,7 @@ class ObservableStart(Observable):
         Remarks:
         The function is called immediately, not during the subscription of the
         resulting sequence. Multiple subscriptions to the resulting sequence can
-        observe the function's result."""
+        observe the function's result.
+        """
 
         return Observable.to_async(func, scheduler)()

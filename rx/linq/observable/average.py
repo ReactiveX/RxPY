@@ -1,16 +1,14 @@
-from six import add_metaclass
-
 from rx import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
+
 
 class AverageValue(object):
     def __init__(self, sum, count):
         self.sum = sum
         self.count = count
 
-@add_metaclass(ExtensionMethod)
-class ObservableAverage(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Average(object):
 
     def average(self, key_selector=None):
         """Computes the average of an observable sequence of values that are in
@@ -24,7 +22,8 @@ class ObservableAverage(Observable):
         key_selector -- A transform function to apply to each element.
 
         Returns an observable sequence containing a single element with the
-        average of the sequence of values."""
+        average of the sequence of values.
+        """
 
         if key_selector:
             return self.select(key_selector).average()
@@ -32,11 +31,11 @@ class ObservableAverage(Observable):
         def accumulator(prev, cur):
             return AverageValue(sum=prev.sum+cur, count=prev.count+1)
 
-        def selector(s):
+        def mapper(s):
             if s.count == 0:
                 raise Exception('The input sequence was empty')
 
             return s.sum / float(s.count)
 
         seed = AverageValue(sum=0, count=0)
-        return self.scan(accumulator, seed).last().select(selector)
+        return self.scan(accumulator, seed).last().map(mapper)

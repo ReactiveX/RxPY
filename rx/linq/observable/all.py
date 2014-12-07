@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableAll(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class All(object):
 
     def all(self, predicate):
         """Determines whether all elements of an observable sequence satisfy a
@@ -17,7 +15,8 @@ class ObservableAll(Observable):
 
         Returns an observable sequence containing a single element determining
         whether all elements in the source sequence pass the test in the
-        specified predicate."""
+        specified predicate.
+        """
 
         return self.filter(lambda v: not predicate(v)).some().select(lambda b: not b)
 

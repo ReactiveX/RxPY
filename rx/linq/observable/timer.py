@@ -1,13 +1,10 @@
 import logging
 from datetime import datetime
-from six import add_metaclass
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler, Scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
@@ -22,9 +19,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@add_metaclass(ExtensionMethod)
-class ObservableTimer(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Timer(object):
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
@@ -129,6 +126,7 @@ class ObservableTimer(Observable):
         Returns an observable sequence that produces a value after due time has
         elapsed and then each period.
         """
+
         log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
         scheduler = scheduler or timeout_scheduler

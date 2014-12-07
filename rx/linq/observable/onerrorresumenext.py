@@ -1,16 +1,13 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableOnErrorResumeNext(Observable):
-    def __init__(self, subscribe):
-        self.on_error_resume_next = self.__on_error_resume_next
+
+@extends(Observable)
+class OnErrorResumeNext(object):
 
     def __on_error_resume_next(self, second):
         """Continues an observable sequence that is terminated normally or by
@@ -21,7 +18,8 @@ class ObservableOnErrorResumeNext(Observable):
             first sequence terminates.
 
         Returns an observable sequence that concatenates the first and second
-        sequence, even if the first sequence terminates exceptionally."""
+        sequence, even if the first sequence terminates exceptionally.
+        """
 
         if not second:
             raise Exception('Second observable is required')
@@ -38,7 +36,8 @@ class ObservableOnErrorResumeNext(Observable):
         3 - res = Observable.on_error_resume_next(xs, factory)
 
         Returns an observable sequence that concatenates the source sequences,
-        even if a sequence terminates exceptionally."""
+        even if a sequence terminates exceptionally.
+        """
 
         if args and isinstance(args[0], list):
             sources = iter(args[0])
@@ -58,7 +57,7 @@ class ObservableOnErrorResumeNext(Observable):
                 # Allow source to be a factory method taking an error
                 source = source(state) if callable(source) else source
                 current = Observable.from_future(source)
-                
+
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
                 d.disposable = current.subscribe(

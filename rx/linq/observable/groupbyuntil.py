@@ -1,5 +1,3 @@
-import six
-from six import add_metaclass
 from collections import OrderedDict
 
 from rx import Observable, AnonymousObservable
@@ -8,13 +6,13 @@ from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
 from rx.internal.basic import default_comparer, identity
 from rx.linq.groupedobservable import GroupedObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableGroupByUntil(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
 
-    def group_by_until(self, key_selector, element_selector, duration_selector, 
+@extends(Observable)
+class GroupByUntil(object):
+
+    def group_by_until(self, key_selector, element_selector, duration_selector,
                        comparer=None):
         """Groups the elements of an observable sequence according to a
         specified key selector function. A duration selector function is used
@@ -72,12 +70,12 @@ class ObservableGroupByUntil(Observable):
                 try:
                     key = key_selector(x)
                 except Exception as e:
-                    for w in six.itervalues(mapping):
+                    for w in mapping.values():
                         w.on_error(e)
 
                     observer.on_error(e)
                     return
-                
+
                 fire_new_map_entry = False
                 writer = mapping.get(key)
                 if not writer:
@@ -91,7 +89,7 @@ class ObservableGroupByUntil(Observable):
                     try:
                         duration = duration_selector(duration_group)
                     except Exception as e:
-                        for w in six.itervalues(mapping):
+                        for w in mapping.values():
                             w.on_error(e)
 
                         observer.on_error(e)
@@ -112,7 +110,7 @@ class ObservableGroupByUntil(Observable):
                         pass
 
                     def on_error(exn):
-                        for wr in six.itervalues(mapping):
+                        for wr in mapping.values():
                             wr.on_error(exn)
                         observer.on_error(exn)
 
@@ -124,7 +122,7 @@ class ObservableGroupByUntil(Observable):
                 try:
                     element = element_selector(x)
                 except Exception as e:
-                    for w in six.itervalues(mapping):
+                    for w in mapping.values():
                         w.on_error(e)
 
                     observer.on_error(e)
@@ -133,13 +131,13 @@ class ObservableGroupByUntil(Observable):
                 writer.on_next(element)
 
             def on_error(ex):
-                for w in six.itervalues(mapping):
+                for w in mapping.values():
                     w.on_error(ex)
 
                 observer.on_error(ex)
 
             def on_completed():
-                for w in six.itervalues(mapping):
+                for w in mapping.values():
                     w.on_completed()
 
                 observer.on_completed()

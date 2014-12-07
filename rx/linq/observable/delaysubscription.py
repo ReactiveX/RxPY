@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDelaySubscription(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class DelaySubscription(object):
 
     def delay_subscription(self, duetime, scheduler):
         """Time shifts the observable sequence by delaying the subscription.
@@ -20,6 +18,7 @@ class ObservableDelaySubscription(Observable):
 
         Returns time-shifted sequence.
         """
+
         scheduler = scheduler or timeout_scheduler
 
         def selector(_):

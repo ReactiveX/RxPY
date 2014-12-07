@@ -1,6 +1,7 @@
 from rx import Lock
 from .observer import Observer, AbstractObserver
 
+
 class Observable(object):
     """Represents a push-style collection."""
 
@@ -10,9 +11,17 @@ class Observable(object):
         self._subscribe = subscribe
         self.lock = Lock()
 
-        # Run extension method initializers added by meta class
-        for init in self.initializers:
-            init(self, subscribe)
+        # Add some instance methods here since there are class methods with the
+        # same name which we don't want to overwrite.
+        self.amb = self._Amb__amb
+        self.catch_exception = self._Catch__catch_exception
+        self.concat = self._Concat__concat
+        self.combine_latest = self._CombineLatest__combine_latest
+        self.merge = self._Merge__merge
+        self.on_error_resume_next = self._OnErrorResumeNext__on_error_resume_next
+        self.repeat = self._Repeat__repeat
+        self.zip = self._Zip__zip
+        self.zip_array = self._ZipArray__zip_array
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):
@@ -46,5 +55,3 @@ class Observable(object):
             observer = Observer(on_next, on_error, on_completed)
 
         return self._subscribe(observer)
-
-

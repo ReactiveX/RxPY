@@ -26,7 +26,7 @@ class Notification(object):
         on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
 
         Returns result produced by the observation."""
-        
+
         if isinstance(on_next, AbstractObserver):
             return self._accept_observable(on_next)
         else:
@@ -100,7 +100,7 @@ class OnNext(Notification):
         return observer.on_next(self.value)
 
     def __str__(self):
-        return "OnNext(%s)" % self.value
+        return "OnNext(%s)" % str(self.value)
 
 class OnError(Notification):
     """Represents an OnError notification to an observer."""

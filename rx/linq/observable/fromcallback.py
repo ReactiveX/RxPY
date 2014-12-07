@@ -1,13 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.concurrency import current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableFromCallback(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class FromCallback(object):
 
     @classmethod
     def from_callback(cls, func, selector=None):
@@ -21,7 +18,8 @@ class ObservableFromCallback(Observable):
 
         Returns {Function} A function, when executed with the required
         parameters minus the callback, produces an Observable sequence with a
-        single value of the arguments to the callback as a list."""
+        single value of the arguments to the callback as a list.
+        """
 
         def function(*args):
             arguments = list(args)

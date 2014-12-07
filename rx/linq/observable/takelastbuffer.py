@@ -1,10 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeLastBuffer(Observable):
+
+@extends(Observable)
+class TakeLastBuffer(object):
+
     def take_last_buffer(self, count):
         """Returns an array with the specified number of contiguous elements
         from the end of an observable sequence.
@@ -24,7 +24,8 @@ class ObservableTakeLastBuffer(Observable):
 
         Returns an observable {Observable} sequence containing a single array
         with the specified number of elements from the end of the source
-        sequence."""
+        sequence.
+        """
 
         source = self
 

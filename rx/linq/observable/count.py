@@ -1,12 +1,9 @@
-from six import add_metaclass
-
 from rx import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableCount(Observable):
-    """Note that we do some magic here by using a meta class to extend
-    Observable with the methods in this class"""
+
+@extends(Observable)
+class Count(object):
 
     def count(self, predicate=None):
         """Returns an observable sequence containing a value that represents

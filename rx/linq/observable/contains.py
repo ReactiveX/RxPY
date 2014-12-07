@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable
 from rx.internal.basic import default_comparer
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableContains(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Contains(object):
 
     def contains(self, value, comparer=None):
         """Determines whether an observable sequence contains a specified
@@ -22,7 +20,8 @@ class ObservableContains(Observable):
 
         Returns an observable {Observable} sequence containing a single element
         determining whether the source sequence contains an element that has
-        the specified value."""
+        the specified value.
+        """
 
         comparer = comparer or default_comparer
         return self.where(lambda v: comparer(v, value)).some()

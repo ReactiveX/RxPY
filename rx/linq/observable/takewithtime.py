@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class TakeWithTime(object):
 
     def take_with_time(self, duration, scheduler=None):
         """Takes elements for the specified duration from the start of the
@@ -29,7 +27,8 @@ class ObservableTakeWithTime(Observable):
             specified, defaults to rx.Scheduler.timeout.
 
         Returns {Observable} An observable sequence with the elements taken
-        during the specified duration from the start of the source sequence."""
+        during the specified duration from the start of the source sequence.
+        """
 
         source = self
         scheudler = scheduler or timeout_scheduler
@@ -40,4 +39,3 @@ class ObservableTakeWithTime(Observable):
             disposable = scheduler.schedule_relative(duration, action)
             return CompositeDisposable(disposable, source.subscribe(observer))
         return AnonymousObservable(subscribe)
-        

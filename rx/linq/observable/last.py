@@ -1,13 +1,11 @@
-from six import add_metaclass
-
-from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx import Observable
+from rx.internal import extends
 
 from .lastordefault import last_or_default_async
 
-@add_metaclass(ExtensionMethod)
-class ObservableLast(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Last(object):
 
     def last(self, predicate=None):
         """Returns the last element of an observable sequence that satisfies the
@@ -22,6 +20,7 @@ class ObservableLast(Observable):
             elements in the source sequence.
 
         Returns {Observable} Sequence containing the last element in the
-        observable sequence that satisfies the condition in the predicate."""
+        observable sequence that satisfies the condition in the predicate.
+        """
 
         return self.where(predicate).last() if predicate else last_or_default_async(self, False)

@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableFind(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Find(object):
 
     @staticmethod
     def _find_value(source, predicate, yield_index):
@@ -45,6 +43,7 @@ class ObservableFind(Observable):
 
         Returns an Observable {Observable} sequence with the first element that
         matches the conditions defined by the specified predicate, if found
-        otherwise, None."""
+        otherwise, None.
+        """
 
-        return self._find_value(self, predicate, False)
+        return Find._find_value(self, predicate, False)

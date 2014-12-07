@@ -1,19 +1,19 @@
-from six import add_metaclass
-
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableBufferWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class BufferWithTime(object):
 
     def buffer_with_time(self, timespan, timeshift=None, scheduler=None):
         """Projects each element of an observable sequence into zero or more
         buffers which are produced based on timing information.
 
-        1 - res = xs.buffer_with_time(1000) # non-overlapping segments of 1 second
-        2 - res = xs.buffer_with_time(1000, 500) # segments of 1 second with time shift 0.5 seconds
+        # non-overlapping segments of 1 second
+        1 - res = xs.buffer_with_time(1000)
+        # segments of 1 second with time shift 0.5 seconds
+        2 - res = xs.buffer_with_time(1000, 500)
 
         Keyword arguments:
         timespan -- Length of each buffer (specified as an integer denoting
@@ -28,10 +28,11 @@ class ObservableBufferWithTime(Observable):
 
         Returns an observable sequence of buffers.
         """
+
         if not timeshift:
             timeshift = timespan
 
         scheduler = scheduler or timeout_scheduler
 
         return self.window_with_time(timespan, timeshift, scheduler) \
-            .select_many(lambda x: x.to_array())
+            .select_many(lambda x: x.to_iterable())

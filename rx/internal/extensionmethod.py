@@ -1,13 +1,24 @@
-import six
+def extends(base):
+    """Class decorator that extends base with methods from the decorated
+    class.
 
-class ExtensionMethod(type):
-    def __new__(cls, name, bases, namespace):
-        assert len(bases) == 1, "Exactly one base class required"
-        base = bases[0]
-        for name, value in six.iteritems(namespace):
-            if name == "__init__":
-                base.initializers.append(value)
+    Keyword arguments:
+    base -- Base class to extend with methods from cls
+    needs_init -- If true, then init method of cls will be run by base init
 
-            if not name.startswith("__"):
-                setattr(base, name, value)
-        return base
+    Returns a function that takes the class to be decorated.
+    """
+
+    def inner(cls):
+        for name in dir(cls):
+            value = getattr(cls, name)
+            iscallable = callable(value)
+            if iscallable and not name.endswith("__"):
+                if hasattr(value, "__func__") and value.__self__ != cls:
+                    # For normal methods we take the function
+                    setattr(base, name, value.__func__)
+                else:
+                    # classmethods
+                    setattr(base, name, value)
+        return cls
+    return inner

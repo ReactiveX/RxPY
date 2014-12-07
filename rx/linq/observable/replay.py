@@ -1,12 +1,10 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.subjects import ReplaySubject
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableReplay(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Replay(object):
 
     def replay(self, selector, buffer_size=None, window=None, scheduler=None):
         """Returns an observable sequence that is the result of invoking the
@@ -35,12 +33,13 @@ class ObservableReplay(Observable):
 
         Returns {Observable} An observable sequence that contains the elements
         of a sequence produced by multicasting the source sequence within a
-        selector function."""
+        selector function.
+        """
 
         if callable(selector):
             def subject_selector():
                 return ReplaySubject(buffer_size, window, scheduler)
-            return self.multicast(subject_selector=subject_selector, 
+            return self.multicast(subject_selector=subject_selector,
                                  selector=selector)
         else:
             return self.multicast(ReplaySubject(buffer_size, window, scheduler))

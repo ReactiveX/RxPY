@@ -1,21 +1,23 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDelayWithSelector(Observable):
 
-    def delay_with_selector(self, subscription_delay=None, delay_duration_selector=None):
+@extends(Observable)
+class DelayWithSelector(object):
+
+    def delay_with_selector(self, subscription_delay=None,
+                            delay_duration_selector=None):
         """Time shifts the observable sequence based on a subscription delay
         and a delay selector function for each element.
 
-        1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000)) # with selector only
-        2 - res = source.delay_with_selector(Observable.timer(2000), lambda x: Observable.timer(x)) # with delay and selector
+        # with selector only
+        1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
+        # with delay and selector
+        2 - res = source.delay_with_selector(Observable.timer(2000),
+                                             lambda x: Observable.timer(x))
 
         subscription_delay -- [Optional] Sequence indicating the delay for the
             subscription to the source.
@@ -24,6 +26,7 @@ class ObservableDelayWithSelector(Observable):
 
         Returns time-shifted sequence.
         """
+
         source = self
         sub_delay, selector = None, None
 
@@ -64,14 +67,17 @@ class ObservableDelayWithSelector(Observable):
                         delays.remove(d)
                         done()
 
-                    d.disposable = delay.subscribe(on_next, observer.on_error, on_completed)
+                    d.disposable = delay.subscribe(on_next, observer.on_error,
+                                                   on_completed)
 
                 def on_completed():
                     at_end[0] = True
                     subscription.dispose()
                     done()
 
-                subscription.disposable = source.subscribe(on_next, observer.on_error, on_completed)
+                subscription.disposable = source.subscribe(on_next,
+                                                           observer.on_error,
+                                                           on_completed)
 
             if not sub_delay:
                 start()

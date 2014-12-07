@@ -1,16 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from six import add_metaclass
-
-from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableTakeUntilWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class TakeUntilWithTime(object):
 
     def take_until_with_time(self, end_time, scheduler=None):
         """Takes elements for the specified duration until the specified end
@@ -27,7 +24,8 @@ class ObservableTakeUntilWithTime(Observable):
         scheduler -- {Scheduler} Scheduler to run the timer on.
 
         Returns an observable {Observable} sequence with the elements taken
-        until the specified end time."""
+        until the specified end time.
+        """
 
         scheduler = scheduler or timeout_scheduler
         source = self

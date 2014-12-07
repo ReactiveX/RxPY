@@ -1,14 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal.basic import default_key_serializer, identity
-from rx.internal import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkipWithTime(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class SkipWithTime(object):
 
     def skip_with_time(self, duration, scheduler=None):
         """Skips elements for the specified duration from the start of the
@@ -34,7 +30,8 @@ class ObservableSkipWithTime(Observable):
             specified, defaults to Rx.Scheduler.timeout.
 
         Returns n observable {Observable} sequence with the elements skipped
-        during the specified duration from the start of the source sequence."""
+        during the specified duration from the start of the source sequence.
+        """
 
         source = self
         scheduler = scheduler or timeout_scheduler

@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableFromIterable(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class FromIterable(object):
 
     @classmethod
     def from_iterable(cls, iterable, scheduler=None):
@@ -22,7 +20,8 @@ class ObservableFromIterable(Observable):
             sequence on.
 
         Returns the observable sequence whose elements are pulled from the
-        given enumerable sequence."""
+        given enumerable sequence.
+        """
 
         scheduler = scheduler or current_thread_scheduler
         iterator = iter(iterable)

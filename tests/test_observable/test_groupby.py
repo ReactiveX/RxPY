@@ -2,8 +2,6 @@ import math
 import unittest
 from datetime import datetime
 
-import six
-
 from rx.observable import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
@@ -52,9 +50,9 @@ class TestGroupBy(unittest.TestCase):
             def key_selector(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
-        
+
             return xs.group_by(key_selector, lambda x: x).select(lambda g: g.key)
-        
+
         results = scheduler.start(factory)
         results.messages.assert_equal(
             on_next(220, "foo"),
@@ -89,7 +87,7 @@ class TestGroupBy(unittest.TestCase):
             on_next(580, "error"),
             on_completed(600),
             on_error(650, 'ex'))
-    
+
         def factory():
             def key_selector(x):
                 key_invoked[0] += 1
@@ -137,7 +135,7 @@ class TestGroupBy(unittest.TestCase):
             on_next(580, "error"),
             on_completed(600),
             on_error(650, 'ex'))
-    
+
         def factory():
             def key_selector(x):
                 key_invoked[0] += 1
@@ -145,7 +143,7 @@ class TestGroupBy(unittest.TestCase):
             def element_selector(x):
                 ele_invoked[0] += 1
                 return x[::-1]
-        
+
             return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
         results = scheduler.start(factory)
@@ -185,12 +183,12 @@ class TestGroupBy(unittest.TestCase):
             on_next(580, "error"),
             on_completed(600),
             on_error(650, 'ex'))
-    
+
         def factory():
             def key_selector(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
-        
+
             def element_selector(x):
                 ele_invoked[0] += 1
                 return x[::-1]
@@ -198,7 +196,7 @@ class TestGroupBy(unittest.TestCase):
             return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
 
         results = scheduler.start(factory, disposed=355)
-    
+
         results.messages.assert_equal(
             on_next(220, "foo"),
             on_next(270, "bar"),
@@ -237,15 +235,15 @@ class TestGroupBy(unittest.TestCase):
                 key_invoked[0] += 1
                 if key_invoked[0] == 10:
                     raise Exception(ex)
-            
+
                 return x.lower().strip()
 
             def element_selector(x):
                 ele_invoked[0] += 1
                 return x[::-1]
-        
+
             return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
-     
+
         results = scheduler.start(factory)
         results.messages.assert_equal(
             on_next(220, "foo"),
@@ -282,12 +280,12 @@ class TestGroupBy(unittest.TestCase):
             on_next(580, "error"),
             on_completed(600),
             on_error(650, 'ex'))
-    
+
         def factory():
             def key_selector(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
-        
+
             def element_selector(x):
                 ele_invoked[0] += 1
                 if ele_invoked[0] == 10:
@@ -339,9 +337,9 @@ class TestGroupBy(unittest.TestCase):
 
         def action1(scheduler, state):
             c["outer"] = xs.group_by(lambda x: x.lower().strip(), lambda x: x[::-1])
-    
+
         scheduler.schedule_absolute(created, action1)
-    
+
         def action2(scheduler, state):
 
             def next(group):
@@ -356,12 +354,12 @@ class TestGroupBy(unittest.TestCase):
                 scheduler.schedule_relative(100, action21)
             c["outer_subscription"] = c["outer"].subscribe(next)
         scheduler.schedule_absolute(subscribed, action2)
-    
+
         def action3(scheduler, state):
             c["outer_subscription"].dispose()
-            for sub in six.itervalues(c["inner_subscriptions"]):
+            for sub in c["inner_subscriptions"].values():
                 sub.dispose()
-        
+
         scheduler.schedule_absolute(disposed, action3)
         scheduler.start()
         assert(len(c["inners"]) == 4)
@@ -415,7 +413,7 @@ class TestGroupBy(unittest.TestCase):
 
         def action1(scheduler, state):
             c["outer"] = xs.group_by(
-                lambda x: x.lower().strip(), 
+                lambda x: x.lower().strip(),
                 lambda x: x[::-1]
             )
             return c["outer"]
@@ -433,10 +431,10 @@ class TestGroupBy(unittest.TestCase):
 
         def action3(scheduler, state):
             c["outer_subscription"].dispose()
-            for sub in six.itervalues(inner_subscriptions):
+            for sub in inner_subscriptions.values():
                 sub.dispose()
         scheduler.schedule_absolute(disposed, action3)
-        
+
         scheduler.start()
         assert(len(inners) == 4)
         results['foo'].messages.assert_equal(
@@ -509,7 +507,7 @@ class TestGroupBy(unittest.TestCase):
 
                 def action3(scheduler, state):
                     inner_subscriptions[group.key] = group.subscribe(result)
-            
+
                 scheduler.schedule_relative(100, action3)
             c["outer_subscription"] = c["outer"].subscribe(on_next, lambda e: None)
             return c["outer_subscription"]
@@ -517,7 +515,7 @@ class TestGroupBy(unittest.TestCase):
 
         def action4(scheduler, state):
             c["outer_subscription"].dispose();
-            for sub in six.itervalues(inner_subscriptions):
+            for sub in inner_subscriptions.values():
                 sub.dispose()
         scheduler.schedule_absolute(disposed, action4)
 

@@ -24,16 +24,15 @@ class TestObserveOn(unittest.TestCase):
 
         def create():
             return xs.observe_on(scheduler)
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(211, 2), on_completed(251))
         xs.subscriptions.assert_equal(subscribe(200, 251))
 
-
     def test_observe_on_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
-    
+
         xs = scheduler.create_hot_observable(
                             on_next(150, 1),
                             on_error(210, ex)
@@ -41,9 +40,9 @@ class TestObserveOn(unittest.TestCase):
 
         def create():
             return xs.observe_on(scheduler)
-    
+
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_error(211, ex))
         xs.subscriptions.assert_equal(subscribe(200, 211))
 
@@ -72,7 +71,7 @@ class TestObserveOn(unittest.TestCase):
         def create():
             return xs.observe_on(scheduler)
         results = scheduler.start(create)
-       
+
         results.messages.assert_equal()
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 

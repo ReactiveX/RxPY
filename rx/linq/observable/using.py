@@ -1,13 +1,12 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import Disposable, CompositeDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableUsing(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Using(object):
 
     @classmethod
     def using(cls, resource_factory, observable_factory):
@@ -24,6 +23,7 @@ class ObservableUsing(Observable):
         Returns an observable sequence whose lifetime controls the lifetime of
         the dependent resource object.
         """
+
         def subscribe(observer):
             disposable = Disposable.empty()
             try:

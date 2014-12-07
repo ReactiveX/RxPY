@@ -1,13 +1,12 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.internal import ExtensionMethod
+from rx.disposables import CompositeDisposable, \
+    SingleAssignmentDisposable, SerialDisposable
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSwitchLatest(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class SwitchLatest(object):
 
     def switch_latest(self):
         """Transforms an observable sequence of observable sequences into an
@@ -15,7 +14,8 @@ class ObservableSwitchLatest(Observable):
         observable sequence.
 
         Returns the observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has been received.
+        elements of the most recent inner observable sequence that has been
+        received.
         """
 
         sources = self

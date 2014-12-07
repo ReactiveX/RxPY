@@ -7,6 +7,7 @@ from rx.abstractobserver import AbstractObserver
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
+
 class Subject(Observable, AbstractObserver):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers."""

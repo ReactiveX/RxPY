@@ -4,8 +4,8 @@ from rx.internal import DisposedException
 from rx.disposables import Disposable
 from rx.abstractobserver import AbstractObserver
 
-from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
+
 
 class BehaviorSubject(Observable, AbstractObserver):
     """Represents a value that changes over time. Observers can subscribe to

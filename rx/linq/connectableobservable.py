@@ -1,6 +1,7 @@
 from rx import AnonymousObservable, Observable
 from rx.disposables import Disposable, CompositeDisposable
 
+
 class ConnectableObservable(Observable):
     """Represents an observable that can be connected and disconnected."""
 

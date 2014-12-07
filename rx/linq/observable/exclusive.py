@@ -1,13 +1,12 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableExclusive(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Exclusive(object):
 
     def exclusive(self):
         """Performs a exclusive waiting for the first to finish before
@@ -15,7 +14,8 @@ class ObservableExclusive(Observable):
         subscriptions will be dropped on the floor.
 
         Returns an exclusive observable {Observable} with only the results that
-        happen when subscribed."""
+        happen when subscribed.
+        """
 
         sources = self
 

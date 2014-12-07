@@ -1,7 +1,6 @@
-from six import add_metaclass
 
 from rx import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 from rx.disposables import CompositeDisposable, Disposable
 from rx.subjects import Subject
 
@@ -41,9 +40,9 @@ class PausableObservable(Observable):
         self.is_paused = False
         self.subject.on_next(True)
 
-@add_metaclass(ExtensionMethod)
-class ObservablePausable(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Pausable(object):
+
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable
@@ -58,6 +57,7 @@ class ObservablePausable(Observable):
             underlying sequence.
 
         Returns the observable {Observable} sequence which is paused based upon
-        the pauser."""
+        the pauser.
+        """
 
         return PausableObservable(self, pauser)

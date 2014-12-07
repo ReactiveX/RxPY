@@ -1,10 +1,10 @@
-from six import add_metaclass
-
 from rx import Observer
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 from rx.internal.exceptions import ReEntracyException, CompletedException
 
 class CheckedObserver(Observer):
+
+
     def __init__(self, observer):
         self._observer = observer
         self._state = 0 # 0 - idle, 1 - busy, 2 - done
@@ -31,16 +31,16 @@ class CheckedObserver(Observer):
             self._state = 2
 
     def check_access(self):
-        if self._state == 1: 
+        if self._state == 1:
             raise ReEntracyException()
-        if self._state == 2: 
+        if self._state == 2:
             raise CompletedException()
         if self._state == 0:
             self._state = 1
 
-@add_metaclass(ExtensionMethod)
-class ObserverChecked(Observer):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observer)
+class Checked(object):
+
 
     def checked(self):
         """Checks access to the observer for grammar violations. This includes

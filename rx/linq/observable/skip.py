@@ -1,29 +1,26 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal.basic import default_key_serializer, identity
 from rx.internal import ArgumentOutOfRangeException
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkip(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
-    
+
+@extends(Observable)
+class Skip(object):
+
     def skip(self, count):
-        """Bypasses a specified number of elements in an observable sequence 
+        """Bypasses a specified number of elements in an observable sequence
         and then returns the remaining elements.
-        
+
         Keyword arguments:
-        count -- The number of elements to skip before returning the remaining 
+        count -- The number of elements to skip before returning the remaining
             elements.
-        
-        Returns an observable sequence that contains the elements that occur 
+
+        Returns an observable sequence that contains the elements that occur
         after the specified index in the input sequence.
-        """        
-        
+        """
+
         if count < 0:
             raise ArgumentOutOfRangeException()
-        
+
         observable = self
 
         def subscribe(observer):
@@ -34,6 +31,6 @@ class ObservableSkip(Observable):
                     observer.on_next(value)
                 else:
                     remaining[0] -= 1
-                
+
             return observable.subscribe(on_next, observer.on_error, observer.on_completed)
         return AnonymousObservable(subscribe)

@@ -59,8 +59,7 @@ class Scheduler(object):
         group = CompositeDisposable()
 
         def recursive_action(state1):
-            # FIXME: need a better name for this function
-            def action2(state2=None):
+            def recurse(state2=None):
                 is_added = False
                 is_done = [False]
 
@@ -79,7 +78,7 @@ class Scheduler(object):
                     group.add(d)
                     is_added = True
 
-            action(action2, state1)
+            action(recurse, state1)
 
         recursive_action(state)
         return group
@@ -90,7 +89,7 @@ class Scheduler(object):
         group = CompositeDisposable()
 
         def recursive_action(state1):
-            def action1(state2, duetime1):
+            def recurse(state2, duetime1):
                 is_added = False
                 is_done = [False]
 
@@ -108,7 +107,7 @@ class Scheduler(object):
                     group.add(d)
                     is_added = True
 
-            action(state1, action1)
+            action(state1, recurse)
         recursive_action(state)
         return group
 
@@ -121,10 +120,10 @@ class Scheduler(object):
         Returns the disposable {Disposable} object used to cancel the scheduled
         action (best effort)."""
 
-        def action2(scheduler, pair):
+        def scheduled_action(scheduler, pair):
             return self.invoke_rec_immediate(scheduler, pair)
 
-        return self.schedule(action2, dict(state=state, action=action))
+        return self.schedule(scheduled_action, dict(state=state, action=action))
 
     def schedule_recursive_with_relative(self, duetime, action):
         """Schedules an action to be executed recursively after a specified

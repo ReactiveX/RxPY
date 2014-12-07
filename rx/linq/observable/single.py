@@ -1,14 +1,11 @@
-from six import add_metaclass
-
-from rx import Observable, AnonymousObservable
-from rx.internal.exceptions import SequenceContainsNoElementsError
-from rx.internal import ExtensionMethod
+from rx import Observable
+from rx.internal import extends
 
 from .singleordefault import single_or_default_async
 
-@add_metaclass(ExtensionMethod)
-class ObservableLast(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Single(object):
 
     def single(self, predicate=None):
         """Returns the only element of an observable sequence that satisfies the
@@ -24,6 +21,7 @@ class ObservableLast(Observable):
             elements in the source sequence.
 
         Returns {Observable} Sequence containing the single element in the
-        observable sequence that satisfies the condition in the predicate."""
+        observable sequence that satisfies the condition in the predicate.
+        """
 
         return self.where(predicate).single() if predicate else single_or_default_async(self, False)

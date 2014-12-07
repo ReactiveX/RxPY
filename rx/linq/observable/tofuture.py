@@ -1,12 +1,9 @@
-from six import add_metaclass
-
 from rx.observable import Observable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableToFuture(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
 
+@extends(Observable)
+class ToFuture(object):
 
     def to_future(self, future_ctor=None):
         """Converts an existing observable sequence to a Future
@@ -22,7 +19,8 @@ class ObservableToFuture(Observable):
             If not provided, it looks for it in rx.config.Future.
 
         Returns {Future} An future with the last value from the observable
-        sequence."""
+        sequence.
+        """
 
         future_ctor = future_ctor or rx.config.get("Future")
         if not future_ctor:

@@ -1,16 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.internal.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableRepeat(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
 
-    def __init__(self, subscribe):
-        self.repeat = self.__repeat # Stitch in instance method
+@extends(Observable)
+class Repeat(object):
 
     # We do this to avoid overwriting the class method with the same name
     def __repeat(self, repeat_count=None):
@@ -31,14 +26,14 @@ class ObservableRepeat(Observable):
 
     def __mul__(self, b):
         """Pythonic version of repeat
-        
+
         Example:
         yx = xs * 5
-        
+
         Returns self.repeat(b)"""
-        
+
         assert isinstance(b, int)
-        return self.repeat(b)        
+        return self.repeat(b)
 
     @classmethod
     def repeat(cls, value=None, repeat_count=None, scheduler=None):
@@ -65,5 +60,5 @@ class ObservableRepeat(Observable):
         if repeat_count == -1:
             repeat_count = None
 
-        xs = cls.return_value(value, scheduler)
+        xs = Observable.return_value(value, scheduler)
         return xs.repeat(repeat_count)

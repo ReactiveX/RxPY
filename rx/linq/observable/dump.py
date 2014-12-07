@@ -1,11 +1,9 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableDump(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Dump(object):
 
     def dump(self, name = "test"):
         """Debug method for inspecting an observable sequence
@@ -14,7 +12,8 @@ class ObservableDump(Observable):
         name -- [Optional] A name to make it easier to match the debug output if
             you insert multiple dumps into the same observable sequence.
 
-        Return an unmodified observable sequence"""
+        Return an unmodified observable sequence
+        """
 
         def subscribe(observer):
             def on_next(value):

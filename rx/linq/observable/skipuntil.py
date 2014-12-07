@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableSkipUntil(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class SkipUntil(object):
 
     def skip_until(self, other):
         """Returns the values from the source observable sequence only after
@@ -18,7 +16,8 @@ class ObservableSkipUntil(Observable):
 
         Returns an observable sequence containing the elements of the source
         sequence starting from the point the other sequence triggered
-        propagation."""
+        propagation.
+        """
 
         source = self
         other = Observable.from_future(other)

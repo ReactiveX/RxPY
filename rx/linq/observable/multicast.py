@@ -1,13 +1,11 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.linq.connectableobservable import ConnectableObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
-@add_metaclass(ExtensionMethod)
-class ObservableMulticast(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
+@extends(Observable)
+class Multicast(object):
 
     def multicast(self, subject=None, subject_selector=None, selector=None):
         """Multicasts the source sequence notifications through an instantiated
@@ -34,7 +32,8 @@ class ObservableMulticast(Observable):
 
         Returns an observable {Observable} sequence that contains the elements
         of a sequence produced by multicasting the source sequence within a
-        selector function."""
+        selector function.
+        """
 
         source = self
         if subject_selector:

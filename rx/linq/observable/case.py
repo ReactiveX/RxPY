@@ -1,12 +1,9 @@
-from six import add_metaclass
+from rx import Observable
+from rx.internal import extends
 
-from rx import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import ExtensionMethod
 
-@add_metaclass(ExtensionMethod)
-class ObservableAmb(Observable):
-    """Uses a meta class to extend Observable with the methods in this class"""
+@extends(Observable)
+class Case(object):
 
     @classmethod
     def case(cls, selector, sources, default_source=None, scheduler=None):
@@ -30,7 +27,8 @@ class ObservableAmb(Observable):
             scheduler.
 
         Returns an observable {Observable} sequence which is determined by a
-        case statement."""
+        case statement.
+        """
 
         default_source = default_source or Observable.empty(scheduler=scheduler)
 
