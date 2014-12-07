@@ -10,11 +10,10 @@ def extends(base):
     """
 
     def inner(cls):
-        for name, value in cls.__dict__.items():
+        for name in dir(cls):
+            value = getattr(cls, name)
             iscallable = callable(getattr(cls, name)) 
             if iscallable and not name.endswith("__"):
-                setattr(base, name, value)
-                if name.startswith("__"):
-                    base.initializers.append(name[2:], value)
+                setattr(base, name, value)        
         return cls
     return inner

@@ -25,4 +25,4 @@ class Interval(object):
         """
 
         scheduler = scheduler or TimeoutScheduler()
-        return cls.observable_timer_timespan_and_period(period, period, scheduler)
+        return Observable.observable_timer_timespan_and_period(period, period, scheduler)

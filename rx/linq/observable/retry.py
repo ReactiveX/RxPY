@@ -3,7 +3,7 @@ from rx.internal.enumerable import Enumerable
 from rx.internal import extends
 
 @extends(Observable)
-class Retry(Observable):
+class Retry(object):
 
 
     def retry(self, retry_count=None):

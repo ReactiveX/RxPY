@@ -55,5 +55,5 @@ class ElementAtOrDefault(object):
             the index is outside the bounds of the source sequence.
         """
 
-        return self._element_at_or_default(self, index, True, default_value)
+        return ElementAtOrDefault._element_at_or_default(self, index, True, default_value)
 

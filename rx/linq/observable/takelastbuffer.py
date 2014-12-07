@@ -2,7 +2,7 @@ from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
 @extends(Observable)
-class TakeLastBuffer(Observable):
+class TakeLastBuffer(object):
 
 
     def take_last_buffer(self, count):

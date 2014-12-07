@@ -9,7 +9,6 @@ from rx.internal import extends
 @extends(Observable)
 class Catch(object):
 
-
     @staticmethod
     def catch_handler(source, handler):
         def subscribe(observer):
@@ -57,7 +56,7 @@ class Catch(object):
         """
 
         if handler or not isinstance(second, Observable):
-            return self.catch_handler(self, handler or second)
+            return Catch.catch_handler(self, handler or second)
 
         return Observable.catch_exception([self, second])
 

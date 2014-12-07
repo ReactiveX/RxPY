@@ -10,9 +10,17 @@ class Observable(object):
         self._subscribe = subscribe
         self.lock = Lock()
 
-        # Add instance methods with same name as class methods
-        for name, method in self.initializers:
-            setattr(self, name, method)
+        # Add some instance methods here since there are class methods with the 
+        # same name.
+        self.amb = self._Amb__amb
+        self.catch_exception = self._Catch__catch_exception
+        self.concat = self._Concat__concat
+        self.combine_latest = self._CombineLatest__combine_latest
+        self.merge = self._Merge__merge
+        self.on_error_resume_next = self._OnErrorResumeNext__on_error_resume_next
+        self.repeat = self._Repeat__repeat
+        self.zip = self._Zip__zip
+        self.zip_array = self._ZipArray__zip_array
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):

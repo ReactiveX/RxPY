@@ -46,4 +46,4 @@ class Find(object):
         otherwise, None.
         """
 
-        return self._find_value(self, predicate, False)
+        return Find._find_value(self, predicate, False)

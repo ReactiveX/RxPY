@@ -5,7 +5,6 @@ from rx.internal import extends
 @extends(Observable)
 class Amb(object):
 
-
     def __amb(self, right_source):
         """Propagates the observable sequence that reacts first.
 

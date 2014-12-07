@@ -3,7 +3,7 @@ from rx.internal import ArgumentOutOfRangeException
 from rx.internal import extends
 
 @extends(Observable)
-class Take(Observable):
+class Take(object):
 
 
     def take(self, count, scheduler=None):

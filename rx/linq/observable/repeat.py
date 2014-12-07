@@ -60,5 +60,5 @@ class Repeat(object):
         if repeat_count == -1:
             repeat_count = None
 
-        xs = cls.return_value(value, scheduler)
+        xs = Observable.return_value(value, scheduler)
         return xs.repeat(repeat_count)
