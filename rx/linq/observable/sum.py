@@ -1,5 +1,3 @@
-from six import add_metaclass
-
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 

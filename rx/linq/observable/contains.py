@@ -1,5 +1,3 @@
-from six import add_metaclass
-
 from rx import Observable
 from rx.internal.basic import default_comparer
 from rx.internal import extends

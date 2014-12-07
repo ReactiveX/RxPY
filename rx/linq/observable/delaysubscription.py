@@ -1,5 +1,3 @@
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extends

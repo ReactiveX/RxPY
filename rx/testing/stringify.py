@@ -1,9 +1,8 @@
 import re
-from six import add_metaclass
 
 from rx import AnonymousObservable, Observable
 from rx.concurrency import timeout_scheduler
-from rx.internal import ExtensionMethod
+from rx.internal import extends
 
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
@@ -12,9 +11,10 @@ on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
 on_error = ReactiveTest.on_error
 
-@add_metaclass(ExtensionMethod)
-class ObservableStringify(Observable):
+@extends(Observable)
+class ObservableStringify(object):
     """Uses a meta class to extend Observable with the methods in this class"""
+
 
     _pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
     _tokens = re.compile(_pattern)
@@ -41,7 +41,8 @@ class ObservableStringify(Observable):
         scheduler -- [Optional] Scheduler to run the the input sequence on.
 
         Returns the observable sequence whose elements are pulled from the
-        given marble diagram string."""
+        given marble diagram string.
+        """
 
         scheduler = scheduler or timeout_scheduler
 

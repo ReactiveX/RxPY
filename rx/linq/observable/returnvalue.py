@@ -1,4 +1,3 @@
-from six import add_metaclass
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 

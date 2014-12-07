@@ -1,5 +1,3 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 from rx.internal import extends

@@ -1,10 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
 @extends(Observable)
 class TakeLast(object):
+
+
     def take_last(self, count):
         """Returns a specified number of contiguous elements from the end of an
         observable sequence.

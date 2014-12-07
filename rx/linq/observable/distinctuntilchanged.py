@@ -1,6 +1,3 @@
-import six
-from six import add_metaclass
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import identity, default_comparer

@@ -1,10 +1,10 @@
-from six import add_metaclass
-
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
 @extends(Observable)
 class TakeLastBuffer(object):
+
+
     def take_last_with_time(self, duration, scheduler=None):
         """Returns elements within the specified duration from the end of the
         observable source sequence, using the specified schedulers to run timers
