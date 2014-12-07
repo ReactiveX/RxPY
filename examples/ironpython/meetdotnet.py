@@ -20,11 +20,12 @@ import rx
 stream = rx.subjects.Subject()
 
 def on_next(x):
-	print "rxpy: %s" % x
+	print "RxPy: %s" % x
 stream.subscribe(on_next)
 
 def OnNext(x):
-	print "rx.net: %s" % x
+	print "RxNET: %s" % x
+	# Send to RxPY
 	stream.on_next(x)
 obs = Observer.Create[int](OnNext)
 
