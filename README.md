@@ -42,8 +42,8 @@ gracefully by using the methods on the Observable object.
 
 ## Install
 
-RxPy runs on [Python](http://www.python.org/) 2.7, 3.4 and
-[PyPy](http://pypy.org/)
+RxPy runs on [Python](http://www.python.org/) 2.7, 3.4,
+[PyPy](http://pypy.org/) and [IronPython](https://ironpython.codeplex.com)
 
 To install RxPY:
 
@@ -55,7 +55,7 @@ Note that `pip` may be called `pip3` if your're using Python3.
 
 RxPY is a fairly complete implementation of
 [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 116 query operators, and over 1020 passing unit-tests. RxPY
+v2.2 with more than 126 query operators, and over 1100 passing unit-tests. RxPY
 is a direct port of RxJS, so it's actually possible to single-step both
 implementations in a debugger to trace any problems.
 
