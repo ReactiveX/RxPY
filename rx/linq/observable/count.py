@@ -1,9 +1,9 @@
 from rx import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Count(object):
-
 
     def count(self, predicate=None):
         """Returns an observable sequence containing a value that represents

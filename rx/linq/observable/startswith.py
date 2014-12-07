@@ -4,9 +4,9 @@ from rx.observable import Observable
 from rx.concurrency import immediate_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class StartsWith(object):
-
 
     def start_with(self, *args, **kw):
         """Prepends a sequence of values to an observable sequence with an

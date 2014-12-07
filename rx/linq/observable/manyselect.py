@@ -1,12 +1,13 @@
 from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
 from rx.internal import extends
 
+
 class ChainObservable(Observable):
+
     def _subscribe(self, observer):
         g = CompositeDisposable()
 
@@ -34,7 +35,6 @@ class ChainObservable(Observable):
 
 @extends(Observable)
 class ManySelect(object):
-
 
     def many_select(self, selector, scheduler=None):
         """Comonadic bind operator.

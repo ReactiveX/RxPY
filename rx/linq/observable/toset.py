@@ -12,9 +12,9 @@ def to_set(source, set_type):
         return source.subscribe(s.add, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
+
 @extends(Observable)
 class ToSet(object):
-
 
     def to_set(self):
         """Converts the observable sequence to a set.

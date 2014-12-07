@@ -42,9 +42,9 @@ def extrema_by(source, key_selector, comparer):
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
+
 @extends(Observable)
 class MinBy(object):
-
 
     def min_by(self, key_selector, comparer=None):
         """Returns the elements in an observable sequence with the minimum key

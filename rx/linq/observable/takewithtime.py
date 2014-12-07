@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeWithTime(object):
-
 
     def take_with_time(self, duration, scheduler=None):
         """Takes elements for the specified duration from the start of the

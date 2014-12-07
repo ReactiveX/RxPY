@@ -1,9 +1,9 @@
 from rx.observable import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class ToFuture(object):
-
 
     def to_future(self, future_ctor=None):
         """Converts an existing observable sequence to a Future

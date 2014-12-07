@@ -1,10 +1,8 @@
 import logging
-from collections import OrderedDict
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
-from rx.observeonobserver import ObserveOnObserver
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
     CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
@@ -12,9 +10,9 @@ from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
+
 @extends(Observable)
 class Window(object):
-
 
     def window(self, window_openings=None, window_closing_selector=None):
         """Projects each element of an observable sequence into zero or more

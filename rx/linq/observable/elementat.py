@@ -1,11 +1,11 @@
-from rx import Observable, AnonymousObservable
+from rx import Observable
 from rx.internal import extends
 
 from .elementatordefault import ElementAtOrDefault
 
+
 @extends(Observable)
 class ElementAt(object):
-
 
     def element_at(self, index):
         """Returns the element at a specified index in a sequence.

@@ -1,11 +1,11 @@
 from rx import Observable
-from rx.observer import Observer, AbstractObserver
+from rx.observer import AbstractObserver
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class DoAction(object):
-
 
     def do_action(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):

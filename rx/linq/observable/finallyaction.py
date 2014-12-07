@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.disposables import Disposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class ObservableForIn(object):
-
 
     def finally_action(self, action):
         """Invokes a specified action after the source observable sequence

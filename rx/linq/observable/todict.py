@@ -29,9 +29,9 @@ def to_dict(source, map_type, key_selector, element_selector):
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
+
 @extends(Observable)
 class ToDict(object):
-
 
     def to_dict(self, key_selector, element_selector=None):
         """Converts the observable sequence to a Map if it exists.

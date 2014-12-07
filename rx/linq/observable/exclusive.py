@@ -4,9 +4,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Exclusive(object):
-
 
     def exclusive(self):
         """Performs a exclusive waiting for the first to finish before

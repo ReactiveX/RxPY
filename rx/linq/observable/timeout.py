@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extends
+
 
 @extends(Observable)
 class Timeout(object):
-
 
     def timeout(self, duetime, other=None, scheduler=None):
         """Returns the source observable sequence or the other observable

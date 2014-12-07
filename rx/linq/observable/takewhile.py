@@ -1,11 +1,10 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import ArgumentOutOfRangeException
 from rx.internal.utils import adapt_call
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeWhile(object):
-
 
     def take_while(self, predicate):
         """Returns elements from an observable sequence as long as a specified

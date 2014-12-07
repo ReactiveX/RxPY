@@ -1,6 +1,7 @@
 from rx import Observable
 from rx.internal import extends
 
+
 class AverageValue(object):
     def __init__(self, sum, count):
         self.sum = sum
@@ -8,7 +9,6 @@ class AverageValue(object):
 
 @extends(Observable)
 class Average(object):
-
 
     def average(self, key_selector=None):
         """Computes the average of an observable sequence of values that are in

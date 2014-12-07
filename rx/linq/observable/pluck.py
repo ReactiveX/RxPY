@@ -1,9 +1,9 @@
 from rx import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Pluck(object):
-
 
     def pluck(self, property):
         """Retrieves the value of a specified property from all elements in the

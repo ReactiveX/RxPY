@@ -1,9 +1,9 @@
 from rx.observable import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class ToList(object):
-
 
     def to_list(self):
         """Creates a list from an observable sequence.

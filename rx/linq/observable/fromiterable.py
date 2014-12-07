@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class FromIterable(object):
-
 
     @classmethod
     def from_iterable(cls, iterable, scheduler=None):

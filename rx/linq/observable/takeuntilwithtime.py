@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeUntilWithTime(object):
-
 
     def take_until_with_time(self, end_time, scheduler=None):
         """Takes elements for the specified duration until the specified end

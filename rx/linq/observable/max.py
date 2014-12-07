@@ -1,13 +1,12 @@
 from rx import AnonymousObservable, Observable
 from rx.internal.basic import identity
-from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import extends
 
 from .min import first_only
 
+
 @extends(Observable)
 class Max(object):
-
 
     def max(self, comparer=None):
         """Returns the maximum value in an observable sequence according to the

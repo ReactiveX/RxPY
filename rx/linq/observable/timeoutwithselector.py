@@ -1,15 +1,12 @@
-from datetime import datetime, timedelta
-
-from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, \
+from rx.disposables import  CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TimeoutWithSelector(object):
-
 
     def timeout_with_selector(self, first_timeout=None,
                               timeout_duration_selector=None, other=None):

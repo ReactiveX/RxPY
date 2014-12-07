@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class GenerateWithRelativeTime(object):
-
 
     @classmethod
     def generate_with_relative_time(cls, initial_state, condition, iterate,

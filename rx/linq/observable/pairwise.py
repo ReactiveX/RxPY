@@ -1,9 +1,9 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Pairwise(object):
-
 
     def pairwise(self):
         """Returns a new observable that triggers on the second and subsequent

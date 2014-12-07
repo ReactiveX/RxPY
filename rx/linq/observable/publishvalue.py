@@ -1,10 +1,10 @@
-from rx import Observable, AnonymousObservable
-from rx.subjects import Subject, BehaviorSubject
+from rx import Observable
+from rx.subjects import BehaviorSubject
 from rx.internal import extends
+
 
 @extends(Observable)
 class PublishValue(object):
-
 
     def publish_value(self, initial_value, selector=None):
         """Returns an observable sequence that is the result of invoking the

@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import immediate_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Empty(object):
-
 
     @classmethod
     def empty(cls, scheduler=None):

@@ -4,9 +4,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import immediate_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class ReturnValue(object):
-
 
     @classmethod
     def return_value(cls, value, scheduler=None):

@@ -1,12 +1,10 @@
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal.basic import default_key_serializer, identity
-from rx.internal import ArgumentOutOfRangeException
 from rx.internal import extends
+
 
 @extends(Observable)
 class SkipWithTime(object):
-
 
     def skip_with_time(self, duration, scheduler=None):
         """Skips elements for the specified duration from the start of the

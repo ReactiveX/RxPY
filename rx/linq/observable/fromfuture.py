@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.internal.utils import is_future
 from rx.internal import extends
 
+
 @extends(Observable)
 class FromFuture(object):
-
 
     @classmethod
     def from_future(cls, future):

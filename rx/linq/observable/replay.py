@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.subjects import ReplaySubject
 from rx.internal import extends
 
+
 @extends(Observable)
 class Replay(object):
-
 
     def replay(self, selector, buffer_size=None, window=None, scheduler=None):
         """Returns an observable sequence that is the result of invoking the

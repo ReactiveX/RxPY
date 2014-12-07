@@ -6,9 +6,9 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
 from rx.subjects import Subject
 from rx.internal import extends
 
+
 @extends(Observable)
 class WindowWithTimeOrCount(object):
-
 
     def window_with_time_or_count(self, timespan, count, scheduler=None):
         source = self

@@ -2,6 +2,7 @@ from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Amb(object):
 

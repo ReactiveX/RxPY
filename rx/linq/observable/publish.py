@@ -1,10 +1,10 @@
-from rx import Observable, AnonymousObservable
+from rx import Observable
 from rx.subjects import Subject
 from rx.internal import extends
 
+
 @extends(Observable)
 class Publish(object):
-
 
     def publish(self, selector=None):
         """Returns an observable sequence that is the result of invoking the

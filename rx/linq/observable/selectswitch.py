@@ -1,9 +1,9 @@
 from rx import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class SelectSwitch(object):
-
 
     def select_switch(self, selector):
         """Projects each element of an observable sequence into a new sequence
@@ -21,7 +21,8 @@ class SelectSwitch(object):
         result of invoking the transform function on each element of source
         producing an Observable of Observable sequences and that at any point in
         time produces the elements of the most recent inner observable sequence
-        that has been received."""
+        that has been received.
+        """
 
         return self.select(selector).switch_latest()
 

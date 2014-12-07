@@ -21,9 +21,9 @@ def last_or_default_async(source, has_default=False, default_value=None):
         return source.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
+
 @extends(Observable)
 class LastOrDefault(object):
-
 
     def last_or_default(self, predicate=None, default_value=None):
         """Returns the last element of an observable sequence that satisfies the

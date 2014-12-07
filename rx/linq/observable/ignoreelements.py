@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.internal import noop
 from rx.internal import extends
 
+
 @extends(Observable)
 class IgnoreElements(object):
-
 
     def ignore_elements(self):
         """Ignores all elements in an observable sequence leaving only the

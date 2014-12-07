@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Never(object):
-
 
     @classmethod
     def never(cls):

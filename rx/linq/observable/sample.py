@@ -4,9 +4,9 @@ from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Sample(object):
-
 
     def _sample_observable(self, sampler):
         source = self

@@ -6,9 +6,9 @@ from rx.disposables import SerialDisposable, CompositeDisposable, \
 from rx.concurrency import immediate_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Expand(object):
-
 
     def expand(self, selector, scheduler=None):
         """Expands an observable sequence by recursively invoking selector.

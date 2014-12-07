@@ -1,10 +1,10 @@
 from rx.observable import Observable
-from rx.concurrency import TimeoutScheduler, timeout_scheduler, Scheduler
+from rx.concurrency import TimeoutScheduler
 from rx.internal import extends
+
 
 @extends(Observable)
 class Interval(object):
-
 
     @classmethod
     def interval(cls, period, scheduler=None):

@@ -1,13 +1,9 @@
-from datetime import timedelta
-
 from rx import Observable, AnonymousObservable
-from rx.internal.basic import default_key_serializer, identity
-from rx.internal import ArgumentOutOfRangeException
 from rx.internal import extends
+
 
 @extends(Observable)
 class SkipLastWithTime(object):
-
 
     def skip_last_with_time(self, duration, scheduler):
         """Skips elements for the specified duration from the end of the

@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class ZipArray(object):
-
 
     def __zip_array(self, second, result_selector):
         first = self
@@ -39,7 +39,8 @@ class ZipArray(object):
         args -- Observable sources.
 
         Returns an observable {Observable} sequence containing lists of elements
-        at corresponding indexes."""
+        at corresponding indexes.
+        """
 
         sources = args
 

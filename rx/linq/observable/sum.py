@@ -1,9 +1,9 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
+
 
 @extends(Observable)
 class Sum(object):
-
 
     def sum(self, key_selector=None):
         """Computes the sum of a sequence of values that are obtained by

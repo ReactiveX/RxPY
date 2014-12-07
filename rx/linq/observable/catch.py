@@ -60,6 +60,7 @@ class Catch(object):
 
         return Observable.catch_exception([self, second])
 
+
     @classmethod
     def catch_exception(cls, *args):
         """Continues an observable sequence that is terminated by an

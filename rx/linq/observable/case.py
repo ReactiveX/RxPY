@@ -1,10 +1,9 @@
-from rx import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx import Observable
 from rx.internal import extends
+
 
 @extends(Observable)
 class Case(object):
-
 
     @classmethod
     def case(cls, selector, sources, default_source=None, scheduler=None):

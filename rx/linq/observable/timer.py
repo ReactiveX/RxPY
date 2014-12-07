@@ -3,8 +3,6 @@ from datetime import datetime
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler, Scheduler
 from rx.internal import extends
 
@@ -21,9 +19,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
+
 @extends(Observable)
 class Timer(object):
-
 
     @classmethod
     def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
@@ -128,6 +126,7 @@ class Timer(object):
         Returns an observable sequence that produces a value after due time has
         elapsed and then each period.
         """
+
         log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
         scheduler = scheduler or timeout_scheduler

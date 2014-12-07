@@ -1,9 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class AsObservable(object):
-
 
     def as_observable(self):
         """Hides the identity of an observable sequence.

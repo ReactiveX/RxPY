@@ -8,9 +8,9 @@ from rx.internal.basic import default_comparer, identity
 from rx.linq.groupedobservable import GroupedObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class GroupByUntil(object):
-
 
     def group_by_until(self, key_selector, element_selector, duration_selector,
                        comparer=None):

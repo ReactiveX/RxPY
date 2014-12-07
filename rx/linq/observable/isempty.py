@@ -1,9 +1,8 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
 
 @extends(Observable)
 class IsEmpty(object):
-
 
     def is_empty(self):
         """Determines whether an observable sequence is empty.

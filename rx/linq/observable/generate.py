@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Generate(object):
-
 
     @classmethod
     def generate(cls, initial_state, condition, iterate, result_selector,

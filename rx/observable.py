@@ -1,6 +1,7 @@
 from rx import Lock
 from .observer import Observer, AbstractObserver
 
+
 class Observable(object):
     """Represents a push-style collection."""
 
@@ -54,5 +55,3 @@ class Observable(object):
             observer = Observer(on_next, on_error, on_completed)
 
         return self._subscribe(observer)
-
-

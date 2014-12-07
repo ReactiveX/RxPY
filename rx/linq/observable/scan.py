@@ -1,9 +1,9 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
+
 
 @extends(Observable)
 class Scan(object):
-
 
     def scan(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence and
@@ -18,7 +18,8 @@ class Scan(object):
         accumulator -- An accumulator function to be invoked on each element.
         seed -- [Optional] The initial accumulator value.
 
-        Returns an observable sequence containing the accumulated values."""
+        Returns an observable sequence containing the accumulated values.
+        """
 
         has_seed = False
         if not seed is None:

@@ -1,9 +1,9 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeLastBuffer(object):
-
 
     def take_last_with_time(self, duration, scheduler=None):
         """Returns elements within the specified duration from the end of the

@@ -3,9 +3,9 @@ from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
 from rx.internal import extends
 
+
 @extends(Observable)
 class ToAsync(object):
-
 
     @classmethod
     def to_async(cls, func, scheduler=None):

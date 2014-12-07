@@ -1,5 +1,6 @@
 from rx import Observable
 
+
 class AnonymousSubject(Observable):
     def __init__(self, observer, observable):
         super(AnonymousSubject, self).__init__(self._subscribe)

@@ -2,9 +2,9 @@ from rx import Observable
 from rx.internal.basic import default_comparer
 from rx.internal import extends
 
+
 @extends(Observable)
 class Contains(object):
-
 
     def contains(self, value, comparer=None):
         """Determines whether an observable sequence contains a specified

@@ -1,14 +1,11 @@
-from rx import AnonymousObservable, Observable
-from rx.internal.basic import identity, default_sub_comparer
-from rx.internal.exceptions import SequenceContainsNoElementsError
+from rx import Observable
+from rx.internal.basic import default_sub_comparer
 from rx.internal import extends
 
-from .min import first_only
 from .minby import extrema_by
 
 @extends(Observable)
 class MaxBy(object):
-
 
     def max_by(self, key_selector, comparer=None):
         """Returns the elements in an observable sequence with the maximum

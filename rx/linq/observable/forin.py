@@ -1,11 +1,10 @@
-from rx import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx import Observable
 from rx.internal import extends
 from rx.internal import Enumerable
 
+
 @extends(Observable)
 class ForIn(object):
-
 
     @classmethod
     def for_in(cls, sources, result_selector):

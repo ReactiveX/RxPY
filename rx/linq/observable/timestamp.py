@@ -11,9 +11,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
+
 @extends(Observable)
 class ObservableTimestamp(object):
-
 
     def timestamp(self, scheduler=None):
         """Records the timestamp for each value in an observable sequence.

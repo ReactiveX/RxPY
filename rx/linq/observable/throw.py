@@ -1,13 +1,12 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
-from rx.disposables import Disposable, CompositeDisposable
-from rx.concurrency import immediate_scheduler, current_thread_scheduler
+from rx.concurrency import immediate_scheduler
 from rx.internal import extends
+
 
 @extends(Observable)
 class Throw(object):
-
 
     @classmethod
     def throw(cls, exception, scheduler=None):

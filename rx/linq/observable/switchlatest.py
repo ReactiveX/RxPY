@@ -1,12 +1,12 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, \
+from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class SwitchLatest(object):
-
 
     def switch_latest(self):
         """Transforms an observable sequence of observable sequences into an

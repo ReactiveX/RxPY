@@ -1,9 +1,9 @@
 from rx import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class GroupBy(object):
-
 
     def group_by(self, key_selector, element_selector=None,
                  key_serializer=None):

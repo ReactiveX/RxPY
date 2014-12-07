@@ -1,9 +1,9 @@
 from rx import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Of(object):
-
 
     @classmethod
     def of(cls, *args, **kwargs):

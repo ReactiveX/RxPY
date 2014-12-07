@@ -1,9 +1,8 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
 
 @extends(Observable)
 class Buffer(object):
-
 
     def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_selector=None):
         """Projects each element of an observable sequence into zero or more

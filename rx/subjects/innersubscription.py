@@ -1,5 +1,6 @@
 from rx import Lock
 
+
 class InnerSubscription(object):
     def __init__(self, subject, observer):
         self.subject = subject

@@ -1,10 +1,9 @@
 from rx import Observable
-from rx.internal import Enumerable, Enumerator
 from rx.internal import extends
+
 
 @extends(Observable)
 class IfThen(object):
-
 
     @classmethod
     def if_then(cls, condition, then_source, else_source=None, scheduler=None):

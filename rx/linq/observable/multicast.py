@@ -3,9 +3,9 @@ from rx.linq.connectableobservable import ConnectableObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Multicast(object):
-
 
     def multicast(self, subject=None, subject_selector=None, selector=None):
         """Multicasts the source sequence notifications through an instantiated

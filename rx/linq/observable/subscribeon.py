@@ -2,9 +2,9 @@ from rx import AnonymousObservable, Observable
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class SubscribeOn(object):
-
 
     def subscribe_on(self, scheduler):
         """Wraps the source sequence in order to run its subscription and

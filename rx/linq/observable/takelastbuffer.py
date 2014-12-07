@@ -1,9 +1,9 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeLastBuffer(object):
-
 
     def take_last_buffer(self, count):
         """Returns an array with the specified number of contiguous elements

@@ -2,9 +2,9 @@ from rx import AnonymousObservable, Observable
 from rx.internal import extends
 from rx.observeonobserver import ObserveOnObserver
 
+
 @extends(Observable)
 class ObserveOn(object):
-
 
     def observe_on(self, scheduler):
         """Wraps the source sequence in order to run its observer callbacks on

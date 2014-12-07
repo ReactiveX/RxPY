@@ -20,9 +20,9 @@ class HashSet(object):
         ret_value and self.set.append(value)
         return ret_value
 
+
 @extends(Observable)
 class Distinct(object):
-
 
     def distinct(self, key_selector=None, comparer=None):
         """Returns an observable sequence that contains only distinct elements

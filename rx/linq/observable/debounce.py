@@ -10,9 +10,9 @@ from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
+
 @extends(Observable)
 class Debounce(object):
-
 
     def debounce(self, duetime, scheduler=None):
         """Ignores values from an observable sequence which are followed by

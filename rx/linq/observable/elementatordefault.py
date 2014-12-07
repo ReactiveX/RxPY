@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 from rx.internal import extends
 
+
 @extends(Observable)
 class ElementAtOrDefault(object):
-
 
     @staticmethod
     def _element_at_or_default(source, index, has_default=False,

@@ -13,9 +13,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
-@extends(Observable)
-class TimeInteval(object):
 
+@extends(Observable)
+class ObservableTimeInteval(object):
 
     def time_interval(self, scheduler):
         """Records the time interval between consecutive values in an

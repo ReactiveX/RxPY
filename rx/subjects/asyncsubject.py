@@ -6,6 +6,7 @@ from rx.abstractobserver import AbstractObserver
 
 from .innersubscription import InnerSubscription
 
+
 class AsyncSubject(Observable, AbstractObserver):
     """Represents the result of an asynchronous operation. The last value
     before the on_completed notification, or the error received through

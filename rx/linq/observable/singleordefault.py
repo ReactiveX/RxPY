@@ -27,7 +27,6 @@ def single_or_default_async(source, has_default=False, default_value=None):
 
 @extends(Observable)
 class SingleOrDefault(object):
-    """Uses a meta class to extend Observable with the methods in this class"""
 
     def single_or_default(self, predicate, default_value):
         """Returns the only element of an observable sequence that matches the

@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
 from rx.internal import extends
 
+
 @extends(Observable)
 class Where(object):
-
 
     def where(self, predicate):
         """Filters the elements of an observable sequence based on a predicate

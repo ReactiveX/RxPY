@@ -1,10 +1,10 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class BufferWithTime(object):
-
 
     def buffer_with_time(self, timespan, timeshift=None, scheduler=None):
         """Projects each element of an observable sequence into zero or more

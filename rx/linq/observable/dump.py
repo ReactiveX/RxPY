@@ -1,9 +1,9 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Dump(object):
-
 
     def dump(self, name = "test"):
         """Debug method for inspecting an observable sequence

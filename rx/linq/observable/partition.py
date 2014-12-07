@@ -1,10 +1,10 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
 from rx.internal.utils import adapt_call
 
+
 @extends(Observable)
 class Partition(object):
-
 
     def partition(self, predicate):
         """Returns two observables which partition the observations of the

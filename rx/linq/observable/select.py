@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
 from rx.internal import extends
 
+
 @extends(Observable)
 class Select(object):
-
 
     def select(self, selector):
         """Projects each element of an observable sequence into a new form by

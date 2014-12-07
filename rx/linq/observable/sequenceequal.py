@@ -1,14 +1,13 @@
 import collections
 
 from rx import AnonymousObservable, Observable
-from rx.observeonobserver import ObserveOnObserver
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable, CompositeDisposable
+from rx.disposables import CompositeDisposable
 from rx.internal import default_comparer
 from rx.internal import extends
 
+
 @extends(Observable)
 class SequenceEqual(object):
-
 
     def sequence_equal(self, second, comparer=None):
         """Determines whether two sequences are equal by comparing the

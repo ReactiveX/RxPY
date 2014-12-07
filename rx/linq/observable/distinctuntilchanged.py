@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.internal.basic import identity, default_comparer
 from rx.internal import extends
 
+
 @extends(Observable)
 class DistinctUntilChanged(object):
-
 
     def distinct_until_changed(self, key_selector=None, comparer=None):
         """Returns an observable sequence that contains only distinct

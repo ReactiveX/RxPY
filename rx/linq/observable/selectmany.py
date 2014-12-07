@@ -9,9 +9,9 @@ def _flat_map(source, selector):
 
     return source.map(projection).merge_observable()
 
+
 @extends(Observable)
 class SelectMany(object):
-
 
     def select_many(self, selector, result_selector=None):
         """One of the Following:

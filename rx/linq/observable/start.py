@@ -1,11 +1,9 @@
-from rx.concurrency import Scheduler
 from rx.observable import Observable
-
 from rx.internal import extends
+
 
 @extends(Observable)
 class Start(object):
-
 
     @classmethod
     def start(cls, func, scheduler=None):

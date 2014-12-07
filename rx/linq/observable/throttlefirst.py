@@ -1,12 +1,11 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import timeout_scheduler
-from rx.internal.exceptions import ArgumentOutOfRangeException
 from rx.internal import extends
+
 
 @extends(Observable)
 class ThrottleFirst(object):
-
 
     def throttle_first(self, window_duration, scheduler=None):
         """Returns an Observable that emits only the first item emitted by the

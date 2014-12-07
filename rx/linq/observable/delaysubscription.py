@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class DelaySubscription(object):
-
 
     def delay_subscription(self, duetime, scheduler):
         """Time shifts the observable sequence by delaying the subscription.

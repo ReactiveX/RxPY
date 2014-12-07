@@ -1,11 +1,9 @@
-from rx.concurrency import Scheduler
 from rx.observable import Observable
-
 from rx.internal import extends
+
 
 @extends(Observable)
 class StartsAsync(object):
-
 
     @classmethod
     def start_async(cls, function_async):

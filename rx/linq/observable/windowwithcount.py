@@ -2,15 +2,15 @@ import logging
 
 from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable
+from rx.disposables import SingleAssignmentDisposable, RefCountDisposable
 from rx.subjects import Subject
 from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
+
 @extends(Observable)
 class WindowWithCount(object):
-
 
     def window_with_count(self, count, skip=None):
         """Projects each element of an observable sequence into zero or more

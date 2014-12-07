@@ -1,14 +1,11 @@
-from rx.internal import noop
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import immediate_scheduler
-from rx.internal.enumerable import Enumerable
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extends
+
 
 @extends(Observable)
 class Zip(object):
-
 
     def __zip(self, *args):
         """Merges the specified observable sequences into one observable

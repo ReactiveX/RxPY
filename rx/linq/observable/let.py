@@ -1,9 +1,9 @@
 from rx.observable import Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Let(object):
-
 
     def let_bind(self, func):
         """Returns an observable sequence that is the result of invoking the

@@ -4,13 +4,10 @@ from datetime import timedelta
 from rx import Lock
 from rx.observable import Observable
 from rx.internal import DisposedException
-from rx.disposables import Disposable
 from rx.abstractobserver import AbstractObserver
 from rx.concurrency import current_thread_scheduler
 from rx.scheduledobserver import ScheduledObserver
 
-from .anonymoussubject import AnonymousSubject
-from .innersubscription import InnerSubscription
 
 class RemovableDisposable(object):
     def __init__(self, subject, observer):

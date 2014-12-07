@@ -15,9 +15,9 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
+
 @extends(Observable)
 class Delay(object):
-
 
     def observable_delay_timespan(self, duetime, scheduler):
         duetime = scheduler.to_timedelta(duetime)

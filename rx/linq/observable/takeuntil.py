@@ -4,9 +4,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class TakeUntil(object):
-
 
     def take_until(self, other):
         """Returns the values from the source observable sequence until the

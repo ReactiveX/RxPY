@@ -1,9 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class All(object):
-
 
     def all(self, predicate):
         """Determines whether all elements of an observable sequence satisfy a

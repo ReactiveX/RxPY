@@ -3,9 +3,9 @@ from rx.internal import extends
 
 from .firstordefault import first_or_default_async
 
+
 @extends(Observable)
 class First(object):
-
 
     def first(self, predicate=None):
         """Returns the first element of an observable sequence that satisfies

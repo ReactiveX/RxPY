@@ -4,9 +4,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import Disposable, CompositeDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Using(object):
-
 
     @classmethod
     def using(cls, resource_factory, observable_factory):

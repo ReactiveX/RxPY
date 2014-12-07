@@ -2,12 +2,12 @@ from datetime import datetime
 
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.disposables import CompositeDisposable
 from rx.internal import extends
+
 
 @extends(Observable)
 class SkipUntilWithTime(object):
-
 
     def skip_until_with_time(self, start_time, scheduler):
         """Skips elements from the observable source sequence until the

@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.notification import OnNext, OnError, OnCompleted
 from rx.internal import extends
 
+
 @extends(Observable)
 class Materialize(object):
-
 
     def materialize(self):
         """Materializes the implicit notifications of an observable sequence as

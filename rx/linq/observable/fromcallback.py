@@ -1,11 +1,10 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
+
 
 @extends(Observable)
 class FromCallback(object):
-
 
     @classmethod
     def from_callback(cls, func, selector=None):

@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Find(object):
-
 
     @staticmethod
     def _find_value(source, predicate, yield_index):

@@ -3,9 +3,9 @@ from rx.internal.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Repeat(object):
-
 
     # We do this to avoid overwriting the class method with the same name
     def __repeat(self, repeat_count=None):

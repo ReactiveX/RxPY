@@ -1,13 +1,12 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extends
 
+
 @extends(Observable)
 class DelayWithSelector(object):
-
 
     def delay_with_selector(self, subscription_delay=None,
                             delay_duration_selector=None):

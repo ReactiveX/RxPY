@@ -1,4 +1,4 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
 
 

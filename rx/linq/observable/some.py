@@ -1,9 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Some(object):
-
 
     def some(self, predicate=None):
         """Determines whether some element of an observable sequence satisfies a
@@ -18,7 +18,8 @@ class Some(object):
         Returns {Observable} an observable sequence containing a single element
         determining whether some elements in the source sequence pass the test
         in the specified predicate if given, else if some items are in the
-        sequence."""
+        sequence.
+        """
 
         source = self
         def subscribe(observer):

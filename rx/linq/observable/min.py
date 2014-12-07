@@ -1,4 +1,4 @@
-from rx import AnonymousObservable, Observable
+from rx import Observable
 from rx.internal import extends
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
@@ -9,9 +9,9 @@ def first_only(x):
 
     return x[0]
 
+
 @extends(Observable)
 class Min(object):
-
 
     def min(self, comparer=None):
         """Returns the minimum element in an observable sequence according to

@@ -1,12 +1,11 @@
-from rx import Observable, AnonymousObservable
-from rx.internal.exceptions import SequenceContainsNoElementsError
+from rx import Observable
 from rx.internal import extends
 
 from .singleordefault import single_or_default_async
 
+
 @extends(Observable)
 class Single(object):
-
 
     def single(self, predicate=None):
         """Returns the only element of an observable sequence that satisfies the

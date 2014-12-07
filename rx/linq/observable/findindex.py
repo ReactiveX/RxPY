@@ -1,12 +1,11 @@
 from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
 from .find import Find
 
+
 @extends(Observable)
 class FindIndex(object):
-
 
     def find_index(predicate):
         """Searches for an element that matches the conditions defined by the

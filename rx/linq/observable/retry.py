@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.internal.enumerable import Enumerable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Retry(object):
-
 
     def retry(self, retry_count=None):
         """Repeats the source observable sequence the specified number of times

@@ -12,9 +12,9 @@ from rx.internal import extends
 
 log = logging.getLogger("Rx")
 
+
 @extends(Observable)
 class GroupJoin(object):
-
 
     def group_join(self, right, left_duration_selector, right_duration_selector,
                    result_selector):

@@ -1,11 +1,10 @@
 from rx import Observable, AnonymousObservable
-from rx.internal.basic import default_key_serializer, identity
 from rx.internal import ArgumentOutOfRangeException
 from rx.internal import extends
 
+
 @extends(Observable)
 class Skip(object):
-
 
     def skip(self, count):
         """Bypasses a specified number of elements in an observable sequence

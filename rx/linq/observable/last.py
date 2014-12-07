@@ -1,11 +1,11 @@
-from rx import Observable, AnonymousObservable
+from rx import Observable
 from rx.internal import extends
 
 from .lastordefault import last_or_default_async
 
+
 @extends(Observable)
 class Last(object):
-
 
     def last(self, predicate=None):
         """Returns the last element of an observable sequence that satisfies the

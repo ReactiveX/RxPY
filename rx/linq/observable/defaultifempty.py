@@ -1,9 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class DefaultIfEmpty(object):
-
 
     def default_if_empty(self, default_value=None):
         """Returns the elements of the specified sequence or the specified value

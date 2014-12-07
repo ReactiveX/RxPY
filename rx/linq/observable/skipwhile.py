@@ -2,9 +2,9 @@ from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
 from rx.internal import extends
 
+
 @extends(Observable)
 class SkipWhile(object):
-
 
     def skip_while(self, predicate):
         """Bypasses elements in an observable sequence as long as a specified

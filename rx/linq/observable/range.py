@@ -3,9 +3,9 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
+
 @extends(Observable)
 class Range(object):
-
 
     @classmethod
     def range(cls, start, count, scheduler=None):

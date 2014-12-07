@@ -2,9 +2,9 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Dematerialize(object):
-
 
     def dematerialize(self):
         """Dematerializes the explicit notification values of an observable
