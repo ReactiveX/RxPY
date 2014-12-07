@@ -35,9 +35,14 @@ class ObservableDebounce(Observable):
             last_on_next = [0]
 
             def on_next(x):
+                emit = False
                 now = scheduler.now()
-                if not last_on_next[0] or now - last_on_next[0] >= duration:
-                    last_on_next[0] = now
+                
+                with self.lock:
+                    if not last_on_next[0] or now - last_on_next[0] >= duration:
+                        last_on_next[0] = now
+                        emit = True
+                if emit:
                     observer.on_next(x)
 
             return source.subscribe(on_next, observer.on_error, observer.on_completed)
