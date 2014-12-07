@@ -2,7 +2,7 @@ import clr
 import sys
 import time
 
-# You need to adjust these after your environment
+# You need to adjust these to your environment
 sys.path.append(r".") # Location of rx
 sys.path.append(r"Library/Frameworks/Mono.framework/Versions/3.10.0/lib/mono/gac/System.Reactive.Core/2.2.0.0__31bf3856ad364e35/")
 sys.path.append(r"/Library/Frameworks/Mono.framework/Versions/3.10.0/lib/mono/gac/System.Reactive.Linq/2.2.0.0__31bf3856ad364e35/")
@@ -20,13 +20,13 @@ import rx
 stream = rx.subjects.Subject()
 
 def on_next(x):
-	print "RxPy: %s" % x
+    print "RxPy: %s" % x
 stream.subscribe(on_next)
 
 def OnNext(x):
-	print "RxNET: %s" % x
-	# Send to RxPY
-	stream.on_next(x)
+    print "RxNET: %s" % x
+    # Send to RxPY
+    stream.on_next(x)
 obs = Observer.Create[int](OnNext)
 
 xs = Observable.Range(1, 10)
