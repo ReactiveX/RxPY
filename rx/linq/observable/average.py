@@ -32,11 +32,11 @@ class ObservableAverage(Observable):
         def accumulator(prev, cur):
             return AverageValue(sum=prev.sum+cur, count=prev.count+1)
 
-        def selector(s):
+        def mapper(s):
             if s.count == 0:
                 raise Exception('The input sequence was empty')
 
             return s.sum / float(s.count)
 
         seed = AverageValue(sum=0, count=0)
-        return self.scan(accumulator, seed).last().select(selector)
+        return self.scan(accumulator, seed).last().map(mapper)
