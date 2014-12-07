@@ -46,7 +46,6 @@ class ScheduledObserver(AbstractObserver):
 
     def run(self, recurse, state):
         parent = self
-        work = None
 
         with self.lock:
             if len(parent.queue):
