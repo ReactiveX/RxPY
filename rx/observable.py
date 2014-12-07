@@ -10,8 +10,8 @@ class Observable(object):
         self._subscribe = subscribe
         self.lock = Lock()
 
-        # Add some instance methods here since there are class methods with the 
-        # same name.
+        # Add some instance methods here since there are class methods with the
+        # same name which we don't want to overwrite.
         self.amb = self._Amb__amb
         self.catch_exception = self._Catch__catch_exception
         self.concat = self._Concat__concat

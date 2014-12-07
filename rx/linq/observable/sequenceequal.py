@@ -8,7 +8,7 @@ from rx.internal import extends
 
 @extends(Observable)
 class SequenceEqual(object):
-    """Uses a meta class to extend Observable with the methods in this class"""
+
 
     def sequence_equal(self, second, comparer=None):
         """Determines whether two sequences are equal by comparing the

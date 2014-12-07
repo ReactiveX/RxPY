@@ -2,7 +2,7 @@ from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
 @extends(Observable)
-class ObservableReduce(object):
+class Reduce(object):
 
 
     def reduce(self, accumulator, seed=None):

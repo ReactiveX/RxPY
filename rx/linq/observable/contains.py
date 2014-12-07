@@ -3,7 +3,7 @@ from rx.internal.basic import default_comparer
 from rx.internal import extends
 
 @extends(Observable)
-class ObservableContains(object):
+class Contains(object):
 
 
     def contains(self, value, comparer=None):

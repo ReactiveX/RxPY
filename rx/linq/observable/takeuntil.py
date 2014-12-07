@@ -5,7 +5,7 @@ from rx.disposables import CompositeDisposable
 from rx.internal import extends
 
 @extends(Observable)
-class ObservableTakeUntil(object):
+class TakeUntil(object):
 
 
     def take_until(self, other):

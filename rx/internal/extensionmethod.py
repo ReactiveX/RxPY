@@ -12,8 +12,13 @@ def extends(base):
     def inner(cls):
         for name in dir(cls):
             value = getattr(cls, name)
-            iscallable = callable(getattr(cls, name)) 
+            iscallable = callable(value)
             if iscallable and not name.endswith("__"):
-                setattr(base, name, value)        
+                if hasattr(value, "__func__") and value.__self__ != cls:
+                    # For normal methods we take the function
+                    setattr(base, name, value.__func__)
+                else:
+                    # classmethods
+                    setattr(base, name, value)
         return cls
     return inner

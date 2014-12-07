@@ -2,7 +2,7 @@ from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
 @extends(Observable)
-class Dump(Observable):
+class Dump(object):
 
 
     def dump(self, name = "test"):

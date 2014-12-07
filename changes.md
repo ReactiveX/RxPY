@@ -5,6 +5,7 @@
 - Made `ScheduledObserver` thread safe
 - Thread safe handling for `take_while` and `group_join`
 - Removed dependecy on six
+- Added support for IronPython
 
 ## 0.13
 
