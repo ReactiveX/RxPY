@@ -4,8 +4,9 @@
 
 - Made `ScheduledObserver` thread safe
 - Thread safe handling for `take_while` and `group_join`
-- Removed dependecy on six
-- Added support for IronPython
+- Removed dependecy on six (https://pythonhosted.org/six/)
+- Added support for IronPython (by removing six)
+- Aggregate is now an alias for reduce
 
 ## 0.13
 

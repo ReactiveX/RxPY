@@ -1,6 +1,5 @@
 """Import all the LINQ observable extension methods"""
 
-from . import aggregate
 from . import all
 from . import amb
 from . import some

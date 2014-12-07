@@ -1,9 +1,9 @@
 from rx import AnonymousObservable, Observable
 from rx.internal import extends
 
+
 @extends(Observable)
 class Reduce(object):
-
 
     def reduce(self, accumulator, seed=None):
         """Applies an accumulator function over an observable sequence,
@@ -31,3 +31,5 @@ class Reduce(object):
             return self.scan(accumulator, seed=seed).start_with(seed).last()
         else:
             return self.scan(accumulator).last()
+
+    aggregate = reduce
