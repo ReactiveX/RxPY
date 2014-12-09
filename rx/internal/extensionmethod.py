@@ -4,7 +4,7 @@ def extends(base):
 
     Keyword arguments:
     base -- Base class to extend with methods from cls
-    
+
     Returns a function that takes the class to be decorated.
     """
 
@@ -18,7 +18,7 @@ def extends(base):
             iscallable = callable(value)
             if iscallable and not name.endswith("__"):
                 if hasattr(value, "__func__") and value.__self__ != cls:
-                    # For Py2 bound methods we need to take the function 
+                    # For Py2 bound methods we need to take the function
                     setattr(base, name, value.__func__)
                 else:
                     # classmethods, staticmethods, and Py3
