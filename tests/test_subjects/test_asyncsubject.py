@@ -384,3 +384,7 @@ def test_subject_disposed():
     results1.messages.assert_equal()
     results2.messages.assert_equal()
     results3.messages.assert_equal()
+
+if __name__ == '__main__':
+    unittest.main()
+
