@@ -37,9 +37,9 @@ class PausableObservable(Observable):
     def resume(self):
         self.controller.on_next(True)
 
+
 @extends(Observable)
 class Pausable(object):
-
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable
