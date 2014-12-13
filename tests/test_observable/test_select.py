@@ -26,17 +26,17 @@ class TestSelect(unittest.TestCase):
     def test_select_throws(self):
         with self.assertRaises(RxException):
             Observable.return_value(1) \
-                .select(lambda x, y: x) \
+                .map(lambda x, y: x) \
                 .subscribe(lambda x: _raise("ex"))
         
         with self.assertRaises(RxException):
             Observable.throw_exception('ex') \
-                .select(lambda x, y: x) \
+                .map(lambda x, y: x) \
                 .subscribe(on_error=lambda ex: _raise(ex))
         
         with self.assertRaises(RxException):
             Observable.empty() \
-                .select(lambda x, y: x) \
+                .map(lambda x, y: x) \
                 .subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
         
         def subscribe(observer):
@@ -44,7 +44,7 @@ class TestSelect(unittest.TestCase):
     
         with self.assertRaises(RxException):
             Observable.create(subscribe) \
-                .select(lambda x: x) \
+                .map(lambda x: x) \
                 .subscribe()
         
     def test_select_disposeinsideselector(self):
@@ -62,7 +62,7 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x
     
-        d.disposable = xs.select(projection).subscribe(results)
+        d.disposable = xs.map(projection).subscribe(results)
     
         def action(scheduler, state):
             return d.dispose()
@@ -85,7 +85,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return x + 1
     
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
@@ -103,7 +103,7 @@ class TestSelect(unittest.TestCase):
                 def projection(x):
                     invoked[0] +=1
                     return x + 1
-                return xs.select(projection)
+                return xs.map(projection)
     
             results = scheduler.start(factory)
             results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400))
@@ -120,7 +120,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return x + 1
             
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6))
@@ -136,7 +136,7 @@ class TestSelect(unittest.TestCase):
             def projection(x):
                 invoked[0] += 1 
                 return x + 1
-            return xs.select(projection)
+            return xs.map(projection)
                 
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_error(400, ex))
@@ -156,7 +156,7 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
                 
                 return x + 1
-            return xs.select(projection)
+            return xs.map(projection)
           
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_error(290, ex))
@@ -166,22 +166,22 @@ class TestSelect(unittest.TestCase):
     def test_select_with_index_throws(self):
         with self.assertRaises(RxException):
             return Observable.return_value(1) \
-                .select(lambda x, index: x) \
+                .map(lambda x, index: x) \
                 .subscribe(lambda x: _raise('ex'))
         
         with self.assertRaises(RxException):
             return Observable.throw_exception('ex') \
-                .select(lambda x, index: x) \
+                .map(lambda x, index: x) \
                 .subscribe(lambda x: x, lambda ex: _raise(ex))
         
         with self.assertRaises(RxException):
             return Observable.empty() \
-                .select(lambda x, index: x) \
+                .map(lambda x, index: x) \
                 .subscribe(lambda x: x, lambda ex: _, lambda : _raise('ex'))
         
         with self.assertRaises(RxException):
             return Observable.create(lambda o: _raise('ex')) \
-                .select(lambda x, index: x) \
+                .map(lambda x, index: x) \
                 .subscribe()
         
     def test_select_with_index_dispose_inside_selector(self):
@@ -198,7 +198,7 @@ class TestSelect(unittest.TestCase):
             
             return x + index * 10
     
-        d.disposable = xs.select(projection).subscribe(results)
+        d.disposable = xs.map(projection).subscribe(results)
     
         def action(scheduler, state):
             return d.dispose()
@@ -219,7 +219,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
             
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_completed(400))
@@ -235,7 +235,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
     
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32))
@@ -253,7 +253,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
             
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
             
@@ -274,7 +274,7 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
                 return (x + 1) + (index * 10)
     
-            return xs.select(projection)
+            return xs.map(projection)
     
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_error(290, ex))

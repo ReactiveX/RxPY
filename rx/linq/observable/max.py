@@ -23,4 +23,4 @@ class Max(object):
         with the maximum element in the source sequence.
         """
 
-        return self.max_by(identity, comparer).select(lambda x: first_only(x))
+        return self.max_by(identity, comparer).map(lambda x: first_only(x))

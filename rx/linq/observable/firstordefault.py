@@ -44,4 +44,4 @@ class FirstOrDefault(object):
         default value if no such element exists.
         """
 
-        return self.where(predicate).first_or_default(None, default_value) if predicate else first_or_default_async(self, True, default_value)
+        return self.filter(predicate).first_or_default(None, default_value) if predicate else first_or_default_async(self, True, default_value)

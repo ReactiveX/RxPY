@@ -11,5 +11,5 @@ class IsEmpty(object):
         determining whether the source sequence is empty.
         """
 
-        return self.some().select(lambda b: not b)
+        return self.some().map(lambda b: not b)
 

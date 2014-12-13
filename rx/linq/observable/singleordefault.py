@@ -51,4 +51,4 @@ class SingleOrDefault(object):
         default value if no such element exists.
         """
 
-        return self.where(predicate).single_or_default(None, default_value) if predicate else single_or_default_async(self, True, default_value)
+        return self.filter(predicate).single_or_default(None, default_value) if predicate else single_or_default_async(self, True, default_value)

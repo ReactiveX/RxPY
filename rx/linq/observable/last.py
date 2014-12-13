@@ -23,4 +23,4 @@ class Last(object):
         observable sequence that satisfies the condition in the predicate.
         """
 
-        return self.where(predicate).last() if predicate else last_or_default_async(self, False)
+        return self.filter(predicate).last() if predicate else last_or_default_async(self, False)

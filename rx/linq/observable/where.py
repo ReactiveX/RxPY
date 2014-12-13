@@ -10,8 +10,8 @@ class Where(object):
         """Filters the elements of an observable sequence based on a predicate
         by incorporating the element's index.
 
-        1 - source.where(lambda value: value < 10)
-        2 - source.where(lambda value, index: value < 10 or index < 10)
+        1 - source.filter(lambda value: value < 10)
+        2 - source.filter(lambda value, index: value < 10 or index < 10)
 
         Keyword arguments:
         predicate -- A function to test each source element for a conditio; the

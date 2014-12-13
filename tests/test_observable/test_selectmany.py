@@ -221,7 +221,7 @@ class TestSelectMany(unittest.TestCase):
         
         def factory():
             def projection(x):
-                return Observable.interval(10, scheduler).select(lambda a, b: x).take(x)
+                return Observable.interval(10, scheduler).map(lambda a, b: x).take(x)
             return xs.select_many(projection)
         results = scheduler.start(factory)
             

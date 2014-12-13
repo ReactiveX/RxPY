@@ -51,7 +51,7 @@ class TestGroupBy(unittest.TestCase):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            return xs.group_by(key_selector, lambda x: x).select(lambda g: g.key)
+            return xs.group_by(key_selector, lambda x: x).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(
@@ -97,7 +97,7 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1] # Yes, this is reverse string in Python
 
-            return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(
@@ -144,7 +144,7 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
 
         results = scheduler.start(factory)
 
@@ -193,7 +193,7 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
 
         results = scheduler.start(factory, disposed=355)
 
@@ -242,7 +242,7 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(
@@ -292,7 +292,7 @@ class TestGroupBy(unittest.TestCase):
                     raise Exception(ex)
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).select(lambda g: g.key)
+            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(

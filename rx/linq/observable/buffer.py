@@ -54,4 +54,4 @@ class Buffer(object):
         def predicate(x):
             return len(x) > 0
 
-        return self.window_with_count(count, skip).select_many(selector).where(predicate)
+        return self.window_with_count(count, skip).select_many(selector).filter(predicate)

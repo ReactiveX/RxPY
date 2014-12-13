@@ -24,4 +24,4 @@ class Contains(object):
         """
 
         comparer = comparer or default_comparer
-        return self.where(lambda v: comparer(v, value)).some()
+        return self.filter(lambda v: comparer(v, value)).some()

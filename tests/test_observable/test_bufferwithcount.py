@@ -28,7 +28,7 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.buffer_with_count(3, 2).select(lambda x: str(x))
+            return xs.buffer_with_count(3, 2).map(lambda x: str(x))
 
         results = scheduler.start(create)
 
@@ -55,7 +55,7 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.buffer_with_count(3, 2).select(lambda x: str(x))
+            return xs.buffer_with_count(3, 2).map(lambda x: str(x))
 
         results = scheduler.start(create, disposed=370)
 

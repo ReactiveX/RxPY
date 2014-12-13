@@ -10,8 +10,8 @@ class Select(object):
         """Projects each element of an observable sequence into a new form by
         incorporating the element's index.
 
-        1 - source.select(lambda value: value * value)
-        2 - source.select(lambda value, index: value * value + index)
+        1 - source.map(lambda value: value * value)
+        2 - source.map(lambda value, index: value * value + index)
 
         Keyword arguments:
         selector -- A transform function to apply to each source element; the

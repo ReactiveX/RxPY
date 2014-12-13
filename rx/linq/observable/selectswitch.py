@@ -24,6 +24,6 @@ class SelectSwitch(object):
         that has been received.
         """
 
-        return self.select(selector).switch_latest()
+        return self.map(selector).switch_latest()
 
     flat_map_latest = switch_map = select_switch # Aliases
