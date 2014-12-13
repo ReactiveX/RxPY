@@ -183,8 +183,8 @@ class TestJoin(unittest.TestCase):
 
          def create():
              return xs.join(ys,
-                            lambda x: Observable.timer(x.interval, scheduler=scheduler).where(lambda _: False),
-                            lambda y: Observable.timer(y.interval, scheduler=scheduler).where(lambda _: False),
+                            lambda x: Observable.timer(x.interval, scheduler=scheduler).filter(lambda _: False),
+                            lambda y: Observable.timer(y.interval, scheduler=scheduler).filter(lambda _: False),
                             lambda x, y: "%s%s" % (x.value, y.value)
              )
          results = scheduler.start(create=create)

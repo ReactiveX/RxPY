@@ -39,7 +39,7 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x)
         
-            return xs.where(predicate)
+            return xs.filter(predicate)
         
         results = scheduler.start(create)
 
@@ -56,7 +56,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x):
                 invoked[0] += 1
                 return True
-            return xs.where(predicate)
+            return xs.filter(predicate)
    
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -73,7 +73,7 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return False
 
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
 
@@ -90,7 +90,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x):
                 invoked[0] += 1
                 return is_prime(x)
-            return xs.where(predicate)
+            return xs.filter(predicate)
     
         results = scheduler.start(create, disposed=400)
         results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7))
@@ -107,7 +107,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x):
                 invoked[0] += 1
                 return is_prime(x)
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
         
@@ -128,7 +128,7 @@ class TestWhere(unittest.TestCase):
                     raise Exception(ex)
             
                 return is_prime(x)
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
         
@@ -152,7 +152,7 @@ class TestWhere(unittest.TestCase):
                     d.dispose()
             
                 return is_prime(x)
-            ys[0] = xs.where(predicate)
+            ys[0] = xs.filter(predicate)
             return ys[0]
 
         scheduler.schedule_absolute(created, action)
@@ -182,7 +182,7 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
         
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_completed(600))
@@ -199,7 +199,7 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return True
 
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -215,7 +215,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return False
-            return xs.where(predicate)
+            return xs.filter(predicate)
     
         results = scheduler.start(create)
 
@@ -233,7 +233,7 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
         
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create, disposed=400)
         results.messages.assert_equal(on_next(230, 3), on_next(390, 7))
@@ -250,7 +250,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
     
@@ -271,7 +271,7 @@ class TestWhere(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x + index * 10)
-            return xs.where(predicate)
+            return xs.filter(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_error(380, ex))
@@ -293,7 +293,7 @@ class TestWhere(unittest.TestCase):
                     d.dispose()
             
                 return is_prime(x + index * 10)
-            ys[0] = xs.where(predicate)
+            ys[0] = xs.filter(predicate)
 
         scheduler.schedule_absolute(created, action1)
     
