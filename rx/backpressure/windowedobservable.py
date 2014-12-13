@@ -52,8 +52,8 @@ class WindowedObservable(Observable):
         self.scheduler = scheduler or timeout_scheduler
 
     def _subscribe(self, observer):
-        self.subscription = self.source.subscribe(observer)
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
+        self.subscription = self.source.subscribe(observer)
 
         def action(scheduler, state):
             self.source.request(self.window_size)
