@@ -1,5 +1,10 @@
 # Changes
 
+## 0.15 (dev)
+
+- Aligned backpressure with RxJS
+- Renamed all select() to map() and where() to map()
+
 ## 0.14
 
 - Made `ScheduledObserver` thread safe
