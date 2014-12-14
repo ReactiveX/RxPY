@@ -4,14 +4,13 @@ from rx.internal import extends
 
 @extends(Observable)
 class Slice(object):
-
     def slice(self, start=None, stop=None, step=1):
         """Slices the given observable. It is basically a wrapper around the
         operators skip(), skip_last(), take(), take_last() and filter().
 
         This marble diagram helps you remember how slices works with streams.
         Positive numbers is relative to the start of the events, while negative
-        numbers are reliative to the end (on_completed) of the stream.
+        numbers are relative to the end (on_completed) of the stream.
 
         r---e---a---c---t---i---v---e---|
         0   1   2   3   4   5   6   7   8
@@ -32,20 +31,20 @@ class Slice(object):
 
         source = self
 
-        if not start is None:
+        if start is not None:
             if start < 0:
                 source = source.take_last(abs(start))
             else:
                 source = source.skip(start)
 
-        if not stop is None:
+        if stop is not None:
             if stop > 0:
                 start = start or 0
-                source = source.take(stop-start)
+                source = source.take(stop - start)
             else:
                 source = source.skip_last(abs(stop))
 
-        if not step is None:
+        if step is not None:
             if step > 1:
                 source = source.filter(lambda x, i: i % step == 0)
             elif step < 0:
@@ -62,7 +61,7 @@ class Slice(object):
 
         This marble diagram helps you remember how slices works with streams.
         Positive numbers is relative to the start of the events, while negative
-        numbers are reliative to the end (on_completed) of the stream.
+        numbers are relative to the end (on_completed) of the stream.
 
         r---e---a---c---t---i---v---e---|
         0   1   2   3   4   5   6   7   8
@@ -82,7 +81,7 @@ class Slice(object):
         if isinstance(key, slice):
             start, stop, step = key.start, key.stop, key.step
         elif isinstance(key, int):
-            start, stop, step = key, key+1, 1
+            start, stop, step = key, key + 1, 1
         else:
             raise TypeError("Invalid argument type.")
 
