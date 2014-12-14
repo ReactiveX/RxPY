@@ -228,5 +228,80 @@ class TestSelectMany(unittest.TestCase):
         results.messages.assert_equal(on_next(220, 4), on_next(230, 3), on_next(230, 4), on_next(240, 3), on_next(240, 4), on_next(250, 3), on_next(250, 4), on_next(260, 5), on_next(270, 5), on_next(280, 1), on_next(280, 5), on_next(290, 5), on_next(300, 5), on_completed(300))
         xs.subscriptions.assert_equal(subscribe(200, 290))
 
+    def test_flat_map_iterable_complete(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(210, 2),
+            on_next(340, 4),
+            on_next(420, 3),
+            on_next(510, 2),
+            on_completed(600)
+        )
+        inners = []
+
+        def create():
+            def mapper(x):
+                ys = [x] * x
+                inners.append(ys)
+                return ys
+            return xs.flat_map(mapper)
+        res = scheduler.start(create)
+
+        res.messages.assert_equal(
+            on_next(210, 2),
+            on_next(210, 2),
+            on_next(340, 4),
+            on_next(340, 4),
+            on_next(340, 4),
+            on_next(340, 4),
+            on_next(420, 3),
+            on_next(420, 3),
+            on_next(420, 3),
+            on_next(510, 2),
+            on_next(510, 2),
+            on_completed(600)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 600)
+        )
+        assert(4 == len(inners))
+    
+    def test_flat_map_iterable_complete_result_selector(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(210, 2),
+            on_next(340, 4),
+            on_next(420, 3),
+            on_next(510, 2),
+            on_completed(600)
+        )
+
+        def create():
+            return xs.flat_map(lambda x, i: [x] * x, lambda x,y, i: x + y)
+      
+        res = scheduler.start(create)
+        
+        res.messages.assert_equal(
+            on_next(210, 4),
+            on_next(210, 4),
+            on_next(340, 8),
+            on_next(340, 8),
+            on_next(340, 8),
+            on_next(340, 8),
+            on_next(420, 6),
+            on_next(420, 6),
+            on_next(420, 6),
+            on_next(510, 4),
+            on_next(510, 4),
+            on_completed(600)
+        )
+
+        xs.subscriptions.assert_equal(
+            subscribe(200, 600)
+        )
+    
 if __name__ == '__main__':
     unittest.main()
