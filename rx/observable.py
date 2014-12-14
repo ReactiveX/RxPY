@@ -12,7 +12,7 @@ class Observable(object):
         self.lock = Lock()
 
         # Add some instance methods here since there are class methods with the
-        # same name which we don't want to overwrite.
+        # same name which we don't want to overwrite. FIXME: find a better way
         self.amb = self._Amb__amb
         self.catch_exception = self._Catch__catch_exception
         self.concat = self._Concat__concat

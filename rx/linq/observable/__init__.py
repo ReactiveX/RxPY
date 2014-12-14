@@ -91,6 +91,7 @@ from . import skipuntil
 from . import skipuntilwithtime
 from . import skipwhile
 from . import skipwithtime
+from . import slice
 from . import start
 from . import startasync
 from . import startswith

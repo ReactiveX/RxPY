@@ -16,7 +16,7 @@ def extends(base):
         for name in dir(cls):
             value = getattr(cls, name)
             iscallable = callable(value)
-            if iscallable and not name.endswith("__"):
+            if iscallable and not name.endswith("__") or name == "__getitem__":
                 if hasattr(value, "__func__") and value.__self__ != cls:
                     # For Py2 bound methods we need to take the function
                     setattr(base, name, value.__func__)
