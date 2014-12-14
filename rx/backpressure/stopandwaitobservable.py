@@ -1,6 +1,7 @@
 from rx import Observer, Observable
 
 from rx.internal.utils import check_disposed
+from rx.concurrency import timeout_scheduler
 
 class StopAndWaitObserver(Observer):
 
@@ -44,15 +45,15 @@ class StopAndWaitObserver(Observer):
 
 class StopAndWaitObservable(Observable):
 
-    def __init__(self, source, scheduler):
+    def __init__(self, source, scheduler=None):
         super(StopAndWaitObservable, self).__init__(self._subscribe)
-        self.scheduler = scheduler
+        self.scheduler = scheduler or timeout_scheduler
         self.source = source
 
     def _subscribe(self, observer):
-        self.subscription = self.source.subscribe(observer)
         observer = StopAndWaitObserver(observer, self, self.subscription, self.scheduler)
-        
+        self.subscription = self.source.subscribe(observer)
+
         def action(scheduler, state=None):
             self.source.request(1)
 

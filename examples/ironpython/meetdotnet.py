@@ -1,3 +1,6 @@
+"""This example shows how to use RxPY together with RxNET in IronPython. Two Rx 
+frameworks in one small program.
+"""
 import clr
 import sys
 import time
@@ -10,7 +13,7 @@ sys.path.append(r"/Library/Frameworks/Mono.framework/Versions/3.10.0/lib/mono/ga
 clr.AddReference("System.Reactive.Core")
 clr.AddReference("System.Reactive.Linq")
 
-# Import Rx.NET
+# Import RxNET
 from System.Reactive.Linq import Observable
 from System.Reactive import Observer
 

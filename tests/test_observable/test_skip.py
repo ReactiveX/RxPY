@@ -113,3 +113,5 @@ class TestSkip(unittest.TestCase):
         results.messages.assert_equal(on_next(280, 1), on_next(300, -1), on_next(310, 3), on_next(340, 8), on_next(370, 11))
         xs.subscriptions.assert_equal(subscribe(200, 400))
     
+if __name__ == '__main__':
+    unittest.main()

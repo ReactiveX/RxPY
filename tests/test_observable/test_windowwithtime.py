@@ -35,8 +35,8 @@ class TestWindowWithTime(unittest.TestCase):
             def selector(ys, i):
                 def proj(y):
                     return "%s %s" % (i, y)
-                return ys.select(proj).concat(Observable.return_value('%s end' % i))
-            return xs.window_with_time(100, scheduler=scheduler).select(selector).merge_observable()
+                return ys.map(proj).concat(Observable.return_value('%s end' % i))
+            return xs.window_with_time(100, scheduler=scheduler).map(selector).merge_observable()
 
         results = scheduler.start(create)
 
@@ -78,8 +78,8 @@ class TestWindowWithTime(unittest.TestCase):
                 def proj(y):
                     return "%s %s" % (i, y)
 
-                return ys.select(proj).concat(Observable.return_value('%s end' % i))
-            return xs.window_with_time(100, 50, scheduler).select(selector).merge_observable()
+                return ys.map(proj).concat(Observable.return_value('%s end' % i))
+            return xs.window_with_time(100, 50, scheduler).map(selector).merge_observable()
 
         results = scheduler.start(create)
 
@@ -92,9 +92,9 @@ class TestWindowWithTime(unittest.TestCase):
     
         def create():
             def selector(w, i):
-                return w.select(lambda x: "%s %s" % (i, x))
+                return w.map(lambda x: "%s %s" % (i, x))
     
-            return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+            return xs.window_with_time(100, 70, scheduler=scheduler).map(selector).merge_observable()
     
         results = scheduler.start(create)
     
@@ -108,9 +108,9 @@ class TestWindowWithTime(unittest.TestCase):
     
         def create():
             def selector(w, i):
-                return w.select(lambda x: "%s %s" % (i, x))
+                return w.map(lambda x: "%s %s" % (i, x))
     
-            return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+            return xs.window_with_time(100, 70, scheduler=scheduler).map(selector).merge_observable()
     
         results = scheduler.start(create)
     
@@ -123,9 +123,9 @@ class TestWindowWithTime(unittest.TestCase):
     
         def create():
             def selector(w, i):
-                return w.select(lambda x: "%s %s" % (i, x))
+                return w.map(lambda x: "%s %s" % (i, x))
     
-            return xs.window_with_time(100, 70, scheduler=scheduler).select(selector).merge_observable()
+            return xs.window_with_time(100, 70, scheduler=scheduler).map(selector).merge_observable()
     
         results = scheduler.start(create, disposed=370)
         results.messages.assert_equal(on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"))
@@ -138,9 +138,9 @@ class TestWindowWithTime(unittest.TestCase):
     
         def create():
             def selector(w, i):
-                return w.select(lambda x: "%s %s" % (i, x))
+                return w.map(lambda x: "%s %s" % (i, x))
     
-            return xs.window_with_time(100, scheduler=scheduler).select(selector).merge_observable()
+            return xs.window_with_time(100, scheduler=scheduler).map(selector).merge_observable()
     
         results = scheduler.start(create)
     

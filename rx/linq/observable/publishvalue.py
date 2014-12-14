@@ -15,7 +15,7 @@ class PublishValue(object):
 
         Example:
         res = source.publish_value(42)
-        res = source.publish_value(42, lambda x: x.select(lambda y: y * y))
+        res = source.publish_value(42, lambda x: x.map(lambda y: y * y))
 
         Keyword arguments:
         initial_value -- {Mixed} Initial value received by observers upon

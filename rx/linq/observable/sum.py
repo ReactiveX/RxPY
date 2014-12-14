@@ -23,7 +23,7 @@ class Sum(object):
         """
 
         if key_selector:
-            return self.select(key_selector).sum()
+            return self.map(key_selector).sum()
         else:
             return self.aggregate(seed=0,
                                   accumulator=lambda prev, curr: prev + curr)

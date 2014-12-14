@@ -24,4 +24,4 @@ class Single(object):
         observable sequence that satisfies the condition in the predicate.
         """
 
-        return self.where(predicate).single() if predicate else single_or_default_async(self, False)
+        return self.filter(predicate).single() if predicate else single_or_default_async(self, False)

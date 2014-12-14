@@ -23,6 +23,6 @@ class Count(object):
         """
 
         if predicate:
-            return self.where(predicate).count()
+            return self.filter(predicate).count()
         else:
             return self.aggregate(lambda count, _: count + 1, seed=0)

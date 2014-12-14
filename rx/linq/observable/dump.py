@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from rx import Observable, AnonymousObservable
 from rx.internal import extends
 
@@ -21,7 +23,6 @@ class Dump(object):
                 observer.on_next(value)
             def on_error(ex):
                 print("{%s} error -->{%s}" % (name, ex))
-                traceback.print_exc(file=sys.stdout)
                 observer.on_error(ex)
             def on_completed():
                 print("{%s} completed" % name)

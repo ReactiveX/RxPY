@@ -34,7 +34,7 @@ class SkipLast(object):
                     if len(q) > count:
                         front = q.pop(0)
 
-                if front:
+                if not front is None:
                     observer.on_next(front)
 
             return source.subscribe(on_next, observer.on_error, observer.on_completed)

@@ -39,5 +39,5 @@ class Scan(object):
                     has_accumulation[0] = True
 
                 return accumulation[0]
-            return source.select(projection)
+            return source.map(projection)
         return Observable.defer(defer)

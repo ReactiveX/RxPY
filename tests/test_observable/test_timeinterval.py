@@ -37,7 +37,7 @@ class TestTimeInterval(unittest.TestCase):
         def create():
             def selector(x):
                 return TimeInterval(x.value, x.interval)
-            return xs.time_interval(scheduler).select(selector)
+            return xs.time_interval(scheduler).map(selector)
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, TimeInterval(2, 10)), on_next(230, TimeInterval(3, 20)), on_next(260, TimeInterval(4, 30)), on_next(300, TimeInterval(5, 40)), on_next(350, TimeInterval(6, 50)), on_completed(400))
 

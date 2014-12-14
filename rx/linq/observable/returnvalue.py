@@ -12,7 +12,7 @@ class ReturnValue(object):
     def return_value(cls, value, scheduler=None):
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
-        There is an alias called 'returnValue' for browsers <IE9.
+        There is an alias called 'just'.
 
         example
         res = rx.Observable.return(42)

@@ -31,14 +31,14 @@ class WSHandler(WebSocketHandler):
 
         # Now we take on our magic glasses and project the stream of bytes into 
         # a ...    
-        query = self.subject.select(
+        query = self.subject.map(
                 lambda obj: obj["keycode"] # 1. stream of keycodes
             ).window_with_count(
                 10, 1 # 2. stream of windows (10 ints long)
             ).select_many(
                 # 3. stream of booleans, True or False
                 lambda win: win.sequence_equal(codes)
-            ).where(
+            ).filter(
                 lambda equal: equal # 4. stream of Trues
             )
         # 4. we then subscribe to the Trues, and signal Konami! if we see any

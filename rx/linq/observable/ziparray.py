@@ -1,5 +1,6 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
+from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
 from rx.internal import extends
 
 
@@ -42,11 +43,7 @@ class ZipArray(object):
         at corresponding indexes.
         """
 
-        sources = args
-
         sources = list(args)
-        result_selector = sources.pop()
-        sources.insert(0, parent)
 
         def subscribe(observer):
             n = len(sources)
@@ -83,7 +80,8 @@ class ZipArray(object):
             composite_disposable = CompositeDisposable(subscriptions)
 
             def action():
-                queues = [[] for _ in queues]
+                for _ in queues:
+                    queues[n] = []
 
             composite_disposable.add(Disposable.create(action))
 

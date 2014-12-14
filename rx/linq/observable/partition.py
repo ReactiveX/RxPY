@@ -25,7 +25,7 @@ class Partition(object):
 
         published = self.publish().ref_count()
         return [
-            published.where(predicate), # where does adapt_call itself
-            published.where(lambda x, i: not adapt_call(predicate)(x, i))
+            published.filter(predicate), # where does adapt_call itself
+            published.filter(lambda x, i: not adapt_call(predicate)(x, i))
         ]
 

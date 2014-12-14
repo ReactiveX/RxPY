@@ -18,7 +18,7 @@ class All(object):
         specified predicate.
         """
 
-        return self.filter(lambda v: not predicate(v)).some().select(lambda b: not b)
+        return self.filter(lambda v: not predicate(v)).some().map(lambda b: not b)
 
     # Alias for all
     every = all

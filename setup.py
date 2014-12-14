@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.14.0',
+    version='0.15.0',
     description='Reactive Extensions for Python',
     long_description = """\
 is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
@@ -28,6 +28,9 @@ is a library for composing asynchronous and event-based programs using observabl
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: Implementation :: IronPython',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     test_suite='nose.collector',

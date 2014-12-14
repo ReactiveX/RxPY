@@ -22,8 +22,8 @@ class TestWindowWithTime(unittest.TestCase):
             def projection(w, i):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
-                return w.select(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).select(projection).merge_observable()
+                return w.map(inner_proj)
+            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
     
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_completed(600))
@@ -38,8 +38,8 @@ class TestWindowWithTime(unittest.TestCase):
             def projection(w, i):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
-                return w.select(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).select(projection).merge_observable()
+                return w.map(inner_proj)
+            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
     
         results = scheduler.start(create)
     
@@ -54,8 +54,8 @@ class TestWindowWithTime(unittest.TestCase):
             def projection(w, i):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
-                return w.select(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).select(projection).merge_observable()
+                return w.map(inner_proj)
+            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
     
         results = scheduler.start(create, disposed=370)
         results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"))

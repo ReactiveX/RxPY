@@ -382,3 +382,6 @@ class TestCombineLatest(unittest.TestCase):
         
         results = scheduler.start(create)        
         results.messages.assert_equal(on_error(220, ex))
+
+if __name__ == '__main__':
+    unittest.main()

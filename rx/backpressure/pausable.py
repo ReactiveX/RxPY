@@ -5,13 +5,18 @@ from rx.disposables import CompositeDisposable, Disposable
 from rx.subjects import Subject
 
 class PausableObservable(Observable):
-    def __init__(self, source, subject=None):
+    def __init__(self, source, pauser=None):
         self.source = source
-        self.subject = subject or Subject()
-        self.is_paused = True
-        super(PausableObservable, self).__init__(self.subscribe)
+        self.controller = Subject()
 
-    def subscribe(self, observer):
+        if pauser and hasattr(pauser, "subscribe"):
+            self.pauser = self.controller.merge(pauser)
+        else:
+            self.pauser = self.controller
+
+        super(PausableObservable, self).__init__(self._subscribe)
+
+    def _subscribe(self, observer):
         conn = self.source.publish()
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]
@@ -23,26 +28,18 @@ class PausableObservable(Observable):
                 connection[0].dispose()
                 connection[0] = Disposable.empty()
 
-        pausable = self.subject.distinct_until_changed().subscribe(on_next)
+        pausable = self.pauser.distinct_until_changed().subscribe(on_next)
         return CompositeDisposable(subscription, connection[0], pausable)
 
     def pause(self):
-        if self.is_paused:
-            return
-
-        self.is_paused = True
-        self.subject.on_next(False)
+        self.controller.on_next(False)
 
     def resume(self):
-        if not self.is_paused:
-            return
+        self.controller.on_next(True)
 
-        self.is_paused = False
-        self.subject.on_next(True)
 
 @extends(Observable)
 class Pausable(object):
-
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable

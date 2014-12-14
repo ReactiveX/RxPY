@@ -1,3 +1,4 @@
+import rx
 from rx.observable import Observable
 from rx.internal import extends
 

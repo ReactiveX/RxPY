@@ -32,4 +32,4 @@ class ObservableTimestamp(object):
         def selector(x):
             return Timestamp(value=x, timestamp=scheduler.now())
 
-        return self.select(selector)
+        return self.map(selector)

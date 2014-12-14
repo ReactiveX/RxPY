@@ -26,7 +26,7 @@ class Average(object):
         """
 
         if key_selector:
-            return self.select(key_selector).average()
+            return self.map(key_selector).average()
 
         def accumulator(prev, cur):
             return AverageValue(sum=prev.sum+cur, count=prev.count+1)

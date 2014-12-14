@@ -46,7 +46,7 @@ class WSHandler(WebSocketHandler):
         self.subject = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = self.subject.select(
+        query = self.subject.map(
             lambda x: x["term"]
         ).filter(
             lambda text: len(text) > 2 # Only if the text is longer than 2 characters

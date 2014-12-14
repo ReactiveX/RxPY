@@ -43,7 +43,7 @@ class ObservableTimeInteval(object):
                 last[0] = now
                 return TimeInterval(value=x, interval=span)
 
-            return source.select(selector)
+            return source.map(selector)
         return Observable.defer(defer)
 
 

@@ -25,5 +25,5 @@ class First(object):
         provided, else the first item in the sequence.
         """
 
-        return self.where(predicate).first() if predicate else first_or_default_async(self, False)
+        return self.filter(predicate).first() if predicate else first_or_default_async(self, False)
 

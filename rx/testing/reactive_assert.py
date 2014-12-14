@@ -1,7 +1,3 @@
-import sys, traceback
-import types
-
-from rx import Observable, AnonymousObservable
 from rx.internal.basic import default_comparer
 
 def create_message(actual, expected):

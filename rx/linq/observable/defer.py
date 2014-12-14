@@ -12,7 +12,7 @@ class Defer(object):
         function whenever a new observer subscribes.
 
         Example:
-        1 - res = rx.Observable.defer(lambda: rx.Observable.from_array([1,2,3]))
+        1 - res = rx.Observable.defer(lambda: rx.Observable.from_([1,2,3]))
 
         Keyword arguments:
         observable_factory -- Observable factory function to invoke for each

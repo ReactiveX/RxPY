@@ -15,4 +15,4 @@ class Pluck(object):
         Returns a new Observable {Observable} sequence of property values.
         """
 
-        return self.select(lambda x: x[property])
+        return self.map(lambda x: x[property])

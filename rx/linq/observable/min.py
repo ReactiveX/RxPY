@@ -27,5 +27,5 @@ class Min(object):
         with the minimum element in the source sequence.
         """
 
-        return self.min_by(identity, comparer).select(first_only)
+        return self.min_by(identity, comparer).map(first_only)
 
