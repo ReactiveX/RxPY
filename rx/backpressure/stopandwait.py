@@ -1,4 +1,3 @@
-from rx.concurrency import current_thread_scheduler
 from rx.internal import extends
 
 from .controlledobservable import ControlledObservable

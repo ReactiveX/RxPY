@@ -2,6 +2,7 @@ from rx.disposables import SingleAssignmentDisposable
 
 from .abstractobserver import AbstractObserver
 
+
 class AutoDetachObserver(AbstractObserver):
 
     def __init__(self, observer):

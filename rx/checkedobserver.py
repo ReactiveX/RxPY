@@ -2,8 +2,8 @@ from rx import Observer
 from rx.internal import extends
 from rx.internal.exceptions import ReEntracyException, CompletedException
 
-class CheckedObserver(Observer):
 
+class CheckedObserver(Observer):
 
     def __init__(self, observer):
         self._observer = observer
@@ -38,9 +38,9 @@ class CheckedObserver(Observer):
         if self._state == 0:
             self._state = 1
 
+
 @extends(Observer)
 class Checked(object):
-
 
     def checked(self):
         """Checks access to the observer for grammar violations. This includes
