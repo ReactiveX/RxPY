@@ -13,6 +13,7 @@ class Some(object):
         result = source.some()
         result = source.some(lambda x: x > 3)
 
+        Keyword arguments:
         predicate -- A function to test each element for a condition.
 
         Returns {Observable} an observable sequence containing a single element
