@@ -7,7 +7,7 @@ from .find import Find
 @extends(Observable)
 class FindIndex(object):
 
-    def find_index(predicate):
+    def find_index(self, predicate):
         """Searches for an element that matches the conditions defined by the
         specified predicate, and returns an Observable sequence with the
         zero-based index of the first occurrence within the entire Observable
