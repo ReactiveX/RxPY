@@ -24,7 +24,7 @@ class ThrottleFirst(object):
         scheduler = scheduler or timeout_scheduler
         duration = scheduler.to_timedelta(+window_duration or 0)
         if duration <= scheduler.to_timedelta(0):
-            raise RangeError('window_duration cannot be less or equal zero.')
+            raise ValueError('window_duration cannot be less or equal zero.')
 
         source = self
 
