@@ -49,7 +49,7 @@ class GroupByUntil(object):
         a unique key value, containing all elements that share that same key
         value. If a group's lifetime expires, a new group with the same key
         value can be created once an element with such a key value is
-        encoutered.
+        encountered.
         """
 
         source = self
@@ -63,8 +63,6 @@ class GroupByUntil(object):
 
             def on_next(x):
                 writer = None
-                element = None
-                duration = None
                 key = None
 
                 try:
@@ -100,8 +98,8 @@ class GroupByUntil(object):
                     group_disposable.add(md)
 
                     def expire():
-                        if mapping[serialized_key]:
-                            del mapping[serialized_key]
+                        if mapping[key]:
+                            del mapping[key]
                             writer.on_completed()
 
                         group_disposable.remove(md)
