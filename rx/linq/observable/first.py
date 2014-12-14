@@ -26,4 +26,3 @@ class First(object):
         """
 
         return self.filter(predicate).first() if predicate else first_or_default_async(self, False)
-

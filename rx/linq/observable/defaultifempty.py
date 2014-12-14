@@ -37,4 +37,3 @@ class DefaultIfEmpty(object):
 
             return source.subscribe(on_next, observer.on_error, on_completed)
         return AnonymousObservable(subscribe)
-

@@ -33,4 +33,3 @@ class Some(object):
             return source.subscribe(on_next, observer.on_error, on_error)
 
         return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)
-

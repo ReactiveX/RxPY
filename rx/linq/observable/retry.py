@@ -22,4 +22,3 @@ class Retry(object):
         """
 
         return Observable.catch_exception(Enumerable.repeat(self, retry_count))
-
