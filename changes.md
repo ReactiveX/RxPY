@@ -1,6 +1,6 @@
 # Changes
 
-## 0.15 (dev)
+## 0.15
 
 - Python slicing and indexing of observables. Thus you can write xs[1:-1:2]
 - Aligned backpressure with RxJS
