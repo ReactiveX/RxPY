@@ -48,7 +48,7 @@ class Repeat(object):
 
         Keyword arguments:
         value -- Element to repeat.
-        repeat_count -- [Optiona] Number of times to repeat the element. If not
+        repeat_count -- [Optional] Number of times to repeat the element. If not
             specified, repeats indefinitely.
         scheduler -- Scheduler to run the producer loop on. If not specified,
             defaults to ImmediateScheduler.
