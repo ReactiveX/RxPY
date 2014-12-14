@@ -26,5 +26,5 @@ class StartsWith(object):
         else:
             scheduler = immediate_scheduler
 
-        sequence = [Observable.from_array(args, scheduler), self]
+        sequence = [Observable.from_(args, scheduler), self]
         return Observable.concat(sequence)

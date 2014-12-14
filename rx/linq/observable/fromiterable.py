@@ -39,4 +39,4 @@ class FromIterable(object):
             return scheduler.schedule_recursive(action)
         return AnonymousObservable(subscribe)
 
-    from_array = from_list = from_iterable # from is a reserved word in Python
+    from_ = from_list = from_iterable # from is a reserved word in Python

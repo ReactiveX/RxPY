@@ -25,7 +25,7 @@ class TestFromArray(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_array(enumerable_finite, scheduler=scheduler)
+            return Observable.from_(enumerable_finite, scheduler=scheduler)
 
         results = scheduler.start(create)
 
@@ -44,7 +44,7 @@ class TestFromArray(unittest.TestCase):
       scheduler = TestScheduler()
 
       def create():
-          return Observable.from_array(enumerable_finite, scheduler=scheduler)
+          return Observable.from_(enumerable_finite, scheduler=scheduler)
       results = scheduler.start(create)
 
       results.messages.assert_equal(on_completed(201))

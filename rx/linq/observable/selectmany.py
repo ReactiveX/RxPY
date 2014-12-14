@@ -34,7 +34,7 @@ class SelectMany(object):
         observable sequence and merges the resulting observable sequences into
         one observable sequence.
 
-        1 - source.select_many(Observable.from_array([1,2,3]))
+        1 - source.select_many(Observable.from_([1,2,3]))
 
         Keyword arguments:
         selector -- A transform function to apply to each element or an

@@ -2,8 +2,10 @@
 
 ## 0.15 (dev)
 
+- Python slicing and indexing of observables. Thus you can write xs[1:-1:2]
 - Aligned backpressure with RxJS
 - Renamed all select() to map() and where() to map()
+- from_ is now an alias for from_iterable. Removed from_array
 
 ## 0.14
 

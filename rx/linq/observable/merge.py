@@ -101,7 +101,7 @@ class Merge(object):
         if isinstance(sources[0], list):
             sources = sources[0]
 
-        return Observable.from_array(sources, scheduler).merge_observable()
+        return Observable.from_(sources, scheduler).merge_observable()
 
     def merge_all(self):
         """Merges an observable sequence of observable sequences into an
