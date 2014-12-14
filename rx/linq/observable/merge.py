@@ -115,7 +115,7 @@ class Merge(object):
 
         def subscribe(observer):
             group = CompositeDisposable()
-            is_stopped = False
+            is_stopped = [False]
             m = SingleAssignmentDisposable()
             group.add(m)
 
@@ -130,7 +130,7 @@ class Merge(object):
 
                 def on_completed():
                     group.remove(inner_subscription)
-                    if is_stopped and group.length == 1:
+                    if is_stopped[0] and len(group) == 1:
                         observer.on_completed()
 
                 disposable = inner_source.subscribe(on_next, observer.on_error,
@@ -138,7 +138,7 @@ class Merge(object):
                 inner_subscription.disposable = disposable
 
             def on_completed():
-                is_stopped = True
+                is_stopped[0] = True
                 if len(group) == 1:
                     observer.on_completed()
 
@@ -172,7 +172,7 @@ class Merge(object):
 
                 def on_complete():
                     group.remove(inner_subscription)
-                    if is_stopped[0] and group.length == 1:
+                    if is_stopped[0] and len(group) == 1:
                         observer.on_completed()
 
                 disposable = inner_source.subscribe(
