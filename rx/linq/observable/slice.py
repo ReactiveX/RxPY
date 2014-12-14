@@ -48,7 +48,7 @@ class Slice(object):
         if not step is None:
             if step > 1:
                 source = source.filter(lambda x, i: i % step == 0)
-            else:
+            elif step < 0:
                 # Reversing events is not supported
                 raise TypeError("Negative step not supported.")
 
