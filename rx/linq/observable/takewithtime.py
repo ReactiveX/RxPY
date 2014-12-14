@@ -1,5 +1,6 @@
 from rx import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
+from rx.concurrency import timeout_scheduler
 from rx.internal import extends
 
 
@@ -31,7 +32,7 @@ class TakeWithTime(object):
         """
 
         source = self
-        scheudler = scheduler or timeout_scheduler
+        scheduler = scheduler or timeout_scheduler
 
         def subscribe(observer):
             def action(scheduler, state):
