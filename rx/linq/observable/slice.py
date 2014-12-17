@@ -8,9 +8,9 @@ class Slice(object):
         """Slices the given observable. It is basically a wrapper around the
         operators skip(), skip_last(), take(), take_last() and filter().
 
-        This marble diagram helps you remember how slices works with streams.
-        Positive numbers is relative to the start of the events, while negative
-        numbers are relative to the end (on_completed) of the stream.
+        This marble diagram helps you remember how slices works. Positive
+        numbers is relative to the start of the sequence, while negative
+        numbers are relative to the end (on_completed).
 
         r---e---a---c---t---i---v---e---|
         0   1   2   3   4   5   6   7   8
@@ -59,9 +59,9 @@ class Slice(object):
         separated with the ':' character. It is basically a wrapper around the
         operators skip(), skip_last(), take(), take_last() and filter().
 
-        This marble diagram helps you remember how slices works with streams.
-        Positive numbers is relative to the start of the events, while negative
-        numbers are relative to the end (on_completed) of the stream.
+        This marble diagram helps you remember how slices works. Positive
+        numbers is relative to the start of the sequence, while negative
+        numbers are relative to the end (on_completed).
 
         r---e---a---c---t---i---v---e---|
         0   1   2   3   4   5   6   7   8
