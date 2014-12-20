@@ -38,7 +38,6 @@ class Subject(Observable, AbstractObserver):
                 return Disposable.empty()
 
             observer.on_completed()
-
             return Disposable.empty()
 
     def on_completed(self):
