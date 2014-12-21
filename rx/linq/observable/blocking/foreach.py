@@ -2,6 +2,7 @@ import threading
 
 from rx.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
+from rx.internal.utils import adapt_call
 
 @extensionmethod(BlockingObservable)
 def for_each(self, action):
@@ -24,11 +25,16 @@ def for_each(self, action):
     :rtype: None
     """
 
+    action = adapt_call(action)
     latch = threading.Event()
-    exception = None
+    exception = [None]
+    count = [0]
 
     def on_next(value):
-        action(value)
+        with self.lock:
+            i = count[0]
+            count[0] += 1
+        action(value, i)
 
     def on_error(err):
         # If we receive an on_error event we set the reference on the
@@ -36,7 +42,7 @@ def for_each(self, action):
         #
         # We do this instead of throwing directly since this may be on
         # a different thread and the latch is still waiting.
-        exception = err
+        exception[0] = err
         latch.set()
 
     def on_completed():
@@ -47,5 +53,5 @@ def for_each(self, action):
     # Block until the subscription completes and then return
     latch.wait()
 
-    if exception is not None:
-        raise exception
+    if exception[0] is not None:
+        raise Exception(exception[0])
