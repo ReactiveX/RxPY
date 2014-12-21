@@ -17,7 +17,7 @@ class Timestamp(object):
 
 def observable_delay_timespan(source, duetime, scheduler):
     duetime = scheduler.to_timedelta(duetime)
-    
+
     def subscribe(observer):
         cancelable = SerialDisposable()
         exception = [None]
@@ -108,13 +108,14 @@ def delay(self, duetime, scheduler=None):
     4 - res = rx.Observable.delay(5000, Scheduler.timeout)
 
     Keyword arguments:
-    duetime -- Absolute (specified as a datetime object) or relative time
-        (specified as an integer denoting milliseconds) by which to shift
-        the observable sequence.
-    scheduler -- [Optional] Scheduler to run the delay timers on. If not
-        specified, the timeout scheduler is used.
+    :param datetime|int duetime: Absolute (specified as a datetime object) or
+        relative time (specified as an integer denoting milliseconds) by which
+        to shift the observable sequence.
+    :param Scheduler scheduler: [Optional] Scheduler to run the delay timers on.
+        If not specified, the timeout scheduler is used.
 
-    Returns time-shifted sequence.
+    :returns: Time-shifted sequence.
+    :rtype: Observable
     """
 
     scheduler = scheduler or timeout_scheduler
