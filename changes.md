@@ -2,6 +2,9 @@
 
 ## 0.16
 
+- Started adding docstrings as reStructuredText in order for PyCharm to infer
+  types. Operators will eventually be converted to new syntax.
+- Refactored operators to use C# like extensionmethods
 - More PEP8 alignment
 
 ## 0.15
