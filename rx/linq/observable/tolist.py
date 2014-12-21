@@ -1,20 +1,16 @@
 from rx.observable import Observable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class ToList(object):
+@extensionmethod(Observable, alias="to_iterable")
+def to_list(self):
+    """Creates a list from an observable sequence.
 
-    def to_list(self):
-        """Creates a list from an observable sequence.
+    Returns an observable sequence containing a single element with a list
+    containing all the elements of the source sequence."""
 
-        Returns an observable sequence containing a single element with a list
-        containing all the elements of the source sequence."""
+    def accumulator(res, i):
+        res.append(i)
+        return res[:]
 
-        def accumulator(res, i):
-            res.append(i)
-            return res[:]
-
-        return self.scan(accumulator, seed=[]).start_with([]).last()
-
-    to_array = to_iterable = to_list
+    return self.scan(accumulator, seed=[]).start_with([]).last()

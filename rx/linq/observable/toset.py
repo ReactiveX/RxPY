@@ -1,7 +1,7 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
-def to_set(source, set_type):
+def _to_set(source, set_type):
     def subscribe(observer):
         s = set_type()
 
@@ -13,14 +13,12 @@ def to_set(source, set_type):
     return AnonymousObservable(subscribe)
 
 
-@extends(Observable)
-class ToSet(object):
+@extensionmethod(Observable)
+def to_set(self):
+    """Converts the observable sequence to a set.
 
-    def to_set(self):
-        """Converts the observable sequence to a set.
+    Returns {Observable} An observable sequence with a single value of a set
+    containing the values from the observable sequence.
+    """
 
-        Returns {Observable} An observable sequence with a single value of a set
-        containing the values from the observable sequence.
-        """
-
-        return to_set(self, set)
+    return _to_set(self, set)

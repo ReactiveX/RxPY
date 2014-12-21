@@ -1,5 +1,5 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionmethod
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
 
@@ -115,23 +115,21 @@ class PausableBufferedObservable(Observable):
     def resume(self):
         self.controller.on_next(True)
 
-@extends(Observable)
-class PausableBuffered(object):
+@extensionmethod(Observable)
+def pausable_buffered(self, subject):
+    """Pauses the underlying observable sequence based upon the observable
+    sequence which yields True/False, and yields the values that were
+    buffered while paused.
 
-    def pausable_buffered(self, subject):
-        """Pauses the underlying observable sequence based upon the observable
-        sequence which yields True/False, and yields the values that were
-        buffered while paused.
+    Example:
+    pauser = rx.Subject()
+    source = rx.Observable.interval(100).pausable_buffered(pauser)
 
-        Example:
-        pauser = rx.Subject()
-        source = rx.Observable.interval(100).pausable_buffered(pauser)
+    Keyword arguments:
+    pauser -- {Observable} The observable sequence used to pause the
+        underlying sequence.
 
-        Keyword arguments:
-        pauser -- {Observable} The observable sequence used to pause the
-            underlying sequence.
+    Returns the observable {Observable} sequence which is paused based upon
+    the pauser."""
 
-        Returns the observable {Observable} sequence which is paused based upon
-        the pauser."""
-
-        return PausableBufferedObservable(self, subject)
+    return PausableBufferedObservable(self, subject)

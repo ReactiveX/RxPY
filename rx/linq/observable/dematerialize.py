@@ -1,24 +1,22 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class Dematerialize(object):
+@extensionmethod(Observable)
+def dematerialize(self):
+    """Dematerializes the explicit notification values of an observable
+    sequence as implicit notifications.
 
-    def dematerialize(self):
-        """Dematerializes the explicit notification values of an observable
-        sequence as implicit notifications.
+    Returns an observable sequence exhibiting the behavior corresponding to
+    the source sequence's notification values.
+    """
 
-        Returns an observable sequence exhibiting the behavior corresponding to
-        the source sequence's notification values.
-        """
+    source = self
 
-        source = self
+    def subscribe(observer):
+        def on_next(value):
+            return value.accept(observer)
 
-        def subscribe(observer):
-            def on_next(value):
-                return value.accept(observer)
-
-            return source.subscribe(on_next, observer.on_error, observer.on_completed)
-        return AnonymousObservable(subscribe)
+        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+    return AnonymousObservable(subscribe)

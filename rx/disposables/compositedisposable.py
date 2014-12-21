@@ -83,7 +83,7 @@ class CompositeDisposable(Disposable):
 
         return item in self.disposables
 
-    def to_array(self):
+    def to_list(self):
         return self.disposables[:]
 
     def __len__(self):

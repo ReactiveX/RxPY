@@ -1,22 +1,20 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import noop
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class IgnoreElements(object):
+@extensionmethod(Observable)
+def ignore_elements(self):
+    """Ignores all elements in an observable sequence leaving only the
+    termination messages.
 
-    def ignore_elements(self):
-        """Ignores all elements in an observable sequence leaving only the
-        termination messages.
+    Returns an empty observable {Observable} sequence that signals
+    termination, successful or exceptional, of the source sequence.
+    """
 
-        Returns an empty observable {Observable} sequence that signals
-        termination, successful or exceptional, of the source sequence.
-        """
+    source = self
 
-        source = self
+    def subscribe(observer):
+        return source.subscribe(noop, observer.on_error, observer.on_completed)
 
-        def subscribe(observer):
-            return source.subscribe(noop, observer.on_error, observer.on_completed)
-
-        return AnonymousObservable(subscribe)
+    return AnonymousObservable(subscribe)

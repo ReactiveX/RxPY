@@ -1,16 +1,12 @@
 from rx.internal import Enumerable, Enumerator
-from rx.internal import extends
+from rx.internal import extensionclassmethod
 
-@extends(Enumerable)
-class EnumerableWhileDo(object):
+@extensionclassmethod(Enumerable)
+def while_do(cls, condition, source):
+    def next():
+        while condition(source):
+            yield source
 
-
-    @classmethod
-    def while_do(cls, condition, source):
-        def next():
-            while condition(source):
-                yield source
-
-            raise StopIteration()
-        return Enumerable(next())
+        raise StopIteration()
+    return Enumerable(next())
 
