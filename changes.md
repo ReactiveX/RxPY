@@ -2,6 +2,7 @@
 
 ## 0.16
 
+- Added `BlockingObservable`and operators `for_each` and `to_iterable`.
 - Started adding docstrings as reStructuredText in order for PyCharm to infer
   types. Operators will eventually be converted to new syntax.
 - Refactored operators to use C# like extensionmethods

@@ -48,5 +48,4 @@ class Observable(object):
         elif not observer:
             observer = Observer(on_next, on_error, on_completed)
 
-        print(self)
         return self._subscribe(observer)

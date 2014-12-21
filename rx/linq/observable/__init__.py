@@ -113,6 +113,7 @@ from . import timer
 from . import timeout
 from . import timeoutwithselector
 from . import timestamp
+from . import toblocking
 from . import tolist
 from . import toasync
 from . import todict
@@ -127,3 +128,5 @@ from . import windowwithtime
 from . import windowwithtimeorcount
 from . import zip
 from . import ziparray
+
+from . import blocking
