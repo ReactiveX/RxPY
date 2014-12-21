@@ -10,13 +10,13 @@ def for_each(self, action):
 
     Note: This will block even if the underlying Observable is asynchronous.
 
-    This is similar to Observable#subscribe(Subscriber), but it blocks. Because
-    it blocks it does not need the Subscriber#onCompleted() or
-    Subscriber#onError(Throwable) methods. If the underlying Observable
+    This is similar to Observable#subscribe(subscriber), but it blocks. Because
+    it blocks it does not need the Subscriber#on_completed() or
+    Subscriber#on_error(Throwable) methods. If the underlying Observable
     terminates with an error, rather than calling `onError`, this method will
     throw an exception.
 
-    Keyword parameters:
+    Keyword arguments:
     :param types.FunctionType action: the action to invoke for each item
         emitted by the `BlockingObservable`.
     :raises Exception: if an error occurs
@@ -31,7 +31,7 @@ def for_each(self, action):
         action(value)
 
     def on_error(err):
-        # If we receive an onError event we set the reference on the
+        # If we receive an on_error event we set the reference on the
         # outer thread so we can git it and throw after the latch.wait()
         #
         # We do this instead of throwing directly since this may be on
@@ -42,9 +42,9 @@ def for_each(self, action):
     def on_completed():
         latch.set()
 
-    self.observable.subscribe(_on_next, on_error, on_completed)
+    self.observable.subscribe(on_next, on_error, on_completed)
 
-    # block until the subscription completes and then return
+    # Block until the subscription completes and then return
     latch.wait()
 
     if exception is not None:
