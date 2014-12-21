@@ -1,42 +1,37 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import extends
+from rx.internal import extensionclassmethod
 
 
-@extends(Observable)
-class FromIterable(object):
+@extensionclassmethod(Observable, alias=["from_", "from_list"])
+def from_iterable(cls, iterable, scheduler=None):
+    """Converts an array to an observable sequence, using an optional
+    scheduler to enumerate the array.
 
-    @classmethod
-    def from_iterable(cls, iterable, scheduler=None):
-        """Converts an array to an observable sequence, using an optional
-        scheduler to enumerate the array.
+    1 - res = rx.Observable.from_iterable([1,2,3])
+    2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
-        1 - res = rx.Observable.from_iterable([1,2,3])
-        2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
+    Keyword arguments:
+    scheduler -- [Optional] Scheduler to run the enumeration of the input
+        sequence on.
 
-        Keyword arguments:
-        scheduler -- [Optional] Scheduler to run the enumeration of the input
-            sequence on.
+    Returns the observable sequence whose elements are pulled from the
+    given enumerable sequence.
+    """
 
-        Returns the observable sequence whose elements are pulled from the
-        given enumerable sequence.
-        """
+    scheduler = scheduler or current_thread_scheduler
+    iterator = iter(iterable)
 
-        scheduler = scheduler or current_thread_scheduler
-        iterator = iter(iterable)
+    def subscribe(observer):
+        def action(action1, state=None):
+            try:
+                item = next(iterator)
+            except StopIteration:
+                observer.on_completed()
+            else:
+                observer.on_next(item)
+                action1(action)
 
-        def subscribe(observer):
-            def action(action1, state=None):
-                try:
-                    item = next(iterator)
-                except StopIteration:
-                    observer.on_completed()
-                else:
-                    observer.on_next(item)
-                    action1(action)
-
-            return scheduler.schedule_recursive(action)
-        return AnonymousObservable(subscribe)
-
-    from_ = from_list = from_iterable # from is a reserved word in Python
+        return scheduler.schedule_recursive(action)
+    return AnonymousObservable(subscribe)

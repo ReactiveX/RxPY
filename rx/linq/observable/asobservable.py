@@ -1,20 +1,20 @@
 from rx import AnonymousObservable, Observable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class AsObservable(object):
+@extensionmethod(Observable)
+def as_observable(self):
+    """Hides the identity of an observable sequence.
 
-    def as_observable(self):
-        """Hides the identity of an observable sequence.
+    :returns: An observable sequence that hides the identity of the source
+        sequence.
+    :rtype: Observable
+    """
 
-        Returns an observable {Observable} sequence that hides the identity of
-        the source sequence."""
+    source = self
 
-        source = self
+    def subscribe(observer):
+        return source.subscribe(observer)
 
-        def subscribe(observer):
-            return source.subscribe(observer)
-
-        return AnonymousObservable(subscribe)
+    return AnonymousObservable(subscribe)
 

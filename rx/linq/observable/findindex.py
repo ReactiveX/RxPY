@@ -1,25 +1,22 @@
 from rx.observable import Observable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
-from .find import Find
+from .find import find_value
 
+@extensionmethod(Observable)
+def find_index(self, predicate):
+    """Searches for an element that matches the conditions defined by the
+    specified predicate, and returns an Observable sequence with the
+    zero-based index of the first occurrence within the entire Observable
+    sequence.
 
-@extends(Observable)
-class FindIndex(object):
+    Keyword Arguments:
+    predicate -- {Function} The predicate that defines the conditions of the
+        element to search for.
 
-    def find_index(self, predicate):
-        """Searches for an element that matches the conditions defined by the
-        specified predicate, and returns an Observable sequence with the
-        zero-based index of the first occurrence within the entire Observable
-        sequence.
+    Returns an observable {Observable} sequence with the zero-based index of
+    the first occurrence of an element that matches the conditions defined
+    by match, if found; otherwise, -1.
+    """
 
-        Keyword Arguments:
-        predicate -- {Function} The predicate that defines the conditions of the
-            element to search for.
-
-        Returns an observable {Observable} sequence with the zero-based index of
-        the first occurrence of an element that matches the conditions defined
-        by match, if found; otherwise, -1.
-        """
-
-        return Find._find_value(self, predicate, True)
+    return find_value(self, predicate, True)

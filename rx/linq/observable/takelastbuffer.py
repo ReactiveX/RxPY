@@ -1,45 +1,43 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class TakeLastBuffer(object):
+@extensionmethod(Observable)
+def take_last_buffer(self, count):
+    """Returns an array with the specified number of contiguous elements
+    from the end of an observable sequence.
 
-    def take_last_buffer(self, count):
-        """Returns an array with the specified number of contiguous elements
-        from the end of an observable sequence.
+    Example:
+    res = source.take_last(5)
 
-        Example:
-        res = source.take_last(5)
+    Description:
+    This operator accumulates a buffer with a length enough to store
+    elements count elements. Upon completion of the source sequence, this
+    buffer is drained on the result sequence. This causes the elements to be
+    delayed.
 
-        Description:
-        This operator accumulates a buffer with a length enough to store
-        elements count elements. Upon completion of the source sequence, this
-        buffer is drained on the result sequence. This causes the elements to be
-        delayed.
-
-        Keyword arguments:
-        count -- {Number} Number of elements to take from the end of the source
-            sequence.
-
-        Returns an observable {Observable} sequence containing a single array
-        with the specified number of elements from the end of the source
+    Keyword arguments:
+    :param int count: Number of elements to take from the end of the source
         sequence.
-        """
 
-        source = self
+    :returns: An observable sequence containing a single list with the specified 
+    number of elements from the end of the source sequence.
+    :rtype: Observable
+    """
 
-        def subscribe(observer):
-            q = []
-            def on_next(x):
-                with self.lock:
-                    q.append(x)
-                    if len(q) > count:
-                        q.pop(0)
+    source = self
 
-            def on_completed():
-                observer.on_next(q)
-                observer.on_completed()
+    def subscribe(observer):
+        q = []
+        def on_next(x):
+            with self.lock:
+                q.append(x)
+                if len(q) > count:
+                    q.pop(0)
 
-            return source.subscribe(on_next, observer.on_error, on_completed)
-        return AnonymousObservable(subscribe)
+        def on_completed():
+            observer.on_next(q)
+            observer.on_completed()
+
+        return source.subscribe(on_next, observer.on_error, on_completed)
+    return AnonymousObservable(subscribe)

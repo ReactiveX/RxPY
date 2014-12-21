@@ -1,31 +1,28 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import immediate_scheduler
-from rx.internal import extends
+from rx.internal import extensionclassmethod
 
 
-@extends(Observable)
-class Empty(object):
+@extensionclassmethod(Observable)
+def empty(cls, scheduler=None):
+    """Returns an empty observable sequence, using the specified scheduler
+    to send out the single OnCompleted message.
 
-    @classmethod
-    def empty(cls, scheduler=None):
-        """Returns an empty observable sequence, using the specified scheduler
-        to send out the single OnCompleted message.
+    1 - res = rx.Observable.empty()
+    2 - res = rx.Observable.empty(Rx.Scheduler.timeout)
 
-        1 - res = rx.Observable.empty()
-        2 - res = rx.Observable.empty(Rx.Scheduler.timeout)
+    scheduler -- Scheduler to send the termination call on.
 
-        scheduler -- Scheduler to send the termination call on.
+    Returns an observable sequence with no elements.
+    """
 
-        Returns an observable sequence with no elements.
-        """
+    scheduler = scheduler or immediate_scheduler
 
-        scheduler = scheduler or immediate_scheduler
+    def subscribe(observer):
+        def action(scheduler, state):
+            observer.on_completed()
 
-        def subscribe(observer):
-            def action(scheduler, state):
-                observer.on_completed()
-
-            return scheduler.schedule(action)
-        return AnonymousObservable(subscribe)
+        return scheduler.schedule(action)
+    return AnonymousObservable(subscribe)
 

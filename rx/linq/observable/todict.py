@@ -1,7 +1,7 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
-def to_dict(source, map_type, key_selector, element_selector):
+def _to_dict(source, map_type, key_selector, element_selector):
     def subscribe(observer):
         m = map_type()
 
@@ -30,21 +30,19 @@ def to_dict(source, map_type, key_selector, element_selector):
     return AnonymousObservable(subscribe)
 
 
-@extends(Observable)
-class ToDict(object):
+@extensionmethod(Observable)
+def to_dict(self, key_selector, element_selector=None):
+    """Converts the observable sequence to a Map if it exists.
 
-    def to_dict(self, key_selector, element_selector=None):
-        """Converts the observable sequence to a Map if it exists.
+    Keyword arguments:
+    key_selector -- {Function} A function which produces the key for the
+        Map.
+    element_selector -- {Function} [Optional] An optional function which
+        produces the element for the Map. If not present, defaults to the
+        value from the observable sequence.
+    Returns {Observable} An observable sequence with a single value of a Map
+    containing the values from the observable sequence.
+    """
 
-        Keyword arguments:
-        key_selector -- {Function} A function which produces the key for the
-            Map.
-        element_selector -- {Function} [Optional] An optional function which
-            produces the element for the Map. If not present, defaults to the
-            value from the observable sequence.
-        Returns {Observable} An observable sequence with a single value of a Map
-        containing the values from the observable sequence.
-        """
-
-        return to_dict(self, dict, key_selector, element_selector)
+    return _to_dict(self, dict, key_selector, element_selector)
 

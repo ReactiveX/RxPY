@@ -1,6 +1,6 @@
 
 from rx import Observable
-from rx.internal import extends
+from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable, Disposable
 from rx.subjects import Subject
 
@@ -38,23 +38,21 @@ class PausableObservable(Observable):
         self.controller.on_next(True)
 
 
-@extends(Observable)
-class Pausable(object):
+@extensionmethod(Observable)
+def pausable(self, pauser):
+    """Pauses the underlying observable sequence based upon the observable
+    sequence which yields True/False.
 
-    def pausable(self, pauser):
-        """Pauses the underlying observable sequence based upon the observable
-        sequence which yields True/False.
+    Example:
+    pauser = rx.Subject()
+    source = rx.Observable.interval(100).pausable(pauser)
 
-        Example:
-        pauser = rx.Subject()
-        source = rx.Observable.interval(100).pausable(pauser)
+    Keyword parameters:
+    pauser -- {Observable} The observable sequence used to pause the
+        underlying sequence.
 
-        Keyword parameters:
-        pauser -- {Observable} The observable sequence used to pause the
-            underlying sequence.
+    Returns the observable {Observable} sequence which is paused based upon
+    the pauser.
+    """
 
-        Returns the observable {Observable} sequence which is paused based upon
-        the pauser.
-        """
-
-        return PausableObservable(self, pauser)
+    return PausableObservable(self, pauser)
