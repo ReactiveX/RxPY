@@ -27,6 +27,7 @@
     <Compile Include="examples\autocomplete\autocomplete.py" />
     <Compile Include="examples\autocomplete\autocomplete_asyncio.py" />
     <Compile Include="examples\chess\chess.py" />
+    <Compile Include="examples\ironpython\meetdotnet.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
     <Compile Include="examples\timeflies\timeflies.py" />
     <Compile Include="rx\abstractobserver.py" />
@@ -42,8 +43,10 @@
     <Compile Include="rx\backpressure\windowed.py" />
     <Compile Include="rx\backpressure\windowedobservable.py" />
     <Compile Include="rx\backpressure\__init__.py" />
+    <Compile Include="rx\blockingobservable.py" />
     <Compile Include="rx\checkedobserver.py" />
     <Compile Include="rx\concurrency\catchscheduler.py" />
+    <Compile Include="rx\concurrency\eventloopscheduler.py" />
     <Compile Include="rx\concurrency\historicalscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\asyncioscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\geventscheduler.py" />
@@ -52,12 +55,14 @@
     <Compile Include="rx\concurrency\mainloopscheduler\tkinterscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\twistedscheduler.py" />
     <Compile Include="rx\concurrency\mainloopscheduler\__init__.py" />
+    <Compile Include="rx\concurrency\newthreadscheduler.py" />
     <Compile Include="rx\concurrency\scheduleperiodicrecursive.py" />
     <Compile Include="rx\concurrency\timeoutscheduler.py" />
     <Compile Include="rx\concurrency\virtualtimescheduler.py" />
     <Compile Include="rx\disposables\booleandisposable.py" />
     <Compile Include="rx\disposables\scheduleddisposable.py" />
     <Compile Include="rx\internal\basic.py" />
+    <Compile Include="rx\internal\concurrency.py" />
     <Compile Include="rx\internal\enumerable.py" />
     <Compile Include="rx\internal\enumerator.py" />
     <Compile Include="rx\internal\exceptions.py" />
@@ -69,12 +74,13 @@
     <Compile Include="rx\linq\enumerable\whiledo.py" />
     <Compile Include="rx\linq\enumerable\__init__.py" />
     <Compile Include="rx\linq\groupedobservable.py" />
-    <Compile Include="rx\linq\observable\aggregate.py" />
     <Compile Include="rx\linq\observable\all.py" />
     <Compile Include="rx\linq\observable\amb.py" />
-    <Compile Include="rx\linq\observable\any.py" />
     <Compile Include="rx\linq\observable\asobservable.py" />
     <Compile Include="rx\linq\observable\average.py" />
+    <Compile Include="rx\linq\observable\blocking\foreach.py" />
+    <Compile Include="rx\linq\observable\blocking\toiterable.py" />
+    <Compile Include="rx\linq\observable\blocking\__init__.py" />
     <Compile Include="rx\linq\observable\buffer.py" />
     <Compile Include="rx\linq\observable\bufferwithtime.py" />
     <Compile Include="rx\linq\observable\bufferwithtimeorcount.py" />
@@ -85,6 +91,7 @@
     <Compile Include="rx\linq\observable\contains.py" />
     <Compile Include="rx\linq\observable\count.py" />
     <Compile Include="rx\linq\observable\create.py" />
+    <Compile Include="rx\linq\observable\debounce.py" />
     <Compile Include="rx\linq\observable\defaultifempty.py" />
     <Compile Include="rx\linq\observable\defer.py" />
     <Compile Include="rx\linq\observable\delay.py" />
@@ -102,7 +109,6 @@
     <Compile Include="rx\linq\observable\exclusive.py" />
     <Compile Include="rx\linq\observable\expand.py" />
     <Compile Include="rx\linq\observable\finallyaction.py" />
-    <Compile Include="rx\linq\observable\finalvalue.py" />
     <Compile Include="rx\linq\observable\find.py" />
     <Compile Include="rx\linq\observable\findindex.py" />
     <Compile Include="rx\linq\observable\first.py" />
@@ -144,6 +150,7 @@
     <Compile Include="rx\linq\observable\range.py" />
     <Compile Include="rx\linq\observable\reduce.py" />
     <Compile Include="rx\linq\observable\repeat.py" />
+    <Compile Include="rx\linq\observable\replay.py" />
     <Compile Include="rx\linq\observable\retry.py" />
     <Compile Include="rx\linq\observable\returnvalue.py" />
     <Compile Include="rx\linq\observable\sample.py" />
@@ -158,8 +165,11 @@
     <Compile Include="rx\linq\observable\skiplast.py" />
     <Compile Include="rx\linq\observable\skiplastwithtime.py" />
     <Compile Include="rx\linq\observable\skipuntil.py" />
+    <Compile Include="rx\linq\observable\skipuntilwithtime.py" />
     <Compile Include="rx\linq\observable\skipwhile.py" />
     <Compile Include="rx\linq\observable\skipwithtime.py" />
+    <Compile Include="rx\linq\observable\slice.py" />
+    <Compile Include="rx\linq\observable\some.py" />
     <Compile Include="rx\linq\observable\start.py" />
     <Compile Include="rx\linq\observable\startasync.py" />
     <Compile Include="rx\linq\observable\startswith.py" />
@@ -173,7 +183,8 @@
     <Compile Include="rx\linq\observable\takeuntil.py" />
     <Compile Include="rx\linq\observable\takeuntilwithtime.py" />
     <Compile Include="rx\linq\observable\takewhile.py" />
-    <Compile Include="rx\linq\observable\throttle.py" />
+    <Compile Include="rx\linq\observable\takewithtime.py" />
+    <Compile Include="rx\linq\observable\throttlefirst.py" />
     <Compile Include="rx\linq\observable\throw.py" />
     <Compile Include="rx\linq\observable\timeinterval.py" />
     <Compile Include="rx\linq\observable\timeout.py" />
@@ -181,6 +192,7 @@
     <Compile Include="rx\linq\observable\timer.py" />
     <Compile Include="rx\linq\observable\timestamp.py" />
     <Compile Include="rx\linq\observable\toasync.py" />
+    <Compile Include="rx\linq\observable\toblocking.py" />
     <Compile Include="rx\linq\observable\todict.py" />
     <Compile Include="rx\linq\observable\tofuture.py" />
     <Compile Include="rx\linq\observable\tolist.py" />
@@ -210,6 +222,7 @@
     <Compile Include="rx\testing\reactivetest.py" />
     <Compile Include="rx\testing\reactive_assert.py" />
     <Compile Include="rx\testing\recorded.py" />
+    <Compile Include="rx\testing\stringify.py" />
     <Compile Include="rx\testing\testscheduler.py" />
     <Compile Include="setup.py" />
     <Compile Include="rx\observable.py" />
@@ -241,18 +254,21 @@
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_tkinterscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\test_twistedscheduler.py" />
     <Compile Include="tests\test_concurrency\test_mainloopscheduler\__init__.py" />
+    <Compile Include="tests\test_concurrency\test_newthreadscheduler.py" />
     <Compile Include="tests\test_concurrency\test_timeoutscheduler.py" />
     <Compile Include="tests\test_concurrency\test_virtualtimescheduler.py" />
+    <Compile Include="tests\test_core\test_extensionmethod.py" />
     <Compile Include="tests\test_core\test_notification.py" />
     <Compile Include="tests\test_core\test_observer.py" />
+    <Compile Include="tests\test_core\test_priorityqueue.py" />
     <Compile Include="tests\test_core\__init__.py" />
     <Compile Include="tests\test_disposables\test_disposable.py" />
     <Compile Include="tests\test_observable\py3_fromfuture.py" />
     <Compile Include="tests\test_observable\py3_start.py" />
     <Compile Include="tests\test_observable\py3_tofuture.py" />
-    <Compile Include="tests\test_observable\test_aggregate.py" />
     <Compile Include="tests\test_observable\test_amb.py" />
     <Compile Include="tests\test_observable\test_asobservable.py" />
+    <Compile Include="tests\test_observable\test_blocking\test_foreach.py" />
     <Compile Include="tests\test_observable\test_buffer.py" />
     <Compile Include="tests\test_observable\test_buffercount.py" />
     <Compile Include="tests\test_observable\test_bufferwithcount.py" />
@@ -266,6 +282,7 @@
     <Compile Include="tests\test_observable\test_contains.py" />
     <Compile Include="tests\test_observable\test_count.py" />
     <Compile Include="tests\test_observable\test_create.py" />
+    <Compile Include="tests\test_observable\test_debounce.py" />
     <Compile Include="tests\test_observable\test_defaultifempty.py" />
     <Compile Include="tests\test_observable\test_defer.py" />
     <Compile Include="tests\test_observable\test_delay.py" />
@@ -282,9 +299,9 @@
     <Compile Include="tests\test_observable\test_first.py" />
     <Compile Include="tests\test_observable\test_firstordefault.py" />
     <Compile Include="tests\test_observable\test_forin.py" />
-    <Compile Include="tests\test_observable\test_fromarray.py" />
     <Compile Include="tests\test_observable\test_fromcallback.py" />
     <Compile Include="tests\test_observable\test_fromfuture.py" />
+    <Compile Include="tests\test_observable\test_fromiterable.py" />
     <Compile Include="tests\test_observable\test_generate.py" />
     <Compile Include="tests\test_observable\test_generatewithrelativetime.py" />
     <Compile Include="tests\test_observable\test_groupby.py" />
@@ -300,7 +317,6 @@
     <Compile Include="tests\test_observable\test_manyselect.py" />
     <Compile Include="tests\test_observable\test_materialize.py" />
     <Compile Include="tests\test_observable\test_all.py" />
-    <Compile Include="tests\test_observable\test_any.py" />
     <Compile Include="tests\test_observable\test_average.py" />
     <Compile Include="tests\test_observable\test_max.py" />
     <Compile Include="tests\test_observable\test_maxby.py" />
@@ -318,9 +334,11 @@
     <Compile Include="tests\test_observable\test_pausablebuffered.py" />
     <Compile Include="tests\test_observable\test_pluck.py" />
     <Compile Include="tests\test_observable\test_publish.py" />
+    <Compile Include="tests\test_observable\test_publishvalue.py" />
     <Compile Include="tests\test_observable\test_range.py" />
     <Compile Include="tests\test_observable\test_reduce.py" />
     <Compile Include="tests\test_observable\test_repeat.py" />
+    <Compile Include="tests\test_observable\test_replay.py" />
     <Compile Include="tests\test_observable\test_retry.py" />
     <Compile Include="tests\test_observable\test_returnvalue.py" />
     <Compile Include="tests\test_observable\test_sample.py" />
@@ -334,8 +352,11 @@
     <Compile Include="tests\test_observable\test_skiplast.py" />
     <Compile Include="tests\test_observable\test_skiplastwithtime.py" />
     <Compile Include="tests\test_observable\test_skipuntil.py" />
+    <Compile Include="tests\test_observable\test_skipuntilwithtime.py" />
     <Compile Include="tests\test_observable\test_skipwhile.py" />
     <Compile Include="tests\test_observable\test_skipwithtime.py" />
+    <Compile Include="tests\test_observable\test_slice.py" />
+    <Compile Include="tests\test_observable\test_some.py" />
     <Compile Include="tests\test_observable\test_start.py" />
     <Compile Include="tests\test_observable\test_startwith.py" />
     <Compile Include="tests\test_observable\test_subscribeon.py" />
@@ -348,7 +369,8 @@
     <Compile Include="tests\test_observable\test_takeuntil.py" />
     <Compile Include="tests\test_observable\test_takeuntilwithtime.py" />
     <Compile Include="tests\test_observable\test_takewhile.py" />
-    <Compile Include="tests\test_observable\test_throttle.py" />
+    <Compile Include="tests\test_observable\test_takewithtime.py" />
+    <Compile Include="tests\test_observable\test_throttlefirst.py" />
     <Compile Include="tests\test_observable\test_throw.py" />
     <Compile Include="tests\test_observable\test_timeinterval.py" />
     <Compile Include="tests\test_observable\test_timeout.py" />
@@ -382,6 +404,7 @@
     <Folder Include="examples\" />
     <Folder Include="examples\autocomplete\" />
     <Folder Include="examples\chess\" />
+    <Folder Include="examples\ironpython\" />
     <Folder Include="examples\konamicode\" />
     <Folder Include="examples\timeflies\" />
     <Folder Include="rx" />
@@ -393,6 +416,7 @@
     <Folder Include="rx\internal\" />
     <Folder Include="rx\linq\enumerable\" />
     <Folder Include="rx\linq\observable\" />
+    <Folder Include="rx\linq\observable\blocking\" />
     <Folder Include="rx\subjects\" />
     <Folder Include="rx\testing" />
     <Folder Include="tests\" />
@@ -401,6 +425,7 @@
     <Folder Include="tests\test_core\" />
     <Folder Include="tests\test_disposables\" />
     <Folder Include="tests\test_observable\" />
+    <Folder Include="tests\test_observable\test_blocking\" />
     <Folder Include="tests\test_subjects\" />
   </ItemGroup>
   <ItemGroup>
