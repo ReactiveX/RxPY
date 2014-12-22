@@ -106,6 +106,7 @@ from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
 from . import takewithtime
+from . import thendo
 from . import throttlefirst
 from . import throw
 from . import timeinterval
@@ -120,6 +121,7 @@ from . import todict
 from . import tofuture
 from . import toset
 from . import using
+from . import when
 from . import where
 from . import whiledo
 from . import window
