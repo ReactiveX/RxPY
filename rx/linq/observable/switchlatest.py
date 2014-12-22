@@ -27,8 +27,9 @@ def switch_latest(self):
 
         def on_next(inner_source):
             d = SingleAssignmentDisposable()
-            latest[0] += 1
-            _id = latest[0]
+            with self.lock:
+                latest[0] += 1
+                _id = latest[0]
             has_latest[0] = True
             inner_subscription.disposable = d
 
