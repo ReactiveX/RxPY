@@ -105,7 +105,6 @@ class EventLoopScheduler(Scheduler, Disposable):
                         seconds = due.total_seconds()
                         log.debug("timeout: %s", seconds)
 
-                        #print("run(), Starting timer ...")
                         self.timer = Timer(seconds, self.tick, args=(_next,))
                         self.timer.start()
 
@@ -113,14 +112,10 @@ class EventLoopScheduler(Scheduler, Disposable):
                     ready = self.ready_list[:]
                     self.ready_list = []
                 else:
-                    #print("run(), waiting ....")
                     self.condition.wait()
-                    #print("run(), wakeup")
-
+                    
             for item in ready:
-                #print("run(), foreach")
                 if not item.is_cancelled():
-                    #print("run(), invoking ...")
                     item.invoke()
 
             if self.exit_if_empty:
