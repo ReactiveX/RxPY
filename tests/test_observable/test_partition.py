@@ -1,7 +1,6 @@
 import unittest
 
 from rx.observable import Observable
-from rx.linq.observable import dump
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
