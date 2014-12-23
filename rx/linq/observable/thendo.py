@@ -3,7 +3,7 @@ from rx.internal import extensionmethod
 
 from rx.joins import Pattern
 
-@extensionmethod(Observable)
+@extensionmethod(Observable, alias="then")
 def then_do(self, selector):
     """Matches when the observable sequence has an available value and projects
     the value.
