@@ -4,6 +4,7 @@ from rx.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
 from rx.internal.utils import adapt_call
 
+
 @extensionmethod(BlockingObservable)
 def for_each(self, action):
     """Invokes a method on each item emitted by this BlockingObservable and

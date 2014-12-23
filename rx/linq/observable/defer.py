@@ -21,7 +21,6 @@ def defer(cls, observable_factory):
     """
 
     def subscribe(observer):
-        result = None
         try:
             result = observable_factory()
         except Exception as ex:

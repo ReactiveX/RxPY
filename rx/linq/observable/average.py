@@ -17,10 +17,13 @@ def average(self, key_selector=None):
     res = source.average();
     res = source.average(lambda x: x.value)
 
-    key_selector -- A transform function to apply to each element.
+    :param Observable self: Observable to average.
+    :param types.FunctionType key_selector: A transform function to apply to
+        each element.
 
-    Returns an observable sequence containing a single element with the
-    average of the sequence of values.
+    :returns: An observable sequence containing a single element with the
+        average of the sequence of values.
+    :rtype: Observable
     """
 
     if key_selector:
