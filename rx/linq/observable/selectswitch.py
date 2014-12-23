@@ -2,7 +2,7 @@ from rx import Observable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable, alias=["flat_map_latest, switch_map"])
+@extensionmethod(Observable, alias=["flat_map_latest", "switch_map"])
 def select_switch(self, selector):
     """Projects each element of an observable sequence into a new sequence
     of observable sequences by incorporating the element's index and then

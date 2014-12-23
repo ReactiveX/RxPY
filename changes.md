@@ -1,5 +1,10 @@
 # Changes
 
+## 1.0.0rc2
+
+- Fixed examples. Use `debounce` instead of `throttle`
+- Fixed wrong aliases for `select_switch`.
+
 ## 1.0.0rc1
 
 - Added join patterns. `Observable.when` and `Observable#and_`
