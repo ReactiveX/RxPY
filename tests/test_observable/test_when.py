@@ -191,101 +191,93 @@ class TestWhen(unittest.TestCase):
             )
 
 
-# def test_Then3Throws(self):
-#     ex = Exception()
+    def test_then3_throws(self):
+        ex = Exception()
+        N = 3
 
-#     N = 3
+        scheduler = TestScheduler()
+        obs = []
 
-#     scheduler = TestScheduler()
+        for i in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
+        def create():
+            def selector(a, b, c):
+                raise ex
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(selector))
 
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).then_do(function (a, b, c) {
-#             throw ex
-#
-#
+        results = scheduler.start(create)
 
-#     results.messages.assert_equal(
-#         on_error(210, ex)
-#     )
-#
+        results.messages.assert_equal(
+            on_error(210, ex)
+        )
 
-# def test_And4(self):
-#     N, i, obs, results, scheduler
-#     N = 4
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).then_do(function (a, b, c, d) {
-#             return a + b + c + d
-#
-#
-#     results.messages.assert_equal(on_next(210, N), on_completed(220))
-#
+    def test_and4(self):
+        N = 4
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_And4Error(self):
-#     N, ex, i, j, obs, results, scheduler
-#     ex = 'ex'
-#     N = 4
-#     for (i = 0 i < N i++) {
-#         scheduler = TestScheduler()
-#         obs = []
-#         for (j = 0 j < N j++) {
-#             if (j === i) {
-#                 obs.append(scheduler.create_hot_observable(on_error(210, ex)))
-#             } else {
-#                 obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#             }
-#         }
+        def create():
+            def selector(a, b, c, d):
+                return a + b + c + d
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
 
-#         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).then_do(function (a, b, c, d) {
-#                 return a + b + c + d
-#
-#
-#         results.messages.assert_equal(on_error(210, ex))
-#     }
-#
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, N), on_completed(220))
 
-# def test_Then4Throws(self):
-#     N, ex, i, obs, results, scheduler
-#     ex = 'ex'
-#     N = 4
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).then_do(function (a, b, c, d) {
-#             throw ex
-#
-#
-#     results.messages.assert_equal(on_error(210, ex))
-#
+    def test_and4_error(self):
+        ex = 'ex'
+        N = 4
 
-# def test_And5(self):
-#     N, i, obs, results, scheduler
-#     N = 5
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).then_do(function (a, b, c, d, e) {
-#             return a + b + c + d + e
-#
-#
-#     results.messages.assert_equal(on_next(210, N), on_completed(220))
-#
+        for i in range(N):
+            scheduler = TestScheduler()
+            obs = []
+            for j in range(N):
+                if j == i:
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
+                else:
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+            def create():
+                def selector(a, b, c, d):
+                    return a + b + c + d
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
+
+            results = scheduler.start(create)
+            results.messages.assert_equal(on_error(210, ex))
+
+    def test_then4_throws(self):
+        ex = 'ex'
+        N = 4
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+        def create():
+            def selector(a, b, c, d):
+                raise Exception(ex)
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_error(210, ex))
+
+    def test_and5(self):
+        N = 5
+        scheduler = TestScheduler()
+        obs = []
+        for i in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+        def create():
+            def selector(a, b, c, d, e):
+                return a + b + c + d + e
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, N), on_completed(220))
 
 # def test_And5Error(self):
 #     N, ex, i, j, obs, results, scheduler
@@ -303,7 +295,7 @@ class TestWhen(unittest.TestCase):
 #         }
 
 #         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).then_do(function (a, b, c, d, e) {
+#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(function (a, b, c, d, e) {
 #                 return a + b + c + d + e
 #
 #
@@ -321,7 +313,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).then_do(function (a, b, c, d, e) {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(function (a, b, c, d, e) {
 #             throw ex
 #
 #
@@ -337,7 +329,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).then_do(function (a, b, c, d, e, f) {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(function (a, b, c, d, e, f) {
 #             return a + b + c + d + e + f
 #
 #
@@ -360,7 +352,7 @@ class TestWhen(unittest.TestCase):
 #         }
 
 #         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).then_do(function (a, b, c, d, e, f) {
+#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(function (a, b, c, d, e, f) {
 #                 return a + b + c + d + e + f
 #
 #
@@ -378,7 +370,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).then_do(function () {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(function () {
 #             throw ex
 #
 #
@@ -394,7 +386,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).then_do(function (a, b, c, d, e, f, g) {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function (a, b, c, d, e, f, g) {
 #             return a + b + c + d + e + f + g
 #
 #
@@ -417,7 +409,7 @@ class TestWhen(unittest.TestCase):
 #         }
 
 #         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).then_do(function (a, b, c, d, e, f, g) {
+#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function (a, b, c, d, e, f, g) {
 #                 return a + b + c + d + e + f + g
 #
 #
@@ -435,7 +427,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).then_do(function () {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function () {
 #             throw ex
 #
 #
@@ -451,7 +443,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
 #             return a + b + c + d + e + f + g + h
 #
 #
@@ -474,7 +466,7 @@ class TestWhen(unittest.TestCase):
 #         }
 
 #         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
+#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
 #                 return a + b + c + d + e + f + g + h
 #
 #
@@ -492,7 +484,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).then_do(function () {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function () {
 #             throw ex
 #
 #
@@ -508,7 +500,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).and(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
 #             return a + b + c + d + e + f + g + h + _i
 #
 #
@@ -531,7 +523,7 @@ class TestWhen(unittest.TestCase):
 #         }
 
 #         results = scheduler.start(create)
-#             return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).and(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
+#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
 #                 return a + b + c + d + e + f + g + h + _i
 #
 #
@@ -549,7 +541,7 @@ class TestWhen(unittest.TestCase):
 #         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 #     }
 #     results = scheduler.start(create)
-#         return Observable.when(obs[0].and(obs[1]).and(obs[2]).and(obs[3]).and(obs[4]).and(obs[5]).and(obs[6]).and(obs[7]).and(obs[8]).then_do(function () {
+#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function () {
 #             throw ex
 #
 #
@@ -574,7 +566,7 @@ class TestWhen(unittest.TestCase):
 #     )
 
 #     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
+#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
 #             return x + y
 #
 #
@@ -604,7 +596,7 @@ class TestWhen(unittest.TestCase):
 #     )
 
 #     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
+#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
 #             return x + y
 #
 #
@@ -616,31 +608,31 @@ class TestWhen(unittest.TestCase):
 #     )
 #
 
-# def test_WhenEmptyEmpty(self):
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_completed(240))
-#     ys = scheduler.create_hot_observable(on_completed(270))
-#     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal(on_completed(270))
-#
+    def test_when_empty_empty(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_completed(240))
+        ys = scheduler.create_hot_observable(on_completed(270))
 
-# def test_WhenNeverNever(self):
-#     results, scheduler, xs, ys
-#     scheduler = TestScheduler()
-#     xs = Observable.never()
-#     ys = Observable.never()
-#     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
-#             return x + y
-#
-#
-#     results.messages.assert_equal()
-#
+        def create():
+            def selector(x, y):
+                return x + y
+            return Observable.when(xs.and_(ys).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_completed(270))
+
+    def test_when_never_never(self):
+        scheduler = TestScheduler()
+        xs = Observable.never()
+        ys = Observable.never()
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return Observable.when(xs.and_(ys).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal()
 
 # def test_WhenThrowNonEmpty(self):
 #     ex, results, scheduler, xs, ys
@@ -649,7 +641,7 @@ class TestWhen(unittest.TestCase):
 #     xs = scheduler.create_hot_observable(on_error(240, ex))
 #     ys = scheduler.create_hot_observable(on_completed(270))
 #     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
+#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
 #             return x + y
 #
 #
@@ -663,11 +655,11 @@ class TestWhen(unittest.TestCase):
 #     ys = scheduler.create_hot_observable(on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
 #     zs = scheduler.create_hot_observable(on_next(220, 7), on_next(230, 8), on_next(240, 9), on_completed(300))
 #     results = scheduler.start(create)
-#         return Observable.when(xs.and(ys).then_do(function (x, y) {
+#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
 #             return x + y
-#         }), xs.and(zs).then_do(function (x, z) {
+#         }), xs.and_(zs).then_do(function (x, z) {
 #             return x * z
-#         }), ys.and(zs).then_do(function (y, z) {
+#         }), ys.and_(zs).then_do(function (y, z) {
 #             return y - z
 #
 #
