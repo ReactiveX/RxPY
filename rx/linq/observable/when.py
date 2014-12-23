@@ -15,7 +15,7 @@ def when(cls, *args):
     """
 
     plans = args[0] if len(args) and isinstance(args[0], list) else list(args)
-    
+    print(plans)
     def subscribe(observer):
         active_plans = []
         external_subscriptions = {}
@@ -27,13 +27,13 @@ def when(cls, *args):
 
         out_observer = Observer(observer.on_next, on_error, observer.on_completed)
 
-        def func(active_plan):
+        def deactivate(active_plan):
             active_plans.remove(active_plan)
             if not len(active_plans):
                 observer.on_completed()
         try:
             for plan in plans:
-                active_plans.append(plan.activate(external_subscriptions, out_observer, func))
+                active_plans.append(plan.activate(external_subscriptions, out_observer, deactivate))
         except Exception as ex:
             Observable.throw(ex).subscribe(observer)
 

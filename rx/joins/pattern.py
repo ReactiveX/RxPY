@@ -5,7 +5,21 @@ class Pattern(object):
         """Represents a join pattern over observable sequences."""
 
         self.patterns = patterns
+        
+    def and_(self, other):
+        """Creates a pattern that matches the current plan matches and when the
+        specified observable sequences has an available value.
 
+        Keyword arguments:
+        :param Observable other: Observable sequence to match in addition to the
+            current pattern.
+        :returns: Pattern object that matches when all observable sequences in
+            the pattern have an available value.
+        :rtype: Pattern
+        """
+        
+        return Pattern(self.patterns + [other])
+        
     def __and__(self, other):
         """Creates a pattern that matches the current plan matches and when the
         specified observable sequences has an available value.
@@ -18,8 +32,8 @@ class Pattern(object):
         :rtype: Pattern
         """
 
-        return Pattern(self.patterns.concat(other))
-
+        return self._and(other)
+        
     def then_do(self, selector):
         """Matches when all observable sequences in the pattern (specified using
         a chain of and operators) have an available value and projects the
