@@ -3,10 +3,10 @@
 ## 0.16
 
 - Added join patterns. `Observable.when` and `Observable#and_`
-- Added `BlockingObservable`and operators `for_each` and `to_iterable`.
+- Added `BlockingObservable`and operators `for_each` and `to_iterable`
 - Started adding docstrings as reStructuredText in order for PyCharm to infer
-  types. Operators will eventually be converted to new syntax.
-- Refactored operators to use C# like extensionmethods
+  types. Operators will eventually be converted to new syntax
+- Refactored operators to use C# like extensionmethods using function decorators
 - More PEP8 alignment
 
 ## 0.15

@@ -7,8 +7,8 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='0.15.0',
-    description='Reactive Extensions for Python',
+    version='1.0.0rc1',
+    description='Reactive Extensions (Rx) for Python',
     long_description = """\
 is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python""",
     author='Dag Brattli',
@@ -20,8 +20,7 @@ is a library for composing asynchronous and event-based programs using observabl
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers = [
-        # 'Development Status :: 5 - Production/Stable',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
 	    'License :: OSI Approved :: Apache Software License',
