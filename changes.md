@@ -2,7 +2,7 @@
 
 ## 0.16
 
-- Added join patterns
+- Added join patterns. `Observable.when` and `Observable#and_`
 - Added `BlockingObservable`and operators `for_each` and `to_iterable`.
 - Started adding docstrings as reStructuredText in order for PyCharm to infer
   types. Operators will eventually be converted to new syntax.
