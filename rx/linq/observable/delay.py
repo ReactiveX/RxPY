@@ -6,7 +6,7 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
@@ -15,116 +15,113 @@ class Timestamp(object):
         self.value = value
         self.timestamp = timestamp
 
+def observable_delay_timespan(source, duetime, scheduler):
+    duetime = scheduler.to_timedelta(duetime)
 
-@extends(Observable)
-class Delay(object):
+    def subscribe(observer):
+        cancelable = SerialDisposable()
+        exception = [None]
+        active = [False]
+        running = [False]
+        queue = []
 
-    def observable_delay_timespan(self, duetime, scheduler):
-        duetime = scheduler.to_timedelta(duetime)
-        source = self
+        def on_next(notification):
+            log.debug("observable_delay_timespan:subscribe:on_next()")
+            should_run = False
 
-        def subscribe(observer):
-            cancelable = SerialDisposable()
-            exception = [None]
-            active = [False]
-            running = [False]
-            queue = []
+            with source.lock:
+                if notification.value.kind == 'E':
+                    del queue[:]
+                    queue.append(notification)
+                    exception[0] = notification.value.exception
+                    should_run = not running[0]
+                else:
+                    queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
+                    should_run = not active[0]
+                    active[0] = True
 
-            def on_next(notification):
-                log.debug("observable_delay_timespan:subscribe:on_next()")
-                should_run = False
+            if should_run:
+                if exception[0]:
+                    log.error("*** Exception: %s", exception[0])
+                    observer.on_error(exception[0])
+                else:
+                    d = SingleAssignmentDisposable()
+                    cancelable.disposable = d
 
-                with self.lock:
-                    if notification.value.kind == 'E':
-                        del queue[:]
-                        queue.append(notification)
-                        exception[0] = notification.value.exception
-                        should_run = not running[0]
-                    else:
-                        queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
-                        should_run = not active[0]
-                        active[0] = True
+                    def action(this):
+                        if exception[0]:
+                            log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
+                            return
 
-                if should_run:
-                    if exception[0]:
-                        log.error("*** Exception: %s", exception[0])
-                        observer.on_error(exception[0])
-                    else:
-                        d = SingleAssignmentDisposable()
-                        cancelable.disposable = d
+                        with source.lock:
+                            running[0] = True
+                            while True:
+                                result = None
+                                if len(queue) and queue[0].timestamp <= scheduler.now():
+                                    result = queue.pop(0).value
 
-                        def action(this):
-                            if exception[0]:
-                                log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
-                                return
+                                if result:
+                                    result.accept(observer)
 
-                            with self.lock:
-                                running[0] = True
-                                while True:
-                                    result = None
-                                    if len(queue) and queue[0].timestamp <= scheduler.now():
-                                        result = queue.pop(0).value
+                                if not result:
+                                    break
 
-                                    if result:
-                                        result.accept(observer)
+                            should_recurse = False
+                            recurse_duetime = 0
+                            if len(queue) :
+                                should_recurse = True
+                                diff = queue[0].timestamp - scheduler.now()
+                                zero = timedelta(0) if isinstance(diff, timedelta) else 0
+                                recurse_duetime = max(zero, diff)
+                            else:
+                                active[0] = False
 
-                                    if not result:
-                                        break
+                            ex = exception[0]
+                            running[0] = False
 
-                                should_recurse = False
-                                recurse_duetime = 0
-                                if len(queue) :
-                                    should_recurse = True
-                                    diff = queue[0].timestamp - scheduler.now()
-                                    zero = timedelta(0) if isinstance(diff, timedelta) else 0
-                                    recurse_duetime = max(zero, diff)
-                                else:
-                                    active[0] = False
+                        if ex:
+                            observer.on_error(ex)
+                        elif should_recurse:
+                            this(recurse_duetime)
 
-                                ex = exception[0]
-                                running[0] = False
+                    d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
+        subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
+        return CompositeDisposable(subscription, cancelable)
+    return AnonymousObservable(subscribe)
 
-                            if ex:
-                                observer.on_error(ex)
-                            elif should_recurse:
-                                this(recurse_duetime)
+def observable_delay_date(source, duetime, scheduler):
+    def defer():
+        timespan = scheduler.to_datetime(duetime) - scheduler.now()
+        return observable_delay_timespan(source, timespan, scheduler)
 
-                        d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
-            subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
-            return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
+    return Observable.defer(defer)
 
-    def observable_delay_date(self, duetime, scheduler):
-        def defer():
-            timespan = scheduler.to_datetime(duetime) - scheduler.now()
-            return self.observable_delay_timespan(timespan, scheduler)
+@extensionmethod(Observable)
+def delay(self, duetime, scheduler=None):
+    """Time shifts the observable sequence by duetime. The relative time
+    intervals between the values are preserved.
 
-        return Observable.defer(defer)
+    1 - res = rx.Observable.delay(datetime())
+    2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
 
-    def delay(self, duetime, scheduler=None):
-        """Time shifts the observable sequence by duetime. The relative time
-        intervals between the values are preserved.
+    3 - res = rx.Observable.delay(5000)
+    4 - res = rx.Observable.delay(5000, Scheduler.timeout)
 
-        1 - res = rx.Observable.delay(datetime())
-        2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
+    Keyword arguments:
+    :param datetime|int duetime: Absolute (specified as a datetime object) or
+        relative time (specified as an integer denoting milliseconds) by which
+        to shift the observable sequence.
+    :param Scheduler scheduler: [Optional] Scheduler to run the delay timers on.
+        If not specified, the timeout scheduler is used.
 
-        3 - res = rx.Observable.delay(5000)
-        4 - res = rx.Observable.delay(5000, Scheduler.timeout)
+    :returns: Time-shifted sequence.
+    :rtype: Observable
+    """
 
-        Keyword arguments:
-        duetime -- Absolute (specified as a datetime object) or relative time
-            (specified as an integer denoting milliseconds) by which to shift
-            the observable sequence.
-        scheduler -- [Optional] Scheduler to run the delay timers on. If not
-            specified, the timeout scheduler is used.
+    scheduler = scheduler or timeout_scheduler
+    if isinstance(duetime, datetime):
+        observable = observable_delay_date(self, duetime, scheduler)
+    else:
+        observable = observable_delay_timespan(self, duetime, scheduler)
 
-        Returns time-shifted sequence.
-        """
-
-        scheduler = scheduler or timeout_scheduler
-        if isinstance(duetime, datetime):
-            observable = self.observable_delay_date(duetime, scheduler)
-        else:
-            observable = self.observable_delay_timespan(duetime, scheduler)
-
-        return observable
+    return observable

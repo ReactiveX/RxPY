@@ -39,9 +39,10 @@ class Notification(object):
         Keyword arguments:
         scheduler -- [Optional] Scheduler to send out the notification calls on.
 
-        Returnes an observable sequence that surfaces the behavior of the
+        Returns an observable sequence that surfaces the behavior of the
         notification upon subscription.
         """
+
         notification = self
         scheduler = scheduler or immediate_scheduler
 
@@ -62,7 +63,8 @@ class Notification(object):
         handler -- Action that handles a notification.
 
         Returns the observer object that invokes the specified handler using a
-        notification corresponding to each message it receives."""
+        notification corresponding to each message it receives.
+        """
 
         def _on_next(value):
             return handler(OnNext(value))

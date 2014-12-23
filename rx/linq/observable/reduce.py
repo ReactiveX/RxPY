@@ -1,35 +1,31 @@
 from rx import Observable
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
-@extends(Observable)
-class Reduce(object):
+@extensionmethod(Observable, alias="aggregate")
+def reduce(self, accumulator, seed=None):
+    """Applies an accumulator function over an observable sequence,
+    returning the result of the aggregation as a single element in the
+    result sequence. The specified seed value is used as the initial
+    accumulator value.
 
-    def reduce(self, accumulator, seed=None):
-        """Applies an accumulator function over an observable sequence,
-        returning the result of the aggregation as a single element in the
-        result sequence. The specified seed value is used as the initial
-        accumulator value.
+    For aggregation behavior with incremental intermediate results, see
+    Observable.scan.
 
-        For aggregation behavior with incremental intermediate results, see
-        Observable.scan.
+    Example:
+    1 - res = source.reduce(lambda acc, x: acc + x)
+    2 - res = source.reduce(lambda acc, x: acc + x, 0)
 
-        Example:
-        1 - res = source.reduce(lambda acc, x: acc + x)
-        2 - res = source.reduce(lambda acc, x: acc + x, 0)
+    Keyword arguments:
+    accumulator -- {Function}  An accumulator function to be invoked on each
+        element.
+    seed -- {Any} [Optional] The initial accumulator value.
 
-        Keyword arguments:
-        accumulator -- {Function}  An accumulator function to be invoked on each
-            element.
-        seed -- {Any} [Optional] The initial accumulator value.
+    Returns {Observable} An observable sequence containing a single element
+    with the final accumulator value.
+    """
 
-        Returns {Observable} An observable sequence containing a single element
-        with the final accumulator value.
-        """
-
-        if not seed is None:
-            return self.scan(accumulator, seed=seed).start_with(seed).last()
-        else:
-            return self.scan(accumulator).last()
-
-    aggregate = reduce
+    if not seed is None:
+        return self.scan(accumulator, seed=seed).start_with(seed).last()
+    else:
+        return self.scan(accumulator).last()

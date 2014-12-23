@@ -3,7 +3,7 @@ from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 
 class ChainObservable(Observable):
@@ -33,51 +33,49 @@ class ChainObservable(Observable):
         self.tail.on_next(v)
         self.tail.on_completed()
 
-@extends(Observable)
-class ManySelect(object):
+@extensionmethod(Observable)
+def many_select(self, selector, scheduler=None):
+    """Comonadic bind operator.
 
-    def many_select(self, selector, scheduler=None):
-        """Comonadic bind operator.
+    Keyword arguments:
+    selector -- {Function} A transform function to apply to each element.
+    scheduler -- {Object} [Optional] Scheduler used to execute the
+        operation. If not specified, defaults to the ImmediateScheduler.
 
-        Keyword arguments:
-        selector -- {Function} A transform function to apply to each element.
-        scheduler -- {Object} [Optional] Scheduler used to execute the
-            operation. If not specified, defaults to the ImmediateScheduler.
+    Returns {Observable} An observable sequence which results from the
+    comonadic bind operation.
+    """
 
-        Returns {Observable} An observable sequence which results from the
-        comonadic bind operation.
-        """
+    scheduler = scheduler or immediate_scheduler
+    source = self
 
-        scheduler = scheduler or immediate_scheduler
-        source = self
+    def factory():
+        chain = [None]
 
-        def factory():
-            chain = [None]
+        def mapper(x):
+            curr = ChainObservable(x)
 
-            def mapper(x):
-                curr = ChainObservable(x)
+            chain[0] and chain[0].on_next(x)
+            chain[0] = curr
 
-                chain[0] and chain[0].on_next(x)
-                chain[0] = curr
+            return curr
 
-                return curr
+        def on_error(e):
+            if chain[0]:
+                chain[0].on_error(e)
 
-            def on_error(e):
-                if chain[0]:
-                    chain[0].on_error(e)
+        def on_completed():
+            if chain[0]:
+                chain[0].on_completed()
 
-            def on_completed():
-                if chain[0]:
-                    chain[0].on_completed()
+        return source.map(
+            mapper
+        ).tap(
+            noop, on_error, on_completed
+        ).observe_on(
+            scheduler
+        ).map(
+            selector
+        )
 
-            return source.map(
-                mapper
-            ).tap(
-                noop, on_error, on_completed
-            ).observe_on(
-                scheduler
-            ).map(
-                selector
-            )
-
-        return Observable.defer(factory)
+    return Observable.defer(factory)

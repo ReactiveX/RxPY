@@ -1,14 +1,8 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
-from rx.internal import extends
+from rx.internal import extensionclassmethod
 
 
-@extends(Observable)
-class Create(object):
-
-    @classmethod
-    def create(cls, subscribe):
-        return AnonymousObservable(subscribe)
-
-    # Deprecated alias
-    create_with_disposable = create
+@extensionclassmethod(Observable, alias="create_with_disposable")
+def create(cls, subscribe):
+    return AnonymousObservable(subscribe)

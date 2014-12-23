@@ -35,3 +35,13 @@ def check_disposed(this):
 
 def is_future(p):
     return callable(getattr(p, "add_done_callback", None))
+
+class TimeInterval(object):
+    def __init__(self, value, interval):
+        self.value = value
+        self.interval = interval
+
+class Timestamp(object):
+    def __init__(self, value, timestamp):
+        self.value = value
+        self.timestamp = timestamp

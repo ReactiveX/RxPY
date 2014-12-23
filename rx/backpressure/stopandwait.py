@@ -1,17 +1,14 @@
-from rx.concurrency import current_thread_scheduler
-from rx.internal import extends
+from rx.internal import extensionmethod
 
 from .controlledobservable import ControlledObservable
 from .stopandwaitobservable import StopAndWaitObservable
 
 
-@extends(ControlledObservable)
-class ControlledObservableStopAndWait(object):
+@extensionmethod(ControlledObservable)
+def stop_and_wait(self):
+    """Attaches a stop and wait observable to the current observable.
 
-    def stop_and_wait(self):
-        """Attaches a stop and wait observable to the current observable.
+    Returns a stop and wait observable {Observable}.
+    """
 
-        Returns a stop and wait observable {Observable}.
-        """
-
-        return StopAndWaitObservable(self)
+    return StopAndWaitObservable(self)

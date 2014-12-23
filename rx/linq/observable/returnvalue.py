@@ -2,39 +2,34 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
 from rx.concurrency import immediate_scheduler
-from rx.internal import extends
+from rx.internal import extensionclassmethod
 
 
-@extends(Observable)
-class ReturnValue(object):
+@extensionclassmethod(Observable, alias="just")
+def return_value(cls, value, scheduler=None):
+    """Returns an observable sequence that contains a single element,
+    using the specified scheduler to send out observer messages.
+    There is an alias called 'just'.
 
-    @classmethod
-    def return_value(cls, value, scheduler=None):
-        """Returns an observable sequence that contains a single element,
-        using the specified scheduler to send out observer messages.
-        There is an alias called 'just'.
+    example
+    res = rx.Observable.return(42)
+    res = rx.Observable.return(42, rx.Scheduler.timeout)
 
-        example
-        res = rx.Observable.return(42)
-        res = rx.Observable.return(42, rx.Scheduler.timeout)
+    Keyword arguments:
+    value -- Single element in the resulting observable sequence.
+    scheduler -- [Optional] Scheduler to send the single element on. If
+        not specified, defaults to Scheduler.immediate.
 
-        Keyword arguments:
-        value -- Single element in the resulting observable sequence.
-        scheduler -- [Optional] Scheduler to send the single element on. If
-            not specified, defaults to Scheduler.immediate.
+    Returns an observable sequence containing the single specified
+    element.
+    """
 
-        Returns an observable sequence containing the single specified
-        element.
-        """
+    scheduler = scheduler or immediate_scheduler
 
-        scheduler = scheduler or immediate_scheduler
+    def subscribe(observer):
+        def action(scheduler, state=None):
+            observer.on_next(value)
+            observer.on_completed()
 
-        def subscribe(observer):
-            def action(scheduler, state=None):
-                observer.on_next(value)
-                observer.on_completed()
-
-            return scheduler.schedule(action)
-        return AnonymousObservable(subscribe)
-
-    just = return_value # Alias
+        return scheduler.schedule(action)
+    return AnonymousObservable(subscribe)

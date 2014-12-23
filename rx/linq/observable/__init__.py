@@ -2,6 +2,7 @@
 
 from . import all
 from . import amb
+from . import and_
 from . import some
 from . import asobservable
 from . import average
@@ -106,6 +107,7 @@ from . import takeuntil
 from . import takeuntilwithtime
 from . import takewhile
 from . import takewithtime
+from . import thendo
 from . import throttlefirst
 from . import throw
 from . import timeinterval
@@ -113,12 +115,14 @@ from . import timer
 from . import timeout
 from . import timeoutwithselector
 from . import timestamp
+from . import toblocking
 from . import tolist
 from . import toasync
 from . import todict
 from . import tofuture
 from . import toset
 from . import using
+from . import when
 from . import where
 from . import whiledo
 from . import window
@@ -127,3 +131,5 @@ from . import windowwithtime
 from . import windowwithtimeorcount
 from . import zip
 from . import ziparray
+
+from . import blocking

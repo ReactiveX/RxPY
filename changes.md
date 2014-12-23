@@ -1,12 +1,21 @@
 # Changes
 
+## 0.16
+
+- Added join patterns. `Observable.when` and `Observable#and_`
+- Added `BlockingObservable`and operators `for_each` and `to_iterable`
+- Started adding docstrings as reStructuredText in order for PyCharm to infer
+  types. Operators will eventually be converted to new syntax
+- Refactored operators to use C# like extensionmethods using function decorators
+- More PEP8 alignment
+
 ## 0.15
 
 - Python slicing and indexing of observables. Thus you can write xs[1:-1:2]
 - Aligned backpressure with RxJS
-- Renamed all select() to map() and where() to map()
-- from_ is now an alias for from_iterable. Removed from_array
-- Fixes for select_many/flat_map. Selector may return iterable
+- Renamed all `select()` to `map()` and `where()` to `map()`
+- `from_` is now an alias for `from_iterable`. Removed `from_array`
+- Fixes for `select_many`/`flat_map`. Selector may return iterable
 
 ## 0.14
 

@@ -1,12 +1,15 @@
 from rx.internal import noop, default_error
 
 class AbstractObserver(object):
-    """Abstract Observer"""
+    """Abstract base class for implementations of the Observer class. This base 
+    class enforces the grammar of observers where OnError and OnCompleted are 
+    terminal messages.
+    """
 
     def __init__(self, on_next=None, on_error=None, on_completed=None):
         self.is_stopped = False
 
-        # on_next now uses fast path and will be nooped when stopped
+        # on_next now uses fast path and will be noop'ed when stopped
         if not hasattr(self, "on_next"):
             self.on_next = on_next or noop
 

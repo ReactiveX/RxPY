@@ -34,7 +34,7 @@ occurs.
 
 Because observable sequences are data streams, you can query them using standard
 LINQ query operators implemented by the Observable type. Thus you can filter,
-project, aggregate, compose and perform time-based operations on multiple events
+map, reduce, compose and perform time-based operations on multiple events
 easily by using these static LINQ operators. In addition, there are a number of
 other reactive stream specific operators that allow powerful queries to be
 written. Cancellation, exceptions, and synchronization are also handled
@@ -56,8 +56,8 @@ Note that `pip` may be called `pip3` if your're using Python3.
 RxPY is a fairly complete implementation of
 [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
 v2.2 with more than 126 query operators, and over 1100 passing unit-tests. RxPY
-is a direct port of RxJS, so it's actually possible to single-step both
-implementations in a debugger to trace any problems.
+is a direct port of RxJS, but also borrows a bit from RxNET and RxJava with
+regards to threading and blocking operators.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
 function and method names are lowercase with words separated by underscores as
