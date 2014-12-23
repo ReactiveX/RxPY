@@ -330,277 +330,257 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, N), on_completed(220))
 
-# def test_And6Error(self):
-#     N, ex, i, j, obs, results, scheduler
-#     ex = 'ex'
-#     N = 6
-#     for (i = 0 i < N i++) {
-#         scheduler = TestScheduler()
-#         obs = []
-#         for (j = 0 j < N j++) {
-#             if (j === i) {
-#                 obs.append(scheduler.create_hot_observable(on_error(210, ex)))
-#             } else {
-#                 obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#             }
-#         }
+    def test_and6_error(self):
+        ex = 'ex'
+        N = 6
+        for i in range(N):
+            scheduler = TestScheduler()
+            obs = []
+            for j in range(N):
+                if j == i:
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
+                else:
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-#         results = scheduler.start(create)
-#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(function (a, b, c, d, e, f) {
-#                 return a + b + c + d + e + f
-#
-#
-#         results.messages.assert_equal(on_error(210, ex))
-#     }
-#
+            def create():
+                def selector(a, b, c, d, e, f):
+                    return a + b + c + d + e + f
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
 
-# def test_Then6Throws(self):
-#     N, ex, i, obs, results, scheduler
-#     ex = 'ex'
-#     N = 6
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(function () {
-#             throw ex
-#
-#
-#     results.messages.assert_equal(on_error(210, ex))
-#
+            results = scheduler.start(create)
+            results.messages.assert_equal(on_error(210, ex))
 
-# def test_And7(self):
-#     N, i, obs, results, scheduler
-#     N = 7
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function (a, b, c, d, e, f, g) {
-#             return a + b + c + d + e + f + g
-#
-#
-#     results.messages.assert_equal(on_next(210, N), on_completed(220))
-#
+    def test_Then6Throws(self):
+        ex = 'ex'
+        N = 6
+        scheduler = TestScheduler()
+        obs = []
+        for i in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_And7Error(self):
-#     N, ex, i, j, obs, results, scheduler
-#     ex = 'ex'
-#     N = 7
-#     for (i = 0 i < N i++) {
-#         scheduler = TestScheduler()
-#         obs = []
-#         for (j = 0 j < N j++) {
-#             if (j === i) {
-#                 obs.append(scheduler.create_hot_observable(on_error(210, ex)))
-#             } else {
-#                 obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#             }
-#         }
 
-#         results = scheduler.start(create)
-#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function (a, b, c, d, e, f, g) {
-#                 return a + b + c + d + e + f + g
-#
-#
-#         results.messages.assert_equal(on_error(210, ex))
-#     }
-#
+        def create():
+            def selector(*args):
+                raise Exception(ex)
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
 
-# def test_Then7Throws(self):
-#     N, ex, i, obs, results, scheduler
-#     ex = 'ex'
-#     N = 7
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(function () {
-#             throw ex
-#
-#
-#     results.messages.assert_equal(on_error(210, ex))
-#
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_error(210, ex))
 
-# def test_And8(self):
-#     N, i, obs, results, scheduler
-#     N = 8
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
-#             return a + b + c + d + e + f + g + h
-#
-#
-#     results.messages.assert_equal(on_next(210, N), on_completed(220))
-#
+    def test_and7(self):
+        N = 7
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_And8Error(self):
-#     N, ex, i, j, obs, results, scheduler
-#     ex = 'ex'
-#     N = 8
-#     for (i = 0 i < N i++) {
-#         scheduler = TestScheduler()
-#         obs = []
-#         for (j = 0 j < N j++) {
-#             if (j === i) {
-#                 obs.append(scheduler.create_hot_observable(on_error(210, ex)))
-#             } else {
-#                 obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#             }
-#         }
+        def create():
+            def selector(a, b, c, d, e, f, g):
+                return a + b + c + d + e + f + g
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
-#         results = scheduler.start(create)
-#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function (a, b, c, d, e, f, g, h) {
-#                 return a + b + c + d + e + f + g + h
-#
-#
-#         results.messages.assert_equal(on_error(210, ex))
-#     }
-#
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, N), on_completed(220))
 
-# def test_Then8Throws(self):
-#     N, ex, i, obs, results, scheduler
-#     ex = 'ex'
-#     N = 8
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(function () {
-#             throw ex
-#
-#
-#     results.messages.assert_equal(on_error(210, ex))
-#
 
-# def test_And9(self):
-#     N, i, obs, results, scheduler
-#     N = 9
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
-#             return a + b + c + d + e + f + g + h + _i
-#
-#
-#     results.messages.assert_equal(on_next(210, N), on_completed(220))
-#
+    def test_and7_error(self):
+        ex = 'ex'
+        N = 7
+        for i in range(N):
+            scheduler = TestScheduler()
+            obs = []
+            for j in range(N):
+                if j == i:
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
+                else:
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_And9Error(self):
-#     N, ex, i, j, obs, results, scheduler
-#     ex = 'ex'
-#     N = 9
-#     for (i = 0 i < N i++) {
-#         scheduler = TestScheduler()
-#         obs = []
-#         for (j = 0 j < N j++) {
-#             if (j === i) {
-#                 obs.append(scheduler.create_hot_observable(on_error(210, ex)))
-#             } else {
-#                 obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#             }
-#         }
+            def create():
+                def selector(a, b, c, d, e, f, g):
+                    return a + b + c + d + e + f + g
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
-#         results = scheduler.start(create)
-#             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function (a, b, c, d, e, f, g, h, _i) {
-#                 return a + b + c + d + e + f + g + h + _i
-#
-#
-#         results.messages.assert_equal(on_error(210, ex))
-#     }
-#
+            results = scheduler.start(create)
+            results.messages.assert_equal(on_error(210, ex))
 
-# def test_Then9Throws(self):
-#     N, ex, i, obs, results, scheduler
-#     ex = 'ex'
-#     N = 9
-#     scheduler = TestScheduler()
-#     obs = []
-#     for (i = 0 i < N i++) {
-#         obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
-#     }
-#     results = scheduler.start(create)
-#         return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(function () {
-#             throw ex
-#
-#
-#     results.messages.assert_equal(on_error(210, ex))
-#
+    def test_then7_throws(self):
+        ex = 'ex'
+        N = 7
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_WhenMultipleDataSymmetric(self):
-#     scheduler = TestScheduler()
+        def create():
+            def selector(*args):
+                raise Exception(ex)
 
-#     xs = scheduler.create_hot_observable(
-#         on_next(210, 1),
-#         on_next(220, 2),
-#         on_next(230, 3),
-#         on_completed(240)
-#     )
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
-#     ys = scheduler.create_hot_observable(
-#         on_next(240, 4),
-#         on_next(250, 5),
-#         on_next(260, 6),
-#         on_completed(270)
-#     )
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_error(210, ex))
 
-#     results = scheduler.start(create)
-#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
-#             return x + y
-#
-#
 
-#     results.messages.assert_equal(
-#         on_next(240, 1 + 4),
-#         on_next(250, 2 + 5),
-#         on_next(260, 3 + 6),
-#         on_completed(270)
-#     )
-#
+    def test_and8(self):
+        N = 8
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-# def test_WhenMultipleDataAsymmetric(self):
-#     scheduler = TestScheduler()
+        def create():
+            def selector(a, b, c, d, e, f, g, h):
+                return a + b + c + d + e + f + g + h
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
 
-#     xs = scheduler.create_hot_observable(
-#         on_next(210, 1),
-#         on_next(220, 2),
-#         on_next(230, 3),
-#         on_completed(240)
-#     )
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, N), on_completed(220))
 
-#     ys = scheduler.create_hot_observable(
-#         on_next(240, 4),
-#         on_next(250, 5),
-#         on_completed(270)
-#     )
+    def test_and8_error(self):
+        ex = 'ex'
+        N = 8
+        for i in range(N):
+            scheduler = TestScheduler()
+            obs = []
+            for j in range(N):
+                if j == i:
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
+                else:
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-#     results = scheduler.start(create)
-#         return Observable.when(xs.and_(ys).then_do(function (x, y) {
-#             return x + y
-#
-#
+            def create():
+                def selector(a, b, c, d, e, f, g, h):
+                    return a + b + c + d + e + f + g + h
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
+            results = scheduler.start(create)
+            results.messages.assert_equal(on_error(210, ex))
 
-#     results.messages.assert_equal(
-#         on_next(240, 1 + 4),
-#         on_next(250, 2 + 5),
-#         on_completed(270)
-#     )
-#
+    def test_then8_throws(self):
+        ex = 'ex'
+        N = 8
+        scheduler = TestScheduler()
+        obs = []
+        for _ in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+        def create():
+            def selector(*args):
+                raise Exception(ex)
+
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_error(210, ex))
+
+    def test_And9(self):
+        N = 9
+        scheduler = TestScheduler()
+        obs = []
+        for i in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+        def create():
+            def selector(a, b, c, d, e, f, g, h, _i):
+                return a + b + c + d + e + f + g + h + _i
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_next(210, N), on_completed(220))
+
+    def test_and9_error(self):
+        ex = 'ex'
+        N = 9
+        for i in range(N):
+            scheduler = TestScheduler()
+            obs = []
+            for j in range(N):
+                if j == i:
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
+                else:
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+            def create():
+                def selector(a, b, c, d, e, f, g, h, _i):
+                    return a + b + c + d + e + f + g + h + _i
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+
+            results = scheduler.start(create)
+            results.messages.assert_equal(on_error(210, ex))
+
+    def test_then9_throws(self):
+        ex = 'ex'
+        N = 9
+        scheduler = TestScheduler()
+        obs = []
+        for i in range(N):
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
+
+        def create():
+            def selector(*args):
+                raise Exception(ex)
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+
+        results = scheduler.start(create)
+        results.messages.assert_equal(on_error(210, ex))
+
+    def test_WhenMultipleDataSymmetric(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_completed(240)
+        )
+
+        ys = scheduler.create_hot_observable(
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270)
+        )
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return Observable.when(xs.and_(ys).then_do(selector))
+
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(
+            on_next(240, 1 + 4),
+            on_next(250, 2 + 5),
+            on_next(260, 3 + 6),
+            on_completed(270)
+        )
+
+    def test_WhenMultipleDataAsymmetric(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_completed(240)
+        )
+
+        ys = scheduler.create_hot_observable(
+            on_next(240, 4),
+            on_next(250, 5),
+            on_completed(270)
+        )
+
+        def create():
+            def selector(x, y):
+                return x + y
+            return Observable.when(xs.and_(ys).then_do(selector))
+
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(
+            on_next(240, 1 + 4),
+            on_next(250, 2 + 5),
+            on_completed(270)
+        )
 
     def test_when_empty_empty(self):
         scheduler = TestScheduler()
