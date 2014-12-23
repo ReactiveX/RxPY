@@ -14,17 +14,14 @@ def when(cls, *args):
     :rtype: Observable
     """
 
-    plans = args[0] if len(args) and isinstance(args[0], list) else args
-    print(plans)
-    print(args)
-
+    plans = args[0] if len(args) and isinstance(args[0], list) else list(args)
+    
     def subscribe(observer):
         active_plans = []
         external_subscriptions = {}
 
         def on_error(err):
-            print(err)
-            for v in external_subscriptions:
+            for v in external_subscriptions.values():
                 v.on_error(err)
             observer.on_error(err)
 
@@ -37,13 +34,11 @@ def when(cls, *args):
         try:
             for plan in plans:
                 active_plans.append(plan.activate(external_subscriptions, out_observer, func))
-
-        except Exception as e:
-            print(e)
-            Observable.throw(e).subscribe(observer)
+        except Exception as ex:
+            Observable.throw(ex).subscribe(observer)
 
         group = CompositeDisposable()
-        for join_observer in external_subscriptions:
+        for join_observer in external_subscriptions.values():
             join_observer.subscribe()
             group.add(join_observer)
 

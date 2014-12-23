@@ -5,7 +5,7 @@ from rx.internal.basic import noop
 class JoinObserver(AbstractObserver):
 
     def __init__(self, source, on_error):
-        super(AbstractObserver, self).__init__()
+        super(JoinObserver, self).__init__(on_next=self._next)
 
         self.source = source
         self.on_error = on_error
@@ -14,7 +14,7 @@ class JoinObserver(AbstractObserver):
         self.subscription = SingleAssignmentDisposable()
         self.is_disposed = False
 
-    def next(self, notification):
+    def _next(self, notification):
         if not self.is_disposed:
             if notification.kind == 'E':
                 self.on_error(notification.exception)
@@ -24,9 +24,6 @@ class JoinObserver(AbstractObserver):
             active_plans = self.active_plans[:]
             for plan in active_plans:
                 plan.match()
-
-    error = noop
-    completed = noop
 
     def add_active_plan(self, active_plan):
         self.active_plans.append(active_plan)

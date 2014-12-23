@@ -5,10 +5,10 @@ class ActivePlan(object):
         self.on_completed = on_completed
         self.join_observers = {}
         for join_observer in self.join_observer_list:
-            self.join_observers[join_observer] = join_observer # TODO: ???
+            self.join_observers[join_observer] = join_observer
 
     def dequeue(self):
-        for join_observer in self.join_observers:
+        for join_observer in self.join_observers.values():
             join_observer.queue.pop(0)
 
     def match(self):
@@ -30,8 +30,8 @@ class ActivePlan(object):
                 self.on_completed()
             else:
                 self.dequeue()
-            values = []
-            for value in first_values:
-                values.append(value.value)
+                values = []
+                for value in first_values:
+                    values.append(value.value)
 
-        self.on_next(values)
+                self.on_next(*values)

@@ -43,45 +43,44 @@ class TestWhen(unittest.TestCase):
 
     def test_then1_error(self):
         ex = Exception()
-
+    
         scheduler = TestScheduler()
-
+    
         xs = scheduler.create_hot_observable(
             on_error(210, ex)
         )
-
+    
         def create():
             def selector(a):
                 return a
             return Observable.when(xs.then_do(selector))
+    
+        results = scheduler.start(create)
+    
+        results.messages.assert_equal(
+            on_error(210, ex)
+       )
+
+    def test_then1_throws(self):
+        ex = Exception()
+
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1),
+            on_completed(220)
+        )
+
+        def create():
+            def selector(a):
+                raise ex
+            return Observable.when(xs.then_do(selector))
 
         results = scheduler.start(create)
-
+    
         results.messages.assert_equal(
             on_error(210, ex)
         )
-
-
-# def test_Then1Throws(self):
-#     ex = Error()
-
-#     scheduler = TestScheduler()
-
-#     xs = scheduler.create_hot_observable(
-#         on_next(210, 1),
-#         on_completed(220)
-#     )
-
-#     results = scheduler.start(create)
-#         return Observable.when(xs.then_do(function (a) {
-#             throw ex
-#
-#
-
-#     results.messages.assert_equal(
-#         on_error(210, ex)
-#     )
-#
 
 # def test_And2(self):
 #     N = 2
@@ -106,7 +105,7 @@ class TestWhen(unittest.TestCase):
 #
 
 # def test_And2Error(self):
-#     ex = Error()
+#     ex = Exception()
 
 #     N = 2
 
@@ -135,7 +134,7 @@ class TestWhen(unittest.TestCase):
 #
 
 # def test_Then2Throws(self):
-#     ex = Error()
+#     ex = Exception()
 
 #     N = 2
 
@@ -179,7 +178,7 @@ class TestWhen(unittest.TestCase):
 #
 
 # def test_And3Error(self):
-#     ex = Error()
+#     ex = Exception()
 
 #     N = 3
 
@@ -208,7 +207,7 @@ class TestWhen(unittest.TestCase):
 #
 
 # def test_Then3Throws(self):
-#     ex = Error()
+#     ex = Exception()
 
 #     N = 3
 
