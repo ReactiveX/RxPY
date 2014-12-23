@@ -1,6 +1,6 @@
 # Changes
 
-## 0.16
+## 1.0.0rc1
 
 - Added join patterns. `Observable.when` and `Observable#and_`
 - Added `BlockingObservable`and operators `for_each` and `to_iterable`
