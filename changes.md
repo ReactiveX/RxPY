@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0rc4
+
+- Added missing rx.joins from setup.py
+
 ## 1.0.0rc3
 
 - Removed some non git files files that were added to the package by accident
