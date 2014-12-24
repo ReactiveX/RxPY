@@ -115,11 +115,12 @@ from . import timer
 from . import timeout
 from . import timeoutwithselector
 from . import timestamp
-from . import toblocking
-from . import tolist
 from . import toasync
+from . import toblocking
 from . import todict
 from . import tofuture
+from . import toiterable
+from . import tolist
 from . import toset
 from . import using
 from . import when
