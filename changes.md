@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0rc5
+
+- Added missing rx.linq.observable.blocking from setup.py
+
 ## 1.0.0rc4
 
 - Added missing rx.joins from setup.py
