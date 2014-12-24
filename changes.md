@@ -1,5 +1,10 @@
 # Changes
 
+## 1.0.0rc3
+
+- Removed some non git files files that were added to the package by accident
+- Added `Observable#to_iterable()`
+
 ## 1.0.0rc2
 
 - Fixed examples. Use `debounce` instead of `throttle`
