@@ -36,7 +36,7 @@ is a library for composing asynchronous and event-based programs using observabl
 
     packages=['rx', 'rx.internal',
               'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
-              'rx.concurrency', 'rx.concurrency.mainloopscheduler',
+              'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
               'rx.disposables', 'rx.subjects', 'rx.backpressure', 'rx.testing'],
     package_dir={'rx':'rx'}
 )
