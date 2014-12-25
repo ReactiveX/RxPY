@@ -8,11 +8,12 @@ class AnonymousObservable(Observable):
     implementation of the Subscribe method."""
 
     def __init__(self, subscribe):
-        """Creates an observable sequence object from the specified subscription
-        function.
+        """Creates an observable sequence object from the specified
+        subscription function.
 
         Keyword arguments:
-        subscribe -- Subscribe method implementation."""
+        :param types.FunctionType subscribe: Subscribe method implementation.
+        """
 
         def _subscribe(observer):
             """Decorator for subscribe. It wraps the observer in an

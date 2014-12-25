@@ -18,7 +18,7 @@ def if_then(cls, condition, then_source, else_source=None, scheduler=None):
         will be run if the condition function returns true.
     else_source -- {Observable} [Optional] The observable sequence or
         Promise that will be run if the condition function returns False.
-        If this is not provided, it defaults to Rx.Observabe.Empty
+        If this is not provided, it defaults to rx.Observable.empty
     scheduler -- [Optional] Scheduler to use.
 
     Returns an observable {Observable} sequence which is either the
@@ -31,6 +31,5 @@ def if_then(cls, condition, then_source, else_source=None, scheduler=None):
     else_source = Observable.from_future(else_source)
 
     def factory():
-
         return then_source if condition() else else_source
     return Observable.defer(factory)
