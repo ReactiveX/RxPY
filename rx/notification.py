@@ -5,7 +5,7 @@ from rx.concurrency import immediate_scheduler
 from .observer import Observer
 from .anonymousobservable import AnonymousObservable
 
-# Notifications
+
 class Notification(object):
     """Represents a notification to an observer."""
 
@@ -121,7 +121,7 @@ class OnError(Notification):
         return observer.on_error(self.exception)
 
     def __str__(self):
-        return "OnError(%s)" % self.exception
+        return "OnError(%s)" % str(self.exception)
 
 class OnCompleted(Notification):
     """Represents an OnCompleted notification to an observer."""
