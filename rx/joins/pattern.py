@@ -32,7 +32,7 @@ class Pattern(object):
         :rtype: Pattern
         """
 
-        return self._and(other)
+        return self.and_(other)
         
     def then_do(self, selector):
         """Matches when all observable sequences in the pattern (specified using
