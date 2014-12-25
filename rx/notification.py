@@ -1,11 +1,12 @@
 from rx import Observable, Observer
 from rx.abstractobserver import AbstractObserver
 from rx.concurrency import immediate_scheduler
+from rx.internal import extensionclassmethod
 
 from .observer import Observer
 from .anonymousobservable import AnonymousObservable
 
-# Notifications
+
 class Notification(object):
     """Represents a notification to an observer."""
 
@@ -55,26 +56,6 @@ class Notification(object):
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
 
-    @classmethod
-    def observer_from_notifier(cls, handler):
-        """Creates an observer from a notification callback.
-
-        Keyword arguments:
-        handler -- Action that handles a notification.
-
-        Returns the observer object that invokes the specified handler using a
-        notification corresponding to each message it receives.
-        """
-
-        def _on_next(value):
-            return handler(OnNext(value))
-        def _on_error(ex):
-            return handler(OnError(ex))
-        def _on_completed():
-            return handler(OnCompleted())
-
-        return Observer(_on_next, _on_error, _on_completed)
-
     def equals(self, other):
         """Indicates whether this instance and a specified object are equal."""
 
@@ -83,6 +64,7 @@ class Notification(object):
 
     def __eq__(self, other):
         return self.equals(other)
+
 
 class OnNext(Notification):
     """Represents an OnNext notification to an observer."""
@@ -104,6 +86,7 @@ class OnNext(Notification):
     def __str__(self):
         return "OnNext(%s)" % str(self.value)
 
+
 class OnError(Notification):
     """Represents an OnError notification to an observer."""
 
@@ -123,6 +106,7 @@ class OnError(Notification):
     def __str__(self):
         return "OnError(%s)" % self.exception
 
+
 class OnCompleted(Notification):
     """Represents an OnCompleted notification to an observer."""
 
@@ -141,5 +125,44 @@ class OnCompleted(Notification):
     def __str__(self):
         return "OnCompleted()"
 
-# Stiched here to avoid circular dependencies in import chain
-Observer.from_notifier = Notification.observer_from_notifier
+    @classmethod
+    def observer_from_notifier(cls, handler):
+        """Creates an observer from a notification callback.
+
+        Keyword arguments:
+        handler -- Action that handles a notification.
+
+        Returns the observer object that invokes the specified handler using a
+        notification corresponding to each message it receives.
+        """
+
+        def _on_next(value):
+            return handler(OnNext(value))
+        def _on_error(ex):
+            return handler(OnError(ex))
+        def _on_completed():
+            return handler(OnCompleted())
+
+        return Observer(_on_next, _on_error, _on_completed)
+
+
+@extensionclassmethod(Observer)
+def from_notifier(cls, handler):
+    """Creates an observer from a notification callback.
+
+    Keyword arguments:
+    :param handler: Action that handles a notification.
+
+    :returns: The observer object that invokes the specified handler using a
+    notification corresponding to each message it receives.
+    :rtype: Observer
+    """
+
+    def _on_next(value):
+        return handler(OnNext(value))
+    def _on_error(ex):
+        return handler(OnError(ex))
+    def _on_completed():
+        return handler(OnCompleted())
+
+    return Observer(_on_next, _on_error, _on_completed)
