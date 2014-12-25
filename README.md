@@ -55,9 +55,9 @@ Note that `pip` may be called `pip3` if your're using Python3.
 
 RxPY is a fairly complete implementation of
 [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 126 query operators, and over 1100 passing unit-tests. RxPY
-is a direct port of RxJS, but also borrows a bit from RxNET and RxJava with
-regards to threading and blocking operators.
+v2.2 with more than 134 query operators, and over 1100 passing unit-tests. RxPY
+is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava
+in terms of threading and blocking operators.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all
 function and method names are lowercase with words separated by underscores as

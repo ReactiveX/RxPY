@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0rc6
+
+- Fixed typo in `Pattern#_and`. Should be `Pattern#and_`
+
 ## 1.0.0rc5
 
 - Added missing rx.linq.observable.blocking from setup.py
