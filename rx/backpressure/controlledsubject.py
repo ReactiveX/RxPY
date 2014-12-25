@@ -41,7 +41,7 @@ class ControlledSubject(Observable):
 
         if not self.requested_count:
             if self.enable_queue:
-                self.queue.push(value)
+                self.queue.append(value)
         else:
             if self.requested_count != -1:
                 requested_count = self.requested_count
@@ -64,9 +64,9 @@ class ControlledSubject(Observable):
                 number_of_items -= 1
 
             if len(self.queue):
-                return { "number_of_items": number_of_items, "return_value": True }
+                return {"number_of_items": number_of_items, "return_value": True}
             else:
-                return { "number_of_items": number_of_items, "return_value": False }
+                return {"number_of_items": number_of_items, "return_value": False}
 
         if self.has_failed:
             self.subject.on_error(self.error)
@@ -77,7 +77,7 @@ class ControlledSubject(Observable):
             self.controlled_disposable.dispose()
             self.controlled_disposable = Disposable.empty()
 
-        return { "number_of_items": number_of_items, "return_value": False }
+        return {"number_of_items": number_of_items, "return_value": False}
 
     def request(self, number):
         check_disposed(self)
