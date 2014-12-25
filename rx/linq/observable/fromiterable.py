@@ -13,11 +13,13 @@ def from_iterable(cls, iterable, scheduler=None):
     2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
     Keyword arguments:
-    scheduler -- [Optional] Scheduler to run the enumeration of the input
+    :param Observable cls: Observable class
+    :param Scheduler scheduler: [Optional] Scheduler to run the enumeration of the input
         sequence on.
 
-    Returns the observable sequence whose elements are pulled from the
-    given enumerable sequence.
+    :returns: The observable sequence whose elements are pulled from the
+        given enumerable sequence.
+    :rtype: Observable
     """
 
     scheduler = scheduler or current_thread_scheduler

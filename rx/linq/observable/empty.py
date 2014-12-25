@@ -10,7 +10,7 @@ def empty(cls, scheduler=None):
     to send out the single OnCompleted message.
 
     1 - res = rx.Observable.empty()
-    2 - res = rx.Observable.empty(Rx.Scheduler.timeout)
+    2 - res = rx.Observable.empty(rx.Scheduler.timeout)
 
     scheduler -- Scheduler to send the termination call on.
 

@@ -11,8 +11,10 @@ from .scheduler import Scheduler
 
 log = logging.getLogger('Rx')
 
+
 class EventLoopScheduler(Scheduler, Disposable):
-    """Creates an object that schedules units of work on a designated thread."""
+    """Creates an object that schedules units of work on a designated thread.
+    """
 
     def __init__(self, thread_factory=None, exit_if_empty=False):
         super(EventLoopScheduler, self).__init__()
@@ -40,7 +42,7 @@ class EventLoopScheduler(Scheduler, Disposable):
         
         with self.condition:
             self.ready_list.append(si)
-            self.condition.notify() # signal that a new item is available
+            self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
         return Disposable(si.cancel)
@@ -64,7 +66,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                 self.ready_list.append(si)
             else:
                 self.queue.enqueue(si)
-            self.condition.notify() # signal that a new item is available
+            self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
         return Disposable(si.cancel)
@@ -87,9 +89,10 @@ class EventLoopScheduler(Scheduler, Disposable):
 
             with self.condition:
 
-                # The event could have been set by a call to dispose. This takes
-                # priority over anything else. We quit the loop immediately.
-                # Subsequent calls to Schedule won't ever create a new thread.
+                # The event could have been set by a call to dispose. This
+                # takes priority over anything else. We quit the loop
+                # immediately. Subsequent calls to Schedule won't ever create a
+                # new thread.
                 if self.is_disposed:
                     return
 
@@ -125,8 +128,9 @@ class EventLoopScheduler(Scheduler, Disposable):
                         return
 
     def dipose(self):
-        """Ends the thread associated with this scheduler. All remaining work in
-        the scheduler queue is abandoned."""
+        """Ends the thread associated with this scheduler. All remaining work
+        in the scheduler queue is abandoned.
+        """
 
         with self.condition:
             if not self.is_disposed:
@@ -139,6 +143,6 @@ class EventLoopScheduler(Scheduler, Disposable):
                 if self.queue.remove(item):
                     self.ready_list.append(item)
 
-            self.condition.notify() # signal that a new item is available
+            self.condition.notify()  # signal that a new item is available
 
 Scheduler.event_loop = event_loop_scheduler = EventLoopScheduler()

@@ -12,9 +12,11 @@ def element_at(self, index):
     res = source.element_at(5)
 
     Keyword arguments:
-    index -- {Number} The zero-based index of the element to retrieve.
+    :param int index: The zero-based index of the element to retrieve.
 
-    Returns an observable {Observable} sequence that produces the element at
-    the specified position in the source sequence."""
+    :returns: An observable  sequence that produces the element at the
+    specified position in the source sequence.
+    :rtype: Observable
+    """
 
     return _element_at_or_default(self, index, False)

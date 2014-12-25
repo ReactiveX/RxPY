@@ -5,6 +5,7 @@ from .scheduler import Scheduler
 # Immediate Scheduler
 SCHEDULER_NO_BLOCK_ERROR = "Scheduler is not allowed to block the thread"
 
+
 class ImmediateScheduler(Scheduler):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
