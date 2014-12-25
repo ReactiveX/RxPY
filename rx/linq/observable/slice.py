@@ -54,6 +54,7 @@ def slice_(self, start=None, stop=None, step=1):
 
     return source
 
+
 @extensionmethod(Observable)
 def __getitem__(self, key):
     """Slices the given observable using Python slice notation. The
