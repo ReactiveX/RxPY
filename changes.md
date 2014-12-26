@@ -1,5 +1,11 @@
 # Changes
 
+## 1.0.0rc6
+
+- Fixed typo in `Pattern#_and`. Should be `Pattern#and_`
+- Fixed bug. Replaced push with append  in controlledsubject.py
+- Refeactored `observer_from_notifier` to `Observer.from_notification`
+
 ## 1.0.0rc5
 
 - Added missing rx.linq.observable.blocking from setup.py

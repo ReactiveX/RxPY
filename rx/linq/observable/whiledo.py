@@ -9,13 +9,14 @@ def while_do(cls, condition, source):
     """Repeats source as long as condition holds emulating a while loop.
 
     Keyword arguments:
-    condition -- {Function} The condition which determines if the source
-        will be repeated.
-    source -- {Observable} The observable sequence that will be run if the
+    :param types.FunctionType condition: The condition which determines if the
+        source will be repeated.
+    :param Observable source: The observable sequence that will be run if the
         condition function returns true.
 
-    Returns an observable {Observable} sequence which is repeated as long
-    as the condition holds.
+    :returns: An observable sequence which is repeated as long as the condition
+        holds.
+    :rtype: Observable
     """
 
     source = Observable.from_future(source)

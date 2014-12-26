@@ -10,7 +10,8 @@ from .innersubscription import InnerSubscription
 
 class Subject(Observable, AbstractObserver):
     """Represents an object that is both an observable sequence as well as an
-    observer. Each notification is broadcasted to all subscribed observers."""
+    observer. Each notification is broadcasted to all subscribed observers.
+    """
 
     def __init__(self):
         super(Subject, self).__init__(self._subscribe)

@@ -1,8 +1,6 @@
 from datetime import datetime
-
-from rx.internal.basic import default_sub_comparer
-
 from .virtualtimescheduler import VirtualTimeScheduler
+
 
 class HistoricalScheduler(VirtualTimeScheduler):
     """Provides a virtual time scheduler that uses datetime for absolute time

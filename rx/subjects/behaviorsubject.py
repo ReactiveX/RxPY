@@ -19,9 +19,10 @@ class BehaviorSubject(Observable, AbstractObserver):
         specified value.
 
         Keyword parameters:
-        value -- Initial value sent to observers when no other value has been
-            received by the subject yet.
+        :param T value: Initial value sent to observers when no other value has
+            been received by the subject yet.
         """
+
         super(BehaviorSubject, self).__init__(self.__subscribe)
 
         self.value = value

@@ -2,7 +2,6 @@ import logging
 
 from rx import Observable
 from rx.abstractobserver import AbstractObserver
-from rx.internal.utils import check_disposed
 from rx.concurrency import timeout_scheduler
 
 log = logging.getLogger('Rx')

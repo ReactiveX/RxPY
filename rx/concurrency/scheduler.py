@@ -4,8 +4,11 @@ from datetime import datetime, timedelta
 from rx.disposables import Disposable, CompositeDisposable
 from rx.internal.basic import default_now
 
+
 class Scheduler(object):
-    """Provides a set of static properties to access commonly used schedulers."""
+    """Provides a set of static properties to access commonly used
+    schedulers.
+    """
 
     def schedule(self, action, state=None):
         raise NotImplementedError
@@ -22,7 +25,7 @@ class Scheduler(object):
 
     def schedule_periodic(self, period, action, state=None):
         """Schedules a periodic piece of work by dynamically discovering the
-        scheduler's capabilities.
+        schedulers capabilities.
 
         Keyword arguments:
         period -- Period for running the work periodically.
@@ -39,7 +42,7 @@ class Scheduler(object):
 
         def interval():
             new_state = action(s[0])
-            if not new_state is None: # Update state if other than None
+            if new_state is not None:  # Update state if other than None
                 s[0] = new_state
 
             timer[0] = Timer(period, interval)
@@ -53,7 +56,8 @@ class Scheduler(object):
 
         return Disposable(dispose)
 
-    def invoke_rec_immediate(self, scheduler, pair):
+    @staticmethod
+    def invoke_rec_immediate(scheduler, pair):
         state = pair.get('state')
         action = pair.get('action')
         group = CompositeDisposable()
@@ -83,7 +87,8 @@ class Scheduler(object):
         recursive_action(state)
         return group
 
-    def invoke_rec_date(self, scheduler, pair, method):
+    @staticmethod
+    def invoke_rec_date(scheduler, pair, method):
         state = pair.get('first')
         action = pair.get('second')
         group = CompositeDisposable()
@@ -102,7 +107,8 @@ class Scheduler(object):
                     recursive_action(state3)
                     return Disposable.empty()
 
-                d = getattr(scheduler, method)(duetime=duetime1, action=action2, state=state2)
+                meth = getattr(scheduler, method)
+                d = meth(duetime=duetime1, action=action2, state=state2)
                 if not is_done[0]:
                     group.add(d)
                     is_added = True
@@ -115,10 +121,13 @@ class Scheduler(object):
         """Schedules an action to be executed recursively.
 
         Keyword arguments:
-        action -- {Function} Action to execute recursively. The parameter passed
-            to the action is used to trigger recursive scheduling of the action.
-        Returns the disposable {Disposable} object used to cancel the scheduled
-        action (best effort)."""
+        :param types.FunctionType action: Action to execute recursively.
+            The parameter passed to the action is used to trigger recursive
+            scheduling of the action.
+        :returns: The disposable  object used to cancel the scheduled action
+        (best effort).
+        :rtype: Disposable
+        """
 
         def scheduled_action(scheduler, pair):
             return self.invoke_rec_immediate(scheduler, pair)
@@ -150,20 +159,24 @@ class Scheduler(object):
         relative due time.
 
         Keyword arguments:
-        state  -- {Mixed} State passed to the action to be executed.
-        action -- {Function} Action to execute recursively. The last parameter
-            passed to the action is used to trigger recursive scheduling of the
-            action, passing in the recursive due time and invocation state.
-        duetime - {Number} Relative time after which to execute the action for
-            the first time.
+        :param T state: State passed to the action to be executed.
+        :param types.FunctionType action: Action to execute recursively. The
+            last parameter passed to the action is used to trigger recursive
+            scheduling of the action, passing in the recursive due time and
+            invocation state.
+        :param int|timedelta duetime: Relative time after which to execute the
+            action for the first time.
 
-        Returns the disposable {Disposable} object used to cancel the scheduled
-        action (best effort)."""
+        :returns: The disposable object used to cancel the scheduled action
+            (best effort).
+        :rtype: Disposable
+        """
 
         def action1(s, p):
             return self.invoke_rec_date(s, p, 'schedule_relative')
 
-        return self.schedule_relative(duetime, action1, state={ "first": state, "second": action })
+        return self.schedule_relative(duetime, action1,
+                                      state={"first": state, "second": action})
 
     def schedule_recursive_with_absolute(self, duetime, action):
         """Schedules an action to be executed recursively at a specified
@@ -183,7 +196,9 @@ class Scheduler(object):
             def func(dt):
                 this(_action, dt)
             _action(func)
-        return self.schedule_recursive_with_absolute_and_state(duetime=duetime, action=action1, state=action)
+        return self.schedule_recursive_with_absolute_and_state(duetime=duetime,
+                                                               action=action1,
+                                                               state=action)
 
     def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
         """Schedules an action to be executed recursively at a specified
@@ -204,11 +219,13 @@ class Scheduler(object):
 
         return self.schedule_absolute(
             duetime=duetime, action=action2,
-            state={ "first": state, "second": action })
+            state={"first": state, "second": action})
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled
-        on a scheduler will adhere to the time denoted by this property."""
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+        """
 
         return self.default_now()
 
@@ -259,11 +276,13 @@ class Scheduler(object):
     def normalize(cls, timespan):
         """Normalizes the specified timespan value to a positive value.
 
-        Keyword Arguments:
-        timeSpan -- {Number} The time span value to normalize.
+        Keyword arguments:
+        :param int|timedelta timespan: The time span value to normalize.
 
-        Returns {Number} The specified Timespan value if it is zero or positive;
-            otherwise, 0"""
+        :returns: The specified Timespan value if it is zero or positive;
+            otherwise, 0
+        :rtype: int|timedelta
+        """
 
         nospan = 0 if isinstance(timespan, int) else timedelta(0)
         if not timespan or timespan < nospan:

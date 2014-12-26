@@ -1,6 +1,5 @@
 from rx.abstractobserver import AbstractObserver
 from rx.disposables import SingleAssignmentDisposable
-from rx.internal.basic import noop
 
 class JoinObserver(AbstractObserver):
 

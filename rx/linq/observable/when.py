@@ -7,8 +7,9 @@ from rx.internal import extensionclassmethod
 def when(cls, *args):
     """Joins together the results from several patterns.
 
-    :param [Plan] args: A series of plans (specified as a list of as a series
-        of arguments) created by use of the Then operator on patterns.
+    :param Observable cls: Observable class.
+    :param list[Plan] args: A series of plans (specified as a list of as a
+        series of arguments) created by use of the Then operator on patterns.
     :returns: Observable sequence with the results form matching several
         patterns.
     :rtype: Observable

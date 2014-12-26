@@ -12,12 +12,15 @@ def where(self, predicate):
     2 - source.filter(lambda value, index: value < 10 or index < 10)
 
     Keyword arguments:
-    predicate -- A function to test each source element for a conditio; the
+    :param Observable self: Observable sequence to filter.
+    :param (T, <int>) -> bool predicate: A function to test each source element
+        for a condition; the
         second parameter of the function represents the index of the source
         element.
 
-    Returns an observable sequence that contains elements from the input
+    :returns: An observable sequence that contains elements from the input
     sequence that satisfy the condition.
+    :rtype: Observable
     """
 
     predicate = adapt_call(predicate)
@@ -27,7 +30,6 @@ def where(self, predicate):
         count = [0]
 
         def on_next(value):
-            should_run = False
             try:
                 should_run = predicate(value, count[0])
             except Exception as ex:

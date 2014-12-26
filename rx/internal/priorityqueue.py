@@ -49,7 +49,7 @@ class PriorityQueue(object):
         with self.lock:
             for index, _item in enumerate(self.items):
                 if _item[0] == item:
-                    item = self.items.pop(index)
+                    self.items.pop(index)
                     heapq.heapify(self.items)
                     return True
 
