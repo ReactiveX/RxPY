@@ -8,7 +8,8 @@ from .stopandwaitobservable import StopAndWaitObservable
 def stop_and_wait(self):
     """Attaches a stop and wait observable to the current observable.
 
-    Returns a stop and wait observable {Observable}.
+    :returns: A stop and wait observable.
+    :rtype: Observable
     """
 
     return StopAndWaitObservable(self)

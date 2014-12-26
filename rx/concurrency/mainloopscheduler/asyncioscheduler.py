@@ -52,10 +52,10 @@ class AsyncIOScheduler(Scheduler):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
+
         def interval():
             disposable.disposable = action(scheduler, state)
 
-        log.debug("timeout: %s", seconds)
         handle = [self.loop.call_later(seconds, interval)]
 
         def dispose():
@@ -68,18 +68,23 @@ class AsyncIOScheduler(Scheduler):
         """Schedules an action to be executed at duetime.
 
         Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        :param datetime duetime: Absolute time after which to execute the
+            action.
+        :param types.FunctionType action: Action to be executed.
+        :param T state: Optional state to be given to the action function.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        :returns: The disposable object used to cancel the scheduled action
+            (best effort).
+        :rtype: Disposable
+        """
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
     def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled 
-        on a scheduler will adhere to the time denoted by this property."""
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+        """
         
         return self.to_datetime(self.loop.time())
-
