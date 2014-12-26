@@ -10,8 +10,8 @@ setup(
     version='1.0.0rc6',
     description='Reactive Extensions (Rx) for Python',
     long_description = ("is a library for composing asynchronous and "
-        "event-based programs using observable collections and LINQ-style query"
-        "operators in Python"),
+        "event-based programs using observable collections and LINQ-style "
+        "query operators in Python."),
     author='Dag Brattli',
     author_email='dag@brattli.net',
     license='Apache License',
