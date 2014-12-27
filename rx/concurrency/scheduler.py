@@ -124,8 +124,10 @@ class Scheduler(object):
         :param types.FunctionType action: Action to execute recursively.
             The parameter passed to the action is used to trigger recursive
             scheduling of the action.
+        :param T state: State to be given to the action function.
+
         :returns: The disposable  object used to cancel the scheduled action
-        (best effort).
+            (best effort).
         :rtype: Disposable
         """
 
