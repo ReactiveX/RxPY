@@ -3,6 +3,7 @@ from rx.disposables import Disposable
 from rx.subjects import Subject
 from rx.internal.utils import check_disposed
 
+
 class ControlledSubject(Observable):
     def __init__(self, enable_queue=True):
         super(ControlledSubject, self).__init__(self._subscribe)

@@ -22,4 +22,5 @@ def single(self, predicate=None):
     observable sequence that satisfies the condition in the predicate.
     """
 
-    return self.filter(predicate).single() if predicate else single_or_default_async(self, False)
+    return self.filter(predicate).single() if predicate else \
+        single_or_default_async(self, False)

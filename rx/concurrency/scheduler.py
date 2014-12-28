@@ -124,8 +124,10 @@ class Scheduler(object):
         :param types.FunctionType action: Action to execute recursively.
             The parameter passed to the action is used to trigger recursive
             scheduling of the action.
+        :param T state: State to be given to the action function.
+
         :returns: The disposable  object used to cancel the scheduled action
-        (best effort).
+            (best effort).
         :rtype: Disposable
         """
 
@@ -200,7 +202,8 @@ class Scheduler(object):
                                                                action=action1,
                                                                state=action)
 
-    def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
+    def schedule_recursive_with_absolute_and_state(self, duetime, action,
+                                                   state):
         """Schedules an action to be executed recursively at a specified
         absolute due time.
 
@@ -242,7 +245,7 @@ class Scheduler(object):
         elif isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
         elif isinstance(timespan, float):
-            timespan = timespan * 1000
+            timespan *= 1000
 
         return int(timespan)
 

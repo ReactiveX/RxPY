@@ -6,6 +6,7 @@ from rx.concurrency import timeout_scheduler
 
 log = logging.getLogger('Rx')
 
+
 class WindowedObserver(AbstractObserver):
     def __init__(self, observer, observable, cancel, scheduler):
         self.observer = observer
@@ -41,6 +42,7 @@ class WindowedObserver(AbstractObserver):
                 self.cancel = None
 
             super(AbstractObserver, self).dispose()
+
 
 class WindowedObservable(Observable):
     def __init__(self, source, window_size, scheduler=None):

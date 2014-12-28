@@ -19,16 +19,16 @@ class CatchScheduler(Scheduler):
 
         return self._scheduler.scheduleWithState(state, self._wrap(action))
 
-    def schedule_relative(self, state, due_time, action):
+    def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        return self._scheduler.schedule_relative(due_time, self._wrap(action),
+        return self._scheduler.schedule_relative(duetime, self._wrap(action),
                                                  state=state)
 
-    def schedule_absolute(self, state, due_time, action):
+    def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        return self._scheduler.schedule_absolute(due_time, self._wrap(action),
+        return self._scheduler.schedule_absolute(duetime, self._wrap(action),
                                                  state=state)
 
     def _clone(self, scheduler):
@@ -60,11 +60,11 @@ class CatchScheduler(Scheduler):
         d = SingleAssignmentDisposable()
         failed = [False]
 
-        def action(state1):
+        def periodic_action(periodic_state):
             if failed[0]:
                 return None
             try:
-                return action(state1)
+                return action(periodic_state)
             except Exception as ex:
                 failed[0] = True
                 if not self._handler(ex):
@@ -72,5 +72,6 @@ class CatchScheduler(Scheduler):
                 d.dispose()
                 return None
 
-        d.disposable = self._scheduler.schedule_periodic(action, period, state)
+        d.disposable = self._scheduler.schedule_periodic(periodic_action,
+                                                         period, state)
         return d

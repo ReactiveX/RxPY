@@ -3,11 +3,13 @@ import threading
 from threading import Timer
 from datetime import timedelta
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
+from rx.disposables import Disposable, SingleAssignmentDisposable, \
+    CompositeDisposable
 
 from .scheduler import Scheduler
 
 log = logging.getLogger('Rx')
+
 
 class NewThreadScheduler(Scheduler):
     """Creates an object that schedules each unit of work on a separate thread.

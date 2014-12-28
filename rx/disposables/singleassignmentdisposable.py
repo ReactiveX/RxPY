@@ -1,6 +1,6 @@
 from .booleandisposable import BooleanDisposable
 
-# Single assignment
+
 class SingleAssignmentDisposable(BooleanDisposable):
     """Represents a disposable resource which only allows a single assignment 
     of its underlying disposable resource. If an underlying disposable resource
@@ -9,4 +9,3 @@ class SingleAssignmentDisposable(BooleanDisposable):
 
     def __init__(self):
         super(SingleAssignmentDisposable, self).__init__(True)
-

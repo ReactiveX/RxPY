@@ -90,12 +90,54 @@ res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 Thus when an operator like `Observable.timeout` has multiple optional arguments
 you should name your arguments. At least the arguments marked as optional.
 
+## Python Alignment
+
+Disposables implements a context manager so you may use them in `with`
+statements.
+
+Observable sequences may be concatenated using `+`, so you can write:
+
+```python
+xs = Observable.from_([1,2,3])
+ys = Observable.from_([4,5,6])
+zs = xs + ys  # Concatenate observables
+```
+
+Observable sequences may be repeated using `*=`, so you can write:
+
+```python
+xs = Observable.from_([1,2,3])
+ys = xs * 4
+```
+
+Observable sequences may be sliced using `[start:stop:step]`, so you can write:
+
+```python
+xs = Observable.from_([1,2,3,4,5,6])
+ys = xs[1:-1]
+```
+
+Observable sequences may be turned into an iterator so you can use generator
+expressions, or iterate over them (uses queueing and blocking).
+
+```python
+xs = Observable.from_([1,2,3,4,5,6])
+ys = xs.to_blocking()
+zs = (x*x for x in ys if x > 3)
+for x in zs:
+    print(x)
+```
+
+## Schedulers
+
+In RxPY you can choose to run fully asynchronously or you may decide to schedule
+work and timeouts using threads.
+
 For time and scheduler handing you will need to supply
 [datetime](https://docs.python.org/2/library/datetime.html) for absolute time
 values and
 [timedelta](https://docs.python.org/2/library/datetime.html#timedelta-objects)
-for relative time. For relative time values you may also use `int` to represent
-milliseconds, or `float` to represent seconds.
+for relative time. You may also use `int` to represent milliseconds.
 
 RxPY also comes with batteries included, and has a number of Python specific
 mainloop schedulers to make it easier for you to use RxPY with your favorite
