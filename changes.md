@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0rc7
+
+- Fixed bug in ScheduledDisposable#dispose. Only dispose if not disposed
+
 ## 1.0.0rc6
 
 - Fixed typo in `Pattern#_and`. Should be `Pattern#and_`
@@ -53,10 +57,12 @@
 
 - Aligning throttle type operator naming with RxJS and RxJava
 - Added `throttle_last()` as alias for `sample()`
-- Renamed `throttle()` to `debounce()` and added `throttle_with_timeout()` as alias
+- Renamed `throttle()` to `debounce()` and added `throttle_with_timeout()` as
+  alias
 - Renamed `any()` to `some()`
 - Simplified `sequence_equal()`
 - Bugfix for `take()` when no count given
-- Removed internal operator `final_value()` which did exactly the same as `last()`
+- Removed internal operator `final_value()` which did exactly the same as
+  `last()`
 - Added `to_iterable()` as alias to `to_list()`
 - Added `throttle_first()`
