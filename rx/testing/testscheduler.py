@@ -46,6 +46,8 @@ class TestScheduler(VirtualTimeScheduler):
 
     @staticmethod
     def add(absolute, relative):
+        """Adds a relative virtual time to an absolute virtual time value"""
+
         return absolute + relative
 
     def start(self, create=None, created=None, subscribed=None, disposed=None):
