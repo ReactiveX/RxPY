@@ -1,6 +1,7 @@
 from rx import Lock
 from .disposable import Disposable
 
+
 class RefCountDisposable(Disposable):
     """Represents a disposable resource that only disposes its underlying
     disposable resource when all dependent disposable objects have been

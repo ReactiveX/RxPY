@@ -1,7 +1,9 @@
 from rx.disposables import SingleAssignmentDisposable
 
+
 def default_sub_comparer(x, y):
     return 0 if x == y else 1 if x > y else -1
+
 
 class ScheduledItem(object):
     def __init__(self, scheduler, state, action, duetime, comparer=None):

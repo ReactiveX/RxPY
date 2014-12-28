@@ -1,5 +1,6 @@
 from .disposable import Disposable
 
+
 class SerialDisposable(Disposable):
     """Represents a disposable resource whose underlying disposable resource can
     be replaced by another disposable resource, causing automatic disposal of
@@ -48,4 +49,3 @@ class SerialDisposable(Disposable):
 
         if old:
             old.dispose()
-

@@ -19,13 +19,13 @@ class CatchScheduler(Scheduler):
 
         return self._scheduler.scheduleWithState(state, self._wrap(action))
 
-    def schedule_relative(self, state, duetime, action):
+    def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
         return self._scheduler.schedule_relative(duetime, self._wrap(action),
                                                  state=state)
 
-    def schedule_absolute(self, state, duetime, action):
+    def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
         return self._scheduler.schedule_absolute(duetime, self._wrap(action),
@@ -72,5 +72,6 @@ class CatchScheduler(Scheduler):
                 d.dispose()
                 return None
 
-        d.disposable = self._scheduler.schedule_periodic(periodic_action, period, state)
+        d.disposable = self._scheduler.schedule_periodic(periodic_action,
+                                                         period, state)
         return d
