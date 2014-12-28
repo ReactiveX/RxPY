@@ -29,18 +29,14 @@ class VirtualTimeScheduler(Scheduler):
 
         super(VirtualTimeScheduler, self).__init__()
 
-    def local_now(self):
-        return self.to_datetime(self.clock)
-
-    def schedule_now(self, state, action):
-        return self.schedule_absolute_with_state(state, self.clock, action)
-
     def now(self):
         """Gets the schedulers absolute time clock value as datetime offset."""
 
         return self.to_datetime(self.clock)
 
     def schedule(self, action, state=None):
+        """Schedules an action to be executed."""
+
         return self.schedule_absolute(self.clock, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
