@@ -1,35 +1,17 @@
 # Changes
 
-## 1.0.0rc7
+## 1.0.0
 
 - Fixed bug in ScheduledDisposable#dispose. Only dispose if not disposed
-
-## 1.0.0rc6
-
 - Fixed typo in `Pattern#_and`. Should be `Pattern#and_`
 - Fixed bug. Replaced push with append  in controlledsubject.py
 - Refeactored `observer_from_notifier` to `Observer.from_notification`
-
-## 1.0.0rc5
-
 - Added missing rx.linq.observable.blocking from setup.py
-
-## 1.0.0rc4
-
 - Added missing rx.joins from setup.py
-
-## 1.0.0rc3
-
 - Removed some non git files files that were added to the package by accident
 - Added `Observable#to_iterable()`
-
-## 1.0.0rc2
-
 - Fixed examples. Use `debounce` instead of `throttle`
 - Fixed wrong aliases for `select_switch`.
-
-## 1.0.0rc1
-
 - Added join patterns. `Observable.when` and `Observable#and_`
 - Added `BlockingObservable`and operators `for_each` and `to_iterable`
 - Started adding docstrings as reStructuredText in order for PyCharm to infer
