@@ -2,6 +2,7 @@ from rx.disposables import Disposable, SingleAssignmentDisposable
 
 from .scheduler import Scheduler
 
+
 class CatchScheduler(Scheduler):
     def __init__(self, scheduler, handler):
         self._scheduler = scheduler
