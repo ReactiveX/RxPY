@@ -33,7 +33,7 @@ class PyGameScheduler(Scheduler):
         return self.schedule_relative(0, action, state)
 
     def run(self):
-        while self.queue.length:
+        while len(self.queue):
             item = self.queue.peek()
             diff = item.duetime - self.now()
             if diff > timedelta(0):
