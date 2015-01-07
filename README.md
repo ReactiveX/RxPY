@@ -49,7 +49,7 @@ To install RxPY:
 
 `pip install rx`
 
-Note that `pip` may be called `pip3` if your're using Python3.
+Note that `pip` may be called `pip3` if your are using Python3.
 
 ## Differences from .NET and RxJS
 
