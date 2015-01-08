@@ -3,7 +3,6 @@ import asyncio
 import rx
 from rx.concurrency import AsyncIOScheduler
 from rx.observable import Observable
-from rx.disposables import Disposable, SerialDisposable
 from rx.internal import extensionmethod
 
 @extensionmethod(Observable)
@@ -42,7 +41,7 @@ def to_async_generator(self, future_ctor=None, sentinel=None):
 
     @asyncio.coroutine
     def gen():
-        """Generator producing futures for the iterator"""
+        """Generator producing futures"""
         
         loop.call_soon(feeder)
         future[0] = future_ctor()
