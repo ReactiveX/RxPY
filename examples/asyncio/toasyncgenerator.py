@@ -23,11 +23,8 @@ def to_async_generator(self, future_ctor=None, sentinel=None):
 
         if notification.kind == "E":
             future[0].set_exception(notification.exception)
-
         elif notification.kind == "C":
-            print("Completed!")
             future[0].set_exception(StopIteration(sentinel))
-
         else:
             future[0].set_result(notification.value)
 
@@ -53,11 +50,11 @@ def to_async_generator(self, future_ctor=None, sentinel=None):
 def go():
     scheduler = AsyncIOScheduler()
 
-    source = Observable.from_([x for x in range(10)], scheduler=scheduler)
-    gen = source.to_async_generator()
+    xs = Observable.from_([x for x in range(10)], scheduler=scheduler)
+    gen = xs.to_async_generator()
 
     # Wish we could write something like:
-    # xs = (x for x in yield from gen())
+    # ys = (x for x in yield from gen())
     while True:
         x = yield from gen()
         if x is None:
