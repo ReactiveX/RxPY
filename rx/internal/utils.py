@@ -1,4 +1,5 @@
 from inspect import getargspec
+import types
 
 from rx import AnonymousObservable
 from rx.disposables import CompositeDisposable
@@ -13,7 +14,14 @@ def add_ref(xs, r):
 
 def adapt_call(func):
     """Adapts func from taking 3 params to only taking 1 or 2 params"""
-    
+
+    func_types = (
+        types.FunctionType,
+        types.MethodType,
+    )
+    if hasattr(func, '__call__') and not isinstance(func, func_types):
+        func = func.__call__
+
     def func1(arg1, *_):
         return func(arg1)
     def func2(arg1, arg2=None, *_):
@@ -21,12 +29,16 @@ def adapt_call(func):
 
     func_wrapped = func
     argnames, varargs, kwargs = getargspec(func)[:3]
+
     if not varargs and not kwargs:
-        if len(argnames) == 1: 
+        num_args = len(argnames)
+        if hasattr(func, '__self__'):
+            num_args -= 1
+        if num_args == 1:
             func_wrapped = func1
-        elif len(argnames) == 2:
+        elif num_args == 2:
             func_wrapped = func2
-    
+
     return func_wrapped
 
 def check_disposed(this):
