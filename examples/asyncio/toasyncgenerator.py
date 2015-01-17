@@ -5,6 +5,7 @@ from rx.concurrency import AsyncIOScheduler
 from rx.observable import Observable
 from rx.internal import extensionmethod
 
+
 @extensionmethod(Observable)
 def to_async_generator(self, future_ctor=None, sentinel=None):
     future_ctor = future_ctor or rx.config.get("Future")
