@@ -9,3 +9,7 @@ class Enumerator(object):
 
     # Python 2.7
     next = __next__
+
+    def __iter__(self):
+    	return self
+  
