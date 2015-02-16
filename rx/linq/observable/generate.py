@@ -14,7 +14,7 @@ def generate(cls, initial_state, condition, iterate, result_selector,
     1 - res = rx.Observable.generate(0,
         lambda x: x < 10,
         lambda x: x + 1,
-        lambda x x)
+        lambda x: x)
     2 - res = rx.Observable.generate(0,
         lambda x: x < 10,
         lambda x: x + 1,
