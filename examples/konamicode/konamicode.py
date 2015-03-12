@@ -9,7 +9,7 @@ from tornado import ioloop
 from rx.subjects import Subject
 
 UP, DOWN, LEFT, RIGHT, B, A = 38, 40, 37, 39, 66, 65
-codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, B, A]
+codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A]
 
 class WSHandler(WebSocketHandler):
     def open(self):
