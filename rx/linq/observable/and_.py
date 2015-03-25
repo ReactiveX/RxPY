@@ -3,6 +3,7 @@ from rx.internal import extensionmethod
 
 from rx.joins import Pattern
 
+
 @extensionmethod(Observable)
 def and_(self, right):
     """Creates a pattern that matches when both observable sequences have an 
@@ -15,4 +16,3 @@ def and_(self, right):
     """
 
     return Pattern([self, right])
-

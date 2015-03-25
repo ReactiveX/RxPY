@@ -1,6 +1,7 @@
 from rx import Observable
 from rx.internal import extensionmethod
 
+
 @extensionmethod(Observable)
 def count(self, predicate=None):
     """Returns an observable sequence containing a value that represents
@@ -11,7 +12,7 @@ def count(self, predicate=None):
     2 - res = source.count(lambda x: x > 3)
 
     Keyword arguments:
-    :param types.FunctionType predicate: A function to test each element for a 
+    :param types.FunctionType predicate: A function to test each element for a
         condition.
 
     :returns: An observable sequence containing a single element with a
@@ -20,7 +21,7 @@ def count(self, predicate=None):
     items in the sequence.
     :rtype: Observable
     """
-    
+
     if predicate:
         return self.filter(predicate).count()
     else:
