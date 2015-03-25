@@ -53,4 +53,3 @@ def element_at_or_default(self, index, default_value=None):
     """
 
     return _element_at_or_default(self, index, True, default_value)
-
