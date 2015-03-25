@@ -3,6 +3,7 @@ from rx.internal import extensionmethod
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
+
 def first_only(x):
     if not len(x):
         raise SequenceContainsNoElementsError()
@@ -26,4 +27,3 @@ def min(self, comparer=None):
     """
 
     return self.min_by(identity, comparer).map(first_only)
-

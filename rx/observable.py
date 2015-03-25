@@ -19,9 +19,9 @@ class Observable(object):
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None,
                   observer=None):
-        """Subscribes an observer to the observable sequence. Returns the source
-        sequence whose subscriptions and unsubscriptions happen on the specified
-        scheduler.
+        """Subscribes an observer to the observable sequence. Returns the
+        source sequence whose subscriptions and unsubscriptions happen on the
+        specified scheduler.
 
         1 - source.subscribe()
         2 - source.subscribe(observer)
@@ -34,8 +34,8 @@ class Observable(object):
             observable sequence.
         on_error -- [Optional] Action to invoke upon exceptional termination of
             the observable sequence.
-        on_completed -- [Optional] Action to invoke upon graceful termination of
-            the observable sequence.
+        on_completed -- [Optional] Action to invoke upon graceful termination
+            of the observable sequence.
         observer -- [Optional] The object that is to receive notifications. You
             may subscribe using an observer or callbacks, not both.
 
