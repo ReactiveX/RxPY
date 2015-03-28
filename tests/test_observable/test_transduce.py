@@ -4,9 +4,12 @@ from nose import SkipTest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-from transducer.functional import compose
-from transducer.react import transduce
-from transducer.transducers import (mapping, filtering, reducing)
+try:
+    from transducer.functional import compose
+    from transducer.react import transduce
+    from transducer.transducers import (mapping, filtering, reducing)
+except ImportError:
+    raise SkipTest("Transducers not available")
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
