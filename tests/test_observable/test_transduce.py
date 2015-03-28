@@ -1,4 +1,5 @@
 import unittest
+from nose import SkipTest
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
