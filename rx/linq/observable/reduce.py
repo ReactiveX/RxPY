@@ -17,16 +17,16 @@ def reduce(self, accumulator, seed=None):
     2 - res = source.reduce(lambda acc, x: acc + x, 0)
 
     Keyword arguments:
-    :param types.FunctionType accumulator: An accumulator function to be invoked
-        on each element.
+    :param types.FunctionType accumulator: An accumulator function to be
+        invoked on each element.
     :param T seed: Optional initial accumulator value.
 
-    :returns: An observable sequence containing a single element with the final
-    accumulator value.
+    :returns: An observable sequence containing a single element with the
+        final accumulator value.
     :rtype: Observable
     """
 
-    if not seed is None:
+    if seed is not None:
         return self.scan(accumulator, seed=seed).start_with(seed).last()
     else:
         return self.scan(accumulator).last()

@@ -27,6 +27,7 @@ def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_sel
     else:
         return self.window(closing_selector, buffer_closing_selector).select_many(lambda item: item.to_iterable())
 
+
 @extensionmethod(Observable)
 def buffer_with_count(self, count, skip=None):
     """Projects each element of an observable sequence into zero or more

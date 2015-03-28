@@ -3,6 +3,7 @@ from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionclassmethod
 
+
 @extensionclassmethod(Observable)
 def when(cls, *args):
     """Joins together the results from several patterns.
@@ -16,7 +17,7 @@ def when(cls, *args):
     """
 
     plans = args[0] if len(args) and isinstance(args[0], list) else list(args)
-    
+
     def subscribe(observer):
         active_plans = []
         external_subscriptions = {}
@@ -26,7 +27,8 @@ def when(cls, *args):
                 v.on_error(err)
             observer.on_error(err)
 
-        out_observer = Observer(observer.on_next, on_error, observer.on_completed)
+        out_observer = Observer(observer.on_next, on_error, 
+                                observer.on_completed)
 
         def deactivate(active_plan):
             active_plans.remove(active_plan)
@@ -34,7 +36,8 @@ def when(cls, *args):
                 observer.on_completed()
         try:
             for plan in plans:
-                active_plans.append(plan.activate(external_subscriptions, out_observer, deactivate))
+                active_plans.append(plan.activate(external_subscriptions, 
+                                                  out_observer, deactivate))
         except Exception as ex:
             Observable.throw(ex).subscribe(observer)
 

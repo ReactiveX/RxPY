@@ -8,16 +8,17 @@ class RefCountDisposable(Disposable):
     disposed."""
 
     class InnerDisposable(Disposable):
+
         def __init__(self, parent):
             self.parent = parent
             self.lock = Lock()
-            
+
         def dispose(self):
             with self.lock:
                 parent = self.parent
                 self.parent = None
             parent.release()
-            
+
     def __init__(self, disposable):
         """Initializes a new instance of the RefCountDisposable class with the
         specified disposable."""
@@ -49,14 +50,14 @@ class RefCountDisposable(Disposable):
     def release(self):
         if self.is_disposed:
             return
-        
+
         should_dispose = False
         with self.lock:
             self.count -= 1
             if not self.count and self.is_primary_disposed:
                 self.is_disposed = True
                 should_dispose = True
-        
+
         if should_dispose:
             self.underlying_disposable.dispose()
 

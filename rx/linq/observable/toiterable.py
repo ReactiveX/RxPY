@@ -2,6 +2,7 @@ from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extensionmethod
 
+
 @extensionmethod(Observable)
 def to_iterable(self):
     """Creates an iterable from an observable sequence.
@@ -12,6 +13,7 @@ def to_iterable(self):
     """
 
     source = self
+
     def subscribe(observer):
         queue = []
 

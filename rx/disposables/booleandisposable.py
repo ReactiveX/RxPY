@@ -1,5 +1,6 @@
 from .disposable import Disposable
 
+
 class BooleanDisposable(Disposable):
     """Represents a Disposable that can be checked for status."""
 

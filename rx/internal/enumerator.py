@@ -11,5 +11,4 @@ class Enumerator(object):
     next = __next__
 
     def __iter__(self):
-    	return self
-  
+        return self
