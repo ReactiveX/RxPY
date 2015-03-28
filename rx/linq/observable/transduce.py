@@ -16,10 +16,8 @@ from rx import Observable
 from rx.internal import extensionmethod
 from rx.anonymousobservable import AnonymousObservable
 
-from transducer.infrastructure import Transducer
 
-
-class Observing(Transducer):
+class Observing(object):
     """An observing transducer"""
 
     def __init__(self, observer):
@@ -33,6 +31,9 @@ class Observing(Transducer):
 
     def complete(self, obs):
         return obs.on_completed()
+
+    def __call__(self, result, item):
+        return self.step(result, item)
 
 
 @extensionmethod(Observable)
@@ -53,15 +54,12 @@ def transduce(self, transducer):
         xform = transducer(Observing(observer))
 
         def on_next(v):
-            print("on_next(%s)" % v)
             try:
                 xform.step(observer, v)
             except Exception as e:
-                print("transduce:excpetion")
                 observer.on_error(e)
 
         def on_completed():
-            print("on_completed()")
             xform.complete(observer)
 
         return source.subscribe(on_next, observer.on_error, on_completed)
