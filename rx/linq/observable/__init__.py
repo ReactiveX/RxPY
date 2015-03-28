@@ -122,6 +122,7 @@ from . import tofuture
 from . import toiterable
 from . import tolist
 from . import toset
+from . import transduce
 from . import using
 from . import when
 from . import where
