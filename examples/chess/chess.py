@@ -66,7 +66,7 @@ def main():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
-                pos = event.__dict__["pos"]
+                pos = event.pos
                 mousemove.on_next(pos)
             elif event.type == pygame.QUIT: 
                 sys.exit()

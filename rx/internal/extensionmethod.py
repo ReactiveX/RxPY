@@ -1,12 +1,12 @@
 def extensionmethod(base, name=None, decorator=None, instancemethod=False,
-    alias=None):
+                    alias=None):
     """Function decorator that extends base with the decorated
     function.
 
     Keyword arguments:
     :param T base: Base class to extend with method
     :param string name: Name of method to set
-    
+
     :returns: A function that takes the class to be decorated.
     :rtype: func -> func
     """
@@ -23,7 +23,7 @@ def extensionmethod(base, name=None, decorator=None, instancemethod=False,
             func_names += aliases
 
         func = decorator(func) if decorator else func
-        
+
         for func_name in func_names:
             if instancemethod:
                 base._methods.append((func_name, func))
@@ -32,6 +32,7 @@ def extensionmethod(base, name=None, decorator=None, instancemethod=False,
         return func
     return inner
 
+
 def extensionclassmethod(base, name=None, alias=None):
     """Function decorator that extends base with the decorated
     function as a class method.
@@ -39,10 +40,10 @@ def extensionclassmethod(base, name=None, alias=None):
     Keyword arguments:
     :param T base: Base class to extend with classmethod
     :param string name: Name of method to set
-    
+
     :returns: A function that takes the class to be decorated.
     :rtype: func -> func
     """
 
-    return extensionmethod(base=base, name=name, decorator=classmethod, 
-        alias=alias)
+    return extensionmethod(base=base, name=name, decorator=classmethod,
+                           alias=alias)

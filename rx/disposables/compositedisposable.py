@@ -1,5 +1,6 @@
 from .disposable import Disposable
 
+
 class CompositeDisposable(Disposable):
     """Represents a group of disposable resources that are disposed together"""
 

@@ -2,6 +2,7 @@ from rx.observable import Observable
 from rx.concurrency import TimeoutScheduler
 from rx.internal import extensionclassmethod
 
+
 @extensionclassmethod(Observable)
 def interval(cls, period, scheduler=None):
     """Returns an observable sequence that produces a value after each

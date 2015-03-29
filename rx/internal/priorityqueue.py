@@ -2,12 +2,13 @@ import heapq
 
 import rx
 
+
 class PriorityQueue(object):
     """ Priority queue for scheduling"""
 
     def __init__(self, capacity=None):
         self.items = []
-        self.count = 0 # Monotonic increasing for sort stability
+        self.count = 0  # Monotonic increasing for sort stability
 
         self.lock = rx.config.get("Lock")()
 

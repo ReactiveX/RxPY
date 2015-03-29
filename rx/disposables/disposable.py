@@ -1,9 +1,10 @@
 from rx import Lock
 from rx.internal import noop
 
+
 class Disposable(object):
     """Main disposable class"""
-    
+
     def __init__(self, action=None):
         """Creates a disposable object that invokes the specified action when
         disposed.

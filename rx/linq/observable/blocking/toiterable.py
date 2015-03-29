@@ -12,7 +12,7 @@ def to_iterable(self):
 
     :returns: An iterator that can iterate over the items emitted by this
         `BlockingObservable`.
-    :rtype: collections.Iterable
+    :rtype: Iterable[Any]
     """
 
     condition = threading.Condition()
@@ -54,9 +54,10 @@ def __iter__(self):
     """Returns an iterator that can iterate over items emitted by this
     `BlockingObservable`.
 
+    :param BlockingObservable self: Blocking observable instance.
     :returns: An iterator that can iterate over the items emitted by this
         `BlockingObservable`.
-    :rtype: collections.Iterable
+    :rtype: Iterable[Any]
     """
 
     return self.to_iterable()

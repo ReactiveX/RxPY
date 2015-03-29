@@ -27,6 +27,7 @@ def combine_latest(self, *args):
 
     return Observable.combine_latest(*args)
 
+
 @extensionclassmethod(Observable)
 def combine_latest(cls, *args):
     """Merges the specified observable sequences into one observable

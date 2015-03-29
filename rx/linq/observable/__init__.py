@@ -1,5 +1,6 @@
-"""Import all the LINQ observable extension methods"""
+"""Import all the LINQ observable extension methods."""
 
+# flake8: noqa
 from . import all
 from . import amb
 from . import and_
@@ -122,6 +123,7 @@ from . import tofuture
 from . import toiterable
 from . import tolist
 from . import toset
+from . import transduce
 from . import using
 from . import when
 from . import where

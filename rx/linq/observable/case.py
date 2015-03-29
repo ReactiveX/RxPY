@@ -1,6 +1,7 @@
 from rx import Observable
 from rx.internal import extensionclassmethod
 
+
 @extensionclassmethod(Observable, alias="switch_case")
 def case(cls, selector, sources, default_source=None, scheduler=None):
     """Uses selector to determine which source in sources to use.

@@ -14,8 +14,8 @@ def from_iterable(cls, iterable, scheduler=None):
 
     Keyword arguments:
     :param Observable cls: Observable class
-    :param Scheduler scheduler: [Optional] Scheduler to run the enumeration of the input
-        sequence on.
+    :param Scheduler scheduler: [Optional] Scheduler to run the enumeration of 
+        the input sequence on.
 
     :returns: The observable sequence whose elements are pulled from the
         given enumerable sequence.

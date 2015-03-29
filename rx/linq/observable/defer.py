@@ -12,8 +12,8 @@ def defer(cls, observable_factory):
     1 - res = rx.Observable.defer(lambda: rx.Observable.from_([1,2,3]))
 
     Keyword arguments:
-    :param types.FunctionType observable_factory: Observable factory function to 
-        invoke for each observer that subscribes to the resulting sequence.
+    :param types.FunctionType observable_factory: Observable factory function
+        to invoke for each observer that subscribes to the resulting sequence.
 
     :returns: An observable sequence whose observers trigger an invocation
     of the given observable factory function.

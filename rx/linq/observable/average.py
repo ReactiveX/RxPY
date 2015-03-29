@@ -3,9 +3,11 @@ from rx.internal import extensionmethod
 
 
 class AverageValue(object):
+
     def __init__(self, sum, count):
         self.sum = sum
         self.count = count
+
 
 @extensionmethod(Observable)
 def average(self, key_selector=None):

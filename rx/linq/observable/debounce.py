@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
@@ -69,6 +67,7 @@ def debounce(self, duetime, scheduler=None):
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
+
 @extensionmethod(Observable)
 def throttle_with_selector(self, throttle_duration_selector):
     """Ignores values from an observable sequence which are followed by
@@ -120,7 +119,8 @@ def throttle_with_selector(self, throttle_duration_selector):
                 has_value[0] = False
                 d.dispose()
 
-            d.disposable = throttle.subscribe(on_next, observer.on_error, on_completed)
+            d.disposable = throttle.subscribe(on_next, observer.on_error,
+                                              on_completed)
 
         def on_error(e):
             cancelable.dispose()

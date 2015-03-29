@@ -1,5 +1,17 @@
 # Changes
 
+## 1.1.0
+
+- Transducers via `Observable.transduce()`
+- `adapt_call` no longer requires the inspect module
+- Support callable instance, instance method, and class method for `adapt_call`
+  thanks to @succhiello.
+- Added example using concurrent futures for compute-intensive task
+  parallelization, thanks to @38elements.
+- Got chess example working again under Python 2.7 thansks to @enobayram.
+- Added example for async generator.
+- Many PEP 8 fixes.
+
 ## 1.0.0
 
 - Fixed bug in ScheduledDisposable#dispose. Only dispose if not disposed

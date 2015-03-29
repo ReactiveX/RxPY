@@ -8,11 +8,11 @@ def to_future(self, future_ctor=None):
     """Converts an existing observable sequence to a Future
 
     Example:
-    future = rx.Observable.return(42).to_future(RSVP.Promise);
+    future = rx.Observable.return_value(42).to_future(trollius.Future);
 
     With config:
-    Rx.config.Promise = RSVP.Promise
-    promise = rx.Observable.return(42).to_future()
+    rx.config["Future"] = trollius.Future
+    future = rx.Observable.return_value(42).to_future()
 
     future_ctor -- {Function} [Optional] The constructor of the future.
         If not provided, it looks for it in rx.config.Future.

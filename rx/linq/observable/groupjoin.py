@@ -156,4 +156,3 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
         group.add(right.subscribe(on_next_right, on_error_right))
         return r
     return AnonymousObservable(subscribe)
-

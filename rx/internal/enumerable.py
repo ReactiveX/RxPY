@@ -1,12 +1,13 @@
 import itertools
 
 from .basic import identity
-from .enumerator import Enumerator
+
 
 class Enumerable(object):
+
     def __init__(self, iterator):
         self._iterator = iterator
-        
+
     def __iter__(self):
         return  self._iterator
 
@@ -26,7 +27,7 @@ class Enumerable(object):
                     raise StopIteration
                 n -= 1
                 yield value
-            
+
             raise StopIteration
         return Enumerable(next())
 
@@ -45,7 +46,7 @@ class Enumerable(object):
 
     @classmethod
     def repeat(cls, value, count=None):
-        if not count is None:
+        if count is not None:
             return Enumerable(value for _ in range(count))
         return Enumerable(itertools.repeat(value))
 
@@ -53,4 +54,3 @@ class Enumerable(object):
     def for_each(cls, source, selector=None):
         selector = selector or identity
         return Enumerable(selector(value) for value in source)
-

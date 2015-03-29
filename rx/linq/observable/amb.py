@@ -79,6 +79,7 @@ def amb(self, right_source):
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)
 
+
 @extensionclassmethod(Observable)
 def amb(cls, *args):
     """Propagates the observable sequence that reacts first.

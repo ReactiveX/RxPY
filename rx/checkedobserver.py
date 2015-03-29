@@ -31,6 +31,11 @@ class CheckedObserver(Observer):
             self._state = 2
 
     def check_access(self):
+        """Checks access to the observer for grammar violations.
+        
+        OnNext* (OnError | OnCompleted)?
+        """
+        
         if self._state == 1:
             raise ReEntracyException()
         if self._state == 2:

@@ -17,4 +17,3 @@ def as_observable(self):
         return source.subscribe(observer)
 
     return AnonymousObservable(subscribe)
-

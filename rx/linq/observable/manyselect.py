@@ -35,7 +35,9 @@ class ChainObservable(Observable):
 
 @extensionmethod(Observable)
 def many_select(self, selector, scheduler=None):
-    """Comonadic bind operator.
+    """Comonadic bind operator. Internally projects a new observable for each 
+    value, and it pushes each observable into the user-defined selector function 
+    that projects/queries each observable into some result.
 
     Keyword arguments:
     selector -- {Function} A transform function to apply to each element.

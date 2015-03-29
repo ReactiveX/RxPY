@@ -25,6 +25,7 @@ def publish(self, selector=None):
     selector function."""
 
     if selector:
-        return self.multicast(subject_selector=lambda: Subject(), selector=selector)
+        return self.multicast(subject_selector=lambda: Subject(),
+                              selector=selector)
     else:
         return self.multicast(subject=Subject())
