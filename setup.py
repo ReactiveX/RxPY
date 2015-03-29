@@ -7,9 +7,9 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='1.0.0',
+    version='1.1.0',
     description='Reactive Extensions (Rx) for Python',
-    long_description = ("is a library for composing asynchronous and "
+    long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
         "query operators in Python."),
     author='Dag Brattli',
@@ -24,7 +24,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
-	    'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
