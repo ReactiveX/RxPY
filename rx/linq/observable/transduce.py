@@ -12,7 +12,6 @@ Transducers through Python" at:
 Other implementations of transducers in Python are:
 
  - https://github.com/cognitect-labs/transducers-python
- - https://github.com/abingham/python-transducers
 """
 
 from rx import Observable
