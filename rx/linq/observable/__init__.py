@@ -1,4 +1,4 @@
-"""Import all the LINQ observable extension methods"""
+"""Import all the LINQ observable extension methods."""
 
 # flake8: noqa
 from . import all

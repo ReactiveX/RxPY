@@ -3,6 +3,7 @@ from rx.internal import extensionmethod
 
 from .find import find_value
 
+
 @extensionmethod(Observable)
 def find_index(self, predicate):
     """Searches for an element that matches the conditions defined by the
@@ -18,5 +19,4 @@ def find_index(self, predicate):
     the first occurrence of an element that matches the conditions defined
     by match, if found; otherwise, -1.
     """
-
     return find_value(self, predicate, True)

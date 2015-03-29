@@ -13,5 +13,4 @@ def of(cls, *args, **kwargs):
     Returns the observable sequence whose elements are pulled from the given
     arguments
     """
-
     return Observable.from_iterable(args, scheduler=kwargs.get("scheduler"))

@@ -1,15 +1,18 @@
-"""
-# Transducers for RxPY:
+"""Transducers for RxPY.
 
-There are several different implementations of transducers in Python. This
-implementation is currently targeted for:
+There are several different implementations of transducers in Python.
+This implementation is currently targeted for:
 
-* http://code.sixty-north.com/python-transducers
+ - http://code.sixty-north.com/python-transducers
+
+You should also read the excellent article series "Understanding
+Transducers through Python" at:
+ - http://sixty-north.com/blog/series/understanding-transducers-through-python
 
 Other implementations of transducers in Python are:
 
-* https://github.com/cognitect-labs/transducers-python
-* https://github.com/abingham/python-transducers
+ - https://github.com/cognitect-labs/transducers-python
+ - https://github.com/abingham/python-transducers
 """
 
 from rx import Observable
@@ -18,7 +21,8 @@ from rx.anonymousobservable import AnonymousObservable
 
 
 class Observing(object):
-    """An observing transducer"""
+
+    """An observing transducer."""
 
     def __init__(self, observer):
         self.observer = observer
@@ -38,7 +42,7 @@ class Observing(object):
 
 @extensionmethod(Observable)
 def transduce(self, transducer):
-    """Executes a transducer to transform the observable sequence.
+    """Execute a transducer to transform the observable sequence.
 
     Keyword arguments:
     :param Transducer transducer: A transducer to execute.
@@ -47,7 +51,6 @@ def transduce(self, transducer):
         transducer.
     :rtype: Observable
     """
-
     source = self
 
     def subscribe(observer):
