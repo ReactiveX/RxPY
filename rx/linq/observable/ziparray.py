@@ -37,8 +37,8 @@ def zip_array(cls, *args):
     Keyword arguments:
     args -- Observable sources.
 
-    Returns an observable {Observable} sequence containing lists of elements
-    at corresponding indexes.
+    Returns an observable {Observable} sequence containing lists of
+    elements at corresponding indexes.
     """
 
     sources = list(args)
@@ -71,17 +71,18 @@ def zip_array(cls, *args):
                 queues[i].append(x)
                 next(i)
 
-            subscriptions[i].disposable = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
+            subscription = sources[i].subscribe(on_next, observer.on_error, lambda: done(i))
+            subscriptions[i].disposable = subscription
         for idx in range(n):
             func(idx)
 
         composite_disposable = CompositeDisposable(subscriptions)
 
-        def action():
-            for _ in queues:
-                queues[n] = []
+        def dispose():
+            for idx, _ in enumerate(queues):
+                queues[idx] = []
 
-        composite_disposable.add(Disposable.create(action))
+        composite_disposable.add(Disposable.create(dispose))
 
         return composite_disposable
     return AnonymousObservable(subscribe)
