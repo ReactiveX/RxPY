@@ -1,6 +1,7 @@
 import unittest
-import asyncio
-from asyncio import Future
+import rx
+asyncio = rx.config['asyncio']
+Future = rx.config['Future']
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable

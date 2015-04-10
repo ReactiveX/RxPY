@@ -1,7 +1,8 @@
 from nose import SkipTest
-try:
-    import asyncio
-except ImportError:
-    raise SkipTest("asyncio not available")
 
-from .py3_asyncioscheduler import *
+import sys
+
+if sys.version_info.major < 3:
+    from .py2_asyncioscheduler import *
+else:
+    from .py3_asyncioscheduler import *

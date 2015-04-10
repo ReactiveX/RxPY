@@ -5,6 +5,11 @@ asyncio = rx.config['asyncio']
 if asyncio is None:
     raise SkipTest("asyncio not available")
 
+try:
+    from trollius import From
+except ImportError:
+    raise SkipTest("trollius.From not available")
+
 import unittest
 
 from datetime import datetime, timedelta
@@ -25,15 +30,17 @@ class TestAsyncIOScheduler(unittest.TestCase):
         @asyncio.coroutine
         def go():
             scheduler = AsyncIOScheduler(loop)
-            ran = False
+
+            class Nonlocal:
+                ran = False
 
             def action(scheduler, state):
-                nonlocal ran
-                ran = True
+                Nonlocal.ran = True
+
             scheduler.schedule(action)
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(ran == True)
+            yield From(asyncio.sleep(0.1, loop=loop))
+            assert(Nonlocal.ran == True)
 
         loop.run_until_complete(go())
 
@@ -44,16 +51,17 @@ class TestAsyncIOScheduler(unittest.TestCase):
         def go():
             scheduler = AsyncIOScheduler(loop)
             starttime = loop.time()
-            endtime = None
+
+            class Nonlocal:
+               endtime = None
 
             def action(scheduler, state):
-                nonlocal endtime
-                endtime = loop.time()
+                Nonlocal.endtime = loop.time()
 
             scheduler.schedule_relative(0.2, action)
 
-            yield from asyncio.sleep(0.3, loop=loop)
-            diff = endtime-starttime
+            yield From(asyncio.sleep(0.3, loop=loop))
+            diff = Nonlocal.endtime-starttime
             assert(diff > 0.18)
 
         loop.run_until_complete(go())
@@ -63,16 +71,16 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         @asyncio.coroutine
         def go():
-            ran = False
+            class Nonlocal:
+                ran = False
             scheduler = AsyncIOScheduler(loop)
 
             def action(scheduler, state):
-                nonlocal ran
-                ran = True
+                Nonlocal.ran = True
             d = scheduler.schedule_relative(0.01, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(not ran)
+            yield From(asyncio.sleep(0.1, loop=loop))
+            assert(not Nonlocal.ran)
 
         loop.run_until_complete(go())
