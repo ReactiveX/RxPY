@@ -1,6 +1,8 @@
-try:
-    import asyncio
-except ImportError:
+from nose import SkipTest
+
+import rx
+asyncio = rx.config['asyncio']
+if asyncio is None:
     raise SkipTest("asyncio not available")
 
 import unittest
