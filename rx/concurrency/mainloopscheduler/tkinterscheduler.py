@@ -73,3 +73,31 @@ class TkinterScheduler(Scheduler):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
+
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work to be executed in the tkinter
+        mainloop.
+
+        Keyword arguments:
+        period -- Period in milliseconds for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first
+            iteration.
+
+        Returns the disposable object used to cancel the scheduled recurring
+        action (best effort)."""
+
+        state = [state]
+
+        def interval():
+            state[0] = action(state[0])
+            alarm[0] = self.master.after(period, interval)
+
+        log.debug("timeout: %s", period)
+        alarm = [self.master.after(period, interval)]
+
+        def dispose():
+            # nonlocal alarm
+            self.master.after_cancel(alarm[0])
+
+        return Disposable(dispose)
