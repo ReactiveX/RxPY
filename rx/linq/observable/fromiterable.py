@@ -23,9 +23,10 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
-    iterator = iter(iterable)
-
+    
     def subscribe(observer):
+        iterator = iter(iterable)
+
         def action(action1, state=None):
             try:
                 item = next(iterator)
