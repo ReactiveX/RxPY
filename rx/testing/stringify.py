@@ -66,7 +66,7 @@ def from_string(cls, string, scheduler=None):
         '|' : handle_on_completed
     }
 
-    for token in cls._tokens.findall(string):
+    for token in _tokens.findall(string):
         func = specials.get(token, handle_on_next)
         func(token)
 
