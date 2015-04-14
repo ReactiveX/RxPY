@@ -75,7 +75,7 @@ class TestTkinterScheduler(unittest.TestCase):
         period = 50
         counter = [3]
 
-        def action(scheduler, state):
+        def action(state):
             if state:
                 counter[0] -= 1
                 return state - 1
