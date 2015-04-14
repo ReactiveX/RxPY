@@ -1,11 +1,11 @@
 import logging
-from datetime import datetime, timedelta
 
 from rx.disposables import Disposable, SingleAssignmentDisposable, \
     CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
+
 
 class TkinterScheduler(Scheduler):
     """A scheduler that schedules work via the Tkinter main event loop.
@@ -49,6 +49,7 @@ class TkinterScheduler(Scheduler):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
+
         def interval():
             disposable.disposable = action(scheduler, state)
 
