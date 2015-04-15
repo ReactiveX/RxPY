@@ -31,16 +31,15 @@ class TestAsyncIOScheduler(unittest.TestCase):
         def go():
             scheduler = AsyncIOScheduler(loop)
 
-            class Nonlocal:
-                ran = False
+            ran = [False]
 
             def action(scheduler, state):
-                Nonlocal.ran = True
+                ran[0] = True
 
             scheduler.schedule(action)
 
             yield From(asyncio.sleep(0.1, loop=loop))
-            assert(Nonlocal.ran == True)
+            assert(ran[0] == True)
 
         loop.run_until_complete(go())
 
@@ -52,16 +51,15 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler = AsyncIOScheduler(loop)
             starttime = loop.time()
 
-            class Nonlocal:
-               endtime = None
+            endtime = [None]
 
             def action(scheduler, state):
-                Nonlocal.endtime = loop.time()
+                endtime[0] = loop.time()
 
             scheduler.schedule_relative(0.2, action)
 
             yield From(asyncio.sleep(0.3, loop=loop))
-            diff = Nonlocal.endtime-starttime
+            diff = endtime[0] - starttime
             assert(diff > 0.18)
 
         loop.run_until_complete(go())
@@ -71,16 +69,17 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         @asyncio.coroutine
         def go():
-            class Nonlocal:
-                ran = False
             scheduler = AsyncIOScheduler(loop)
 
+            ran = [False]
+
             def action(scheduler, state):
-                Nonlocal.ran = True
+                ran[0] = True
+
             d = scheduler.schedule_relative(0.01, action)
             d.dispose()
 
             yield From(asyncio.sleep(0.1, loop=loop))
-            assert(not Nonlocal.ran)
+            assert(not ran[0])
 
         loop.run_until_complete(go())
