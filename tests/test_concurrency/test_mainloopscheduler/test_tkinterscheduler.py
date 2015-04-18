@@ -13,7 +13,7 @@ except Exception:
     raise SkipTest("No display, skipping")
 
 from rx.concurrency import TkinterScheduler
-        
+
 class TestTkinterScheduler(unittest.TestCase):
 
     def test_tkinter_schedule_now(self):
@@ -32,7 +32,7 @@ class TestTkinterScheduler(unittest.TestCase):
         def done():
             assert(ran[0] == True)
             root.quit()
-        
+
         root.after_idle(done)
         root.mainloop()
 
@@ -66,6 +66,25 @@ class TestTkinterScheduler(unittest.TestCase):
         def done():
             root.quit()
             assert(not ran[0])
-            
+
+        root.after(300, done)
+        root.mainloop()
+
+    def test_tkinter_schedule_action_periodic(self):
+        scheduler = TkinterScheduler(root)
+        period = 50
+        counter = [3]
+
+        def action(state):
+            if state:
+                counter[0] -= 1
+                return state - 1
+
+        scheduler.schedule_periodic(period, action, counter[0])
+
+        def done():
+            root.quit()
+            assert counter[0] == 0
+
         root.after(300, done)
         root.mainloop()

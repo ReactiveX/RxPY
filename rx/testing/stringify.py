@@ -14,6 +14,7 @@ on_error = ReactiveTest.on_error
 _pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
+
 @extensionclassmethod(Observable)
 def from_string(cls, string, scheduler=None):
     """Converts a marble diagram string to an observable sequence, using an
@@ -60,13 +61,13 @@ def from_string(cls, string, scheduler=None):
         completed[0] = True
 
     specials = {
-        '-' : handle_timespan,
-        'x' : handle_on_error,
-        'X' : handle_on_error,
-        '|' : handle_on_completed
+        '-': handle_timespan,
+        'x': handle_on_error,
+        'X': handle_on_error,
+        '|': handle_on_completed
     }
 
-    for token in cls._tokens.findall(string):
+    for token in _tokens.findall(string):
         func = specials.get(token, handle_on_next)
         func(token)
 
@@ -94,7 +95,7 @@ def to_string(self, scheduler=None):
 
         def add_timespan():
             now = scheduler.now()
-            diff =  now - previously[0]
+            diff = now - previously[0]
             previously[0] = now
             msecs = scheduler.to_relative(diff)
             dashes = "-" * int((msecs+50)/100)

@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='1.1.0',
+    version='1.2.0',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
@@ -40,5 +40,5 @@ setup(
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
               'rx.linq.observable.blocking', 'rx.disposables', 'rx.subjects',
               'rx.backpressure', 'rx.testing'],
-    package_dir={'rx':'rx'}
+    package_dir={'rx': 'rx'}
 )

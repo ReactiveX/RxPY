@@ -26,7 +26,7 @@ def zip(self, *args):
     sources.insert(0, parent)
 
     if args and isinstance(args[0], list):
-        return self.zip_array(*args)
+        return _zip_list(self, *args)
 
     def subscribe(observer):
         n = len(sources)
@@ -69,6 +69,7 @@ def zip(self, *args):
         return CompositeDisposable(subscriptions)
     return AnonymousObservable(subscribe)
 
+
 @extensionclassmethod(Observable)
 def zip(cls, *args):
     """Merges the specified observable sequences into one observable
@@ -88,3 +89,27 @@ def zip(cls, *args):
 
     first = args[0]
     return first.zip(*args[1:])
+
+
+def _zip_list(source, second, result_selector):
+    first = source
+
+    def subscribe(observer):
+        length = len(second)
+        index = [0]
+
+        def on_next(left):
+            if index[0] < length:
+                right = second[index[0]]
+                index[0] += 1
+                try:
+                    result = result_selector(left, right)
+                except Exception as ex:
+                    observer.on_error(ex)
+                    return
+                observer.on_next(result)
+            else:
+                observer.on_completed()
+
+        return first.subscribe(on_next, observer.on_error, observer.on_completed)
+    return AnonymousObservable(subscribe)

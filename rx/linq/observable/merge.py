@@ -99,9 +99,9 @@ def merge(cls, *args):
     if isinstance(sources[0], list):
         sources = sources[0]
 
-    return Observable.from_(sources, scheduler).merge_observable()
+    return Observable.from_(sources, scheduler).merge_all()
 
-@extensionmethod(Observable)
+@extensionmethod(Observable, alias="merge_observable")
 def merge_all(self):
     """Merges an observable sequence of observable sequences into an
     observable sequence.
@@ -147,47 +147,3 @@ def merge_all(self):
 
     return AnonymousObservable(subscribe)
 
-@extensionmethod(Observable)
-def merge_observable(self):
-    """Merges an observable sequence of observable sequences into an
-    observable sequence.
-
-    Returns the observable sequence that merges the elements of the inner
-    sequences.
-    """
-
-    sources = self
-
-    def subscribe(observer):
-        m = SingleAssignmentDisposable()
-        group = CompositeDisposable()
-        is_stopped = [False]
-        group.add(m)
-
-        def on_next(inner_source):
-            inner_subscription = SingleAssignmentDisposable()
-            group.add(inner_subscription)
-
-            inner_source = Observable.from_future(inner_source)
-
-            def on_complete():
-                group.remove(inner_subscription)
-                if is_stopped[0] and len(group) == 1:
-                    observer.on_completed()
-
-            disposable = inner_source.subscribe(
-                observer.on_next,
-                observer.on_error,
-                on_complete)
-
-            inner_subscription.disposable = disposable
-
-        def on_complete():
-            is_stopped[0] = True
-            if group.length == 1:
-                observer.on_completed()
-
-        m.disposable = sources.subscribe(on_next, observer.on_error,
-                                         on_complete)
-        return group
-    return AnonymousObservable(subscribe)

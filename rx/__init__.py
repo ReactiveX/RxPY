@@ -1,4 +1,12 @@
 try:
+    import asyncio
+except ImportError:
+    try:
+        import trollius as asyncio
+    except ImportError:
+        asyncio = None
+
+try:
     from threading import Lock
 except ImportError:
     from rx.internal.concurrency import NoLock as Lock
@@ -6,12 +14,17 @@ except ImportError:
 try:
     from asyncio import Future
 except ImportError:
-    Future = None
+    try:
+        from trollius import Future
+    except ImportError:
+        Future = None
+
 
 # Rx configuration dictionary
 config = {
     "Future": Future,
-    "Lock": Lock
+    "Lock": Lock,
+    "asyncio": asyncio
 }
 
 from .observable import Observable

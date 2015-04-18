@@ -1,5 +1,17 @@
 # Changes
 
+## 1.2.0
+
+- Removed impl. of `merge_observable` and made it an alias of `merge_all`
+- Bugfix for #40. Every subscription needs it's own iterator in `from_()`.
+  Thanks to @hangtwenty.
+- Bugfix in `from_string()` debug method.
+- Added `TkInterScheduler.schedule_periodic()` thanks to @pillmuncher. #39
+- Bugfix for #35. Refactored `zip_array` to use `zip` instead.
+- AsyncIOScheduler now works with Python-2.7 and Trollus. Fixes #37
+  thanks to @hangtwenty.
+- Added `with_latest_from` extension method #34. Thanks to @pillmuncher.
+
 ## 1.1.0
 
 - Transducers via `Observable.transduce()`

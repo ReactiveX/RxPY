@@ -5,6 +5,11 @@ asyncio = rx.config['asyncio']
 if asyncio is None:
     raise SkipTest("asyncio not available")
 
+try:
+    from trollius import From
+except ImportError:
+    raise SkipTest("trollius.From not available")
+
 import unittest
 
 from datetime import datetime, timedelta
@@ -25,15 +30,16 @@ class TestAsyncIOScheduler(unittest.TestCase):
         @asyncio.coroutine
         def go():
             scheduler = AsyncIOScheduler(loop)
-            ran = False
+
+            ran = [False]
 
             def action(scheduler, state):
-                nonlocal ran
-                ran = True
+                ran[0] = True
+
             scheduler.schedule(action)
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(ran == True)
+            yield From(asyncio.sleep(0.1, loop=loop))
+            assert(ran[0] == True)
 
         loop.run_until_complete(go())
 
@@ -44,16 +50,16 @@ class TestAsyncIOScheduler(unittest.TestCase):
         def go():
             scheduler = AsyncIOScheduler(loop)
             starttime = loop.time()
-            endtime = None
+
+            endtime = [None]
 
             def action(scheduler, state):
-                nonlocal endtime
-                endtime = loop.time()
+                endtime[0] = loop.time()
 
             scheduler.schedule_relative(0.2, action)
 
-            yield from asyncio.sleep(0.3, loop=loop)
-            diff = endtime-starttime
+            yield From(asyncio.sleep(0.3, loop=loop))
+            diff = endtime[0] - starttime
             assert(diff > 0.18)
 
         loop.run_until_complete(go())
@@ -63,16 +69,17 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         @asyncio.coroutine
         def go():
-            ran = False
             scheduler = AsyncIOScheduler(loop)
 
+            ran = [False]
+
             def action(scheduler, state):
-                nonlocal ran
-                ran = True
+                ran[0] = True
+
             d = scheduler.schedule_relative(0.01, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(not ran)
+            yield From(asyncio.sleep(0.1, loop=loop))
+            assert(not ran[0])
 
         loop.run_until_complete(go())

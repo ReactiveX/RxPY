@@ -7,7 +7,8 @@ Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 """
 
 import os
-import asyncio
+import rx
+asyncio = rx.config['asyncio']
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url

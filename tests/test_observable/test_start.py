@@ -1,7 +1,8 @@
 from nose import SkipTest
-try:
-    import asyncio
-except ImportError:
+
+import rx
+asyncio = rx.config['asyncio']
+if asyncio is None:
     raise SkipTest("asyncio not available")
 
 from .py3_start import *

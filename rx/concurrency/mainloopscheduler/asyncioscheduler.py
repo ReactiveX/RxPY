@@ -16,7 +16,9 @@ class AsyncIOScheduler(Scheduler):
 
     def __init__(self, loop=None):
         global asyncio
-        import asyncio
+        import rx
+        asyncio = rx.config['asyncio']
+
         self.loop = loop or asyncio.get_event_loop()
 
     def schedule(self, action, state=None):

@@ -30,10 +30,11 @@ class ConnectableObservable(Observable):
         return self.subscription
 
     def ref_count(self):
-        """Returns an observable sequence that stays connected to the source as 
-        long as there is at least one subscription to the observable sequence.
+        """Returns an observable sequence that stays connected to the
+        source as long as there is at least one subscription to the
+        observable sequence.
         """
-        
+
         connectable_subscription = [None]
         count = [0]
         source = self

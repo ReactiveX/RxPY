@@ -6,6 +6,7 @@ def extensionmethod(base, name=None, decorator=None, instancemethod=False,
     Keyword arguments:
     :param T base: Base class to extend with method
     :param string name: Name of method to set
+    :param Callable decorator: Additional decorator e.g staticmethod
 
     :returns: A function that takes the class to be decorated.
     :rtype: func -> func
