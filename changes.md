@@ -1,5 +1,10 @@
 # Changes
 
+## Develop
+
+- Fix to preserve the original error message for exceptions #44, thanks
+  to @hangtwenty
+
 ## 1.2.0
 
 - Removed impl. of `merge_observable` and made it an alias of `merge_all`
