@@ -56,11 +56,11 @@ class ScheduledObserver(AbstractObserver):
 
         try:
             work()
-        except Exception as ex:
+        except Exception:
             with self.lock:
                 parent.queue = []
                 parent.has_faulted = True
-            raise ex
+            raise
 
         recurse()
 
