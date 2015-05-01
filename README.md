@@ -2,8 +2,9 @@
 [![Coverage Status](https://coveralls.io/repos/dbrattli/RxPY/badge.png)](https://coveralls.io/r/dbrattli/RxPY)
 [![Downloads](https://pypip.in/download/Rx/badge.svg)](https://pypi.python.org/pypi/Rx/)
 
-# The Reactive Extensions for Python (RxPY) ... #
-*...is a library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
+# The Reactive Extensions for Python (RxPY) #
+
+*A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
 The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY).
 There are currently outdated mirrors at
