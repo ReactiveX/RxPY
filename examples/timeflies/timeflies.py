@@ -26,13 +26,14 @@ def main():
 
     def handle_label(i, label):
         label.config(dict(borderwidth=0, padx=0, pady=0))
+
         def on_next(ev):
             label.place(x=ev.x + i*12 + 15, y=ev.y)
         mousemove.delay(i*100, scheduler=scheduler).subscribe(on_next)
-        
+
     for i, label in enumerate(labels):
         handle_label(i, label)
-        
+
     frame.pack()
     root.mainloop()
 
