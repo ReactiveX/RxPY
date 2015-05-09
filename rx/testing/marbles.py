@@ -32,7 +32,8 @@ def from_marbles(cls, string, scheduler=None):
 
     Examples:
     1 - res = rx.Observable.from_string("1-2-3-|")
-    2 - res = rx.Observable.from_string("1-2-3-x", rx.Scheduler.timeout)
+    2 - res = rx.Observable.from_string("1-(42)-3-|")
+    3 - res = rx.Observable.from_string("1-2-3-x", rx.Scheduler.timeout)
 
     Keyword arguments:
     string -- String with marble diagram
@@ -152,6 +153,8 @@ def to_marbles(self, scheduler=None):
 
 
 def stringify(value):
+    """Utility for stringifying an event.
+    """
     string = str(value)
     if len(string) > 1:
         string = "(%s)" % string
