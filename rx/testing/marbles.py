@@ -13,7 +13,7 @@ on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
 on_error = ReactiveTest.on_error
 
-_pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
+_pattern = "([a-zA-Z_0-9])|(-)|\(([a-zA-Z1-9]+)\)|([xX])|(\|)"
 _tokens = re.compile(_pattern)
 
 
@@ -69,9 +69,11 @@ def from_marbles(cls, string, scheduler=None):
         '|': handle_on_completed
     }
 
-    for token in _tokens.findall(string):
-        func = specials.get(token, handle_on_next)
-        func(token)
+    for groups in _tokens.findall(string):
+        for token in groups:
+            if token:
+                func = specials.get(token, handle_on_next)
+                func(token)
 
     if not completed[0]:
         messages.append(on_completed(timespan[0]))
@@ -111,13 +113,13 @@ def to_marbles(self, scheduler=None):
         def on_error(exception):
             add_timespan()
             result.append(exception)
-            observer.on_next("".join(str(n) for n in result))
+            observer.on_next("".join(stringify(n) for n in result))
             observer.on_completed()
 
         def on_completed():
             add_timespan()
             result.append("|")
-            observer.on_next("".join(str(n) for n in result))
+            observer.on_next("".join(stringify(n) for n in result))
             observer.on_completed()
 
         return source.subscribe(on_next, on_error, on_completed)
@@ -147,3 +149,11 @@ def to_marbles(self, scheduler=None):
     latch.wait()
 
     return ret[0]
+
+
+def stringify(value):
+    string = str(value)
+    if len(string) > 1:
+        string = "(%s)" % string
+
+    return string
