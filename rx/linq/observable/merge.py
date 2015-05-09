@@ -71,7 +71,8 @@ def merge(self, *args, **kwargs):
         return group
     return AnonymousObservable(subscribe)
 
-@extensionclassmethod(Observable)
+
+@extensionclassmethod(Observable)  # noqa
 def merge(cls, *args):
     """Merges all the observable sequences into a single observable
     sequence. The scheduler is optional and if not specified, the
@@ -100,6 +101,7 @@ def merge(cls, *args):
         sources = sources[0]
 
     return Observable.from_(sources, scheduler).merge_all()
+
 
 @extensionmethod(Observable, alias="merge_observable")
 def merge_all(self):
@@ -146,4 +148,3 @@ def merge_all(self):
         return group
 
     return AnonymousObservable(subscribe)
-
