@@ -1,6 +1,8 @@
 import re
+import threading
 
 from rx import AnonymousObservable, Observable
+from rx.blockingobservable import BlockingObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 
@@ -15,10 +17,10 @@ _pattern = "([a-zA-Z_0-9]|-|\([a-zA-Z1-9]*\)|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
 
-@extensionclassmethod(Observable)
-def from_string(cls, string, scheduler=None):
-    """Converts a marble diagram string to an observable sequence, using an
-    optional scheduler to enumerate the events.
+@extensionclassmethod(Observable, alias="from_string")
+def from_marbles(cls, string, scheduler=None):
+    """Convert a marble diagram string to an observable sequence, using
+    an optional scheduler to enumerate the events.
 
     Special characters:
     - = Timespan of 100 ms
@@ -76,16 +78,17 @@ def from_string(cls, string, scheduler=None):
 
     return ColdObservable(scheduler, messages)
 
-@extensionmethod(Observable)
-def to_string(self, scheduler=None):
-    """Converts an observable sequence into a marble diagram string
+
+@extensionmethod(Observable, alias="to_string")
+def to_marbles(self, scheduler=None):
+    """Convert an observable sequence into a marble diagram string
 
     Keyword arguments:
-    scheduler -- [Optional] The scheduler that was used to run the the input
+    scheduler -- [Optional] The scheduler used to run the the input
         sequence on.
 
-    Returns marble string"""
-
+    Returns Observable
+    """
     scheduler = scheduler or timeout_scheduler
     source = self
 
@@ -119,3 +122,28 @@ def to_string(self, scheduler=None):
 
         return source.subscribe(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
+
+
+@extensionmethod(BlockingObservable, alias="to_string")  # noqa
+def to_marbles(self, scheduler=None):
+    """Convert an observable sequence into a marble diagram string
+
+    Keyword arguments:
+    scheduler -- [Optional] The scheduler used to run the the input
+        sequence on.
+
+    Returns marble string.
+    """
+
+    latch = threading.Event()
+    ret = [None]
+
+    def on_next(value):
+        ret[0] = value
+
+    self.observable.to_marbles(scheduler=scheduler).subscribe(on_next, on_complete=latch.set)
+
+    # Block until the subscription completes and then return
+    latch.wait()
+
+    return ret[0]
