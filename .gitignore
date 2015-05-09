@@ -50,8 +50,9 @@ TestResults/Rx.TE.Tests_log.ldf
 
 # Cloud9
 .c9
-*.ipynb
 
 # PyCharm
 .idea
 .zedstate
+
+.ipynb_checkpoints
