@@ -141,7 +141,7 @@ def to_marbles(self, scheduler=None):
     def on_next(value):
         ret[0] = value
 
-    self.observable.to_marbles(scheduler=scheduler).subscribe(on_next, on_complete=latch.set)
+    self.observable.to_marbles(scheduler=scheduler).subscribe(on_next, on_completed=latch.set)
 
     # Block until the subscription completes and then return
     latch.wait()
