@@ -138,8 +138,10 @@ class OnCompleted(Notification):
 
         def _on_next(value):
             return handler(OnNext(value))
+
         def _on_error(ex):
             return handler(OnError(ex))
+
         def _on_completed():
             return handler(OnCompleted())
 
@@ -160,8 +162,10 @@ def from_notifier(cls, handler):
 
     def _on_next(value):
         return handler(OnNext(value))
+
     def _on_error(ex):
         return handler(OnError(ex))
+
     def _on_completed():
         return handler(OnCompleted())
 
