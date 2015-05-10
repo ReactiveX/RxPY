@@ -13,7 +13,7 @@ on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
 on_error = ReactiveTest.on_error
 
-_pattern = "([a-zA-Z_0-9])|(-)|\(([a-zA-Z1-9]+)\)|([xX])|(\|)"
+_pattern = r"\(?([a-zA-Z1-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
 
