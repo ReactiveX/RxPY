@@ -1,6 +1,6 @@
 # Changes
 
-## Develop
+## 1.2.1
 
 - Fix to preserve the original error message for exceptions #44, thanks
   to @hangtwenty
