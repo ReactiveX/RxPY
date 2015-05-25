@@ -3,6 +3,7 @@ from rx.disposables import Disposable
 from .autodetachobserver import AutoDetachObserver
 from .observable import Observable
 
+
 class AnonymousObservable(Observable):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""

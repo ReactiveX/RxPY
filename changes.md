@@ -1,5 +1,17 @@
 # Changes
 
+## 1.2.1
+
+- Fix to preserve the original error message for exceptions #44, thanks
+  to @hangtwenty
+- Fixed bug in `combine_latest()`. Fixes #48.
+- Added `to_marbles()` and `from_marbles()`. Available from module
+  `rx.testing.marbles`.
+- Added [Getting Started](https://github.com/ReactiveX/RxPY/blob/master/notebooks/Getting%20Started.ipynb)
+  IPython Notebook.
+- Added `share()` as alias for `publish().ref_count()`.
+- Added error handling example at https://github.com/ReactiveX/RxPY/blob/master/examples/errors/failing.py
+
 ## 1.2.0
 
 - Removed impl. of `merge_observable` and made it an alias of `merge_all`

@@ -14,4 +14,3 @@ class InnerSubscription(object):
                 if self.observer in self.subject.observers:
                     self.subject.observers.remove(self.observer)
                 self.observer = None
-

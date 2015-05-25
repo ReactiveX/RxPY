@@ -1,7 +1,8 @@
 """
-RxPY example running a Tornado server doing search queries against Wikipedia to
-populate the autocomplete dropdown in the web UI. Start using 
-`python autocomplete.py` and navigate your web browser to http://localhost:8080
+RxPY example running a Tornado server doing search queries against
+Wikipedia to populate the autocomplete dropdown in the web UI. Start
+using `python autocomplete.py` and navigate your web browser to
+http://localhost:8080
 
 Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 """
@@ -14,7 +15,7 @@ from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httputil import url_concat
-from tornado.escape import json_encode, json_decode
+from tornado.escape import json_decode
 from tornado.platform.asyncio import AsyncIOMainLoop
 
 from rx.subjects import Subject
@@ -22,10 +23,11 @@ from rx.concurrency import AsyncIOScheduler
 
 scheduler = AsyncIOScheduler()
 
+
 def search_wikipedia(term):
     """Search Wikipedia for a given term"""
     url = 'http://en.wikipedia.org/w/api.php'
-    
+
     params = {
         "action": 'opensearch',
         "search": term,
@@ -33,11 +35,12 @@ def search_wikipedia(term):
     }
     # Must set a user agent for non-browser requests to Wikipedia
     user_agent = "RxPY/1.0 (https://github.com/dbrattli/RxPY; dag@brattli.net) Tornado/4.0.1"
-    
+
     url = url_concat(url, params)
-    
+
     http_client = AsyncHTTPClient()
     return http_client.fetch(url, method='GET', user_agent=user_agent)
+
 
 class WSHandler(WebSocketHandler):
     def open(self):
@@ -51,11 +54,11 @@ class WSHandler(WebSocketHandler):
         query = self.subject.map(
             lambda x: x["term"]
         ).filter(
-            lambda text: len(text) > 2 # Only if the text is longer than 2 characters
+            lambda text: len(text) > 2  # Only if the text is longer than 2 characters
         ).debounce(
-            0.750, # Pause for 750ms
+            0.750,  # Pause for 750ms
             scheduler=scheduler
-        ).distinct_until_changed() # Only if the value has changed
+        ).distinct_until_changed()  # Only if the value has changed
 
         searcher = query.flat_map_latest(search_wikipedia)
 
@@ -74,13 +77,15 @@ class WSHandler(WebSocketHandler):
     def on_close(self):
         print("WebSocket closed")
 
+
 class MainHandler(RequestHandler):
     def get(self):
         self.render("index.html")
 
+
 def main():
     AsyncIOMainLoop().install()
-    
+
     port = os.environ.get("PORT", 8080)
     app = Application([
         url(r"/", MainHandler),

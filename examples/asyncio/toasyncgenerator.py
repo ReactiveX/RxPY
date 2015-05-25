@@ -31,21 +31,22 @@ def to_async_generator(self, future_ctor=None, sentinel=None):
 
     def on_next(value):
         """Takes on_next values and appends them to the notification queue"""
-        
+
         notifications.append(value)
         loop.call_soon(feeder)
-        
+
     self.materialize().subscribe(on_next)
 
     @asyncio.coroutine
     def gen():
         """Generator producing futures"""
-        
+
         loop.call_soon(feeder)
         future[0] = future_ctor()
-        
+
         return future[0]
     return gen
+
 
 @asyncio.coroutine
 def go():
@@ -61,6 +62,7 @@ def go():
         if x is None:
             break
         print(x)
+
 
 def main():
     loop = asyncio.get_event_loop()

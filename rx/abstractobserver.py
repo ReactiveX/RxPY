@@ -1,5 +1,6 @@
 from rx.internal import noop, default_error
 
+
 class AbstractObserver(object):
     """Abstract base class for implementations of the Observer class. This base
     class enforces the grammar of observers where OnError and OnCompleted are
