@@ -29,7 +29,8 @@
     <Compile Include="examples\chess\chess.py" />
     <Compile Include="examples\ironpython\meetdotnet.py" />
     <Compile Include="examples\konamicode\konamicode.py" />
-    <Compile Include="examples\timeflies\timeflies.py" />
+    <Compile Include="examples\timeflies\timeflies_tkinter.py" />
+    <Compile Include="examples\timeflies\timeflies_qt.py" />
     <Compile Include="rx\abstractobserver.py" />
     <Compile Include="rx\anonymousobservable.py" />
     <Compile Include="rx\anonymousobserver.py" />
