@@ -15,7 +15,7 @@ class QtScheduler(Scheduler):
         self.qtcore = qtcore
         self._timers = set()
 
-    def _qtimer_schedule(self, time, action, state, *, periodic=False):
+    def _qtimer_schedule(self, time, action, state, periodic=False):
         scheduler = self
         msecs = self.to_relative(time)
 
