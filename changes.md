@@ -1,5 +1,12 @@
 # Changes
 
+## 1.2.2
+
+- Added Qt mainloop scheduler thanks to @jdreaver.
+- Bugfix, wse `threading.RLock` instead of `threading.Lock` since
+  `BehaviorSubject` may share lock with "child" operator at subscribe
+  time. Fixes #50
+
 ## 1.2.1
 
 - Fix to preserve the original error message for exceptions #44, thanks

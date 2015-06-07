@@ -7,7 +7,7 @@ except ImportError:
         asyncio = None
 
 try:
-    from threading import Lock
+    from threading import RLock as Lock
 except ImportError:
     from rx.internal.concurrency import NoLock as Lock
 
@@ -34,5 +34,4 @@ from .observer import Observer
 from . import checkedobserver
 from . import linq
 from . import backpressure
-
 

@@ -18,3 +18,4 @@ from .mainloopscheduler import GEventScheduler
 from .mainloopscheduler import TwistedScheduler
 from .mainloopscheduler import TkinterScheduler
 from .mainloopscheduler import PyGameScheduler
+from .mainloopscheduler import QtScheduler

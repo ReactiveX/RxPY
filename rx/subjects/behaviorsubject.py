@@ -8,9 +8,9 @@ from .innersubscription import InnerSubscription
 
 
 class BehaviorSubject(Observable, AbstractObserver):
-    """Represents a value that changes over time. Observers can subscribe to
-    the subject to receive the last (or initial) value and all subsequent
-    notifications.
+    """Represents a value that changes over time. Observers can
+    subscribe to the subject to receive the last (or initial) value and
+    all subsequent notifications.
     """
 
     def __init__(self, value):
@@ -19,8 +19,8 @@ class BehaviorSubject(Observable, AbstractObserver):
         specified value.
 
         Keyword parameters:
-        :param T value: Initial value sent to observers when no other value has
-            been received by the subject yet.
+        :param T value: Initial value sent to observers when no other
+            value has been received by the subject yet.
         """
 
         super(BehaviorSubject, self).__init__(self.__subscribe)
@@ -70,10 +70,8 @@ class BehaviorSubject(Observable, AbstractObserver):
             for o in os:
                 o.on_completed()
 
-
     def on_error(self, error):
-        """Notifies all subscribed observers with the exception."""
-
+        """Notifie all subscribed observers with the exception."""
         os = None
         with self.lock:
             self.check_disposed()
@@ -88,8 +86,7 @@ class BehaviorSubject(Observable, AbstractObserver):
                 o.on_error(error)
 
     def on_next(self, value):
-        """Notifies all subscribed observers with the value."""
-
+        """Notifie all subscribed observers with the value."""
         os = None
         with self.lock:
             self.check_disposed()
@@ -101,14 +98,13 @@ class BehaviorSubject(Observable, AbstractObserver):
                 o.on_next(value)
 
     def dispose(self):
-        """Releases all resources used by the current instance of the
-        ReplaySubject class and unsubscribe all observers."""
+        """Release all resources.
 
+        Releases all resources used by the current instance of the
+        ReplaySubject class and unsubscribe all observers.
+        """
         with self.lock:
             self.is_disposed = True
             self.observers = None
             self.value = None
             self.exception = None
-
-
-

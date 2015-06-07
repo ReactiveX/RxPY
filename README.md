@@ -166,6 +166,12 @@ Python framework.
 * `PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the
   [chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess)
   example for howto use RxPY with your PyGame application.
+* `QtScheduler` for use with
+  [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download),
+  [PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and
+  [PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the
+  [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
+  example for howto use RxPY with your Qt application.
 
 ## Contributing ##
 
