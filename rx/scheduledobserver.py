@@ -2,6 +2,7 @@ from rx import Lock
 from rx.abstractobserver import AbstractObserver
 from rx.disposables import SerialDisposable
 
+
 class ScheduledObserver(AbstractObserver):
     def __init__(self, scheduler, observer):
         super(ScheduledObserver, self).__init__(self._next, self._error, self._completed)
@@ -19,19 +20,19 @@ class ScheduledObserver(AbstractObserver):
         # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
     def _next(self, value):
-        def func():
+        def action():
             self.observer.on_next(value)
-        self.queue.append(func)
+        self.queue.append(action)
 
     def _error(self, exception):
-        def func():
+        def action():
             self.observer.on_error(exception)
-        self.queue.append(func)
+        self.queue.append(action)
 
     def _completed(self):
-        def func():
+        def action():
             self.observer.on_completed()
-        self.queue.append(func)
+        self.queue.append(action)
 
     def ensure_active(self):
         is_owner = False
