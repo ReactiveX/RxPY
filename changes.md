@@ -1,10 +1,11 @@
 # Changes
 
-## Devel
+## 1.2.2
 
-- Qt mainloop scheduler thanks to @jdreaver.
-- Use `threading.RLock` instead of `threading.Lock` since `BehaviorSubject`
-  may share lock with "child" operator at subscribe time. Fixes #50
+- Added Qt mainloop scheduler thanks to @jdreaver.
+- Bugfix, wse `threading.RLock` instead of `threading.Lock` since
+  `BehaviorSubject` may share lock with "child" operator at subscribe
+  time. Fixes #50
 
 ## 1.2.1
 
