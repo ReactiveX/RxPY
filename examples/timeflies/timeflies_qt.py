@@ -19,7 +19,7 @@ except ImportError:
 class Window(QWidget):
 
     def __init__(self):
-        super().__init__()
+        super(QWidget, self).__init__()
         self.setWindowTitle("Rx for Python rocks")
         self.resize(600, 600)
         self.setMouseTracking(True)
