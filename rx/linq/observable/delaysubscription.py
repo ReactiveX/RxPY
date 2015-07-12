@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def delay_subscription(self, duetime, scheduler):
+def delay_subscription(self, duetime, scheduler=None):
     """Time shifts the observable sequence by delaying the subscription.
 
     1 - res = source.delay_subscription(5000) # 5s
