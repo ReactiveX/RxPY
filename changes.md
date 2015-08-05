@@ -1,5 +1,12 @@
 # Changes
 
+## 1.2.3
+
+- Fix optional parameter in `delay_subscription`. Thanks to @angelsanz.
+- Simplified `adapt_call` in `util.py` which makes higher order functions
+  accept more forms of callables.
+- Fix for Python 2.7 in `timeflies_qt.py`.
+
 ## 1.2.2
 
 - Added Qt mainloop scheduler thanks to @jdreaver.
