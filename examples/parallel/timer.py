@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import rx
 import concurrent.futures
 import time
@@ -11,7 +13,7 @@ def sleep(t):
 
 
 def output(result):
-    print '%d seconds' % result
+    print('%d seconds' % result)
 
 with concurrent.futures.ProcessPoolExecutor(5) as executor:
     rx.Observable.from_(seconds).flat_map(

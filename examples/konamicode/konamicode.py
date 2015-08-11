@@ -8,29 +8,19 @@ from tornado import ioloop
 
 from rx.subjects import Subject
 
-codes = [
-    38, # up
-    38, # up
-    40, # down
-    40, # down
-    37, # left
-    39, # right
-    37, # left
-    39, # right
-    66, # b
-    65  # a
-]
+UP, DOWN, LEFT, RIGHT, B, A = 38, 40, 37, 39, 66, 65
+codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A]
 
 class WSHandler(WebSocketHandler):
     def open(self):
         print("WebSocket opened")
 
-        # A Subject is both an observable and observer, so we can both subscribe 
+        # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
         self.subject = Subject()
 
-        # Now we take on our magic glasses and project the stream of bytes into 
-        # a ...    
+        # Now we take on our magic glasses and project the stream of bytes into
+        # a ...
         query = self.subject.map(
                 lambda obj: obj["keycode"] # 1. stream of keycodes
             ).window_with_count(

@@ -4,7 +4,7 @@ import rx
 
 
 class PriorityQueue(object):
-    """ Priority queue for scheduling"""
+    """Priority queue for scheduling"""
 
     def __init__(self, capacity=None):
         self.items = []
