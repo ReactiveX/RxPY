@@ -39,7 +39,7 @@ class EventLoopScheduler(Scheduler, Disposable):
             raise DisposedException()
 
         si = ScheduledItem(self, state, action, None)
-        
+
         with self.condition:
             self.ready_list.append(si)
             self.condition.notify()  # signal that a new item is available
@@ -116,7 +116,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                     self.ready_list = []
                 else:
                     self.condition.wait()
-                    
+
             for item in ready:
                 if not item.is_cancelled():
                     item.invoke()
