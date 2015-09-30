@@ -20,7 +20,9 @@ class EventLoopScheduler(Scheduler, Disposable):
         super(EventLoopScheduler, self).__init__()
 
         def default_factory(target):
-            return threading.Thread(target=target)
+            t = threading.Thread(target=target)
+            t.setDaemon(True)
+            return t
 
         self.thread_factory = thread_factory or default_factory
         self.thread = None
@@ -109,6 +111,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                         log.debug("timeout: %s", seconds)
 
                         self.timer = Timer(seconds, self.tick, args=(_next,))
+                        self.timer.setDaemon(True)
                         self.timer.start()
 
                 if len(self.ready_list):
@@ -133,6 +136,9 @@ class EventLoopScheduler(Scheduler, Disposable):
         """
 
         with self.condition:
+            if self.timer:
+                self.timer.cancel()
+
             if not self.is_disposed:
                 self.is_disposed = True
 

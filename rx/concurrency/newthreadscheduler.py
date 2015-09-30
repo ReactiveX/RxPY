@@ -15,6 +15,16 @@ class NewThreadScheduler(Scheduler):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
+    def __init__(self, thread_factory=None):
+        super(NewThreadScheduler, self).__init__()
+
+        def default_factory(target, args):
+            t = threading.Thread(target=target, args=args)
+            t.setDaemon(True)
+            return t
+
+        self.thread_factory = thread_factory or default_factory
+
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
@@ -26,7 +36,7 @@ class NewThreadScheduler(Scheduler):
             if not disposed[0]:
                 disposable.disposable = action(scheduler, state)
 
-        t = threading.Thread(target=interval, args=(self, state))
+        t = self.thread_factory(target=interval, args=(self, state))
         t.start()
 
         def dispose():
@@ -49,6 +59,7 @@ class NewThreadScheduler(Scheduler):
         seconds = timespan.total_seconds()
         log.debug("timeout: %s", seconds)
         timer = Timer(seconds, interval)
+        timer.setDaemon(True)
         timer.start()
 
         def dispose():

@@ -1,5 +1,10 @@
 # Changes
 
+## Develop
+
+- Threads are now daemonic by default. Thus they will exit if parent
+  thread exits which should probably be what most people want.
+
 ## 1.2.3
 
 - Fix optional parameter in `delay_subscription`. Thanks to @angelsanz.
