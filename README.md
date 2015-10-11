@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/ReactiveX/RxPY.svg?branch=master)](https://travis-ci.org/ReactiveX/RxPY)
-[![Coverage Status](https://coveralls.io/repos/dbrattli/RxPY/badge.png)](https://coveralls.io/r/dbrattli/RxPY)
-[![Downloads](https://pypip.in/download/Rx/badge.svg)](https://pypi.python.org/pypi/Rx/)
+[![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)
+[![Coveralls Coverage Status](https://img.shields.io/coveralls/dbrattli/RxPY.svg)](https://coveralls.io/r/dbrattli/RxPY)
+[![PyPI Downloads per month](https://img.shields.io/pypi/dm/Rx.svg)](https://pypi.python.org/pypi/Rx/)
 
 # The Reactive Extensions for Python (RxPY) #
 
