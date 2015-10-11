@@ -6,13 +6,13 @@ from rx.internal import extensionmethod
 
 
 def sample_observable(source, sampler):
-    
+
     def subscribe(observer):
         at_end = [None]
         has_value = [None]
         value = [None]
 
-        def sample_subscribe(x):
+        def sample_subscribe(x=None):
             if has_value[0]:
                 has_value[0] = False
                 observer.on_next(value[0])
