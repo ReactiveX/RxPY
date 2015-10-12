@@ -53,8 +53,7 @@ def sample(self, interval=None, sampler=None, scheduler=None):
     """
 
     scheduler = scheduler or timeout_scheduler
-    if not interval is None:
+    if interval is not None:
         return sample_observable(self, Observable.interval(interval, scheduler=scheduler))
 
     return sample_observable(self, sampler)
-
