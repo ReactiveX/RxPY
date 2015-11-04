@@ -1,6 +1,7 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
+from rx.disposables import Disposable, CompositeDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -26,8 +27,11 @@ def from_iterable(cls, iterable, scheduler=None):
 
     def subscribe(observer):
         iterator = iter(iterable)
+        is_disposed = [False]
 
         def action(action1, state=None):
+            if is_disposed[0]:
+                return
             try:
                 item = next(iterator)
             except StopIteration:
@@ -36,5 +40,11 @@ def from_iterable(cls, iterable, scheduler=None):
                 observer.on_next(item)
                 action1(action)
 
-        return scheduler.schedule_recursive(action)
+        cancelable = scheduler.schedule_recursive(action)
+
+        def dispose():
+            is_disposed[0] = True
+
+        return CompositeDisposable(cancelable, Disposable(dispose))
+
     return AnonymousObservable(subscribe)
