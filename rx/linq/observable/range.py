@@ -26,10 +26,10 @@ def range(cls, start, count, scheduler=None):
     scheduler = scheduler or current_thread_scheduler
 
     def subscribe(observer):
-        def action(scheduler, i):
+        def action(recurse, i):
             if i < count:
                 observer.on_next(start + i)
-                scheduler(i + 1)
+                recurse(i + 1)
             else:
                 observer.on_completed()
 
