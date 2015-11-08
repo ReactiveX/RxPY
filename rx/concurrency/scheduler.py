@@ -62,29 +62,25 @@ class Scheduler(object):
         action = pair.get('action')
         group = CompositeDisposable()
 
-        def recursive_action(state1):
-            def recurse(state2=None):
-                is_added = False
-                is_done = [False]
+        def inner_action(state2=None):
+            is_added = False
+            is_done = [False]
 
-                def action(scheduler, state=None):
-                    if is_added:
-                        group.remove(d)
-                    else:
-                        is_done[0] = True
+            def schedule_work(_, state3):
+                action(inner_action, state3)
+                if is_added:
+                    group.remove(d)
+                else:
+                    is_done[0] = True
 
-                    recursive_action(state)
-                    return Disposable.empty()
+                return Disposable.empty()
 
-                d = scheduler.schedule(action, state2)
+            d = scheduler.schedule(schedule_work, state2)
+            if not is_done[0]:
+                group.add(d)
+                is_added = True
 
-                if not is_done[0]:
-                    group.add(d)
-                    is_added = True
-
-            action(recurse, state1)
-
-        recursive_action(state)
+        action(inner_action, state)
         return group
 
     @staticmethod
@@ -93,28 +89,25 @@ class Scheduler(object):
         action = pair.get('second')
         group = CompositeDisposable()
 
-        def recursive_action(state1):
-            def recurse(state2, duetime1):
-                is_added = False
-                is_done = [False]
+        def inner_action(state2, duetime):
+            is_added = False
+            is_done = [False]
 
-                def action2(scheduler1, state3):
-                    if is_added:
-                        group.remove(d)
-                    else:
-                        is_done[0] = True
+            def schedule_work(_, state3):
+                action(state3, inner_action)
+                if is_added:
+                    group.remove(d)
+                else:
+                    is_done[0] = True
 
-                    recursive_action(state3)
-                    return Disposable.empty()
+                return Disposable.empty()
 
-                meth = getattr(scheduler, method)
-                d = meth(duetime=duetime1, action=action2, state=state2)
-                if not is_done[0]:
-                    group.add(d)
-                    is_added = True
+            d = getattr(scheduler, method)(duetime=duetime, action=schedule_work, state=state2)
+            if not is_done[0]:
+                group.add(d)
+                is_added = True
 
-            action(state1, recurse)
-        recursive_action(state)
+        action(state, inner_action)
         return group
 
     def schedule_recursive(self, action, state=None):
@@ -126,7 +119,7 @@ class Scheduler(object):
             scheduling of the action.
         :param T state: State to be given to the action function.
 
-        :returns: The disposable  object used to cancel the scheduled action
+        :returns: The disposable object used to cancel the scheduled action
             (best effort).
         :rtype: Disposable
         """
