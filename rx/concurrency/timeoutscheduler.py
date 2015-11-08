@@ -9,6 +9,7 @@ from .scheduler import Scheduler
 
 log = logging.getLogger("Rx")
 
+
 class TimeoutScheduler(Scheduler):
     """A scheduler that schedules work via a timed callback based upon platform."""
 
@@ -21,6 +22,7 @@ class TimeoutScheduler(Scheduler):
         def interval():
             disposable.disposable = action(scheduler, state)
         timer = Timer(0, interval)
+        timer.setDaemon(True)
         timer.start()
 
         def dispose():
@@ -36,6 +38,7 @@ class TimeoutScheduler(Scheduler):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
+
         def interval():
             disposable.disposable = action(scheduler, state)
 

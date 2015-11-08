@@ -22,11 +22,11 @@ class SchedulePeriodicRecursive(object):
         recurse(0, self._period)
         try:
             new_state = self._action(self._state)
-        except Exception as exn:
+        except Exception:
             self._cancel.dispose()
             raise
         else:
-            if not new_state is None: # Update state if other than None
+            if new_state is not None:  # Update state if other than None
                 self._state = new_state
 
     def start(self):
