@@ -1,6 +1,6 @@
 # Changes
 
-## Devel
+## 1.2.4
 
 - Threads are now daemonic by default. Thus they will exit if parent
   thread exits which should probably be what most people want.
