@@ -1,9 +1,13 @@
 # Changes
 
-## Develop
+## Devel
 
 - Threads are now daemonic by default. Thus they will exit if parent
   thread exits which should probably be what most people want.
+- Fix for recursive scheduling, thanks to @smeder
+- Fix for NewThreadScheduler. Now uses EventLoopScheduler to make sure
+  scheduled actions by scheduled actions happens on the same thread.
+- Uses shields.io to uniformize and fix the badges, thanks to @DavidJFelix
 
 ## 1.2.3
 
