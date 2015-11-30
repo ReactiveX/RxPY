@@ -38,6 +38,8 @@ nosetests.xml
 # Visual studio
 *.suo
 *.DotSettings.user
+*.pyproj
+*.sln
 
 # Log files
 *.log
