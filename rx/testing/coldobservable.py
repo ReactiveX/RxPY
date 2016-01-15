@@ -8,7 +8,7 @@ from .reactive_assert import AssertList
 class ColdObservable(Observable):
     def __init__(self, scheduler, messages):
         super(ColdObservable, self).__init__(self._subscribe)
-        
+
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions = AssertList()
@@ -18,7 +18,7 @@ class ColdObservable(Observable):
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
         disposable = CompositeDisposable()
-        
+
         def get_action(notification):
             def action(scheduler, state):
                 notification.accept(observer)
@@ -27,7 +27,7 @@ class ColdObservable(Observable):
 
         for message in self.messages:
             notification = message.value
-            
+
             # Don't make closures within a loop
             action = get_action(notification)
             disposable.add(self.scheduler.schedule_relative(message.time, action))
@@ -40,4 +40,3 @@ class ColdObservable(Observable):
 
         return Disposable(dispose)
 
-    

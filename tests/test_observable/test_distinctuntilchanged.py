@@ -127,7 +127,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_comparer_all_different(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
-        
+
         def create():
             return xs.distinct_until_changed(comparer=lambda x, y: False)
 
@@ -142,7 +142,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_key_selector_div2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
-        
+
         def create():
             return xs.distinct_until_changed(lambda x: x % 2)
     

@@ -24,14 +24,14 @@ class TestGenerate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate(0, 
+            return Observable.generate(0,
                 lambda x: x <= 3,
                 lambda x: x + 1,
                 lambda x: x,
                 scheduler)
-        
+
         results = scheduler.start(create)
-            
+
         results.messages.assert_equal(
                             on_next(201, 0),
                             on_next(202, 1),
@@ -45,13 +45,13 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0, 
+            return Observable.generate(0,
                 lambda x: _raise('ex'),
                 lambda x: x + 1,
                 lambda x: x,
                 scheduler)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_error(201, ex))
 
     def test_generate_throw_result_selector(self):
@@ -59,12 +59,12 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0, 
+            return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: _raise('ex'),
                 scheduler)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(201, ex))
 
@@ -73,13 +73,13 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0, 
+            return Observable.generate(0,
                 lambda x: True,
                 lambda x: _raise(ex),
                 lambda x: x,
                 scheduler)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(
                             on_next(201, 0),
                             on_error(202, ex)
