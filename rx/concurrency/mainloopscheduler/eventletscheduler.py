@@ -79,6 +79,40 @@ class EventLetEventScheduler(Scheduler):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now(), action, state)
 
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work by dynamically discovering the
+        schedulers capabilities.
+
+        Keyword arguments:
+        period -- Period for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first
+            iteration.
+
+        Returns the disposable object used to cancel the scheduled recurring
+        action (best effort)."""
+
+        scheduler = self
+        seconds = self.to_relative(period)/1000.0
+        if not seconds:
+            return scheduler.schedule(action, state)
+
+        disposable = SingleAssignmentDisposable()
+
+        def interval():
+            disposable.disposable = action(scheduler, state)
+            scheduler.schedule_periodic(period, action, state)
+
+        log.debug("timeout: %s", seconds)
+        timer = [eventlet.spawn_after(seconds, interval)]
+
+        def dispose():
+            timer[0].kill()
+
+        return CompositeDisposable(disposable, Disposable(dispose))
+
+
+
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

@@ -52,3 +52,29 @@ class TestEventLetEventScheduler(unittest.TestCase):
 
         eventlet.sleep(0.1)
         assert(not ran[0])
+
+    def test_eventlet_schedule_action_periodic(self):
+        scheduler = EventLetEventScheduler()
+        period = 50
+        counter = [3]
+
+
+        def action(scheduler, state):
+            if counter[0]:
+                counter[0] -= 1
+
+        scheduler.schedule_periodic(period, action)
+        eventlet.sleep(.3)
+        assert (counter[0] == 0)
+
+    def test_eventlet_schedule_action_periodic_now(self):
+        scheduler = EventLetEventScheduler()
+        period = 0
+        num_times = [3]
+
+        def action(scheduler, state):
+            num_times[0] -= 1
+
+        scheduler.schedule_periodic(period, action)
+        eventlet.sleep(.3)
+        assert (num_times[0] == 2)
