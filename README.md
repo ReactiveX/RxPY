@@ -156,22 +156,25 @@ Python framework.
   [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the
   [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete)
   and [konamicode](https://github.com/ReactiveX/RxPY/tree/master/examples/konamicode)
-  examples for howto use RxPY with your Tonado application.
+  examples for how to use RxPY with your Tonado application.
 * `GEventScheduler` for use with [GEvent](http://www.gevent.org/).
   (Python 2.7 only).
 * `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
 * `TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter).
   See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
-  example for howto use RxPY with your Tkinter application.
+  example for how to use RxPY with your Tkinter application.
 * `PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the
   [chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess)
-  example for howto use RxPY with your PyGame application.
+  example for how to use RxPY with your PyGame application.
 * `QtScheduler` for use with
   [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download),
   [PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and
   [PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the
   [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
-  example for howto use RxPY with your Qt application.
+  example for how to use RxPY with your Qt application.
+* `WxScheduler` for use with [wxPython](http://www.wxpython.org). See the
+  [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
+  example for how to use RxPY with your wx application.
 
 ## Contributing ##
 
