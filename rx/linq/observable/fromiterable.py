@@ -1,3 +1,4 @@
+from rx import Lock
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.concurrency import current_thread_scheduler
@@ -23,13 +24,15 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
+    lock = Lock()
 
     def subscribe(observer):
         iterator = iter(iterable)
 
         def action(action1, state=None):
             try:
-                item = next(iterator)
+                with lock:
+                    item = next(iterator)
             except StopIteration:
                 observer.on_completed()
             else:

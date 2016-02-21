@@ -48,28 +48,28 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_key_selector_all_distinct(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420))
-        
+
         def create():
             def key_selector(x):
                 return x / 2
             return xs.distinct(key_selector)
 
         results = scheduler.start(create)
-    
+
         results.messages.assert_equal(on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420))
         xs.subscriptions.assert_equal(subscribe(200, 420))
 
     def test_distinct_key_selector_some_duplicates(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 4), on_next(300, 2), on_next(350, 3), on_next(380, 7), on_next(400, 5), on_completed(420))
-        
+
         def create():
             def key_selector(x):
                 return math.floor(x / 2.0)
 
             return xs.distinct(key_selector)
         results = scheduler.start(create)
-            
+
         results.messages.assert_equal(on_next(280, 4), on_next(300, 2), on_next(380, 7), on_completed(420))
         xs.subscriptions.assert_equal(subscribe(200, 420))
 

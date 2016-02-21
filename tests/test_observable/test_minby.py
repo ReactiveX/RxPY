@@ -23,10 +23,10 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, { "key": 1, "value": 'z' }), on_completed(250))
-        
+
         def create():
             return xs.min_by(lambda x: x["key"])
-            
+
         res = scheduler.start(create=create).messages
         assert(2 == len(res))
         assert(0 == len(res[0].value.value))
@@ -38,10 +38,10 @@ class TestMinBy(unittest.TestCase):
             on_next(150, { "key": 1, "value": 'z' }),
             on_next(210, { "key": 2, "value": 'a' }),
             on_completed(250))
-        
+
         def create():
             return xs.min_by(lambda x: x["key"])
-            
+
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
@@ -70,9 +70,9 @@ class TestMinBy(unittest.TestCase):
 
         xs = scheduler.create_hot_observable(msgs)
         def create():
-            return xs.min_by(lambda x: x["key"])    
+            return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
-        
+
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
         self.assertEqual(1, len(res[0].value.value))
@@ -108,9 +108,9 @@ class TestMinBy(unittest.TestCase):
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
-            return xs.min_by(lambda x: x["key"])    
+            return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
-            
+
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
         self.assertEqual(2, len(res[0].value.value))
@@ -131,7 +131,7 @@ class TestMinBy(unittest.TestCase):
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
-            return xs.min_by(lambda x: x["key"])    
+            return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(210, ex))
 
@@ -145,9 +145,9 @@ class TestMinBy(unittest.TestCase):
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
-            return xs.min_by(lambda x: x["key"])    
+            return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
-        
+
         res.assert_equal()
 
     def test_min_by_comparer_empty(self):
@@ -161,16 +161,16 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-             
+
             if a == b:
-                return 0   
+                return 0
             return 1
-         
+
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.min_by(lambda x: x["key"], reverse_comparer)
-         
+
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         self.assertEqual(0, len(res[0].value.value))
@@ -190,16 +190,16 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-           
+
             if a == b:
                 return 0
             return 1
-         
+
         xs = scheduler.create_hot_observable(msgs)
-         
+
         def create():
             return xs.min_by(lambda x: x["key"], reverse_comparer)
-         
+
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
@@ -228,16 +228,16 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
             return 1
-       
+
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.min_by(lambda x: x["key"], reverse_comparer)
-        
+
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
@@ -258,14 +258,14 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
-            
+
             return 1
         def create():
             return xs.min_by(lambda x: x["key"], reverse_comparer)
-        
+
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(210, ex))
@@ -281,17 +281,17 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
-            
+
             return 1
-        
+
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.min_by(lambda x: x["key"], reverse_comparer)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal()
 
@@ -316,17 +316,17 @@ class TestMinBy(unittest.TestCase):
         def reverse_comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
-            
+
             return 1
-        
+
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
            return xs.min_by(lambda x: _raise(ex), reverse_comparer)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(210, ex))
 
@@ -350,11 +350,11 @@ class TestMinBy(unittest.TestCase):
         ]
         def reverse_comparer(a, b):
             _raise(ex)
-        
+
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
            return xs.min_by(lambda x: x["key"], reverse_comparer)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(220, ex))

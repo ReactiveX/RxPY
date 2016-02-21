@@ -95,33 +95,33 @@ class TestMin(unittest.TestCase):
         def comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
-            
+
             return 1
-        
+
         xs = scheduler.create_hot_observable(on_next(150, 'z'), on_error(210, ex))
-        
+
         def create():
             return xs.min(comparer)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(210, ex))
-    
+
     def test_min_of_t_comparer_never(self):
         scheduler = TestScheduler()
         def comparer(a, b):
             if a > b:
                 return -1
-            
+
             if a == b:
                 return 0
-            
+
             return 1
-        
+
         xs = scheduler.create_hot_observable(on_next(150, 'z'))
-        
+
         def create():
             return xs.min(comparer)
         res = scheduler.start(create=create).messages
@@ -132,11 +132,11 @@ class TestMin(unittest.TestCase):
         scheduler = TestScheduler()
         def comparer(a, b):
             raise Exception(ex)
-        
+
         xs = scheduler.create_hot_observable(on_next(150, 'z'), on_next(210, "b"), on_next(220, "c"), on_next(230, "a"), on_completed(250))
-        
+
         def create():
             return xs.min(comparer)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(220, ex))

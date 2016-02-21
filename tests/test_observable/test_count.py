@@ -25,7 +25,7 @@ class TestCount(unittest.TestCase):
 
         def create():
             return xs.count()
-                
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_next(250, 1), on_completed(250))
 
@@ -51,60 +51,60 @@ class TestCount(unittest.TestCase):
     def test_count_predicate_empty_true(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-        
+
         def create():
             return xs.count(lambda _: True)
-        
+
         res = scheduler.start(create=create)
-        
+
         res.messages.assert_equal(on_next(250, 0), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_count_predicate_empty_false(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-        
+
         def create():
             return xs.count(lambda _: False)
-        
+
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_next(250, 0), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_count_predicate_return_true(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-        
+
         def create():
             return xs.count(lambda _: True)
-        
+
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_next(250, 1), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_count_predicate_return_false(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-        
+
         def create():
             return xs.count(lambda _: False)
-        
+
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_next(250, 0), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_count_predicate_some_all(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-        
+
         def create():
             return xs.count(lambda x: x < 10)
-            
+
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_next(250, 3), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -116,19 +116,19 @@ class TestCount(unittest.TestCase):
             return xs.count(lambda x: x > 10)
 
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_next(250, 0), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_count_predicate_some_even(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
-        
+
         def create():
             return xs.count(lambda x: x % 2 == 0)
 
         res = scheduler.start(create=create)
-                
+
         res.messages.assert_equal(on_next(250, 2), on_completed(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -141,7 +141,7 @@ class TestCount(unittest.TestCase):
             return xs.count(lambda _: True)
 
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_error(210, ex))
         xs.subscriptions.assert_equal(subscribe(200, 210))
 
@@ -154,19 +154,19 @@ class TestCount(unittest.TestCase):
             return xs.count(lambda _: False)
 
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal(on_error(210, ex))
         xs.subscriptions.assert_equal(subscribe(200, 210))
 
     def test_count_predicate_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1))
-     
+
         def create():
             return xs.count(lambda _: True)
-     
+
         res = scheduler.start(create=create)
-            
+
         res.messages.assert_equal()
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 
@@ -181,10 +181,10 @@ class TestCount(unittest.TestCase):
                     raise Exception(ex)
                 else:
                     return True
-                
+
             return xs.count(predicate)
 
         res = scheduler.start(create=create)
-                
+
         res.messages.assert_equal(on_error(230, ex))
         xs.subscriptions.assert_equal(subscribe(200, 230))

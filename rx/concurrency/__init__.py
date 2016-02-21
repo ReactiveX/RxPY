@@ -19,3 +19,5 @@ from .mainloopscheduler import TwistedScheduler
 from .mainloopscheduler import TkinterScheduler
 from .mainloopscheduler import PyGameScheduler
 from .mainloopscheduler import QtScheduler
+from .mainloopscheduler import WxScheduler
+from .mainloopscheduler import EventLetEventScheduler

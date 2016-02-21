@@ -1,5 +1,11 @@
 # Changes
 
+## 1.2.5
+- Added wxscheduler.py for use with wxPython applications thanks to
+  @bosonogi
+- Added eventletscheduler.py for use with Eventlet thanks to @jalandip
+- Protect generators that are not thread safe. Fixes #71
+
 ## 1.2.4
 
 - Threads are now daemonic by default. Thus they will exit if parent
