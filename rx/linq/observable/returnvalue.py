@@ -1,7 +1,7 @@
 from rx.observable import Observable
 from rx.anonymousobservable import AnonymousObservable
 
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionclassmethod
 
 
@@ -24,7 +24,7 @@ def return_value(cls, value, scheduler=None):
     element.
     """
 
-    scheduler = scheduler or immediate_scheduler
+    scheduler = scheduler or current_thread_scheduler
 
     def subscribe(observer):
         def action(scheduler, state=None):
