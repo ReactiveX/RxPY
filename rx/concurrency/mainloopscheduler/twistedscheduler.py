@@ -1,7 +1,5 @@
 import logging
 
-from twisted.internet.task import deferLater
-
 from rx.concurrency.scheduler import Scheduler
 from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
 
@@ -28,6 +26,8 @@ class TwistedScheduler(Scheduler):
 
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
+
+        from twisted.internet.task import deferLater
 
         scheduler = self
         seconds = self.to_relative(duetime)/1000.0
