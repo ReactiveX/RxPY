@@ -1,11 +1,10 @@
 import logging
-from datetime import datetime
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
+from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
 
 log = logging.getLogger("Rx")
+
 
 class TwistedScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
@@ -28,18 +27,22 @@ class TwistedScheduler(Scheduler):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
+        from twisted.internet.task import deferLater
+
         scheduler = self
         seconds = self.to_relative(duetime)/1000.0
 
         disposable = SingleAssignmentDisposable()
+
         def interval():
             disposable.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
-        handle = [self.reactor.callLater(seconds, interval)]
+        handle = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
 
         def dispose():
-            handle[0].cancel()
+            if not handle.called:
+                handle.cancel()
 
         return CompositeDisposable(disposable, Disposable(dispose))
 
@@ -61,4 +64,3 @@ class TwistedScheduler(Scheduler):
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(int(self.reactor.seconds()*1000))
-
