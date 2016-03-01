@@ -1,5 +1,10 @@
 # Changes
 
+## 1.2.6
+- Fixes for TwistedScheduler raising AlreadyCalled error #78. Thanks to
+  @mchen402 and @jcwilson.
+- Use CurrentThreadScheduler as default for just/return_value. Fixes #76
+
 ## 1.2.5
 - Added wxscheduler.py for use with wxPython applications thanks to
   @bosonogi
