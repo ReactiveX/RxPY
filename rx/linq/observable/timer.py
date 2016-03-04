@@ -46,7 +46,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
                 now = scheduler.now()
                 d[0] = d[0] + scheduler.to_timedelta(p)
                 if d[0] <= now:
-                    d[0] = now + p
+                    d[0] = now + scheduler.to_timedelta(p)
 
             observer.on_next(count[0])
             count[0] += 1
