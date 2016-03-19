@@ -2,8 +2,9 @@ import asyncio
 from rx import Observable
 
 
+stream = Observable.just("Hello, world!")
+
 async def hello_world():
-    stream = Observable.just("Hello, world!")
     n = await stream
     print(n)
 
