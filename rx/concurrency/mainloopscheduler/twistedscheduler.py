@@ -7,7 +7,7 @@ log = logging.getLogger("Rx")
 
 
 class TwistedScheduler(Scheduler):
-    """A scheduler that schedules work via the asyncio mainloop."""
+    """A scheduler that schedules work via the Twisted reactor mainloop."""
 
     def __init__(self, reactor):
         self.reactor = reactor
