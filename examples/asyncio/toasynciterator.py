@@ -49,8 +49,7 @@ async def __aiter__(self):
 async def go():
     scheduler = AsyncIOScheduler()
 
-    xs = Observable.range(0, 10, scheduler=scheduler)
-    async for x in xs:
+    async for x in Observable.range(0, 10, scheduler=scheduler):
         print("got %s" % x)
 
 
