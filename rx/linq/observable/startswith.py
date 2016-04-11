@@ -16,13 +16,11 @@ def start_with(self, *args, **kw):
     Returns the source sequence prepended with the specified values.
     """
 
-    scheduler = kw.get("scheduler")
-
-    if not scheduler and isinstance(args[0], Scheduler):
+    if isinstance(args[0], Scheduler):
         scheduler = args[0]
         args = args[1:]
     else:
-        scheduler = immediate_scheduler
+        scheduler = kw.get("scheduler", immediate_scheduler)
 
     sequence = [Observable.from_(args, scheduler), self]
     return Observable.concat(sequence)
