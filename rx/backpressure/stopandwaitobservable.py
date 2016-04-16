@@ -7,7 +7,7 @@ class StopAndWaitObserver(Observer):
 
     def __init__(self, observer, observable, cancel, scheduler=None):
         super(StopAndWaitObserver, self).__init__()
-        
+
         self.scheduler = scheduler
         self.observer = observer
         self.observable = observable
@@ -43,6 +43,7 @@ class StopAndWaitObserver(Observer):
 
         self.is_disposed = True
 
+
 class StopAndWaitObservable(Observable):
 
     def __init__(self, source, scheduler=None):
@@ -59,7 +60,3 @@ class StopAndWaitObservable(Observable):
 
         self.scheduler.schedule(action)
         return self.subscription
-
-
-
-

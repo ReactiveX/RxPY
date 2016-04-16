@@ -4,6 +4,7 @@ from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable, Disposable
 from rx.subjects import Subject
 
+
 class PausableObservable(Observable):
     def __init__(self, source, pauser=None):
         self.source = source
