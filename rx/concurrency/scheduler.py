@@ -246,12 +246,10 @@ class Scheduler(object):
     def to_datetime(cls, duetime):
         """Converts time value to datetime"""
 
-        if isinstance(duetime, int):
-            duetime = datetime.fromtimestamp(duetime/1000.0)
-        elif isinstance(duetime, float):
-            duetime = datetime.fromtimestamp(duetime)
-        elif isinstance(duetime, timedelta):
+        if isinstance(duetime, timedelta):
             duetime = datetime.fromtimestamp(0) + duetime
+        elif not isinstance(duetime, datetime):
+            duetime = datetime.fromtimestamp(duetime/1000.0)
 
         return duetime
 
@@ -259,12 +257,10 @@ class Scheduler(object):
     def to_timedelta(cls, timespan):
         """Converts time value to timedelta"""
 
-        if isinstance(timespan, int):
-            timespan = timedelta(milliseconds=timespan)
-        elif isinstance(timespan, float):
-            timespan = timedelta(seconds=timespan)
-        elif isinstance(timespan, datetime):
+        if isinstance(timespan, datetime):
             timespan = timespan - datetime.fromtimestamp(0)
+        elif not isinstance(timespan, timedelta):
+            timespan = timedelta(milliseconds=timespan)
 
         return timespan
 
