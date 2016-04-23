@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -26,7 +26,7 @@ class TestEmpty(unittest.TestCase):
         def factory():
             return Observable.empty(scheduler)
         results = scheduler.start(factory)
-        
+
         results.messages.assert_equal(on_completed(201))
 
     def test_empty_disposed(self):
@@ -34,7 +34,7 @@ class TestEmpty(unittest.TestCase):
 
         def factory():
             return Observable.empty(scheduler)
-        
+
         results = scheduler.start(factory, disposed=200)
         results.messages.assert_equal()
 
@@ -42,7 +42,7 @@ class TestEmpty(unittest.TestCase):
         scheduler = TestScheduler()
         xs = Observable.empty(scheduler)
         xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'))
-        
+
         with self.assertRaises(RxException):
             scheduler.start()
-        
+

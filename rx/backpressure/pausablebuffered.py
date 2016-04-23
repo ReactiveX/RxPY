@@ -1,5 +1,4 @@
-from rx import Observable, AnonymousObservable
-from rx.observablebase import ObservableBase
+from rx.core import ObservableBase, Observable, AnonymousObservable
 from rx.internal import extensionmethod
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
@@ -65,9 +64,9 @@ class PausableBufferedObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableBufferedObservable, self).__init__(self._subscribe)
+        super(PausableBufferedObservable, self).__init__()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         previous_should_fire = [None]
         queue = []
 

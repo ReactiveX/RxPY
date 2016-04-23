@@ -1,5 +1,4 @@
-from rx.abc import Observer
-from rx.observablebase import ObservableBase
+from rx.core import Observer, ObservableBase
 
 from rx.internal.utils import check_disposed
 from rx.concurrency import timeout_scheduler
@@ -49,11 +48,11 @@ class StopAndWaitObserver(Observer):
 class StopAndWaitObservable(ObservableBase):
 
     def __init__(self, source, scheduler=None):
-        super(StopAndWaitObservable, self).__init__(self._subscribe)
+        super(StopAndWaitObservable, self).__init__()
         self.scheduler = scheduler or timeout_scheduler
         self.source = source
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         observer = StopAndWaitObserver(observer, self, self.subscription, self.scheduler)
         self.subscription = self.source.subscribe(observer)
 

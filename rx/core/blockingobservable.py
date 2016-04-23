@@ -1,4 +1,4 @@
-from rx.observablebase import ObservableBase
+from rx.core import ObservableBase
 
 
 class BlockingObservable(ObservableBase):
@@ -13,4 +13,7 @@ class BlockingObservable(ObservableBase):
         """
 
         self.observable = observable
-        super(BlockingObservable, self).__init__(observable.subscribe)
+        super(BlockingObservable, self).__init__()
+
+    def _subscribe_core(self, observer):
+        return self.observable.subscribe(observer)

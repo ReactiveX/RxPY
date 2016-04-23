@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -123,18 +123,18 @@ class TestLast(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
-        
+
         def create():
             def predicate(x):
                 if x < 4:
                     return x % 2 == 1
                 else:
                     raise Exception(ex)
-                
+
             return xs.last(predicate)
-    
+
         res = scheduler.start(create=create)
-    
+
         res.messages.assert_equal(on_error(230, ex))
         xs.subscriptions.assert_equal(subscribe(200, 230))
 

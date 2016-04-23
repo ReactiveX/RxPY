@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -148,7 +148,7 @@ class TestToDict(unittest.TestCase):
             return xs.to_dict(lambda x: x * 2, lambda x: x * 4)
 
         res = scheduler.start(create)
-        
+
         res.messages.assert_equal()
 
         xs.subscriptions.assert_equal(

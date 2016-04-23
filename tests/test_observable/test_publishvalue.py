@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -92,7 +92,7 @@ class TestPublishValue(unittest.TestCase):
         connection = [None]
         subscription = [None]
         ys = [None]
-        
+
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -111,35 +111,35 @@ class TestPublishValue(unittest.TestCase):
             on_next(560, 20),
             on_error(600, ex))
         results = scheduler.create_observer()
-        
+
         def action0(scheduler, state):
             ys[0] = xs.publish_value(1979)
         scheduler.schedule_absolute(created, action0)
-    
+
         def action1(scheduler, state):
             subscription[0] = ys[0].subscribe(results)
         scheduler.schedule_absolute(subscribed, action1)
-    
+
         def action2(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(disposed, action2)
-    
+
         def action3(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(300, action3)
-    
+
         def action4(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(400, action4)
-    
+
         def action5(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(500, action5)
-    
+
         def action6(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(800, action6)
-    
+
         scheduler.start()
         results.messages.assert_equal(
             on_next(200, 1979),
@@ -151,7 +151,7 @@ class TestPublishValue(unittest.TestCase):
             on_next(560, 20),
             on_error(600, ex))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
-    
+
     def test_publish_with_initial_value_complete(self):
         connection = [None]
         subscription = [None]
@@ -173,35 +173,35 @@ class TestPublishValue(unittest.TestCase):
             on_next(560, 20),
             on_completed(600))
         results = scheduler.create_observer()
-        
+
         def action0(scheduler, state):
             ys[0] = xs.publish_value(1979)
         scheduler.schedule_absolute(created, action0)
-    
+
         def action1(scheduler, state):
             subscription[0] = ys[0].subscribe(results)
         scheduler.schedule_absolute(subscribed, action1)
-    
+
         def action2(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(disposed, action2)
-    
+
         def action3(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(300, action3)
-    
+
         def action4(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(400, action4)
-    
+
         def action5(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(500, action5)
-    
+
         def action6(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(800, action6)
-    
+
         scheduler.start()
         results.messages.assert_equal(
             on_next(200, 1979),
@@ -213,12 +213,12 @@ class TestPublishValue(unittest.TestCase):
             on_next(560, 20),
             on_completed(600))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
-    
+
     def test_publish_with_initial_value_dispose(self):
         connection = [None]
         subscription = [None]
         ys = [None]
-        
+
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(110, 7),
@@ -235,52 +235,52 @@ class TestPublishValue(unittest.TestCase):
             on_next(520, 11),
             on_next(560, 20),
             on_completed(600))
-        
+
         results = scheduler.create_observer()
-        
+
         def action0(scheduler, state):
             ys[0] = xs.publish_value(1979)
         scheduler.schedule_absolute(created, action0)
-    
+
         def action1(scheduler, state):
             subscription[0] = ys[0].subscribe(results)
         scheduler.schedule_absolute(subscribed, action1)
-    
+
         def action2(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(350, action2)
-    
+
         def action3(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(300, action3)
-    
+
         def action4(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(400, action4)
-    
+
         def action5(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(500, action5)
-    
+
         def action6(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(550, action6)
-    
+
         def action7(scheduler, state):
             connection[0] = ys[0].connect()
         scheduler.schedule_absolute(650, action7)
-    
+
         def action8(scheduler, state):
             connection[0].dispose()
         scheduler.schedule_absolute(800, action8)
-    
+
         scheduler.start()
         results.messages.assert_equal(
             on_next(200, 1979),
             on_next(340, 8))
         xs.subscriptions.assert_equal(
-            subscribe(300, 400), 
-            subscribe(500, 550), 
+            subscribe(300, 400),
+            subscribe(500, 550),
             subscribe(650, 800))
 
     def test_publish_with_initial_value_multiple_connections(self):
@@ -311,13 +311,13 @@ class TestPublishValue(unittest.TestCase):
             on_next(520, 11),
             on_next(560, 20),
             on_completed(600))
-        
+
         def create():
             def selector(_xs):
                 return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(
             on_next(220, 1982),
             on_next(280, 7),
@@ -333,7 +333,7 @@ class TestPublishValue(unittest.TestCase):
             on_next(560, 31),
             on_completed(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
-    
+
     def test_publish_with_initial_value_lambda_zip_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
@@ -352,14 +352,14 @@ class TestPublishValue(unittest.TestCase):
             on_next(520, 11),
             on_next(560, 20),
             on_error(600, ex))
-        
+
         def create():
             def selector(_xs):
                 return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
-    
+
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(
             on_next(220, 1982),
             on_next(280, 7),
@@ -393,12 +393,12 @@ class TestPublishValue(unittest.TestCase):
             on_next(520, 11),
             on_next(560, 20),
             on_completed(600))
-        
+
         def create():
             def selector(_xs):
                 return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
-            
+
         results = scheduler.start(create, disposed=470)
         results.messages.assert_equal(
             on_next(220, 1982),

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -68,10 +68,10 @@ class TestReturnValue(unittest.TestCase):
         xs.subscribe(lambda x: _raise('ex'))
 
         self.assertRaises(RxException, scheduler1.start)
-        
+
         scheduler2 = TestScheduler()
         ys = Observable.return_value(1, scheduler2)
         ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         self.assertRaises(RxException, scheduler2.start)
-        
+

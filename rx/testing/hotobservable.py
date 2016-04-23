@@ -1,6 +1,6 @@
 import logging
 
-from rx.observablebase import ObservableBase
+from rx.core import ObservableBase
 from rx.disposables import Disposable
 
 from .subscription import Subscription
@@ -12,7 +12,7 @@ log = logging.getLogger("Rx")
 class HotObservable(ObservableBase):
     def __init__(self, scheduler, messages):
         log.debug("HotObservable.__init__()")
-        ObservableBase.__init__(self, self._subscribe)
+        super(HotObservable, self).__init__()
 
         self.scheduler = scheduler
         self.messages = messages
@@ -35,7 +35,7 @@ class HotObservable(ObservableBase):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         log.debug("HotObservable:subscribe()")
 
         observable = self

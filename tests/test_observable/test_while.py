@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -16,22 +16,22 @@ class TestWhile(unittest.TestCase):
     def test_while_always_false(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
-        
+
         def create():
             return Observable.while_do(lambda _: False, xs)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_completed(200))
         xs.subscriptions.assert_equal()
 
     def test_while_always_true(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
-        
+
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
-       
+
         results.messages.assert_equal(on_next(250, 1), on_next(300, 2), on_next(350, 3), on_next(400, 4), on_next(500, 1), on_next(550, 2), on_next(600, 3), on_next(650, 4), on_next(750, 1), on_next(800, 2), on_next(850, 3), on_next(900, 4))
         xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1000))
 
@@ -42,7 +42,7 @@ class TestWhile(unittest.TestCase):
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_error(250, ex))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
@@ -52,7 +52,7 @@ class TestWhile(unittest.TestCase):
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_next(250, 1))
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 
@@ -60,14 +60,14 @@ class TestWhile(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
         n = [0]
-        
+
         def create():
             def predicate(x):
                 n[0] += 1
                 return n[0] < 3
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_next(250, 1), on_next(300, 2), on_next(350, 3), on_next(400, 4), on_next(500, 1), on_next(550, 2), on_next(600, 3), on_next(650, 4), on_completed(700))
         xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700))
 
@@ -76,7 +76,7 @@ class TestWhile(unittest.TestCase):
         xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
         n = [0]
         ex = 'ex'
-        
+
         def create():
             def predicate(x):
                 n[0] += 1
@@ -84,7 +84,7 @@ class TestWhile(unittest.TestCase):
                     return True
                 else:
                     raise Exception(ex)
-                
+
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
 

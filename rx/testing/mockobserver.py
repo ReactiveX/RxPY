@@ -1,5 +1,5 @@
-from rx.abc import Observer
-from rx.notification import OnNext, OnError, OnCompleted
+from rx.core import Observer
+from rx.core.notification import OnNext, OnError, OnCompleted
 
 from .recorded import Recorded
 from .reactive_assert import AssertList

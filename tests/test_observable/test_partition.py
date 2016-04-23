@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -285,7 +285,7 @@ class TestPartition(unittest.TestCase):
             subscription1[0].dispose()
             subscription2[0].dispose()
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
-        
+
         scheduler.start()
 
         results1.messages.assert_equal(
@@ -304,7 +304,7 @@ class TestPartition(unittest.TestCase):
 
     def test_partition_disposed(self):
         scheduler = TestScheduler()
-    
+
         xs = scheduler.create_hot_observable(
             on_next(180, 5),
             on_next(210, 4),
@@ -313,39 +313,39 @@ class TestPartition(unittest.TestCase):
             on_next(350, 1),
             on_completed(360)
         )
-    
+
         observables = []
         subscription1 = [None]
         subscription2 = [None]
         results1 = scheduler.create_observer()
         results2 = scheduler.create_observer()
-    
+
         def action0(scheduler, state):
             observables.extend(xs.partition(is_even))
-    
+
         scheduler.schedule_absolute(ReactiveTest.created, action0)
-        
+
         def action1(scheduler, state):
             subscription1[0] = observables[0].subscribe(results1)
             subscription2[0] = observables[1].subscribe(results2)
-    
+
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
-        
+
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
         scheduler.schedule_absolute(280, action2)
-        
+
         scheduler.start()
-    
+
         results1.messages.assert_equal(
             on_next(210, 4)
         )
-    
+
         results2.messages.assert_equal(
             on_next(240, 3)
         )
-    
+
         xs.subscriptions.assert_equal(
             subscribe(200, 280)
         )

@@ -1,6 +1,5 @@
 
-from rx import Observable
-from rx.observablebase import ObservableBase
+from rx.core import Observable, ObservableBase
 from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable, Disposable
 from rx.subjects import Subject
@@ -16,9 +15,9 @@ class PausableObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableObservable, self).__init__(self._subscribe)
+        super(PausableObservable, self).__init__()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         conn = self.source.publish()
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]

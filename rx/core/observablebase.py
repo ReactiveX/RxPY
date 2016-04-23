@@ -1,16 +1,16 @@
 import types
+from abc import abstractmethod
 
 from rx import Lock
-from rx.abc import Observer, Observable
 
+from . import Observer, Observable
 from .anonymousobserver import AnonymousObserver
 
 
 class ObservableBase(Observable):
     """Represents a push-style collection."""
 
-    def __init__(self, subscribe):
-        self._subscribe = subscribe
+    def __init__(self):
         self.lock = Lock()
 
         # Deferred instance method assignment
@@ -48,4 +48,8 @@ class ObservableBase(Observable):
         elif not observer:
             observer = AnonymousObserver(on_next, on_error, on_completed)
 
-        return self._subscribe(observer)
+        return self._subscribe_core(observer)
+
+    @abstractmethod
+    def _subscribe_core(self, observer):
+        return NotImplemented

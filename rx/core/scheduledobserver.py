@@ -1,6 +1,7 @@
 from rx import Lock
-from rx.observerbase import ObserverBase
 from rx.disposables import SerialDisposable
+
+from .observerbase import ObserverBase
 
 
 class ScheduledObserver(ObserverBase):
@@ -19,17 +20,17 @@ class ScheduledObserver(ObserverBase):
         # Note to self: list append is thread safe
         # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
-    def _next(self, value):
+    def _on_next_core(self, value):
         def action():
             self.observer.on_next(value)
         self.queue.append(action)
 
-    def _error(self, exception):
+    def _on_error_core(self, exception):
         def action():
             self.observer.on_error(exception)
         self.queue.append(action)
 
-    def _completed(self):
+    def _on_completed_core(self):
         def action():
             self.observer.on_completed()
         self.queue.append(action)

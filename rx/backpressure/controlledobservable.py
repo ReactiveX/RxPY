@@ -1,5 +1,4 @@
-from rx import Observable
-from rx.observablebase import ObservableBase
+from rx.core import Observable, ObservableBase
 from rx.internal import extensionmethod
 
 from .controlledsubject import ControlledSubject
@@ -8,12 +7,12 @@ from .controlledsubject import ControlledSubject
 class ControlledObservable(ObservableBase):
 
     def __init__(self, source, enable_queue, scheduler=None):
-        super(ControlledObservable, self).__init__(self._subscribe)
+        super(ControlledObservable, self).__init__()
 
         self.subject = ControlledSubject(enable_queue, scheduler)
         self.source = source.multicast(self.subject).ref_count()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         return self.source.subscribe(observer)
 
     def request(self, number_of_items):

@@ -1,6 +1,5 @@
 from rx.internal import noop
-from rx.abc import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionmethod
 

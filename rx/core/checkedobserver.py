@@ -1,4 +1,4 @@
-from rx.abc import Observer
+from . import Observer
 from rx.internal import extensionmethod
 from rx.internal.exceptions import ReEntracyException, CompletedException
 

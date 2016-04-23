@@ -1,6 +1,6 @@
 import unittest
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import Disposable, SerialDisposable
 
@@ -64,7 +64,7 @@ class TestAsObservable(unittest.TestCase):
     def test_as_observable_isnoteager(self):
         scheduler = TestScheduler()
         subscribed = [False]
-        
+
         def subscribe(obs):
             subscribed[0] = True
             disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe(obs)

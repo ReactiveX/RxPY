@@ -1,7 +1,6 @@
 import logging
 
-from rx.observablebase import ObservableBase
-from rx.observerbase import ObserverBase
+from rx.core import ObserverBase, ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.disposables import CompositeDisposable
 log = logging.getLogger('Rx')
@@ -18,15 +17,15 @@ class WindowedObserver(ObserverBase):
 
         super(WindowedObserver, self).__init__(self._next, self._error, self._completed)
 
-    def _completed(self):
+    def _on_completed_core(self):
         self.observer.on_completed()
         self.dispose()
 
-    def _error(self, error):
+    def _on_error_core(self, error):
         self.observer.on_error(error)
         self.dispose()
 
-    def _next(self, value):
+    def _on_next_core(self, value):
         def inner_schedule_method(s, state):
             return self.observable.source.request(self.observable.window_size)
 
@@ -50,14 +49,14 @@ class WindowedObserver(ObserverBase):
 
 class WindowedObservable(ObservableBase):
     def __init__(self, source, window_size, scheduler=None):
-        super(WindowedObservable, self).__init__(self._subscribe)
+        super(WindowedObservable, self).__init__()
 
         self.source = source
         self.window_size = window_size
         self.scheduler = scheduler or timeout_scheduler
         self.subscription = None
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
         self.subscription = self.source.subscribe(observer)
 

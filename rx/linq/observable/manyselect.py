@@ -1,5 +1,5 @@
-from rx.abc import Observable
-from rx.observablebase import ObservableBase
+from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
@@ -9,7 +9,7 @@ from rx.internal import extensionmethod
 
 class ChainObservable(ObservableBase):
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         g = CompositeDisposable()
 
         def action(scheduler, state):
@@ -20,7 +20,7 @@ class ChainObservable(ObservableBase):
         return g
 
     def __init__(self, head):
-        super(ChainObservable, self).__init__(self._subscribe)
+        super(ChainObservable, self).__init__()
         self.head = head
         self.tail = AsyncSubject()
 

@@ -1,6 +1,5 @@
-from rx.abc import Observable
-from rx.anonymousobservable import AnonymousObservable
-from rx.notification import OnNext, OnError, OnCompleted
+from rx.core import Observable, AnonymousObservable
+from rx.core.notification import OnNext, OnError, OnCompleted
 from rx.internal import extensionmethod
 
 

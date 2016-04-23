@@ -1,5 +1,4 @@
-from rx import AnonymousObserver
-from rx.abc import Observer
+from . import Observer, AnonymousObserver
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionclassmethod
 

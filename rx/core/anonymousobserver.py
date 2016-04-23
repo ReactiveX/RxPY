@@ -9,3 +9,12 @@ class AnonymousObserver(ObserverBase):
         self._next = on_next or noop
         self._error = on_error or default_error
         self._completed = on_completed or noop
+
+    def _on_next_core(self, value):
+        self._next(value)
+
+    def _on_error_core(self, error):
+        self._error(error)
+
+    def _on_completed_core(self):
+        self._completed()

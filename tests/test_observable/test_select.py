@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from rx.abc import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
@@ -134,7 +134,7 @@ class TestSelect(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_error(400, ex), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
         def factory():
             def projection(x):
-                invoked[0] += 1 
+                invoked[0] += 1
                 return x + 1
             return xs.map(projection)
 

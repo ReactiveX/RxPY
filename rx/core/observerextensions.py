@@ -1,6 +1,7 @@
-from rx import AnonymousObserver
-from rx.abc import Observer
 from rx.internal import extensionmethod
+
+from . import Observer
+from .anonymousobserver import AnonymousObserver
 
 
 @extensionmethod(Observer)

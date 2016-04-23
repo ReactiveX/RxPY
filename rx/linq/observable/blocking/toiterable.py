@@ -1,6 +1,6 @@
 import threading
 
-from rx.blockingobservable import BlockingObservable
+from rx.core.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
 from rx.internal.enumerator import Enumerator
 

@@ -1,8 +1,7 @@
 from nose.tools import assert_raises
 
-from rx import AnonymousObserver
-from rx.abc import Observer
-from rx.notification import OnNext, OnError, OnCompleted
+from rx.core import Observer, AnonymousObserver
+from rx.core.notification import OnNext, OnError, OnCompleted
 from rx.internal.exceptions import CompletedException
 
 

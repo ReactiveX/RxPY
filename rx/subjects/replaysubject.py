@@ -2,11 +2,10 @@ import sys
 from datetime import timedelta
 
 from rx import Lock
-from rx.abc import Observer
-from rx.observablebase import ObservableBase
+from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
-from rx.scheduledobserver import ScheduledObserver
+from rx.core.scheduledobserver import ScheduledObserver
 
 
 class RemovableDisposable(object):
@@ -48,13 +47,13 @@ class ReplaySubject(ObservableBase, Observer):
 
         self.lock = Lock()
 
-        super(ReplaySubject, self).__init__(self.__subscribe)
+        super(ReplaySubject, self).__init__()
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def __subscribe(self, observer):
+    def _subscribe_core(self, observer):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
 

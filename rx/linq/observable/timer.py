@@ -1,8 +1,7 @@
 import logging
 from datetime import datetime
 
-from rx.abc import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler, Scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal.utils import Timestamp, TimeInterval

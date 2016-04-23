@@ -1,4 +1,4 @@
-from rx.observablebase import ObservableBase
+from rx.core import ObservableBase
 from rx.disposables import Disposable, CompositeDisposable
 
 from .subscription import Subscription
@@ -7,13 +7,13 @@ from .reactive_assert import AssertList
 
 class ColdObservable(ObservableBase):
     def __init__(self, scheduler, messages):
-        super(ColdObservable, self).__init__(self._subscribe)
+        super(ColdObservable, self).__init__()
 
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions = AssertList()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         clock = self.scheduler.to_relative(self.scheduler.now())
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
@@ -39,4 +39,3 @@ class ColdObservable(ObservableBase):
             disposable.dispose()
 
         return Disposable(dispose)
-

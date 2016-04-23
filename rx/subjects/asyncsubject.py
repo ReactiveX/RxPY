@@ -1,8 +1,7 @@
 from rx import Lock
-from rx.observablebase import ObservableBase
+from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
 from rx.disposables import Disposable
-from rx.abc import Observer
 
 from .innersubscription import InnerSubscription
 
@@ -16,7 +15,7 @@ class AsyncSubject(ObservableBase, Observer):
         """Creates a subject that can only receive one value and that value is
         cached for all future observations."""
 
-        super(AsyncSubject, self).__init__(self._subscribe)
+        super(AsyncSubject, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
@@ -31,7 +30,7 @@ class AsyncSubject(ObservableBase, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

@@ -1,7 +1,6 @@
-from rx import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.abc import Observable
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal import Enumerable
 

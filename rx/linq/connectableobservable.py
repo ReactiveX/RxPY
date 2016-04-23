@@ -1,5 +1,5 @@
 from rx import AnonymousObservable
-from rx.observablebase import ObservableBase
+from rx.core import ObservableBase
 from rx.disposables import Disposable, CompositeDisposable
 
 
@@ -12,9 +12,10 @@ class ConnectableObservable(ObservableBase):
         self.has_subscription = False
         self.subscription = None
 
-        def subscribe(observer):
-            return self.subject.subscribe(observer)
-        super(ConnectableObservable, self).__init__(subscribe)
+        super(ConnectableObservable, self).__init__()
+
+    def _subscribe_core(self, observer):
+        return self.subject.subscribe(observer)
 
     def connect(self):
         """Connects the observable."""
