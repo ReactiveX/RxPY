@@ -1,4 +1,4 @@
-from rx.core import ObservableBase
+from rx.core import ObservableBase, Observer, AnonymousObserver
 from rx.disposables import Disposable, CompositeDisposable
 
 from .subscription import Subscription
@@ -12,6 +12,15 @@ class ColdObservable(ObservableBase):
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions = AssertList()
+
+    def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
+        # Be forgiving and accept an un-named observer as first parameter
+        if isinstance(on_next, Observer):
+            observer = on_next
+        elif not observer:
+            observer = AnonymousObserver(on_next, on_error, on_completed)
+
+        return self._subscribe_core(observer)
 
     def _subscribe_core(self, observer):
         clock = self.scheduler.to_relative(self.scheduler.now())

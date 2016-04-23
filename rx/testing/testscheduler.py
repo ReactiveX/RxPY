@@ -39,7 +39,9 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
+        print(duetime, self.clock)
         if duetime <= self.clock:
+            print("got here")
             duetime = self.clock + 1
 
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)

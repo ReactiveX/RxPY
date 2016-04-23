@@ -2,9 +2,12 @@ import types
 from abc import abstractmethod
 
 from rx import Lock
+from rx.concurrency import current_thread_scheduler
+from rx.disposables import Disposable
 
 from . import Observer, Observable
 from .anonymousobserver import AnonymousObserver
+from .autodetachobserver import AutoDetachObserver
 
 
 class ObservableBase(Observable):
@@ -17,8 +20,7 @@ class ObservableBase(Observable):
         for name, method in self._methods:
             setattr(self, name, types.MethodType(method, self))
 
-    def subscribe(self, on_next=None, on_error=None, on_completed=None,
-                  observer=None):
+    def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
         """Subscribes an observer to the observable sequence. Returns the
         source sequence whose subscriptions and unsubscriptions happen on the
         specified scheduler.
@@ -48,7 +50,42 @@ class ObservableBase(Observable):
         elif not observer:
             observer = AnonymousObserver(on_next, on_error, on_completed)
 
-        return self._subscribe_core(observer)
+        auto_detach_observer = AutoDetachObserver(observer)
+
+        def fix_subscriber(subscriber):
+            """Fixes subscriber to make sure it returns a Disposable instead
+            of None or a dispose function"""
+
+            if not hasattr(subscriber, "dispose"):
+                subscriber = Disposable(subscriber)
+
+            return subscriber
+
+        def set_disposable(scheduler=None, value=None):
+            try:
+                subscriber = self._subscribe_core(auto_detach_observer)
+            except Exception as ex:
+                if not auto_detach_observer.fail(ex):
+                    raise
+            else:
+                auto_detach_observer.disposable = fix_subscriber(subscriber)
+
+        # Subscribe needs to set up the trampoline before for subscribing.
+        # Actually, the first call to Subscribe creates the trampoline so
+        # that it may assign its disposable before any observer executes
+        # OnNext over the CurrentThreadScheduler. This enables single-
+        # threaded cancellation
+        # https://social.msdn.microsoft.com/Forums/en-US/eb82f593-9684-4e27-
+        # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
+        # dulerschedulerequired-behaves?forum=rx
+        if current_thread_scheduler.schedule_required():
+            print("Schedule")
+            current_thread_scheduler.schedule(set_disposable)
+        else:
+            print("set_disposable()")
+            set_disposable()
+
+        return auto_detach_observer
 
     @abstractmethod
     def _subscribe_core(self, observer):

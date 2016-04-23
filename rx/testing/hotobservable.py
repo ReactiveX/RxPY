@@ -1,17 +1,12 @@
-import logging
-
-from rx.core import ObservableBase
 from rx.disposables import Disposable
 
+from rx.core import Observer, AnonymousObserver, ObservableBase
 from .subscription import Subscription
 from .reactive_assert import AssertList
-
-log = logging.getLogger("Rx")
 
 
 class HotObservable(ObservableBase):
     def __init__(self, scheduler, messages):
-        log.debug("HotObservable.__init__()")
         super(HotObservable, self).__init__()
 
         self.scheduler = scheduler
@@ -35,16 +30,22 @@ class HotObservable(ObservableBase):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe_core(self, observer):
-        log.debug("HotObservable:subscribe()")
+    def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
+        # Be forgiving and accept an un-named observer as first parameter
+        if isinstance(on_next, Observer):
+            observer = on_next
+        elif not observer:
+            observer = AnonymousObserver(on_next, on_error, on_completed)
 
+        return self._subscribe_core(observer)
+
+    def _subscribe_core(self, observer):
         observable = self
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
-            log.debug("HotObservable:subscribe:dispose_action(%s)" % self.scheduler.clock)
             observable.observers.remove(observer)
             start = observable.subscriptions[index].subscribe
             end = observable.scheduler.clock
