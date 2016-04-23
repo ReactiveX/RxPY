@@ -6,9 +6,9 @@ asyncio = rx.config['asyncio']
 if asyncio is None:
     raise SkipTest("asyncio not available")
 
-from rx.core import Observable
+from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
+from rx.disposables import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

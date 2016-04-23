@@ -1,6 +1,6 @@
 from rx import AnonymousObservable
-from rx.core import ObservableBase
-from rx.disposables import Disposable, CompositeDisposable
+from rx.core import ObservableBase, Disposable
+from rx.disposables import CompositeDisposable
 
 
 class ConnectableObservable(ObservableBase):

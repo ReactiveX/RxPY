@@ -1,6 +1,6 @@
-from rx.core import Observer, ObservableBase
-from rx.disposables import Disposable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.subjects import Subject
+from rx.disposables import AnonymousDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.core.notification import OnCompleted, OnError, OnNext
 
@@ -74,7 +74,7 @@ class ControlledSubject(ObservableBase, Observer):
 
             def dispose():
                 self.requested_count = 0
-            return Disposable(dispose)
+            return AnonymousDisposable(dispose)
             # Scheduled item is still in progress. Return a new
             # disposable to allow the request to be interrupted
             # via dispose.

@@ -1,5 +1,5 @@
-from rx.core import Observable, AnonymousObservable
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.core import Observable, AnonymousObservable, Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal import Enumerable
@@ -94,7 +94,7 @@ def concat(cls, *args):
 
         def dispose():
             is_disposed[0] = True
-        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+        return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
     return AnonymousObservable(subscribe)
 
 

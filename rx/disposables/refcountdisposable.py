@@ -1,5 +1,5 @@
 from rx import Lock
-from .disposable import Disposable
+from rx.core import Disposable
 
 
 class RefCountDisposable(Disposable):
@@ -11,6 +11,7 @@ class RefCountDisposable(Disposable):
 
         def __init__(self, parent):
             self.parent = parent
+            self.is_disposed = False
             self.lock = Lock()
 
         def dispose(self):
@@ -25,6 +26,8 @@ class RefCountDisposable(Disposable):
 
         self.underlying_disposable = disposable
         self.is_primary_disposed = False
+        self.is_disposed = False
+        self.lock = Lock()
         self.count = 0
 
         super(RefCountDisposable, self).__init__()

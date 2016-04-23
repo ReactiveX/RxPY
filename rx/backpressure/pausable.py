@@ -1,7 +1,7 @@
 
-from rx.core import Observable, ObservableBase
+from rx.core import Observable, ObservableBase, Disposable
 from rx.internal import extensionmethod
-from rx.disposables import CompositeDisposable, Disposable
+from rx.disposables import CompositeDisposable
 from rx.subjects import Subject
 
 

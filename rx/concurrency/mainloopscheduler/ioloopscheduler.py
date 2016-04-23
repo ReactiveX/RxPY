@@ -1,11 +1,11 @@
 import logging
-from datetime import datetime
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
+
 
 class IOLoopScheduler(Scheduler):
     """A scheduler that schedules work via the Tornado I/O main event loop.
@@ -13,7 +13,7 @@ class IOLoopScheduler(Scheduler):
     http://tornado.readthedocs.org/en/latest/ioloop.html"""
 
     def __init__(self, loop=None):
-        from tornado import ioloop # Lazy import
+        from tornado import ioloop  # Lazy import
         self.loop = loop or ioloop.IOLoop.current()
 
     def schedule(self, action, state=None):
@@ -33,7 +33,7 @@ class IOLoopScheduler(Scheduler):
             # nonlocal
             disposed[0] = True
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -51,6 +51,7 @@ class IOLoopScheduler(Scheduler):
             return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
+
         def interval():
             disposable.disposable = action(scheduler, state)
 
@@ -60,7 +61,7 @@ class IOLoopScheduler(Scheduler):
         def dispose():
             self.loop.remove_timeout(handle)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -80,4 +81,3 @@ class IOLoopScheduler(Scheduler):
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(self.loop.time())
-

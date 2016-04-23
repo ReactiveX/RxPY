@@ -3,9 +3,8 @@ from abc import abstractmethod
 
 from rx import Lock
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import Disposable
 
-from . import Observer, Observable
+from . import Observer, Observable, Disposable
 from .anonymousobserver import AnonymousObserver
 from .autodetachobserver import AutoDetachObserver
 
@@ -57,7 +56,7 @@ class ObservableBase(Observable):
             of None or a dispose function"""
 
             if not hasattr(subscriber, "dispose"):
-                subscriber = Disposable(subscriber)
+                subscriber = Disposable.create(subscriber)
 
             return subscriber
 
@@ -79,10 +78,8 @@ class ObservableBase(Observable):
         # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
         # dulerschedulerequired-behaves?forum=rx
         if current_thread_scheduler.schedule_required():
-            print("Schedule")
             current_thread_scheduler.schedule(set_disposable)
         else:
-            print("set_disposable()")
             set_disposable()
 
         return auto_detach_observer

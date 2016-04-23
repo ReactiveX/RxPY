@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,6 +11,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class TestCatch(unittest.TestCase):
 
     def test_catch_no_errors(self):
@@ -20,11 +20,11 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(240, 5), on_completed(250)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return o1.catch_exception(o2)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(230))
 
     def test_catch_never(self):
@@ -36,7 +36,7 @@ class TestCatch(unittest.TestCase):
         def create():
             return o1.catch_exception(o2)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal()
 
     def test_catch_empty(self):
@@ -45,10 +45,10 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(240, 5), on_completed(250)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return o1.catch_exception(o2)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(230))
 
@@ -72,7 +72,7 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(240, 5), on_completed(250)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return o1.catch_exception(o2)
 
@@ -98,7 +98,7 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(240, 4), on_error(250, ex)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return o1.catch_exception(o2)
 
@@ -114,7 +114,7 @@ class TestCatch(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
         o3 = scheduler.create_hot_observable(msgs3)
-        
+
         def create():
             return Observable.catch_exception(o1, o2, o3)
 
@@ -129,14 +129,14 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(240, 4), on_completed(250)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             def handler(e):
                 handler_called[0] = True
                 return o2
 
             return o1.catch_exception(handler)
-        
+
         results = scheduler.start(create)
 
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
@@ -157,7 +157,7 @@ class TestCatch(unittest.TestCase):
             return Observable.throw_exception('ex').catch_exception(handler)
 
         results = scheduler.start(create)
-            
+
         results.messages.assert_equal(on_next(240, 4), on_completed(250))
         assert(handler_called[0])
 
@@ -168,15 +168,15 @@ class TestCatch(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
         o1 = scheduler.create_hot_observable(msgs1)
-        
+
         def create():
             def handler(e):
                 handler_called[0] = True
                 raise Exception(ex2)
             return o1.catch_exception(handler)
-        
+
         results = scheduler.start(create)
-            
+
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
         assert(handler_called[0])
 
@@ -191,7 +191,7 @@ class TestCatch(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
         o3 = scheduler.create_hot_observable(msgs3)
-        
+
         def create():
             def handler1(e):
                 first_handler_called[0] = True
@@ -200,9 +200,9 @@ class TestCatch(unittest.TestCase):
                 second_handler_called[0] = True
                 return o3
             return o1.catch_exception(handler1).catch_exception(handler2)
-        
-        results = scheduler.start(create)    
-        
+
+        results = scheduler.start(create)
+
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
         assert(first_handler_called[0])
         assert(not second_handler_called[0])
@@ -219,7 +219,7 @@ class TestCatch(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
         o3 = scheduler.create_hot_observable(msgs3)
-        
+
         def create():
             def handler1(e):
                 first_handler_called[0] = True
@@ -230,9 +230,9 @@ class TestCatch(unittest.TestCase):
                 assert(e == ex2)
                 return o3
             return o1.catch_exception(handler1).catch_exception(handler2)
-        
+
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
         assert(first_handler_called[0])
         assert(second_handler_called[0])

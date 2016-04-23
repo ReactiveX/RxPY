@@ -1,8 +1,9 @@
 import unittest
 from datetime import datetime, timedelta
 
-from rx.concurrency import Scheduler, ImmediateScheduler
-from rx.disposables import Disposable
+from rx.core import Disposable
+from rx.concurrency import ImmediateScheduler
+
 
 class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_now(self):

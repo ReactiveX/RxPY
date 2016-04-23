@@ -1,9 +1,7 @@
 import unittest
-from datetime import timedelta
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.core import Observable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestWindow(unittest.TestCase):
 
@@ -310,14 +309,14 @@ class TestWindow(unittest.TestCase):
                 on_next(350, True),
                 on_completed(400)
         )
-        
+
         def create():
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
             return xs.window(ys).map(selector).merge_observable()
 
         res = scheduler.start(create=create)
-        
+
         res.messages.assert_equal(
                 on_next(250, "0 3"),
                 on_next(260, "1 4"),
@@ -361,7 +360,7 @@ class TestWindow(unittest.TestCase):
                 return w.map(lambda x: str(i) + ' ' + str(x))
             return xs.window(ys).map(selector).merge_observable()
         res = scheduler.start(create=create)
-        
+
         res.messages.assert_equal(
                 on_next(250, "0 3"),
                 on_next(260, "1 4"),

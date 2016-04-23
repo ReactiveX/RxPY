@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestAmb(unittest.TestCase):
 
@@ -42,10 +42,10 @@ class TestAmb(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_completed(225)]
         n = Observable.never()
         e = scheduler.create_hot_observable(r_msgs)
-        
+
         def create():
             return n.amb(e)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(225))
 
@@ -54,10 +54,10 @@ class TestAmb(unittest.TestCase):
         r_msgs = [on_next(150, 1), on_completed(225)]
         n = Observable.never()
         e = scheduler.create_hot_observable(r_msgs)
-        
+
         def create():
             return e.amb(n)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(225))
 
@@ -72,11 +72,11 @@ class TestAmb(unittest.TestCase):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
-        
+
         def create():
             return o1.amb(o2)
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_next(210, 2), on_completed(240))
         assert(not source_not_disposed[0])
 
@@ -87,15 +87,15 @@ class TestAmb(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
-        
+
         def action():
             source_not_disposed[0] = True
-        
+
         o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
-        
+
         def create():
             return o1.amb(o2)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
         assert(not source_not_disposed[0])
@@ -106,16 +106,16 @@ class TestAmb(unittest.TestCase):
         msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
         msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
         source_not_disposed = [False]
-        
+
         def action():
             source_not_disposed[0] = True
         o1 = scheduler.create_hot_observable(msgs1).do_action(on_next=action)
-        
+
         o2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return o1.amb(o2)
-            
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, 3), on_completed(250))
         assert(not source_not_disposed[0])
@@ -127,16 +127,16 @@ class TestAmb(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
-        
+
         def action():
             source_not_disposed[0] = True
-        
+
         o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
-        
+
         def create():
             return o1.amb(o2)
-            
+
         results = scheduler.start(create)
-        
+
         results.messages.assert_equal(on_error(210, ex))
         assert(not source_not_disposed[0])

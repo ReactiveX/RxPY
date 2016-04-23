@@ -1,13 +1,13 @@
 import logging
-from datetime import datetime, timedelta
 
 gevent = None
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
+
 
 class GEventScheduler(Scheduler):
     """A scheduler that schedules work via the GEvent event loop.
@@ -35,7 +35,7 @@ class GEventScheduler(Scheduler):
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -64,7 +64,7 @@ class GEventScheduler(Scheduler):
             # nonlocal timer
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -84,4 +84,3 @@ class GEventScheduler(Scheduler):
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(gevent.core.time())
-

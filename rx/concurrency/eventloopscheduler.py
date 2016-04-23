@@ -2,8 +2,9 @@ import logging
 import threading
 from threading import Timer
 
+from rx import Lock
+from rx.core import Disposable
 from rx.concurrency import ScheduledItem
-from rx.disposables import Disposable
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
@@ -18,12 +19,14 @@ class EventLoopScheduler(Scheduler, Disposable):
 
     def __init__(self, thread_factory=None, exit_if_empty=False):
         super(EventLoopScheduler, self).__init__()
+        self.is_disposed = False
 
         def default_factory(target):
             t = threading.Thread(target=target)
             t.setDaemon(True)
             return t
 
+        self.lock = Lock()
         self.thread_factory = thread_factory or default_factory
         self.thread = None
         self.timer = None
@@ -47,7 +50,7 @@ class EventLoopScheduler(Scheduler, Disposable):
             self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
-        return Disposable(si.cancel)
+        return Disposable.create(si.cancel)
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
@@ -71,7 +74,7 @@ class EventLoopScheduler(Scheduler, Disposable):
             self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
-        return Disposable(si.cancel)
+        return Disposable.create(si.cancel)
 
     def ensure_thread(self):
         """Ensures there is an event loop thread running. Should be called
@@ -130,7 +133,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                         self.thread = None
                         return
 
-    def dipose(self):
+    def dispose(self):
         """Ends the thread associated with this scheduler. All remaining work
         in the scheduler queue is abandoned.
         """

@@ -1,4 +1,5 @@
-from .disposable import Disposable
+from rx import Lock
+from rx.core import Disposable
 
 
 class ScheduledDisposable(Disposable):
@@ -11,6 +12,9 @@ class ScheduledDisposable(Disposable):
 
         self.scheduler = scheduler
         self.disposable = disposable
+        self.is_disposed = False
+        self.lock = Lock()
+
         super(ScheduledDisposable, self).__init__()
 
     def dispose(self):

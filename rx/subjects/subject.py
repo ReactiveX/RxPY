@@ -1,7 +1,6 @@
 from rx import Lock
-from rx.core import Observer, ObservableBase
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
-from rx.disposables import Disposable
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription

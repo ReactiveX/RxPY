@@ -1,8 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,13 +10,14 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class TestToArray(unittest.TestCase):
 
     def test_toiterable_completed(self):
         scheduler = TestScheduler()
         msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5), on_completed(660)]
         xs = scheduler.create_hot_observable(msgs)
-    
+
         def create():
             return xs.to_iterable()
         results = scheduler.start(create=create).messages
@@ -34,7 +33,7 @@ class TestToArray(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5), on_error(660, ex)]
         xs = scheduler.create_hot_observable(msgs)
-    
+
         def create():
             return xs.to_iterable()
         results = scheduler.start(create=create).messages
@@ -45,10 +44,10 @@ class TestToArray(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(110, 1), on_next(220, 2), on_next(330, 3), on_next(440, 4), on_next(550, 5)]
         xs = scheduler.create_hot_observable(msgs)
-    
+
         def create():
            return xs.to_iterable()
-    
+
         results = scheduler.start(create=create).messages
         results.assert_equal()
         xs.subscriptions.assert_equal(subscribe(200, 1000))

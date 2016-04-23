@@ -1,8 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
 on_next = ReactiveTest.on_next
@@ -12,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestPausable(unittest.TestCase):
     def test_paused_no_skip(self):
@@ -29,7 +28,7 @@ class TestPausable(unittest.TestCase):
             on_next(350, 5),
             on_next(399, 6),
             on_completed(500)
-         )
+        )
 
         def action(scheduler, state):
             subscription[0] = xs.pausable(controller).subscribe(results)
@@ -129,7 +128,6 @@ class TestPausable(unittest.TestCase):
             controller.on_next(True)
         scheduler.schedule_absolute(200, action0)
 
-
         def action1(scheduler, state):
             controller.on_next(False)
         scheduler.schedule_absolute(300, action1)
@@ -148,7 +146,6 @@ class TestPausable(unittest.TestCase):
             on_next(210, 2),
             on_error(230, err)
         )
-
 
     def test_paused_with_observable_controller_and_pause_and_unpause(self):
         subscription = [None]

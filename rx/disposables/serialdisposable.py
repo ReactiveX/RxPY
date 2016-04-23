@@ -1,4 +1,5 @@
-from .disposable import Disposable
+from rx import Lock
+from rx.core import Disposable
 
 
 class SerialDisposable(Disposable):
@@ -8,6 +9,8 @@ class SerialDisposable(Disposable):
 
     def __init__(self):
         self.current = None
+        self.is_disposed = False
+        self.lock = Lock()
 
         super(SerialDisposable, self).__init__()
 

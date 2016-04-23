@@ -1,13 +1,9 @@
 import logging
-from datetime import datetime, timedelta
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import ReactiveTest
 
 FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
 logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)
-#logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 log = logging.getLogger('Rx')
 
 on_next = ReactiveTest.on_next
@@ -18,8 +14,10 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):

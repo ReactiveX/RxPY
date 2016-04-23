@@ -1,8 +1,6 @@
 import unittest
 
-from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +9,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestToDict(unittest.TestCase):
 
@@ -24,7 +23,7 @@ class TestToDict(unittest.TestCase):
             on_next(440, 4),
             on_next(550, 5),
             on_completed(660)
-          )
+        )
 
         def create():
             return xs.to_dict(lambda x: x * 2, lambda x: x * 4)

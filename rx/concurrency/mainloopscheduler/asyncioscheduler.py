@@ -2,14 +2,14 @@
 # and the AsyncIOScheduler
 
 import logging
-from datetime import datetime, timedelta
 asyncio = None
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
+
 
 class AsyncIOScheduler(Scheduler):
     """A scheduler that schedules work via the asyncio mainloop."""
@@ -36,7 +36,7 @@ class AsyncIOScheduler(Scheduler):
             # nonlocal handle
             handle[0].cancel()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -64,7 +64,7 @@ class AsyncIOScheduler(Scheduler):
             # nonlocal handle
             handle[0].cancel()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -112,12 +112,12 @@ class AsyncIOScheduler(Scheduler):
             # nonlocal handle
             handle[0].cancel()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being
         scheduled on a scheduler will adhere to the time denoted by this
         property.
         """
-        
+
         return self.to_datetime(self.loop.time())

@@ -1,14 +1,13 @@
 import logging
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
 
 
 class QtScheduler(Scheduler):
-
     """A scheduler for a PyQt4/PyQt5/PySide event loop."""
 
     def __init__(self, qtcore):
@@ -42,7 +41,7 @@ class QtScheduler(Scheduler):
             timer.stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""

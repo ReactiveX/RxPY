@@ -1,7 +1,7 @@
 import logging
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
@@ -65,7 +65,7 @@ class WxScheduler(Scheduler):
             timer.Stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""

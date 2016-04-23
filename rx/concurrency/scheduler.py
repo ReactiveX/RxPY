@@ -1,7 +1,8 @@
 from threading import Timer
 from datetime import datetime, timedelta
 
-from rx.disposables import Disposable, CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import CompositeDisposable
 from rx.internal.basic import default_now
 
 
@@ -54,7 +55,7 @@ class Scheduler(object):
         def dispose():
             timer[0].cancel()
 
-        return Disposable(dispose)
+        return Disposable.create(dispose)
 
     @staticmethod
     def invoke_rec_immediate(scheduler, pair):

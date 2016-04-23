@@ -1,7 +1,7 @@
 import logging
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.scheduler import Scheduler
 
 log = logging.getLogger("Rx")
@@ -31,7 +31,7 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -60,7 +60,7 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -101,4 +101,4 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm[0])
 
-        return Disposable(dispose)
+        return Disposable.create(dispose)

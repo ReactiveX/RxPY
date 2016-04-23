@@ -2,8 +2,8 @@ import logging
 from threading import Timer
 from datetime import timedelta
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
 from .scheduler import Scheduler
 
@@ -27,7 +27,7 @@ class TimeoutScheduler(Scheduler):
 
         def dispose():
             timer.cancel()
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
@@ -50,7 +50,7 @@ class TimeoutScheduler(Scheduler):
         def dispose():
             timer.cancel()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""

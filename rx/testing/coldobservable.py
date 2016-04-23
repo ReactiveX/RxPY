@@ -1,5 +1,5 @@
-from rx.core import ObservableBase, Observer, AnonymousObserver
-from rx.disposables import Disposable, CompositeDisposable
+from rx.core import ObservableBase, Observer, AnonymousObserver, Disposable
+from rx.disposables import CompositeDisposable
 
 from .subscription import Subscription
 from .reactive_assert import AssertList
@@ -47,4 +47,4 @@ class ColdObservable(ObservableBase):
             self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 
-        return Disposable(dispose)
+        return Disposable.create(dispose)

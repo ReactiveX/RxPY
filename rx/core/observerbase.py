@@ -1,10 +1,10 @@
 from abc import abstractmethod
 
 from rx.internal import noop
-from . import Observer
+from . import Observer, Disposable
 
 
-class ObserverBase(Observer):
+class ObserverBase(Observer, Disposable):
     """Base class for implementations of the Observer class. This base
     class enforces the grammar of observers where OnError and
     OnCompleted are terminal messages.

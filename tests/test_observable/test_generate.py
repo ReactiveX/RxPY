@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable, BooleanDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,12 +11,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestGenerate(unittest.TestCase):
     def test_generate_finite(self):
@@ -90,7 +92,7 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0, 
+            return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,

@@ -1,15 +1,14 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 pygame = None
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
 from rx.internal import PriorityQueue
 from rx.concurrency.scheduler import Scheduler
 from rx.concurrency.scheduleditem import ScheduledItem
 
 log = logging.getLogger("Rx")
+
 
 class PyGameScheduler(Scheduler):
     """A scheduler that schedules works for PyGame.
@@ -77,4 +76,3 @@ class PyGameScheduler(Scheduler):
         on a scheduler will adhere to the time denoted by this property."""
 
         return self.to_datetime(pygame.time.get_ticks())
-

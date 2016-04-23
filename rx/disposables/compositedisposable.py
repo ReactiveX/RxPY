@@ -1,4 +1,5 @@
-from .disposable import Disposable
+from rx import Lock
+from rx.core import Disposable
 
 
 class CompositeDisposable(Disposable):
@@ -10,6 +11,8 @@ class CompositeDisposable(Disposable):
         else:
             self.disposables = list(args)
 
+        self.is_disposed = False
+        self.lock = Lock()
         super(CompositeDisposable, self).__init__()
 
     def add(self, item):

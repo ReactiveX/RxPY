@@ -1,8 +1,9 @@
 from rx import Lock
 from rx.internal import noop
+from rx.core import Disposable
 
 
-class Disposable(object):
+class AnonymousDisposable(Disposable):
     """Main disposable class"""
 
     def __init__(self, action=None):
@@ -34,13 +35,11 @@ class Disposable(object):
             self.action()
 
     def __enter__(self):
-        """Context management protocol"""
-
+        """Context management protocol."""
         pass
 
     def __exit__(self, type, value, traceback):
-        """Context management protocol"""
-
+        """Context management protocol."""
         self.dispose()
 
     @classmethod

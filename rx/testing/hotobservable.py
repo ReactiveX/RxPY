@@ -1,6 +1,4 @@
-from rx.disposables import Disposable
-
-from rx.core import Observer, AnonymousObserver, ObservableBase
+from rx.core import Observer, AnonymousObserver, ObservableBase, Disposable
 from .subscription import Subscription
 from .reactive_assert import AssertList
 
@@ -51,4 +49,4 @@ class HotObservable(ObservableBase):
             end = observable.scheduler.clock
             observable.subscriptions[index] = Subscription(start, end)
 
-        return Disposable(dispose_action)
+        return Disposable.create(dispose_action)
