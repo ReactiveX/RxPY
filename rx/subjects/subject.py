@@ -1,14 +1,14 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.observablebase import ObservableBase
 from rx.internal import DisposedException
 from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
+from rx.abc import Observer
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, AbstractObserver):
+class Subject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """

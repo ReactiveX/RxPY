@@ -1,5 +1,5 @@
 from rx.concurrency import Scheduler
-from rx.observable import Observable
+from rx.abc import Observable
 
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionmethod

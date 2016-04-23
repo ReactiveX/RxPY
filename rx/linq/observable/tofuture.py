@@ -1,5 +1,5 @@
 import rx
-from rx.observable import Observable
+from rx.abc import Observable
 from rx.internal import extensionmethod
 
 

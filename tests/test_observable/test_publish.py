@@ -1,11 +1,10 @@
 import unittest
 
 from rx import Observable
-from rx.abstractobserver import AbstractObserver
+from rx.abc import Observer
+from rx.observablebase import ObservableBase
 from rx.linq.connectableobservable import ConnectableObservable
-from rx.subjects import Subject
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -15,14 +14,17 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
 
-class MySubject(Observable, AbstractObserver):
+
+class MySubject(ObservableBase, Observer):
 
     def __init__(self):
 
@@ -56,6 +58,7 @@ class MySubject(Observable, AbstractObserver):
 
     def on_completed(self):
         self.observer.on_completed()
+
 
 class TestPublish(unittest.TestCase):
 

@@ -1,7 +1,9 @@
 from rx import Observable, AnonymousObservable
+from rx.observablebase import ObservableBase
 from rx.internal import extensionmethod
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
+
 
 def combine_latest_source(source, subject, result_selector):
     def subscribe(observer):
@@ -52,7 +54,7 @@ def combine_latest_source(source, subject, result_selector):
     return AnonymousObservable(subscribe)
 
 
-class PausableBufferedObservable(Observable):
+class PausableBufferedObservable(ObservableBase):
 
     def __init__(self, source, pauser=None):
         self.source = source
@@ -114,6 +116,7 @@ class PausableBufferedObservable(Observable):
 
     def resume(self):
         self.controller.on_next(True)
+
 
 @extensionmethod(Observable)
 def pausable_buffered(self, subject):

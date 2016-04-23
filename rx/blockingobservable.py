@@ -1,7 +1,7 @@
-from rx import Observable
+from rx.observablebase import ObservableBase
 
 
-class BlockingObservable(Observable):
+class BlockingObservable(ObservableBase):
     def __init__(self, observable=None):
         """Turns an observable into a blocking observable.
 

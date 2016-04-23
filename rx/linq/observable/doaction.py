@@ -1,5 +1,5 @@
 from rx import Observable
-from rx.observer import AbstractObserver
+from rx.abc import Observer
 from rx.anonymousobservable import AnonymousObservable
 from rx.internal import extensionmethod
 
@@ -31,11 +31,11 @@ def do_action(self, on_next=None, on_error=None, on_completed=None,
 
     source = self
 
-    if isinstance(observer, AbstractObserver):
+    if isinstance(observer, Observer):
         on_next = observer.on_next
         on_error = observer.on_error
         on_completed = observer.on_completed
-    elif isinstance(on_next, AbstractObserver):
+    elif isinstance(on_next, Observer):
         on_error = on_next.on_error
         on_completed = on_next.on_completed
         on_next = on_next.on_next

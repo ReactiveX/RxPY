@@ -1,19 +1,19 @@
 import types
 
 from rx import Lock
-from .observer import Observer, AbstractObserver
+from rx.abc import Observer, Observable
+
+from .anonymousobserver import AnonymousObserver
 
 
-class Observable(object):
+class ObservableBase(Observable):
     """Represents a push-style collection."""
-
-    _methods = []
 
     def __init__(self, subscribe):
         self._subscribe = subscribe
         self.lock = Lock()
 
-        # Deferred method assignment
+        # Deferred instance method assignment
         for name, method in self._methods:
             setattr(self, name, types.MethodType(method, self))
 
@@ -43,9 +43,9 @@ class Observable(object):
         unsubscriptions happen on the specified scheduler."""
 
         # Be forgiving and accept an un-named observer as first parameter
-        if isinstance(on_next, AbstractObserver):
+        if isinstance(on_next, Observer):
             observer = on_next
         elif not observer:
-            observer = Observer(on_next, on_error, on_completed)
+            observer = AnonymousObserver(on_next, on_error, on_completed)
 
         return self._subscribe(observer)

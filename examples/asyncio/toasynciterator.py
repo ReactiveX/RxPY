@@ -2,7 +2,7 @@ import rx
 asyncio = rx.config['asyncio']
 
 from rx.concurrency import AsyncIOScheduler
-from rx.observable import Observable
+from rx.abc import Observable
 from rx.internal import extensionmethod
 
 future_ctor = rx.config.get("Future") or asyncio.Future

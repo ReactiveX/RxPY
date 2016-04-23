@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.abc import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable

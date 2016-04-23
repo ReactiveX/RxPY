@@ -25,8 +25,7 @@ def publish(self, selector=None):
     selector function."""
 
     if selector:
-        return self.multicast(subject_selector=lambda: Subject(),
-                              selector=selector)
+        return self.multicast(subject_selector=lambda: Subject(), selector=selector)
     else:
         return self.multicast(subject=Subject())
 
@@ -35,12 +34,12 @@ def publish(self, selector=None):
 def share(self):
     """Share a single subscription among multple observers.
 
-    Returns a new Observable that multicasts (shares) the original 
-    Observable. As long as there is at least one Subscriber this 
-    Observable will be subscribed and emitting data. When all 
-    subscribers have unsubscribed it will unsubscribe from the source 
+    Returns a new Observable that multicasts (shares) the original
+    Observable. As long as there is at least one Subscriber this
+    Observable will be subscribed and emitting data. When all
+    subscribers have unsubscribed it will unsubscribe from the source
     Observable.
 
-    This is an alias for Observable.publish().ref_count(). 
+    This is an alias for Observable.publish().ref_count().
     """
     return self.publish().ref_count()

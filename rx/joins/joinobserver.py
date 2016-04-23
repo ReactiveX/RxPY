@@ -1,10 +1,11 @@
-from rx.abstractobserver import AbstractObserver
+from rx.observerbase import ObserverBase
 from rx.disposables import SingleAssignmentDisposable
 
-class JoinObserver(AbstractObserver):
+
+class JoinObserver(ObserverBase):
 
     def __init__(self, source, on_error):
-        super(JoinObserver, self).__init__(on_next=self._next)
+        super(JoinObserver, self).__init__()
 
         self.source = source
         self.on_error = on_error
@@ -24,6 +25,12 @@ class JoinObserver(AbstractObserver):
             for plan in active_plans:
                 plan.match()
 
+    def _error(self, error):
+        pass
+
+    def _completed(self):
+        pass
+
     def add_active_plan(self, active_plan):
         self.active_plans.append(active_plan)
 
@@ -41,4 +48,3 @@ class JoinObserver(AbstractObserver):
         if not self.is_disposed:
             self.is_disposed = True
             self.subscription.dispose()
-

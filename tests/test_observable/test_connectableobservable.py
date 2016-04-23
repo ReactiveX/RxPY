@@ -1,9 +1,9 @@
 import unittest
 
 from rx import Observable
-from rx.abstractobserver import AbstractObserver
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.observablebase import ObservableBase
+from rx.abc import Observer
+from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 from rx.linq.connectableobservable import ConnectableObservable
 
@@ -16,7 +16,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class MySubject(Observable, AbstractObserver):
+class MySubject(ObservableBase, Observer):
 
     def __init__(self):
 
@@ -50,6 +50,7 @@ class MySubject(Observable, AbstractObserver):
 
     def on_completed(self):
         self.observer.on_completed()
+
 
 class TestConnectableObservable(unittest.TestCase):
 
@@ -161,7 +162,7 @@ class TestConnectableObservable(unittest.TestCase):
 
     def test_connectable_observable_multiple_non_overlapped_connections(self):
         scheduler = TestScheduler()
-    
+
         xs = scheduler.create_hot_observable(
             on_next(210, 1),
             on_next(220, 2),
@@ -174,60 +175,60 @@ class TestConnectableObservable(unittest.TestCase):
             on_next(290, 9),
             on_completed(300)
         )
-    
+
         subject = Subject()
-    
+
         conn = xs.multicast(subject)
-    
+
         c1 = [None]
         def action10(scheduler, state):
             c1[0] = conn.connect()
         scheduler.schedule_absolute(225, action10)
-        
+
         def action11(scheduler, state):
             c1[0].dispose()
         scheduler.schedule_absolute(241, action11)
-        
+
         def action12(scheduler, state):
             c1[0].dispose() # idempotency test
         scheduler.schedule_absolute(245, action12)
-        
+
         def action13(scheduler, state):
             c1[0].dispose() # idempotency test
         scheduler.schedule_absolute(251, action13)
-        
+
         def action14(scheduler, state):
             c1[0].dispose() # idempotency test
         scheduler.schedule_absolute(260, action14)
-        
+
         c2 = [None]
         def action20(scheduler, state):
             c2[0] = conn.connect()
         scheduler.schedule_absolute(249, action20)
-        
+
         def action21(scheduler, state):
             c2[0].dispose()
         scheduler.schedule_absolute(255, action21)
-        
+
         def action22(scheduler, state):
             c2[0].dispose() # idempotency test
         scheduler.schedule_absolute(265, action22)
-        
+
         def action23(scheduler, state):
             c2[0].dispose() # idempotency test
         scheduler.schedule_absolute(280, action23)
-        
+
         c3 = [None]
         def action30(scheduler, state):
             c3[0] = conn.connect()
         scheduler.schedule_absolute(275, action30)
-        
+
         def action31(scheduler, state):
             c3[0].dispose()
         scheduler.schedule_absolute(295, action31)
-    
+
         res = scheduler.start(lambda: conn)
-    
+
         res.messages.assert_equal(
             on_next(230, 3),
             on_next(240, 4),
@@ -235,7 +236,7 @@ class TestConnectableObservable(unittest.TestCase):
             on_next(280, 8),
             on_next(290, 9)
         )
-    
+
         xs.subscriptions.assert_equal(
             subscribe(225, 241),
             subscribe(249, 255),

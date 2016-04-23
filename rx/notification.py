@@ -1,9 +1,8 @@
-from rx import Observable, Observer
-from rx.abstractobserver import AbstractObserver
+from rx import AnonymousObserver
+from rx.abc import Observer
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionclassmethod
 
-from .observer import Observer
 from .anonymousobservable import AnonymousObservable
 
 
@@ -28,7 +27,7 @@ class Notification(object):
 
         Returns result produced by the observation."""
 
-        if isinstance(on_next, AbstractObserver):
+        if isinstance(on_next, Observer):
             return self._accept_observable(on_next)
         else:
             return self._accept(on_next, on_error, on_completed)
@@ -145,7 +144,7 @@ class OnCompleted(Notification):
         def _on_completed():
             return handler(OnCompleted())
 
-        return Observer(_on_next, _on_error, _on_completed)
+        return AnonymousObserver(_on_next, _on_error, _on_completed)
 
 
 @extensionclassmethod(Observer)
@@ -169,4 +168,4 @@ def from_notifier(cls, handler):
     def _on_completed():
         return handler(OnCompleted())
 
-    return Observer(_on_next, _on_error, _on_completed)
+    return AnonymousObserver(_on_next, _on_error, _on_completed)

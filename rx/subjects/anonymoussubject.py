@@ -1,7 +1,7 @@
-from rx import Observable
+from rx.observablebase import ObservableBase
 
 
-class AnonymousSubject(Observable):
+class AnonymousSubject(ObservableBase):
     def __init__(self, observer, observable):
         super(AnonymousSubject, self).__init__(self._subscribe)
 

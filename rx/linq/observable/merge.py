@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.abc import Observable
 from rx.anonymousobservable import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import Scheduler, immediate_scheduler
@@ -66,8 +66,7 @@ def merge(self, *args, **kwargs):
             if active_count[0] == 0:
                 observer.on_completed()
 
-        group.add(sources.subscribe(on_next, observer.on_error,
-                                    on_completed))
+        group.add(sources.subscribe(on_next, observer.on_error, on_completed))
         return group
     return AnonymousObservable(subscribe)
 

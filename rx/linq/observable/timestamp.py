@@ -1,6 +1,6 @@
 import logging
 
-from rx.observable import Observable
+from rx.abc import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
 from rx.internal import extensionmethod

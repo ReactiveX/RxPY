@@ -1,13 +1,13 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.observablebase import ObservableBase
 from rx.internal import DisposedException
 from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
+from rx.abc import Observer
 
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(Observable, AbstractObserver):
+class AsyncSubject(ObservableBase, Observer):
     """Represents the result of an asynchronous operation. The last value
     before the on_completed notification, or the error received through
     on_error, is sent to all subscribed observers."""

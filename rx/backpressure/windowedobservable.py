@@ -1,13 +1,13 @@
 import logging
 
-from rx import Observable
-from rx.abstractobserver import AbstractObserver
+from rx.observablebase import ObservableBase
+from rx.observerbase import ObserverBase
 from rx.concurrency import timeout_scheduler
 from rx.disposables import CompositeDisposable
 log = logging.getLogger('Rx')
 
 
-class WindowedObserver(AbstractObserver):
+class WindowedObserver(ObserverBase):
     def __init__(self, observer, observable, cancel, scheduler):
         self.observer = observer
         self.observable = observable
@@ -48,7 +48,7 @@ class WindowedObserver(AbstractObserver):
         super(WindowedObserver, self).dispose()
 
 
-class WindowedObservable(Observable):
+class WindowedObservable(ObservableBase):
     def __init__(self, source, window_size, scheduler=None):
         super(WindowedObservable, self).__init__(self._subscribe)
 

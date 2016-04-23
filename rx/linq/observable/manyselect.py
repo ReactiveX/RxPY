@@ -1,4 +1,5 @@
-from rx.observable import Observable
+from rx.abc import Observable
+from rx.observablebase import ObservableBase
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
@@ -6,7 +7,7 @@ from rx.concurrency import immediate_scheduler, current_thread_scheduler
 from rx.internal import extensionmethod
 
 
-class ChainObservable(Observable):
+class ChainObservable(ObservableBase):
 
     def _subscribe(self, observer):
         g = CompositeDisposable()
@@ -33,10 +34,11 @@ class ChainObservable(Observable):
         self.tail.on_next(v)
         self.tail.on_completed()
 
+
 @extensionmethod(Observable)
 def many_select(self, selector, scheduler=None):
-    """Comonadic bind operator. Internally projects a new observable for each 
-    value, and it pushes each observable into the user-defined selector function 
+    """Comonadic bind operator. Internally projects a new observable for each
+    value, and it pushes each observable into the user-defined selector function
     that projects/queries each observable into some result.
 
     Keyword arguments:

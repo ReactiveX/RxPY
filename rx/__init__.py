@@ -27,11 +27,11 @@ config = {
     "asyncio": asyncio
 }
 
-from .observable import Observable
+from .abc import Observer, Observable
+from .anonymousobserver import AnonymousObserver
 from .anonymousobservable import AnonymousObservable
-from .observer import Observer
 
+from . import observerextensions
 from . import checkedobserver
 from . import linq
 from . import backpressure
-

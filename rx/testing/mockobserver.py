@@ -1,4 +1,4 @@
-from rx import Observer
+from rx.abc import Observer
 from rx.notification import OnNext, OnError, OnCompleted
 
 from .recorded import Recorded

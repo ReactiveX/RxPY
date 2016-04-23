@@ -1,11 +1,11 @@
 from rx import Lock
-from rx.abstractobserver import AbstractObserver
+from rx.observerbase import ObserverBase
 from rx.disposables import SerialDisposable
 
 
-class ScheduledObserver(AbstractObserver):
+class ScheduledObserver(ObserverBase):
     def __init__(self, scheduler, observer):
-        super(ScheduledObserver, self).__init__(self._next, self._error, self._completed)
+        super(ScheduledObserver, self).__init__()
 
         self.scheduler = scheduler
         self.observer = observer

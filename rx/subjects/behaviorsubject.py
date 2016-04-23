@@ -1,13 +1,13 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.observablebase import ObservableBase
 from rx.internal import DisposedException
 from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
+from rx.abc import Observer
 
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(Observable, AbstractObserver):
+class BehaviorSubject(ObservableBase, Observer):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.

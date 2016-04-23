@@ -1,10 +1,11 @@
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import Disposable
+
 from .autodetachobserver import AutoDetachObserver
-from .observable import Observable
+from .observablebase import ObservableBase
 
 
-class AnonymousObservable(Observable):
+class AnonymousObservable(ObservableBase):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
 

@@ -1,7 +1,6 @@
 import logging
 
-from rx import Observable, Observer
-from rx.abstractobserver import AbstractObserver
+from rx.observablebase import ObservableBase
 from rx.disposables import Disposable
 
 from .subscription import Subscription
@@ -9,10 +8,11 @@ from .reactive_assert import AssertList
 
 log = logging.getLogger("Rx")
 
-class HotObservable(Observable):
+
+class HotObservable(ObservableBase):
     def __init__(self, scheduler, messages):
         log.debug("HotObservable.__init__()")
-        Observable.__init__(self, self._subscribe)
+        ObservableBase.__init__(self, self._subscribe)
 
         self.scheduler = scheduler
         self.messages = messages
@@ -51,4 +51,3 @@ class HotObservable(Observable):
             observable.subscriptions[index] = Subscription(start, end)
 
         return Disposable(dispose_action)
-

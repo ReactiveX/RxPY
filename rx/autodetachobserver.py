@@ -1,12 +1,12 @@
 from rx.disposables import SingleAssignmentDisposable
 
-from .abstractobserver import AbstractObserver
+from .observerbase import ObserverBase
 
 
-class AutoDetachObserver(AbstractObserver):
+class AutoDetachObserver(ObserverBase):
 
     def __init__(self, observer):
-        super(AutoDetachObserver, self).__init__(self._next, self._error, self._completed)
+        super(AutoDetachObserver, self).__init__()
 
         self.observer = observer
         self.m = SingleAssignmentDisposable()
