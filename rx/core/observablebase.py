@@ -84,7 +84,8 @@ class ObservableBase(Observable):
         else:
             set_disposable()
 
-        return auto_detach_observer
+        # Hide the identity of the auto detach observer
+        return Disposable.create(auto_detach_observer.dispose)
 
     @abstractmethod
     def _subscribe_core(self, observer):
