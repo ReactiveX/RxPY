@@ -33,7 +33,7 @@ def combine_latest_source(source, subject, result_selector):
 
         def on_error_source(e):
             if values[1]:
-                 observer.on_error(e)
+                observer.on_error(e)
             else:
                 err[0] = e
 
