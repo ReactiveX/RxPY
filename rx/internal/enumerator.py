@@ -1,11 +1,11 @@
 class Enumerator(object):
-    """For Python we just wrap the generator"""
+    """For Python we just wrap the iterator"""
 
     def __init__(self, next):
-        self.generator = next
+        self.iterator = next
 
     def __next__(self):
-        return next(self.generator)
+        return next(self.iterator)
 
     # Python 2.7
     next = __next__
