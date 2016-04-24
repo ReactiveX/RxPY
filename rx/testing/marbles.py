@@ -1,8 +1,8 @@
 import re
 import threading
 
-from rx import AnonymousObservable, Observable
-from rx.blockingobservable import BlockingObservable
+from rx.core import AnonymousObservable, Observable
+from rx.core.blockingobservable import BlockingObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 
@@ -109,18 +109,18 @@ def to_marbles(self, scheduler=None):
 
         def on_next(value):
             add_timespan()
-            result.append(value)
+            result.append(stringify(value))
 
         def on_error(exception):
             add_timespan()
-            result.append(exception)
-            observer.on_next("".join(stringify(n) for n in result))
+            result.append(stringify(exception))
+            observer.on_next("".join(n for n in result))
             observer.on_completed()
 
         def on_completed():
             add_timespan()
             result.append("|")
-            observer.on_next("".join(stringify(n) for n in result))
+            observer.on_next("".join(n for n in result))
             observer.on_completed()
 
         return source.subscribe(on_next, on_error, on_completed)
