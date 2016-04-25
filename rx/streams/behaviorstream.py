@@ -2,21 +2,31 @@ from rx import Lock
 from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
-from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(ObservableBase, Observer):
-    """Represents an object that is both an observable sequence as well as an
-    observer. Each notification is broadcasted to all subscribed observers.
+class BehaviorStream(ObservableBase, Observer):
+    """Represents a value that changes over time. Observers can
+    subscribe to the stream to receive the last (or initial) value and
+    all subsequent notifications.
     """
 
-    def __init__(self):
-        super(Subject, self).__init__()
+    def __init__(self, value):
+        """Initializes a new instance of the BehaviorStream class which
+        creates a stream that caches its last value and starts with the
+        specified value.
 
+        Keyword parameters:
+        :param T value: Initial value sent to observers when no other
+            value has been received by the stream yet.
+        """
+
+        super(BehaviorStream, self).__init__()
+
+        self.value = value
+        self.observers = []
         self.is_disposed = False
         self.is_stopped = False
-        self.observers = []
         self.exception = None
 
         self.lock = Lock()
@@ -26,18 +36,22 @@ class Subject(ObservableBase, Observer):
             raise DisposedException()
 
     def _subscribe_core(self, observer):
+        ex = None
+
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 self.observers.append(observer)
+                observer.on_next(self.value)
                 return InnerSubscription(self, observer)
+            ex = self.exception
 
-            if self.exception:
-                observer.on_error(self.exception)
-                return Disposable.empty()
-
+        if ex:
+            observer.on_error(ex)
+        else:
             observer.on_completed()
-            return Disposable.empty()
+
+        return Disposable.empty()
 
     def on_completed(self):
         """Notifies all subscribed observers of the end of the sequence."""
@@ -51,16 +65,11 @@ class Subject(ObservableBase, Observer):
                 self.is_stopped = True
 
         if os:
-            for observer in os:
-                observer.on_completed()
+            for o in os:
+                o.on_completed()
 
-    def on_error(self, exception):
-        """Notifies all subscribed observers with the exception.
-
-        Keyword arguments:
-        error -- The exception to send to all subscribed observers.
-        """
-
+    def on_error(self, error):
+        """Notifie all subscribed observers with the exception."""
         os = None
         with self.lock:
             self.check_disposed()
@@ -68,36 +77,34 @@ class Subject(ObservableBase, Observer):
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                self.exception = exception
+                self.exception = error
 
         if os:
-            for observer in os:
-                observer.on_error(exception)
+            for o in os:
+                o.on_error(error)
 
     def on_next(self, value):
-        """Notifies all subscribed observers with the value.
-
-        Keyword arguments:
-        value -- The value to send to all subscribed observers.
-        """
-
+        """Notifie all subscribed observers with the value."""
         os = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 os = self.observers[:]
-
+                self.value = value
         if os:
-            for observer in os:
-                observer.on_next(value)
+            for o in os:
+                o.on_next(value)
 
     def dispose(self):
-        """Unsubscribe all observers and release resources."""
+        """Release all resources.
 
+        Releases all resources used by the current instance of the
+        ReplayStream class and unsubscribe all observers.
+        """
         with self.lock:
             self.is_disposed = True
             self.observers = None
+            self.value = None
+            self.exception = None
 
-    @classmethod
-    def create(cls, observer, observable):
-        return AnonymousSubject(observer, observable)
+BehaviorStream = BehaviorStream

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,7 +16,7 @@ class TestMulticast(unittest.TestCase):
     def test_multicast_hot_1(self):
         scheduler = TestScheduler()
 
-        s = Subject()
+        s = Stream()
 
         xs = scheduler.create_hot_observable(
             on_next(40, 0),
@@ -65,7 +65,7 @@ class TestMulticast(unittest.TestCase):
         d2 = [None]
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -94,7 +94,7 @@ class TestMulticast(unittest.TestCase):
         d2 = [None]
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -123,7 +123,7 @@ class TestMulticast(unittest.TestCase):
         d2 = [None]
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -157,7 +157,7 @@ class TestMulticast(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_error(390, ex))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -191,7 +191,7 @@ class TestMulticast(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_error(390, ex))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -217,7 +217,7 @@ class TestMulticast(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
-        s = Subject()
+        s = Stream()
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -241,11 +241,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
 
         def create():
-            def subject_selector():
-                return Subject()
+            def stream_selector():
+                return Stream()
             def selector(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(stream_selector=stream_selector, selector=selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
@@ -257,11 +257,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_error(390, ex))
 
         def create():
-            def subject_selector():
-                return Subject()
+            def stream_selector():
+                return Stream()
             def selector(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(stream_selector=stream_selector, selector=selector)
 
         results = scheduler.start(create)
 
@@ -273,11 +273,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7))
 
         def create():
-            def subject_selector():
-                return Subject()
+            def stream_selector():
+                return Stream()
             def selector(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(stream_selector=stream_selector, selector=selector)
 
         results = scheduler.start(create)
 
@@ -289,11 +289,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
 
         def create():
-            def subject_selector():
-                return Subject()
+            def stream_selector():
+                return Stream()
             def selector(ys):
                 return ys.zip(ys, lambda a,b: a+b)
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(stream_selector=stream_selector, selector=selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(on_next(210, 6), on_next(240, 8), on_next(270, 10), on_next(330, 12), on_next(340, 14), on_completed(390))

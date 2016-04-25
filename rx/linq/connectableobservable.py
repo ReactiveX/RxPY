@@ -6,8 +6,8 @@ from rx.disposables import CompositeDisposable
 class ConnectableObservable(ObservableBase):
     """Represents an observable that can be connected and disconnected."""
 
-    def __init__(self, source, subject):
-        self.subject = subject
+    def __init__(self, source, stream):
+        self.stream = stream
         self.source = source.as_observable()
         self.has_subscription = False
         self.subscription = None
@@ -15,7 +15,7 @@ class ConnectableObservable(ObservableBase):
         super(ConnectableObservable, self).__init__()
 
     def _subscribe_core(self, observer):
-        return self.subject.subscribe(observer)
+        return self.stream.subscribe(observer)
 
     def connect(self):
         """Connects the observable."""
@@ -26,7 +26,7 @@ class ConnectableObservable(ObservableBase):
             def dispose():
                 self.has_subscription = False
 
-            disposable = self.source.subscribe(self.subject)
+            disposable = self.source.subscribe(self.stream)
             self.subscription = CompositeDisposable(disposable, Disposable.create(dispose))
 
         return self.subscription

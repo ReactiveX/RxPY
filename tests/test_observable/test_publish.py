@@ -22,10 +22,10 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class MySubject(ObservableBase, Observer):
+class MyStream(ObservableBase, Observer):
 
     def __init__(self):
-        super(MySubject, self).__init__()
+        super(MyStream, self).__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
@@ -98,8 +98,8 @@ class TestPublish(unittest.TestCase):
             on_next(240, 4),
             on_completed(250)
         )
-        subject = MySubject()
-        conn = ConnectableObservable(xs, subject)
+        stream = MyStream()
+        conn = ConnectableObservable(xs, stream)
 
         def create():
             return conn.ref_count()
@@ -113,7 +113,7 @@ class TestPublish(unittest.TestCase):
             on_next(240, 4),
             on_completed(250)
         )
-        assert(subject.disposed)
+        assert(stream.disposed)
 
     def test_ref_count_notconnected(self):
         disconnected = [False]
@@ -131,16 +131,16 @@ class TestPublish(unittest.TestCase):
 
         xs = Observable.defer(factory)
 
-        subject = MySubject()
-        conn = ConnectableObservable(xs, subject)
+        stream = MyStream()
+        conn = ConnectableObservable(xs, stream)
         refd = conn.ref_count()
         dis1 = refd.subscribe()
         self.assertEqual(1, count[0])
-        self.assertEqual(1, subject.subscribe_count)
+        self.assertEqual(1, stream.subscribe_count)
         assert(not disconnected[0])
         dis2 = refd.subscribe()
         self.assertEqual(1, count[0])
-        self.assertEqual(2, subject.subscribe_count)
+        self.assertEqual(2, stream.subscribe_count)
         assert(not disconnected[0])
         dis1.dispose()
         assert(not disconnected[0])
@@ -149,7 +149,7 @@ class TestPublish(unittest.TestCase):
         disconnected[0] = False
         dis3 = refd.subscribe()
         self.assertEqual(2, count[0])
-        self.assertEqual(3, subject.subscribe_count)
+        self.assertEqual(3, stream.subscribe_count)
         assert(not disconnected[0])
         dis3.dispose()
         assert(disconnected[0])

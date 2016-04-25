@@ -8,7 +8,7 @@ def using(cls, resource_factory, observable_factory):
     """Constructs an observable sequence that depends on a resource object,
     whose lifetime is tied to the resulting observable sequence's lifetime.
 
-    1 - res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
+    1 - res = rx.Observable.using(lambda: AsyncStream(), lambda: s: s)
 
     Keyword arguments:
     resource_factory -- Factory function to obtain a resource object.

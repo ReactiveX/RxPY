@@ -1,6 +1,6 @@
 """
 RxPY example running a Tornado server doing search queries against Wikipedia to
-populate the autocomplete dropdown in the web UI. Start using 
+populate the autocomplete dropdown in the web UI. Start using
 `python autocomplete.py` and navigate your web browser to http://localhost:8080
 
 Uses the RxPY IOLoopScheduler (works on both Python 2.7 and 3.4)
@@ -15,7 +15,7 @@ from tornado.httputil import url_concat
 from tornado.escape import json_decode
 from tornado import ioloop
 
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import IOLoopScheduler
 
 scheduler = IOLoopScheduler()
@@ -43,9 +43,9 @@ class WSHandler(WebSocketHandler):
     def open(self):
         print("WebSocket opened")
 
-        # A Subject is both an observable and observer, so we can both subscribe
+        # A Stream is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
-        self.stream = Subject()
+        self.stream = Stream()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
         query = self.stream.map(

@@ -5,7 +5,7 @@ from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
     CompositeDisposable, RefCountDisposable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
@@ -48,7 +48,7 @@ def observable_window_with_bounaries(self, window_boundaries):
     source = self
 
     def subscribe(observer):
-        window = [Subject()]
+        window = [Stream()]
         d = CompositeDisposable()
         r = RefCountDisposable(d)
 
@@ -69,7 +69,7 @@ def observable_window_with_bounaries(self, window_boundaries):
 
         def on_next_observer(w):
             window[0].on_completed()
-            window[0] = Subject()
+            window[0] = Stream()
             observer.on_next(add_ref(window[0], r))
 
         d.add(window_boundaries.subscribe(on_next_observer, on_error, on_completed))
@@ -83,7 +83,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
         m = SerialDisposable()
         d = CompositeDisposable(m)
         r = RefCountDisposable(d)
-        window = [Subject()]
+        window = [Stream()]
 
         observer.on_next(add_ref(window[0], r))
 
@@ -110,7 +110,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
             def on_completed():
                 window[0].on_completed()
-                window[0] = Subject()
+                window[0] = Stream()
                 observer.on_next(add_ref(window[0], r))
                 create_window_close()
 

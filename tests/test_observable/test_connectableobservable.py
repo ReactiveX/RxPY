@@ -2,7 +2,7 @@ import unittest
 
 from rx.core import Observer, Observable, ObservableBase
 from rx.testing import TestScheduler, ReactiveTest
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.linq.connectableobservable import ConnectableObservable
 
 on_next = ReactiveTest.on_next
@@ -14,11 +14,11 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class MySubject(ObservableBase, Observer):
+class MyStream(ObservableBase, Observer):
 
     def __init__(self):
 
-        super(MySubject, self).__init__()
+        super(MyStream, self).__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
@@ -55,7 +55,7 @@ class TestConnectableObservable(unittest.TestCase):
     def test_connectable_observable_creation(self):
         y = [0]
 
-        s2 = Subject()
+        s2 = Stream()
         co2 = ConnectableObservable(Observable.return_value(1), s2)
 
         def on_next(x):
@@ -77,9 +77,9 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250)
         )
 
-        subject = MySubject()
+        stream = MyStream()
 
-        conn = ConnectableObservable(xs, subject)
+        conn = ConnectableObservable(xs, stream)
         disconnect = conn.connect()
 
         res = scheduler.start(lambda: conn)
@@ -103,9 +103,9 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250)
         )
 
-        subject = MySubject()
+        stream = MyStream()
 
-        conn = ConnectableObservable(xs, subject)
+        conn = ConnectableObservable(xs, stream)
 
         res = scheduler.start(lambda: conn)
 
@@ -123,9 +123,9 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250)
         )
 
-        subject = MySubject()
+        stream = MyStream()
 
-        conn = ConnectableObservable(xs, subject)
+        conn = ConnectableObservable(xs, stream)
         disconnect = conn.connect()
         disconnect.dispose()
 
@@ -145,10 +145,10 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250)
         )
 
-        subject = MySubject()
+        stream = MyStream()
 
-        conn = ConnectableObservable(xs, subject)
-        subject.dispose_on(3, conn.connect())
+        conn = ConnectableObservable(xs, stream)
+        stream.dispose_on(3, conn.connect())
 
         res = scheduler.start(lambda: conn)
 
@@ -174,9 +174,9 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(300)
         )
 
-        subject = Subject()
+        stream = Stream()
 
-        conn = xs.multicast(subject)
+        conn = xs.multicast(stream)
 
         c1 = [None]
         def action10(scheduler, state):

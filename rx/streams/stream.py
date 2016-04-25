@@ -2,24 +2,20 @@ from rx import Lock
 from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
+from .anonymousstream import AnonymousStream
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(ObservableBase, Observer):
-    """Represents the result of an asynchronous operation. The last value
-    before the on_completed notification, or the error received through
-    on_error, is sent to all subscribed observers."""
+class Stream(ObservableBase, Observer):
+    """Represents an object that is both an observable sequence as well as an
+    observer. Each notification is broadcasted to all subscribed observers.
+    """
 
     def __init__(self):
-        """Creates a subject that can only receive one value and that value is
-        cached for all future observations."""
-
-        super(AsyncSubject, self).__init__()
+        super(Stream, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
-        self.value = None
-        self.has_value = False
         self.observers = []
         self.exception = None
 
@@ -36,47 +32,36 @@ class AsyncSubject(ObservableBase, Observer):
                 self.observers.append(observer)
                 return InnerSubscription(self, observer)
 
-            ex = self.exception
-            hv = self.has_value
-            v = self.value
+            if self.exception:
+                observer.on_error(self.exception)
+                return Disposable.empty()
 
-        if ex:
-            observer.on_error(ex)
-        elif hv:
-            observer.on_next(v)
             observer.on_completed()
-        else:
-            observer.on_completed()
-
-        return Disposable.empty()
+            return Disposable.empty()
 
     def on_completed(self):
-        value = None
-        os = None
-        hv = None
+        """Notifies all subscribed observers of the end of the sequence."""
 
+        os = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 os = self.observers[:]
                 self.observers = []
-
                 self.is_stopped = True
-                value = self.value
-                hv = self.has_value
 
         if os:
-            if hv:
-                for o in os:
-                    o.on_next(value)
-                    o.on_completed()
-            else:
-                for o in os:
-                    o.on_completed()
+            for observer in os:
+                observer.on_completed()
 
     def on_error(self, exception):
-        os = None
+        """Notifies all subscribed observers with the exception.
 
+        Keyword arguments:
+        error -- The exception to send to all subscribed observers.
+        """
+
+        os = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -86,20 +71,35 @@ class AsyncSubject(ObservableBase, Observer):
                 self.exception = exception
 
         if os:
-            for o in os:
-                o.on_error(exception)
+            for observer in os:
+                observer.on_error(exception)
 
     def on_next(self, value):
+        """Notifies all subscribed observers with the value.
+
+        Keyword arguments:
+        value -- The value to send to all subscribed observers.
+        """
+
+        os = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
-                self.value = value
-                self.has_value = True
+                os = self.observers[:]
+
+        if os:
+            for observer in os:
+                observer.on_next(value)
 
     def dispose(self):
+        """Unsubscribe all observers and release resources."""
+
         with self.lock:
             self.is_disposed = True
             self.observers = None
-            self.exception = None
-            self.value = None
 
+    @classmethod
+    def create(cls, observer, observable):
+        return AnonymousStream(observer, observable)
+
+Stream = Stream

@@ -2,7 +2,7 @@ import unittest
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.subjects import Subject
+from rx.streams import Stream
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -20,7 +20,7 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
 
         results = scheduler.create_observer()
 
@@ -67,7 +67,7 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
@@ -114,7 +114,7 @@ class TestPausable_buffered(unittest.TestCase):
         err = Exception()
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
 
         results = scheduler.create_observer()
 
@@ -157,7 +157,7 @@ class TestPausable_buffered(unittest.TestCase):
         subscription = [None]
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
@@ -414,7 +414,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_completed(500)
         )
 
-        controller = Subject()
+        controller = Stream()
 
         pausable_buffered = xs.pausable_buffered(controller)
 

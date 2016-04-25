@@ -1,10 +1,10 @@
 from rx.core import ObservableBase, Observable, AnonymousObservable
 from rx.internal import extensionmethod
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.disposables import CompositeDisposable
 
 
-def combine_latest_source(source, subject, result_selector):
+def combine_latest_source(source, stream, result_selector):
     def subscribe(observer):
         has_value = [False, False]
         has_value_all = [False]
@@ -42,13 +42,13 @@ def combine_latest_source(source, subject, result_selector):
             if values[1]:
                 observer.on_completed()
 
-        def on_completed_subject():
+        def on_completed_stream():
             is_done[0] = True
             next(True, 1)
 
         return CompositeDisposable(
             source.subscribe(lambda x: next(x, 0), on_error_source, on_completed_source),
-            subject.subscribe(lambda x: next(x, 1), observer.on_error, on_completed_subject)
+            stream.subscribe(lambda x: next(x, 1), observer.on_error, on_completed_stream)
         )
     return AnonymousObservable(subscribe)
 
@@ -57,7 +57,7 @@ class PausableBufferedObservable(ObservableBase):
 
     def __init__(self, source, pauser=None):
         self.source = source
-        self.controller = Subject()
+        self.controller = Stream()
 
         if pauser and hasattr(pauser, "subscribe"):
             self.pauser = self.controller.merge(pauser)
@@ -118,13 +118,13 @@ class PausableBufferedObservable(ObservableBase):
 
 
 @extensionmethod(Observable)
-def pausable_buffered(self, subject):
+def pausable_buffered(self, stream):
     """Pauses the underlying observable sequence based upon the observable
     sequence which yields True/False, and yields the values that were
     buffered while paused.
 
     Example:
-    pauser = rx.Subject()
+    pauser = rx.Stream()
     source = rx.Observable.interval(100).pausable_buffered(pauser)
 
     Keyword arguments:
@@ -134,4 +134,4 @@ def pausable_buffered(self, subject):
     Returns the observable {Observable} sequence which is paused based upon
     the pauser."""
 
-    return PausableBufferedObservable(self, subject)
+    return PausableBufferedObservable(self, stream)

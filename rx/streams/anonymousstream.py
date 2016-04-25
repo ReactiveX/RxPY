@@ -1,9 +1,9 @@
 from rx.core import ObservableBase
 
 
-class AnonymousSubject(ObservableBase):
+class AnonymousStream(ObservableBase):
     def __init__(self, observer, observable):
-        super(AnonymousSubject, self).__init__()
+        super(AnonymousStream, self).__init__()
 
         self.observer = observer
         self.observable = observable
@@ -19,3 +19,5 @@ class AnonymousSubject(ObservableBase):
 
     def on_next(self, value):
         self.observer.on_next(value)
+
+AnonymousStream = AnonymousStream

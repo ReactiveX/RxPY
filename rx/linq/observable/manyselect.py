@@ -1,7 +1,7 @@
 from rx.core import Observable
 from rx.core import ObservableBase
 from rx.internal.basic import noop
-from rx.subjects import AsyncSubject
+from rx.streams import AsyncStream
 from rx.disposables import CompositeDisposable
 from rx.concurrency import immediate_scheduler, current_thread_scheduler
 from rx.internal import extensionmethod
@@ -22,7 +22,7 @@ class ChainObservable(ObservableBase):
     def __init__(self, head):
         super(ChainObservable, self).__init__()
         self.head = head
-        self.tail = AsyncSubject()
+        self.tail = AsyncStream()
 
     def on_completed(self):
         self.on_next(Observable.empty())

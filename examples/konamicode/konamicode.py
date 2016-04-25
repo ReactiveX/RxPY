@@ -6,7 +6,7 @@ from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.escape import json_encode, json_decode
 from tornado import ioloop
 
-from rx.subjects import Subject
+from rx.streams import Stream
 
 UP, DOWN, LEFT, RIGHT, B, A = 38, 40, 37, 39, 66, 65
 codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A]
@@ -15,9 +15,9 @@ class WSHandler(WebSocketHandler):
     def open(self):
         print("WebSocket opened")
 
-        # A Subject is both an observable and observer, so we can both subscribe
+        # A Stream is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
-        self.subject = Subject()
+        self.subject = Stream()
 
         # Now we take on our magic glasses and project the stream of bytes into
         # a ...

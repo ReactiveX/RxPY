@@ -1,7 +1,7 @@
 import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
-from rx.subjects import Subject
+from rx.streams import Stream
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -17,7 +17,7 @@ class TestPausable(unittest.TestCase):
         subscription = [None]
 
         scheduler = TestScheduler()
-        controller = Subject()
+        controller = Stream()
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
@@ -63,7 +63,7 @@ class TestPausable(unittest.TestCase):
 
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
 
         results = scheduler.create_observer()
 
@@ -109,7 +109,7 @@ class TestPausable(unittest.TestCase):
         err = Exception()
         scheduler = TestScheduler()
 
-        controller = Subject()
+        controller = Stream()
 
         results = scheduler.create_observer()
 

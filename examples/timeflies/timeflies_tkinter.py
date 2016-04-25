@@ -1,4 +1,4 @@
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import TkinterScheduler
 
 try:
@@ -13,7 +13,7 @@ def main():
     root.title("Rx for Python rocks")
     scheduler = TkinterScheduler(root)
 
-    mousemove = Subject()
+    mousemove = Stream()
 
     frame = Frame(root, width=600, height=600)
 

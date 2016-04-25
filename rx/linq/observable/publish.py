@@ -1,5 +1,5 @@
 from rx import Observable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.internal import extensionmethod
 
 
@@ -8,7 +8,7 @@ def publish(self, selector=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
-    specialization of Multicast using a regular Subject.
+    specialization of Multicast using a regular Stream.
 
     Example:
     res = source.publish()
@@ -25,9 +25,9 @@ def publish(self, selector=None):
     selector function."""
 
     if selector:
-        return self.multicast(subject_selector=lambda: Subject(), selector=selector)
+        return self.multicast(stream_selector=lambda: Stream(), selector=selector)
     else:
-        return self.multicast(subject=Subject())
+        return self.multicast(stream=Stream())
 
 
 @extensionmethod(Observable)

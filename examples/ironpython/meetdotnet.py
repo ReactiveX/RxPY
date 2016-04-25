@@ -1,4 +1,4 @@
-"""This example shows how to use RxPY together with RxNET in IronPython. Two Rx 
+"""This example shows how to use RxPY together with RxNET in IronPython. Two Rx
 frameworks in one small program.
 """
 import clr
@@ -20,7 +20,7 @@ from System.Reactive import Observer
 # Import RxPY
 import rx
 
-stream = rx.subjects.Subject()
+stream = rx.streams.Stream()
 
 def on_next(x):
     print "RxPy: %s" % x
