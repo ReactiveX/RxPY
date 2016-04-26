@@ -47,9 +47,11 @@ class Scheduler(object):
                 s[0] = new_state
 
             timer[0] = Timer(period, interval)
+            timer[0].setDaemon(True)
             timer[0].start()
 
         timer[0] = Timer(period, interval)
+        timer[0].setDaemon(True)
         timer[0].start()
 
         def dispose():

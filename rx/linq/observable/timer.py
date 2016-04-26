@@ -3,8 +3,7 @@ from datetime import datetime
 
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler, Scheduler
-from rx.internal import extensionmethod, extensionclassmethod
-from rx.internal.utils import Timestamp, TimeInterval
+from rx.internal import extensionclassmethod
 
 log = logging.getLogger("Rx")
 
@@ -24,6 +23,7 @@ def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
         return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
     return Observable.defer(deferred)
 
+
 def observable_timer_date(duetime, scheduler):
     def subscribe(observer):
         def action(scheduler, state):
@@ -32,6 +32,7 @@ def observable_timer_date(duetime, scheduler):
 
         return scheduler.schedule_absolute(duetime, action)
     return AnonymousObservable(subscribe)
+
 
 def observable_timer_date_and_period(duetime, period, scheduler):
     p = Scheduler.normalize(period)
