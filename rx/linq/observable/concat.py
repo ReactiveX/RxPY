@@ -63,10 +63,6 @@ def concat(cls, *args):
     else:
         sources = list(args)
 
-    print("****************")
-    print(args)
-    print(sources)
-
     def subscribe(observer):
         enum = iter(sources)
         is_disposed = [False]
