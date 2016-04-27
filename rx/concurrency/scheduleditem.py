@@ -1,3 +1,4 @@
+from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable
 
 
@@ -15,7 +16,9 @@ class ScheduledItem(object):
         self.disposable = SingleAssignmentDisposable()
 
     def invoke(self):
-        self.disposable.disposable = self.invoke_core()
+        ret = self.action(self.scheduler, self.state)
+        if isinstance(ret, Disposable):
+            self.disposable.disposable = ret
 
     def compare_to(self, other):
         return self.comparer(self.duetime, other.duetime)
@@ -28,9 +31,6 @@ class ScheduledItem(object):
 
     def is_cancelled(self):
         return self.disposable.is_disposed
-
-    def invoke_core(self):
-        return self.action(self.scheduler, self.state)
 
     def __lt__(self, other):
         return self.compare_to(other) < 0
