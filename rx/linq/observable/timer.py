@@ -8,22 +8,6 @@ from rx.internal import extensionclassmethod
 log = logging.getLogger("Rx")
 
 
-def observable_timer_timespan_and_period(cls, duetime, period, scheduler):
-    if duetime == period:
-        def subscribe(observer):
-            def action(count):
-                observer.on_next(count)
-                count += 1
-                return count
-
-            return scheduler.schedule_periodic(period, action, 0)
-        return AnonymousObservable(subscribe)
-
-    def deferred():
-        return cls.observable_timer_date_and_period(scheduler.now() + duetime, period, scheduler)
-    return Observable.defer(deferred)
-
-
 def observable_timer_date(duetime, scheduler):
     def subscribe(observer):
         def action(scheduler, state):
@@ -55,6 +39,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
         return scheduler.schedule_recursive_with_absolute(d[0], action)
     return AnonymousObservable(subscribe)
 
+
 def observable_timer_timespan(duetime, scheduler):
     d = Scheduler.normalize(duetime)
 
@@ -65,6 +50,7 @@ def observable_timer_timespan(duetime, scheduler):
 
         return scheduler.schedule_relative(d, action)
     return AnonymousObservable(subscribe)
+
 
 def observable_timer_timespan_and_period(duetime, period, scheduler):
     if duetime == period:
@@ -77,8 +63,10 @@ def observable_timer_timespan_and_period(duetime, period, scheduler):
         return AnonymousObservable(subscribe)
 
     def defer():
-        return observable_timer_date_and_period(scheduler.now() + scheduler.to_timedelta(duetime), period, scheduler)
+        dt = scheduler.now() + scheduler.to_timedelta(duetime)
+        return observable_timer_date_and_period(dt, period, scheduler)
     return Observable.defer(defer)
+
 
 @extensionclassmethod(Observable)
 def timer(cls, duetime, period=None, scheduler=None):
