@@ -28,8 +28,9 @@ class AsyncIOScheduler(Scheduler):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
-
+            ret = action(scheduler, state)
+            if isinstance(ret, Disposable):
+                disposable.disposable = ret
         handle = [self.loop.call_soon(interval)]
 
         def dispose():
@@ -56,7 +57,9 @@ class AsyncIOScheduler(Scheduler):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            ret = action(scheduler, state)
+            if isinstance(ret, Disposable):
+                disposable.disposable = ret
 
         handle = [self.loop.call_later(seconds, interval)]
 
@@ -100,11 +103,9 @@ class AsyncIOScheduler(Scheduler):
         if seconds == 0:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
-
         def interval():
-            disposable.disposable = action(state)
-            scheduler.schedule_periodic(period, action, state)
+            new_state = action(state)
+            scheduler.schedule_periodic(period, action, new_state)
 
         handle = [self.loop.call_later(seconds, interval)]
 
@@ -112,7 +113,7 @@ class AsyncIOScheduler(Scheduler):
             # nonlocal handle
             handle[0].cancel()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return Disposable.create(dispose)
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being

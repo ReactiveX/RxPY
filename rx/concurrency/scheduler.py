@@ -47,9 +47,11 @@ class Scheduler(object):
                 s[0] = new_state
 
             timer[0] = Timer(period, interval)
+            timer[0].setDaemon(True)
             timer[0].start()
 
         timer[0] = Timer(period, interval)
+        timer[0].setDaemon(True)
         timer[0].start()
 
         def dispose():
@@ -196,8 +198,7 @@ class Scheduler(object):
                                                                action=action1,
                                                                state=action)
 
-    def schedule_recursive_with_absolute_and_state(self, duetime, action,
-                                                   state):
+    def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
         """Schedules an action to be executed recursively at a specified
         absolute due time.
 

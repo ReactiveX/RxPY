@@ -97,11 +97,9 @@ class EventLetEventScheduler(Scheduler):
         if not seconds:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
-
         def interval():
-            disposable.disposable = action(scheduler, state)
-            scheduler.schedule_periodic(period, action, state)
+            new_state = action(scheduler, state)
+            scheduler.schedule_periodic(period, action, new_state)
 
         log.debug("timeout: %s", seconds)
         timer = [eventlet.spawn_after(seconds, interval)]
@@ -109,7 +107,7 @@ class EventLetEventScheduler(Scheduler):
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return Disposable.create(dispose)
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
