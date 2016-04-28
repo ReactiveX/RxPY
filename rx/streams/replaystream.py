@@ -146,4 +146,4 @@ class ReplayStream(ObservableBase, Observer):
             self.observers = None
             self.queue = []
 
-ReplayStream = ReplayStream
+ReplaySubject = ReplayStream

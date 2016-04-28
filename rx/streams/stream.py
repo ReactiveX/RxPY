@@ -102,4 +102,4 @@ class Stream(ObservableBase, Observer):
     def create(cls, observer, observable):
         return AnonymousStream(observer, observable)
 
-Stream = Stream
+Subject = Stream

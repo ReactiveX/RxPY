@@ -103,4 +103,4 @@ class AsyncStream(ObservableBase, Observer):
             self.exception = None
             self.value = None
 
-AsyncStream = AsyncStream
+AsyncSubject = AsyncStream

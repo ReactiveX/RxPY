@@ -20,4 +20,4 @@ class AnonymousStream(ObservableBase):
     def on_next(self, value):
         self.observer.on_next(value)
 
-AnonymousStream = AnonymousStream
+AnonymousSubject = AnonymousStream

@@ -107,4 +107,4 @@ class BehaviorStream(ObservableBase, Observer):
             self.value = None
             self.exception = None
 
-BehaviorStream = BehaviorStream
+BehaviorSubject = BehaviorStream
