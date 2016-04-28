@@ -5,22 +5,28 @@ from rx.internal import DisposedException
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(ObservableBase, Observer):
-    """Represents the result of an asynchronous operation. The last value
-    before the on_completed notification, or the error received through
-    on_error, is sent to all subscribed observers."""
+class BehaviorStream(ObservableBase, Observer):
+    """Represents a value that changes over time. Observers can
+    subscribe to the stream to receive the last (or initial) value and
+    all subsequent notifications.
+    """
 
-    def __init__(self):
-        """Creates a subject that can only receive one value and that value is
-        cached for all future observations."""
+    def __init__(self, value):
+        """Initializes a new instance of the BehaviorStream class which
+        creates a stream that caches its last value and starts with the
+        specified value.
 
-        super(AsyncSubject, self).__init__()
+        Keyword parameters:
+        :param T value: Initial value sent to observers when no other
+            value has been received by the stream yet.
+        """
 
+        super(BehaviorStream, self).__init__()
+
+        self.value = value
+        self.observers = []
         self.is_disposed = False
         self.is_stopped = False
-        self.value = None
-        self.has_value = False
-        self.observers = []
         self.exception = None
 
         self.lock = Lock()
@@ -30,76 +36,75 @@ class AsyncSubject(ObservableBase, Observer):
             raise DisposedException()
 
     def _subscribe_core(self, observer):
+        ex = None
+
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 self.observers.append(observer)
+                observer.on_next(self.value)
                 return InnerSubscription(self, observer)
-
             ex = self.exception
-            hv = self.has_value
-            v = self.value
 
         if ex:
             observer.on_error(ex)
-        elif hv:
-            observer.on_next(v)
-            observer.on_completed()
         else:
             observer.on_completed()
 
         return Disposable.empty()
 
     def on_completed(self):
-        value = None
+        """Notifies all subscribed observers of the end of the sequence."""
+
         os = None
-        hv = None
-
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-                self.observers = []
-
-                self.is_stopped = True
-                value = self.value
-                hv = self.has_value
-
-        if os:
-            if hv:
-                for o in os:
-                    o.on_next(value)
-                    o.on_completed()
-            else:
-                for o in os:
-                    o.on_completed()
-
-    def on_error(self, exception):
-        os = None
-
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                self.exception = exception
 
         if os:
             for o in os:
-                o.on_error(exception)
+                o.on_completed()
 
-    def on_next(self, value):
+    def on_error(self, error):
+        """Notifie all subscribed observers with the exception."""
+        os = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
+                os = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                self.exception = error
+
+        if os:
+            for o in os:
+                o.on_error(error)
+
+    def on_next(self, value):
+        """Notifie all subscribed observers with the value."""
+        os = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                os = self.observers[:]
                 self.value = value
-                self.has_value = True
+        if os:
+            for o in os:
+                o.on_next(value)
 
     def dispose(self):
+        """Release all resources.
+
+        Releases all resources used by the current instance of the
+        ReplayStream class and unsubscribe all observers.
+        """
         with self.lock:
             self.is_disposed = True
             self.observers = None
-            self.exception = None
             self.value = None
+            self.exception = None
 
+BehaviorSubject = BehaviorStream

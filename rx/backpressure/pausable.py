@@ -2,13 +2,13 @@
 from rx.core import Observable, ObservableBase, Disposable
 from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable
-from rx.subjects import Subject
+from rx.streams import Stream
 
 
 class PausableObservable(ObservableBase):
     def __init__(self, source, pauser=None):
         self.source = source
-        self.controller = Subject()
+        self.controller = Stream()
 
         if pauser and hasattr(pauser, "subscribe"):
             self.pauser = self.controller.merge(pauser)
@@ -45,7 +45,7 @@ def pausable(self, pauser):
     sequence which yields True/False.
 
     Example:
-    pauser = rx.Subject()
+    pauser = rx.Stream()
     source = rx.Observable.interval(100).pausable(pauser)
 
     Keyword parameters:

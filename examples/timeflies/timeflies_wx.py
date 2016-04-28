@@ -1,4 +1,4 @@
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import WxScheduler
 
 import wx
@@ -11,8 +11,8 @@ class Frame(wx.Frame):
         self.SetTitle("Rx for Python rocks")
         self.SetSize((600, 600))
 
-        # This Subject is used to transmit mouse moves to labels
-        self.mousemove = Subject()
+        # This Stream is used to transmit mouse moves to labels
+        self.mousemove = Stream()
 
         self.Bind(wx.EVT_MOTION, self.OnMotion)
 

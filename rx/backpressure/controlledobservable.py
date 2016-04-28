@@ -1,7 +1,7 @@
 from rx.core import Observable, ObservableBase
 from rx.internal import extensionmethod
 
-from .controlledsubject import ControlledSubject
+from .controlledstream import ControlledStream
 
 
 class ControlledObservable(ObservableBase):
@@ -9,8 +9,8 @@ class ControlledObservable(ObservableBase):
     def __init__(self, source, enable_queue, scheduler=None):
         super(ControlledObservable, self).__init__()
 
-        self.subject = ControlledSubject(enable_queue, scheduler)
-        self.source = source.multicast(self.subject).ref_count()
+        self.stream = ControlledStream(enable_queue, scheduler)
+        self.source = source.multicast(self.stream).ref_count()
 
     def _subscribe_core(self, observer):
         return self.source.subscribe(observer)
@@ -18,7 +18,7 @@ class ControlledObservable(ObservableBase):
     def request(self, number_of_items):
         if number_of_items is None:
             number_of_items = -1
-        return self.subject.request(number_of_items)
+        return self.stream.request(number_of_items)
 
 
 @extensionmethod(Observable)

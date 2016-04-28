@@ -1,4 +1,4 @@
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import QtScheduler
 import sys
 
@@ -24,8 +24,8 @@ class Window(QWidget):
         self.resize(600, 600)
         self.setMouseTracking(True)
 
-        # This Subject is used to transmit mouse moves to labels
-        self.mousemove = Subject()
+        # This Stream is used to transmit mouse moves to labels
+        self.mousemove = Stream()
 
     def mouseMoveEvent(self, event):
         self.mousemove.on_next((event.x(), event.y()))

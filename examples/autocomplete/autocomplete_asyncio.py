@@ -18,7 +18,7 @@ from tornado.httputil import url_concat
 from tornado.escape import json_decode
 from tornado.platform.asyncio import AsyncIOMainLoop
 
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import AsyncIOScheduler
 
 scheduler = AsyncIOScheduler()
@@ -46,12 +46,12 @@ class WSHandler(WebSocketHandler):
     def open(self):
         print("WebSocket opened")
 
-        # A Subject is both an observable and observer, so we can both subscribe
+        # A Stream is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
-        self.subject = Subject()
+        self.stream = Stream()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = self.subject.map(
+        query = self.stream.map(
             lambda x: x["term"]
         ).filter(
             lambda text: len(text) > 2  # Only if the text is longer than 2 characters
@@ -72,7 +72,7 @@ class WSHandler(WebSocketHandler):
 
     def on_message(self, message):
         obj = json_decode(message)
-        self.subject.on_next(obj)
+        self.stream.on_next(obj)
 
     def on_close(self):
         print("WebSocket closed")

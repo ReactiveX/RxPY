@@ -5,27 +5,27 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def multicast(self, subject=None, subject_selector=None, selector=None):
+def multicast(self, stream=None, stream_selector=None, selector=None):
     """Multicasts the source sequence notifications through an instantiated
-    subject into all uses of the sequence within a selector function. Each
+    stream into all uses of the sequence within a selector function. Each
     subscription to the resulting sequence causes a separate multicast
     invocation, exposing the sequence resulting from the selector function's
-    invocation. For specializations with fixed subject types, see Publish,
+    invocation. For specializations with fixed stream types, see Publish,
     PublishLast, and Replay.
 
     Example:
     1 - res = source.multicast(observable)
-    2 - res = source.multicast(subject_selector=lambda: Subject(),
+    2 - res = source.multicast(stream_selector=lambda: Stream(),
                                selector=lambda x: x)
 
     Keyword arguments:
-    subject_selector -- {Function} Factory function to create an
-        intermediate subject through which the source sequence's elements
+    stream_selector -- {Function} Factory function to create an
+        intermediate stream through which the source sequence's elements
         will be multicast to the selector function.
-    subject -- Subject {Subject} to push source elements into.
+    stream -- Stream {Stream} to push source elements into.
     selector -- {Function} [Optional] Optional selector function which can
-        use the multicasted source sequence subject to the policies enforced
-        by the created subject. Specified only if subject_selector" is a
+        use the multicasted source sequence stream to the policies enforced
+        by the created stream. Specified only if stream_selector" is a
         factory function.
 
     Returns an observable {Observable} sequence that contains the elements
@@ -34,11 +34,11 @@ def multicast(self, subject=None, subject_selector=None, selector=None):
     """
 
     source = self
-    if subject_selector:
+    if stream_selector:
         def subscribe(observer):
-            connectable = source.multicast(subject=subject_selector())
+            connectable = source.multicast(stream=stream_selector())
             return CompositeDisposable(selector(connectable).subscribe(observer), connectable.connect())
 
         return AnonymousObservable(subscribe)
     else:
-        return ConnectableObservable(source, subject)
+        return ConnectableObservable(source, stream)

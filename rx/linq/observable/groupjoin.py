@@ -5,7 +5,7 @@ from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable, \
     CompositeDisposable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
@@ -48,7 +48,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
         right_id = [0]
 
         def on_next_left(value):
-            s = Subject()
+            s = Stream()
 
             with self.lock:
                 _id = left_id[0]

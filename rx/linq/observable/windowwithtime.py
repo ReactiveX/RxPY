@@ -5,7 +5,7 @@ from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
     RefCountDisposable, SerialDisposable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.internal import extensionmethod
 
 
@@ -61,7 +61,7 @@ def window_with_time(self, timespan, timeshift=None, scheduler=None):
                 s = None
 
                 if is_shift:
-                    s = Subject()
+                    s = Stream()
                     q.append(s)
                     observer.on_next(add_ref(s, ref_count_disposable))
 
@@ -72,7 +72,7 @@ def window_with_time(self, timespan, timeshift=None, scheduler=None):
                 create_timer()
             m.disposable = scheduler.schedule_relative(ts, action)
 
-        q.append(Subject())
+        q.append(Stream())
         observer.on_next(add_ref(q[0], ref_count_disposable))
         create_timer()
 

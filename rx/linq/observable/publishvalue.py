@@ -1,5 +1,5 @@
 from rx import Observable
-from rx.subjects import BehaviorSubject
+from rx.streams import BehaviorStream
 from rx.internal import extensionmethod
 
 
@@ -9,7 +9,7 @@ def publish_value(self, initial_value, selector=None):
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence and starts with initial_value.
 
-    This operator is a specialization of Multicast using a BehaviorSubject.
+    This operator is a specialization of Multicast using a BehaviorStream.
 
     Example:
     res = source.publish_value(42)
@@ -31,10 +31,10 @@ def publish_value(self, initial_value, selector=None):
     """
 
     if selector:
-        def subject_selector():
-            return BehaviorSubject(initial_value)
+        def stream_selector():
+            return BehaviorStream(initial_value)
 
-        return self.multicast(subject_selector=subject_selector,
+        return self.multicast(stream_selector=stream_selector,
                               selector=selector)
     else:
-        return self.multicast(BehaviorSubject(initial_value))
+        return self.multicast(BehaviorStream(initial_value))

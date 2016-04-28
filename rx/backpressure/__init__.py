@@ -1,5 +1,5 @@
 from . import controlledobservable
-from . import controlledsubject
+from . import controlledstream
 from . import pausable
 from . import pausablebuffered
 from . import stopandwait

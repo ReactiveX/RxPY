@@ -2,17 +2,17 @@ from rx import Lock
 from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
-from .anonymoussubject import AnonymousSubject
+from .anonymousstream import AnonymousStream
 from .innersubscription import InnerSubscription
 
 
-class Subject(ObservableBase, Observer):
+class Stream(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """
 
     def __init__(self):
-        super(Subject, self).__init__()
+        super(Stream, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
@@ -100,4 +100,6 @@ class Subject(ObservableBase, Observer):
 
     @classmethod
     def create(cls, observer, observable):
-        return AnonymousSubject(observer, observable)
+        return AnonymousStream(observer, observable)
+
+Subject = Stream

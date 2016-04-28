@@ -1,15 +1,15 @@
 from rx.core import Observer, ObservableBase, Disposable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.disposables import AnonymousDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.core.notification import OnCompleted, OnError, OnNext
 
 
-class ControlledSubject(ObservableBase, Observer):
+class ControlledStream(ObservableBase, Observer):
     def __init__(self, enable_queue=True, scheduler=None):
-        super(ControlledSubject, self).__init__(self._subscribe)
+        super(ControlledStream, self).__init__(self._subscribe)
 
-        self.subject = Subject()
+        self.stream = Stream()
         self.enable_queue = enable_queue
         self.queue = [] if enable_queue else None
         self.requested_count = 0
@@ -20,13 +20,13 @@ class ControlledSubject(ObservableBase, Observer):
         self.scheduler = scheduler or current_thread_scheduler
 
     def _subscribe(self, observer):
-        return self.subject.subscribe(observer)
+        return self.stream.subscribe(observer)
 
     def on_completed(self):
         self.has_completed = True
 
         if not self.enable_queue or len(self.queue) == 0:
-            self.subject.on_completed()
+            self.stream.on_completed()
             self.dispose_current_request()
         else:
             self.queue.push(OnCompleted())
@@ -36,7 +36,7 @@ class ControlledSubject(ObservableBase, Observer):
         self.error = error
 
         if not self.enable_queue or len(self.queue) == 0:
-            self.subject.on_error(error)
+            self.stream.on_error(error)
             self.dispose_current_request()
         else:
             self.queue.push(OnError(error))
@@ -48,13 +48,13 @@ class ControlledSubject(ObservableBase, Observer):
             self.requested_count -= 1
             if self.requested_count == 0:
                 self.dispose_current_request()
-            self.subject.onNext(value)
+            self.stream.onNext(value)
 
     def _process_request(self, number_of_items):
         if self.enable_queue:
             while len(self.queue) > 0 and (number_of_items > 0 or self.queue[0].kind != 'N'):
                 first = self.queue.pop(0)
-                first.accept(self.subject)
+                first.accept(self.stream)
                 if first.kind == 'N':
                     number_of_items -= 1
                 else:

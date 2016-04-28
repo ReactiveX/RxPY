@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.concurrency import PyGameScheduler
 
 import pygame
@@ -16,7 +16,7 @@ def main():
     size = width, height = 500, 500
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Rx for Python rocks")
-    
+
     black = 0, 0, 0
     background = pygame.Surface(screen.get_size())
     background.fill((0, 0, 0))         # fill the background black
@@ -24,20 +24,20 @@ def main():
 
     scheduler = PyGameScheduler()
 
-    mousemove = Subject()
+    mousemove = Stream()
 
     files = [
-        "chess_tower.png", 
-        "chess_bishop.png", 
-        "chess_horse.png", 
-        "chess_king.png", 
-        "chess_queen.png", 
-        "chess_horse.png", 
+        "chess_tower.png",
         "chess_bishop.png",
-        "chess_tower.png"   
+        "chess_horse.png",
+        "chess_king.png",
+        "chess_queen.png",
+        "chess_horse.png",
+        "chess_bishop.png",
+        "chess_tower.png"
         ]
     images = [pygame.image.load(image).convert_alpha() for image in files]
-    
+
     old = [None] * len(images)
     draw = []
     erase = []
@@ -48,7 +48,7 @@ def main():
         def on_next(ev):
             imagerect.top = ev[1]
             imagerect.left = ev[0] + i*30
-            
+
             if old[i]:
                 erase.append(old[i])
             old[i] = imagerect.copy()
@@ -59,34 +59,34 @@ def main():
             sys.exit()
 
         mousemove.delay(i*i*50, scheduler=scheduler).subscribe(on_next, on_error=on_error)
-        
+
     for i, image in enumerate(images):
         handle_image(i, image)
-    
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEMOTION:
                 pos = event.pos
                 mousemove.on_next(pos)
-            elif event.type == pygame.QUIT: 
+            elif event.type == pygame.QUIT:
                 sys.exit()
-        
+
         if len(draw):
             update = []
             for rect in erase:
                 screen.blit(background, (rect.x, rect.y), rect)
                 update.append(rect)
-            
+
             for image, rect in draw:
                 screen.blit(image, rect)
                 update.append(rect)
-            
+
             pygame.display.update(update)
             #pygame.display.flip()
             draw = []
             erase = []
 
         scheduler.run()
-        
+
 if __name__ == '__main__':
     main()

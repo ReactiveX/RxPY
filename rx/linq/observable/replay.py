@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.subjects import ReplaySubject
+from rx.streams import ReplayStream
 from rx.internal import extensionmethod
 
 
@@ -7,10 +7,10 @@ from rx.internal import extensionmethod
 def replay(self, selector, buffer_size=None, window=None, scheduler=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
-    subscription to the underlying sequence replaying notifications subject
+    subscription to the underlying sequence replaying notifications stream
     to a maximum time length for the replay buffer.
 
-    This operator is a specialization of Multicast using a ReplaySubject.
+    This operator is a specialization of Multicast using a ReplayStream.
 
     Example:
     res = source.replay(buffer_size=3)
@@ -22,7 +22,7 @@ def replay(self, selector, buffer_size=None, window=None, scheduler=None):
     selector -- [Optional] Selector function which can use the multicasted
         source sequence as many times as needed, without causing multiple
         subscriptions to the source sequence. Subscribers to the given
-        source will receive all the notifications of the source subject to
+        source will receive all the notifications of the source stream to
         the specified replay buffer trimming policy.
     buffer_size -- [Optional] Maximum element count of the replay buffer.
     window -- [Optional] Maximum time length of the replay buffer.
@@ -35,10 +35,9 @@ def replay(self, selector, buffer_size=None, window=None, scheduler=None):
     """
 
     if callable(selector):
-        def subject_selector():
-            return ReplaySubject(buffer_size, window, scheduler)
-        return self.multicast(subject_selector=subject_selector,
-                             selector=selector)
+        def stream_selector():
+            return ReplayStream(buffer_size, window, scheduler)
+        return self.multicast(stream_selector=stream_selector,
+                              selector=selector)
     else:
-        return self.multicast(ReplaySubject(buffer_size, window, scheduler))
-
+        return self.multicast(ReplayStream(buffer_size, window, scheduler))

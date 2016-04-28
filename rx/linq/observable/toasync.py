@@ -1,6 +1,6 @@
 from rx.core import Observable
 from rx.concurrency import timeout_scheduler
-from rx.subjects import AsyncSubject
+from rx.streams import AsyncStream
 from rx.internal import extensionclassmethod
 
 
@@ -23,21 +23,21 @@ def to_async(cls, func, scheduler=None):
     Returns {Function} Asynchronous function.
     """
 
-    scheduler =  scheduler or timeout_scheduler
+    scheduler = scheduler or timeout_scheduler
 
     def wrapper(*args):
-        subject = AsyncSubject()
+        stream = AsyncStream()
 
         def action(scheduler, state):
             try:
                 result = func(*args)
             except Exception as ex:
-                subject.on_error(ex)
+                stream.on_error(ex)
                 return
 
-            subject.on_next(result)
-            subject.on_completed()
+            stream.on_next(result)
+            stream.on_completed()
 
         scheduler.schedule(action)
-        return subject.as_observable()
+        return stream.as_observable()
     return wrapper

@@ -4,7 +4,7 @@ from rx import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable
 from rx.internal.exceptions import ArgumentOutOfRangeException
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
@@ -42,7 +42,7 @@ def window_with_count(self, count, skip=None):
         q = []
 
         def create_window():
-            s = Subject()
+            s = Stream()
             q.append(s)
             observer.on_next(add_ref(s, refCountDisposable))
 

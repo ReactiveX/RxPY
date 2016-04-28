@@ -9,24 +9,24 @@ from rx.core.scheduledobserver import ScheduledObserver
 
 
 class RemovableDisposable(object):
-    def __init__(self, subject, observer):
-        self.subject = subject
+    def __init__(self, stream, observer):
+        self.stream = stream
         self.observer = observer
 
     def dispose(self):
         self.observer.dispose()
-        if not self.subject.is_disposed and self.observer in self.subject.observers:
-            self.subject.observers.remove(self.observer)
+        if not self.stream.is_disposed and self.observer in self.stream.observers:
+            self.stream.observers.remove(self.observer)
 
 
-class ReplaySubject(ObservableBase, Observer):
+class ReplayStream(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed and future
-    observers, subject to buffer trimming policies.
+    observers, stream to buffer trimming policies.
     """
 
     def __init__(self, buffer_size=None, window=None, scheduler=None):
-        """Initializes a new instance of the ReplaySubject class with the
+        """Initializes a new instance of the ReplayStream class with the
         specified buffer size, window and scheduler.
 
         Keyword arguments:
@@ -47,7 +47,7 @@ class ReplaySubject(ObservableBase, Observer):
 
         self.lock = Lock()
 
-        super(ReplaySubject, self).__init__()
+        super(ReplayStream, self).__init__()
 
     def check_disposed(self):
         if self.is_disposed:
@@ -139,9 +139,11 @@ class ReplaySubject(ObservableBase, Observer):
 
     def dispose(self):
         """Releases all resources used by the current instance of the
-        ReplaySubject class and unsubscribe all observers."""
+        ReplayStream class and unsubscribe all observers."""
 
         with self.lock:
             self.is_disposed = True
             self.observers = None
             self.queue = []
+
+ReplaySubject = ReplayStream

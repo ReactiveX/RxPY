@@ -9,7 +9,7 @@ class Enumerable(object):
         self._iterator = iterator
 
     def __iter__(self):
-        return  self._iterator
+        return self._iterator
 
     def where(self, predicate):
         return Enumerable(value for value in self if predicate(value))
@@ -33,7 +33,7 @@ class Enumerable(object):
 
     @classmethod
     def range(cls, start, count):
-        def next():
+        def _next():
             value = start
             n = count
             while n > 0:
@@ -42,7 +42,7 @@ class Enumerable(object):
                 n -= 1
 
             raise StopIteration
-        return Enumerable(next())
+        return Enumerable(_next())
 
     @classmethod
     def repeat(cls, value, count=None):

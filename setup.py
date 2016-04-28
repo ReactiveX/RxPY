@@ -38,7 +38,7 @@ setup(
     packages=['rx', 'rx.internal',
               'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
-              'rx.linq.observable.blocking', 'rx.disposables', 'rx.subjects',
+              'rx.linq.observable.blocking', 'rx.disposables', 'rx.streams',
               'rx.backpressure', 'rx.testing'],
     package_dir={'rx': 'rx'}
 )

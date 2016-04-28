@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from rx import Observable, AnonymousObservable
-from rx.subjects import Subject
+from rx.streams import Stream
 from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
 from rx.internal.basic import default_comparer, identity
@@ -75,7 +75,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
             fire_new_map_entry = False
             writer = mapping.get(key)
             if not writer:
-                writer = Subject()
+                writer = Stream()
                 mapping[key] = writer
                 fire_new_map_entry = True
 
