@@ -239,8 +239,6 @@ class Scheduler(object):
             timespan = int(timespan.total_seconds()*1000)
         elif isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
-        elif isinstance(timespan, float):
-            timespan *= 1000
 
         return int(timespan)
 
