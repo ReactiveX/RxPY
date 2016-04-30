@@ -14,7 +14,7 @@ def add_ref(xs, r):
 def adapt_call(func):
     """Adapt called func.
 
-    Adapt called funcfrom taking n params to only taking 1 or 2 params
+    Adapt call from taking n params to only taking 1 or 2 params
     """
     cached = [None]
 
@@ -31,7 +31,8 @@ def adapt_call(func):
         for fn in (func1, func2):
             try:
                 ret = fn(*args, **kw)
-            except TypeError:
+            except TypeError as e:
+                print(e)
                 continue
             else:
                 cached[0] = fn
