@@ -1,4 +1,3 @@
-from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable
 
 
@@ -16,9 +15,8 @@ class ScheduledItem(object):
         self.disposable = SingleAssignmentDisposable()
 
     def invoke(self):
-        ret = self.action(self.scheduler, self.state)
-        if isinstance(ret, Disposable):
-            self.disposable.disposable = ret
+        ret = self.scheduler.invoke_action(self.action, self.state)
+        self.disposable.disposable = ret
 
     def compare_to(self, other):
         return self.comparer(self.duetime, other.duetime)

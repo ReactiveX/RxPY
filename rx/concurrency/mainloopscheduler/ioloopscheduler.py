@@ -19,13 +19,12 @@ class IOLoopScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
         disposed = [False]
 
         def interval():
             if not disposed[0]:
-                disposable.disposable = action(scheduler, state)
+                disposable.disposable = self.invoke_action(action, state)
 
         self.loop.add_callback(interval)
 
@@ -53,7 +52,7 @@ class IOLoopScheduler(SchedulerBase):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", seconds)
         handle = self.loop.call_later(seconds, interval)

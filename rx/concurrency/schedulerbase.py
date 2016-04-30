@@ -12,7 +12,10 @@ class SchedulerBase(Scheduler):
     """
 
     def invoke_action(self, action, state=None):
-        action(self, state)
+        ret = action(self, state)
+        if isinstance(ret, Disposable):
+            return ret
+
         return Disposable.empty()
 
     @staticmethod

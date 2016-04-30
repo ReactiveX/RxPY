@@ -19,11 +19,10 @@ class TkinterScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         alarm = self.master.after_idle(interval)
 
@@ -51,7 +50,7 @@ class TkinterScheduler(SchedulerBase):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", msecs)
         alarm = self.master.after(msecs, interval)

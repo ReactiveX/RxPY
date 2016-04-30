@@ -16,11 +16,10 @@ class TimeoutScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
         timer = Timer(0, interval)
         timer.setDaemon(True)
         timer.start()
@@ -40,7 +39,7 @@ class TimeoutScheduler(SchedulerBase):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         seconds = timespan.total_seconds()
         log.debug("timeout: %s", seconds)

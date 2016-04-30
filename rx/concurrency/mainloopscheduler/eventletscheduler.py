@@ -24,11 +24,10 @@ class EventLetEventScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         timer = [eventlet.spawn(interval)]
 
@@ -55,7 +54,7 @@ class EventLetEventScheduler(SchedulerBase):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", seconds)
         timer = [eventlet.spawn_after(seconds, interval)]

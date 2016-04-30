@@ -24,11 +24,10 @@ class GEventScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         timer = [gevent.spawn(interval)]
 

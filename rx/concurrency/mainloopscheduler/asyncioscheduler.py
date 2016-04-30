@@ -24,13 +24,10 @@ class AsyncIOScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            ret = action(scheduler, state)
-            if isinstance(ret, Disposable):
-                disposable.disposable = ret
+            disposable.disposable = self.invoke_action(action, state)
         handle = [self.loop.call_soon(interval)]
 
         def dispose():
@@ -57,9 +54,7 @@ class AsyncIOScheduler(SchedulerBase):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            ret = action(scheduler, state)
-            if isinstance(ret, Disposable):
-                disposable.disposable = ret
+            disposable.disposable = self.invoke_action(action, state)
 
         handle = [self.loop.call_later(seconds, interval)]
 
