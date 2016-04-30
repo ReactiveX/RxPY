@@ -2,12 +2,12 @@ import logging
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class WxScheduler(Scheduler):
+class WxScheduler(SchedulerBase):
 
     """A scheduler for a wxPython event loop."""
 

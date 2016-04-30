@@ -2,13 +2,14 @@ import logging
 
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 
-from .scheduler import Scheduler
+from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
 from .scheduleperiodicrecursive import SchedulePeriodicRecursive
 
 log = logging.getLogger("Rx")
 
-class VirtualTimeScheduler(Scheduler):
+
+class VirtualTimeScheduler(SchedulerBase):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
@@ -29,6 +30,7 @@ class VirtualTimeScheduler(Scheduler):
 
         super(VirtualTimeScheduler, self).__init__()
 
+    @property
     def now(self):
         """Gets the schedulers absolute time clock value as datetime offset."""
 

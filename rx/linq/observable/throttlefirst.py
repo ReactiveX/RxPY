@@ -30,7 +30,7 @@ def throttle_first(self, window_duration, scheduler=None):
 
         def on_next(x):
             emit = False
-            now = scheduler.now()
+            now = scheduler.now
 
             with self.lock:
                 if not last_on_next[0] or now - last_on_next[0] >= duration:

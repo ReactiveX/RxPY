@@ -24,6 +24,6 @@ def timestamp(self, scheduler=None):
     scheduler = scheduler or timeout_scheduler
 
     def selector(x):
-        return Timestamp(value=x, timestamp=scheduler.now())
+        return Timestamp(value=x, timestamp=scheduler.now)
 
     return self.map(selector)

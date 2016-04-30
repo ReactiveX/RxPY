@@ -5,9 +5,10 @@ import threading
 from datetime import timedelta
 
 from rx import Lock
+from rx.core import Scheduler
 from rx.internal import PriorityQueue
 
-from .scheduler import Scheduler
+from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
 
 log = logging.getLogger('Rx')
@@ -19,18 +20,18 @@ class Trampoline(object):
         while len(queue):
             item = queue.dequeue()
             if not item.is_cancelled():
-                diff = item.duetime - current_thread_scheduler.now()
+                diff = item.duetime - current_thread_scheduler.now
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
                     log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
-                    diff = item.duetime - current_thread_scheduler.now()
+                    diff = item.duetime - current_thread_scheduler.now
 
                 if not item.is_cancelled():
                     item.invoke()
 
 
-class CurrentThreadScheduler(Scheduler):
+class CurrentThreadScheduler(SchedulerBase):
     """Represents an object that schedules units of work on the current
     thread. You never want to schedule timeouts using the CurrentThreadScheduler
     since it will block the current thread while waiting."""
@@ -53,7 +54,7 @@ class CurrentThreadScheduler(Scheduler):
 
         duetime = self.to_timedelta(duetime)
 
-        dt = self.now() + Scheduler.normalize(duetime)
+        dt = self.now + SchedulerBase.normalize(duetime)
         si = ScheduledItem(self, state, action, dt)
 
         queue = self.queue
@@ -75,7 +76,7 @@ class CurrentThreadScheduler(Scheduler):
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state=None)
+        return self.schedule_relative(duetime - self.now, action, state=None)
 
     def get_queue(self):
         ident = threading.current_thread().ident

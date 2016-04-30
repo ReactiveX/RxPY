@@ -6,12 +6,12 @@ asyncio = None
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class AsyncIOScheduler(Scheduler):
+class AsyncIOScheduler(SchedulerBase):
     """A scheduler that schedules work via the asyncio mainloop."""
 
     def __init__(self, loop=None):
@@ -84,7 +84,7 @@ class AsyncIOScheduler(Scheduler):
         """
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
         """Schedules an action to be executed periodically.
@@ -115,6 +115,7 @@ class AsyncIOScheduler(Scheduler):
 
         return Disposable.create(dispose)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being
         scheduled on a scheduler will adhere to the time denoted by this

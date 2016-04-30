@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 from rx.concurrency import VirtualTimeScheduler
 
+
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
     def __init__(self):
         super(VirtualSchedulerTestScheduler, self).__init__(comparer=self.comparer)
@@ -31,9 +32,10 @@ class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
     def to_relative(self, timespan):
         return String.fromCharCode(timeSpan % 65535)
 
+
 class TestVirtualTimeScheduler(unittest.TestCase):
     def test_virtual_now(self):
-        res = VirtualSchedulerTestScheduler().now() - datetime.fromtimestamp(0)
+        res = VirtualSchedulerTestScheduler().now - datetime.fromtimestamp(0)
         assert(res < timedelta(1000))
 
     def test_virtual_schedule_action(self):

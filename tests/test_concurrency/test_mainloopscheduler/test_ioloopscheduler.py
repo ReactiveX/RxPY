@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 
 from nose import SkipTest
 try:
-    from tornado import ioloop, gen
+    from tornado import ioloop
 except ImportError:
     raise SkipTest("Tornado not installed")
 
 from rx.concurrency import IOLoopScheduler
+
 
 class TestIOLoopScheduler(unittest.TestCase):
 
@@ -15,7 +16,7 @@ class TestIOLoopScheduler(unittest.TestCase):
         loop = ioloop.IOLoop.instance()
 
         scheduler = IOLoopScheduler(loop)
-        res = scheduler.now() - datetime.now()
+        res = scheduler.now - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_ioloop_schedule_action(self):

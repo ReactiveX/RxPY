@@ -59,7 +59,7 @@ class ReplaySubject(ObservableBase, Observer):
 
         with self.lock:
             self.check_disposed()
-            self._trim(self.scheduler.now())
+            self._trim(self.scheduler.now)
             self.observers.append(so)
 
             for item in self.queue:
@@ -88,7 +88,7 @@ class ReplaySubject(ObservableBase, Observer):
             self.check_disposed()
             if not self.is_stopped:
                 os = self.observers[:]
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self.queue.append(dict(interval=now, value=value))
                 self._trim(now)
 
@@ -110,7 +110,7 @@ class ReplaySubject(ObservableBase, Observer):
                 self.is_stopped = True
                 self.error = error
                 self.has_error = True
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self._trim(now)
 
                 for observer in os:
@@ -129,7 +129,7 @@ class ReplaySubject(ObservableBase, Observer):
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self._trim(now)
                 for observer in os:
                     observer.on_completed()

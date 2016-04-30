@@ -35,7 +35,7 @@ class TestQtScheduler(unittest.TestCase):
 
     def test_qt_schedule_now(self):
         scheduler = QtScheduler(QtCore)
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
     def test_qt_schedule_action(self):

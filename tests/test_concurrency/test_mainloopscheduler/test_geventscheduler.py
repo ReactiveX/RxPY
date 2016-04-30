@@ -9,11 +9,12 @@ except ImportError:
 
 from rx.concurrency import GEventScheduler
 
+
 class TestGEventScheduler(unittest.TestCase):
 
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler()
-        res = scheduler.now() - datetime.now()
+        res = scheduler.now - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_gevent_schedule_action(self):
@@ -25,7 +26,7 @@ class TestGEventScheduler(unittest.TestCase):
         scheduler.schedule(action)
 
         gevent.sleep(0.1)
-        assert(ran[0] == True)
+        assert(ran[0] is True)
 
     def test_gevent_schedule_action_due(self):
         scheduler = GEventScheduler()

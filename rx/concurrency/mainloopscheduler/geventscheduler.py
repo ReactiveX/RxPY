@@ -4,12 +4,12 @@ gevent = None
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class GEventScheduler(Scheduler):
+class GEventScheduler(SchedulerBase):
     """A scheduler that schedules work via the GEvent event loop.
 
     http://www.gevent.org/
@@ -77,8 +77,9 @@ class GEventScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

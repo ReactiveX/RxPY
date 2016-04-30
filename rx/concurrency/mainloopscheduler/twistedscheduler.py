@@ -1,13 +1,13 @@
 import logging
 
 from rx.core import Disposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
 log = logging.getLogger("Rx")
 
 
-class TwistedScheduler(Scheduler):
+class TwistedScheduler(SchedulerBase):
     """A scheduler that schedules work via the Twisted reactor mainloop."""
 
     def __init__(self, reactor):
@@ -58,7 +58,7 @@ class TwistedScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled

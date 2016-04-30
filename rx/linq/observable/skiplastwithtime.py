@@ -35,13 +35,13 @@ def skip_last_with_time(self, duration, scheduler):
         q = []
 
         def on_next(x):
-            now = scheduler.now()
-            q.append({ "interval": now, "value": x })
+            now = scheduler.now
+            q.append({"interval": now, "value": x})
             while len(q) and now - q[0]["interval"] >= duration:
                 observer.on_next(q.pop(0)["value"])
 
         def on_completed():
-            now = scheduler.now()
+            now = scheduler.now
             while len(q) and now - q[0]["interval"] >= duration:
                 observer.on_next(q.pop(0)["value"])
 

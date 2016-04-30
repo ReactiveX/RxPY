@@ -2,12 +2,12 @@ import logging
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class TkinterScheduler(Scheduler):
+class TkinterScheduler(SchedulerBase):
     """A scheduler that schedules work via the Tkinter main event loop.
 
     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html
@@ -73,7 +73,7 @@ class TkinterScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
         """Schedules a periodic piece of work to be executed in the tkinter

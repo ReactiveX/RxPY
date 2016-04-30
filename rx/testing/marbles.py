@@ -97,10 +97,10 @@ def to_marbles(self, scheduler=None):
 
     def subscribe(observer):
         result = []
-        previously = [scheduler.now()]
+        previously = [scheduler.now]
 
         def add_timespan():
-            now = scheduler.now()
+            now = scheduler.now
             diff = now - previously[0]
             previously[0] = now
             msecs = scheduler.to_relative(diff)

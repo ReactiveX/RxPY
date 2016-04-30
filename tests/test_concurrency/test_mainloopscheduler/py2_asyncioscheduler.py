@@ -21,7 +21,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
-        res = scheduler.now() - datetime.now()
+        res = scheduler.now - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_asyncio_schedule_action(self):

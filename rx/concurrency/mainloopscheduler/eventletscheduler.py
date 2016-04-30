@@ -4,12 +4,12 @@ eventlet = None
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class EventLetEventScheduler(Scheduler):
+class EventLetEventScheduler(SchedulerBase):
     """A scheduler that schedules work via the eventlet event loop.
 
     http://eventlet.net/
@@ -77,7 +77,7 @@ class EventLetEventScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
         """Schedules a periodic piece of work by dynamically discovering the
@@ -109,6 +109,7 @@ class EventLetEventScheduler(Scheduler):
 
         return Disposable.create(dispose)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

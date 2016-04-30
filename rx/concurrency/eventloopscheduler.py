@@ -3,17 +3,17 @@ import threading
 from threading import Timer
 
 from rx import Lock
-from rx.core import Disposable
+from rx.core import Scheduler, Disposable
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
-from .scheduler import Scheduler
+from .schedulerbase import SchedulerBase
 
 log = logging.getLogger('Rx')
 
 
-class EventLoopScheduler(Scheduler, Disposable):
+class EventLoopScheduler(SchedulerBase, Disposable):
     """Creates an object that schedules units of work on a designated thread.
     """
 
@@ -55,7 +55,7 @@ class EventLoopScheduler(Scheduler, Disposable):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        return self.schedule_absolute(duetime + self.now(), action, state=None)
+        return self.schedule_absolute(duetime + self.now, action, state=None)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
@@ -67,7 +67,7 @@ class EventLoopScheduler(Scheduler, Disposable):
         si = ScheduledItem(self, state, action, dt)
 
         with self.condition:
-            if dt < self.now():
+            if dt < self.now:
                 self.ready_list.append(si)
             else:
                 self.queue.enqueue(si)
@@ -101,7 +101,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                 if self.is_disposed:
                     return
 
-                while len(self.queue) and self.queue.peek().duetime <= self.now():
+                while len(self.queue) and self.queue.peek().duetime <= self.now:
                     item = self.queue.dequeue()
                     self.ready_list.append(item)
 
@@ -109,7 +109,7 @@ class EventLoopScheduler(Scheduler, Disposable):
                     _next = self.queue.peek()
                     if self.next_item is None or _next != self.next_item:
                         self.next_item = _next
-                        due = _next.duetime - self.now()
+                        due = _next.duetime - self.now
                         seconds = due.total_seconds()
                         log.debug("timeout: %s", seconds)
 

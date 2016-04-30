@@ -2,12 +2,12 @@ import logging
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class IOLoopScheduler(Scheduler):
+class IOLoopScheduler(SchedulerBase):
     """A scheduler that schedules work via the Tornado I/O main event loop.
 
     http://tornado.readthedocs.org/en/latest/ioloop.html"""
@@ -74,8 +74,9 @@ class IOLoopScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

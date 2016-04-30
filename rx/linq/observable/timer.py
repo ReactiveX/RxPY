@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable
-from rx.concurrency import timeout_scheduler, Scheduler
+from rx.core import Scheduler, Observable, AnonymousObservable
+from rx.concurrency import timeout_scheduler
 from rx.internal import extensionclassmethod
 
 log = logging.getLogger("Rx")
@@ -19,7 +19,7 @@ def observable_timer_date(duetime, scheduler):
 
 
 def observable_timer_date_and_period(duetime, period, scheduler):
-    p = Scheduler.normalize(period)
+    p = scheduler.normalize(period)
 
     def subscribe(observer):
         count = [0]
@@ -27,7 +27,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
 
         def action(state):
             if p > 0:
-                now = scheduler.now()
+                now = scheduler.now
                 d[0] = d[0] + scheduler.to_timedelta(p)
                 if d[0] <= now:
                     d[0] = now + scheduler.to_timedelta(p)
@@ -41,7 +41,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
 
 
 def observable_timer_timespan(duetime, scheduler):
-    d = Scheduler.normalize(duetime)
+    d = scheduler.normalize(duetime)
 
     def subscribe(observer):
         def action(scheduler, state):
@@ -63,7 +63,7 @@ def observable_timer_timespan_and_period(duetime, period, scheduler):
         return AnonymousObservable(subscribe)
 
     def defer():
-        dt = scheduler.now() + scheduler.to_timedelta(duetime)
+        dt = scheduler.now + scheduler.to_timedelta(duetime)
         return observable_timer_date_and_period(dt, period, scheduler)
     return Observable.defer(defer)
 

@@ -23,15 +23,13 @@ def time_interval(self, scheduler):
     scheduler = scheduler or timeout_scheduler
 
     def defer():
-        last = [scheduler.now()]
+        last = [scheduler.now]
 
         def selector(x):
-            now = scheduler.now()
+            now = scheduler.now
             span = now - last[0]
             last[0] = now
             return TimeInterval(value=x, interval=span)
 
         return source.map(selector)
     return Observable.defer(defer)
-
-

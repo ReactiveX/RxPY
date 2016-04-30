@@ -8,7 +8,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
 
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert res < timedelta(milliseconds=1000)
 
     def test_currentthread_scheduleaction(self):
@@ -19,7 +19,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
             ran[0] = True
 
         scheduler.schedule(action)
-        assert ran[0] == True
+        assert ran[0] is True
 
     def test_currentthread_scheduleactionerror(self):
         scheduler = CurrentThreadScheduler()

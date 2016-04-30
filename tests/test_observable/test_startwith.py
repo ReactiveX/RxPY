@@ -1,6 +1,6 @@
 import unittest
 
-from rx.concurrency import Scheduler
+from rx.core import Scheduler
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next

@@ -11,11 +11,12 @@ from twisted.trial import unittest
 
 from rx.concurrency import TwistedScheduler
 
+
 class TestTwistedScheduler(unittest.TestCase):
 
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
-        res = scheduler.now() - datetime.now()
+        res = scheduler.now - datetime.now()
         assert(res < timedelta(seconds=1))
 
     @defer.inlineCallbacks
@@ -29,7 +30,7 @@ class TestTwistedScheduler(unittest.TestCase):
 
         promise = defer.Deferred()
         def done():
-            assert(ran[0] == True)
+            assert(ran[0] is True)
             promise.callback("Done")
         reactor.callLater(0.1, done)
         yield promise
