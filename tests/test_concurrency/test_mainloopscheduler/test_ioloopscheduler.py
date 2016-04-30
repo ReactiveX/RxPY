@@ -30,7 +30,7 @@ class TestIOLoopScheduler(unittest.TestCase):
         scheduler.schedule(action)
 
         def done():
-            assert(ran[0] == True)
+            assert(ran[0] is True)
             loop.stop()
         loop.call_later(0.1, done)
 
@@ -46,7 +46,7 @@ class TestIOLoopScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = loop.time()
 
-        scheduler.schedule_relative(0.2, action)
+        scheduler.schedule_relative(200, action)
 
         def done():
             diff = endtime[0]-starttime
@@ -64,7 +64,7 @@ class TestIOLoopScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(0.01, action)
+        d = scheduler.schedule_relative(10, action)
         d.dispose()
 
         def done():
