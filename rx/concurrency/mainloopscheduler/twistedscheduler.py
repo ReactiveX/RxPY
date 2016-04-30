@@ -60,6 +60,7 @@ class TwistedScheduler(SchedulerBase):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
