@@ -13,8 +13,8 @@ except ImportError:
 import unittest
 
 from datetime import datetime, timedelta
-from time import sleep
 from rx.concurrency import AsyncIOScheduler
+
 
 class TestAsyncIOScheduler(unittest.TestCase):
 
@@ -39,7 +39,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler.schedule(action)
 
             yield From(asyncio.sleep(0.1, loop=loop))
-            assert(ran[0] == True)
+            assert(ran[0] is True)
 
         loop.run_until_complete(go())
 
@@ -56,7 +56,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             def action(scheduler, state):
                 endtime[0] = loop.time()
 
-            scheduler.schedule_relative(0.2, action)
+            scheduler.schedule_relative(200, action)
 
             yield From(asyncio.sleep(0.3, loop=loop))
             diff = endtime[0] - starttime
@@ -76,7 +76,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             def action(scheduler, state):
                 ran[0] = True
 
-            d = scheduler.schedule_relative(0.01, action)
+            d = scheduler.schedule_relative(10, action)
             d.dispose()
 
             yield From(asyncio.sleep(0.1, loop=loop))
