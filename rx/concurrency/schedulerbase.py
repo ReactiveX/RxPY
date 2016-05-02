@@ -1,4 +1,3 @@
-from threading import Timer
 from datetime import datetime, timedelta
 
 from rx.core import Scheduler, Disposable
