@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{b970c4cd-8be7-4f04-94bc-bf92875d5ebc}</ProjectGuid>
+    <ProjectHome>..\tests\</ProjectHome>
+    <StartupFile>test_observable_multiple.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <InterpreterVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="test_concurrency\test_currentthreadscheduler.py" />
+    <Compile Include="test_concurrency\test_eventloopscheduler.py" />
+    <Compile Include="test_concurrency\test_historicalscheduler.py" />
+    <Compile Include="test_concurrency\test_immediatescheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\py2_asyncioscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\py3_asyncioscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_asyncioscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_eventletscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_geventscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_ioloopscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_qtscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_tkinterscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\test_twistedscheduler.py" />
+    <Compile Include="test_concurrency\test_mainloopscheduler\__init__.py" />
+    <Compile Include="test_concurrency\test_newthreadscheduler.py" />
+    <Compile Include="test_concurrency\test_timeoutscheduler.py" />
+    <Compile Include="test_concurrency\test_virtualtimescheduler.py" />
+    <Compile Include="test_concurrency\__init__.py" />
+    <Compile Include="test_core\test_extensionmethod.py" />
+    <Compile Include="test_core\test_notification.py" />
+    <Compile Include="test_core\test_observer.py" />
+    <Compile Include="test_core\test_priorityqueue.py" />
+    <Compile Include="test_core\test_util.py" />
+    <Compile Include="test_core\__init__.py" />
+    <Compile Include="test_disposables\test_disposable.py" />
+    <Compile Include="test_disposables\__init__.py" />
+    <Compile Include="test_observable\py3_fromfuture.py" />
+    <Compile Include="test_observable\py3_start.py" />
+    <Compile Include="test_observable\py3_tofuture.py" />
+    <Compile Include="test_observable\test_all.py" />
+    <Compile Include="test_observable\test_amb.py" />
+    <Compile Include="test_observable\test_asobservable.py" />
+    <Compile Include="test_observable\test_average.py" />
+    <Compile Include="test_observable\test_blocking\test_foreach.py" />
+    <Compile Include="test_observable\test_buffer.py" />
+    <Compile Include="test_observable\test_buffercount.py" />
+    <Compile Include="test_observable\test_bufferwithcount.py" />
+    <Compile Include="test_observable\test_bufferwithtime.py" />
+    <Compile Include="test_observable\test_bufferwithtimeorcount.py" />
+    <Compile Include="test_observable\test_case.py" />
+    <Compile Include="test_observable\test_catch.py" />
+    <Compile Include="test_observable\test_combinelatest.py" />
+    <Compile Include="test_observable\test_concat.py" />
+    <Compile Include="test_observable\test_connectableobservable.py" />
+    <Compile Include="test_observable\test_contains.py" />
+    <Compile Include="test_observable\test_count.py" />
+    <Compile Include="test_observable\test_create.py" />
+    <Compile Include="test_observable\test_debounce.py" />
+    <Compile Include="test_observable\test_defaultifempty.py" />
+    <Compile Include="test_observable\test_defer.py" />
+    <Compile Include="test_observable\test_delay.py" />
+    <Compile Include="test_observable\test_delaywithselector.py" />
+    <Compile Include="test_observable\test_distinct.py" />
+    <Compile Include="test_observable\test_distinctuntilchanged.py" />
+    <Compile Include="test_observable\test_doaction.py" />
+    <Compile Include="test_observable\test_dowhile.py" />
+    <Compile Include="test_observable\test_elementat.py" />
+    <Compile Include="test_observable\test_empty.py" />
+    <Compile Include="test_observable\test_expand.py" />
+    <Compile Include="test_observable\test_finally.py" />
+    <Compile Include="test_observable\test_find.py" />
+    <Compile Include="test_observable\test_first.py" />
+    <Compile Include="test_observable\test_firstordefault.py" />
+    <Compile Include="test_observable\test_forin.py" />
+    <Compile Include="test_observable\test_fromcallback.py" />
+    <Compile Include="test_observable\test_fromfuture.py" />
+    <Compile Include="test_observable\test_fromiterable.py" />
+    <Compile Include="test_observable\test_generate.py" />
+    <Compile Include="test_observable\test_generatewithrelativetime.py" />
+    <Compile Include="test_observable\test_groupby.py" />
+    <Compile Include="test_observable\test_groupjoin.py" />
+    <Compile Include="test_observable\test_ifthen.py" />
+    <Compile Include="test_observable\test_ignoreelements.py" />
+    <Compile Include="test_observable\test_interval.py" />
+    <Compile Include="test_observable\test_isempty.py" />
+    <Compile Include="test_observable\test_join.py" />
+    <Compile Include="test_observable\test_last.py" />
+    <Compile Include="test_observable\test_lastordefault.py" />
+    <Compile Include="test_observable\test_let.py" />
+    <Compile Include="test_observable\test_manyselect.py" />
+    <Compile Include="test_observable\test_materialize.py" />
+    <Compile Include="test_observable\test_max.py" />
+    <Compile Include="test_observable\test_maxby.py" />
+    <Compile Include="test_observable\test_merge.py" />
+    <Compile Include="test_observable\test_min.py" />
+    <Compile Include="test_observable\test_minby.py" />
+    <Compile Include="test_observable\test_multicast.py" />
+    <Compile Include="test_observable\test_never.py" />
+    <Compile Include="test_observable\test_observeon.py" />
+    <Compile Include="test_observable\test_of.py" />
+    <Compile Include="test_observable\test_onerrorresumenext.py" />
+    <Compile Include="test_observable\test_pairwise.py" />
+    <Compile Include="test_observable\test_partition.py" />
+    <Compile Include="test_observable\test_pausable.py" />
+    <Compile Include="test_observable\test_pausablebuffered.py" />
+    <Compile Include="test_observable\test_pluck.py" />
+    <Compile Include="test_observable\test_publish.py" />
+    <Compile Include="test_observable\test_publishvalue.py" />
+    <Compile Include="test_observable\test_range.py" />
+    <Compile Include="test_observable\test_reduce.py" />
+    <Compile Include="test_observable\test_repeat.py" />
+    <Compile Include="test_observable\test_replay.py" />
+    <Compile Include="test_observable\test_retry.py" />
+    <Compile Include="test_observable\test_returnvalue.py" />
+    <Compile Include="test_observable\test_sample.py" />
+    <Compile Include="test_observable\test_scan.py" />
+    <Compile Include="test_observable\test_select.py" />
+    <Compile Include="test_observable\test_selectmany.py" />
+    <Compile Include="test_observable\test_sequenceequal.py" />
+    <Compile Include="test_observable\test_single.py" />
+    <Compile Include="test_observable\test_singleordefault.py" />
+    <Compile Include="test_observable\test_skip.py" />
+    <Compile Include="test_observable\test_skiplast.py" />
+    <Compile Include="test_observable\test_skiplastwithtime.py" />
+    <Compile Include="test_observable\test_skipuntil.py" />
+    <Compile Include="test_observable\test_skipuntilwithtime.py" />
+    <Compile Include="test_observable\test_skipwhile.py" />
+    <Compile Include="test_observable\test_skipwithtime.py" />
+    <Compile Include="test_observable\test_slice.py" />
+    <Compile Include="test_observable\test_some.py" />
+    <Compile Include="test_observable\test_start.py" />
+    <Compile Include="test_observable\test_startwith.py" />
+    <Compile Include="test_observable\test_subscribeon.py" />
+    <Compile Include="test_observable\test_sum.py" />
+    <Compile Include="test_observable\test_switch.py" />
+    <Compile Include="test_observable\test_take.py" />
+    <Compile Include="test_observable\test_takelast.py" />
+    <Compile Include="test_observable\test_takelastbuffer.py" />
+    <Compile Include="test_observable\test_takelastwithtime.py" />
+    <Compile Include="test_observable\test_takeuntil.py" />
+    <Compile Include="test_observable\test_takeuntilwithtime.py" />
+    <Compile Include="test_observable\test_takewhile.py" />
+    <Compile Include="test_observable\test_takewithtime.py" />
+    <Compile Include="test_observable\test_throttlefirst.py" />
+    <Compile Include="test_observable\test_throw.py" />
+    <Compile Include="test_observable\test_timeinterval.py" />
+    <Compile Include="test_observable\test_timeout.py" />
+    <Compile Include="test_observable\test_timeoutwithselector.py" />
+    <Compile Include="test_observable\test_timer.py" />
+    <Compile Include="test_observable\test_timestamp.py" />
+    <Compile Include="test_observable\test_toarray.py" />
+    <Compile Include="test_observable\test_toasync.py" />
+    <Compile Include="test_observable\test_todict.py" />
+    <Compile Include="test_observable\test_tofuture.py" />
+    <Compile Include="test_observable\test_toset.py" />
+    <Compile Include="test_observable\test_transduce.py" />
+    <Compile Include="test_observable\test_using.py" />
+    <Compile Include="test_observable\test_when.py" />
+    <Compile Include="test_observable\test_where.py" />
+    <Compile Include="test_observable\test_while.py" />
+    <Compile Include="test_observable\test_window.py" />
+    <Compile Include="test_observable\test_windowwithcount.py" />
+    <Compile Include="test_observable\test_windowwithtime.py" />
+    <Compile Include="test_observable\test_windowwithtimeorcount.py" />
+    <Compile Include="test_observable\test_withlatestfrom.py" />
+    <Compile Include="test_observable\test_zip.py" />
+    <Compile Include="test_observable\__init__.py" />
+    <Compile Include="test_subjects\test_asyncsubject.py" />
+    <Compile Include="test_subjects\test_behaviorsubject.py" />
+    <Compile Include="test_subjects\test_replaysubject.py" />
+    <Compile Include="test_subjects\test_subject.py" />
+    <Compile Include="test_subjects\__init__.py" />
+    <Compile Include="__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="test_concurrency" />
+    <Folder Include="test_concurrency\test_mainloopscheduler" />
+    <Folder Include="test_core" />
+    <Folder Include="test_disposables" />
+    <Folder Include="test_observable" />
+    <Folder Include="test_observable\test_blocking" />
+    <Folder Include="test_subjects" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
