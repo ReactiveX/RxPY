@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.core import Observable
 from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next

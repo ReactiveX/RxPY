@@ -21,10 +21,6 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="abstractobserver.py" />
-    <Compile Include="anonymousobservable.py" />
-    <Compile Include="anonymousobserver.py" />
-    <Compile Include="autodetachobserver.py" />
     <Compile Include="backpressure\controlledobservable.py" />
     <Compile Include="backpressure\controlledsubject.py" />
     <Compile Include="backpressure\pausable.py" />
@@ -34,8 +30,6 @@
     <Compile Include="backpressure\windowed.py" />
     <Compile Include="backpressure\windowedobservable.py" />
     <Compile Include="backpressure\__init__.py" />
-    <Compile Include="blockingobservable.py" />
-    <Compile Include="checkedobserver.py" />
     <Compile Include="concurrency\catchscheduler.py" />
     <Compile Include="concurrency\currentthreadscheduler.py" />
     <Compile Include="concurrency\eventloopscheduler.py" />
@@ -246,11 +240,6 @@
     <Compile Include="linq\observable\ziparray.py" />
     <Compile Include="linq\observable\__init__.py" />
     <Compile Include="linq\__init__.py" />
-    <Compile Include="notification.py" />
-    <Compile Include="observable.py" />
-    <Compile Include="observeonobserver.py" />
-    <Compile Include="observer.py" />
-    <Compile Include="scheduledobserver.py" />
     <Compile Include="subjects\anonymoussubject.py" />
     <Compile Include="subjects\asyncsubject.py" />
     <Compile Include="subjects\behaviorsubject.py" />

@@ -25,8 +25,8 @@
     <Compile Include="test_concurrency\test_eventloopscheduler.py" />
     <Compile Include="test_concurrency\test_historicalscheduler.py" />
     <Compile Include="test_concurrency\test_immediatescheduler.py" />
-    <Compile Include="test_concurrency\test_mainloopscheduler\py2_asyncioscheduler.py" />
-    <Compile Include="test_concurrency\test_mainloopscheduler\py3_asyncioscheduler.py" />
+    <Content Include="test_concurrency\test_mainloopscheduler\py2_asyncioscheduler.py" />
+    <Content Include="test_concurrency\test_mainloopscheduler\py3_asyncioscheduler.py" />
     <Compile Include="test_concurrency\test_mainloopscheduler\test_asyncioscheduler.py" />
     <Compile Include="test_concurrency\test_mainloopscheduler\test_eventletscheduler.py" />
     <Compile Include="test_concurrency\test_mainloopscheduler\test_geventscheduler.py" />
@@ -55,6 +55,9 @@
     <Compile Include="test_observable\test_asobservable.py" />
     <Compile Include="test_observable\test_average.py" />
     <Compile Include="test_observable\test_blocking\test_foreach.py" />
+    <Compile Include="test_observable\test_blocking\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="test_observable\test_buffer.py" />
     <Compile Include="test_observable\test_buffercount.py" />
     <Compile Include="test_observable\test_bufferwithcount.py" />
@@ -193,6 +196,13 @@
     <Folder Include="test_observable" />
     <Folder Include="test_observable\test_blocking" />
     <Folder Include="test_subjects" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ide\rx.pyproj">
+      <Name>rx</Name>
+      <Project>{c2a8f128-b11e-4d94-ac17-71c2a80719f9}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
