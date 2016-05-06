@@ -31,8 +31,7 @@ def adapt_call(func):
         for fn in (func1, func2):
             try:
                 ret = fn(*args, **kw)
-            except TypeError as e:
-                print(e)
+            except TypeError:
                 continue
             else:
                 cached[0] = fn
