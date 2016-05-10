@@ -21,7 +21,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
         clock = initial_clock or datetime.fromtimestamp(0)
         comparer = comparer or compare_datetimes
 
-        super(HistoricalScheduler, self).__init__(clock, comparer)
+        super(HistoricalScheduler, self).__init__(clock)
 
     @property
     def now(self):

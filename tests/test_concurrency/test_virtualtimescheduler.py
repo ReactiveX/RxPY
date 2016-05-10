@@ -5,7 +5,7 @@ from rx.concurrency import VirtualTimeScheduler
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
     def __init__(self):
-        super(VirtualSchedulerTestScheduler, self).__init__(comparer=self.comparer)
+        super(VirtualSchedulerTestScheduler, self).__init__()
 
     @staticmethod
     def comparer(a, b):
@@ -28,9 +28,6 @@ class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
             absolute = ''
 
         return datetime.fromtimestamp(len(absolute))
-
-    def to_relative(self, timespan):
-        return String.fromCharCode(timeSpan % 65535)
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):

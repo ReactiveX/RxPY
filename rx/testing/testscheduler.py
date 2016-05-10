@@ -21,7 +21,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def comparer(a, b):
             return a - b
-        super(TestScheduler, self).__init__(0, comparer)
+        super(TestScheduler, self).__init__(0)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at the specified virtual time.

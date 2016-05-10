@@ -6,20 +6,16 @@ def default_sub_comparer(x, y):
 
 
 class ScheduledItem(object):
-    def __init__(self, scheduler, state, action, duetime, comparer=None):
+    def __init__(self, scheduler, state, action, duetime):
         self.scheduler = scheduler
         self.state = state
         self.action = action
         self.duetime = duetime
-        self.comparer = comparer or default_sub_comparer
         self.disposable = SingleAssignmentDisposable()
 
     def invoke(self):
         ret = self.scheduler.invoke_action(self.action, self.state)
         self.disposable.disposable = ret
-
-    def compare_to(self, other):
-        return self.comparer(self.duetime, other.duetime)
 
     def cancel(self):
         """Cancels the work item by disposing the resource returned by
@@ -31,10 +27,10 @@ class ScheduledItem(object):
         return self.disposable.is_disposed
 
     def __lt__(self, other):
-        return self.compare_to(other) < 0
+        return self.duetime < other.duetime
 
     def __gt__(self, other):
-        return self.compare_to(other) > 0
+        return self.duetime > other.duetime
 
     def __eq__(self, other):
-        return self.compare_to(other) == 0
+        return self.duetime == other.duetime

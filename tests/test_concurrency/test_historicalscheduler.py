@@ -39,6 +39,12 @@ class Timestamped(object):
 
         return other.value == self.value and other.timestamp == self.timestamp
 
+    def __str__(self):
+        return "(%s, %s)" % (self.value, self.timestamp)
+
+    def __repr__(self):
+        return str(self)
+
 
 class TestHistoricalScheduler(unittest.TestCase):
 
@@ -308,7 +314,6 @@ class TestHistoricalScheduler(unittest.TestCase):
         def action(rec):
             s.sleep(timedelta(3 * 6000))
             n[0] += 1
-
             rec(s.now + timedelta(6000))
 
         s.schedule_recursive_with_absolute(s.now + timedelta(6000), action)
@@ -316,20 +321,3 @@ class TestHistoricalScheduler(unittest.TestCase):
         s.advance_to(s.now + timedelta(5 * 6000))
 
         self.assertEqual(2, n[0])
-
-    def test_with_comparer(self):
-        now = datetime.utcnow()
-
-        def reverse_comparer(x, y):
-            return y < x
-
-        s = HistoricalScheduler(now, reverse_comparer)
-
-        res = []
-
-        s.schedule_absolute(now - timedelta(1000), lambda a, b: res.append(1))
-        s.schedule_absolute(now - timedelta(2000), lambda a, b: res.append(2))
-
-        s.start()
-
-        assert_equals(res, [1, 2])

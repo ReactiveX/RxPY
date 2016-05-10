@@ -43,7 +43,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         if self.is_disposed:
             raise DisposedException()
 
-        si = ScheduledItem(self, state, action, None)
+        si = ScheduledItem(self, state, action, self.now)
 
         with self.condition:
             self.ready_list.append(si)
