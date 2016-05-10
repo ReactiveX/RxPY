@@ -55,10 +55,7 @@ class VirtualTimeScheduler(SchedulerBase):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        def run(scheduler, state1):
-            return action(scheduler, state1)
-
-        si = ScheduledItem(self, state, run, duetime)
+        si = ScheduledItem(self, state, action, duetime)
         self.queue.enqueue(si)
         return si.disposable
 
