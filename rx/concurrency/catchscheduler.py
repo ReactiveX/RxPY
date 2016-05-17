@@ -1,9 +1,10 @@
-from rx.disposables import Disposable, SingleAssignmentDisposable
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable
 
-from .scheduler import Scheduler
+from .schedulerbase import SchedulerBase
 
 
-class CatchScheduler(Scheduler):
+class CatchScheduler(SchedulerBase):
     def __init__(self, scheduler, handler):
         self._scheduler = scheduler
         self._handler = handler
@@ -13,7 +14,7 @@ class CatchScheduler(Scheduler):
         super(CatchScheduler, self).__init__()
 
     def local_now(self):
-        return self._scheduler.now()
+        return self._scheduler.now
 
     def schedule_now(self, state, action):
         """Schedules an action to be executed."""

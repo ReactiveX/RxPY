@@ -1,8 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +9,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestFind(unittest.TestCase):
 
@@ -91,11 +90,11 @@ class TestFind(unittest.TestCase):
         def create():
             return xs.find(lambda x,i,s: x==3)
         res = scheduler.start(create)
-    
+
         res.messages.assert_equal(
             on_error(220, ex)
         )
-        
+
     def test_find_throws(self):
         ex = 'error'
         scheduler = TestScheduler()
@@ -110,7 +109,7 @@ class TestFind(unittest.TestCase):
                 raise Exception(ex)
             return xs.find(predicate)
         res = scheduler.start(create)
-    
+
         res.messages.assert_equal(
             on_error(210, ex)
         )

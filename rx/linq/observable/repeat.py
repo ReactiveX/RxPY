@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.core import Observable
 from rx.internal.enumerable import Enumerable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod

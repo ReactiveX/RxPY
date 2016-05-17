@@ -1,60 +1,21 @@
-from threading import Timer
 from datetime import datetime, timedelta
 
-from rx.disposables import Disposable, CompositeDisposable
+from rx.core import Scheduler, Disposable
+from rx.disposables import CompositeDisposable
 from rx.internal.basic import default_now
 
 
-class Scheduler(object):
+class SchedulerBase(Scheduler):
     """Provides a set of static properties to access commonly used
     schedulers.
     """
 
-    def schedule(self, action, state=None):
-        raise NotImplementedError
-
-    def schedule_relative(self, duetime, action, state=None):
-        raise NotImplementedError
-
-    def schedule_absolute(self, duetime, action, state=None):
-        raise NotImplementedError
-
     def invoke_action(self, action, state=None):
-        action(self, state)
+        ret = action(self, state)
+        if isinstance(ret, Disposable):
+            return ret
+
         return Disposable.empty()
-
-    def schedule_periodic(self, period, action, state=None):
-        """Schedules a periodic piece of work by dynamically discovering the
-        schedulers capabilities.
-
-        Keyword arguments:
-        period -- Period for running the work periodically.
-        action -- Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
-            iteration.
-
-        Returns the disposable object used to cancel the scheduled recurring
-        action (best effort)."""
-
-        period /= 1000.0
-        timer = [None]
-        s = [state]
-
-        def interval():
-            new_state = action(s[0])
-            if new_state is not None:  # Update state if other than None
-                s[0] = new_state
-
-            timer[0] = Timer(period, interval)
-            timer[0].start()
-
-        timer[0] = Timer(period, interval)
-        timer[0].start()
-
-        def dispose():
-            timer[0].cancel()
-
-        return Disposable(dispose)
 
     @staticmethod
     def invoke_rec_immediate(scheduler, pair):
@@ -195,8 +156,7 @@ class Scheduler(object):
                                                                action=action1,
                                                                state=action)
 
-    def schedule_recursive_with_absolute_and_state(self, duetime, action,
-                                                   state):
+    def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
         """Schedules an action to be executed recursively at a specified
         absolute due time.
 
@@ -217,15 +177,13 @@ class Scheduler(object):
             duetime=duetime, action=action2,
             state={"first": state, "second": action})
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being
         scheduled on a scheduler will adhere to the time denoted by this
         property.
         """
 
-        return self.default_now()
-
-    def default_now(self):
         return default_now()
 
     @classmethod
@@ -237,8 +195,6 @@ class Scheduler(object):
             timespan = int(timespan.total_seconds()*1000)
         elif isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
-        elif isinstance(timespan, float):
-            timespan *= 1000
 
         return int(timespan)
 
@@ -246,12 +202,10 @@ class Scheduler(object):
     def to_datetime(cls, duetime):
         """Converts time value to datetime"""
 
-        if isinstance(duetime, int):
-            duetime = datetime.fromtimestamp(duetime/1000.0)
-        elif isinstance(duetime, float):
-            duetime = datetime.fromtimestamp(duetime)
-        elif isinstance(duetime, timedelta):
+        if isinstance(duetime, timedelta):
             duetime = datetime.fromtimestamp(0) + duetime
+        elif not isinstance(duetime, datetime):
+            duetime = datetime.fromtimestamp(duetime/1000.0)
 
         return duetime
 
@@ -259,12 +213,10 @@ class Scheduler(object):
     def to_timedelta(cls, timespan):
         """Converts time value to timedelta"""
 
-        if isinstance(timespan, int):
-            timespan = timedelta(milliseconds=timespan)
-        elif isinstance(timespan, float):
-            timespan = timedelta(seconds=timespan)
-        elif isinstance(timespan, datetime):
+        if isinstance(timespan, datetime):
             timespan = timespan - datetime.fromtimestamp(0)
+        elif not isinstance(timespan, timedelta):
+            timespan = timedelta(milliseconds=timespan)
 
         return timespan
 

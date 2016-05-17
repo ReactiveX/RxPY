@@ -1,7 +1,7 @@
-from rx import Observable
+from rx.core import ObservableBase
 
 
-class BlockingObservable(Observable):
+class BlockingObservable(ObservableBase):
     def __init__(self, observable=None):
         """Turns an observable into a blocking observable.
 
@@ -13,4 +13,7 @@ class BlockingObservable(Observable):
         """
 
         self.observable = observable
-        super(BlockingObservable, self).__init__(observable.subscribe)
+        super(BlockingObservable, self).__init__()
+
+    def _subscribe_core(self, observer):
+        return self.observable.subscribe(observer)

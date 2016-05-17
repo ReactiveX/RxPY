@@ -1,8 +1,7 @@
 import unittest
 
-from rx.observable import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestDo(unittest.TestCase):
     def test_do_should_see_all_values(self):
@@ -73,10 +73,10 @@ class TestDo(unittest.TestCase):
         def create():
             def on_next(x):
                 i[0] += 1
-            def on_completed(): 
+            def on_completed():
                 completed = True
             return Observable.never().do_action(on_next=on_next, on_completed=on_completed)
-        
+
         scheduler.start(create)
 
         self.assertEqual(0, i[0])

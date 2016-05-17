@@ -1,10 +1,8 @@
 import unittest
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
-from rx.subjects import Subject
+from rx.core import Observable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,6 +11,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TimeInterval(object):
     def __init__(self, value, interval):
@@ -25,8 +24,9 @@ class TimeInterval(object):
     def __str__(self):
         return "%s@%s" % (self.value, self.interval)
 
-    def equals(other):
+    def equals(self, other):
         return other.interval == self.interval and other.value == self.value
+
 
 class TestTimeInterval(unittest.TestCase):
 

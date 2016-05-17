@@ -38,6 +38,7 @@ nosetests.xml
 # Visual studio
 *.suo
 *.DotSettings.user
+TestResults/
 
 # Log files
 *.log

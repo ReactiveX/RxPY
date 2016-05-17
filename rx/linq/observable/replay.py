@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.core import Observable
 from rx.subjects import ReplaySubject
 from rx.internal import extensionmethod
 

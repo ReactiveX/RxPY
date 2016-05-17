@@ -1,6 +1,5 @@
 import unittest
 
-from rx.observable import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -10,6 +9,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestSkipWithTime(unittest.TestCase):
     def test_skip_zero(self):

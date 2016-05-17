@@ -5,10 +5,11 @@ from time import sleep
 import threading
 from rx.concurrency import EventLoopScheduler
 
+
 class TestEventLoopScheduler(unittest.TestCase):
     def test_event_loop_now(self):
         scheduler = EventLoopScheduler()
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert res < timedelta(microseconds=1000)
 
     def test_event_loop_schedule_action(self):
@@ -22,7 +23,7 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule(action)
         gate.acquire()
-        assert (ran[0] == True)
+        assert (ran[0] is True)
 
     def test_event_loop_different_thread(self):
         thread_id = [None]

@@ -1,8 +1,9 @@
 import unittest
 
 from rx import Observable
+from rx.core import Disposable
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.disposables import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

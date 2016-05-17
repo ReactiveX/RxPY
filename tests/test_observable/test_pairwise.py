@@ -1,8 +1,6 @@
 import unittest
 
-from rx.observable import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +9,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestPairwise(unittest.TestCase):
 
@@ -27,7 +26,6 @@ class TestPairwise(unittest.TestCase):
 
         results = scheduler.start(create)
 
-
         results.messages.assert_equal(
             on_completed(210)
         )
@@ -35,7 +33,6 @@ class TestPairwise(unittest.TestCase):
         xs.subscriptions.assert_equal(
             subscribe(200, 210)
         )
-
 
     def test_pairwise_single(self):
         scheduler = TestScheduler()

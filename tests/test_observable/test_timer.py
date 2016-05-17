@@ -1,9 +1,7 @@
 import unittest
-from datetime import datetime, timedelta
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable, BooleanDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,12 +11,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestTimer(unittest.TestCase):
     def test_oneshot_timer_timespan_basic(self):
@@ -63,13 +64,13 @@ class TestTimer(unittest.TestCase):
         xs.subscribe(lambda x: _raise("ex"))
 
         self.assertRaises(RxException, scheduler1.start)
-        
+
         scheduler2 = TestScheduler()
         ys = Observable.timer(1, period=None, scheduler=scheduler2)
         ys.subscribe(on_completed=lambda: _raise("ex"))
 
         self.assertRaises(RxException, scheduler2.start)
-        
+
     def test_periodic_timer_basic(self):
         scheduler = TestScheduler()
 

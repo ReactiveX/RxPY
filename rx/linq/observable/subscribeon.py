@@ -5,7 +5,9 @@ from rx.internal import extensionmethod
 
 @extensionmethod(Observable)
 def subscribe_on(self, scheduler):
-    """Wraps the source sequence in order to run its subscription and
+    """Subscribe on the specified scheduler.
+
+    Wrap the source sequence in order to run its subscription and
     unsubscription logic on the specified scheduler. This operation is not
     commonly used; see the remarks section for more information on the
     distinction between subscribe_on and observe_on.
@@ -21,7 +23,6 @@ def subscribe_on(self, scheduler):
     on the specified scheduler. In order to invoke observer callbacks on a
     scheduler, use observe_on.
     """
-
     source = self
 
     def subscribe(observer):
@@ -36,4 +37,3 @@ def subscribe_on(self, scheduler):
         return d
 
     return AnonymousObservable(subscribe)
-

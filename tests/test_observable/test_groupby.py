@@ -2,7 +2,7 @@ import math
 import unittest
 from datetime import datetime
 
-from rx.observable import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 

@@ -1,13 +1,13 @@
 import logging
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class WxScheduler(Scheduler):
+class WxScheduler(SchedulerBase):
 
     """A scheduler for a wxPython event loop."""
 
@@ -65,7 +65,7 @@ class WxScheduler(Scheduler):
             timer.Stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""

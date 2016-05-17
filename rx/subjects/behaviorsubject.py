@@ -1,13 +1,11 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
-from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
 
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(Observable, AbstractObserver):
+class BehaviorSubject(ObservableBase, Observer):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.
@@ -23,7 +21,7 @@ class BehaviorSubject(Observable, AbstractObserver):
             value has been received by the subject yet.
         """
 
-        super(BehaviorSubject, self).__init__(self.__subscribe)
+        super(BehaviorSubject, self).__init__()
 
         self.value = value
         self.observers = []
@@ -37,7 +35,7 @@ class BehaviorSubject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
 
-    def __subscribe(self, observer):
+    def _subscribe_core(self, observer):
         ex = None
 
         with self.lock:

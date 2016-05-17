@@ -1,6 +1,5 @@
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import  CompositeDisposable, \
+from rx.core import Observable, AnonymousObservable
+from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extensionmethod
 

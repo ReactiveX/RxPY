@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
 on_next = ReactiveTest.on_next
@@ -12,6 +11,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestPausable_buffered(unittest.TestCase):
 

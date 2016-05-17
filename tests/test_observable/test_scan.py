@@ -1,8 +1,7 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.core import Observable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestScan(unittest.TestCase):
 
@@ -22,7 +22,7 @@ class TestScan(unittest.TestCase):
             def func(acc, x):
                 return acc + x
             return Observable.never().scan(seed=seed, accumulator=func)
-            
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -33,7 +33,7 @@ class TestScan(unittest.TestCase):
 
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
-        
+
         results = scheduler.start(create).messages
         assert(len(results) == 1)
         assert(results[0].value.kind == 'C' and results[0].time == 250)
@@ -42,10 +42,10 @@ class TestScan(unittest.TestCase):
         scheduler = TestScheduler()
         seed = 42
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
-    
+
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
-        
+
         results = scheduler.start(create).messages
         assert(len(results) == 2)
         assert(results[0].value.kind == 'N' and results[0].value.value == seed + 2 and results[0].time == 220)
@@ -56,10 +56,10 @@ class TestScan(unittest.TestCase):
         scheduler = TestScheduler()
         seed = 42
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
-    
+
         def create():
             return xs.scan(seed, lambda acc, x: acc + x)
-        
+
         results = scheduler.start(create).messages
         assert(len(results) == 1)
         assert(results[0].value.kind == 'E' and results[0].value.exception == ex and results[0].time == 250)
@@ -68,10 +68,10 @@ class TestScan(unittest.TestCase):
         scheduler = TestScheduler()
         seed = 1
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
-    
+
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
-     
+
         results = scheduler.start(create).messages
         assert(len(results) == 5)
         assert(results[0].value.kind == 'N' and results[0].value.value == seed + 2 and results[0].time == 210)
@@ -82,20 +82,20 @@ class TestScan(unittest.TestCase):
 
     def test_scan_noseed_never(self):
         scheduler = TestScheduler()
-    
+
         def create():
             return Observable.never().scan(lambda acc, x: acc + x)
-    
-        results = scheduler.start(create)        
+
+        results = scheduler.start(create)
         results.messages.assert_equal()
 
     def test_scan_noseed_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
-    
+
         def create():
             return xs.scan(lambda acc, x: acc + x)
-    
+
         results = scheduler.start(create).messages
         assert(len(results) == 1)
         assert(results[0].value.kind == 'C' and results[0].time == 250)
@@ -103,14 +103,14 @@ class TestScan(unittest.TestCase):
     def test_scan_noseed_return(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
-    
+
         def create():
             def func(acc, x):
                 if acc is None:
                     acc = 0
                 return acc + x
             return xs.scan(accumulator=func)
-    
+
         results = scheduler.start(create).messages
         assert(len(results) == 2)
         assert(results[0].value.kind == 'N' and results[0].time == 220 and results[0].value.value == 2)
@@ -120,12 +120,12 @@ class TestScan(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
-    
+
         def create():
             def func(acc, x):
                 if acc is None:
                     acc = 0
-            
+
                 return acc + x
             return xs.scan(func)
         results = scheduler.start(create).messages
@@ -135,14 +135,14 @@ class TestScan(unittest.TestCase):
     def test_scan_noseed_somedata(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
-        
+
         def create():
             def func(acc, x):
                 if acc is None:
                     acc = 0
                 return acc + x
             return xs.scan(func)
-    
+
         results = scheduler.start(create).messages
         assert(len(results) == 5)
         assert(results[0].value.kind == 'N' and results[0].time == 210 and results[0].value.value == 2)

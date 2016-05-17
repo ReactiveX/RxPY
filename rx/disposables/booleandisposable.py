@@ -1,4 +1,5 @@
-from .disposable import Disposable
+from rx import Lock
+from rx.core import Disposable
 
 
 class BooleanDisposable(Disposable):
@@ -10,6 +11,7 @@ class BooleanDisposable(Disposable):
         self.is_single = is_single
         self.is_disposed = False
         self.current = None
+        self.lock = Lock()
 
         super(BooleanDisposable, self).__init__()
 

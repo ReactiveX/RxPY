@@ -1,8 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,7 +10,8 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-class TestSum(unittest.TestCase):
+
+class TestSequenceEqual(unittest.TestCase):
     def test_sequence_equal_equal(self):
         scheduler = TestScheduler()
         msgs1 = [on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510)]
@@ -250,7 +249,7 @@ class TestSum(unittest.TestCase):
             def comparer(x, y):
                 if x == value:
                     raise Exception(exn)
-                
+
                 return x == y
             return comparer
 
@@ -262,35 +261,34 @@ class TestSum(unittest.TestCase):
             return xs.sequence_equal([3, 4, 5, 6, 7], throw_comparer(5, ex))
 
         res = scheduler.start(create=create)
-    
+
         res.messages.assert_equal(on_error(310, ex))
         xs.subscriptions.assert_equal(subscribe(200, 310))
 
     def test_sequenceequal_enumerable_notequal_toolong(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
-    
+
         def create():
             return xs.sequence_equal([3, 4, 5, 6, 7, 8])
-    
+
         res = scheduler.start(create=create)
-    
+
         res.messages.assert_equal(on_next(510, False), on_completed(510))
         xs.subscriptions.assert_equal(subscribe(200, 510))
-    
-    
+
     def test_sequenceequal_enumerable_notequal_tooshort(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
-        
+
         def create():
             return xs.sequence_equal([3, 4, 5, 6])
-    
+
         res = scheduler.start(create=create)
-        
+
         res.messages.assert_equal(on_next(450, False), on_completed(450))
         xs.subscriptions.assert_equal(subscribe(200, 450))
-    
+
     def test_sequenceequal_enumerable_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
@@ -303,5 +301,3 @@ class TestSum(unittest.TestCase):
 
         res.messages.assert_equal(on_error(310, ex))
         xs.subscriptions.assert_equal(subscribe(200, 310))
-
-

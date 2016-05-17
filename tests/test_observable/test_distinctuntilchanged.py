@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,12 +11,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_never(self):
@@ -145,7 +147,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         def create():
             return xs.distinct_until_changed(lambda x: x % 2)
-    
+
         results = scheduler.start(create).messages
         self.assertEqual(3, len(results))
         assert(results[0].value.kind == 'N' and results[0].time == 210 and results[0].value.value == 2)
@@ -156,19 +158,19 @@ class TestDistinctUntilChanged(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-        
+
         def create():
             return xs.distinct_until_changed(lambda x: _raise(ex))
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(210, ex))
-    
+
     def test_distinct_until_changed_comparer_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
-        
+
         def create():
             return xs.distinct_until_changed(comparer=lambda x,y: _raise(ex))
-    
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(210, 2), on_error(220, ex))

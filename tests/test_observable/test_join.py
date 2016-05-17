@@ -2,8 +2,7 @@ import unittest
 from datetime import timedelta
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,9 +12,11 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class TimeSpan(object):
     def from_ticks(self, value):
         return value
+
 
 class TimeInterval(object):
     def __init__(self, value, interval):
@@ -33,6 +34,7 @@ class TimeInterval(object):
 
     def get_hash_code(self):
         return self.value.get_hash_code() ^ self.interval.get_hash_code()
+
 
 class TestJoin(unittest.TestCase):
 

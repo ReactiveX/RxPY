@@ -1,8 +1,6 @@
 from nose.tools import raises
 
-from rx import Observable, Observer
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import BehaviorSubject
 from rx.internal.exceptions import DisposedException
 
@@ -14,12 +12,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 def test_infinite():
     scheduler = TestScheduler()
@@ -52,15 +53,15 @@ def test_infinite():
     def action1(scheduler, state=None):
         subject[0] = BehaviorSubject(100)
     scheduler.schedule_absolute(100, action1)
-    
+
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(subject[0])
-    scheduler.schedule_absolute(200, action2) 
-    
+    scheduler.schedule_absolute(200, action2)
+
     def action3(scheduler, state=None):
         subscription[0].dispose()
     scheduler.schedule_absolute(1000, action3)
-    
+
     def action4(scheduler, state=None):
         subscription1[0] = subject[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
@@ -72,23 +73,23 @@ def test_infinite():
     def action6(scheduler, state=None):
         subscription3[0] = subject[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
-    
+
     def action7(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
-    
+
     def action8(scheduler, state=None):
         subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
-    
+
     def action9(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
-    
+
     def action10(scheduler, state=None):
         subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
-    
+
     scheduler.start()
 
     results1.messages.assert_equal(
@@ -109,6 +110,7 @@ def test_infinite():
         on_next(900, 10),
         on_next(940, 11)
     )
+
 
 def test_finite():
     scheduler = TestScheduler()
@@ -140,39 +142,39 @@ def test_finite():
     def action1(scheduler, state=None):
         subject[0] = BehaviorSubject(100)
     scheduler.schedule_absolute(100, action1)
-    
+
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(subject[0])
-    scheduler.schedule_absolute(200, action2) 
-    
+    scheduler.schedule_absolute(200, action2)
+
     def action3(scheduler, state=None):
         subscription[0].dispose()
-    scheduler.schedule_absolute(1000, action3) 
-    
+    scheduler.schedule_absolute(1000, action3)
+
     def action4(scheduler, state=None):
         subscription1[0] = subject[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
-    
+
     def action5(scheduler, state=None):
         subscription2[0] = subject[0].subscribe(results2)
     scheduler.schedule_absolute(400, action5)
-    
+
     def action6(scheduler, state=None):
         subscription3[0] = subject[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
-    
+
     def action7(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
-    
+
     def action8(scheduler, state=None):
         subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
-    
+
     def action9(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
-    
+
     def action10(scheduler, state=None):
         subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
@@ -196,6 +198,7 @@ def test_finite():
     results3.messages.assert_equal(
         on_completed(900)
     )
+
 
 def test_error():
     scheduler = TestScheduler()
@@ -233,11 +236,11 @@ def test_error():
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(subject[0])
     scheduler.schedule_absolute(200, action2)
-    
+
     def action3(scheduler, state=None):
         subscription[0].dispose()
     scheduler.schedule_absolute(1000, action3)
-    
+
     def action4(scheduler, state=None):
         subscription1[0] = subject[0].subscribe(results1)
     scheduler.schedule_absolute(300, action4)
@@ -249,11 +252,11 @@ def test_error():
     def action6(scheduler, state=None):
         subscription3[0] = subject[0].subscribe(results3)
     scheduler.schedule_absolute(900, action6)
-    
+
     def action7(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(600, action7)
-    
+
     def action8(scheduler, state=None):
         subscription2[0].dispose()
     scheduler.schedule_absolute(700, action8)
@@ -261,11 +264,11 @@ def test_error():
     def action9(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(800, action9)
-    
+
     def action10(scheduler, state=None):
         subscription3[0].dispose()
     scheduler.schedule_absolute(950, action10)
-    
+
     scheduler.start()
 
     results1.messages.assert_equal(
@@ -382,61 +385,61 @@ def test_subject_disposed():
     def action2(scheduler, state=None):
         subscription1[0] = subject[0].subscribe(results1)
     scheduler.schedule_absolute(200, action2)
-    
+
     def action3(scheduler, state=None):
         subscription2[0] = subject[0].subscribe(results2)
     scheduler.schedule_absolute(300, action3)
-    
+
     def action4(scheduler, state=None):
         subscription3[0] = subject[0].subscribe(results3)
     scheduler.schedule_absolute(400, action4)
-    
+
     def action5(scheduler, state=None):
         subscription1[0].dispose()
     scheduler.schedule_absolute(500, action5)
-    
+
     def action6(scheduler, state=None):
         subject[0].dispose()
     scheduler.schedule_absolute(600, action6)
-    
+
     def action7(scheduler, state=None):
         subscription2[0].dispose()
     scheduler.schedule_absolute(700, action7)
-    
+
     def action8(scheduler, state=None):
         subscription3[0].dispose()
     scheduler.schedule_absolute(800, action8)
-    
+
     def action9(scheduler, state=None):
         subject[0].on_next(1)
     scheduler.schedule_absolute(150, action9)
-    
+
     def action10(scheduler, state=None):
         subject[0].on_next(2)
     scheduler.schedule_absolute(250, action10)
-    
+
     def action11(scheduler, state=None):
         subject[0].on_next(3)
     scheduler.schedule_absolute(350, action11)
-    
+
     def action12(scheduler, state=None):
         subject[0].on_next(4)
     scheduler.schedule_absolute(450, action12)
-    
+
     def action13(scheduler, state=None):
         subject[0].on_next(5)
     scheduler.schedule_absolute(550, action13)
-    
+
     @raises(DisposedException)
     def action14(scheduler, state=None):
         subject[0].on_next(6)
     scheduler.schedule_absolute(650, action14)
-    
+
     @raises(DisposedException)
     def action15(scheduler, state=None):
         subject[0].on_completed()
     scheduler.schedule_absolute(750, action15)
-    
+
     @raises(DisposedException)
     def action16(scheduler, state=None):
         subject[0].on_error(RxException())

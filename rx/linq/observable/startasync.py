@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.core import Observable
 from rx.internal import extensionclassmethod
 
 
@@ -8,10 +8,10 @@ def start_async(cls, function_async):
     observable sequence.
 
     Keyword arguments:
-    :param types.FunctionType function_async: Asynchronous function which 
+    :param types.FunctionType function_async: Asynchronous function which
         returns a Future to run.
 
-    :returns: An observable sequence exposing the function's result value, or an 
+    :returns: An observable sequence exposing the function's result value, or an
         exception.
     :rtype: Observable
     """

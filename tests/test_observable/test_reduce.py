@@ -1,7 +1,6 @@
 import unittest
 
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -18,10 +17,10 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return xs.reduce(lambda acc, x: acc + x, 42)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_next(250, 42), on_completed(250))
 
@@ -32,7 +31,7 @@ class TestReduce(unittest.TestCase):
 
         def create():
             return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_next(250, 42 + 24), on_completed(250))
 
@@ -52,7 +51,7 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1)]
         xs = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
 
@@ -74,7 +73,7 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return xs.reduce(accumulator=lambda acc, x: acc + x)
 
@@ -86,7 +85,7 @@ class TestReduce(unittest.TestCase):
     def test_reduce_without_seed_return(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
-        
+
         def create():
             return xs.reduce(accumulator=lambda acc, x: acc + x)
 
@@ -99,10 +98,10 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return xs.reduce(lambda acc, x: acc + x)
-            
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_error(210, ex))
 
@@ -110,10 +109,10 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1)]
         xs = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return xs.reduce(lambda acc, x: acc + x)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal()
 
@@ -124,10 +123,10 @@ class TestReduce(unittest.TestCase):
 
         def create():
             return xs.reduce(lambda acc, x: acc + x)
-        
+
         res = scheduler.start(create=create).messages
         res.assert_equal(on_next(260, 10), on_completed(260))
 
 if __name__ == '__main__':
     unittest.main()
-    
+

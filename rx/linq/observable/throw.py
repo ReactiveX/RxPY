@@ -1,5 +1,4 @@
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionclassmethod
@@ -25,7 +24,7 @@ def throw(cls, exception, scheduler=None):
 
     scheduler = scheduler or immediate_scheduler
 
-    exception = Exception(exception) if type(exception) is Exception else exception
+    exception = exception if type(exception) is Exception else Exception(exception)
 
     def subscribe(observer):
         def action(scheduler, state):

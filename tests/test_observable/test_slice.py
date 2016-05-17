@@ -1,8 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -11,6 +9,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestSlice(unittest.TestCase):
 
@@ -91,7 +90,7 @@ class TestSlice(unittest.TestCase):
             on_next(410, 8),
             on_next(415, 9),
             on_completed(690))
-        xs.subscriptions.assert_equal(subscribe(200, 1000)) # TODO: Why 1000?
+        xs.subscriptions.assert_equal(subscribe(200, 1000))
 
     def test_slice_skip_first(self):
         scheduler = TestScheduler()

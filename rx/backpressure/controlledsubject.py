@@ -1,11 +1,12 @@
-from rx import Observable
-from rx.disposables import Disposable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.subjects import Subject
-from rx.internal.utils import check_disposed
+from rx.disposables import AnonymousDisposable
+from rx.concurrency import current_thread_scheduler
+from rx.core.notification import OnCompleted, OnError, OnNext
 
 
-class ControlledSubject(Observable):
-    def __init__(self, enable_queue=True):
+class ControlledSubject(ObservableBase, Observer):
+    def __init__(self, enable_queue=True, scheduler=None):
         super(ControlledSubject, self).__init__(self._subscribe)
 
         self.subject = Subject()
@@ -16,93 +17,72 @@ class ControlledSubject(Observable):
         self.error = None
         self.has_failed = False
         self.has_completed = False
-        self.controlled_disposable = Disposable.empty()
+        self.scheduler = scheduler or current_thread_scheduler
 
     def _subscribe(self, observer):
         return self.subject.subscribe(observer)
 
     def on_completed(self):
-        check_disposed(self)
         self.has_completed = True
 
-        if not self.enable_queue or not len(self.queue):
+        if not self.enable_queue or len(self.queue) == 0:
             self.subject.on_completed()
+            self.dispose_current_request()
+        else:
+            self.queue.push(OnCompleted())
 
     def on_error(self, error):
-        check_disposed(self)
         self.has_failed = True
         self.error = error
 
-        if not self.enable_queue or not len(self.queue):
+        if not self.enable_queue or len(self.queue) == 0:
             self.subject.on_error(error)
+            self.dispose_current_request()
+        else:
+            self.queue.push(OnError(error))
 
     def on_next(self, value):
-        check_disposed(self)
-        has_requested = False
-
-        if not self.requested_count:
-            if self.enable_queue:
-                self.queue.append(value)
+        if self.requested_count <= 0:
+            self.enable_queue and self.queue.append(OnNext(value))
         else:
-            if self.requested_count != -1:
-                requested_count = self.requested_count
-                self.requested_count -= 1
-                if requested_count == 0:
-                    self.dispose_current_request()
-
-            has_requested = True
-
-        if has_requested:
-            self.subject.on_next(value)
+            self.requested_count -= 1
+            if self.requested_count == 0:
+                self.dispose_current_request()
+            self.subject.onNext(value)
 
     def _process_request(self, number_of_items):
         if self.enable_queue:
-            #console.log('queue length', self.queue.length)
+            while len(self.queue) > 0 and (number_of_items > 0 or self.queue[0].kind != 'N'):
+                first = self.queue.pop(0)
+                first.accept(self.subject)
+                if first.kind == 'N':
+                    number_of_items -= 1
+                else:
+                    self.dispose_current_request()
+                    self.queue = []
 
-            while len(self.queue) >= number_of_items and number_of_items > 0:
-                # console.log('number of items', number_of_items)
-                self.subject.on_next(self.queue.shift())
-                number_of_items -= 1
-
-            if len(self.queue):
-                return {"number_of_items": number_of_items, "return_value": True}
-            else:
-                return {"number_of_items": number_of_items, "return_value": False}
-
-        if self.has_failed:
-            self.subject.on_error(self.error)
-            self.controlled_disposable.dispose()
-            self.controlled_disposable = Disposable.empty()
-        elif self.has_completed:
-            self.subject.on_completed()
-            self.controlled_disposable.dispose()
-            self.controlled_disposable = Disposable.empty()
-
-        return {"number_of_items": number_of_items, "return_value": False}
+        return number_of_items
 
     def request(self, number):
-        check_disposed(self)
         self.dispose_current_request()
 
-        r = self._process_request(number)
-        number = r["number_of_items"]
-        if not r["return_value"]:
-            self.requested_count = number
+        def action(scheduler, i):
+            remaining = self._process_request(i)
+            stopped = self.has_completed and self.has_failed
+            if not stopped and remaining > 0:
+                self.requestedCount = remaining
 
-            def action():
+            def dispose():
                 self.requested_count = 0
-            self.requested_disposable = Disposable(action)
+            return AnonymousDisposable(dispose)
+            # Scheduled item is still in progress. Return a new
+            # disposable to allow the request to be interrupted
+            # via dispose.
 
-            return self.requested_disposable
-        else:
-            return Disposable.empty()
+        self.requested_disposable = self.scheduler.schedule(action, state=number)
+        return self.requested_disposable
 
     def dispose_current_request(self):
-        self.requested_disposable.dispose()
-        self.requested_disposable = Disposable.empty()
-
-    def dispose(self):
-        self.is_disposed = True # FIXME: something wrong in RxJS?
-        self.error = None
-        self.subject.dispose()
-        self.requested_disposable.dispose()
+        if self.requested_disposable:
+            self.requested_disposable.dispose()
+            self.requested_disposable = None

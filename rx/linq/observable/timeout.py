@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
 from rx.concurrency import timeout_scheduler

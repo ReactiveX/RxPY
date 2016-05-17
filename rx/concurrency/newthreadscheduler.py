@@ -1,13 +1,14 @@
 import logging
 import threading
 
-from .scheduler import Scheduler
+from rx.core import Scheduler
+from .schedulerbase import SchedulerBase
 from .eventloopscheduler import EventLoopScheduler
 
 log = logging.getLogger('Rx')
 
 
-class NewThreadScheduler(Scheduler):
+class NewThreadScheduler(SchedulerBase):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
@@ -36,6 +37,6 @@ class NewThreadScheduler(Scheduler):
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        return self.schedule_relative(duetime - self.now(), action, state=None)
+        return self.schedule_relative(duetime - self.now, action, state=None)
 
 Scheduler.new_thread = new_thread_scheduler = NewThreadScheduler()

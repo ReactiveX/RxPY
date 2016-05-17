@@ -1,4 +1,4 @@
-from rx import AnonymousObservable, Observable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 

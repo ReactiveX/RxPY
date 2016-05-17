@@ -2,7 +2,7 @@ import rx
 asyncio = rx.config['asyncio']
 
 from rx.concurrency import AsyncIOScheduler
-from rx.observable import Observable
+from rx.core import Observable
 from rx.internal import extensionmethod
 
 

@@ -1,5 +1,4 @@
-from rx import Observable, Observer
-from rx.anonymousobservable import AnonymousObservable
+from rx import Observable, AnonymousObserver, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionclassmethod
 
@@ -27,8 +26,7 @@ def when(cls, *args):
                 v.on_error(err)
             observer.on_error(err)
 
-        out_observer = Observer(observer.on_next, on_error, 
-                                observer.on_completed)
+        out_observer = AnonymousObserver(observer.on_next, on_error, observer.on_completed)
 
         def deactivate(active_plan):
             active_plans.remove(active_plan)

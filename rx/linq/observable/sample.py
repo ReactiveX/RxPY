@@ -1,5 +1,4 @@
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod

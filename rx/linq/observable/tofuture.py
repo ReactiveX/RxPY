@@ -1,5 +1,5 @@
 import rx
-from rx.observable import Observable
+from rx.core import Observable
 from rx.internal import extensionmethod
 
 
@@ -47,3 +47,14 @@ def to_future(self, future_ctor=None):
 
     # No cancellation can be done
     return future
+
+
+@extensionmethod(Observable)
+def __await__(self):
+    """Awaits the given observable
+    :returns: The last item of the observable sequence.
+    :rtype: Any
+    :raises TypeError: If key is not of type int or slice
+    """
+    return iter(self.to_future())
+

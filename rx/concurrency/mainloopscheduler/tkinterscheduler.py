@@ -1,13 +1,13 @@
 import logging
 
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
-    CompositeDisposable
-from rx.concurrency.scheduler import Scheduler
+from rx.core import Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
 
 
-class TkinterScheduler(Scheduler):
+class TkinterScheduler(SchedulerBase):
     """A scheduler that schedules work via the Tkinter main event loop.
 
     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html
@@ -19,11 +19,10 @@ class TkinterScheduler(Scheduler):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        scheduler = self
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         alarm = self.master.after_idle(interval)
 
@@ -31,7 +30,7 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -51,7 +50,7 @@ class TkinterScheduler(Scheduler):
         disposable = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            disposable.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", msecs)
         alarm = self.master.after(msecs, interval)
@@ -60,7 +59,7 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -73,7 +72,7 @@ class TkinterScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
         """Schedules a periodic piece of work to be executed in the tkinter
@@ -101,4 +100,4 @@ class TkinterScheduler(Scheduler):
             # nonlocal alarm
             self.master.after_cancel(alarm[0])
 
-        return Disposable(dispose)
+        return Disposable.create(dispose)

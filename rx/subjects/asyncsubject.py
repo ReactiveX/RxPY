@@ -1,13 +1,11 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
-from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
 
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(Observable, AbstractObserver):
+class AsyncSubject(ObservableBase, Observer):
     """Represents the result of an asynchronous operation. The last value
     before the on_completed notification, or the error received through
     on_error, is sent to all subscribed observers."""
@@ -16,7 +14,7 @@ class AsyncSubject(Observable, AbstractObserver):
         """Creates a subject that can only receive one value and that value is
         cached for all future observations."""
 
-        super(AsyncSubject, self).__init__(self._subscribe)
+        super(AsyncSubject, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
@@ -31,7 +29,7 @@ class AsyncSubject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

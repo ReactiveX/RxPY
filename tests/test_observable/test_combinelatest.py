@@ -1,8 +1,7 @@
 import unittest
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,12 +11,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestCombineLatest(unittest.TestCase):
 
@@ -37,10 +39,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs = [on_next(150, 1), on_completed(210)]
         e1 = Observable.never()
         e2 = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -49,10 +51,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs = [on_next(150, 1), on_completed(210)]
         e1 = Observable.never()
         e2 = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -62,7 +64,7 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_completed(210)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
 
@@ -75,10 +77,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(215))
 
@@ -88,10 +90,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_completed(215))
 
@@ -103,7 +105,7 @@ class TestCombineLatest(unittest.TestCase):
 
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -115,7 +117,7 @@ class TestCombineLatest(unittest.TestCase):
 
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal()
 
@@ -128,7 +130,7 @@ class TestCombineLatest(unittest.TestCase):
 
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(220, 2 + 3), on_completed(240))
 
@@ -139,10 +141,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -153,10 +155,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -167,10 +169,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -181,10 +183,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -196,10 +198,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex1))
 
@@ -211,11 +213,11 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
-        results = scheduler.start(create) 
+
+        results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex1))
 
     def test_combine_latest_throw_error(self):
@@ -226,10 +228,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex1))
 
@@ -239,10 +241,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs = [on_next(150, 1), on_error(220, ex)]
         e1 = Observable.never()
         e2 = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -252,10 +254,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs = [on_next(150, 1), on_error(220, ex)]
         e1 = Observable.never()
         e2 = scheduler.create_hot_observable(msgs)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -266,11 +268,11 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
 
-        results = scheduler.start(create)    
+        results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
     def test_combine_latest_throw_some(self):
@@ -280,10 +282,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(220, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
@@ -294,10 +296,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(230, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(230, ex))
 
@@ -308,10 +310,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_error(230, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_error(230, ex))
 
@@ -321,10 +323,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(220, 3), on_next(230, 5), on_next(235, 6), on_next(240, 7), on_completed(250)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(220, 2 + 3), on_next(225, 3 + 4), on_next(230, 4 + 5), on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250))
 
@@ -334,10 +336,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(235, 6), on_next(240, 7), on_completed(250)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250))
 
@@ -348,11 +350,11 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(235, 6), on_next(240, 7), on_completed(250)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e1.combine_latest(e2, lambda x, y: x + y)
-        
-        results = scheduler.start(create)    
+
+        results = scheduler.start(create)
         results.messages.assert_equal(on_error(230, ex))
 
     def test_combine_latest_consecutive_end_with_error_right(self):
@@ -362,10 +364,10 @@ class TestCombineLatest(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(235, 6), on_next(240, 7), on_error(245, ex)]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
-        
+
         def create():
             return e2.combine_latest(e1, lambda x, y: x + y)
-        
+
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(235, 4 + 6), on_next(240, 4 + 7), on_error(245, ex))
 
@@ -379,8 +381,8 @@ class TestCombineLatest(unittest.TestCase):
 
         def create():
             return e1.combine_latest(e2, lambda x, y: _raise(ex))
-        
-        results = scheduler.start(create)        
+
+        results = scheduler.start(create)
         results.messages.assert_equal(on_error(220, ex))
 
 if __name__ == '__main__':

@@ -1,6 +1,5 @@
 from rx import Lock
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionclassmethod
 

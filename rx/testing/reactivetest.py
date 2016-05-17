@@ -1,7 +1,7 @@
 import math
 import types
 
-from rx.notification import OnNext, OnError, OnCompleted
+from rx.core.notification import OnNext, OnError, OnCompleted
 from .recorded import Recorded
 from .subscription import Subscription
 

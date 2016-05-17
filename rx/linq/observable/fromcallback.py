@@ -1,5 +1,4 @@
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import extensionclassmethod
 
 
@@ -20,6 +19,7 @@ def from_callback(cls, func, selector=None):
 
     def function(*args):
         arguments = list(args)
+
         def subscribe(observer):
             def handler(*args):
                 results = list(args)

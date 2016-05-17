@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 from time import sleep
 from rx.concurrency import NewThreadScheduler
 
+
 class TestNewThreadScheduler(unittest.TestCase):
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert res < timedelta(microseconds=1000)
 
     def test_new_thread_schedule_action(self):
@@ -20,7 +21,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         scheduler.schedule(action)
 
         sleep(0.1)
-        assert (ran[0] == True)
+        assert (ran[0] is True)
 
     def test_new_thread_schedule_action_due(self):
         scheduler = NewThreadScheduler()

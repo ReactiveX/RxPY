@@ -2,33 +2,34 @@ import logging
 
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 
-from .scheduler import Scheduler
+from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
 from .scheduleperiodicrecursive import SchedulePeriodicRecursive
 
 log = logging.getLogger("Rx")
 
-class VirtualTimeScheduler(Scheduler):
+
+class VirtualTimeScheduler(SchedulerBase):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
-    def __init__(self, initial_clock=0, comparer=None):
+    def __init__(self, initial_clock=0):
         """Creates a new virtual time scheduler with the specified initial
         clock value and absolute time comparer.
 
         Keyword arguments:
         initial_clock -- Initial value for the clock.
         comparer -- Comparer to determine causality of events based on absolute
-            time."""
-
+            time.
+        """
         self.clock = initial_clock
 
-        self.comparer = comparer
         self.is_enabled = False
         self.queue = PriorityQueue(1024)
 
         super(VirtualTimeScheduler, self).__init__()
 
+    @property
     def now(self):
         """Gets the schedulers absolute time clock value as datetime offset."""
 
@@ -48,19 +49,13 @@ class VirtualTimeScheduler(Scheduler):
         action -- Action to be executed.
         state -- [Optional] State passed to the action to be executed."""
 
-        log.debug("VirtualTimeScheduler.schedule_relative(duetime=%s, state=%s)" % (duetime, state))
-
         runat = self.add(self.clock, self.to_relative(duetime))
         return self.schedule_absolute(duetime=runat, action=action, state=state)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        def run(scheduler, state1):
-            self.queue.remove(si)
-            return action(scheduler, state1)
-
-        si = ScheduledItem(self, state, run, duetime, self.comparer)
+        si = ScheduledItem(self, state, action, duetime)
         self.queue.enqueue(si)
         return si.disposable
 
@@ -71,18 +66,19 @@ class VirtualTimeScheduler(Scheduler):
     def start(self):
         """Starts the virtual time scheduler."""
 
-        if not self.is_enabled:
-            self.is_enabled = True
-            while self.is_enabled:
-                next = self.get_next()
-                if next:
-                    if self.comparer(next.duetime, self.clock) > 0:
-                        self.clock = next.duetime
-                        log.info("VirtualTimeScheduler.start(), clock: %s",
-                                 self.clock)
-                    next.invoke()
-                else:
-                    self.is_enabled = False
+        if self.is_enabled:
+            return
+
+        self.is_enabled = True
+        while self.is_enabled:
+            next = self.get_next()
+            if not next:
+                break
+            if next.duetime > self.clock:
+                self.clock = next.duetime
+            next.invoke()
+
+        self.is_enabled = False
 
     def stop(self):
         """Stops the virtual time scheduler."""
@@ -96,26 +92,33 @@ class VirtualTimeScheduler(Scheduler):
         Keyword arguments:
         time -- Absolute time to advance the schedulers clock to."""
 
-        due_to_clock = self.comparer(self.clock, time)
-        if due_to_clock > 0:
+        if self.clock > time:
             raise ArgumentOutOfRangeException()
 
-        if not due_to_clock:
+        if self.clock == time:
             return
 
-        if not self.is_enabled:
-            self.is_enabled = True
-            while self.is_enabled:
-                next = self.get_next()
-                if next and self.comparer(next.duetime, time) <= 0:
-                    if self.comparer(next.duetime, self.clock) > 0:
-                        self.clock = next.duetime
+        if self.is_enabled:
+            return
 
-                    next.invoke()
-                else:
-                    self.is_enabled = False
+        self.is_enabled = True
 
-            self.clock = time
+        while self.is_enabled:
+            next = self.get_next()
+            if not next:
+                break
+
+            if next.duetime > time:
+                self.queue.enqueue(next)
+                break
+
+            if next.duetime > self.clock:
+                self.clock = next.duetime
+
+            next.invoke()
+
+        self.is_enabled = False
+        self.clock = time
 
     def advance_by(self, time):
         """Advances the schedulers clock by the specified relative time,
@@ -127,7 +130,7 @@ class VirtualTimeScheduler(Scheduler):
         log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
         dt = self.add(self.clock, time)
-        if self.comparer(self.clock, dt) > 0:
+        if self.clock > dt:
             raise ArgumentOutOfRangeException()
         return self.advance_to(dt)
 
@@ -139,7 +142,7 @@ class VirtualTimeScheduler(Scheduler):
 
         dt = self.add(self.clock, time)
 
-        if self.comparer(self.clock, dt) >= 0:
+        if self.clock > dt:
             raise ArgumentOutOfRangeException()
 
         self.clock = dt
@@ -148,10 +151,8 @@ class VirtualTimeScheduler(Scheduler):
         """Returns the next scheduled item to be executed."""
 
         while len(self.queue):
-            next = self.queue.peek()
-            if next.is_cancelled():
-                self.queue.dequeue()
-            else:
+            next = self.queue.dequeue()
+            if not next.is_cancelled():
                 return next
 
         return None

@@ -1,9 +1,8 @@
-from rx import AnonymousObservable
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.core import Observable, AnonymousObservable, Disposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
-from rx.observable import Observable
 from rx.internal import extensionmethod, extensionclassmethod
-from rx.internal import Enumerable, Enumerator
+from rx.internal import Enumerable
 
 
 @extensionmethod(Observable, instancemethod=True)
@@ -17,7 +16,6 @@ def concat(self, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
-
     if isinstance(args[0], list):
         items = args[0]
     else:
@@ -25,6 +23,7 @@ def concat(self, *args):
 
     items.insert(0, self)
     return Observable.concat(items)
+
 
 @extensionmethod(Observable)
 def __add__(self, other):
@@ -35,6 +34,7 @@ def __add__(self, other):
     Returns self.concat(other)"""
 
     return self.concat(other)
+
 
 @extensionmethod(Observable)
 def __iadd__(self, other):
@@ -47,6 +47,7 @@ def __iadd__(self, other):
 
     return self.concat(self, other)
 
+
 @extensionclassmethod(Observable)
 def concat(cls, *args):
     """Concatenates all the observable sequences.
@@ -57,7 +58,6 @@ def concat(cls, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
-
     if isinstance(args[0], list) or isinstance(args[0], Enumerable):
         sources = args[0]
     else:
@@ -90,8 +90,9 @@ def concat(cls, *args):
 
         def dispose():
             is_disposed[0] = True
-        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+        return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
     return AnonymousObservable(subscribe)
+
 
 @extensionmethod(Observable)
 def concat_all(self):

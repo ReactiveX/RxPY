@@ -1,8 +1,6 @@
 import unittest
 
-from rx.observable import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,12 +10,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestLast(unittest.TestCase):
 
@@ -31,7 +32,7 @@ class TestLast(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         res.messages.assert_equal(on_error(250, predicate))
         xs.subscriptions.assert_equal(subscribe(200, 250))
@@ -123,18 +124,18 @@ class TestLast(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
-        
+
         def create():
             def predicate(x):
                 if x < 4:
                     return x % 2 == 1
                 else:
                     raise Exception(ex)
-                
+
             return xs.last(predicate)
-    
+
         res = scheduler.start(create=create)
-    
+
         res.messages.assert_equal(on_error(230, ex))
         xs.subscriptions.assert_equal(subscribe(200, 230))
 

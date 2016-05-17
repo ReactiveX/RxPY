@@ -1,30 +1,30 @@
 from rx.disposables import SingleAssignmentDisposable
 
-from .abstractobserver import AbstractObserver
+from .observerbase import ObserverBase
 
 
-class AutoDetachObserver(AbstractObserver):
+class AutoDetachObserver(ObserverBase):
 
     def __init__(self, observer):
-        super(AutoDetachObserver, self).__init__(self._next, self._error, self._completed)
+        super(AutoDetachObserver, self).__init__()
 
         self.observer = observer
         self.m = SingleAssignmentDisposable()
 
-    def _next(self, value):
+    def _on_next_core(self, value):
         try:
             self.observer.on_next(value)
         except Exception:
             self.dispose()
             raise
 
-    def _error(self, exn):
+    def _on_error_core(self, exn):
         try:
             self.observer.on_error(exn)
         finally:
             self.dispose()
 
-    def _completed(self):
+    def _on_completed_core(self):
         try:
             self.observer.on_completed()
         finally:

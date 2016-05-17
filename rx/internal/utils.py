@@ -14,7 +14,7 @@ def add_ref(xs, r):
 def adapt_call(func):
     """Adapt called func.
 
-    Adapt called funcfrom taking n params to only taking 1 or 2 params
+    Adapt call from taking n params to only taking 1 or 2 params
     """
     cached = [None]
 

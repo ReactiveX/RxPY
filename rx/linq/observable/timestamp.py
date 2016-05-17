@@ -1,6 +1,6 @@
 import logging
 
-from rx.observable import Observable
+from rx.core import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
 from rx.internal import extensionmethod
@@ -24,6 +24,6 @@ def timestamp(self, scheduler=None):
     scheduler = scheduler or timeout_scheduler
 
     def selector(x):
-        return Timestamp(value=x, timestamp=scheduler.now())
+        return Timestamp(value=x, timestamp=scheduler.now)
 
     return self.map(selector)

@@ -1,5 +1,22 @@
 # Changes
 
+## 1.5.0
+
+- Refactored virtual time scheduling. Fixes #95. Thanks to @djarb
+- Fixed Visual Studio project files and moved to ide folder.
+- Remove timer operations from base `SchedulerBase` class.
+- Scheduler.now is now a property to align with Rx.NET
+- Bugfix for periodic scheduling. Fixes #91. Thanks to @frederikaalund
+- Demonize all threads in `TimeoutScheduler`. Fixes #90
+- Enable subscription with duck-typed observer.
+- Added new core module. Observable, Observer, Scheduler and Disposable
+  are now ABCs.
+- Synced backpressure with RxJS to fix #87
+- Do not overwrite scheduler keyword arg. Fixes #85. Thanks to @rjayatilleka
+- Added async iterator example.
+- Added support for awaiting observables
+- Fixed issue #83 with `int + datetime.datetime` in timer.py. Thanks to @AlexMost
+
 ## 1.2.6
 - Fixes for TwistedScheduler raising AlreadyCalled error #78. Thanks to
   @mchen402 and @jcwilson.

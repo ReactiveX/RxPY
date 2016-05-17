@@ -6,9 +6,9 @@ asyncio = rx.config['asyncio']
 if asyncio is None:
     raise SkipTest("asyncio not available")
 
-from rx.observable import Observable
+from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import Disposable, SerialDisposable
+from rx.disposables import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -17,6 +17,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestToFuture(unittest.TestCase):
 
@@ -32,7 +33,7 @@ class TestToFuture(unittest.TestCase):
             def done(future):
                 try:
                     value = future.result()
-                except Exception as ex:
+                except Exception:
                     success[1] = False
                 else:
                     success[0] = value == 42
@@ -51,12 +52,11 @@ class TestToFuture(unittest.TestCase):
             error = Exception('woops')
 
             source = Observable.throw_exception(error)
-
             future = source.to_future(asyncio.Future)
 
             def done(future):
                 try:
-                    value = future.result()
+                    future.result()
                 except Exception as ex:
                     success[1] = str(ex) == str(error)
                 else:
@@ -66,3 +66,31 @@ class TestToFuture(unittest.TestCase):
 
         loop.run_until_complete(go())
         assert(all(success))
+
+    def test_await_success(self):
+        loop = asyncio.get_event_loop()
+        result = None
+
+        async def go():
+            nonlocal result
+            source = Observable.return_value(42)
+            result = await source
+
+        loop.run_until_complete(go())
+        assert(result == 42)
+
+    def test_await_error(self):
+        loop = asyncio.get_event_loop()
+        error = Exception("error")
+        result = None
+
+        async def go():
+            nonlocal result
+            source = Observable.throw(error)
+            try:
+                result = await source
+            except Exception as ex:
+                result = ex
+
+        loop.run_until_complete(go())
+        assert(result == error)

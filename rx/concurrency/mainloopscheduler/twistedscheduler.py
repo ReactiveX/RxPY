@@ -1,13 +1,14 @@
 import logging
 
-from rx.concurrency.scheduler import Scheduler
-from rx.disposables import Disposable, SingleAssignmentDisposable, CompositeDisposable
+from rx.core import Disposable
+from rx.concurrency.schedulerbase import SchedulerBase
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
 log = logging.getLogger("Rx")
 
 
-class TwistedScheduler(Scheduler):
-    """A scheduler that schedules work via the asyncio mainloop."""
+class TwistedScheduler(SchedulerBase):
+    """A scheduler that schedules work via the Twisted reactor mainloop."""
 
     def __init__(self, reactor):
         self.reactor = reactor
@@ -44,7 +45,7 @@ class TwistedScheduler(Scheduler):
             if not handle.called:
                 handle.cancel()
 
-        return CompositeDisposable(disposable, Disposable(dispose))
+        return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.
@@ -57,8 +58,9 @@ class TwistedScheduler(Scheduler):
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now(), action, state)
+        return self.schedule_relative(duetime - self.now, action, state)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

@@ -2,11 +2,10 @@ import sys
 from datetime import timedelta
 
 from rx import Lock
-from rx.observable import Observable
+from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
-from rx.abstractobserver import AbstractObserver
 from rx.concurrency import current_thread_scheduler
-from rx.scheduledobserver import ScheduledObserver
+from rx.core.scheduledobserver import ScheduledObserver
 
 
 class RemovableDisposable(object):
@@ -19,7 +18,8 @@ class RemovableDisposable(object):
         if not self.subject.is_disposed and self.observer in self.subject.observers:
             self.subject.observers.remove(self.observer)
 
-class ReplaySubject(Observable, AbstractObserver):
+
+class ReplaySubject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed and future
     observers, subject to buffer trimming policies.
@@ -47,19 +47,19 @@ class ReplaySubject(Observable, AbstractObserver):
 
         self.lock = Lock()
 
-        super(ReplaySubject, self).__init__(self.__subscribe)
+        super(ReplaySubject, self).__init__()
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def __subscribe(self, observer):
+    def _subscribe_core(self, observer):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
 
         with self.lock:
             self.check_disposed()
-            self._trim(self.scheduler.now())
+            self._trim(self.scheduler.now)
             self.observers.append(so)
 
             for item in self.queue:
@@ -88,7 +88,7 @@ class ReplaySubject(Observable, AbstractObserver):
             self.check_disposed()
             if not self.is_stopped:
                 os = self.observers[:]
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self.queue.append(dict(interval=now, value=value))
                 self._trim(now)
 
@@ -110,7 +110,7 @@ class ReplaySubject(Observable, AbstractObserver):
                 self.is_stopped = True
                 self.error = error
                 self.has_error = True
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self._trim(now)
 
                 for observer in os:
@@ -129,7 +129,7 @@ class ReplaySubject(Observable, AbstractObserver):
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                now = self.scheduler.now()
+                now = self.scheduler.now
                 self._trim(now)
                 for observer in os:
                     observer.on_completed()

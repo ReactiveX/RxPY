@@ -1,11 +1,8 @@
 import unittest
 
-from rx import Observable
-from rx.abstractobserver import AbstractObserver
+from rx.core import Observer, Observable, ObservableBase
 from rx.linq.connectableobservable import ConnectableObservable
-from rx.subjects import Subject
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -15,33 +12,35 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
 
-class MySubject(Observable, AbstractObserver):
+
+class MySubject(ObservableBase, Observer):
 
     def __init__(self):
-
-        def subscribe(observer):
-            self.subscribe_count += 1
-            self.observer = observer
-
-            class Duck:
-                def __init__(self, this):
-                    self.this = this
-                def dispose(self):
-                    self.this.disposed = True
-            return Duck(self)
-
-        super(MySubject, self).__init__(subscribe)
+        super(MySubject, self).__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
         self.disposed = False
+
+    def _subscribe_core(self, observer):
+        self.subscribe_count += 1
+        self.observer = observer
+
+        class Duck:
+            def __init__(self, this):
+                self.this = this
+            def dispose(self):
+                self.this.disposed = True
+        return Duck(self)
 
     def dispose_on(self, value, disposable):
         self.dispose_on_map[value] = disposable
@@ -56,6 +55,7 @@ class MySubject(Observable, AbstractObserver):
 
     def on_completed(self):
         self.observer.on_completed()
+
 
 class TestPublish(unittest.TestCase):
 

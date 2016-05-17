@@ -2,8 +2,7 @@ import unittest
 from datetime import timedelta
 
 from rx import Observable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import Disposable, SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,10 +12,12 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class TimeSpan(object):
     @classmethod
     def from_ticks(cls, value):
         return value
+
 
 class TimeInterval(object):
     def __init__(self, value, interval):
@@ -29,17 +30,19 @@ class TimeInterval(object):
     def __str__(self):
         return "%s@%s" % (self.value, self.interval)
 
-    def equals(other):
+    def equals(self, other):
         return other.interval == self.interval and other.value == self.value
 
     def get_hash_code(self):
         return self.value.get_hash_code() ^ self.interval.get_hash_code()
+
 
 def new_timer(l, t, scheduler):
     timer = scheduler.create_cold_observable(on_next(t, 0),
     on_completed(t))
     l.append(timer)
     return timer
+
 
 class TestGroup_join(unittest.TestCase):
 
@@ -790,25 +793,25 @@ class TestGroup_join(unittest.TestCase):
             on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
             on_completed(800)
         )
-        
+
         def create():
             def right_duration_selector(y):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
                     return Observable.empty()
-            
+
             def result_selector(x, yy):
                 return yy.map(lambda y: x.value + y.value)
-            
-            return xs.group_join(ys, 
+
+            return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval, scheduler=scheduler),
                 right_duration_selector,
                 result_selector
             ).merge_observable()
-        
+
         results = scheduler.start(create=create)
-        
+
         results.messages.assert_equal(on_error(215, ex))
 
     def test_group_join_op_error_vii(self):
@@ -839,23 +842,23 @@ class TestGroup_join(unittest.TestCase):
             on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
             on_completed(800)
         )
-        
+
         def result_selector(x, yy):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
                     return yy.map(lambda y: x.value + y.value)
-        
+
         def create():
-            return xs.group_join(ys, 
+            return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval, scheduler=scheduler),
                 lambda y: Observable.timer(y.interval, scheduler=scheduler),
                 result_selector
             ).merge_observable()
-        
+
         results = scheduler.start(create=create)
         results.messages.assert_equal(on_error(215, ex))
-    
+
     def test_group_join_op_error_viii(self):
         ex = 'ex'
         scheduler = TestScheduler()
@@ -891,16 +894,16 @@ class TestGroup_join(unittest.TestCase):
                     raise Exception(ex)
                 else:
                     return yy.map(lambda y: x.value + y.value)
-                
-            return xs.group_join(ys, 
+
+            return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval, scheduler=scheduler),
                 lambda y: Observable.timer(y.interval, scheduler=scheduler),
                 result_selector
             ).merge_observable()
-        
+
         results = scheduler.start(create=create)
-            
+
         results.messages.assert_equal(on_error(210, ex))
-    
+
 if __name__ == '__main__':
     unittest.main()

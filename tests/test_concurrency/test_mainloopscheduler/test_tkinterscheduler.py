@@ -14,11 +14,12 @@ except Exception:
 
 from rx.concurrency import TkinterScheduler
 
+
 class TestTkinterScheduler(unittest.TestCase):
 
     def test_tkinter_schedule_now(self):
         scheduler = TkinterScheduler(root)
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert(res < timedelta(seconds=1))
 
     def test_tkinter_schedule_action(self):

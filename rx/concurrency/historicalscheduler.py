@@ -21,8 +21,9 @@ class HistoricalScheduler(VirtualTimeScheduler):
         clock = initial_clock or datetime.fromtimestamp(0)
         comparer = comparer or compare_datetimes
 
-        super(HistoricalScheduler, self).__init__(clock, comparer)
+        super(HistoricalScheduler, self).__init__(clock)
 
+    @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""

@@ -1,13 +1,14 @@
 import unittest
 from datetime import datetime, timedelta
 
-from rx.concurrency import Scheduler, ImmediateScheduler
-from rx.disposables import Disposable
+from rx.core import Disposable
+from rx.concurrency import ImmediateScheduler
+
 
 class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()
-        res = scheduler.now() - datetime.utcnow()
+        res = scheduler.now - datetime.utcnow()
         assert res < timedelta(milliseconds=1000)
 
     def test_immediate_scheduleaction(self):

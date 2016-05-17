@@ -1,20 +1,18 @@
 from rx import Lock
-from rx.observable import Observable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
-from rx.disposables import Disposable
-from rx.abstractobserver import AbstractObserver
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, AbstractObserver):
+class Subject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """
 
     def __init__(self):
-        super(Subject, self).__init__(self._subscribe)
+        super(Subject, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
@@ -27,7 +25,7 @@ class Subject(Observable, AbstractObserver):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

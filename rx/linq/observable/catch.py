@@ -1,10 +1,10 @@
-from rx.observable import Observable
-from rx.anonymousobservable import AnonymousObservable
-from rx.disposables import Disposable, SingleAssignmentDisposable, \
+from rx.core import Observable, AnonymousObservable, Disposable
+from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import immediate_scheduler
 from rx.internal import Enumerable
 from rx.internal import extensionmethod, extensionclassmethod
+
 
 def catch_handler(source, handler):
     def subscribe(observer):
@@ -32,6 +32,7 @@ def catch_handler(source, handler):
         )
         return subscription
     return AnonymousObservable(subscribe)
+
 
 @extensionmethod(Observable, instancemethod=True)
 def catch_exception(self, second=None, handler=None):
@@ -113,5 +114,5 @@ def catch_exception(cls, *args):
 
         def dispose():
             is_disposed[0] = True
-        return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+        return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
     return AnonymousObservable(subscribe)

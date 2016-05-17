@@ -1,4 +1,4 @@
-from rx.observable import Observable
+from rx.core import Observable
 from rx.internal import extensionmethod
 
 from .find import find_value
