@@ -44,6 +44,7 @@ class TimeoutScheduler(SchedulerBase):
         seconds = timespan.total_seconds()
         log.debug("timeout: %s", seconds)
         timer = Timer(seconds, interval)
+        timer.setDaemon(True)
         timer.start()
 
         def dispose():

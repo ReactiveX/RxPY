@@ -6,6 +6,11 @@ from .schedulerbase import SchedulerBase
 
 class CatchScheduler(SchedulerBase):
     def __init__(self, scheduler, handler):
+        """Create new CatchScheduler.
+
+        Returns a scheduler that wraps the original scheduler, adding
+        exception handling for scheduled actions.
+        """
         self._scheduler = scheduler
         self._handler = handler
         self._recursive_original = None
@@ -24,14 +29,12 @@ class CatchScheduler(SchedulerBase):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        return self._scheduler.schedule_relative(duetime, self._wrap(action),
-                                                 state=state)
+        return self._scheduler.schedule_relative(duetime, self._wrap(action), state=state)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
 
-        return self._scheduler.schedule_absolute(duetime, self._wrap(action),
-                                                 state=state)
+        return self._scheduler.schedule_absolute(duetime, self._wrap(action), state=state)
 
     def _clone(self, scheduler):
         return CatchScheduler(scheduler, self._handler)
@@ -74,6 +77,5 @@ class CatchScheduler(SchedulerBase):
                 d.dispose()
                 return None
 
-        d.disposable = self._scheduler.schedule_periodic(periodic_action,
-                                                         period, state)
+        d.disposable = self._scheduler.schedule_periodic(periodic_action, period, state)
         return d
