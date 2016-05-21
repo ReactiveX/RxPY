@@ -55,7 +55,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
 
-        return self.schedule_absolute(duetime + self.now, action, state=None)
+        return self.schedule_absolute(duetime + self.now, action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""

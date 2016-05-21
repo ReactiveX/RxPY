@@ -104,7 +104,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler."""
-        if self.schedule_required:
+        if self.schedule_required():
             return self.schedule(action)
         else:
             return action(self, None)
