@@ -1,4 +1,5 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from threading import Timer
 from datetime import timedelta
 
@@ -10,26 +11,28 @@ from .schedulerbase import SchedulerBase
 log = logging.getLogger("Rx")
 
 
-class TimeoutScheduler(SchedulerBase):
-    """A scheduler that schedules work via a timed callback based upon platform."""
+class ThreadPoolScheduler(SchedulerBase):
+    """A scheduler that schedules work via the thread pool and threading
+    timers."""
+
+    def __init__(self, max_workers=None):
+        self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
         disposable = SingleAssignmentDisposable()
 
-        def interval():
+        def run():
             disposable.disposable = self.invoke_action(action, state)
-        timer = Timer(0, interval)
-        timer.setDaemon(True)
-        timer.start()
+        future = self.executor.submit(run)
 
         def dispose():
-            timer.cancel()
+            future.cancel()
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        """Schedule an action to be executed after duetime."""
 
         scheduler = self
         timespan = self.to_timedelta(duetime)
@@ -53,22 +56,25 @@ class TimeoutScheduler(SchedulerBase):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        """Schedule an action to be executed after duetime."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
-        """Schedule a periodic piece of work.
+        """Schedule a periodic action
+
+        Schedules a periodic piece of work using a threading.Timer
+        object.
 
         Keyword arguments:
         period -- Period for running the work periodically.
         action -- Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
+        state -- Initial state passed to the action upon the first
             iteration.
 
-        Returns the disposable object used to cancel the scheduled recurring
-        action (best effort)."""
+        Returns the disposable object used to cancel the scheduled
+        recurring action (best effort)."""
 
         period /= 1000.0
         timer = [None]
@@ -93,4 +99,4 @@ class TimeoutScheduler(SchedulerBase):
         return Disposable.create(dispose)
 
 
-Scheduler.timeout = timeout_scheduler = TimeoutScheduler()
+Scheduler.thread_pool = thread_pool_scheduler = ThreadPoolScheduler()

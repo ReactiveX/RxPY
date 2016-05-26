@@ -76,6 +76,30 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
         return Disposable.create(si.cancel)
 
+    def schedule_periodic(self, period, action, state=None):
+        """Schedule a periodic piece of work."""
+
+        dt = self.to_timedelta(period)
+        disposed = []
+
+        s = [state]
+
+        def tick(scheduler, state):
+            if disposed:
+                return
+
+            self.schedule_relative(dt, tick)
+            new_state = action(s[0])
+            if new_state is not None:
+                s[0] = new_state
+
+        self.schedule_relative(dt, tick)
+
+        def dispose():
+            disposed.append(True)
+
+        return Disposable.create(dispose)
+
     def ensure_thread(self):
         """Ensures there is an event loop thread running. Should be called
         under the gate."""
