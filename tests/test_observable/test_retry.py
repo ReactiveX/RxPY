@@ -66,9 +66,6 @@ class TestRetry(unittest.TestCase):
 
         self.assertRaises(RxException, scheduler3.start)
 
-        xss = Observable.create(lambda o: _raise('ex')).retry()
-        self.assertRaises(Exception, xss.subscribe)
-
     def test_retry_observable_retry_count_basic(self):
         scheduler = TestScheduler()
         ex = 'ex'
