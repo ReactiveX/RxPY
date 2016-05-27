@@ -59,18 +59,21 @@ class TimeoutScheduler(SchedulerBase):
         return self.schedule_relative(duetime - self.now, action, state)
 
     def schedule_periodic(self, period, action, state=None):
-        """Schedule a periodic piece of work.
+        """Schedule a periodic action
+
+        Schedules a periodic piece of work using a threading.Timer
+        object.
 
         Keyword arguments:
         period -- Period for running the work periodically.
         action -- Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
+        state -- Initial state passed to the action upon the first
             iteration.
 
-        Returns the disposable object used to cancel the scheduled recurring
-        action (best effort)."""
+        Returns the disposable object used to cancel the scheduled
+        recurring action (best effort)."""
 
-        period /= 1000.0
+        period = self.to_relative(period) / 1000.0
         timer = [None]
         s = [state]
 
@@ -79,18 +82,20 @@ class TimeoutScheduler(SchedulerBase):
             if new_state is not None:  # Update state if other than None
                 s[0] = new_state
 
-            timer[0] = Timer(period, interval)
-            timer[0].setDaemon(True)
-            timer[0].start()
-
-        timer[0] = Timer(period, interval)
-        timer[0].setDaemon(True)
-        timer[0].start()
+            timer[0] = self._start_timer(period, interval)
+        timer[0] = self._start_timer(period, interval)
 
         def dispose():
             timer[0].cancel()
 
         return Disposable.create(dispose)
+
+    def _start_timer(self, period, action):
+        timer = Timer(period, action)
+        timer.setDaemon(True)
+        timer.start()
+
+        return timer
 
 
 Scheduler.timeout = timeout_scheduler = TimeoutScheduler()

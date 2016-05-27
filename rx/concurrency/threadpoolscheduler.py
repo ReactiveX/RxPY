@@ -1,17 +1,15 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from threading import Timer
-from datetime import timedelta
 
 from rx.core import Scheduler, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
-from .schedulerbase import SchedulerBase
+from .timeoutscheduler import TimeoutScheduler
 
 log = logging.getLogger("Rx")
 
 
-class ThreadPoolScheduler(SchedulerBase):
+class ThreadPoolScheduler(TimeoutScheduler):
     """A scheduler that schedules work via the thread pool and threading
     timers."""
 
@@ -30,73 +28,5 @@ class ThreadPoolScheduler(SchedulerBase):
         def dispose():
             future.cancel()
         return CompositeDisposable(disposable, Disposable.create(dispose))
-
-    def schedule_relative(self, duetime, action, state=None):
-        """Schedule an action to be executed after duetime."""
-
-        scheduler = self
-        timespan = self.to_timedelta(duetime)
-        if timespan == timedelta(0):
-            return scheduler.schedule(action, state)
-
-        disposable = SingleAssignmentDisposable()
-
-        def interval():
-            disposable.disposable = self.invoke_action(action, state)
-
-        seconds = timespan.total_seconds()
-        log.debug("timeout: %s", seconds)
-        timer = Timer(seconds, interval)
-        timer.setDaemon(True)
-        timer.start()
-
-        def dispose():
-            timer.cancel()
-
-        return CompositeDisposable(disposable, Disposable.create(dispose))
-
-    def schedule_absolute(self, duetime, action, state=None):
-        """Schedule an action to be executed after duetime."""
-
-        duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
-
-    def schedule_periodic(self, period, action, state=None):
-        """Schedule a periodic action
-
-        Schedules a periodic piece of work using a threading.Timer
-        object.
-
-        Keyword arguments:
-        period -- Period for running the work periodically.
-        action -- Action to be executed.
-        state -- Initial state passed to the action upon the first
-            iteration.
-
-        Returns the disposable object used to cancel the scheduled
-        recurring action (best effort)."""
-
-        period /= 1000.0
-        timer = [None]
-        s = [state]
-
-        def interval():
-            new_state = action(s[0])
-            if new_state is not None:  # Update state if other than None
-                s[0] = new_state
-
-            timer[0] = Timer(period, interval)
-            timer[0].setDaemon(True)
-            timer[0].start()
-
-        timer[0] = Timer(period, interval)
-        timer[0].setDaemon(True)
-        timer[0].start()
-
-        def dispose():
-            timer[0].cancel()
-
-        return Disposable.create(dispose)
-
 
 Scheduler.thread_pool = thread_pool_scheduler = ThreadPoolScheduler()
