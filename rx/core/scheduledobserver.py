@@ -44,7 +44,7 @@ class ScheduledObserver(ObserverBase):
                 self.is_acquired = True
 
         if is_owner:
-            self.disposable.disposable = self.scheduler.schedule_recursive(self.run)
+            self.disposable.disposable = self.scheduler.schedule(self.run)
 
     def run(self, recurse, state):
         parent = self
@@ -64,7 +64,7 @@ class ScheduledObserver(ObserverBase):
                 parent.has_faulted = True
             raise
 
-        recurse()
+        return self.scheduler.schedule(self.run)
 
     def dispose(self):
         super(ScheduledObserver, self).dispose()

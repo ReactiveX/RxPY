@@ -311,12 +311,12 @@ class TestHistoricalScheduler(unittest.TestCase):
         s = HistoricalScheduler()
         n = [0]
 
-        def action(rec):
+        def action(scheduler, state):
             s.sleep(timedelta(3 * 6000))
             n[0] += 1
-            rec(s.now + timedelta(6000))
+            s.schedule_absolute(s.now + timedelta(6000), action)
 
-        s.schedule_recursive_with_absolute(s.now + timedelta(6000), action)
+        s.schedule_absolute(s.now + timedelta(6000), action)
 
         s.advance_to(s.now + timedelta(5 * 6000))
 

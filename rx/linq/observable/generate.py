@@ -1,11 +1,11 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
+from rx.disposables import SerialDisposable
 from rx.internal import extensionclassmethod
 
 
 @extensionclassmethod(Observable)
-def generate(cls, initial_state, condition, iterate, result_selector,
-             scheduler=None):
+def generate(cls, initial_state, condition, iterate, result_selector, scheduler=None):
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
@@ -33,12 +33,13 @@ def generate(cls, initial_state, condition, iterate, result_selector,
     """
 
     scheduler = scheduler or current_thread_scheduler
+    sd = SerialDisposable()
 
     def subscribe(observer):
         first = [True]
         state = [initial_state]
 
-        def action (action1, state1=None):
+        def action(scheduler, state1=None):
             has_result = False
             result = None
 
@@ -58,10 +59,10 @@ def generate(cls, initial_state, condition, iterate, result_selector,
 
             if has_result:
                 observer.on_next(result)
-                action1()
+                sd.disposable = scheduler.schedule(action)
             else:
                 observer.on_completed()
 
-        return scheduler.schedule_recursive(action)
+        sd.disposable = scheduler.schedule(action)
+        return sd
     return AnonymousObservable(subscribe)
-

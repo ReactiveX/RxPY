@@ -1,7 +1,7 @@
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import current_thread_scheduler
 from rx.internal import Enumerable
 from rx.internal import extensionmethod, extensionclassmethod
 
@@ -71,26 +71,28 @@ def catch_exception(cls, *args):
     source sequences until a source sequence terminates successfully.
     """
 
+    scheduler = current_thread_scheduler
+
     if isinstance(args[0], list) or isinstance(args[0], Enumerable):
         sources = args[0]
     else:
         sources = list(args)
 
-    #return Enumerable.catch_exception(Enumerable.for_each(sources))
-
     def subscribe(observer):
-        e = iter(sources)
-        is_disposed = [False]
-        last_exception = [None]
         subscription = SerialDisposable()
+        cancelable = SerialDisposable()
+        last_exception = [None]
+        is_disposed = []
+        e = iter(sources)
 
         def action(action1, state=None):
             def on_error(exn):
                 last_exception[0] = exn
-                action1()
+                cancelable.disposable = scheduler.schedule(action)
 
-            if is_disposed[0]:
+            if is_disposed:
                 return
+
             try:
                 current = next(e)
             except StopIteration:
@@ -103,16 +105,11 @@ def catch_exception(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
+                d.disposable = current.subscribe(observer.on_next, on_error, observer.on_completed)
 
-                d.disposable = current.subscribe(
-                    observer.on_next,
-                    on_error,
-                    observer.on_completed
-                )
-
-        cancelable = immediate_scheduler.schedule_recursive(action)
+        cancelable.disposable = scheduler.schedule(action)
 
         def dispose():
-            is_disposed[0] = True
+            is_disposed.append(True)
         return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
     return AnonymousObservable(subscribe)

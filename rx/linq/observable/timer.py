@@ -1,8 +1,9 @@
 import logging
 from datetime import datetime
 
-from rx.core import Scheduler, Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
+from rx.disposables import SerialDisposable
 from rx.internal import extensionclassmethod
 
 log = logging.getLogger("Rx")
@@ -22,21 +23,22 @@ def observable_timer_date_and_period(duetime, period, scheduler):
     p = scheduler.normalize(period)
 
     def subscribe(observer):
+        sd = SerialDisposable()
+        dt = [duetime]
         count = [0]
-        d = [duetime]
 
-        def action(state):
+        def action(scheduler, state):
             if p > 0:
                 now = scheduler.now
-                d[0] = d[0] + scheduler.to_timedelta(p)
-                if d[0] <= now:
-                    d[0] = now + scheduler.to_timedelta(p)
+                dt[0] = dt[0] + scheduler.to_timedelta(p)
+                if dt[0] <= now:
+                    dt[0] = now + scheduler.to_timedelta(p)
 
             observer.on_next(count[0])
             count[0] += 1
-            state(d[0])
-
-        return scheduler.schedule_recursive_with_absolute(d[0], action)
+            sd.disposable = scheduler.schedule_absolute(dt[0], action)
+        sd.disposable = scheduler.schedule_absolute(dt[0], action)
+        return sd
     return AnonymousObservable(subscribe)
 
 
