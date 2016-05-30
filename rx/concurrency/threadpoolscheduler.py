@@ -1,32 +1,32 @@
-import logging
 from concurrent.futures import ThreadPoolExecutor
 
-from rx.core import Scheduler, Disposable
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.core import Scheduler
 
-from .timeoutscheduler import TimeoutScheduler
-
-log = logging.getLogger("Rx")
+from .newthreadscheduler import NewThreadScheduler
 
 
-class ThreadPoolScheduler(TimeoutScheduler):
-    """A scheduler that schedules work via the thread pool and threading
-    timers."""
+class ThreadPoolScheduler(NewThreadScheduler):
+    """A scheduler that schedules work via the thread pool."""
+
+    class ThreadPoolThread:
+        """Wraps a concurrent future as a thread."""
+
+        def __init__(self, executor, run):
+            self.run = run
+            self.future = None
+            self.executor = executor
+
+        def start(self):
+            self.future = self.executor.submit(self.run)
+
+        def cancel(self):
+            self.future.cancel()
 
     def __init__(self, max_workers=None):
+        super(ThreadPoolScheduler, self).__init__(self.thread_factory)
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
-    def schedule(self, action, state=None):
-        """Schedules an action to be executed."""
-
-        disposable = SingleAssignmentDisposable()
-
-        def run():
-            disposable.disposable = self.invoke_action(action, state)
-        future = self.executor.submit(run)
-
-        def dispose():
-            future.cancel()
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+    def thread_factory(self, target, *args):
+        return self.ThreadPoolThread(self.executor, target)
 
 Scheduler.thread_pool = thread_pool_scheduler = ThreadPoolScheduler()
