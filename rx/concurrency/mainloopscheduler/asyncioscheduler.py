@@ -1,6 +1,3 @@
-# Same example as autocomplete.py but instead using the asyncio mainloop
-# and the AsyncIOScheduler
-
 import logging
 asyncio = None
 
@@ -28,11 +25,10 @@ class AsyncIOScheduler(SchedulerBase):
 
         def interval():
             disposable.disposable = self.invoke_action(action, state)
-        handle = [self.loop.call_soon(interval)]
+        handle = self.loop.call_soon(interval)
 
         def dispose():
-            # nonlocal handle
-            handle[0].cancel()
+            handle.cancel()
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
@@ -40,11 +36,12 @@ class AsyncIOScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime.
 
         Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
+        duetime -- {timedelta} Relative time after which to execute the
+            action.
         action -- {Function} Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns {Disposable} The disposable object used to cancel the
+        scheduled action (best effort)."""
 
         scheduler = self
         seconds = self.to_relative(duetime)/1000.0
@@ -56,11 +53,10 @@ class AsyncIOScheduler(SchedulerBase):
         def interval():
             disposable.disposable = self.invoke_action(action, state)
 
-        handle = [self.loop.call_later(seconds, interval)]
+        handle = self.loop.call_later(seconds, interval)
 
         def dispose():
-            # nonlocal handle
-            handle[0].cancel()
+            handle.cancel()
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
@@ -87,11 +83,11 @@ class AsyncIOScheduler(SchedulerBase):
         Keyword arguments:
         period -- Period for running the work periodically.
         action -- {Function} Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
-            iteration.
+        state -- [Optional] Initial state passed to the action upon the
+            first iteration.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns {Disposable} The disposable object used to cancel the
+            scheduled action (best effort)."""
 
         scheduler = self
         seconds = self.to_relative(period)/1000.0
@@ -102,11 +98,10 @@ class AsyncIOScheduler(SchedulerBase):
             new_state = action(state)
             scheduler.schedule_periodic(period, action, new_state)
 
-        handle = [self.loop.call_later(seconds, interval)]
+        handle = self.loop.call_later(seconds, interval)
 
         def dispose():
-            # nonlocal handle
-            handle[0].cancel()
+            handle.cancel()
 
         return Disposable.create(dispose)
 
