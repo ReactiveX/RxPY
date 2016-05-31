@@ -196,6 +196,7 @@ class SchedulerBase(Scheduler):
         def invoke_action(scheduler, _):
             if disposable.is_disposed:
                 return
+
             new_state = action(state[0])
             if new_state is not None:
                 state[0] = new_state
