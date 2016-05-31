@@ -1,5 +1,7 @@
 import unittest
+from unittest import SkipTest
 
+from rx import Lock
 from datetime import datetime, timedelta
 from time import sleep
 import threading
@@ -51,7 +53,7 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule(action)
         gate.acquire()
-        assert (result == [1,2])
+        assert (result == [1, 2])
 
     def test_event_loop_schedule_action_due(self):
         scheduler = EventLoopScheduler(exit_if_empty=True)
@@ -70,16 +72,22 @@ class TestEventLoopScheduler(unittest.TestCase):
         diff = endtime[0]-starttime
         assert(diff > timedelta(milliseconds=180))
 
-    def test_event_loop_schedule_action_cancel(self):
-        scheduler = EventLoopScheduler(exit_if_empty=True)
+    def test_eventloop_schedule_action_periodic(self):
+        scheduler = EventLoopScheduler()
         gate = threading.Semaphore(0)
-        ran = [False]
+        period = 50
+        counter = [3]
 
-        def action(scheduler, state):
-            ran[0] = True
+        def action(state):
+            if state:
+                counter[0] -= 1
+                return state - 1
+            if counter[0] == 0:
+                gate.release()
 
-        d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
-        d.dispose()
+        scheduler.schedule_periodic(period, action, counter[0])
 
-        sleep(0.1)
-        assert (not ran[0])
+        def done():
+            assert counter[0] == 0
+
+        gate.acquire()
