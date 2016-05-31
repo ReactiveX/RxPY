@@ -1,10 +1,6 @@
-import logging
-
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
-
-log = logging.getLogger("Rx")
 
 
 class TkinterScheduler(SchedulerBase):
@@ -19,18 +15,7 @@ class TkinterScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        disposable = SingleAssignmentDisposable()
-
-        def interval():
-            disposable.disposable = self.invoke_action(action, state)
-
-        alarm = self.master.after_idle(interval)
-
-        def dispose():
-            # nonlocal alarm
-            self.master.after_cancel(alarm)
-
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return self.schedule_relative(0, action, state)
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -42,21 +27,16 @@ class TkinterScheduler(SchedulerBase):
         Returns {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
-        scheduler = self
         msecs = self.to_relative(duetime)
-        if msecs == 0:
-            return scheduler.schedule(action, state)
 
         disposable = SingleAssignmentDisposable()
 
-        def interval():
+        def invoke_action():
             disposable.disposable = self.invoke_action(action, state)
 
-        log.debug("timeout: %s", msecs)
-        alarm = self.master.after(msecs, interval)
+        alarm = self.master.after(msecs, invoke_action)
 
         def dispose():
-            # nonlocal alarm
             self.master.after_cancel(alarm)
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
@@ -73,31 +53,3 @@ class TkinterScheduler(SchedulerBase):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
-
-    def schedule_periodic(self, period, action, state=None):
-        """Schedules a periodic piece of work to be executed in the tkinter
-        mainloop.
-
-        Keyword arguments:
-        period -- Period in milliseconds for running the work periodically.
-        action -- Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
-            iteration.
-
-        Returns the disposable object used to cancel the scheduled recurring
-        action (best effort)."""
-
-        state = [state]
-
-        def interval():
-            state[0] = action(state[0])
-            alarm[0] = self.master.after(period, interval)
-
-        log.debug("timeout: %s", period)
-        alarm = [self.master.after(period, interval)]
-
-        def dispose():
-            # nonlocal alarm
-            self.master.after_cancel(alarm[0])
-
-        return Disposable.create(dispose)
