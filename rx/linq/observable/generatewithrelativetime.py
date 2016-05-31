@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
-from rx.disposables import SerialDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -33,7 +33,7 @@ def generate_with_relative_time(cls, initial_state, condition, iterate,
     scheduler = scheduler or timeout_scheduler
 
     def subscribe(observer):
-        sd = SerialDisposable()
+        mad = MultipleAssignmentDisposable()
         state = [initial_state]
         has_result = [False]
         result = [None]
@@ -60,10 +60,10 @@ def generate_with_relative_time(cls, initial_state, condition, iterate,
                 return
 
             if has_result[0]:
-                sd.disposable = scheduler.schedule_relative(time[0], action)
+                mad.disposable = scheduler.schedule_relative(time[0], action)
             else:
                 observer.on_completed()
 
-        sd.disposable = scheduler.schedule_relative(0, action)
-        return sd
+        mad.disposable = scheduler.schedule_relative(0, action)
+        return mad
     return AnonymousObservable(subscribe)

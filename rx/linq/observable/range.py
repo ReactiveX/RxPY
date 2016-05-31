@@ -1,7 +1,7 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionclassmethod
-from rx.disposables import SerialDisposable
+from rx.disposables import MultipleAssignmentDisposable
 
 
 @extensionclassmethod(Observable)
@@ -23,7 +23,7 @@ def range(cls, start, count, scheduler=None):
     integral numbers.
     """
     scheduler = scheduler or current_thread_scheduler
-    sd = SerialDisposable()
+    sd = MultipleAssignmentDisposable()
     end = start + count
 
     def subscribe(observer):

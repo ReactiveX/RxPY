@@ -3,7 +3,7 @@ from datetime import datetime
 
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
-from rx.disposables import SerialDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 log = logging.getLogger("Rx")
@@ -23,7 +23,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
     p = scheduler.normalize(period)
 
     def subscribe(observer):
-        sd = SerialDisposable()
+        mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
 
@@ -36,9 +36,9 @@ def observable_timer_date_and_period(duetime, period, scheduler):
 
             observer.on_next(count[0])
             count[0] += 1
-            sd.disposable = scheduler.schedule_absolute(dt[0], action)
-        sd.disposable = scheduler.schedule_absolute(dt[0], action)
-        return sd
+            mad.disposable = scheduler.schedule_absolute(dt[0], action)
+        mad.disposable = scheduler.schedule_absolute(dt[0], action)
+        return mad
     return AnonymousObservable(subscribe)
 
 

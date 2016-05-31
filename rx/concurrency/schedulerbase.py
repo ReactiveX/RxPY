@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from rx.core import Scheduler, Disposable
-from rx.disposables import CompositeDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
@@ -16,6 +16,34 @@ class SchedulerBase(Scheduler):
             return ret
 
         return Disposable.empty()
+
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work to be executed in the tkinter
+        mainloop.
+
+        Keyword arguments:
+        period -- Period in milliseconds for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first
+            iteration.
+
+        Returns the disposable object used to cancel the scheduled recurring
+        action (best effort)."""
+
+        disposable = MultipleAssignmentDisposable()
+        state = [state]
+
+        def invoke_action(scheduler, _):
+            if disposable.is_disposed:
+                return
+
+            new_state = action(state[0])
+            if new_state is not None:
+                state[0] = new_state
+            disposable.disposable = self.schedule_relative(period, invoke_action, state)
+
+        disposable.disposable = self.schedule_relative(period, invoke_action, state)
+        return disposable
 
     @property
     def now(self):

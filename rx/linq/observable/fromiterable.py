@@ -1,7 +1,7 @@
 from rx import Lock
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import SerialDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -24,7 +24,7 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
-    sd = SerialDisposable()
+    sd = MultipleAssignmentDisposable()
     lock = Lock()
 
     def subscribe(observer):

@@ -2,8 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
@@ -46,8 +45,8 @@ def observable_delay_timespan(source, duetime, scheduler):
                     log.error("*** Exception: %s", exception[0])
                     observer.on_error(exception[0])
                 else:
-                    sd = SerialDisposable()
-                    cancelable.disposable = sd
+                    mad = MultipleAssignmentDisposable()
+                    cancelable.disposable = mad
 
                     def action(scheduler, state):
                         if exception[0]:
@@ -83,9 +82,9 @@ def observable_delay_timespan(source, duetime, scheduler):
                         if ex:
                             observer.on_error(ex)
                         elif should_continue:
-                            sd.disposable = scheduler.schedule_relative(recurse_duetime, action)
+                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
-                    sd.disposable = scheduler.schedule_relative(duetime, action)
+                    mad.disposable = scheduler.schedule_relative(duetime, action)
         subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)

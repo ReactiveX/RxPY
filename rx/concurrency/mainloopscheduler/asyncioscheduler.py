@@ -77,34 +77,6 @@ class AsyncIOScheduler(SchedulerBase):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
 
-    def schedule_periodic(self, period, action, state=None):
-        """Schedules an action to be executed periodically.
-
-        Keyword arguments:
-        period -- Period for running the work periodically.
-        action -- {Function} Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the
-            first iteration.
-
-        Returns {Disposable} The disposable object used to cancel the
-            scheduled action (best effort)."""
-
-        scheduler = self
-        seconds = self.to_relative(period)/1000.0
-        if seconds == 0:
-            return scheduler.schedule(action, state)
-
-        def interval():
-            new_state = action(state)
-            scheduler.schedule_periodic(period, action, new_state)
-
-        handle = self.loop.call_later(seconds, interval)
-
-        def dispose():
-            handle.cancel()
-
-        return Disposable.create(dispose)
-
     @property
     def now(self):
         """Represents a notion of time for this scheduler. Tasks being

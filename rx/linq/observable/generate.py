@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import SerialDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -33,7 +33,7 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
     """
 
     scheduler = scheduler or current_thread_scheduler
-    sd = SerialDisposable()
+    mad = MultipleAssignmentDisposable()
 
     def subscribe(observer):
         first = [True]
@@ -59,10 +59,10 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
 
             if has_result:
                 observer.on_next(result)
-                sd.disposable = scheduler.schedule(action)
+                mad.disposable = scheduler.schedule(action)
             else:
                 observer.on_completed()
 
-        sd.disposable = scheduler.schedule(action)
-        return sd
+        mad.disposable = scheduler.schedule(action)
+        return mad
     return AnonymousObservable(subscribe)
