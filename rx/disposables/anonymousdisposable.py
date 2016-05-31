@@ -34,14 +34,6 @@ class AnonymousDisposable(Disposable):
         if dispose:
             self.action()
 
-    def __enter__(self):
-        """Context management protocol."""
-        pass
-
-    def __exit__(self, type, value, traceback):
-        """Context management protocol."""
-        self.dispose()
-
     @classmethod
     def empty(cls):
         return cls(noop)
