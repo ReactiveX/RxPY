@@ -7,10 +7,12 @@ from rx.internal import extensionmethod, extensionclassmethod
 def amb(self, right_source):
     """Propagates the observable sequence that reacts first.
 
-    right_source Second observable sequence.
+    Arguments:
+      right_source (Observable): Second observable sequence.
 
-    returns an observable sequence that surfaces either of the given
-    sequences, whichever reacted first.
+    Returns:
+      Observable: an observable sequence that surfaces either of the given
+      sequences, whichever reacted first.
     """
 
     left_source = self
@@ -84,10 +86,13 @@ def amb(self, right_source):
 def amb(cls, *args):
     """Propagates the observable sequence that reacts first.
 
-    E.g. winner = rx.Observable.amb(xs, ys, zs)
+    Example::
+        
+        winner = rx.Observable.amb(xs, ys, zs)
 
-    Returns an observable sequence that surfaces any of the given sequences,
-    whichever reacted first.
+    Returns:
+      Observable: an observable sequence that surfaces any of the given sequences,
+      whichever reacted first.
     """
 
     acc = Observable.never()

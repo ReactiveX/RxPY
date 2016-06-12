@@ -10,17 +10,23 @@ def debounce(self, duetime, scheduler=None):
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
-    Example:
-    1 - res = source.debounce(5000) # 5 seconds
-    2 - res = source.debounce(5000, scheduler)
+    Example::
 
-    Keyword arguments:
-    duetime -- {Number} Duration of the throttle period for each value
-        (specified as an integer denoting milliseconds).
-    scheduler -- {Scheduler} [Optional]  Scheduler to run the throttle
-        timers on. If not specified, the timeout scheduler is used.
+        res = source.debounce(5000) # 5 seconds
+        res = source.debounce(5000, scheduler)
 
-    Returns {Observable} The debounced sequence.
+    Args:
+
+        duetime (Number): Duration of the throttle period for each value
+            (specified as an integer denoting milliseconds).
+
+    Keyword Arguments:
+
+        scheduler (Scheduler): Scheduler to run the throttle
+            timers on. If not specified, the timeout scheduler is used.
+
+    Returns:
+        Observable: The debounced sequence.
     """
 
     scheduler = scheduler or timeout_scheduler
@@ -72,13 +78,17 @@ def throttle_with_selector(self, throttle_duration_selector):
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
-    1 - res = source.throttle_with_selector(lambda x: rx.Scheduler.timer(x+x))
+    Example::
+        
+        res = source.throttle_with_selector(lambda x: rx.Scheduler.timer(x+x))
 
-    Keyword arguments:
-    throttle_duration_selector -- Selector function to retrieve a sequence
-        indicating the throttle duration for each given element.
+    Keyword Arguments:
+    
+        throttle_duration_selector: Selector function to retrieve a sequence
+            indicating the throttle duration for each given element.
 
-    Returns the throttled sequence.
+    Returns:
+        Observable: the throttled sequence.
     """
 
     source = self

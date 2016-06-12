@@ -37,18 +37,27 @@ def sample_observable(source, sampler):
 def sample(self, interval=None, sampler=None, scheduler=None):
     """Samples the observable sequence at each interval.
 
-    1 - res = source.sample(sample_observable) # Sampler tick sequence
-    2 - res = source.sample(5000) # 5 seconds
-    2 - res = source.sample(5000, rx.scheduler.timeout) # 5 seconds
+    Examples::
 
-    Keyword arguments:
-    source -- Source sequence to sample.
-    interval -- Interval at which to sample (specified as an integer
+        # Sampler tick sequence
+        res = source.sample(sample_observable)
+        # 5 seconds (5000 milliseconds)
+        res = source.sample(5000)
+        # 5 seconds
+        res = source.sample(5000, rx.scheduler.timeout)
+
+    Arguments:
+
+      source (Observable): Source sequence to sample.
+      
+    Keyword Arguments:
+      interval (int): Interval at which to sample (specified as an integer
         denoting milliseconds).
-    scheduler -- [Optional] Scheduler to run the sampling timer on. If not
+      scheduler (Secheduler): Scheduler to run the sampling timer on. If not
         specified, the timeout scheduler is used.
 
-    Returns sampled observable sequence.
+    Returns:
+      (Observable): sampled observable sequence.
     """
 
     scheduler = scheduler or timeout_scheduler

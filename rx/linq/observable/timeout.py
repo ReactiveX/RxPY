@@ -12,31 +12,46 @@ def timeout(self, duetime, other=None, scheduler=None):
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
-    1 - res = source.timeout(new Date()); # As a date
-    2 - res = source.timeout(5000); # 5 seconds
-    # As a date and timeout observable
-    3 - res = source.timeout(datetime(), rx.Observable.return_value(42))
-    # 5 seconds and timeout observable
-    4 - res = source.timeout(5000, rx.Observable.return_value(42))
-    # As a date and timeout observable
-    5 - res = source.timeout(datetime(), rx.Observable.return_value(42),
+    Example::
+
+        from datetime import datetime    
+
+        # As a date
+        res = source.timeout(datetime.now())
+
+        # 5 seconds (5000 milliseconds)        
+        res = source.timeout(5000); # 5 seconds
+
+        # As a date and timeout observable
+        res = source.timeout(datetime.now(),
+                             rx.Observable.return_value(42))
+
+        # 5 seconds and timeout observable
+        res = source.timeout(5000, rx.Observable.return_value(42))
+
+        # As a date and timeout observable
+        res = source.timeout(datetime.now(),
+                             rx.Observable.return_value(42),
                              rx.Scheduler.timeout)
-    # 5 seconds and timeout observable
-    6 - res = source.timeout(5000, rx.Observable.return_value(42),
+
+        # 5 seconds and timeout observable
+        res = source.timeout(5000,
+                             rx.Observable.return_value(42),
                              rx.Scheduler.timeout)
 
     Keyword arguments:
-    :param datetime|int duetime: Absolute (specified as a datetime object) or
-        relative time (specified as an integer denoting milliseconds) when a
-        timeout occurs.
-    :param Observable other: Sequence to return in case of a timeout. If not
+
+      duetime (int, datetime.datetime): Absolute (specified as a
+        :class:`datetime.datetime` object) or relative time (specified as an
+        integer denoting milliseconds) when a timeout occurs.
+      other (Observable): Sequence to return in case of a timeout. If not
         specified, a timeout error throwing sequence will be used.
-    :param Scheduler scheduler: Scheduler to run the timeout timers on. If not
+      scheduler (Scheduler): Scheduler to run the timeout timers on. If not
         specified, the timeout scheduler is used.
 
-    :returns: The source sequence switching to the other sequence in case of
-        a timeout.
-    :rtype: Observable
+    Returns:
+      (Observable): The source sequence switching to the other sequence in case
+      of a timeout.
     """
 
     scheduler_method = None

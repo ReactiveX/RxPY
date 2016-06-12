@@ -57,3 +57,9 @@ TestResults/Rx.TE.Tests_log.ldf
 .zedstate
 
 .ipynb_checkpoints
+
+# Gedit
+*~
+
+# Sphinx
+docs/_build/**

@@ -15,14 +15,18 @@ def window_with_count(self, count, skip=None):
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
-    1 - xs.window_with_count(10)
-    2 - xs.window_with_count(10, 1)
+    Example::
 
-    count -- Length of each window.
-    skip -- [Optional] Number of elements to skip between creation of
+        xs.window_with_count(10)
+        xs.window_with_count(10, 1)
+
+    Arguments:
+      count (int): Length of each window.
+      skip (int, optional) Number of elements to skip between creation of
         consecutive windows. If not specified, defaults to the count.
 
-    Returns an observable sequence of windows.
+    Returns:
+      Observable: an observable sequence of windows.
     """
 
     source = self

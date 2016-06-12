@@ -8,15 +8,19 @@ def using(cls, resource_factory, observable_factory):
     """Constructs an observable sequence that depends on a resource object,
     whose lifetime is tied to the resulting observable sequence's lifetime.
 
-    1 - res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
+    Example::
 
-    Keyword arguments:
-    resource_factory -- Factory function to obtain a resource object.
-    observable_factory -- Factory function to obtain an observable sequence
-        that depends on the obtained resource.
+        res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
 
-    Returns an observable sequence whose lifetime controls the lifetime of
-    the dependent resource object.
+    Arguments:
+      resource_factory (types.FunctionType): Factory function to obtain a
+        resource object.
+      observable_factory (types.FunctionType): Factory function to obtain an
+        observable sequence that depends on the obtained resource.
+
+    Returns:
+      An observable sequence whose lifetime controls the lifetime of
+      the dependent resource object.
     """
 
     def subscribe(observer):

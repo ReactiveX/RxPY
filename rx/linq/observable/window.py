@@ -13,21 +13,20 @@ log = logging.getLogger("Rx")
 
 @extensionmethod(Observable)
 def window(self, window_openings=None, window_closing_selector=None):
-    """Projects each element of an observable sequence into zero or more
-    windows.
+    """Projects each element of an observable sequence into zero or more windows.
 
     Keyword arguments:
-    :param Observable window_openings: Observable sequence whose elements
+
+      window_openings (Observable): Observable sequence whose elements
         denote the creation of windows.
-    :param types.FunctionType window_closing_selector: [Optional] A function
+      window_closing_selector (types.FunctionType, optional): A function
         invoked to define the closing of each produced window. It defines the
         boundaries of the produced windows (a window is started when the
         previous one is closed, resulting in non-overlapping windows).
 
-    :returns: An observable sequence of windows.
-    :rtype: Observable[Observable]
+    Returns:
+      (Observable): An observable sequence of windows.
     """
-
     # Make it possible to call window with a single unnamed parameter
     if not isinstance(window_openings, Observable) and callable(window_openings):
         window_closing_selector = window_openings

@@ -8,15 +8,16 @@ from rx.internal import extensionclassmethod
 def while_do(cls, condition, source):
     """Repeats source as long as condition holds emulating a while loop.
 
-    Keyword arguments:
-    :param types.FunctionType condition: The condition which determines if the
-        source will be repeated.
-    :param Observable source: The observable sequence that will be run if the
-        condition function returns true.
+    Arguments:
 
-    :returns: An observable sequence which is repeated as long as the condition
-        holds.
-    :rtype: Observable
+      condition (types.FunctionType): The condition which determines if the
+        source will be repeated.
+      source (Observable): The observable sequence that will be run if the
+        condition function returns True.
+
+    Returns:
+      (Observable): An observable sequence which is repeated as long as the
+        condition holds.
     """
 
     source = Observable.from_future(source)

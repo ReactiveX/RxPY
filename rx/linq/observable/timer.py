@@ -73,28 +73,35 @@ def timer(cls, duetime, period=None, scheduler=None):
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 
-    1 - res = Observable.timer(datetime(...))
-    2 - res = Observable.timer(datetime(...), 1000)
-    3 - res = Observable.timer(datetime(...), Scheduler.timeout)
-    4 - res = Observable.timer(datetime(...), 1000, Scheduler.timeout)
+    Examples::
+    
+        from datetime import datetime
 
-    5 - res = Observable.timer(5000)
-    6 - res = Observable.timer(5000, 1000)
-    7 - res = Observable.timer(5000, scheduler=Scheduler.timeout)
-    8 - res = Observable.timer(5000, 1000, Scheduler.timeout)
+        res = Observable.timer(datetime.now())
+        res = Observable.timer(datetime.now(), 1000)
+        res = Observable.timer(datetime.now(), Scheduler.timeout)
+        res = Observable.timer(datetime.now(), 1000, Scheduler.timeout)
 
-    Keyword arguments:
-    duetime -- Absolute (specified as a Date object) or relative time
-        (specified as an integer denoting milliseconds) at which to produce
-        the first value.</param>
-    period -- [Optional] Period to produce subsequent values (specified as
+        res = Observable.timer(5000)
+        res = Observable.timer(5000, 1000)
+        res = Observable.timer(5000, scheduler=Scheduler.timeout)
+        res = Observable.timer(5000, 1000, Scheduler.timeout)
+
+    Arguments:
+      duetime: Absolute (specified as a :func:`datetime.datetime` object) or
+        relative time (specified as an integer denoting milliseconds) at which
+        to produce the first value.
+      
+    Keyword Arguments:
+      period (int): Period to produce subsequent values (specified as
         an integer denoting milliseconds), or the scheduler to run the
         timer on. If not specified, the resulting timer is not recurring.
-    scheduler -- [Optional] Scheduler to run the timer on. If not
+      scheduler (Scheduler): Scheduler to run the timer on. If not
         specified, the timeout scheduler is used.
 
-    Returns an observable sequence that produces a value after due time has
-    elapsed and then each period.
+    Returns:
+      An observable sequence that produces a value after due time has
+      elapsed and then each period.
     """
 
     log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)

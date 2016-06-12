@@ -8,19 +8,22 @@ def where(self, predicate):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
-    1 - source.filter(lambda value: value < 10)
-    2 - source.filter(lambda value, index: value < 10 or index < 10)
+    Examples::
 
-    Keyword arguments:
-    :param Observable self: Observable sequence to filter.
-    :param (T, <int>) -> bool predicate: A function to test each source element
-        for a condition; the
-        second parameter of the function represents the index of the source
-        element.
+        source.filter(lambda value: value < 10)
+        source.filter(lambda value, index: value < 10 or index < 10)
 
-    :returns: An observable sequence that contains elements from the input
-    sequence that satisfy the condition.
-    :rtype: Observable
+    Arguments:
+    
+        self (Observable): Observable sequence to filter.
+        predicate: A function to test each source element
+           for a condition; the second parameter of the function represents the index of the source
+           element.
+
+    Returns:
+
+        Observable: An observable sequence that contains elements from the input
+        sequence that satisfy the condition.
     """
 
     predicate = adapt_call(predicate)

@@ -32,17 +32,20 @@ def _to_dict(source, map_type, key_selector, element_selector):
 
 @extensionmethod(Observable)
 def to_dict(self, key_selector, element_selector=None):
-    """Converts the observable sequence to a Map if it exists.
+    """Converts the observable sequence to a :class:`dict` if it exists.
 
-    Keyword arguments:
-    key_selector -- {Function} A function which produces the key for the
-        Map.
-    element_selector -- {Function} [Optional] An optional function which
-        produces the element for the Map. If not present, defaults to the
-        value from the observable sequence.
-    Returns {Observable} An observable sequence with a single value of a Map
-    containing the values from the observable sequence.
+    Arguments:
+      key_selector (types.FunctionType): A function which produces the key
+        for the :class:`dict`.
+
+    Keyword Arguments:
+      element_selector (types.FunctionType): An optional function which
+        produces the element for the :class:`dict`. If not present, defaults to
+        the value from the observable sequence.
+
+    Returns:
+      (Observable): An observable sequence with a single value of a :class:`dict`
+        containing the values from the observable sequence.
     """
-
     return _to_dict(self, dict, key_selector, element_selector)
 

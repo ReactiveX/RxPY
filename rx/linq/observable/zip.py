@@ -12,8 +12,10 @@ def zip(self, *args):
     The last element in the arguments must be a function to invoke for each
     series of elements at corresponding indexes in the sources.
 
-    1 - res = obs1.zip(obs2, fn)
-    2 - res = x1.zip([1,2,3], fn)
+    Examples::
+
+        res = obs1.zip(obs2, fn)
+        res = x1.zip([1,2,3], fn)
 
     Returns an observable sequence containing the result of combining
     elements of the sources using the specified result selector function.
@@ -79,11 +81,12 @@ def zip(cls, *args):
     series of elements at corresponding indexes in the sources.
 
     Arguments:
-    args -- Observable sources.
+      args (List[Observable]): Observable sources.
 
-    Returns an observable {Observable} sequence containing the result of
-    combining elements of the sources using the specified result selector
-    function.
+    Returns:
+      Observable: an observable sequence containing the result of
+      combining elements of the sources using the specified result selector
+      function.
     """
 
     first = args[0]

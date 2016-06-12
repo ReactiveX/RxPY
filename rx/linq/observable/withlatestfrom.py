@@ -14,9 +14,11 @@ def with_latest_from(self, *args):
     (the instance) produces an element. The other observables can be passed
     either as seperate arguments or as a list.
 
-    1 - obs = observable.with_latest_from(obs1, obs2, obs3,
+    Examples::
+
+        obs = observable.with_latest_from(obs1, obs2, obs3,
                                         lambda o1, o2, o3: o1 + o2 + o3)
-    2 - obs = observable.with_latest_from([obs1, obs2, obs3],
+        obs = observable.with_latest_from([obs1, obs2, obs3],
                                         lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns an observable sequence containing the result of combining
@@ -40,9 +42,10 @@ def with_latest_from(cls, *args):
     produces an element. The observables can be passed either as seperate
     arguments or as a list.
 
-    1 - obs = Observable.with_latest_from(obs1, obs2, obs3,
+    Excamples::
+        obs = Observable.with_latest_from(obs1, obs2, obs3,
                                        lambda o1, o2, o3: o1 + o2 + o3)
-    2 - obs = Observable.with_latest_from([obs1, obs2, obs3],
+        obs = Observable.with_latest_from([obs1, obs2, obs3],
                                         lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns an observable sequence containing the result of combining

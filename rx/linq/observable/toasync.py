@@ -10,17 +10,22 @@ def to_async(cls, func, scheduler=None):
     of the resulting asynchronous function causes an invocation of the
     original synchronous function on the specified scheduler.
 
-    Example:
-    res = Observable.to_async(lambda x, y: x + y)(4, 3)
-    res = Observable.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
-    res = Observable.to_async(lambda x: log.debug(x),
-                              Scheduler.timeout)('hello')
+    Example::
 
-    func -- {Function} Function to convert to an asynchronous function.
-    scheduler -- {Scheduler} [Optional] Scheduler to run the function on. If
-        not specified, defaults to Scheduler.timeout.
+        res = Observable.to_async(lambda x, y: x + y)(4, 3)
+        res = Observable.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
+        res = Observable.to_async(lambda x: log.debug(x),
+                                            Scheduler.timeout)('hello')
 
-    Returns {Function} Asynchronous function.
+    Arguments:
+      func (types.FunctionType): Function to convert to an asynchronous function.
+
+    Keyword Arguments:    
+      scheduler (Scheduler): Scheduler to run the function on. If
+        not specified, defaults to :func:`rx.Scheduler.timeout`.
+
+    Returns:
+      (types.FunctionType): Asynchronous function.
     """
 
     scheduler =  scheduler or timeout_scheduler

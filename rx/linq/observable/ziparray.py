@@ -8,15 +8,13 @@ def zip_list(cls, *args):
     sequence by emitting a list with the elements of the observable
     sequences at corresponding indexes.
 
-    Keyword arguments:
-    :param Observable cls: Class
-    :param Tuple args: Observable sources.
+    Arguments:
+      args (Tuple): Observable sources.
 
-    :return: Returns an observable sequence containing lists of
-    elements at corresponding indexes.
-    :rtype: Observable
+    Returns:
+      Observable: Returns an observable sequence containing lists of
+      elements at corresponding indexes.    
     """
-
     def result(*args):
         return list(args)
 
