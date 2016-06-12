@@ -1,8 +1,14 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. figure:: /img/RxPY/misc/under-construction-icon.png
+    :align: center
+    
+    Under construction...
+
 .. currentmodule:: rx
 
 .. _operator_skip_while:
+.. _operator_skip_while_with_index:
 
 
 Skip while
@@ -16,5 +22,9 @@ Skip while
         :align: center
     
 
+.. automethod:: Observable.skip_while_with_index
 
-Under construction...
+    
+    .. image:: /img/reactivex/operators/skipWhileWithIndex.png
+        :align: center
+    

@@ -1,6 +1,6 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
-.. figure:: /img/under-construction-icon.png
+.. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
     Under construction...
@@ -8,6 +8,7 @@
 .. currentmodule:: rx
 
 .. _operator_retry:
+.. _operator_retry_infinitely:
 
 
 Retry
@@ -19,4 +20,8 @@ Retry
     
     .. image:: /img/reactivex/operators/retry.png
         :align: center
+    
+
+.. automethod:: Observable.retry_infinitely
+
     

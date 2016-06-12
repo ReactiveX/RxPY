@@ -1,6 +1,6 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
-.. figure:: /img/under-construction-icon.png
+.. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
     Under construction...

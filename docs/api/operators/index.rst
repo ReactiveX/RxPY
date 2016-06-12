@@ -447,7 +447,7 @@ An Alphabetical List of Observable Operators
     
    all
    amb
-   and
+   and-then-when
    as_observable
    average
    buffer
@@ -468,7 +468,6 @@ An Alphabetical List of Observable Operators
    do_while
    element_at
    empty-never-throw
-   exclusive
    filter
    first
    flat_map
@@ -503,28 +502,26 @@ An Alphabetical List of Observable Operators
    sequence_equal
    share
    skip
+   skip_last
+   skip_until
+   skip_until_with_time
+   skip_while
    start
-   start_async
    start_with
    subscribe
    subscribe_on
    sum
-   switch_latest
+   switch
    switch_map
    take
    take_last
-   take_last_buffer
    take_last_with_time
    take_until
    take_until_with_time
    take_while
-   take_with_time
    then
-   throttle_first
-   throttle_last
    time_interval
    timeout
-   timeout_with_selector
    timer
    timestamp
    to

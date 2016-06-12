@@ -1,6 +1,6 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
-.. figure:: /img/under-construction-icon.png
+.. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
     Under construction...
@@ -12,8 +12,8 @@
 .. _operator_when:
 
 
-And
-===
+And-then-when
+=============
 
 
 .. automethod:: Observable.and_
