@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_transduce:
+.. _operator_transduce_header:
 
 
 Transduce
 =========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Transduce <http://reactivex.io/documentation/operators/transduce.html>`_
+
+
+
+.. _operator_transduce:
 
 .. automethod:: Observable.transduce
 

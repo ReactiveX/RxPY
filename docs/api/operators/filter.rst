@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,14 +9,22 @@
 
 .. currentmodule:: rx
 
-.. _operator_filter:
-.. _operator_slice:
-.. _operator_where:
+.. _operator_filter_header:
+.. _operator_slice_header:
+.. _operator_where_header:
 
 
 Filter
 ======
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Filter <http://reactivex.io/documentation/operators/filter.html>`_
+
+
+
+.. _operator_filter:
 
 .. automethod:: Observable.filter
 
@@ -23,9 +33,15 @@ Filter
         :align: center
     
 
+
+.. _operator_slice:
+
 .. automethod:: Observable.slice
 
     
+
+
+.. _operator_where:
 
 .. automethod:: Observable.where
 

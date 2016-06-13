@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,14 +9,22 @@
 
 .. currentmodule:: rx
 
-.. _operator_group_by:
-.. _operator_group_by_until:
-.. _operator_partition:
+.. _operator_group_by_header:
+.. _operator_group_by_until_header:
+.. _operator_partition_header:
 
 
 Group by
 ========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `GroupBy <http://reactivex.io/documentation/operators/groupby.html>`_
+
+
+
+.. _operator_group_by:
 
 .. automethod:: Observable.group_by
 
@@ -23,12 +33,18 @@ Group by
         :align: center
     
 
+
+.. _operator_group_by_until:
+
 .. automethod:: Observable.group_by_until
 
     
     .. image:: /img/reactivex/operators/groupByUntil.png
         :align: center
     
+
+
+.. _operator_partition:
 
 .. automethod:: Observable.partition
 

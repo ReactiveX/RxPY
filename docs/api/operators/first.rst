@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,15 +9,23 @@
 
 .. currentmodule:: rx
 
-.. _operator_first:
-.. _operator_first_or_default:
-.. _operator_single:
-.. _operator_single_or_default:
+.. _operator_first_header:
+.. _operator_first_or_default_header:
+.. _operator_single_header:
+.. _operator_single_or_default_header:
 
 
 First
 =====
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `First <http://reactivex.io/documentation/operators/first.html>`_
+
+
+
+.. _operator_first:
 
 .. automethod:: Observable.first
 
@@ -27,6 +37,9 @@ First
         :align: center
     
 
+
+.. _operator_first_or_default:
+
 .. automethod:: Observable.first_or_default
 
     
@@ -37,6 +50,9 @@ First
         :align: center
     
 
+
+.. _operator_single:
+
 .. automethod:: Observable.single
 
     
@@ -46,6 +62,9 @@ First
     .. image:: /img/reactivex/operators/B.single.p.png
         :align: center
     
+
+
+.. _operator_single_or_default:
 
 .. automethod:: Observable.single_or_default
 

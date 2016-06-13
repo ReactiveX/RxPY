@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_subscribe_on:
+.. _operator_subscribe_on_header:
 
 
 Subscribe on
 ============
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `SubscribeOn <http://reactivex.io/documentation/operators/subscribeon.html>`_
+
+
+
+.. _operator_subscribe_on:
 
 .. automethod:: Observable.subscribe_on
 

@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,14 +9,22 @@
 
 .. currentmodule:: rx
 
-.. _operator_debounce:
-.. _operator_throttle_with_selector:
-.. _operator_throttle_with_timeout:
+.. _operator_debounce_header:
+.. _operator_throttle_with_selector_header:
+.. _operator_throttle_with_timeout_header:
 
 
 Debounce
 ========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Debounce <http://reactivex.io/documentation/operators/debounce.html>`_
+
+
+
+.. _operator_debounce:
 
 .. automethod:: Observable.debounce
 
@@ -23,9 +33,15 @@ Debounce
         :align: center
     
 
+
+.. _operator_throttle_with_selector:
+
 .. automethod:: Observable.throttle_with_selector
 
     
+
+
+.. _operator_throttle_with_timeout:
 
 .. automethod:: Observable.throttle_with_timeout
 

@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,15 +9,23 @@
 
 .. currentmodule:: rx
 
-.. _operator_window:
-.. _operator_window_with_count:
-.. _operator_window_with_time:
-.. _operator_window_with_time_or_count:
+.. _operator_window_header:
+.. _operator_window_with_count_header:
+.. _operator_window_with_time_header:
+.. _operator_window_with_time_or_count_header:
 
 
 Window
 ======
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Window <http://reactivex.io/documentation/operators/window.html>`_
+
+
+
+.. _operator_window:
 
 .. automethod:: Observable.window
 
@@ -90,6 +100,9 @@ Window
         :align: center
     
 
+
+.. _operator_window_with_count:
+
 .. automethod:: Observable.window_with_count
 
     
@@ -105,6 +118,9 @@ Window
     .. image:: /img/reactivex/operators/window_with_count4.png
         :align: center
     
+
+
+.. _operator_window_with_time:
 
 .. automethod:: Observable.window_with_time
 
@@ -127,6 +143,9 @@ Window
     .. image:: /img/reactivex/operators/window_with_time7.py.png
         :align: center
     
+
+
+.. _operator_window_with_time_or_count:
 
 .. automethod:: Observable.window_with_time_or_count
 

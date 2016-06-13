@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,13 +9,21 @@
 
 .. currentmodule:: rx
 
-.. _operator_timeout:
-.. _operator_timeout_with_selector:
+.. _operator_timeout_header:
+.. _operator_timeout_with_selector_header:
 
 
 Timeout
 =======
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Timeout <http://reactivex.io/documentation/operators/timeout.html>`_
+
+
+
+.. _operator_timeout:
 
 .. automethod:: Observable.timeout
 
@@ -30,6 +40,9 @@ Timeout
     .. image:: /img/reactivex/operators/timeout6.png
         :align: center
     
+
+
+.. _operator_timeout_with_selector:
 
 .. automethod:: Observable.timeout_with_selector
 

@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,16 +9,24 @@
 
 .. currentmodule:: rx
 
-.. _operator_buffer:
-.. _operator_buffer_with_count:
-.. _operator_buffer_with_time:
-.. _operator_buffer_with_time_or_count:
-.. _operator_pairwise:
+.. _operator_buffer_header:
+.. _operator_buffer_with_count_header:
+.. _operator_buffer_with_time_header:
+.. _operator_buffer_with_time_or_count_header:
+.. _operator_pairwise_header:
 
 
 Buffer
 ======
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Buffer <http://reactivex.io/documentation/operators/buffer.html>`_
+
+
+
+.. _operator_buffer:
 
 .. automethod:: Observable.buffer
 
@@ -64,6 +74,9 @@ Buffer
         :align: center
     
 
+
+.. _operator_buffer_with_count:
+
 .. automethod:: Observable.buffer_with_count
 
     
@@ -83,6 +96,9 @@ Buffer
         :align: center
     
 
+
+.. _operator_buffer_with_time:
+
 .. automethod:: Observable.buffer_with_time
 
     
@@ -99,6 +115,9 @@ Buffer
         :align: center
     
 
+
+.. _operator_buffer_with_time_or_count:
+
 .. automethod:: Observable.buffer_with_time_or_count
 
     
@@ -108,6 +127,9 @@ Buffer
     .. image:: /img/reactivex/operators/buffer_with_time_or_count6.py.png
         :align: center
     
+
+
+.. _operator_pairwise:
 
 .. automethod:: Observable.pairwise
 

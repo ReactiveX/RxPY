@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_map:
+.. _operator_map_header:
 
 
 Map
 ===
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Map <http://reactivex.io/documentation/operators/map.html>`_
+
+
+
+.. _operator_map:
 
 .. automethod:: Observable.map
 

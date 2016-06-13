@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,13 +9,21 @@
 
 .. currentmodule:: rx
 
-.. _operator_distinct:
-.. _operator_distinct_until_changed:
+.. _operator_distinct_header:
+.. _operator_distinct_until_changed_header:
 
 
 Distinct
 ========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Distinct <http://reactivex.io/documentation/operators/distinct.html>`_
+
+
+
+.. _operator_distinct:
 
 .. automethod:: Observable.distinct
 
@@ -21,6 +31,9 @@ Distinct
     .. image:: /img/reactivex/operators/distinct.png
         :align: center
     
+
+
+.. _operator_distinct_until_changed:
 
 .. automethod:: Observable.distinct_until_changed
 

@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,17 +9,25 @@
 
 .. currentmodule:: rx
 
-.. _operator_expand:
-.. _operator_flat_map:
-.. _operator_for_in:
-.. _operator_many_select:
-.. _operator_select_many:
-.. _operator_select_switch:
+.. _operator_expand_header:
+.. _operator_flat_map_header:
+.. _operator_for_in_header:
+.. _operator_many_select_header:
+.. _operator_select_many_header:
+.. _operator_select_switch_header:
 
 
 Flat map
 ========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `FlatMap <http://reactivex.io/documentation/operators/flatmap.html>`_
+
+
+
+.. _operator_expand:
 
 .. automethod:: Observable.expand
 
@@ -26,6 +36,9 @@ Flat map
         :align: center
     
 
+
+.. _operator_flat_map:
+
 .. automethod:: Observable.flat_map
 
     
@@ -33,9 +46,15 @@ Flat map
         :align: center
     
 
+
+.. _operator_for_in:
+
 .. automethod:: Observable.for_in
 
     
+
+
+.. _operator_many_select:
 
 .. automethod:: Observable.many_select
 
@@ -44,9 +63,15 @@ Flat map
         :align: center
     
 
+
+.. _operator_select_many:
+
 .. automethod:: Observable.select_many
 
     
+
+
+.. _operator_select_switch:
 
 .. automethod:: Observable.select_switch
 

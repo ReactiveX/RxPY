@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_observe_on:
+.. _operator_observe_on_header:
 
 
 Observe on
 ==========
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `ObserveOn <http://reactivex.io/documentation/operators/observeon.html>`_
+
+
+
+.. _operator_observe_on:
 
 .. automethod:: Observable.observe_on
 

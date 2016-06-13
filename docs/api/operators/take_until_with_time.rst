@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_take_until_with_time:
+.. _operator_take_until_with_time_header:
 
 
 Take until with time
 ====================
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `TakeUntilWithTime <http://reactivex.io/documentation/operators/takeuntilwithtime.html>`_
+
+
+
+.. _operator_take_until_with_time:
 
 .. automethod:: Observable.take_until_with_time
 

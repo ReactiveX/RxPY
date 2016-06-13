@@ -1,5 +1,7 @@
 .. !!!AUTO!!! (remove this comment to edit)
 
+.. include:: operator-aliases.rst
+
 .. figure:: /img/RxPY/misc/under-construction-icon.png
     :align: center
     
@@ -7,12 +9,20 @@
 
 .. currentmodule:: rx
 
-.. _operator_average:
+.. _operator_average_header:
 
 
 Average
 =======
 
+.. seealso::
+
+    - Official ReactiveX documentation:
+      `Average <http://reactivex.io/documentation/operators/average.html>`_
+
+
+
+.. _operator_average:
 
 .. automethod:: Observable.average
 
