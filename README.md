@@ -1,6 +1,5 @@
 [![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)
 [![Coveralls Coverage Status](https://img.shields.io/coveralls/dbrattli/RxPY.svg)](https://coveralls.io/r/dbrattli/RxPY)
-[![PyPI Downloads per month](https://img.shields.io/pypi/dm/Rx.svg)](https://pypi.python.org/pypi/Rx/)
 
 # The Reactive Extensions for Python (RxPY) #
 
