@@ -148,6 +148,7 @@ Python framework.
   [AsyncIO](https://docs.python.org/3/library/asyncio.html). (requires Python 3.4 or
   [trollius](http://trollius.readthedocs.org/),
   a port of `asyncio` compatible with Python 2.6-3.5).
+* `EventLetEventScheduler` for use with [Eventlet](http://eventlet.net/).
 * `IOLoopScheduler` for use with
   [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the
   [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete)
