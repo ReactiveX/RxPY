@@ -58,8 +58,8 @@ class TestRetry(unittest.TestCase):
         d = ys.subscribe(on_error=lambda ex: _raise('ex'))
 
         scheduler2.schedule_absolute(210, lambda sc, st: d.dispose())
-
         scheduler2.start()
+
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).retry()
         zs.subscribe(on_completed=lambda: _raise('ex'))

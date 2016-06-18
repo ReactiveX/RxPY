@@ -1,7 +1,7 @@
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 
 
@@ -36,6 +36,8 @@ def on_error_resume_next(cls, *args):
     even if a sequence terminates exceptionally.
     """
 
+    scheduler = current_thread_scheduler
+
     if args and isinstance(args[0], list):
         sources = iter(args[0])
     else:
@@ -43,8 +45,9 @@ def on_error_resume_next(cls, *args):
 
     def subscribe(observer):
         subscription = SerialDisposable()
+        cancelable = SerialDisposable()
 
-        def action(this, state=None):
+        def action(scheduler, state=None):
             try:
                 source = next(sources)
             except StopIteration:
@@ -57,11 +60,12 @@ def on_error_resume_next(cls, *args):
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = current.subscribe(
-                    observer.on_next,
-                    lambda ex: this(ex),
-                    this)
 
-        cancelable = immediate_scheduler.schedule_recursive(action)
+            def on_resume(state=None):
+                scheduler.schedule(action, state)
+
+            d.disposable = current.subscribe(observer.on_next, on_resume, on_resume)
+
+        cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)

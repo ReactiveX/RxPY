@@ -1,6 +1,7 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionclassmethod
+from rx.disposables import MultipleAssignmentDisposable
 
 
 @extensionclassmethod(Observable)
@@ -21,16 +22,18 @@ def range(cls, start, count, scheduler=None):
     Returns an observable sequence that contains a range of sequential
     integral numbers.
     """
-
     scheduler = scheduler or current_thread_scheduler
+    sd = MultipleAssignmentDisposable()
+    end = start + count
 
     def subscribe(observer):
-        def action(recurse, i):
-            if i < count:
-                observer.on_next(start + i)
-                recurse(i + 1)
+        def action(scheduler, n):
+            if n < end:
+                observer.on_next(n)
+                sd.disposable = scheduler.schedule(action, n + 1)
             else:
                 observer.on_completed()
 
-        return scheduler.schedule_recursive(action, 0)
+        sd.disposable = scheduler.schedule(action, start)
+        return sd
     return AnonymousObservable(subscribe)

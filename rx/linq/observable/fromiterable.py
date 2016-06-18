@@ -1,6 +1,7 @@
 from rx import Lock
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
 
 
@@ -23,12 +24,13 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
+    sd = MultipleAssignmentDisposable()
     lock = Lock()
 
     def subscribe(observer):
         iterator = iter(iterable)
 
-        def action(action1, state=None):
+        def action(scheduler, state=None):
             try:
                 with lock:
                     item = next(iterator)
@@ -36,7 +38,8 @@ def from_iterable(cls, iterable, scheduler=None):
                 observer.on_completed()
             else:
                 observer.on_next(item)
-                action1(action)
+                sd.disposable = scheduler.schedule(action)
 
-        return scheduler.schedule_recursive(action)
+        sd.disposable = scheduler.schedule(action)
+        return sd
     return AnonymousObservable(subscribe)

@@ -4,7 +4,7 @@ from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 
 from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
-from .scheduleperiodicrecursive import SchedulePeriodicRecursive
+from .scheduleperiodic import SchedulePeriodic
 
 log = logging.getLogger("Rx")
 
@@ -60,7 +60,7 @@ class VirtualTimeScheduler(SchedulerBase):
         return si.disposable
 
     def schedule_periodic(self, period, action, state=None):
-        scheduler = SchedulePeriodicRecursive(self, period, action, state)
+        scheduler = SchedulePeriodic(self, period, action, state)
         return scheduler.start()
 
     def start(self):

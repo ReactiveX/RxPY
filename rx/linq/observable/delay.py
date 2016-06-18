@@ -2,8 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
+from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
@@ -46,10 +45,10 @@ def observable_delay_timespan(source, duetime, scheduler):
                     log.error("*** Exception: %s", exception[0])
                     observer.on_error(exception[0])
                 else:
-                    d = SingleAssignmentDisposable()
-                    cancelable.disposable = d
+                    mad = MultipleAssignmentDisposable()
+                    cancelable.disposable = mad
 
-                    def action(this):
+                    def action(scheduler, state):
                         if exception[0]:
                             log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
                             return
@@ -67,10 +66,10 @@ def observable_delay_timespan(source, duetime, scheduler):
                                 if not result:
                                     break
 
-                            should_recurse = False
+                            should_continue = False
                             recurse_duetime = 0
                             if len(queue):
-                                should_recurse = True
+                                should_continue = True
                                 diff = queue[0].timestamp - scheduler.now
                                 zero = timedelta(0) if isinstance(diff, timedelta) else 0
                                 recurse_duetime = max(zero, diff)
@@ -82,10 +81,10 @@ def observable_delay_timespan(source, duetime, scheduler):
 
                         if ex:
                             observer.on_error(ex)
-                        elif should_recurse:
-                            this(recurse_duetime)
+                        elif should_continue:
+                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
-                    d.disposable = scheduler.schedule_recursive_with_relative(duetime, action)
+                    mad.disposable = scheduler.schedule_relative(duetime, action)
         subscription = source.materialize().timestamp(scheduler).subscribe(on_next)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
