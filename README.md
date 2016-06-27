@@ -50,7 +50,11 @@ Note that `pip` may be called `pip3` if your are using Python3.
 
 ## Tutorials
 
-*  [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
+* [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
+* General Rx/ReactiveX tutorials
+    * [reactivex.io: Introduction](http://reactivex.io/intro.html)
+    * [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
+    * [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
 ## Differences from .NET and RxJS
 
