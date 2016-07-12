@@ -50,13 +50,13 @@ Note that `pip` may be called `pip3` if your are using Python3.
 
 ## Tutorials
 
-*  [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
+* [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
 
 ## Differences from .NET and RxJS
 
 RxPY is a fairly complete implementation of
 [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx)
-v2.2 with more than 134 query operators, and over 1100 passing unit-tests. RxPY
+v2.2 with more than [134 query operators](http://reactivex.io/documentation/operators.html), and over [1100 passing unit-tests](https://coveralls.io/github/dbrattli/RxPY). RxPY
 is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava
 in terms of threading and blocking operators.
 
