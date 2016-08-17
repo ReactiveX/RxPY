@@ -84,4 +84,4 @@ class AsyncIOScheduler(SchedulerBase):
         property.
         """
 
-        return self.to_datetime(self.loop.time())
+        return self.to_datetime(self.loop.time()*1000)
