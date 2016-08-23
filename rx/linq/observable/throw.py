@@ -24,7 +24,7 @@ def throw(cls, exception, scheduler=None):
 
     scheduler = scheduler or immediate_scheduler
 
-    exception = exception if type(exception) is Exception else Exception(exception)
+    exception = exception if isinstance(exception, Exception) else Exception(exception)
 
     def subscribe(observer):
         def action(scheduler, state):
