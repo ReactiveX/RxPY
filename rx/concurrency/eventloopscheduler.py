@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import threading
 from threading import Timer
 
@@ -30,7 +31,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         self.thread_factory = thread_factory or default_factory
         self.thread = None
         self.timer = None
-        self.condition = threading.Condition(self.lock)
+        self.condition = multiprocessing.Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list = []
         self.next_item = None
