@@ -1,4 +1,4 @@
-import threading
+import multiprocessing
 
 from rx.core.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
@@ -15,7 +15,7 @@ def to_iterable(self):
     :rtype: Iterable[Any]
     """
 
-    condition = threading.Condition()
+    condition = multiprocessing.Condition()
     notifications = []
 
     def on_next(value):

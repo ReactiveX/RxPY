@@ -7,7 +7,7 @@ except ImportError:
         asyncio = None
 
 try:
-    from threading import RLock as Lock
+    from multiprocessing import RLock as Lock
 except ImportError:
     from rx.internal.concurrency import NoLock as Lock
 

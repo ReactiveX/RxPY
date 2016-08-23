@@ -1,4 +1,4 @@
-import threading
+import multiprocessing
 
 from rx.core.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
@@ -27,7 +27,7 @@ def for_each(self, action):
     """
 
     action = adapt_call(action)
-    latch = threading.Event()
+    latch = multiprocessing.Event()
     exception = [None]
     count = [0]
 
