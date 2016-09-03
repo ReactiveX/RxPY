@@ -1,5 +1,5 @@
 import re
-import threading
+import multiprocessing 
 
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
@@ -138,7 +138,7 @@ def to_marbles(self, scheduler=None):
     Returns marble string.
     """
 
-    latch = threading.Event()
+    latch = multiprocessing.Event()
     ret = [None]
 
     def on_next(value):
