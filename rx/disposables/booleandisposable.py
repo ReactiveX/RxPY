@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Disposable
 
 
@@ -9,7 +9,7 @@ class BooleanDisposable(Disposable):
         """Initializes a new instance of the BooleanDisposable class."""
 
         self.is_disposed = False
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
         super(BooleanDisposable, self).__init__()
 

@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Disposable
 
 
@@ -12,7 +12,7 @@ class RefCountDisposable(Disposable):
         def __init__(self, parent):
             self.parent = parent
             self.is_disposed = False
-            self.lock = Lock()
+            self.lock = config["concurrency"].RLock()
 
         def dispose(self):
             with self.lock:
@@ -27,7 +27,7 @@ class RefCountDisposable(Disposable):
         self.underlying_disposable = disposable
         self.is_primary_disposed = False
         self.is_disposed = False
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
         self.count = 0
 
         super(RefCountDisposable, self).__init__()

@@ -1,7 +1,6 @@
 import unittest
 from unittest import SkipTest
 
-from rx import Lock
 from datetime import datetime, timedelta
 from time import sleep
 import threading

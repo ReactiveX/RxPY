@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.internal import noop
 from rx.core import Disposable
 
@@ -20,7 +20,7 @@ class AnonymousDisposable(Disposable):
         self.is_disposed = False
         self.action = action or noop
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
     def dispose(self):
         """Performs the task of cleaning up resources."""

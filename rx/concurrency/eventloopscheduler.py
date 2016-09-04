@@ -1,9 +1,8 @@
 import logging
-import multiprocessing
 import threading
 from threading import Timer
 
-from rx import Lock
+from rx import config
 from rx.core import Scheduler, Disposable
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
@@ -27,11 +26,11 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             t.setDaemon(True)
             return t
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
         self.thread_factory = thread_factory or default_factory
         self.thread = None
         self.timer = None
-        self.condition = multiprocessing.Condition(self.lock)
+        self.condition = config["concurrency"].Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list = []
         self.next_item = None

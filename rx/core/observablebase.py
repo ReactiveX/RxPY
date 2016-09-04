@@ -1,7 +1,7 @@
 import types
 from abc import abstractmethod
 
-from rx import Lock
+from rx import config
 from rx.concurrency import current_thread_scheduler
 
 from . import Observer, Observable, Disposable
@@ -13,7 +13,7 @@ class ObservableBase(Observable):
     """Represents a push-style collection."""
 
     def __init__(self):
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
         # Deferred instance method assignment
         for name, method in self._methods:

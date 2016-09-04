@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
@@ -25,7 +25,7 @@ def from_iterable(cls, iterable, scheduler=None):
 
     scheduler = scheduler or current_thread_scheduler
     sd = MultipleAssignmentDisposable()
-    lock = Lock()
+    lock = config["concurrency"].RLock()
 
     def subscribe(observer):
         iterator = iter(iterable)

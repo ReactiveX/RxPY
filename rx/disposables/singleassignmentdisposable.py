@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Disposable
 
 
@@ -14,7 +14,7 @@ class SingleAssignmentDisposable(Disposable):
         """
         self.is_disposed = False
         self.current = None
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
         super(Disposable, self).__init__()
 

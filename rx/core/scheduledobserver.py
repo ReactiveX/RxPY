@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.disposables import SerialDisposable
 
 from .observerbase import ObserverBase
@@ -11,7 +11,7 @@ class ScheduledObserver(ObserverBase):
         self.scheduler = scheduler
         self.observer = observer
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
         self.is_acquired = False
         self.has_faulted = False
         self.queue = []

@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
@@ -29,7 +29,7 @@ class BehaviorSubject(ObservableBase, Observer):
         self.is_stopped = False
         self.exception = None
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
     def check_disposed(self):
         if self.is_disposed:
