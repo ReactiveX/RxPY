@@ -60,7 +60,7 @@ def select_many(self, selector, result_selector=None):
                 result = Observable.from_(selector_result)
             else:
                 result = Observable.from_future(selector_result)
-            return result.map(lambda y: result_selector(x, y, i))
+            return result.map(lambda y, i: result_selector(x, y, i))
 
         return self.flat_map(projection)
 
