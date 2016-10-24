@@ -172,6 +172,10 @@ Python framework.
   [PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the
   [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
   example for how to use RxPY with your Qt application.
+* `GtkScheduler` for use with
+  [Python GTK+ 3](https://wiki.gnome.org/Projects/PyGObject). See the
+  [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
+  example for how to use RxPY with your GTK+ application.
 * `WxScheduler` for use with [wxPython](http://www.wxpython.org). See the
   [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies)
   example for how to use RxPY with your wx application.
