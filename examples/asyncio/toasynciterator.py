@@ -1,15 +1,15 @@
 import rx
-asyncio = rx.config['asyncio']
 
 from rx.concurrency import AsyncIOScheduler
 from rx.core import Observable
 from rx.internal import extensionmethod
 
+asyncio = rx.config['asyncio']
 future_ctor = rx.config.get("Future") or asyncio.Future
+
 
 @extensionmethod(Observable)
 async def __aiter__(self):
-    loop = asyncio.get_event_loop()
     source = self
 
     class AIterator:
