@@ -4,7 +4,7 @@ import logging
 import threading
 from datetime import timedelta
 
-from rx import Lock
+from rx import config
 from rx.core import Scheduler
 from rx.internal import PriorityQueue
 
@@ -41,7 +41,7 @@ class CurrentThreadScheduler(SchedulerBase):
         current thread."""
 
         self.queues = dict()
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
@@ -104,7 +104,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler."""
-        if self.schedule_required:
+        if self.schedule_required():
             return self.schedule(action)
         else:
             return action(self, None)

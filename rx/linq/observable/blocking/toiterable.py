@@ -1,8 +1,7 @@
-import threading
-
 from rx.core.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
 from rx.internal.enumerator import Enumerator
+from rx import config
 
 
 @extensionmethod(BlockingObservable)
@@ -15,7 +14,7 @@ def to_iterable(self):
     :rtype: Iterable[Any]
     """
 
-    condition = threading.Condition()
+    condition = config["concurrency"].Condition()
     notifications = []
 
     def on_next(value):

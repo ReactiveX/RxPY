@@ -56,7 +56,7 @@ class WSHandler(WebSocketHandler):
         ).filter(
             lambda text: len(text) > 2  # Only if the text is longer than 2 characters
         ).debounce(
-            0.750,  # Pause for 750ms
+            750,  # Pause for 750ms
             scheduler=scheduler
         ).distinct_until_changed()  # Only if the value has changed
 

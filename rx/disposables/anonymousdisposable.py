@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.internal import noop
 from rx.core import Disposable
 
@@ -20,7 +20,7 @@ class AnonymousDisposable(Disposable):
         self.is_disposed = False
         self.action = action or noop
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
 
     def dispose(self):
         """Performs the task of cleaning up resources."""
@@ -33,14 +33,6 @@ class AnonymousDisposable(Disposable):
 
         if dispose:
             self.action()
-
-    def __enter__(self):
-        """Context management protocol."""
-        pass
-
-    def __exit__(self, type, value, traceback):
-        """Context management protocol."""
-        self.dispose()
 
     @classmethod
     def empty(cls):

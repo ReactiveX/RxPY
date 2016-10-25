@@ -7,9 +7,9 @@ except ImportError:
         asyncio = None
 
 try:
-    from threading import RLock as Lock
+    import threading
 except ImportError:
-    from rx.internal.concurrency import NoLock as Lock
+    import rx.internal.concurrency as threading
 
 try:
     from asyncio import Future
@@ -22,8 +22,9 @@ except ImportError:
 
 # Rx configuration dictionary
 config = {
+    "concurrency": threading,
     "Future": Future,
-    "Lock": Lock,
+    "Lock": threading.RLock,  # Deprecated
     "asyncio": asyncio
 }
 

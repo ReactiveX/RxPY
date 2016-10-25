@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.concurrency import immediate_scheduler
+from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal import Enumerable
 
@@ -58,19 +58,26 @@ def concat(cls, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
+    scheduler = current_thread_scheduler
+
     if isinstance(args[0], list) or isinstance(args[0], Enumerable):
         sources = args[0]
     else:
         sources = list(args)
 
     def subscribe(observer):
-        enum = iter(sources)
-        is_disposed = [False]
         subscription = SerialDisposable()
+        cancelable = SerialDisposable()
+        enum = iter(sources)
+        is_disposed = []
 
         def action(action1, state=None):
-            if is_disposed[0]:
+            if is_disposed:
                 return
+
+            def on_completed():
+                cancelable.disposable = scheduler.schedule(action)
+
             try:
                 current = next(enum)
             except StopIteration:
@@ -80,16 +87,12 @@ def concat(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe(
-                    observer.on_next,
-                    observer.on_error,
-                    lambda: action1()
-                )
+                d.disposable = current.subscribe(observer.on_next, observer.on_error, on_completed)
 
-        cancelable = immediate_scheduler.schedule_recursive(action)
+        cancelable.disposable = scheduler.schedule(action)
 
         def dispose():
-            is_disposed[0] = True
+            is_disposed.append(True)
         return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
     return AnonymousObservable(subscribe)
 

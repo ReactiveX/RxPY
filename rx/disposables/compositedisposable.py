@@ -1,4 +1,4 @@
-from rx import Lock
+from rx import config
 from rx.core import Disposable
 
 
@@ -12,7 +12,7 @@ class CompositeDisposable(Disposable):
             self.disposables = list(args)
 
         self.is_disposed = False
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
         super(CompositeDisposable, self).__init__()
 
     def add(self, item):

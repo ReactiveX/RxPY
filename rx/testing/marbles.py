@@ -1,10 +1,10 @@
 import re
-import threading
 
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
+from rx import config
 
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
@@ -138,7 +138,7 @@ def to_marbles(self, scheduler=None):
     Returns marble string.
     """
 
-    latch = threading.Event()
+    latch = config["concurrency"].Event()
     ret = [None]
 
     def on_next(value):

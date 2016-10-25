@@ -1,6 +1,5 @@
 [![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)
 [![Coveralls Coverage Status](https://img.shields.io/coveralls/dbrattli/RxPY.svg)](https://coveralls.io/r/dbrattli/RxPY)
-[![PyPI Downloads per month](https://img.shields.io/pypi/dm/Rx.svg)](https://pypi.python.org/pypi/Rx/)
 
 # The Reactive Extensions for Python (RxPY) #
 
@@ -51,6 +50,10 @@ Note that `pip` may be called `pip3` if you are using Python3.
 ## Tutorials
 
 * [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
+* General Rx/ReactiveX tutorials
+    * [reactivex.io: Introduction](http://reactivex.io/intro.html)
+    * [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
+    * [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
 ## Differences from .NET and RxJS
 
@@ -148,6 +151,7 @@ Python framework.
   [AsyncIO](https://docs.python.org/3/library/asyncio.html). (requires Python 3.4 or
   [trollius](http://trollius.readthedocs.org/),
   a port of `asyncio` compatible with Python 2.6-3.5).
+* `EventLetEventScheduler` for use with [Eventlet](http://eventlet.net/).
 * `IOLoopScheduler` for use with
   [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the
   [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete)

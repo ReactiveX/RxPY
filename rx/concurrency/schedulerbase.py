@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from rx.core import Scheduler, Disposable
-from rx.disposables import CompositeDisposable
+from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
@@ -17,165 +17,33 @@ class SchedulerBase(Scheduler):
 
         return Disposable.empty()
 
-    @staticmethod
-    def invoke_rec_immediate(scheduler, pair):
-        state = pair.get('state')
-        action = pair.get('action')
-        group = CompositeDisposable()
-
-        def inner_action(state2=None):
-            is_added = False
-            is_done = [False]
-
-            def schedule_work(_, state3):
-                action(inner_action, state3)
-                if is_added:
-                    group.remove(d)
-                else:
-                    is_done[0] = True
-
-                return Disposable.empty()
-
-            d = scheduler.schedule(schedule_work, state2)
-            if not is_done[0]:
-                group.add(d)
-                is_added = True
-
-        action(inner_action, state)
-        return group
-
-    @staticmethod
-    def invoke_rec_date(scheduler, pair, method):
-        state = pair.get('first')
-        action = pair.get('second')
-        group = CompositeDisposable()
-
-        def inner_action(state2, duetime):
-            is_added = False
-            is_done = [False]
-
-            def schedule_work(_, state3):
-                action(state3, inner_action)
-                if is_added:
-                    group.remove(d)
-                else:
-                    is_done[0] = True
-
-                return Disposable.empty()
-
-            d = getattr(scheduler, method)(duetime=duetime, action=schedule_work, state=state2)
-            if not is_done[0]:
-                group.add(d)
-                is_added = True
-
-        action(state, inner_action)
-        return group
-
-    def schedule_recursive(self, action, state=None):
-        """Schedules an action to be executed recursively.
+    def schedule_periodic(self, period, action, state=None):
+        """Schedules a periodic piece of work to be executed in the tkinter
+        mainloop.
 
         Keyword arguments:
-        :param types.FunctionType action: Action to execute recursively.
-            The parameter passed to the action is used to trigger recursive
-            scheduling of the action.
-        :param T state: State to be given to the action function.
+        period -- Period in milliseconds for running the work periodically.
+        action -- Action to be executed.
+        state -- [Optional] Initial state passed to the action upon the first
+            iteration.
 
-        :returns: The disposable object used to cancel the scheduled action
-            (best effort).
-        :rtype: Disposable
-        """
-
-        def scheduled_action(scheduler, pair):
-            return self.invoke_rec_immediate(scheduler, pair)
-
-        return self.schedule(scheduled_action, dict(state=state, action=action))
-
-    def schedule_recursive_with_relative(self, duetime, action):
-        """Schedules an action to be executed recursively after a specified
-        relative due time.
-
-        Keyword arguments:
-        action -- {Function} Action to execute recursively. The parameter passed
-            to the action is used to trigger recursive scheduling of the action
-            at the specified relative time.
-         duetime - {Number} Relative time after which to execute the action for
-            the first time.
-
-        Returns the disposable {Disposable} object used to cancel the scheduled
+        Returns the disposable object used to cancel the scheduled recurring
         action (best effort)."""
 
-        def action1(_action, this=None):
-            def func(dt):
-                this(_action, dt)
-            _action(func)
-        return self.schedule_recursive_with_relative_and_state(duetime, action1, state=action)
+        disposable = MultipleAssignmentDisposable()
+        state = [state]
 
-    def schedule_recursive_with_relative_and_state(self, duetime, action, state):
-        """Schedules an action to be executed recursively after a specified
-        relative due time.
+        def invoke_action(scheduler, _):
+            if disposable.is_disposed:
+                return
 
-        Keyword arguments:
-        :param T state: State passed to the action to be executed.
-        :param types.FunctionType action: Action to execute recursively. The
-            last parameter passed to the action is used to trigger recursive
-            scheduling of the action, passing in the recursive due time and
-            invocation state.
-        :param int|timedelta duetime: Relative time after which to execute the
-            action for the first time.
+            new_state = action(state[0])
+            if new_state is not None:
+                state[0] = new_state
+            disposable.disposable = self.schedule_relative(period, invoke_action, state)
 
-        :returns: The disposable object used to cancel the scheduled action
-            (best effort).
-        :rtype: Disposable
-        """
-
-        def action1(s, p):
-            return self.invoke_rec_date(s, p, 'schedule_relative')
-
-        return self.schedule_relative(duetime, action1,
-                                      state={"first": state, "second": action})
-
-    def schedule_recursive_with_absolute(self, duetime, action):
-        """Schedules an action to be executed recursively at a specified
-        absolute due time.
-
-        Keyword arguments:
-        action -- {Function} Action to execute recursively. The parameter
-            passed to the action is used to trigger recursive scheduling of
-            the action at the specified absolute time.
-        duetime {Number} Absolute time at which to execute the action for
-            the first time.
-
-        Returns the disposable {Disposable} object used to cancel the
-        scheduled action (best effort)."""
-
-        def action1(_action, this=None):
-            def func(dt):
-                this(_action, dt)
-            _action(func)
-        return self.schedule_recursive_with_absolute_and_state(duetime=duetime,
-                                                               action=action1,
-                                                               state=action)
-
-    def schedule_recursive_with_absolute_and_state(self, duetime, action, state):
-        """Schedules an action to be executed recursively at a specified
-        absolute due time.
-
-        Keyword arguments:
-        state -- {Mixed} State passed to the action to be executed.
-        action -- {Function} Action to execute recursively. The last parameter
-            passed to the action is used to trigger recursive scheduling of the
-            action, passing in the recursive due time and invocation state.
-        duetime -- {Number} Absolute time at which to execute the action for the
-            first time.
-        Returns the disposable {Disposable} object used to cancel the scheduled
-        action (best effort)."""
-
-        def action2(scheduler, pair):
-            return self.invoke_rec_date(scheduler, pair, method='schedule_absolute')
-
-        return self.schedule_absolute(
-            duetime=duetime, action=action2,
-            state={"first": state, "second": action})
+        disposable.disposable = self.schedule_relative(period, invoke_action, state)
+        return disposable
 
     @property
     def now(self):

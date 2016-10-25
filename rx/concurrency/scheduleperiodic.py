@@ -1,6 +1,7 @@
-from rx.disposables import SingleAssignmentDisposable
+from rx.disposables import SerialDisposable
 
-class SchedulePeriodicRecursive(object):
+
+class SchedulePeriodic(object):
     """Scheduler with support for running periodic tasks. This type of
     scheduler can be used to run timers more efficiently instead of using
     recursive scheduling."""
@@ -16,10 +17,10 @@ class SchedulePeriodicRecursive(object):
         self._state = state
         self._period = period
         self._action = action
-        self._cancel = None
+        self._cancel = SerialDisposable()
 
-    def tick(self, command, recurse):
-        recurse(0, self._period)
+    def tick(self, scheduler, command):
+        self._cancel.disposable = self._scheduler.schedule_relative(self._period, self.tick, 0)
         try:
             new_state = self._action(self._state)
         except Exception:
@@ -34,8 +35,5 @@ class SchedulePeriodicRecursive(object):
         action (best effort).
         """
 
-        dis = SingleAssignmentDisposable()
-        self._cancel = dis
-        dis.disposable = self._scheduler.schedule_recursive_with_relative_and_state(self._period, self.tick, 0)
-
-        return dis
+        self._cancel.disposable = self._scheduler.schedule_relative(self._period, self.tick, 0)
+        return self._cancel

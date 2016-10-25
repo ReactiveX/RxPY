@@ -37,42 +37,42 @@ def expand(self, selector, scheduler=None):
                 is_owner = not is_acquired[0]
                 is_acquired[0] = True
 
+            def action(scheduler, state):
+                if len(q) > 0:
+                    work = q.pop(0)
+                else:
+                    is_acquired[0] = False
+                    return
+
+                sad = SingleAssignmentDisposable()
+                d.add(sad)
+
+                def on_next(x):
+                    observer.on_next(x)
+                    result = None
+                    try:
+                        result = selector(x)
+                    except Exception as ex:
+                        observer.on_error(ex)
+
+                    q.append(result)
+                    active_count[0] += 1
+                    ensure_active()
+
+                def on_complete():
+                    d.remove(sad)
+                    active_count[0] -= 1
+                    if active_count[0] == 0:
+                        observer.on_completed()
+
+                sad.disposable = work.subscribe(on_next, observer.on_error, on_complete)
+                m.disposable = scheduler.schedule(action)
+
             if is_owner:
-                def action(this, state):
-                    if len(q) > 0:
-                        work = q.pop(0)
-                    else:
-                        is_acquired[0] = False
-                        return
-
-                    m1 = SingleAssignmentDisposable()
-                    d.add(m1)
-
-                    def on_next(x):
-                        observer.on_next(x)
-                        result = None
-                        try:
-                            result = selector(x)
-                        except Exception as ex:
-                            observer.on_error(ex)
-
-                        q.append(result)
-                        active_count[0] += 1
-                        ensure_active()
-
-                    def on_complete():
-                        d.remove(m1)
-                        active_count[0] -= 1
-                        if active_count[0] == 0:
-                            observer.on_completed()
-
-                    m1.disposable = work.subscribe(on_next, observer.on_error, on_complete)
-                    this()
-                m.disposable = scheduler.schedule_recursive(action)
+                m.disposable = scheduler.schedule(action)
 
         q.append(source)
         active_count[0] += 1
         ensure_active()
         return d
     return AnonymousObservable(subscribe)
-

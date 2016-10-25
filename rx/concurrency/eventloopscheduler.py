@@ -2,7 +2,7 @@ import logging
 import threading
 from threading import Timer
 
-from rx import Lock
+from rx import config
 from rx.core import Scheduler, Disposable
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
@@ -26,11 +26,11 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             t.setDaemon(True)
             return t
 
-        self.lock = Lock()
+        self.lock = config["concurrency"].RLock()
         self.thread_factory = thread_factory or default_factory
         self.thread = None
         self.timer = None
-        self.condition = threading.Condition(self.lock)
+        self.condition = config["concurrency"].Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list = []
         self.next_item = None
@@ -54,8 +54,8 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
-
-        return self.schedule_absolute(duetime + self.now, action, state=None)
+        dt = self.to_timedelta(duetime)
+        return self.schedule_absolute(dt + self.now, action, state)
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime."""
@@ -75,6 +75,30 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             self.ensure_thread()
 
         return Disposable.create(si.cancel)
+
+    def schedule_periodic(self, period, action, state=None):
+        """Schedule a periodic piece of work."""
+
+        dt = self.to_timedelta(period)
+        disposed = []
+
+        s = [state]
+
+        def tick(scheduler, state):
+            if disposed:
+                return
+
+            self.schedule_relative(dt, tick)
+            new_state = action(s[0])
+            if new_state is not None:
+                s[0] = new_state
+
+        self.schedule_relative(dt, tick)
+
+        def dispose():
+            disposed.append(True)
+
+        return Disposable.create(dispose)
 
     def ensure_thread(self):
         """Ensures there is an event loop thread running. Should be called

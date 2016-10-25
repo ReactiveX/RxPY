@@ -30,7 +30,8 @@ def from_future(cls, future):
 
         def dispose():
             if future and future.cancel:
-              future.cancel()
+                future.cancel()
+
         return dispose
 
     return AnonymousObservable(subscribe) if is_future(future) else future

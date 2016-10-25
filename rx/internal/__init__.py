@@ -4,3 +4,4 @@ from .exceptions import SequenceContainsNoElementsError, ArgumentOutOfRangeExcep
 from .extensionmethod import extensionmethod, extensionclassmethod
 from .enumerable import Enumerable
 from .enumerator import Enumerator
+from . import concurrency
