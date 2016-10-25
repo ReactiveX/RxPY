@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='1.5.2',
+    version='1.5.3',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
@@ -16,11 +16,11 @@ setup(
     author_email='dag@brattli.net',
     license='Apache License',
     url='http://reactivex.io',
-    download_url = 'https://github.com/ReactiveX/RxPY',
-    zip_safe = True,
+    download_url='https://github.com/ReactiveX/RxPY',
+    zip_safe=True,
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers = [
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
