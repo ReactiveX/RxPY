@@ -17,6 +17,7 @@ from .catchscheduler import CatchScheduler
 from .mainloopscheduler import AsyncIOScheduler
 from .mainloopscheduler import IOLoopScheduler
 from .mainloopscheduler import GEventScheduler
+from .mainloopscheduler import GtkScheduler
 from .mainloopscheduler import TwistedScheduler
 from .mainloopscheduler import TkinterScheduler
 from .mainloopscheduler import PyGameScheduler
