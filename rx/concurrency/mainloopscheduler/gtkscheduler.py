@@ -10,10 +10,11 @@ class GtkScheduler(SchedulerBase):
     See https://wiki.gnome.org/Projects/PyGObject
     """
 
-    def __init__(self):
+    def _gtk_schedule(self, time, action, state, periodic=False):
+        # Do not import GLib into global scope because Qt and GLib
+        # don't like each other there
         from gi.repository import GLib
 
-    def _gtk_schedule(self, time, action, state, periodic=False):
         scheduler = self
         msecs = self.to_relative(time)
 
