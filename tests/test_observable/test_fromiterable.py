@@ -21,13 +21,13 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class TestFromArray(unittest.TestCase):
-    def test_subscribe_to_enumerable_finite(self):
-        enumerable_finite = [1, 2, 3, 4, 5]
+class TestFromIterable(unittest.TestCase):
+    def test_subscribe_to_iterable_finite(self):
+        iterable_finite = [1, 2, 3, 4, 5]
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(enumerable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite, scheduler=scheduler)
 
         results = scheduler.start(create)
 
@@ -40,13 +40,24 @@ class TestFromArray(unittest.TestCase):
                             on_completed(206)
                         )
 
-    def test_subscribe_to_enumerable_empty(self):
-      enumerable_finite = []
+    def test_subscribe_to_iterable_empty(self):
+        iterable_finite = []
 
-      scheduler = TestScheduler()
+        scheduler = TestScheduler()
 
-      def create():
-          return Observable.from_(enumerable_finite, scheduler=scheduler)
-      results = scheduler.start(create)
+        def create():
+            return Observable.from_(iterable_finite, scheduler=scheduler)
+        results = scheduler.start(create)
 
-      results.messages.assert_equal(on_completed(201))
+        results.messages.assert_equal(on_completed(201))
+
+    def test_double_subscribe_to_iterable(self):
+        iterable_finite = [1, 2, 3]
+        scheduler = TestScheduler()
+        obs = Observable.from_(iterable_finite)
+
+        results = scheduler.start(lambda: obs)
+        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200))
+
+        results = scheduler.start(lambda: obs)
+        results.messages.assert_equal(on_next(1001, 1), on_next(1001, 2), on_next(1001, 3), on_completed(1001))

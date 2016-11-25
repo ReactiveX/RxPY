@@ -24,16 +24,17 @@ def from_iterable(cls, iterable, scheduler=None):
     """
 
     scheduler = scheduler or current_thread_scheduler
-    sd = MultipleAssignmentDisposable()
     lock = config["concurrency"].RLock()
 
     def subscribe(observer):
+        sd = MultipleAssignmentDisposable()
         iterator = iter(iterable)
 
         def action(scheduler, state=None):
             try:
                 with lock:
                     item = next(iterator)
+
             except StopIteration:
                 observer.on_completed()
             else:
