@@ -132,8 +132,7 @@ def merge_all(self):
                 if is_stopped[0] and len(group) == 1:
                     observer.on_completed()
 
-            disposable = inner_source.subscribe(on_next, observer.on_error,
-                                                on_completed)
+            disposable = inner_source.subscribe(on_next, observer.on_error, on_completed)
             inner_subscription.disposable = disposable
 
         def on_completed():
@@ -141,8 +140,7 @@ def merge_all(self):
             if len(group) == 1:
                 observer.on_completed()
 
-        m.disposable = sources.subscribe(on_next, observer.on_error,
-                                         on_completed)
+        m.disposable = sources.subscribe(on_next, observer.on_error, on_completed)
         return group
 
     return AnonymousObservable(subscribe)

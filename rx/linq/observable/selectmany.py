@@ -13,7 +13,7 @@ def _flat_map(source, selector):
             result = Observable.from_future(selector_result)
         return result
 
-    return source.map(projection).merge_observable()
+    return source.map(projection).merge_all()
 
 
 @extensionmethod(Observable, alias="flat_map")

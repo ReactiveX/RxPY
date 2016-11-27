@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.concurrency import current_thread_scheduler
+from rx.concurrency import immediate_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal import Enumerable
 
@@ -58,7 +58,8 @@ def concat(cls, *args):
     Returns an observable sequence that contains the elements of each given
     sequence, in sequential order.
     """
-    scheduler = current_thread_scheduler
+
+    scheduler = immediate_scheduler
 
     if isinstance(args[0], list) or isinstance(args[0], Enumerable):
         sources = args[0]
