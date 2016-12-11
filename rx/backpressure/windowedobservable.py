@@ -15,7 +15,7 @@ class WindowedObserver(ObserverBase):
         self.received = 0
         self.schedule_disposable = None
 
-        super(WindowedObserver, self).__init__(self._next, self._error, self._completed)
+        super(WindowedObserver, self).__init__()
 
     def _on_completed_core(self):
         self.observer.on_completed()
