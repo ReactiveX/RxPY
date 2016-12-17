@@ -156,7 +156,7 @@ Python framework.
   [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the
   [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete)
   and [konamicode](https://github.com/ReactiveX/RxPY/tree/master/examples/konamicode)
-  examples for how to use RxPY with your Tonado application.
+  examples for how to use RxPY with your Tornado application.
 * `GEventScheduler` for use with [GEvent](http://www.gevent.org/).
   (Python 2.7 only).
 * `TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).

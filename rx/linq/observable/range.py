@@ -23,10 +23,11 @@ def range(cls, start, count, scheduler=None):
     integral numbers.
     """
     scheduler = scheduler or current_thread_scheduler
-    sd = MultipleAssignmentDisposable()
     end = start + count
 
     def subscribe(observer):
+        sd = MultipleAssignmentDisposable()
+
         def action(scheduler, n):
             if n < end:
                 observer.on_next(n)
@@ -34,6 +35,7 @@ def range(cls, start, count, scheduler=None):
             else:
                 observer.on_completed()
 
+        print(sd.is_disposed)
         sd.disposable = scheduler.schedule(action, start)
         return sd
     return AnonymousObservable(subscribe)
