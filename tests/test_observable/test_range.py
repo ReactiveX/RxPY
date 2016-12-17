@@ -56,3 +56,12 @@ class TestRange(unittest.TestCase):
         results = scheduler.start(create, disposed=204)
         results.messages.assert_equal(on_next(201, -10), on_next(202, -9), on_next(203, -8))
 
+    def test_range_double_subscribe(self):
+        scheduler = TestScheduler()
+        obs = Observable.range(1, 3)
+
+        results = scheduler.start(lambda: obs)
+        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200))
+
+        results = scheduler.start(lambda: obs)
+        results.messages.assert_equal(on_next(1001, 1), on_next(1001, 2), on_next(1001, 3), on_completed(1001))
