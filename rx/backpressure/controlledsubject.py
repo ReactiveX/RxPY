@@ -7,7 +7,7 @@ from rx.core.notification import OnCompleted, OnError, OnNext
 
 class ControlledSubject(ObservableBase, Observer):
     def __init__(self, enable_queue=True, scheduler=None):
-        super(ControlledSubject, self).__init__(self._subscribe)
+        super(ControlledSubject, self).__init__()
 
         self.subject = Subject()
         self.enable_queue = enable_queue
@@ -19,7 +19,7 @@ class ControlledSubject(ObservableBase, Observer):
         self.has_completed = False
         self.scheduler = scheduler or current_thread_scheduler
 
-    def _subscribe(self, observer):
+    def _subscribe_core(self, observer):
         return self.subject.subscribe(observer)
 
     def on_completed(self):
@@ -29,7 +29,7 @@ class ControlledSubject(ObservableBase, Observer):
             self.subject.on_completed()
             self.dispose_current_request()
         else:
-            self.queue.push(OnCompleted())
+            self.queue.append(OnCompleted())
 
     def on_error(self, error):
         self.has_failed = True
@@ -39,7 +39,7 @@ class ControlledSubject(ObservableBase, Observer):
             self.subject.on_error(error)
             self.dispose_current_request()
         else:
-            self.queue.push(OnError(error))
+            self.queue.append(OnError(error))
 
     def on_next(self, value):
         if self.requested_count <= 0:
