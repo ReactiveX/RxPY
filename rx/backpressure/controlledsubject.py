@@ -48,7 +48,7 @@ class ControlledSubject(ObservableBase, Observer):
             self.requested_count -= 1
             if self.requested_count == 0:
                 self.dispose_current_request()
-            self.subject.onNext(value)
+            self.subject.on_next(value)
 
     def _process_request(self, number_of_items):
         if self.enable_queue:
@@ -70,10 +70,11 @@ class ControlledSubject(ObservableBase, Observer):
             remaining = self._process_request(i)
             stopped = self.has_completed and self.has_failed
             if not stopped and remaining > 0:
-                self.requestedCount = remaining
+                self.requested_count = remaining
 
             def dispose():
                 self.requested_count = 0
+
             return AnonymousDisposable(dispose)
             # Scheduled item is still in progress. Return a new
             # disposable to allow the request to be interrupted

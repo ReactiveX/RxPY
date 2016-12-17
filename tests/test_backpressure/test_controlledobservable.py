@@ -29,7 +29,7 @@ class TestControlledObservable(unittest.TestCase):
         )
 
         def action1(scheduler, state=None):
-            controlled[0] = xs.controlled()
+            controlled[0] = xs.controlled(scheduler=scheduler)
         scheduler.schedule_absolute(200, action1)
 
         def action2(scheduler, state=None):
@@ -37,7 +37,7 @@ class TestControlledObservable(unittest.TestCase):
         scheduler.schedule_absolute(300, action2)
 
         def action3(scheduler, state=None):
-            controlled[0].request(4)
+            controlled[0].request(2)
         scheduler.schedule_absolute(380, action3)
 
         def action4(scheduler, state=None):
@@ -45,17 +45,18 @@ class TestControlledObservable(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action3(scheduler, state=None):
-            controlled[0].request(2)
+           controlled[0].request(1)
         scheduler.schedule_absolute(410, action3)
 
         scheduler.start()
         results1.messages.assert_equal(
-            on_next(380, 4),
-            on_next(380, 5),
-            on_next(410, 6),
+            on_next(381, 4),
+            on_next(381, 5),
+            on_next(411, 6),
             on_completed(500)
         )
+
         results2.messages.assert_equal(
-            on_next(410, 6),
+            on_next(411, 6),
             on_completed(500)
         )

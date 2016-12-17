@@ -2,6 +2,7 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
+from rx.backpressure.controlledsubject import ControlledSubject
 from rx.backpressure.windowedobservable import WindowedObservable
 
 on_next = ReactiveTest.on_next
@@ -32,12 +33,12 @@ class TestWindowedObservable(unittest.TestCase):
         )
 
         def action1(scheduler, state=None):
-            subject[0] = Subject()
+            subject[0] = ControlledSubject(enable_queue=False, scheduler=scheduler)
             xs.subscribe(subject[0])
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state=None):
-            windowed[0] = WindowedObservable(subject[0], 2)
+            windowed[0] = WindowedObservable(subject[0], 2, scheduler=scheduler)
         scheduler.schedule_absolute(120, action2)
 
         def action3(scheduler, state=None):
@@ -56,6 +57,7 @@ class TestWindowedObservable(unittest.TestCase):
             on_next(399, 6),
             on_completed(500)
         )
+
         results2.messages.assert_equal(
             on_next(399, 6),
             on_completed(500)
