@@ -2,7 +2,7 @@ import re
 
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
-from rx.concurrency import timeout_scheduler
+from rx.concurrency import new_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx import config
 
@@ -43,7 +43,7 @@ def from_marbles(cls, string, scheduler=None):
     given marble diagram string.
     """
 
-    scheduler = scheduler or timeout_scheduler
+    scheduler = scheduler or new_thread_scheduler
 
     completed = [False]
     messages = []
@@ -53,13 +53,17 @@ def from_marbles(cls, string, scheduler=None):
         timespan[0] += 100
 
     def handle_on_next(value):
+        timespan[0] += 10
         messages.append(on_next(timespan[0], value))
 
+
     def handle_on_completed(value):
+        timespan[0] += 10
         messages.append(on_completed(timespan[0]))
         completed[0] = True
 
     def handle_on_error(value):
+        timespan[0] += 10
         messages.append(on_error(timespan[0], value))
         completed[0] = True
 
@@ -92,7 +96,7 @@ def to_marbles(self, scheduler=None):
 
     Returns Observable
     """
-    scheduler = scheduler or timeout_scheduler
+    scheduler = scheduler or new_thread_scheduler
     source = self
 
     def subscribe(observer):
@@ -104,7 +108,7 @@ def to_marbles(self, scheduler=None):
             diff = now - previously[0]
             previously[0] = now
             msecs = scheduler.to_relative(diff)
-            dashes = "-" * int((msecs+50)/100)
+            dashes = "-" * int((msecs + 50) / 100)
             result.append(dashes)
 
         def on_next(value):
