@@ -9,6 +9,7 @@ tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
 def test_alias():
     assert rx.Observable.from_string == rx.Observable.from_marbles
 
+
 class TestFromToMarbles(unittest.TestCase):
     def _run_test(self,
                   expected_results,
