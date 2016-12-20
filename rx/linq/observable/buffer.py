@@ -26,7 +26,7 @@ def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_sel
     if closing_selector:
         return self.window(closing_selector).select_many(lambda item: item.to_iterable())
     else:
-        return self.window(closing_selector, buffer_closing_selector).select_many(lambda item: item.to_iterable())
+        return self.window(buffer_openings, buffer_closing_selector).select_many(lambda item: item.to_iterable())
 
 
 @extensionmethod(Observable)
