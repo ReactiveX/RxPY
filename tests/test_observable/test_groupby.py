@@ -538,5 +538,31 @@ class TestGroupBy(unittest.TestCase):
         xs.subscriptions.assert_equal(
             subscribe(200, 570))
 
+    def test_group_by_with_merge(self):
+        scheduler = TestScheduler()
+
+        xs = [None]
+        results = [None]
+
+        def action1(scheduler, state):
+            xs[0] = Observable.from_(["alpha", "apple", "beta", "bat", "gamma"]) \
+                              .group_by(lambda s: s[0]) \
+                              .map(lambda group: group.to_list()) \
+                              .merge_all()
+        scheduler.schedule_absolute(created, action1)
+
+        def action2(scheduler, state):
+            results[0] = scheduler.create_observer()
+            xs[0].subscribe(results[0])
+        scheduler.schedule_absolute(subscribed, action2)
+
+        scheduler.start()
+
+        results[0].messages.assert_equal(
+            on_next(200, ["alpha", "apple"]),
+            on_next(200, ["beta", "bat"]),
+            on_next(200, ["gamma"]),
+            on_completed(200))
+
 if __name__ == '__main__':
     unittest.main()

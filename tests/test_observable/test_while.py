@@ -56,6 +56,25 @@ class TestWhile(unittest.TestCase):
         results.messages.assert_equal(on_next(250, 1))
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 
+    def test_dowhile_always_true_infinite_with_create(self):
+        scheduler = TestScheduler()
+        n = [0]
+
+        def create():
+            import sys
+            sys.setrecursionlimit(1000)
+            def predicate(x):
+                n[0] += 1
+                return n[0] < 1000
+            def subscribe(o):
+                o.on_next(1)
+                o.on_completed()
+                return lambda: None
+            return Observable.while_do(predicate, Observable.create(subscribe))
+        results = scheduler.start(create=create)
+
+        results.messages.assert_equal(*([on_next(200, 1) for _ in range(999)] + [on_completed(200)]))
+
     def test_while_sometimes_true(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
