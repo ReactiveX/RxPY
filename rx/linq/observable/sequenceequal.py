@@ -18,6 +18,7 @@ def sequence_equal(self, second, comparer=None):
 
     second -- Second observable sequence or array to compare.
     comparer -- [Optional] Comparer used to compare elements of both sequences.
+                No guarantees on order of comparer arguments.
 
     Returns an observable sequence that contains a single element which
     indicates whether both sequences are of equal length and their
