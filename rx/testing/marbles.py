@@ -54,6 +54,8 @@ def from_marbles(cls, string, scheduler=None):
 
     def handle_on_next(value):
         timespan[0] += 10
+        if value in ('T', 'F'):
+            value = True if value == 'T' else False
         messages.append(on_next(timespan[0], value))
 
 
