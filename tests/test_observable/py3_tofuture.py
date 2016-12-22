@@ -5,7 +5,9 @@ from nose import SkipTest
 import sys
 if sys.version_info.major < 3:
     raise SkipTest("Py3 language async declaration required")
-
+asyncio = rx.config['asyncio']
+if asyncio is None:
+    raise SkipTest("asyncio not available")
 import rx
 from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest
