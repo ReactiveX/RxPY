@@ -1,3 +1,8 @@
+"""
+Tests which work with backports of asyncio to Py2, i.e. w/o the language
+additions
+"""
+
 import unittest
 
 from nose import SkipTest
