@@ -30,11 +30,12 @@ def on_error_resume_next(cls, *args):
 
     1 - res = Observable.on_error_resume_next(xs, ys, zs)
     2 - res = Observable.on_error_resume_next([xs, ys, zs])
-    3 - res = Observable.on_error_resume_next(xs, factory)
 
     Returns an observable sequence that concatenates the source sequences,
     even if a sequence terminates exceptionally.
     """
+    # curently not in:
+    # 3 - res = Observable.on_error_resume_next(xs, factory)
 
     scheduler = current_thread_scheduler
 
