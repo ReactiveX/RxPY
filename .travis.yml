@@ -6,6 +6,7 @@ python:
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install gevent; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install twisted; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install trollius; fi
   - python setup.py install
   - pip install coveralls
   - pip install coverage

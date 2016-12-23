@@ -15,7 +15,7 @@ def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_sel
         closed, resulting in non-overlapping windows).
     buffer_closing_selector -- [optional] A function invoked to define the
         closing of each produced window. If a closing selector function is
-        specified for the first parameter, self parameter is ignored.
+        specified for the first parameter, this parameter is ignored.
 
     Returns an observable sequence of windows.
     """
@@ -26,7 +26,7 @@ def buffer(self, buffer_openings=None, closing_selector=None, buffer_closing_sel
     if closing_selector:
         return self.window(closing_selector).select_many(lambda item: item.to_iterable())
     else:
-        return self.window(closing_selector, buffer_closing_selector).select_many(lambda item: item.to_iterable())
+        return self.window(buffer_openings, buffer_closing_selector).select_many(lambda item: item.to_iterable())
 
 
 @extensionmethod(Observable)

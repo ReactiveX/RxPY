@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def skip_last_with_time(self, duration, scheduler):
+def skip_last_with_time(self, duration, scheduler=None):
     """Skips elements for the specified duration from the end of the
     observable source sequence, using the specified scheduler to run timers.
 
