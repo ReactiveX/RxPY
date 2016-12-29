@@ -20,12 +20,12 @@ class Trampoline(object):
         while len(queue):
             item = queue.dequeue()
             if not item.is_cancelled():
-                diff = item.duetime - current_thread_scheduler.now
+                diff = item.duetime - item.scheduler.now
                 while diff > timedelta(0):
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
                     log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
-                    diff = item.duetime - current_thread_scheduler.now
+                    diff = item.duetime - item.scheduler.now
 
                 if not item.is_cancelled():
                     item.invoke()
