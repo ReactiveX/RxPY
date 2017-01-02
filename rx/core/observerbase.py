@@ -44,7 +44,7 @@ class ObserverBase(Observer, Disposable):
             self._on_completed_core()
 
     @abstractmethod
-    def _on_completed_core(self, value):
+    def _on_completed_core(self):
         return NotImplemented
 
     def dispose(self):
