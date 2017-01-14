@@ -31,7 +31,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
         print(res.messages)
         res.messages.assert_equal(
-            on_next(660, {8: 16, 10: 20, 4: 8, 6: 12}),
+            on_next(660, {4: 8, 6: 12, 8: 16, 10: 20}),
             on_completed(660)
         )
 

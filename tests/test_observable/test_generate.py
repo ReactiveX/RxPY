@@ -102,3 +102,28 @@ class TestGenerate(unittest.TestCase):
         results.messages.assert_equal(
                             on_next(201, 0),
                             on_next(202, 1))
+
+    def test_generate_repeat(self):
+        scheduler = TestScheduler()
+
+        def create():
+            return Observable.generate(0,
+                    lambda x: x <= 3,
+                    lambda x: x + 1,
+                    lambda x: x,
+                    scheduler) \
+                .repeat(2)
+
+        results = scheduler.start(create)
+
+        results.messages.assert_equal(
+                on_next(201, 0),
+                on_next(202, 1),
+                on_next(203, 2),
+                on_next(204, 3),
+                on_next(206, 0),
+                on_next(207, 1),
+                on_next(208, 2),
+                on_next(209, 3),
+                on_completed(210)
+        )
