@@ -2,18 +2,25 @@ from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
-
 class GtkScheduler(SchedulerBase):
     """ A scheduler that schedules work via the GLib main loop
     used in GTK+ applications.
 
     See https://wiki.gnome.org/Projects/PyGObject
     """
-
-    def __init__(self):
-        from gi.repository import GLib
-
+    
+    # LAST EDIT:
+    # All global imports have failed with Travis.
+    # Going to implement fqxp's changes and see if they build with Travis.
+    # Have not yet tested on my main development system.
+    # Will likely drop my pull request if fqxp's code runs at home.
+    # -UmlautBioEye
+    # -19 Jan 2017
+    
     def _gtk_schedule(self, time, action, state, periodic=False):
+        
+        from gi.repository import GLib
+        
         scheduler = self
         msecs = self.to_relative(time)
 
