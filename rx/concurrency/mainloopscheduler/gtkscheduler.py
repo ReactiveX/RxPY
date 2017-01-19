@@ -2,6 +2,12 @@ from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
+# Proposed change from UmlautBioEye: This was the only way the RxPY demo would work for me!
+# NOTE: It appears that BOTH my new import AND the existing import in __init__(self) are required
+#       in order for the GTK Demo to work.
+# -UmlautBioEye
+# -19 Jan 2017
+from gi.repository import GLib
 
 class GtkScheduler(SchedulerBase):
     """ A scheduler that schedules work via the GLib main loop
