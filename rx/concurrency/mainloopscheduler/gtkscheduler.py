@@ -1,13 +1,15 @@
+# SECOND ATTEMPT: Travis builds both failed : - (
+# Will try the global import at the top.
+# If this fails with Travis, I will withdraw my Pull Request
+#   and try fqxp's method...
+# -UmlautBioEye
+# -19 Jan 2017
+
+from gi.repository import GLib
+
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
-
-# Proposed change from UmlautBioEye: This was the only way the RxPY demo would work for me!
-# NOTE: It appears that BOTH my new import AND the existing import in __init__(self) are required
-#       in order for the GTK Demo to work.
-# -UmlautBioEye
-# -19 Jan 2017
-from gi.repository import GLib
 
 class GtkScheduler(SchedulerBase):
     """ A scheduler that schedules work via the GLib main loop
