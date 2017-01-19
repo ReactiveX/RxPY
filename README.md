@@ -1,5 +1,5 @@
 [![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)
-[![Coverage Status](https://coveralls.io/repos/github/ReactiveX/RxPY/badge.svg?branch=master)](https://coveralls.io/github/ReactiveX/RxPY?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/UmlautBioEye/RxPY/badge.svg?branch=fix_gtkscheduler)](https://coveralls.io/github/UmlautBioEye/RxPY?branch=fix_gtkscheduler)
 
 # The Reactive Extensions for Python (RxPY) #
 
