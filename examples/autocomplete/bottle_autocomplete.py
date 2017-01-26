@@ -19,8 +19,11 @@ class WikiFinder:
         gevent.spawn(lambda: requests.get(self.tmpl % term).text).link(r)
 
     def subscribe(self, on_next, on_err, on_compl):
-        self.res.wait()
-        on_next(self.res.value)
+        try:
+            self.res.get()
+            on_next(self.res.value)
+        except Exception as ex:
+            on_err(ex.args)
         on_compl()
 
 
