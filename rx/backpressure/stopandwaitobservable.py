@@ -51,6 +51,7 @@ class StopAndWaitObservable(ObservableBase):
         super(StopAndWaitObservable, self).__init__()
         self.scheduler = scheduler or timeout_scheduler
         self.source = source
+        self.subscription = None
 
     def _subscribe_core(self, observer):
         observer = StopAndWaitObserver(observer, self, self.subscription, self.scheduler)
