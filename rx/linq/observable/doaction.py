@@ -40,12 +40,15 @@ def do_action(self, on_next=None, on_error=None, on_completed=None,
 
     def subscribe(observer):
         def _on_next(x):
-            try:
-                on_next(x)
-            except Exception as e:
-                observer.on_error(e)
+            if not on_next:
+                observer.on_next(x)
+            else:
+                try:
+                    on_next(x)
+                except Exception as e:
+                    observer.on_error(e)
 
-            observer.on_next(x)
+                observer.on_next(x)
 
         def _on_error(exception):
             if not on_error:
