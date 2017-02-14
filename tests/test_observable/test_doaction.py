@@ -82,6 +82,19 @@ class TestDo(unittest.TestCase):
         self.assertEqual(0, i[0])
         assert(not completed[0])
 
+    def test_do_action_without_next(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2),  on_completed(250))
+        completed = [False]
+        def create():
+            def on_completed():
+                completed[0] = True
+            return xs.do_action(on_completed=on_completed)
+
+        scheduler.start(create)
+
+        assert(completed[0])
+
 # def test_do_next_error(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
