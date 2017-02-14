@@ -7,7 +7,7 @@ from rx.concurrency import timeout_scheduler
 
 
 @extensionmethod(Observable)
-def skip_until_with_time(self, start_time, scheduler):
+def skip_until_with_time(self, start_time, scheduler=None):
     """Skips elements from the observable source sequence until the
     specified start time, using the specified scheduler to run timers.
     Errors produced by the source sequence are always forwarded to the

@@ -33,11 +33,11 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
     """
 
     scheduler = scheduler or current_thread_scheduler
-    mad = MultipleAssignmentDisposable()
 
     def subscribe(observer):
         first = [True]
         state = [initial_state]
+        mad = MultipleAssignmentDisposable()
 
         def action(scheduler, state1=None):
             has_result = False

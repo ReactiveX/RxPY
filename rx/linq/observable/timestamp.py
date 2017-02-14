@@ -12,7 +12,8 @@ log = logging.getLogger("Rx")
 def timestamp(self, scheduler=None):
     """Records the timestamp for each value in an observable sequence.
 
-    1 - res = source.timestamp() # produces { "value": x, "timestamp": ts }
+    1 - res = source.timestamp() # produces objects with attributes "value" and
+        "timestamp", where value is the original value.
     2 - res = source.timestamp(Scheduler.timeout)
 
     :param Scheduler scheduler: [Optional] Scheduler used to compute timestamps. If not
