@@ -5,9 +5,14 @@
 
 *A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-Python Reactive Programming is in the making. Finally there will be a book about reactive programming in Python and RxPY. The book is scheduled for fall 2016, and you may pre-order it at [Amazon](http://www.amazon.com/dp/B01DT4D5MI/ref=cm_sw_r_fa_dp_E7Mexb19ZJJA3), or buy it directly from [Packt Publishing](https://www.packtpub.com/application-development/python-reactive-programming) when available.
+Python Reactive Programming is in the making. Finally there will be a book about reactive programming in Python and RxPY. The book is scheduled for 2017, and you may pre-order it at [Amazon](http://www.amazon.com/dp/B01DT4D5MI/ref=cm_sw_r_fa_dp_E7Mexb19ZJJA3), or buy it directly from [Packt Publishing](https://www.packtpub.com/application-development/python-reactive-programming) when available.
 
 ![Python Reactive Programming](https://d1ldz4te4covpm.cloudfront.net/sites/default/files/imagecache/ppv4_main_book_cover/B05510_MockupCover_Normal.jpg)
+
+O'Reilly has also published the video _Reactive Python for Data Science_ which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
+
+[![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](shop.oreilly.com/product/0636920064237.do))
+
 
 ## About the Reactive Extensions
 
