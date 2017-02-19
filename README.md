@@ -11,7 +11,7 @@ Python Reactive Programming is in the making. Finally there will be a book about
 
 O'Reilly has also published the video _Reactive Python for Data Science_ which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). This video teaches RxPy from scratch with applications towards data science, but should be helpful for anyone seeking to learn RxPy and reactive programming.
 
-[![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](shop.oreilly.com/product/0636920064237.do))
+[![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006))
 
 ## About the Reactive Extensions
 
