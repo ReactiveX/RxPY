@@ -49,9 +49,9 @@ The Basics
 
 An `Observable` is the core type in ReactiveX. It serially pushes items, known as *emissions*, through a series of operators until it finally arrives at an `Observer`, where they are consumed.
 
-Push-based (rather than pull-based) iteration opens up powerful new possibilities to express code and concurrency much more quickly. Because an `Observable` treats events as data, and data as events, composing the two together becomes trivial.
+Push-based (rather than pull-based) iteration opens up powerful new possibilities to express code and concurrency much more quickly. Because an `Observable` treats events as data and data as events, composing the two together becomes trivial.
 
-There are many ways to create an `Observable` that hands items to an `Observer`. You cna use an `Observable.create()` factory and pass it a function that hands items to the `Observer`. The `Observer` implements `on_next()`, `on_completed()`, and `on_error()` functions. The `on_next()` is used to pass items. The `on_completed()` will signal no more items are coming, and the `on_error()` signals an error.
+There are many ways to create an `Observable` that hands items to an `Observer`. You can use an `Observable.create()` factory and pass it a function that hands items to the `Observer`. The `Observer` implements `on_next()`, `on_completed()`, and `on_error()` functions. The `on_next()` is used to pass items. The `on_completed()` will signal no more items are coming, and the `on_error()` signals an error.
 
 For instance, you can implement an `Observer` with these three methods and simply print these events. Then the `Observable.create()` can leverage a function that passes five strings to the `Observer` by calling those events.
 
