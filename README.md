@@ -44,8 +44,8 @@ Tutorials
 	-	[reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
 	-	[reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
-The Basics
-----------
+# The Basics
+
 
 An `Observable` is the core type in ReactiveX. It serially pushes items, known as *emissions*, through a series of operators until it finally arrives at an `Observer`, where they are consumed.
 
@@ -151,8 +151,7 @@ Received Epsilon
 ```
 
 
-Operators and Chaining
-----------------------
+### Operators and Chaining
 
 
 You can also derive new Observables using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other. 
@@ -189,8 +188,8 @@ Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
     .subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
-Emitting Events
----------------
+### Emitting Events
+
 
 On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1000 milliseconds. This `Observable` will run infinitely and never call `on_complete`.
 
@@ -219,9 +218,66 @@ input("Press any key to quit\n")
 
 Because `Observable.interval()` operates on a separate thread (via the `TimeoutScheduler`), we need to prevent the application from exiting prematurely before it has a chance to fire. We can use an `input()` to stop the main thread until a key is pressed. Observables can be created for button events, requests, timers, and even [live Twitter feeds](https://github.com/thomasnield/oreilly_reactive_python_for_data/blob/master/code_examples/8.2_twitter_feed_for_topics.py).
 
+### Multicasting
 
-Combining Observables
----------------------
+Each Subscriber to an `Observable` often will receive a separate stream of emissions. For instance, having two subscribers to this `Observable` emitting three random integers will result in both subscribers getting different numbers. 
+
+```python
+from rx import Observable
+from random import randint
+
+
+three_emissions = Observable.range(1, 3)
+
+three_random_ints = three_emissions.map(lambda i: randint(1, 100000))
+
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+```
+
+**OUTPUT:**
+
+```
+Subscriber 1 Received: 79262
+Subscriber 1 Received: 20892
+Subscriber 1 Received: 69197
+Subscriber 2 Received: 66574
+Subscriber 2 Received: 41177
+Subscriber 2 Received: 47445
+```
+
+To force a specifc point in an `Observable` chain to push the same emissions to all subscribers (rather than generating a separate stream of emissions for each subscriber), you can call `publish()` to return a `ConnectableObservable`. Then you can set up your subscribers and call `connect()` when they are ready to receive emissions. 
+
+```python
+from rx import Observable
+from random import randint
+
+
+three_emissions = Observable.range(1, 3)
+
+three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish()
+
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+
+three_random_ints.connect()
+```
+
+**OUTPUT:**
+
+```
+Subscriber 1 Received: 90994
+Subscriber 2 Received: 90994
+Subscriber 1 Received: 91213
+Subscriber 2 Received: 91213
+Subscriber 1 Received: 42335
+Subscriber 2 Received: 42335
+```
+
+This is taking a cold `Observable` (which "replays" operations for each subscriber) and making it hot (putting all subscribers on the same stream/operation). Be sure to have all your subscribers set up before calling `connect()`, as any tardy subscribers that subscribe after `connect()` is called will miss any previous emissions.
+
+### Combining Observables
+
 
 You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
@@ -278,8 +334,8 @@ Observable.from_([1, 3, 5]) \
 (5, 'Marsh Lane Metal Works', 'Southeast', '9143 Marsh Ln', 'Avondale', 'LA', 79782)
 ```
 
-Concurrency
------------
+### Concurrency
+
 
 To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads. 
 
