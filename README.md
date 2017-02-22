@@ -95,7 +95,7 @@ Received Epsilon
 Done!
 ```
 
-However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.from_()`. This factory accepts an iterable, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass it a list of these five Strings in our previous example.
+However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.from_()`. This factory accepts an iterable, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass it a list of these five Strings to it.
 
 ```python
 from rx import Observable, Observer
@@ -117,7 +117,7 @@ source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
 source.subscribe(PrintObserver())
 ```
 
-Most of the time you will not want to go through the verbosity of implementing your own `Observer`. You can instead pass 1 to 3 lambda arguments to `subscribe()` for `on_next`, `on_complete`, and `on_error`.
+Most of the time you will not want to go through the verbosity of implementing your own `Observer`. You can instead pass 1 to 3 lambda arguments to `subscribe()` specifying the `on_next`, `on_complete`, and `on_error` actions.
 
 ```python
 from rx import Observable
@@ -130,7 +130,7 @@ source.subscribe(on_next=lambda value: print("Received {0}".format(value)),
                  )
 ```
 
-You do not even have to specify all three events types. You can pick and choose which events you want to observe using the named arguments, or simply provide a single lambda for the `on_next`.
+You do not have to specify all three events types. You can pick and choose which events you want to observe using the named arguments, or simply provide a single lambda for the `on_next`. Typically in production, you will want to provide an `on_error` so errors are explicitly handled by the subscriber.
 
 ```python
 from rx import Observable
@@ -150,7 +150,7 @@ Received Delta
 Received Epsilon
 ```
 
-You can also derive new Observables by using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5.
+You can also derive new Observables using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other. 
 
 Operators and Chaining
 ----------------------
@@ -190,7 +190,7 @@ Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
 Emitting Events
 ---------------
 
-On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1000 milliseconds.
+On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1000 milliseconds. This `Observable` will run infinitely and never call `on_complete`.
 
 ```python
 from rx import Observable
@@ -215,12 +215,14 @@ input("Press any key to quit\n")
 ...
 ```
 
-Because `Observable.interval()` operates on a separate thread (via the `TimeoutScheduler`), we need to prevent the application from exiting prematurely before it has a chance to fire. We can use an `input()` to stop the main thread until a key is pressed. Observables can be created for button events, requests, timers, and even [Twitter feeds](https://github.com/thomasnield/oreilly_reactive_python_for_data/blob/master/code_examples/8.2_twitter_feed_for_topics.py).
+Because `Observable.interval()` operates on a separate thread (via the `TimeoutScheduler`), we need to prevent the application from exiting prematurely before it has a chance to fire. We can use an `input()` to stop the main thread until a key is pressed. Observables can be created for button events, requests, timers, and even [live Twitter feeds](https://github.com/thomasnield/oreilly_reactive_python_for_data/blob/master/code_examples/8.2_twitter_feed_for_topics.py).
 
-You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
 Combining Observables
 ---------------------
+
+You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
+
 
 ```python
 from rx import Observable
@@ -277,9 +279,11 @@ Observable.from_([1, 3, 5]) \
 Concurrency
 -----------
 
-To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads. The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` _at that point_ in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument). 
+To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads. 
 
-Below, we run three different processes concurrently rather than sequentially using `subscribe_on()` as well as an `observe_on()`. 
+The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
+
+Below, we run three different processes concurrently rather than sequentially using `subscribe_on()` as well as an `observe_on()`.
 
 ```python
 import multiprocessing
@@ -346,8 +350,7 @@ PROCESS 3: Thread-7 300
 ...
 ```
 
-For in-depth walkthroughs on RxPy, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). 
-
+For more in-depth tutorials, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
 
 Python Alignment
 ----------------
