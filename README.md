@@ -150,10 +150,12 @@ Received Delta
 Received Epsilon
 ```
 
-You can also derive new Observables using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other. 
 
 Operators and Chaining
 ----------------------
+
+
+You can also derive new Observables using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other. 
 
 ```python
 from rx import Observable
