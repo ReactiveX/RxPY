@@ -70,7 +70,7 @@ class ConnectableObservable(ObservableBase):
         source = self
 
         if subscriber_count == 0:
-            source.connect()
+            connectable_subscription[0] = source.connect()
 
         def subscribe(observer):
             count[0] += 1
