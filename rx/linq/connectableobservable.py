@@ -68,22 +68,24 @@ class ConnectableObservable(ObservableBase):
         connectable_subscription = [None]
         count = [0]
         source = self
-        is_connected = False
+        is_connected = [False]
 
         if subscriber_count == 0:
             connectable_subscription[0] = source.connect()
-            is_connected = True
+            is_connected[0] = True
 
         def subscribe(observer):
             count[0] += 1
-            should_connect = count[0] == subscriber_count and not is_connected
+            should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)
             if should_connect:
                 connectable_subscription[0] = source.connect()
+                is_connected[0] = True
 
             def dispose():
                 subscription.dispose()
                 count[0] -= 1
+                is_connected[0] = False
 
             return Disposable.create(dispose)
 
