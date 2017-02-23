@@ -68,13 +68,15 @@ class ConnectableObservable(ObservableBase):
         connectable_subscription = [None]
         count = [0]
         source = self
+        is_connected = False
 
         if subscriber_count == 0:
             connectable_subscription[0] = source.connect()
+            is_connected = True
 
         def subscribe(observer):
             count[0] += 1
-            should_connect = count[0] == subscriber_count
+            should_connect = count[0] == subscriber_count and not is_connected
             subscription = source.subscribe(observer)
             if should_connect:
                 connectable_subscription[0] = source.connect()
