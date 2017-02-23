@@ -55,4 +55,34 @@ class ConnectableObservable(ObservableBase):
                     connectable_subscription[0].dispose()
 
             return Disposable.create(dispose)
+
+        return AnonymousObservable(subscribe)
+
+    def auto_connect(self, subscriber_count=1):
+        """Returns an observable sequence that stays connected to the
+        source indefinitely to the observable sequence.
+        Providing a subscriber_count will cause it to connect() after that many subscriptions occur.
+        A subscriber_count of 0 will result in emissions firing immediately without waiting for subscribers.
+        """
+
+        connectable_subscription = [None]
+        count = [0]
+        source = self
+
+        if subscriber_count == 0:
+            source.connect()
+
+        def subscribe(observer):
+            count[0] += 1
+            should_connect = count[0] == subscriber_count
+            subscription = source.subscribe(observer)
+            if should_connect:
+                connectable_subscription[0] = source.connect()
+
+            def dispose():
+                subscription.dispose()
+                count[0] -= 1
+
+            return Disposable.create(dispose)
+
         return AnonymousObservable(subscribe)
