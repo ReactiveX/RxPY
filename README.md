@@ -13,16 +13,14 @@ O'Reilly has also published the video *Reactive Python for Data Science* which i
 
 [![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](https://shop.oreilly.com/product/0636920064237.do)
 
-About the Reactive Extensions
+About ReactiveX
 -----------------------------
 
-The Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using LINQ operators, and parameterize the concurrency in the asynchronous data streams using Schedulers. Simply put, Rx = Observables + LINQ + Schedulers.
+Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using operators, and parameterize concurrency in data/event streams using Schedulers.
 
-Whether you are authoring a client-side or server-side application in Python, you have to deal with asynchronous and event-based programming as a matter of course.
+Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well. 
 
-Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.
-
-Because observable sequences are data streams, you can query them using standard LINQ query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
+Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
 Install
 -------
@@ -246,7 +244,7 @@ Subscriber 2 Received: 41177
 Subscriber 2 Received: 47445
 ```
 
-To force a specifc point in an `Observable` chain to push the same emissions to all subscribers (rather than generating a separate stream of emissions for each subscriber), you can call `publish()` to return a `ConnectableObservable`. Then you can set up your subscribers and call `connect()` when they are ready to receive emissions. 
+To force a specifc point in an `Observable` chain to push the same emissions to all subscribers (rather than generating a separate stream of emissions for each subscriber), you can call `publish()` to return a `ConnectableObservable`. Then you can set up your subscribers and call `connect()` when they are ready to receive the same stream of emissions.
 
 ```python
 from rx import Observable
@@ -274,7 +272,7 @@ Subscriber 1 Received: 42335
 Subscriber 2 Received: 42335
 ```
 
-This is taking a cold `Observable` (which "replays" operations for each subscriber) and making it hot (putting all subscribers on the same stream/operation). Be sure to have all your subscribers set up before calling `connect()`, as any tardy subscribers that subscribe after `connect()` is called will miss any previous emissions.
+This takes a cold `Observable` (which "replays" operations for each subscriber) and makes it hot by putting all Observers on the same stream of emissions which are broadcasted in live time. Be sure to have all your Observers set up before calling `connect()`, as any tardy Observers that subscribe after `connect()` is called will miss any previous emissions.
 
 ### Combining Observables
 
