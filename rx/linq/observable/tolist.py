@@ -14,3 +14,11 @@ def to_list(self):
         return res[:]
 
     return self.scan(accumulator, seed=[]).start_with([]).last()
+
+
+@extensionmethod(Observable)
+def to_sorted_list(self, key_selector=None):
+    if key_selector:
+        return self.to_list().do_action(on_next=lambda l: l.sort(key=key_selector))
+    else:
+        return self.to_list().map(lambda l: sorted(l))
