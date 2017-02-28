@@ -17,7 +17,7 @@ def to_list(self):
 
 
 @extensionmethod(Observable)
-def to_sorted_list(self, key_selector=None):
+def to_sorted_list(self, key_selector=None, reverse=False):
     """
     Creates a sorted list from an observable sequence,
     with an optional key_selector used to map the attribute for sorting
@@ -26,6 +26,6 @@ def to_sorted_list(self, key_selector=None):
     containing all the sorted elements of the source sequence."""
 
     if key_selector:
-        return self.to_list().do_action(on_next=lambda l: l.sort(key=key_selector))
+        return self.to_list().do_action(on_next=lambda l: l.sort(key=key_selector, reverse=reverse))
     else:
-        return self.to_list().map(lambda l: sorted(l))
+        return self.to_list().do_action(lambda l: l.sort(reverse=reverse))
