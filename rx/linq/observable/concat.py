@@ -25,6 +25,15 @@ def concat(self, *args):
     return Observable.concat(items)
 
 
+@extensionmethod(Observable, instancemethod=True)
+def concat_map(self, selector):
+    """Maps each emission to an Observable and fires its emissions.
+    It will only fire each resulting Observable sequentially.
+    The next derived Observable will not start its emissions until the current one calls on_complate
+    """
+    return self.map(selector).concat_all()
+
+
 @extensionmethod(Observable)
 def __add__(self, other):
     """Pythonic version of concat
@@ -94,7 +103,9 @@ def concat(cls, *args):
 
         def dispose():
             is_disposed.append(True)
+
         return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
+
     return AnonymousObservable(subscribe)
 
 

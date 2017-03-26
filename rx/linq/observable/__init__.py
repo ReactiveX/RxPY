@@ -97,6 +97,7 @@ from . import slice
 from . import start
 from . import startasync
 from . import startswith
+from . import statistics
 from . import subscribeon
 from . import sum
 from . import switchlatest
