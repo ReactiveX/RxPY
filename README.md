@@ -5,11 +5,7 @@ The Reactive Extensions for Python (RxPY)
 
 *A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-Python Reactive Programming is in the making. Finally there will be a book about reactive programming in Python and RxPY. The book is scheduled for 2017, and you may pre-order it at [Amazon](http://www.amazon.com/dp/B01DT4D5MI/ref=cm_sw_r_fa_dp_E7Mexb19ZJJA3), or buy it directly from [Packt Publishing](https://www.packtpub.com/application-development/python-reactive-programming) when available.
-
-![Python Reactive Programming](https://d1ldz4te4covpm.cloudfront.net/sites/default/files/imagecache/ppv4_main_book_cover/B05510_MockupCover_Normal.jpg)
-
-O'Reilly has also published the video *Reactive Python for Data Science* which is available on both the [O'Reilly Store](https://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). This video teaches RxPy from scratch with applications towards data science, but should be helpful for anyone seeking to learn RxPy and reactive programming.
+O'Reilly has published the video *Reactive Python for Data Science* which is available on both the [O'Reilly Store](https://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). This video teaches RxPY from scratch with applications towards data science, but should be helpful for anyone seeking to learn RxPY and reactive programming.
 
 [![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](https://shop.oreilly.com/product/0636920064237.do)
 
@@ -18,14 +14,14 @@ About ReactiveX
 
 Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using operators, and parameterize concurrency in data/event streams using Schedulers.
 
-Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well. 
+Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well.
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
 Install
 -------
 
-RxPy runs on [Python](http://www.python.org/) 2.7, 3.4,[PyPy](http://pypy.org/) and [IronPython](https://ironpython.codeplex.com)
+RxPY runs on [Python](http://www.python.org/) 2.7, 3.4,[PyPy](http://pypy.org/) and [IronPython](https://ironpython.codeplex.com)
 
 To install RxPY:
 
@@ -151,8 +147,7 @@ Received Epsilon
 
 ### Operators and Chaining
 
-
-You can also derive new Observables using over 130 operators available in RxPy. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other. 
+You can also derive new Observables using over 130 operators available in RxPY. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other.
 
 ```python
 from rx import Observable
@@ -218,7 +213,7 @@ Because `Observable.interval()` operates on a separate thread (via the `TimeoutS
 
 ### Multicasting
 
-Each Subscriber to an `Observable` often will receive a separate stream of emissions. For instance, having two subscribers to this `Observable` emitting three random integers will result in both subscribers getting different numbers. 
+Each Subscriber to an `Observable` often will receive a separate stream of emissions. For instance, having two subscribers to this `Observable` emitting three random integers will result in both subscribers getting different numbers.
 
 ```python
 from rx import Observable
@@ -335,7 +330,7 @@ Observable.from_([1, 3, 5]) \
 ### Concurrency
 
 
-To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads. 
+To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
 The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
 
