@@ -417,7 +417,7 @@ PROCESS 3: Thread-7 300
 ...
 ```
 
-For more in-depth tutorials, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
+For more in-depth tutorials, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](http://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
 
 Python Alignment
 ----------------
