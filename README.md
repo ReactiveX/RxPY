@@ -272,7 +272,6 @@ This takes a cold `Observable` (which "replays" operations for each subscriber) 
 Another way to implement mutlicasting is to use the `auto_connect()` operator on a `ConnectableObservable`. This will start firing emissions the moment it gets a subscriber, and will continue to fire even as subscribers come and go. If you provide an integer argument, it will hold off firing until there are that many subscribers subscribed to it. 
 
 ```python
-```python
 from rx import Observable
 from random import randint
 
