@@ -14,7 +14,7 @@ About ReactiveX
 
 Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using operators, and parameterize concurrency in data/event streams using Schedulers.
 
-Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well.
+Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs. You can put various transformations in-between the source Observable and the consuming Observer as well.
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
@@ -422,7 +422,7 @@ For more in-depth tutorials, check out *Reactive Python for Data Science* which 
 Python Alignment
 ----------------
 
-Disposables implements a context manager so you may use them in `with` statements.
+Observables implements a context manager so you may use them in `with` statements.
 
 Observable sequences may be concatenated using `+`, so you can write:
 
@@ -432,7 +432,7 @@ ys = Observable.from_([4,5,6])
 zs = xs + ys  # Concatenate observables
 ```
 
-Observable sequences may be repeated using `*=`, so you can write:
+Observable sequences may be repeated using `*`, so you can write:
 
 ```python
 xs = Observable.from_([1,2,3])
@@ -459,17 +459,21 @@ for x in zs:
 Differences from .NET and RxJS
 ------------------------------
 
-RxPY is a fairly complete implementation of[Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx) v2.2 with more than [134 query operators](http://reactivex.io/documentation/operators.html), and over [1100 passing unit-tests](https://coveralls.io/github/dbrattli/RxPY). RxPY is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in terms of threading and blocking operators.
+RxPY is a fairly complete implementation of [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx) v2.2 with more than [134 query operators](http://reactivex.io/documentation/operators.html), and over [1100 passing unit-tests](https://coveralls.io/github/dbrattli/RxPY). RxPY is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in terms of threading and blocking operators.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all function and method names are lowercase with words separated by underscores as necessary to improve readability.
 
-Thus .NET code such as:`c#
-var group = source.GroupBy(i => i % 3);
-`
+Thus .NET code such as:
 
-need to be written with an `_` in Python:`python
+```c#
+var group = source.GroupBy(i => i % 3);
+```
+
+need to be written with an `_` in Python:
+
+```python
 group = source.group_by(lambda i: i % 3)
-`
+```
 
 With RxPY you should use named[keyword arguments](https://docs.python.org/2/glossary.html) instead of positional arguments when an operator has multiple optional arguments. RxPY will not try to detect which arguments you are giving to the operator (or not).
 
@@ -482,36 +486,36 @@ res = Observable.timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
 res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 ```
 
-Thus when an operator like `Observable.timeout` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
+Thus when an operator like `Observable.timeout` has multiple optional arguments you should name your arguments; at least the arguments marked as optional.
 
 Schedulers
 ----------
 
 In RxPY you can choose to run fully asynchronously or you may decide to schedule work and timeouts using threads.
 
-For time and scheduler handing you will need to supply[datetime](https://docs.python.org/2/library/datetime.html) for absolute time values and[timedelta](https://docs.python.org/2/library/datetime.html#timedelta-objects) for relative time. You may also use `int` to represent milliseconds.
+For time and scheduler handing you will need to supply [datetime](https://docs.python.org/2/library/datetime.html) for absolute time values and [timedelta](https://docs.python.org/2/library/datetime.html#timedelta-objects) for relative time. You may also use `int` to represent milliseconds.
 
 RxPY also comes with batteries included, and has a number of Python specific mainloop schedulers to make it easier for you to use RxPY with your favorite Python framework.
 
 -	`ThreadPoolScheduler` to create a fixed sized pool of Schedulers.
 -	`NewThreadScheduler` to create a new thread for each subscription
--	`AsyncIOScheduler` for use with[AsyncIO](https://docs.python.org/3/library/asyncio.html). (requires Python 3.4 or[trollius](http://trollius.readthedocs.org/), a port of `asyncio` compatible with Python 2.6-3.5).
+-	`AsyncIOScheduler` for use with [AsyncIO](https://docs.python.org/3/library/asyncio.html). (requires Python 3.4 or [trollius](http://trollius.readthedocs.org/), a port of `asyncio` compatible with Python 2.6-3.5).
 -	`EventLetEventScheduler` for use with [Eventlet](http://eventlet.net/).
--	`IOLoopScheduler` for use with[Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the[autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete) and [konamicode](https://github.com/ReactiveX/RxPY/tree/master/examples/konamicode) examples for how to use RxPY with your Tornado application.
+-	`IOLoopScheduler` for use with [Tornado IOLoop](http://www.tornadoweb.org/en/stable/networking.html). See the [autocomplete](https://github.com/ReactiveX/RxPY/tree/master/examples/autocomplete) and [konamicode](https://github.com/ReactiveX/RxPY/tree/master/examples/konamicode) examples for how to use RxPY with your Tornado application.
 -	`GEventScheduler` for use with [GEvent](http://www.gevent.org/). (Python 2.7 only).
 -	`TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
 -	`TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Tkinter application.
 -	`PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the[chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess) example for how to use RxPY with your PyGame application.
--	`QtScheduler` for use with[PyQt4](http://www.riverbankcomputing.com/software/pyqt/download),[PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and[PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the[timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Qt application.
--	`GtkScheduler` for use with[Python GTK+ 3](https://wiki.gnome.org/Projects/PyGObject). See the[timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your GTK+ application.
--	`WxScheduler` for use with [wxPython](http://www.wxpython.org). See the[timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your wx application.
+-	`QtScheduler` for use with [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download),[PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and[PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Qt application.
+-	`GtkScheduler` for use with [Python GTK+ 3](https://wiki.gnome.org/Projects/PyGObject). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your GTK+ application.
+-	`WxScheduler` for use with [wxPython](http://www.wxpython.org). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your wx application.
 
 Contributing
 ------------
 
 You can contribute by reviewing and sending feedback on code checkins, suggesting and trying out new features as they are implemented, register issues and help us verify fixes as they are checked in, as well as submit code fixes or code contributions of your own.
 
-The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at[Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and[CodePlex](http://rxpy.codeplex.com/). Please register any issues to[ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
+The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/). Please register any issues to[ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
 
 Note that the master branch is for releases only, so please submit any pull requests against the [develop](https://github.com/ReactiveX/RxPY/tree/develop) branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY/tree/develop).
 
