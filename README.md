@@ -475,7 +475,7 @@ need to be written with an `_` in Python:
 group = source.group_by(lambda i: i % 3)
 ```
 
-With RxPY you should use named[keyword arguments](https://docs.python.org/2/glossary.html) instead of positional arguments when an operator has multiple optional arguments. RxPY will not try to detect which arguments you are giving to the operator (or not).
+With RxPY you should use named [keyword arguments](https://docs.python.org/2/glossary.html) instead of positional arguments when an operator has multiple optional arguments. RxPY will not try to detect which arguments you are giving to the operator (or not).
 
 ```python
 res = Observable.timer(5000) # Yes
@@ -505,8 +505,8 @@ RxPY also comes with batteries included, and has a number of Python specific mai
 -	`GEventScheduler` for use with [GEvent](http://www.gevent.org/). (Python 2.7 only).
 -	`TwistedScheduler` for use with [Twisted](https://twistedmatrix.com/).
 -	`TkinterScheduler` for use with [Tkinter](https://wiki.python.org/moin/TkInter). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Tkinter application.
--	`PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the[chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess) example for how to use RxPY with your PyGame application.
--	`QtScheduler` for use with [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download),[PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and[PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Qt application.
+-	`PyGameScheduler` for use with [PyGame](http://www.pygame.org/). See the [chess](https://github.com/ReactiveX/RxPY/tree/master/examples/chess) example for how to use RxPY with your PyGame application.
+-	`QtScheduler` for use with [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download), [PyQt5](http://www.riverbankcomputing.com/software/pyqt/download5), and [PySide](https://wiki.qt.io/Category:LanguageBindings::PySide). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your Qt application.
 -	`GtkScheduler` for use with [Python GTK+ 3](https://wiki.gnome.org/Projects/PyGObject). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your GTK+ application.
 -	`WxScheduler` for use with [wxPython](http://www.wxpython.org). See the [timeflies](https://github.com/ReactiveX/RxPY/tree/master/examples/timeflies) example for how to use RxPY with your wx application.
 
@@ -515,7 +515,7 @@ Contributing
 
 You can contribute by reviewing and sending feedback on code checkins, suggesting and trying out new features as they are implemented, register issues and help us verify fixes as they are checked in, as well as submit code fixes or code contributions of your own.
 
-The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/). Please register any issues to[ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
+The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/). Please register any issues to [ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
 
 Note that the master branch is for releases only, so please submit any pull requests against the [develop](https://github.com/ReactiveX/RxPY/tree/develop) branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY/tree/develop).
 
