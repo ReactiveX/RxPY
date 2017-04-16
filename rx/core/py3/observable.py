@@ -2922,7 +2922,7 @@ class Observable(metaclass=ABCMeta):
         """
         pass
 
-    def to_iterable(self, accumulator):
+    def to_iterable(self):
         """
         Creates a list from an observable sequence.
     
@@ -2930,7 +2930,7 @@ class Observable(metaclass=ABCMeta):
         containing all the elements of the source sequence."""
         pass
 
-    def to_list(self, accumulator):
+    def to_list(self):
         """
         Creates a list from an observable sequence.
     
@@ -3105,6 +3105,19 @@ class Observable(metaclass=ABCMeta):
         elements of the sources using the specified result selector function.
         """
         pass
+
+    def zip(self, *args):
+        """
+        Merges the specified observable sequences into one observable
+        sequence by using the selector function whenever all of the observable
+        sequences or an array have produced an element at a corresponding index.
+        The last element in the arguments must be a function to invoke for each
+        series of elements at corresponding indexes in the sources.
+        1 - res = obs1.zip(obs2, fn)
+        2 - res = x1.zip([1,2,3], fn)
+        Returns an observable sequence containing the result of combining
+        elements of the sources using the specified result selector function.
+        """
 
     @classmethod
     def zip(cls, *args, first):
