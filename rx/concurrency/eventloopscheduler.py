@@ -79,7 +79,6 @@ class EventLoopScheduler(SchedulerBase, Disposable):
     def schedule_periodic(self, period, action, state=None):
         """Schedule a periodic piece of work."""
 
-        dt = self.to_timedelta(period)
         disposed = []
 
         s = [state]
@@ -88,12 +87,12 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             if disposed:
                 return
 
-            self.schedule_relative(dt, tick)
+            self.schedule_relative(period, tick)
             new_state = action(s[0])
             if new_state is not None:
                 s[0] = new_state
 
-        self.schedule_relative(dt, tick)
+        self.schedule_relative(period, tick)
 
         def dispose():
             disposed.append(True)
