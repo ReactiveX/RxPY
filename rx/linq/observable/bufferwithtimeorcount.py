@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def buffer_with_time_or_count(self, timespan, count, scheduler):
+def buffer_with_time_or_count(self, timespan, count, scheduler=None):
     """Projects each element of an observable sequence into a buffer that
     is completed when either it's full or a given amount of time has
     elapsed.
