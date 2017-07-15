@@ -19,7 +19,8 @@ def repeat(self, repeat_count=None):
     Returns the observable sequence producing the elements of the given
     sequence repeatedly."""
 
-    return Observable.concat(Enumerable.repeat(self, repeat_count))
+    return Observable.defer(lambda: Observable.concat(Enumerable.repeat(self, repeat_count)))
+
 
 @extensionmethod(Observable)
 def __mul__(self, b):
@@ -32,6 +33,7 @@ def __mul__(self, b):
 
     assert isinstance(b, int)
     return self.repeat(b)
+
 
 @extensionclassmethod(Observable)
 def repeat(cls, value=None, repeat_count=None, scheduler=None):
