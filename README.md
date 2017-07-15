@@ -1,4 +1,4 @@
-[![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)[![Coveralls Coverage Status](https://img.shields.io/coveralls/dbrattli/RxPY.svg)](https://coveralls.io/r/dbrattli/RxPY)
+[![Travis Build Status](https://img.shields.io/travis/ReactiveX/RxPY.svg)](https://travis-ci.org/ReactiveX/RxPY)[![Coveralls Coverage Status](https://img.shields.io/coveralls/dbrattli/RxPY.svg)](https://coveralls.io/r/dbrattli/RxPY)[![pypi version](https://img.shields.io/pypi/v/rx.svg)](https://pypi.python.org/pypi/Rx/)
 
 The Reactive Extensions for Python (RxPY)
 =========================================
@@ -269,6 +269,22 @@ Subscriber 2 Received: 42335
 
 This takes a cold `Observable` (which "replays" operations for each subscriber) and makes it hot by putting all Observers on the same stream of emissions which are broadcasted in live time. Be sure to have all your Observers set up before calling `connect()`, as any tardy Observers that subscribe after `connect()` is called will miss any previous emissions.
 
+Another way to implement mutlicasting is to use the `auto_connect()` operator on a `ConnectableObservable`. This will start firing emissions the moment it gets a subscriber, and will continue to fire even as subscribers come and go. If you provide an integer argument, it will hold off firing until there are that many subscribers subscribed to it. 
+
+```python
+from rx import Observable
+from random import randint
+
+
+three_emissions = Observable.range(1, 3)
+
+three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
+
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
+
+```
+
 ### Combining Observables
 
 
@@ -401,7 +417,7 @@ PROCESS 3: Thread-7 300
 ...
 ```
 
-For more in-depth tutorials, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
+For more in-depth tutorials, check out *Reactive Python for Data Science* which is available on both the [O'Reilly Store](http://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006).
 
 Python Alignment
 ----------------
