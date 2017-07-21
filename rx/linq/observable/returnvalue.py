@@ -58,8 +58,8 @@ def from_callable(cls, supplier, scheduler=None):
             try:
                 observer.on_next(supplier())
                 observer.on_completed()
-            except Exception:
-                observer.on_error(Exception)
+            except Exception as e:
+                observer.on_error(e)
         return scheduler.schedule(action)
 
     return AnonymousObservable(subscribe)
