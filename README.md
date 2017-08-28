@@ -484,7 +484,7 @@ res = Observable.timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
 res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 ```
 
-Thus when an operator like `Observable.timeout` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
+Thus when an operator like `Observable.timer` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
 
 Schedulers
 ----------
