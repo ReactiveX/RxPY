@@ -19,7 +19,8 @@ class PriorityQueue(object):
 
     def peek(self):
         """Returns first item in queue without removing it"""
-
+        if not self.items:
+            return None
         return self.items[0][0]
 
     def remove_at(self, index):
