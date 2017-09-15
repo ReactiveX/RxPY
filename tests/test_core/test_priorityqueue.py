@@ -117,7 +117,7 @@ class TestPriorityQueue(unittest.TestCase):
 
         p = PriorityQueue()
 
-        self.assertRaises(IndexError, p.peek)
+        assert(p.peek() == None)
         p.enqueue(42)
         assert(p.peek() == 42)
         p.enqueue(41)
