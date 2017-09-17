@@ -23,13 +23,14 @@ def with_latest_from(self, *args):
     elements of the sources using the specified result selector function.
     """
 
-    args = list(args)
     if args and isinstance(args[0], list):
-        args = args[0]
+        children = args[0]
+        result_selector = args[1]
+        args_ = [self] + children + [result_selector]
+    else:
+        args_ = [self] + list(args)
 
-    args.insert(0, self)
-
-    return Observable.with_latest_from(*args)
+    return Observable.with_latest_from(*args_)
 
 
 @extensionclassmethod(Observable)
@@ -50,11 +51,12 @@ def with_latest_from(cls, *args):
     """
 
     if args and isinstance(args[0], list):
-        args = args[0]
+        observables = args[0]
+        result_selector = args[1]
     else:
-        args = list(args)
+        observables = list(args[:-1])
+        result_selector = args[-1]
 
-    result_selector = args.pop()
     NO_VALUE = object()
 
     def subscribe(observer):
@@ -90,5 +92,5 @@ def with_latest_from(cls, *args):
                 *(subscribe_child(*a) for a in enumerate(children))
             )
 
-        return CompositeDisposable(subscribe_all(*args))
+        return CompositeDisposable(subscribe_all(*observables))
     return AnonymousObservable(subscribe)
