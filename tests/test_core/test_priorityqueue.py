@@ -1,6 +1,8 @@
 import unittest
 
 from rx.internal import PriorityQueue
+from rx.internal.exceptions import InvalidOperationException
+
 
 class TestItem():
     def __init__(self, value, label=None):
@@ -117,7 +119,7 @@ class TestPriorityQueue(unittest.TestCase):
 
         p = PriorityQueue()
 
-        self.assertRaises(IndexError, p.peek)
+        self.assertRaises(InvalidOperationException, p.peek)
         p.enqueue(42)
         assert(p.peek() == 42)
         p.enqueue(41)

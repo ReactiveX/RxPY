@@ -348,6 +348,8 @@ Observable.from_([1, 3, 5]) \
 
 To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
+> Keep in mind Python's [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to undermine your concurrency performance, as it prevents multiple threads from accessing the same line of code simultaneously. Libraries like [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive computations as they free the GIL. RxPy may also minimize thread overlap to some degree. Just be sure to test your application with concurrency and ensure there is a performance gain. 
+
 The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
 
 Below, we run three different processes concurrently rather than sequentially using `subscribe_on()` as well as an `observe_on()`.
@@ -482,7 +484,7 @@ res = Observable.timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
 res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
 ```
 
-Thus when an operator like `Observable.timeout` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
+Thus when an operator like `Observable.timer` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
 
 Schedulers
 ----------
