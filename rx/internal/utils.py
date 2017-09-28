@@ -28,18 +28,22 @@ def adapt_call(func):
         if cached[0]:
             return cached[0](*args, **kw)
 
+        exceptions = []
         for fn in (func1, func2):
             try:
                 ret = fn(*args, **kw)
-            except TypeError:
+            except TypeError as e:
+                exceptions.append(e)
                 continue
             else:
                 cached[0] = fn
             return ret
 
-        # Error if we get here. Just call original function to generate a
-        # meaningful error message
-        return func(*args, **kw)
+        # Error if we get here. Raise all captured
+        # Type Errors together to generate a meaningful
+        # error message.
+        raise TypeError(*exceptions)
+        
     return func_wrapped
 
 
