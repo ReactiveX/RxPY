@@ -5,9 +5,6 @@ The Reactive Extensions for Python (RxPY)
 
 *A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
-O'Reilly has published the video *Reactive Python for Data Science* which is available on both the [O'Reilly Store](https://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). This video teaches RxPY from scratch with applications towards data science, but should be helpful for anyone seeking to learn RxPY and reactive programming.
-
-[![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](https://shop.oreilly.com/product/0636920064237.do)
 
 About ReactiveX
 -----------------------------
@@ -37,6 +34,14 @@ Tutorials
 	-	[reactivex.io: Introduction](http://reactivex.io/intro.html)
 	-	[reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
 	-	[reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
+	
+	
+**O'Reilly Video**
+
+O'Reilly has published the video *Reactive Python for Data Science* which is available on both the [O'Reilly Store](https://shop.oreilly.com/product/0636920064237.do) as well as [O'Reilly Safari](https://www.safaribooksonline.com/library/view/reactive-python-for/9781491979006). This video teaches RxPY from scratch with applications towards data science, but should be helpful for anyone seeking to learn RxPY and reactive programming.
+
+[![](http://akamaicovers.oreilly.com/images/0636920064237/lrg.jpg)](https://shop.oreilly.com/product/0636920064237.do)
+
 
 # The Basics
 
