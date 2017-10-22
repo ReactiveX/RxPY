@@ -15,7 +15,7 @@ def catch_handler(source, handler):
 
         def on_error(exception):
             try:
-                result = handler(exception)
+                result = handler(exception, source)
             except Exception as ex:
                 observer.on_error(ex)
                 return
