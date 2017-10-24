@@ -4,9 +4,13 @@ from rx.disposables import SingleAssignmentDisposable, \
 from rx.concurrency import current_thread_scheduler
 from rx.internal import Enumerable
 from rx.internal import extensionmethod, extensionclassmethod
+from rx.internal.utils import adapt_call
 
 
 def catch_handler(source, handler):
+    # For compatibility with legacy handlers that don't take ``source``.
+    adapted_handler = adapt_call(handler)
+
     def subscribe(observer):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -15,7 +19,7 @@ def catch_handler(source, handler):
 
         def on_error(exception):
             try:
-                result = handler(exception, source)
+                result = adapted_handler(exception, source)
             except Exception as ex:
                 observer.on_error(ex)
                 return

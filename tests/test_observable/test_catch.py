@@ -243,3 +243,24 @@ class TestCatch(unittest.TestCase):
         msgs3 = [on_next(230, 4), on_completed(235)]
 
         self._base_call_tracked_handler_test([msgs1, msgs2, msgs3])
+
+    def test_legacy_handler_call_adapted(self):
+        handler_calls = [0]
+
+        def mk_handler(o2):
+            # This is the legacy type for handlers; note that we don't take
+            # the source observable as a parameter.
+            def handler(e):
+                handler_calls[0] += 1
+                return o2
+            return handler
+
+        ex = 'ex'
+        ex2 = 'ex'
+
+        msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
+        msgs2 = [on_next(220, 3), on_error(225, ex2)]
+        msgs3 = [on_next(230, 4), on_completed(235)]
+
+        self._base_catch_exception_test([msgs1, msgs2, msgs3], mk_handler=mk_handler)
+        self.assertEqual(handler_calls[0], 2)
