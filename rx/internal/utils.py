@@ -1,3 +1,5 @@
+import sys
+
 from rx import AnonymousObservable
 from rx.disposables import CompositeDisposable
 
@@ -16,6 +18,26 @@ def adapt_call(func):
 
     Adapt call from taking n params to only taking 1 or 2 params
     """
+
+    def _should_reraise_TypeError(tb):
+        """Determine whether or not we should re-raise a given TypeError. Since
+        we rely on excepting TypeError in order to determine whether or not we
+        can adapt a function, we can't immediately determine whether a given
+        TypeError is from the adapted function's logic (and should be
+        re-raised) or from argspec mismatches (which should not be re-raised).
+
+        Given that this function is private to adapt_call, we know that there will
+        always be at least two frames in the given traceback:
+
+        - frame: (func1 | func2) call
+            - frame: func call
+                - frame: (Optional) TypeError in body
+
+        and hence we can check for the presence of the third frame, which indicates
+        whether an error occurred in the body.
+        """
+        return tb.tb_next.tb_next is not None
+
     cached = [None]
 
     def func1(arg1, *_):
@@ -28,21 +50,22 @@ def adapt_call(func):
         if cached[0]:
             return cached[0](*args, **kw)
 
-        exceptions = []
         for fn in (func1, func2):
             try:
                 ret = fn(*args, **kw)
-            except TypeError as e:
-                exceptions.append(e)
-                continue
+            except TypeError:
+                # Preserve the original traceback if there was a TypeError raised
+                # in the body of the adapted function.
+                if _should_reraise_TypeError(sys.exc_traceback):
+                    raise
+                else:
+                    continue
             else:
                 cached[0] = fn
-            return ret
-
-        # Error if we get here. Raise all captured
-        # Type Errors together to generate a meaningful
-        # error message.
-        raise TypeError(*exceptions)
+                return ret
+        else:
+            # We were unable to call the function successfully.
+            raise TypeError("Couldn't adapt function {}".format(func.__name__))
 
     return func_wrapped
 
