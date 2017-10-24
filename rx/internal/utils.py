@@ -43,7 +43,7 @@ def adapt_call(func):
         # Type Errors together to generate a meaningful
         # error message.
         raise TypeError(*exceptions)
-        
+
     return func_wrapped
 
 

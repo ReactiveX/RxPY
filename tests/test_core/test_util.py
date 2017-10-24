@@ -8,16 +8,16 @@ class C(object):
 
     def __call__(self, x):
         return x + self._arg
-    
+
     def method1(self, x):
         return x + self._arg
-    
+
     def method2(self, x, y):
         return x + self._arg
-    
+
     def method3(self, x, y, z):
         return x + y + z + self._arg
-    
+
     @classmethod
     def clsmethod(cls, x):
         return x * 10
