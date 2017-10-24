@@ -16,7 +16,7 @@ created = ReactiveTest.created
 
 class TestCatch(unittest.TestCase):
 
-    def _base_catch_exception_test(self, msgs, expected_msgs=None, use_chaining_api=True):
+    def _base_catch_exception_test(self, msgs, expected_msgs=None, mk_handler=None, use_chaining_api=True):
         """Given lists of messages for successive observables, creates the
         appropriate observables and chains them together using catch_exception.
         Tests that the actions seen by a subscriber match the expected
@@ -25,22 +25,46 @@ class TestCatch(unittest.TestCase):
         Params:
 
         :param msgs:
-            List of lists of expected messages.
+            List of lists of expected messages. If an element is an Observable, then
+            it will be used as-is.
         :param expected_msgs:
             List of expected messages received by subscribers. If not provided,
             a "best guess" is used. Note that this "best guess" currently
             doesn't perform well with non-terminating Observables (i.e.
-            Observable.never()).
+            Observable.never()). If a test is tricky, provide this manually.
+        :param mk_handler:
+            ``mk_handler`` should be a higher-order function with type
+
+                handler: (Observable) -> (Observable) -> Observable
+
+            that is, it takes the next observable (defined by ``msgs``) and returns a
+            function that can be used as a handler by ``catch_exception``.
+
+            Only used if ``use_chaining_api`` is ``True``.
         :param use_chaining_api:
             Whether to construct the catch_exception call by repeated chaining
             off of instance methods, or by calling Observable.catch_exception
             at the class level.
+
+            If ``False``, then ``mk_handler`` is unused, as the classmethod
+            ``Observable.catch_exception`` does not take handlers, only
+            Observables.
         """
         scheduler = TestScheduler()
+
+
+        if mk_handler is None:
+            # So ``catch_exception(handler)`` is the same as ``catch_exception(o2)``.
+            def mk_handler(o2):
+                def handler(e, o1):
+                    return o2
+                return handler
 
         def _ms_dispatch(ms):
             if ms == []:
                 return Observable.never()
+            elif isinstance(ms, Observable):
+                return ms
             else:
                 return scheduler.create_hot_observable(ms)
 
@@ -48,12 +72,18 @@ class TestCatch(unittest.TestCase):
 
         def create():
             if use_chaining_api:
-                return reduce(lambda o, catcher: o.catch_exception(catcher), os)
+                return reduce(lambda o, catcher: o.catch_exception(mk_handler(catcher)), os)
             else:
+                # Note that you can't use handlers with the classmethod ``catch_exception``.
                 return Observable.catch_exception(os)
 
         if expected_msgs is None:
-            all_msgs = reduce(lambda acc, ms: acc + ms, msgs)
+            # Account for cases in which not all ms in msgs are lists of messages.
+            all_msgs = reduce(
+                    lambda acc, ms: acc + ms if isinstance(ms, list) else acc,
+                    msgs,
+                    [],
+                    )
 
             # This is an "imperative specification" of the expected behavior
             # of catch_exception.
@@ -76,6 +106,30 @@ class TestCatch(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(*expected_msgs)
+
+    def _mk_call_tracked_handler(self):
+        # We use the same "counter" for all handlers, so this will count
+        # the calls to "all" handlers in a given Observable chain.
+        handler_calls = [0]
+
+        def mk_handler(o2):
+            def handler(e, o1):
+                handler_calls[0] += 1
+                return o2
+            return handler
+
+        return handler_calls, mk_handler
+
+    def _base_call_tracked_handler_test(self, msgs, expected_handler_call_count=None, **kwargs):
+        handler_calls, mk_handler = self._mk_call_tracked_handler()
+
+        if not expected_handler_call_count:
+            # If ``msgs`` is a generator, this test will not work as intended, as we consume
+            # ``msgs`` here.
+            expected_handler_call_count = len(msgs) - 1
+
+        self._base_catch_exception_test(msgs, mk_handler=mk_handler, **kwargs)
+        assert(handler_calls[0] == expected_handler_call_count)
 
     def test_catch_no_errors(self):
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(230)]
@@ -151,6 +205,8 @@ class TestCatch(unittest.TestCase):
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
         assert(handler_called[0])
 
+        self._base_call_tracked_handler_test([msgs1, msgs2])
+
     def test_catch_error_specific_caught_immediate(self):
         ex = 'ex'
         handler_called = [False]
@@ -170,6 +226,11 @@ class TestCatch(unittest.TestCase):
         results.messages.assert_equal(on_next(240, 4), on_completed(250))
         assert(handler_called[0])
 
+        self._base_call_tracked_handler_test(
+                [Observable.throw_exception(ex), msgs2],
+                expected_msgs=msgs2,
+                )
+
     def test_catch_handler_throws(self):
         ex = 'ex'
         ex2 = 'ex2'
@@ -188,6 +249,16 @@ class TestCatch(unittest.TestCase):
 
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
         assert(handler_called[0])
+
+        handler_calls, _ = self._mk_call_tracked_handler()
+        def mk_handler(o2):
+            def handler(e, o1):
+                handler_calls[0] += 1
+                # Note that ``e`` is not an Exception, it's a str, as written.
+                raise Exception(e)
+            return handler
+
+        self._base_catch_exception_test([msgs1, []], msgs1[1:], mk_handler=mk_handler)
 
     def test_catch_nested_outer_catches(self):
         ex = 'ex'
@@ -215,6 +286,9 @@ class TestCatch(unittest.TestCase):
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
         assert(first_handler_called[0])
         assert(not second_handler_called[0])
+
+        # Since we complete in the first handler.
+        self._base_call_tracked_handler_test([msgs1, msgs2, msgs3], expected_handler_call_count=1)
 
     def test_catch_throw_from_nested_catch(self):
         ex = 'ex'
@@ -245,3 +319,5 @@ class TestCatch(unittest.TestCase):
         results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
         assert(first_handler_called[0])
         assert(second_handler_called[0])
+
+        self._base_call_tracked_handler_test([msgs1, msgs2, msgs3])
