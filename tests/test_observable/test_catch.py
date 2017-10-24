@@ -1,3 +1,4 @@
+from functools import reduce
 import unittest
 
 from rx import Observable
