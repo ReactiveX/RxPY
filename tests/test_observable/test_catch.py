@@ -107,23 +107,34 @@ class TestCatch(unittest.TestCase):
 
         results.messages.assert_equal(*expected_msgs)
 
-    def _mk_call_tracked_handler(self):
+    def _mk_call_tracked_handler(self, handler):
+        """Makes a handler-builder that tracks total calls to the built handler
+        across an Observable chain.
+
+        :param handler:
+            Function which takes the next Observable, the Exception raised, and
+            the source Observable and returns an Observable (or throws).
+        """
         # We use the same "counter" for all handlers, so this will count
         # the calls to "all" handlers in a given Observable chain.
         handler_calls = [0]
 
         def mk_handler(o2):
-            def handler(e, o1):
+            def _handler(e, o1):
                 handler_calls[0] += 1
-                return o2
-            return handler
+                return handler(o2, e, o1)
+            return _handler
 
         return handler_calls, mk_handler
 
-    def _base_call_tracked_handler_test(self, msgs, expected_handler_call_count=None, **kwargs):
-        handler_calls, mk_handler = self._mk_call_tracked_handler()
+    def _base_call_tracked_handler_test(self, msgs, handler=None, expected_handler_call_count=None, **kwargs):
+        if handler is None:
+            def handler(o2, e, o1):
+                return o2
 
-        if not expected_handler_call_count:
+        handler_calls, mk_handler = self._mk_call_tracked_handler(handler)
+
+        if expected_handler_call_count is None:
             # If ``msgs`` is a generator, this test will not work as intended, as we consume
             # ``msgs`` here.
             expected_handler_call_count = len(msgs) - 1
@@ -207,15 +218,11 @@ class TestCatch(unittest.TestCase):
 
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
 
-        handler_calls, _ = self._mk_call_tracked_handler()
-        def mk_handler(o2):
-            def handler(e, o1):
-                handler_calls[0] += 1
-                # Note that ``e`` is not an Exception, it's a str, as written.
-                raise Exception(e)
-            return handler
+        def handler(o2, e, o1):
+            # Note that ``e`` is not an Exception, it's a str, as written.
+            raise Exception(e)
 
-        self._base_catch_exception_test([msgs1, []], msgs1[1:], mk_handler=mk_handler)
+        self._base_call_tracked_handler_test([msgs1, []], handler=handler, expected_msgs=msgs1[1:])
 
     def test_catch_nested_outer_catches(self):
         ex = 'ex'
