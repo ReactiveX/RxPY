@@ -186,45 +186,16 @@ class TestCatch(unittest.TestCase):
 
     def test_catch_error_specific_caught(self):
         ex = 'ex'
-        handler_called = [False]
-        scheduler = TestScheduler()
+
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
         msgs2 = [on_next(240, 4), on_completed(250)]
-        o1 = scheduler.create_hot_observable(msgs1)
-        o2 = scheduler.create_hot_observable(msgs2)
-
-        def create():
-            def handler(e, o):
-                handler_called[0] = True
-                return o2
-
-            return o1.catch_exception(handler)
-
-        results = scheduler.start(create)
-
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250))
-        assert(handler_called[0])
 
         self._base_call_tracked_handler_test([msgs1, msgs2])
 
     def test_catch_error_specific_caught_immediate(self):
         ex = 'ex'
-        handler_called = [False]
-        scheduler = TestScheduler()
+
         msgs2 = [on_next(240, 4), on_completed(250)]
-        o2 = scheduler.create_hot_observable(msgs2)
-
-        def create():
-            def handler(e, o):
-                handler_called[0] = True
-                return o2
-
-            return Observable.throw_exception('ex').catch_exception(handler)
-
-        results = scheduler.start(create)
-
-        results.messages.assert_equal(on_next(240, 4), on_completed(250))
-        assert(handler_called[0])
 
         self._base_call_tracked_handler_test(
                 [Observable.throw_exception(ex), msgs2],
@@ -233,22 +204,8 @@ class TestCatch(unittest.TestCase):
 
     def test_catch_handler_throws(self):
         ex = 'ex'
-        ex2 = 'ex2'
-        handler_called = [False]
-        scheduler = TestScheduler()
+
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
-        o1 = scheduler.create_hot_observable(msgs1)
-
-        def create():
-            def handler(e, o):
-                handler_called[0] = True
-                raise Exception(ex2)
-            return o1.catch_exception(handler)
-
-        results = scheduler.start(create)
-
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_error(230, ex2))
-        assert(handler_called[0])
 
         handler_calls, _ = self._mk_call_tracked_handler()
         def mk_handler(o2):
@@ -262,62 +219,20 @@ class TestCatch(unittest.TestCase):
 
     def test_catch_nested_outer_catches(self):
         ex = 'ex'
-        first_handler_called = [False]
-        second_handler_called = [False]
-        scheduler = TestScheduler()
+
         msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
         msgs2 = [on_next(220, 3), on_completed(225)]
         msgs3 = [on_next(220, 4), on_completed(225)]
-        o1 = scheduler.create_hot_observable(msgs1)
-        o2 = scheduler.create_hot_observable(msgs2)
-        o3 = scheduler.create_hot_observable(msgs3)
 
-        def create():
-            def handler1(e, o):
-                first_handler_called[0] = True
-                return o2
-            def handler2(e, o):
-                second_handler_called[0] = True
-                return o3
-            return o1.catch_exception(handler1).catch_exception(handler2)
-
-        results = scheduler.start(create)
-
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_completed(225))
-        assert(first_handler_called[0])
-        assert(not second_handler_called[0])
-
-        # Since we complete in the first handler.
+        # Since we complete in the first handler, we should only call one handler.
         self._base_call_tracked_handler_test([msgs1, msgs2, msgs3], expected_handler_call_count=1)
 
     def test_catch_throw_from_nested_catch(self):
         ex = 'ex'
         ex2 = 'ex'
-        first_handler_called = [False]
-        second_handler_called = [False]
-        scheduler = TestScheduler()
+
         msgs1 = [on_next(150, 1), on_next(210, 2), on_error(215, ex)]
         msgs2 = [on_next(220, 3), on_error(225, ex2)]
         msgs3 = [on_next(230, 4), on_completed(235)]
-        o1 = scheduler.create_hot_observable(msgs1)
-        o2 = scheduler.create_hot_observable(msgs2)
-        o3 = scheduler.create_hot_observable(msgs3)
-
-        def create():
-            def handler1(e, o):
-                first_handler_called[0] = True
-                assert(e == ex)
-                return o2
-            def handler2(e, o):
-                second_handler_called[0] = True
-                assert(e == ex2)
-                return o3
-            return o1.catch_exception(handler1).catch_exception(handler2)
-
-        results = scheduler.start(create)
-
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235))
-        assert(first_handler_called[0])
-        assert(second_handler_called[0])
 
         self._base_call_tracked_handler_test([msgs1, msgs2, msgs3])
