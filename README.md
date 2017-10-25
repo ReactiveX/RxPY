@@ -15,6 +15,16 @@ Using Rx, you can represent multiple asynchronous data streams (that come from d
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
+Community
+-------
+
+Join the conversation on Slack! 
+
+The gracious folks at [PySlackers](https://pyslackers.com/) have given us a home in the [#rxpy](https://pythondev.slack.com/messages/rxpy) Slack channel. Please join us there for questions, conversations, and all things related to RxPy. 
+
+https://pyslackers.com/
+
+
 Install
 -------
 
