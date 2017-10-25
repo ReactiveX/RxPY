@@ -24,6 +24,9 @@ The gracious folks at [PySlackers](https://pyslackers.com/) have given us a home
 
 https://pyslackers.com/
 
+To join, navigate to the page above to receive an email invite. After signing up, join us in the #rxpy channel. 
+
+Please follow the community guidelines and terms of service. 
 
 Install
 -------
