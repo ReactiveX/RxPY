@@ -40,10 +40,10 @@ def adapt_call(func):
 
     cached = [None]
 
-    def func1(arg1, *_):
+    def func1(arg1, *_, **__):
         return func(arg1)
 
-    def func2(arg1, arg2=None, *_):
+    def func2(arg1, arg2=None, *_, **__):
         return func(arg1, arg2)
 
     def func_wrapped(*args, **kw):
