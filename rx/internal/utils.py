@@ -19,7 +19,7 @@ def adapt_call(func):
     Adapt call from taking n params to only taking 1 or 2 params
     """
 
-    def _should_reraise_TypeError(tb):
+    def _should_reraise_TypeError():
         """Determine whether or not we should re-raise a given TypeError. Since
         we rely on excepting TypeError in order to determine whether or not we
         can adapt a function, we can't immediately determine whether a given
@@ -36,6 +36,8 @@ def adapt_call(func):
         and hence we can check for the presence of the third frame, which indicates
         whether an error occurred in the body.
         """
+        _, __, tb = sys.exc_info()
+
         return tb.tb_next.tb_next is not None
 
     cached = [None]
@@ -56,7 +58,7 @@ def adapt_call(func):
             except TypeError:
                 # Preserve the original traceback if there was a TypeError raised
                 # in the body of the adapted function.
-                if _should_reraise_TypeError(sys.exc_traceback):
+                if _should_reraise_TypeError():
                     raise
                 else:
                     continue
