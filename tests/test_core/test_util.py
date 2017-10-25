@@ -58,7 +58,7 @@ class TestUtil(unittest.TestCase):
         with self.assertRaises(TypeError) as e:
             adapt_call(throws)(None)
 
-        self.assertEqual(err_msg, e.exception.message)
+        self.assertEqual(err_msg, str(e.exception))
 
     def test_adapt_call_adaptation_error(self):
 
@@ -74,4 +74,4 @@ class TestUtil(unittest.TestCase):
             adapt_call(not_adaptable)(None, None)
 
         for e in (e1, e2):
-            self.assertEqual(err_msg, e.exception.message)
+            self.assertEqual(err_msg, str(e.exception))
