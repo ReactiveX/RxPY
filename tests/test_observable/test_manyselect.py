@@ -15,7 +15,7 @@ created = ReactiveTest.created
 class TestManySelect(unittest.TestCase):
 
     def test_many_select_law_1(self):
-        xs = Observable.range(1, 0)
+        xs = Observable.range(1, 3)
 
         left = xs.many_select(lambda x: x.first())
         right = xs
