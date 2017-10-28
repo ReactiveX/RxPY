@@ -43,6 +43,15 @@ class TestManySelect(unittest.TestCase):
 
         self._obs_equal(left, right)
 
+    def test_many_select_subsequent_elements(self):
+        count = 3
+        xs = Observable.range(1, count)
+
+        left = xs.many_select(lambda x: x.to_list())
+        right = Observable.from_iterable([[e for e in range(i, count + 1)] for i in range(1, count + 1)])
+
+        self._obs_equal(left, right)
+
     def test_many_select_basic(self):
         scheduler = TestScheduler()
 
