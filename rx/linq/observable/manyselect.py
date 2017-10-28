@@ -59,7 +59,7 @@ def many_select(self, selector, scheduler=None):
         def mapper(x):
             curr = ChainObservable(x)
 
-            chain[0] and chain[0].on_next(x)
+            chain[0] and chain[0].on_next(curr)
             chain[0] = curr
 
             return curr
