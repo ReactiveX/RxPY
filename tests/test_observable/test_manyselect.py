@@ -31,15 +31,62 @@ def _comparer(x, y):
 
 
 class TestManySelect(unittest.TestCase):
+    """Laws are taken from the Haskell ``Control.Comonad`` docs."""
 
     def _obs_equal(self, left, right):
         return left.sequence_equal(right, _comparer).first().subscribe(self.assertTrue)
 
     def test_many_select_law_1(self):
+        """
+            extend(cv, extract) = cv
+
+        and phrased in python:
+
+            cv.extend(lambda o: o.extract()) = cv
+        """
         xs = Observable.range(1, 3)
 
         left = xs.many_select(_extract)
         right = xs.map(_duplicate)  # since .first() returns ``Observable[a]`` and not ``a``.
+
+        self._obs_equal(left, right)
+
+    def test_many_select_law_2(self):
+        """
+            extract(extend cv, f) = f(cv)
+
+        and phrased in python:
+
+            cv.extend(f).extract() = f(cv)
+        """
+        xs = Observable.range(1, 3)
+
+        def test_f(o):
+            return o.last()
+
+        left = _extract(xs.many_select(test_f))
+        right = test_f(xs)
+
+        self._obs_equal(left, right)
+
+    def test_many_select_law_3(self):
+        """
+            extend f . extend g = extend (f . extend g)
+
+        and phrased in python:
+
+            cv.extend(g).extend(f) = cv.extend(lambda o: f(o.extend(g)))
+        """
+        xs = Observable.range(1, 3)
+
+        def test_f(o):
+            return o.last()
+
+        def test_g(o):
+            return o.sum()
+
+        left = xs.many_select(test_g).many_select(test_f)
+        right = xs.many_select(lambda o: test_f(o.many_select(test_g)))
 
         self._obs_equal(left, right)
 
