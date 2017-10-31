@@ -16,7 +16,13 @@ created = ReactiveTest.created
 
 class TestCatch(unittest.TestCase):
 
-    def _base_catch_exception_test(self, msgs, expected_msgs=None, mk_handler=None, use_chaining_api=True):
+    def _base_catch_exception_test(
+            self,
+            msgs,
+            expected_msgs,
+            mk_handler=None,
+            use_chaining_api=True,
+            ):
         """Given lists of messages for successive observables, creates the
         appropriate observables and chains them together using catch_exception.
         Tests that the actions seen by a subscriber match the expected
@@ -25,13 +31,10 @@ class TestCatch(unittest.TestCase):
         Params:
 
         :param msgs:
-            List of lists of expected messages. If an element is an Observable, then
+            List of lists of messages. If an element is an Observable, then
             it will be used as-is.
         :param expected_msgs:
-            List of expected messages received by subscribers. If not provided,
-            a "best guess" is used. Note that this "best guess" currently
-            doesn't perform well with non-terminating Observables (i.e.
-            Observable.never()). If a test is tricky, provide this manually.
+            List of expected messages seen by a subscriber.
         :param mk_handler:
             ``mk_handler`` should be a higher-order function with type
 
@@ -77,32 +80,6 @@ class TestCatch(unittest.TestCase):
                 # Note that you can't use handlers with the classmethod ``catch_exception``.
                 return Observable.catch_exception(os)
 
-        if expected_msgs is None:
-            # Account for cases in which not all ms in msgs are lists of messages.
-            all_msgs = reduce(
-                    lambda acc, ms: acc + ms if isinstance(ms, list) else acc,
-                    msgs,
-                    [],
-                    )
-
-            # This is an "imperative specification" of the expected behavior
-            # of catch_exception.
-            expected_msgs = []
-            for msg in all_msgs:
-                if is_completed(msg):
-                    expected_msgs.append(msg)
-                    break
-                elif is_error(msg):
-                    continue
-                elif is_next(msg):
-                    expected_msgs.append(msg)
-
-            expected_msgs = expected_msgs[1:]
-
-            # If the final handler throws, catch_exception throws.
-            if is_error(all_msgs[-1]):
-                expected_msgs.append(all_msgs[-1])
-
         results = scheduler.start(create)
 
         results.messages.assert_equal(*expected_msgs)
@@ -127,7 +104,14 @@ class TestCatch(unittest.TestCase):
 
         return handler_calls, mk_handler
 
-    def _base_call_tracked_handler_test(self, msgs, handler=None, expected_handler_call_count=None, **kwargs):
+    def _base_call_tracked_handler_test(
+            self,
+            msgs,
+            expected_msgs,
+            handler=None,
+            expected_handler_call_count=None,
+            **kwargs
+            ):
         if handler is None:
             def handler(o2, e, o1):
                 return o2
@@ -139,53 +123,72 @@ class TestCatch(unittest.TestCase):
             # ``msgs`` here.
             expected_handler_call_count = len(msgs) - 1
 
-        self._base_catch_exception_test(msgs, mk_handler=mk_handler, **kwargs)
+        self._base_catch_exception_test(msgs, expected_msgs, mk_handler=mk_handler, **kwargs)
         assert(handler_calls[0] == expected_handler_call_count)
 
     def test_catch_no_errors(self):
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(230)]
         msgs2 = [on_next(240, 5), on_completed(250)]
 
-        self._base_catch_exception_test([msgs1, msgs2])
+        self._base_catch_exception_test(
+                [msgs1, msgs2],
+                [on_next(210, 2), on_next(220, 3), on_completed(230)],
+                )
 
     def test_catch_never(self):
         msgs2 = [on_next(240, 5), on_completed(250)]
 
-        # We don't do well with Observable.never(), so we pass expected_msgs.
-        self._base_catch_exception_test([[], msgs2], expected_msgs=[])
+        self._base_catch_exception_test(
+                [[], msgs2],
+                [],
+                )
 
     def test_catch_empty(self):
         msgs1 = [on_next(150, 1), on_completed(230)]
         msgs2 = [on_next(240, 5), on_completed(250)]
 
-        self._base_catch_exception_test([msgs1, msgs2])
+        self._base_catch_exception_test(
+                [msgs1, msgs2],
+                [on_completed(230)],
+                )
 
     def test_catch_return(self):
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         msgs2 = [on_next(240, 5), on_completed(250)]
 
-        self._base_catch_exception_test([msgs1, msgs2])
+        self._base_catch_exception_test(
+                [msgs1, msgs2],
+                [on_next(210, 2), on_completed(230)],
+                )
 
     def test_catch_error(self):
         ex = 'ex'
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
         msgs2 = [on_next(240, 5), on_completed(250)]
 
-        self._base_catch_exception_test([msgs1, msgs2])
+        self._base_catch_exception_test(
+                [msgs1, msgs2],
+                [on_next(210, 2), on_next(220, 3), on_next(240, 5), on_completed(250)],
+                )
 
     def test_catch_error_never(self):
         ex = 'ex'
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
 
-        # We don't do well with Observable.never(), so we pass expected_msgs.
-        self._base_catch_exception_test([msgs1, []], expected_msgs=[on_next(210, 2), on_next(220, 3)])
+        self._base_catch_exception_test(
+                [msgs1, []],
+                [on_next(210, 2), on_next(220, 3)],
+                )
 
     def test_catch_error_error(self):
         ex = 'ex'
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, 'ex1')]
         msgs2 = [on_next(240, 4), on_error(250, ex)]
 
-        self._base_catch_exception_test([msgs1, msgs2])
+        self._base_catch_exception_test(
+                [msgs1, msgs2],
+                [on_next(210, 2), on_next(220, 3), on_next(240, 4), on_error(250, ex)],
+                )
 
     def test_catch_multiple(self):
         ex = 'ex'
@@ -193,7 +196,11 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(220, 3), on_error(225, ex)]
         msgs3 = [on_next(230, 4), on_completed(235)]
 
-        self._base_catch_exception_test([msgs1, msgs2, msgs3], use_chaining_api=False)
+        self._base_catch_exception_test(
+                [msgs1, msgs2, msgs3],
+                [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235)],
+                use_chaining_api=False,
+                )
 
     def test_catch_error_specific_caught(self):
         ex = 'ex'
@@ -201,7 +208,10 @@ class TestCatch(unittest.TestCase):
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, ex)]
         msgs2 = [on_next(240, 4), on_completed(250)]
 
-        self._base_call_tracked_handler_test([msgs1, msgs2])
+        self._base_call_tracked_handler_test(
+                [msgs1, msgs2],
+                [on_next(210, 2), on_next(220, 3), on_next(240, 4), on_completed(250)],
+                )
 
     def test_catch_error_specific_caught_immediate(self):
         ex = 'ex'
@@ -210,7 +220,7 @@ class TestCatch(unittest.TestCase):
 
         self._base_call_tracked_handler_test(
                 [Observable.throw_exception(ex), msgs2],
-                expected_msgs=msgs2,
+                msgs2,
                 )
 
     def test_catch_handler_throws(self):
@@ -222,7 +232,11 @@ class TestCatch(unittest.TestCase):
             # Note that ``e`` is not an Exception, it's a str, as written.
             raise Exception(e)
 
-        self._base_call_tracked_handler_test([msgs1, []], handler=handler, expected_msgs=msgs1[1:])
+        self._base_call_tracked_handler_test(
+                [msgs1, []],
+                msgs1[1:],
+                handler=handler,
+                )
 
     def test_catch_nested_outer_catches(self):
         ex = 'ex'
@@ -232,7 +246,11 @@ class TestCatch(unittest.TestCase):
         msgs3 = [on_next(220, 4), on_completed(225)]
 
         # Since we complete in the first handler, we should only call one handler.
-        self._base_call_tracked_handler_test([msgs1, msgs2, msgs3], expected_handler_call_count=1)
+        self._base_call_tracked_handler_test(
+                [msgs1, msgs2, msgs3],
+                [on_next(210, 2), on_next(220, 3), on_completed(225)],
+                expected_handler_call_count=1,
+                )
 
     def test_catch_throw_from_nested_catch(self):
         ex = 'ex'
@@ -242,7 +260,10 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(220, 3), on_error(225, ex2)]
         msgs3 = [on_next(230, 4), on_completed(235)]
 
-        self._base_call_tracked_handler_test([msgs1, msgs2, msgs3])
+        self._base_call_tracked_handler_test(
+                [msgs1, msgs2, msgs3],
+                [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235)],
+                )
 
     def test_legacy_handler_call_adapted(self):
         handler_calls = [0]
@@ -262,5 +283,9 @@ class TestCatch(unittest.TestCase):
         msgs2 = [on_next(220, 3), on_error(225, ex2)]
         msgs3 = [on_next(230, 4), on_completed(235)]
 
-        self._base_catch_exception_test([msgs1, msgs2, msgs3], mk_handler=mk_handler)
+        self._base_catch_exception_test(
+                [msgs1, msgs2, msgs3],
+                [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235)],
+                mk_handler=mk_handler,
+                )
         self.assertEqual(handler_calls[0], 2)
