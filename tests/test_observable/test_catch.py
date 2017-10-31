@@ -20,7 +20,7 @@ class TestCatch(unittest.TestCase):
             self,
             msgs,
             expected_msgs,
-            mk_handler=None,
+            create_handler=None,
             use_chaining_api=True,
             ):
         """Given lists of messages for successive observables, creates the
@@ -35,8 +35,8 @@ class TestCatch(unittest.TestCase):
             it will be used as-is.
         :param expected_msgs:
             List of expected messages seen by a subscriber.
-        :param mk_handler:
-            ``mk_handler`` should be a higher-order function with type
+        :param create_handler:
+            ``create_handler`` should be a higher-order function with type
 
                 handler: (Observable) -> (Observable) -> Observable
 
@@ -49,16 +49,16 @@ class TestCatch(unittest.TestCase):
             off of instance methods, or by calling Observable.catch_exception
             at the class level.
 
-            If ``False``, then ``mk_handler`` is unused, as the classmethod
+            If ``False``, then ``create_handler`` is unused, as the classmethod
             ``Observable.catch_exception`` does not take handlers, only
             Observables.
         """
         scheduler = TestScheduler()
 
 
-        if mk_handler is None:
+        if create_handler is None:
             # So ``catch_exception(handler)`` is the same as ``catch_exception(o2)``.
-            def mk_handler(o2):
+            def create_handler(o2):
                 def handler(e, o1):
                     return o2
                 return handler
@@ -75,7 +75,7 @@ class TestCatch(unittest.TestCase):
 
         def create():
             if use_chaining_api:
-                return reduce(lambda o, catcher: o.catch_exception(mk_handler(catcher)), os)
+                return reduce(lambda o, catcher: o.catch_exception(create_handler(catcher)), os)
             else:
                 # Note that you can't use handlers with the classmethod ``catch_exception``.
                 return Observable.catch_exception(os)
@@ -84,7 +84,7 @@ class TestCatch(unittest.TestCase):
 
         results.messages.assert_equal(*expected_msgs)
 
-    def _mk_call_tracked_handler(self, handler):
+    def _create_call_tracked_handler(self, handler):
         """Makes a handler-builder that tracks total calls to the built handler
         across an Observable chain.
 
@@ -96,13 +96,13 @@ class TestCatch(unittest.TestCase):
         # the calls to "all" handlers in a given Observable chain.
         handler_calls = [0]
 
-        def mk_handler(o2):
+        def create_handler(o2):
             def _handler(e, o1):
                 handler_calls[0] += 1
                 return handler(o2, e, o1)
             return _handler
 
-        return handler_calls, mk_handler
+        return handler_calls, create_handler
 
     def _base_call_tracked_handler_test(
             self,
@@ -116,14 +116,14 @@ class TestCatch(unittest.TestCase):
             def handler(o2, e, o1):
                 return o2
 
-        handler_calls, mk_handler = self._mk_call_tracked_handler(handler)
+        handler_calls, create_handler = self._create_call_tracked_handler(handler)
 
         if expected_handler_call_count is None:
             # If ``msgs`` is a generator, this test will not work as intended, as we consume
             # ``msgs`` here.
             expected_handler_call_count = len(msgs) - 1
 
-        self._base_catch_exception_test(msgs, expected_msgs, mk_handler=mk_handler, **kwargs)
+        self._base_catch_exception_test(msgs, expected_msgs, create_handler=create_handler, **kwargs)
         assert(handler_calls[0] == expected_handler_call_count)
 
     def test_catch_no_errors(self):
@@ -268,7 +268,7 @@ class TestCatch(unittest.TestCase):
     def test_legacy_handler_call_adapted(self):
         handler_calls = [0]
 
-        def mk_handler(o2):
+        def create_handler(o2):
             # This is the legacy type for handlers; note that we don't take
             # the source observable as a parameter.
             def handler(e):
@@ -286,6 +286,6 @@ class TestCatch(unittest.TestCase):
         self._base_catch_exception_test(
                 [msgs1, msgs2, msgs3],
                 [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(235)],
-                mk_handler=mk_handler,
+                create_handler=create_handler,
                 )
         self.assertEqual(handler_calls[0], 2)
