@@ -13,12 +13,15 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 def test_is_prime():
     assert is_prime(1) == False
@@ -28,11 +31,19 @@ def test_is_prime():
     assert is_prime(5) == True
     assert is_prime(6) == False
 
-class TestWhere(unittest.TestCase):
-    def test_where_complete(self):
+
+class TestFilter(unittest.TestCase):
+    def test_filter_complete(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(on_next(110, 1),
+                                             on_next(180, 2), on_next(230, 3),
+                                             on_next(270, 4), on_next(340, 5),
+                                             on_next(380, 6), on_next(390, 7),
+                                             on_next(450, 8), on_next(470, 9),
+                                             on_next(560, 10), on_next(580, 11),
+                                             on_completed(600), on_next(610, 12),
+                                             on_error(620, 'ex'), on_completed(630))
 
         def create():
             def predicate(x):
@@ -43,11 +54,13 @@ class TestWhere(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_completed(600))
+        results.messages.assert_equal(on_next(230, 3),
+                                      on_next(340, 5), on_next(390, 7),
+                                      on_next(580, 11), on_completed(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
-    def test_where_true(self):
+    def test_filter_true(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -63,7 +76,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
-    def test_where_false(self):
+    def test_filter_false(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -81,7 +94,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
-    def test_where_dispose(self):
+    def test_filter_dispose(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -97,7 +110,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 400))
         assert(invoked[0] == 5)
 
-    def test_where_error(self):
+    def test_filter_error(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -115,7 +128,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
-    def test_where_throw(self):
+    def test_filter_throw(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -136,7 +149,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 380))
         assert(invoked[0] == 4)
 
-    def test_where_dispose_in_predicate(self):
+    def test_filter_dispose_in_predicate(self):
         scheduler = TestScheduler()
         invoked = [0]
         ys = [None]
@@ -172,7 +185,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 450))
         assert(invoked[0] == 6)
 
-    def test_where_index_complete(self):
+    def test_filter_indexed_complete(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
@@ -182,14 +195,14 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_completed(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
-    def test_where_index_true(self):
+    def test_filter_indexed_true(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -199,14 +212,14 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return True
 
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
-    def test_where_index_false(self):
+    def test_filter_indexed_false(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -215,7 +228,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return False
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
 
@@ -223,7 +236,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
-    def test_where_index_dispose(self):
+    def test_filter_indexed_dispose(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
@@ -233,14 +246,14 @@ class TestWhere(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create, disposed=400)
         results.messages.assert_equal(on_next(230, 3), on_next(390, 7))
         xs.subscriptions.assert_equal(subscribe(200, 400))
         assert(invoked[0] == 5)
 
-    def test_where_index_error(self):
+    def test_filter_indexed_error(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -250,7 +263,7 @@ class TestWhere(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
 
@@ -258,7 +271,7 @@ class TestWhere(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
-    def test_where_index_throw(self):
+    def test_filter_indexed_throw(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -271,14 +284,14 @@ class TestWhere(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x + index * 10)
-            return xs.filter(predicate)
+            return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
         results.messages.assert_equal(on_next(230, 3), on_error(380, ex))
         xs.subscriptions.assert_equal(subscribe(200, 380))
         assert(invoked[0] == 4)
 
-    def test_where_index_dispose_in_predicate(self):
+    def test_filter_indexed_dispose_in_predicate(self):
         scheduler = TestScheduler()
         ys = [None]
         invoked = [0]
@@ -293,7 +306,7 @@ class TestWhere(unittest.TestCase):
                     d.dispose()
 
                 return is_prime(x + index * 10)
-            ys[0] = xs.filter(predicate)
+            ys[0] = xs.filter_indexed(predicate)
 
         scheduler.schedule_absolute(created, action1)
 

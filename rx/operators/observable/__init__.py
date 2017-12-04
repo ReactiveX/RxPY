@@ -33,6 +33,7 @@ from . import elementatordefault
 from . import empty
 from . import exclusive
 from . import expand
+from . import filter
 from . import finallyaction
 from . import find
 from . import findindex
@@ -127,7 +128,6 @@ from . import toset
 from . import transduce
 from . import using
 from . import when
-from . import where
 from . import whiledo
 from . import window
 from . import windowwithcount

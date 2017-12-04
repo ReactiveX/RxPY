@@ -1,8 +1,5 @@
 from typing import Callable, Any
-
 from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call
-from rx.internal import extensionmethod
 
 
 def map(source: Observable, mapper: Callable[[Any], Any]) -> Observable:
@@ -30,5 +27,7 @@ def map(source: Observable, mapper: Callable[[Any], Any]) -> Observable:
             else:
                 observer.on_next(result)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe(on_next,
+                                observer.on_error,
+                                observer.on_completed)
     return AnonymousObservable(subscribe)

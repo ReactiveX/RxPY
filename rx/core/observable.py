@@ -115,3 +115,46 @@ class Observable(bases.Observable):
         from ..operators.observable.map_indexed import map_indexed
         source = self
         return map_indexed(source, mapper)
+
+    def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
+        """Filters the elements of an observable sequence based on a predicate
+        by incorporating the element's index.
+
+        1 - source.filter(lambda value: value < 10)
+
+        Keyword arguments:
+        :param Observable self: Observable sequence to filter.
+        :param A function to test each source element
+            for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        :returns: An observable sequence that contains elements from the input
+        sequence that satisfy the condition.
+        :rtype: Observable
+        """
+        from ..operators.observable.filter import filter
+        source = self
+        return filter(source, predicate)
+
+    def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> "Observable":
+        """Filters the elements of an observable sequence based on a predicate
+        by incorporating the element's index.
+
+        1 - source.filter(lambda value, index: value < 10 or index < 10)
+
+        Keyword arguments:
+        :param source: Observable sequence to filter.
+        :param predicate: A function to test each source element
+            for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        :returns: An observable sequence that contains elements from the input
+        sequence that satisfy the condition.
+        :rtype: Observable
+        """
+
+        from ..operators.observable.filter import filter_indexed
+        source = self
+        return filter_indexed(source, predicate)
