@@ -6,7 +6,7 @@ class Disposable(metaclass=ABCMeta):
 
     @abstractmethod
     def dispose(self):
-        return NotImplemented
+        raise NotImplementedError
 
     def __enter__(self):
         """Context management protocol."""

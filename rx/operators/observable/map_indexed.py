@@ -1,8 +1,7 @@
 from typing import Callable, Any
 
-from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call
-from rx.internal import extensionmethod
+from rx import Observable, Observer, AnonymousObservable
+from rx.core import Disposable
 
 
 def map_indexed(source: Observable, selector: Callable[[Any, int], Any]) -> Observable:
@@ -12,16 +11,15 @@ def map_indexed(source: Observable, selector: Callable[[Any, int], Any]) -> Obse
     1 - source.map(lambda value, index: value * value + index)
 
     Keyword arguments:
-    :param Callable[[Any, Any], Any] selector: A transform function to
-        apply to each source element; the second parameter of the
-        function represents the index of the source element.
-    :rtype: Observable
+    selector -- A transform function to apply to each source element;
+        the second parameter of the function represents the index of the
+        source element.
 
     Returns an observable sequence whose elements are the result of
-    invoking the transform function on each element of source.
+    invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer):
+    def subscribe(observer: Observer) -> Disposable:
         count = 0
 
         def on_next(value):

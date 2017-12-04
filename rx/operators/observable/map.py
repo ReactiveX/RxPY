@@ -1,27 +1,24 @@
 from typing import Callable, Any
 
-from rx import Observable, AnonymousObservable
-from rx.internal.utils import adapt_call
-from rx.internal import extensionmethod
+from rx import Observable, Observer, AnonymousObservable
+from rx.core import Disposable
 
 
 def map(source: Observable, mapper: Callable[[Any], Any]) -> Observable:
-    """Project each element of an observable sequence into a new form
-    by incorporating the element's index.
+    """Project each element of an observable sequence into a new form.
 
     1 - source.map(lambda value: value * value)
 
     Keyword arguments:
-    :param Callable[[Any, Any], Any] mapper: A transform function to
-        apply to each source element; the second parameter of the
-        function represents the index of the source element.
-    :rtype: Observable
+    mapper -- A transform function to apply to each source element; the
+        second parameter of the function represents the index of the
+        source element.
 
     Returns an observable sequence whose elements are the result of
-    invoking the transform function on each element of source.
+    invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer):
+    def subscribe(observer: Observer) -> Disposable:
         def on_next(value):
             try:
                 result = mapper(value)
