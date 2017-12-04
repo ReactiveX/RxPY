@@ -2,7 +2,7 @@ import sys
 from datetime import timedelta
 
 from rx import config
-from rx.core import Observer, ObservableBase
+from rx.core import Observer, Observable
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
 from rx.core.scheduledobserver import ScheduledObserver
@@ -19,7 +19,7 @@ class RemovableDisposable(object):
             self.subject.observers.remove(self.observer)
 
 
-class ReplaySubject(ObservableBase, Observer):
+class ReplaySubject(Observable, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed and future
     observers, subject to buffer trimming policies.

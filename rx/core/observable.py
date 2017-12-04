@@ -1,15 +1,16 @@
 import types
+from typing import Callable, Any
 from abc import abstractmethod
 
 from rx import config
 from rx.concurrency import current_thread_scheduler
 
-from . import Observer, Observable, Disposable
+from . import Observer, Disposable, bases
 from .anonymousobserver import AnonymousObserver
 from .autodetachobserver import AutoDetachObserver
 
 
-class ObservableBase(Observable):
+class Observable(bases.Observable):
     """Represents a push-style collection."""
 
     def __init__(self):
@@ -65,7 +66,7 @@ class ObservableBase(Observable):
         def set_disposable(scheduler=None, value=None):
             try:
                 subscriber = self._subscribe_core(auto_detach_observer)
-            except Exception as ex:
+            except Exception as ex:  # By design. pylint: disable=W0703
                 if not auto_detach_observer.fail(ex):
                     raise
             else:
@@ -90,3 +91,27 @@ class ObservableBase(Observable):
     @abstractmethod
     def _subscribe_core(self, observer):
         return NotImplemented
+
+    def map(self, mapper: Callable[[Any], Any]) -> "Observable":
+        """Project each element of an observable sequence into a new form
+        by incorporating the element's index.
+
+        1 - source.map(lambda value: value * value)
+
+        Keyword arguments:
+        mapper -- A transform function to apply to each source element; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the transform function on each element of source.
+        """
+
+        from ..operators.observable.map import map
+        source = self
+        return map(source, mapper)
+
+    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
+        from ..operators.observable.map_indexed import map_indexed
+        source = self
+        return map_indexed(source, mapper)

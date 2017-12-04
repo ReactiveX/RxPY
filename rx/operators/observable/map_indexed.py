@@ -1,15 +1,15 @@
+from typing import Callable, Any
+
 from rx import Observable, AnonymousObservable
 from rx.internal.utils import adapt_call
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable, alias="map")
-def select(self, selector):
+def map_indexed(source: Observable, selector: Callable[[Any, int], Any]) -> Observable:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
-    1 - source.map(lambda value: value * value)
-    2 - source.map(lambda value, index: value * value + index)
+    1 - source.map(lambda value, index: value * value + index)
 
     Keyword arguments:
     :param Callable[[Any, Any], Any] selector: A transform function to
@@ -21,20 +21,19 @@ def select(self, selector):
     invoking the transform function on each element of source.
     """
 
-    selector = adapt_call(selector)
-
     def subscribe(observer):
-        count = [0]
+        count = 0
 
         def on_next(value):
+            nonlocal count
+
             try:
-                result = selector(value, count[0])
+                result = selector(value, count)
             except Exception as err:
                 observer.on_error(err)
             else:
-                count[0] += 1
+                count += 1
                 observer.on_next(result)
 
-        return self.subscribe(on_next, observer.on_error, observer.on_completed)
-
+        return source.subscribe(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

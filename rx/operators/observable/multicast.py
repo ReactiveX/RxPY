@@ -1,5 +1,5 @@
 from rx import Observable, AnonymousObservable
-from rx.linq.connectableobservable import ConnectableObservable
+from rx.operators.connectableobservable import ConnectableObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionmethod
 

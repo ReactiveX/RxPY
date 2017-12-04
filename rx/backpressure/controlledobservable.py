@@ -1,10 +1,10 @@
-from rx.core import Observable, ObservableBase
+from rx.core import Observable, Observable
 from rx.internal import extensionmethod
 
 from .controlledsubject import ControlledSubject
 
 
-class ControlledObservable(ObservableBase):
+class ControlledObservable(Observable):
 
     def __init__(self, source, enable_queue, scheduler=None):
         super(ControlledObservable, self).__init__()

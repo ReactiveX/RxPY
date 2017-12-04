@@ -1,11 +1,11 @@
 from rx import config
-from rx.core import Observer, ObservableBase, Disposable
+from rx.core import Observer, Observable, Disposable
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(ObservableBase, Observer):
+class BehaviorSubject(Observable, Observer):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.

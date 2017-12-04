@@ -1,11 +1,11 @@
 
-from rx.core import Observable, ObservableBase, Disposable
+from rx.core import Observable, Observable, Disposable
 from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable
 from rx.subjects import Subject
 
 
-class PausableObservable(ObservableBase):
+class PausableObservable(Observable):
     def __init__(self, source, pauser=None):
         self.source = source
         self.controller = Subject()

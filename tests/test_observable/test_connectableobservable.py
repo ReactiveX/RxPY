@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observer, Observable, ObservableBase
+from rx.core import Observer, Observable, Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 from rx.linq.connectableobservable import ConnectableObservable
@@ -14,7 +14,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class MySubject(ObservableBase, Observer):
+class MySubject(Observable, Observer):
 
     def __init__(self):
 

@@ -1,11 +1,11 @@
-from rx.core import ObservableBase, Observer, AnonymousObserver, Disposable
+from rx.core import Observable, Observer, AnonymousObserver, Disposable
 from rx.disposables import CompositeDisposable
 
 from .subscription import Subscription
 from .reactive_assert import AssertList
 
 
-class ColdObservable(ObservableBase):
+class ColdObservable(Observable):
     def __init__(self, scheduler, messages):
         super(ColdObservable, self).__init__()
 

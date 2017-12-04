@@ -26,17 +26,17 @@ class TestSelect(unittest.TestCase):
     def test_select_throws(self):
         with self.assertRaises(RxException):
             Observable.return_value(1) \
-                .map(lambda x, y: x) \
+                .map_indexed(lambda x, y: x) \
                 .subscribe(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             Observable.throw_exception('ex') \
-                .map(lambda x, y: x) \
+                .map_indexed(lambda x, y: x) \
                 .subscribe(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             Observable.empty() \
-                .map(lambda x, y: x) \
+                .map_indexed(lambda x, y: x) \
                 .subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         def subscribe(observer):
@@ -150,7 +150,7 @@ class TestSelect(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
 
         def factory():
-            def projection (x):
+            def projection(x):
                 invoked[0] += 1
                 if invoked[0] == 3:
                     raise Exception(ex)
@@ -166,12 +166,12 @@ class TestSelect(unittest.TestCase):
     def test_select_with_index_throws(self):
         with self.assertRaises(RxException):
             return Observable.return_value(1) \
-                .map(lambda x, index: x) \
+                .map_indexed(lambda x, index: x) \
                 .subscribe(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
             return Observable.throw_exception('ex') \
-                .map(lambda x, index: x) \
+                .map_indexed(lambda x, index: x) \
                 .subscribe(lambda x: x, lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
@@ -198,7 +198,7 @@ class TestSelect(unittest.TestCase):
 
             return x + index * 10
 
-        d.disposable = xs.map(projection).subscribe(results)
+        d.disposable = xs.map_indexed(projection).subscribe(results)
 
         def action(scheduler, state):
             return d.dispose()
@@ -219,7 +219,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map(projection)
+            return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_completed(400))
@@ -235,7 +235,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map(projection)
+            return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32))
@@ -253,7 +253,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map(projection)
+            return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
 
@@ -274,7 +274,7 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
                 return (x + 1) + (index * 10)
 
-            return xs.map(projection)
+            return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(on_next(210, 5), on_next(240, 14), on_error(290, ex))

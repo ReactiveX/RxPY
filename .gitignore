@@ -57,3 +57,5 @@ TestResults/Rx.TE.Tests_log.ldf
 .zedstate
 
 .ipynb_checkpoints
+.cache/
+.mypy_cache/

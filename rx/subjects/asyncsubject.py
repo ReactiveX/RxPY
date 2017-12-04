@@ -1,11 +1,11 @@
 from rx import config
-from rx.core import Observer, ObservableBase, Disposable
+from rx.core import Observer, Observable, Disposable
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(ObservableBase, Observer):
+class AsyncSubject(Observable, Observer):
     """Represents the result of an asynchronous operation. The last value
     before the on_completed notification, or the error received through
     on_error, is sent to all subscribed observers."""

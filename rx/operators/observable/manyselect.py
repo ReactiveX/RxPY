@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.core import ObservableBase
+from rx.core import Observable
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
@@ -7,7 +7,7 @@ from rx.concurrency import immediate_scheduler, current_thread_scheduler
 from rx.internal import extensionmethod
 
 
-class ChainObservable(ObservableBase):
+class ChainObservable(Observable):
 
     def _subscribe_core(self, observer):
         g = CompositeDisposable()

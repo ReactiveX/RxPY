@@ -1,9 +1,9 @@
-from rx.core import Observer, AnonymousObserver, ObservableBase, Disposable
+from rx.core import Observer, AnonymousObserver, Observable, Disposable
 from .subscription import Subscription
 from .reactive_assert import AssertList
 
 
-class HotObservable(ObservableBase):
+class HotObservable(Observable):
     def __init__(self, scheduler, messages):
         super(HotObservable, self).__init__()
 

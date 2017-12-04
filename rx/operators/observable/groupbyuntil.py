@@ -5,7 +5,7 @@ from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
 from rx.internal.basic import default_comparer, identity
-from rx.linq.groupedobservable import GroupedObservable
+from rx.operators.groupedobservable import GroupedObservable
 from rx.internal import extensionmethod
 
 

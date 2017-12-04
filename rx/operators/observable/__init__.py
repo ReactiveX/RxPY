@@ -80,7 +80,7 @@ from . import retry
 from . import returnvalue
 from . import scan
 from . import sample
-from . import select
+from . import map
 from . import selectswitch
 from . import selectmany
 from . import sequenceequal

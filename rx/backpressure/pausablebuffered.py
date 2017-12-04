@@ -1,4 +1,4 @@
-from rx.core import ObservableBase, Observable, AnonymousObservable
+from rx.core import Observable, Observable, AnonymousObservable
 from rx.internal import extensionmethod
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
@@ -53,7 +53,7 @@ def combine_latest_source(source, subject, result_selector):
     return AnonymousObservable(subscribe)
 
 
-class PausableBufferedObservable(ObservableBase):
+class PausableBufferedObservable(Observable):
 
     def __init__(self, source, pauser=None):
         self.source = source

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observer, Observable, ObservableBase
+from rx.core import Observer, Observable, Observable
 from rx.linq.connectableobservable import ConnectableObservable
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -22,7 +22,7 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class MySubject(ObservableBase, Observer):
+class MySubject(Observable, Observer):
 
     def __init__(self):
         super(MySubject, self).__init__()
