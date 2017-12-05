@@ -38,9 +38,9 @@ setup(
     test_suite='nose.collector',
 
     packages=['rx', 'rx.core', 'rx.core.py2', 'rx.core.py3', 'rx.internal',
-              'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
+              'rx.operators', 'rx.operators.observable', 'rx.operators.enumerable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
-              'rx.linq.observable.blocking', 'rx.disposables', 'rx.subjects',
+              'rx.operators.observable.blocking', 'rx.disposables', 'rx.subjects',
               'rx.backpressure', 'rx.testing'],
     package_dir={'rx': 'rx'}
 )
