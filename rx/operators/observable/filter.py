@@ -2,7 +2,7 @@ from typing import Any, Callable
 from rx import Observable, AnonymousObservable
 
 
-def filter(source: Observable, predicate: Callable[[Any], bool]):
+def filter(predicate: Callable[[Any], bool], source: Observable):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
@@ -21,7 +21,6 @@ def filter(source: Observable, predicate: Callable[[Any], bool]):
     """
 
     def subscribe(observer):
-
         def on_next(value):
             try:
                 should_run = predicate(value)
@@ -38,7 +37,7 @@ def filter(source: Observable, predicate: Callable[[Any], bool]):
     return AnonymousObservable(subscribe)
 
 
-def filter_indexed(source: Observable, predicate: Callable[[Any, int], bool]):
+def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
@@ -73,7 +72,5 @@ def filter_indexed(source: Observable, predicate: Callable[[Any, int], bool]):
             if should_run:
                 observer.on_next(value)
 
-        return source.subscribe(on_next,
-                                observer.on_error,
-                                observer.on_completed)
+        return source.subscribe(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)
