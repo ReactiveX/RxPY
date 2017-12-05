@@ -4,7 +4,7 @@ from rx import Observable, Observer, AnonymousObservable
 from rx.core import Disposable
 
 
-def map(source: Observable, mapper: Callable[[Any], Any]) -> Observable:
+def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     """Project each element of an observable sequence into a new form.
 
     1 - source.map(lambda value: value * value)
@@ -30,7 +30,8 @@ def map(source: Observable, mapper: Callable[[Any], Any]) -> Observable:
         return source.subscribe(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)
 
-def map_indexed(source: Observable, selector: Callable[[Any, int], Any]) -> Observable:
+
+def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Observable:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
