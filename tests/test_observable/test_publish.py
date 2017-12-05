@@ -1,7 +1,7 @@
 import unittest
 
 from rx.core import Observer, Observable, Observable
-from rx.linq.connectableobservable import ConnectableObservable
+from rx.operators.connectableobservable import ConnectableObservable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next

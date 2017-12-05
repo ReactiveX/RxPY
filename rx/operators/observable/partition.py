@@ -24,6 +24,6 @@ def partition(self, predicate):
     published = self.publish().ref_count()
     return [
         published.filter(predicate), # where does adapt_call itself
-        published.filter(lambda x, i: not adapt_call(predicate)(x, i))
+        published.filter_indexed(lambda x, i: not adapt_call(predicate)(x, i))
     ]
 

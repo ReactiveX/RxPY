@@ -13,7 +13,7 @@ def _flat_map(source, selector):
             result = Observable.from_future(selector_result)
         return result
 
-    return source.map(projection).merge_all()
+    return source.map_indexed(projection).merge_all()
 
 
 @extensionmethod(Observable, alias="flat_map")
@@ -60,7 +60,7 @@ def select_many(self, selector, result_selector=None):
                 result = Observable.from_(selector_result)
             else:
                 result = Observable.from_future(selector_result)
-            return result.map(lambda y, i: result_selector(x, y, i))
+            return result.map_indexed(lambda y, i: result_selector(x, y, i))
 
         return self.flat_map(projection)
 
