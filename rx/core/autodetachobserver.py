@@ -18,9 +18,9 @@ class AutoDetachObserver(ObserverBase):
             self.dispose()
             raise
 
-    def _on_error_core(self, exn):
+    def _on_error_core(self, error):
         try:
-            self.observer.on_error(exn)
+            self.observer.on_error(error)
         finally:
             self.dispose()
 

@@ -25,9 +25,9 @@ class ScheduledObserver(ObserverBase):
             self.observer.on_next(value)
         self.queue.append(action)
 
-    def _on_error_core(self, exception):
+    def _on_error_core(self, error):
         def action():
-            self.observer.on_error(exception)
+            self.observer.on_error(error)
         self.queue.append(action)
 
     def _on_completed_core(self):
@@ -39,7 +39,7 @@ class ScheduledObserver(ObserverBase):
         is_owner = False
 
         with self.lock:
-            if not self.has_faulted and len(self.queue):
+            if not self.has_faulted and self.queue:
                 is_owner = not self.is_acquired
                 self.is_acquired = True
 

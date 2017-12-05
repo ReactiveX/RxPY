@@ -1,6 +1,7 @@
-from . import Observer
 from rx.internal import extensionmethod
 from rx.internal.exceptions import ReEntracyException, CompletedException
+
+from . import Observer
 
 
 class CheckedObserver(Observer):
@@ -16,10 +17,10 @@ class CheckedObserver(Observer):
         finally:
             self._state = 0
 
-    def on_error(self, err):
+    def on_error(self, error):
         self.check_access()
         try:
-            self._observer.on_error(err)
+            self._observer.on_error(error)
         finally:
             self._state = 2
 
