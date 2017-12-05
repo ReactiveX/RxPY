@@ -112,12 +112,12 @@ class Observable(bases.Observable):
 
         from ..operators.observable.map import map
         source = self
-        return map(source, mapper)
+        return map(mapper, source)
 
     def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
         from ..operators.observable.map import map_indexed
         source = self
-        return map_indexed(source, mapper)
+        return map_indexed(mapper, source)
 
     def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
         """Filters the elements of an observable sequence based on a
@@ -154,3 +154,18 @@ class Observable(bases.Observable):
         from ..operators.observable.filter import filter_indexed
         source = self
         return filter_indexed(predicate, source)
+
+    def skip(self, count: int) -> "Observable":
+        """Bypasses a specified number of elements in an observable sequence
+        and then returns the remaining elements.
+
+        Keyword arguments:
+        count -- The number of elements to skip before returning the remaining
+            elements.
+
+        Returns an observable sequence that contains the elements that occur
+        after the specified index in the input sequence.
+        """
+        from ..operators.observable.skip import skip
+        source = self
+        return skip(count, source)

@@ -1,10 +1,8 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def skip(self, count):
+def skip(count: int, source: Observable):
     """Bypasses a specified number of elements in an observable sequence
     and then returns the remaining elements.
 
@@ -19,16 +17,18 @@ def skip(self, count):
     if count < 0:
         raise ArgumentOutOfRangeException()
 
-    observable = self
+    observable = source
 
     def subscribe(observer):
-        remaining = [count]
+        remaining = count
 
         def on_next(value):
-            if remaining[0] <= 0:
+            nonlocal remaining
+
+            if remaining <= 0:
                 observer.on_next(value)
             else:
-                remaining[0] -= 1
+                remaining -= 1
 
         return observable.subscribe(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)
