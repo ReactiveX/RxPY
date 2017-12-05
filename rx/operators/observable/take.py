@@ -1,10 +1,8 @@
 from rx import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def take(self, count, scheduler=None):
+def take(source: Observable, count: int, scheduler=None):
     """Returns a specified number of contiguous elements from the start of
     an observable sequence, using the specified scheduler for the edge case
     of take(0).
@@ -27,15 +25,18 @@ def take(self, count, scheduler=None):
     if not count:
         return Observable.empty(scheduler)
 
-    observable = self
+    observable = source
+
     def subscribe(observer):
-        remaining = [count]
+        remaining = count
 
         def on_next(value):
-            if remaining[0] > 0:
-                remaining[0] -= 1
+            nonlocal remaining
+
+            if remaining > 0:
+                remaining -= 1
                 observer.on_next(value)
-                if not remaining[0]:
+                if not remaining:
                     observer.on_completed()
 
         return observable.subscribe(on_next, observer.on_error, observer.on_completed)

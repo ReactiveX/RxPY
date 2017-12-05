@@ -184,3 +184,23 @@ class Observable(bases.Observable):
         from ..operators.observable.skiplast import skip_last
         source = self
         return skip_last(count, source)
+
+    def take(self, count: int, scheduler=None) -> "Observable":
+        """Returns a specified number of contiguous elements from the start of
+        an observable sequence, using the specified scheduler for the edge case
+        of take(0).
+
+        1 - source.take(5)
+        2 - source.take(0, rx.Scheduler.timeout)
+
+        Keyword arguments:
+        count -- The number of elements to return.
+        scheduler -- [Optional] Scheduler used to produce an OnCompleted
+            message in case count is set to 0.
+
+        Returns an observable sequence that contains the specified number of
+        elements from the start of the input sequence.
+        """
+        from ..operators.observable.take import take
+        source = self
+        return take(source, count, scheduler)
