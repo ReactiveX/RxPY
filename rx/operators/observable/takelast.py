@@ -1,9 +1,7 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def take_last(self, count):
+def take_last(count: int, source: Observable):
     """Returns a specified number of contiguous elements from the end of an
     observable sequence.
 
@@ -17,18 +15,19 @@ def take_last(self, count):
     delayed.
 
     Keyword arguments:
-    :param int count: Number of elements to take from the end of the source
+    :param count: Number of elements to take from the end of the source
         sequence.
 
-    :returns: An observable sequence containing the specified number of elements 
+    :returns: An observable sequence containing the specified number of elements
         from the end of the source sequence.
     :rtype: Observable
     """
 
-    source = self
+    observable = source
 
     def subscribe(observer):
         q = []
+
         def on_next(x):
             q.append(x)
             if len(q) > count:
@@ -39,5 +38,5 @@ def take_last(self, count):
                 observer.on_next(q.pop(0))
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return observable.subscribe(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

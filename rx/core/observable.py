@@ -204,3 +204,28 @@ class Observable(bases.Observable):
         from ..operators.observable.take import take
         source = self
         return take(source, count, scheduler)
+
+    def take_last(self, count: int) -> "Observable":
+        """Returns a specified number of contiguous elements from the end of an
+        observable sequence.
+
+        Example:
+        res = source.take_last(5)
+
+        Description:
+        This operator accumulates a buffer with a length enough to store
+        elements count elements. Upon completion of the source sequence, this
+        buffer is drained on the result sequence. This causes the elements to be
+        delayed.
+
+        Keyword arguments:
+        :param count: Number of elements to take from the end of the source
+            sequence.
+
+        :returns: An observable sequence containing the specified number of elements
+            from the end of the source sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.takelast import take_last
+        source = self
+        return take_last(count, source)
