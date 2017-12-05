@@ -169,3 +169,18 @@ class Observable(bases.Observable):
         from ..operators.observable.skip import skip
         source = self
         return skip(count, source)
+
+    def skip_last(self, count: int) -> "Observable":
+        """Bypasses a specified number of elements in an observable sequence
+        and then returns the remaining elements.
+
+        Keyword arguments:
+        count -- The number of elements to skip before returning the remaining
+            elements.
+
+        Returns an observable sequence that contains the elements that occur
+        after the specified index in the input sequence.
+        """
+        from ..operators.observable.skiplast import skip_last
+        source = self
+        return skip_last(count, source)

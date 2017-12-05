@@ -1,9 +1,7 @@
 from rx import Observable, AnonymousObservable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def skip_last(self, count):
+def skip_last(count: int, source: Observable):
     """Bypasses a specified number of elements at the end of an observable
     sequence.
 
@@ -20,22 +18,22 @@ def skip_last(self, count):
     sequence elements except for the bypassed ones at the end.
     """
 
-    source = self
+    observable = source
 
     def subscribe(observer):
         q = []
 
         def on_next(x):
             front = None
-            with self.lock:
+            with observable.lock:
                 q.append(x)
                 if len(q) > count:
                     front = q.pop(0)
 
-            if not front is None:
+            if front is not None:
                 observer.on_next(front)
 
-        return source.subscribe(on_next, observer.on_error, 
-                                observer.on_completed)
+        return observable.subscribe(on_next, observer.on_error,
+                                    observer.on_completed)
     return AnonymousObservable(subscribe)
 
