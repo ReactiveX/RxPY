@@ -20,6 +20,9 @@ class Observable(bases.Observable):
         for name, method in self._methods:
             setattr(self, name, types.MethodType(method, self))
 
+    def __or__(self, other):
+        return other(self)
+
     def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
         """Subscribe an observer to the observable sequence.
 
@@ -112,49 +115,42 @@ class Observable(bases.Observable):
         return map(source, mapper)
 
     def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
-        from ..operators.observable.map_indexed import map_indexed
+        from ..operators.observable.map import map_indexed
         source = self
         return map_indexed(source, mapper)
 
     def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
-        """Filters the elements of an observable sequence based on a predicate
-        by incorporating the element's index.
+        """Filters the elements of an observable sequence based on a
+        predicate.
 
         1 - source.filter(lambda value: value < 10)
 
         Keyword arguments:
-        :param Observable self: Observable sequence to filter.
-        :param A function to test each source element
-            for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        predicate -- A function to test each source element for a
+            condition.
 
-        :returns: An observable sequence that contains elements from the input
-        sequence that satisfy the condition.
-        :rtype: Observable
+        Returns an observable sequence that contains elements from the
+        input sequence that satisfy the condition.
         """
         from ..operators.observable.filter import filter
         source = self
-        return filter(source, predicate)
+        return filter(predicate, source)
 
     def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> "Observable":
-        """Filters the elements of an observable sequence based on a predicate
-        by incorporating the element's index.
+        """Filters the elements of an observable sequence based on a
+        predicate by incorporating the element's index.
 
         1 - source.filter(lambda value, index: value < 10 or index < 10)
 
         Keyword arguments:
-        :param source: Observable sequence to filter.
-        :param predicate: A function to test each source element
-            for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        predicate - A function to test each source element for a
+            condition; the second parameter of the function represents
+            the index of the source element.
 
-        :returns: An observable sequence that contains elements from the input
-        sequence that satisfy the condition.
-        :rtype: Observable
+        Returns an observable sequence that contains elements from the
+        input sequence that satisfy the condition.
         """
 
         from ..operators.observable.filter import filter_indexed
         source = self
-        return filter_indexed(source, predicate)
+        return filter_indexed(predicate, source)
