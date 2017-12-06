@@ -16,11 +16,12 @@ class Observable(bases.Observable):
     def __init__(self):
         self.lock = config["concurrency"].RLock()
 
-        # Deferred instance method assignment
+        # Deferred instance method assignment: TODO will be removed when extensionmethods are gone
         for name, method in self._methods:
             setattr(self, name, types.MethodType(method, self))
 
     def __or__(self, other):
+        """Forward pipe operator."""
         return other(self)
 
     def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
@@ -156,39 +157,39 @@ class Observable(bases.Observable):
         return filter_indexed(predicate, source)
 
     def skip(self, count: int) -> "Observable":
-        """Bypasses a specified number of elements in an observable sequence
-        and then returns the remaining elements.
+        """Bypasses a specified number of elements in an observable
+        sequence and then returns the remaining elements.
 
         Keyword arguments:
-        count -- The number of elements to skip before returning the remaining
-            elements.
+        count -- The number of elements to skip before returning the
+            remaining elements.
 
-        Returns an observable sequence that contains the elements that occur
-        after the specified index in the input sequence.
+        Returns an observable sequence that contains the elements that
+        occur after the specified index in the input sequence.
         """
         from ..operators.observable.skip import skip
         source = self
         return skip(count, source)
 
     def skip_last(self, count: int) -> "Observable":
-        """Bypasses a specified number of elements in an observable sequence
-        and then returns the remaining elements.
+        """Bypasses a specified number of elements in an observable
+        sequence and then returns the remaining elements.
 
         Keyword arguments:
-        count -- The number of elements to skip before returning the remaining
-            elements.
+        count -- The number of elements to skip before returning the
+            remaining elements.
 
-        Returns an observable sequence that contains the elements that occur
-        after the specified index in the input sequence.
+        Returns an observable sequence that contains the elements that
+        occur after the specified index in the input sequence.
         """
         from ..operators.observable.skiplast import skip_last
         source = self
         return skip_last(count, source)
 
     def take(self, count: int, scheduler=None) -> "Observable":
-        """Returns a specified number of contiguous elements from the start of
-        an observable sequence, using the specified scheduler for the edge case
-        of take(0).
+        """Returns a specified number of contiguous elements from the
+        start of an observable sequence, using the specified scheduler
+        for the edge case of take(0).
 
         1 - source.take(5)
         2 - source.take(0, rx.Scheduler.timeout)
@@ -198,33 +199,32 @@ class Observable(bases.Observable):
         scheduler -- [Optional] Scheduler used to produce an OnCompleted
             message in case count is set to 0.
 
-        Returns an observable sequence that contains the specified number of
-        elements from the start of the input sequence.
+        Returns an observable sequence that contains the specified
+        number of elements from the start of the input sequence.
         """
         from ..operators.observable.take import take
         source = self
         return take(source, count, scheduler)
 
     def take_last(self, count: int) -> "Observable":
-        """Returns a specified number of contiguous elements from the end of an
-        observable sequence.
+        """Returns a specified number of contiguous elements from the
+        end of an observable sequence.
 
         Example:
         res = source.take_last(5)
 
         Description:
         This operator accumulates a buffer with a length enough to store
-        elements count elements. Upon completion of the source sequence, this
-        buffer is drained on the result sequence. This causes the elements to be
-        delayed.
+        elements count elements. Upon completion of the source sequence,
+        this buffer is drained on the result sequence. This causes the
+        elements to be delayed.
 
         Keyword arguments:
-        :param count: Number of elements to take from the end of the source
+        count - Number of elements to take from the end of the source
             sequence.
 
-        :returns: An observable sequence containing the specified number of elements
-            from the end of the source sequence.
-        :rtype: Observable
+        Returns an observable sequence containing the specified number
+            of elements from the end of the source sequence.
         """
         from ..operators.observable.takelast import take_last
         source = self
