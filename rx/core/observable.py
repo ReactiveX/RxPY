@@ -8,6 +8,7 @@ from rx.concurrency import current_thread_scheduler
 from . import Observer, Disposable, bases
 from .anonymousobserver import AnonymousObserver
 from .autodetachobserver import AutoDetachObserver
+from . import Scheduler
 
 
 class Observable(bases.Observable):
@@ -130,6 +131,47 @@ class Observable(bases.Observable):
         from ..operators.observable.filter import filter_indexed
         source = self
         return filter_indexed(predicate, source)
+
+    @classmethod
+    def from_callable(cls, supplier: Callable, scheduler: Scheduler=None) -> "Observable":
+        """Returns an observable sequence that contains a single element generate from a supplier,
+        using the specified scheduler to send out observer messages.
+
+        example
+        res = rx.Observable.from_callable(lambda: calculate_value())
+        res = rx.Observable.from_callable(lambda: 1 / 0) # emits an error
+
+        Keyword arguments:
+        supplier -- Single element in the resulting observable sequence.
+        scheduler -- [Optional] Scheduler to send the single element on. If
+            not specified, defaults to Scheduler.immediate.
+
+        Returns an observable sequence containing the single specified
+        element derived from the supplier
+        """
+        from ..operators.observable.returnvalue import from_callable
+        return from_callable(supplier, scheduler)
+
+    @classmethod
+    def return_value(cls, value, scheduler: Scheduler=None) -> "Observable":
+        """Returns an observable sequence that contains a single element,
+        using the specified scheduler to send out observer messages.
+        There is an alias called 'just'.
+
+        example
+        res = rx.Observable.return(42)
+        res = rx.Observable.return(42, rx.Scheduler.timeout)
+
+        Keyword arguments:
+        value -- Single element in the resulting observable sequence.
+        scheduler -- [Optional] Scheduler to send the single element on. If
+            not specified, defaults to Scheduler.immediate.
+
+        Returns an observable sequence containing the single specified
+        element.
+        """
+        from ..operators.observable.returnvalue import return_value
+        return return_value(value, scheduler)
 
     def skip(self, count: int) -> "Observable":
         """Bypasses a specified number of elements in an observable
