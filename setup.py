@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='1.6.0',
+    version='2.0.0-alpha',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
@@ -26,8 +26,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: CPython',
@@ -37,7 +35,7 @@ setup(
     ],
     test_suite='nose.collector',
 
-    packages=['rx', 'rx.core', 'rx.core.py2', 'rx.core.py3', 'rx.internal',
+    packages=['rx', 'rx.core', 'rx.core.bases', 'rx.internal',
               'rx.operators', 'rx.operators.observable', 'rx.operators.enumerable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
               'rx.operators.observable.blocking', 'rx.disposables', 'rx.subjects',
