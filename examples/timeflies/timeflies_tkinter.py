@@ -1,11 +1,7 @@
+from tkinter import Tk, Label, Frame
+
 from rx.subjects import Subject
 from rx.concurrency import TkinterScheduler
-
-try:
-    from tkinter import *
-except ImportError:
-    # In python 2 tkinter is capitalized
-    from Tkinter import *
 
 
 def main():
@@ -29,7 +25,7 @@ def main():
 
         def on_next(ev):
             label.place(x=ev.x + i*12 + 15, y=ev.y)
-        mousemove.delay(i*100, scheduler=scheduler).subscribe_callbacks(on_next)
+        ys = mousemove.delay(i*100, scheduler=scheduler).subscribe_callbacks(on_next)
 
     for i, label in enumerate(labels):
         handle_label(i, label)
