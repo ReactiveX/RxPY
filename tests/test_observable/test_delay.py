@@ -45,7 +45,7 @@ class TestDelay(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
 
         def create():
-            dt = datetime.fromtimestamp(300/1000.0)
+            dt = datetime.utcfromtimestamp(300/1000.0)
             return xs.delay(dt, scheduler)
 
         results = scheduler.start(create)
@@ -68,7 +68,7 @@ class TestDelay(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
 
         def create():
-            return xs.delay(datetime.fromtimestamp(250/1000.0), scheduler)
+            return xs.delay(datetime.utcfromtimestamp(250/1000.0), scheduler)
 
         results = scheduler.start(create)
 
@@ -92,7 +92,7 @@ class TestDelay(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_completed(550))
 
         def create():
-            return xs.delay(datetime.fromtimestamp(0.350), scheduler)
+            return xs.delay(datetime.utcfromtimestamp(0.350), scheduler)
 
         results = scheduler.start(create)
 
@@ -118,7 +118,7 @@ class TestDelay(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
 
         def create():
-            return xs.delay(datetime.fromtimestamp(0.250), scheduler)
+            return xs.delay(datetime.utcfromtimestamp(0.250), scheduler)
 
         results = scheduler.start(create)
 
@@ -144,7 +144,7 @@ class TestDelay(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2), on_next(350, 3), on_next(450, 4), on_error(550, ex))
 
         def create():
-            return xs.delay(datetime.fromtimestamp(0.350), scheduler)
+            return xs.delay(datetime.utcfromtimestamp(0.350), scheduler)
 
         results = scheduler.start(create)
 

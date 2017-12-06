@@ -111,9 +111,9 @@ class Observable(bases.Observable):
         invoking the transform function on each element of source.
         """
 
-        from ..operators.observable.map import map
+        from ..operators.observable.map import map as _map
         source = self
-        return map(mapper, source)
+        return _map(mapper, source)
 
     def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
         from ..operators.observable.map import map_indexed
@@ -133,9 +133,9 @@ class Observable(bases.Observable):
         Returns an observable sequence that contains elements from the
         input sequence that satisfy the condition.
         """
-        from ..operators.observable.filter import filter
+        from ..operators.observable.filter import filter as _filter
         source = self
-        return filter(predicate, source)
+        return _filter(predicate, source)
 
     def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> "Observable":
         """Filters the elements of an observable sequence based on a

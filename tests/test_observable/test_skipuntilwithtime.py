@@ -19,7 +19,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(0), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(0), scheduler)
         res = scheduler.start(create)
 
         res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
@@ -30,7 +30,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
 
         res = scheduler.start(create)
 
@@ -43,7 +43,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
 
         res = scheduler.start(create)
 
@@ -55,7 +55,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
 
         res = scheduler.start(create)
 
@@ -75,9 +75,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.fromtimestamp(0.215), scheduler
+                datetime.utcfromtimestamp(0.215), scheduler
             ).skip_until_with_time(
-                datetime.fromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230), scheduler
             )
 
         res = scheduler.start(create)
@@ -95,9 +95,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.fromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230), scheduler
             ).skip_until_with_time(
-                datetime.fromtimestamp(0.215), scheduler
+                datetime.utcfromtimestamp(0.215), scheduler
             )
 
         res = scheduler.start(create)

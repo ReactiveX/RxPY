@@ -28,7 +28,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.take_until_with_time(datetime.fromtimestamp(0), scheduler=scheduler)
+            return xs.take_until_with_time(datetime.utcfromtimestamp(0), scheduler=scheduler)
 
         res = scheduler.start(create)
 
@@ -44,7 +44,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt = datetime.fromtimestamp(250)
+            dt = datetime.utcfromtimestamp(250)
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
@@ -56,7 +56,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_error(210, ex))
         def create():
-            dt = datetime.fromtimestamp(0.250)
+            dt = datetime.utcfromtimestamp(0.250)
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
@@ -68,7 +68,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            dt = datetime.fromtimestamp(0.250)
+            dt = datetime.utcfromtimestamp(0.250)
             return xs.take_until_with_time(dt, scheduler)
 
         res = scheduler.start(create)
@@ -88,8 +88,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
             on_completed(270)
         )
         def create():
-            dt235 = datetime.fromtimestamp(0.235)
-            dt255 = datetime.fromtimestamp(0.255)
+            dt235 = datetime.utcfromtimestamp(0.235)
+            dt255 = datetime.utcfromtimestamp(0.255)
             return xs.take_until_with_time(dt255, scheduler).take_until_with_time(dt235, scheduler)
         res = scheduler.start(create)
 
@@ -109,8 +109,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt235 = datetime.fromtimestamp(0.235)
-            dt255 = datetime.fromtimestamp(0.255)
+            dt235 = datetime.utcfromtimestamp(0.235)
+            dt255 = datetime.utcfromtimestamp(0.255)
             return xs.take_until_with_time(dt235, scheduler).take_until_with_time(dt255, scheduler)
         res = scheduler.start(create)
 

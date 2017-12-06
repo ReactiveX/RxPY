@@ -59,7 +59,7 @@ class SchedulerBase(Scheduler):
         """Converts time value to milliseconds"""
 
         if isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
+            timespan = timespan - datetime.utcfromtimestamp(0)
             timespan = int(timespan.total_seconds()*1000)
         elif isinstance(timespan, timedelta):
             timespan = int(timespan.total_seconds()*1000)
@@ -71,9 +71,9 @@ class SchedulerBase(Scheduler):
         """Converts time value to datetime"""
 
         if isinstance(duetime, timedelta):
-            duetime = datetime.fromtimestamp(0) + duetime
+            duetime = datetime.utcfromtimestamp(0) + duetime
         elif not isinstance(duetime, datetime):
-            duetime = datetime.fromtimestamp(duetime/1000.0)
+            duetime = datetime.utcfromtimestamp(duetime/1000.0)
 
         return duetime
 
@@ -82,7 +82,7 @@ class SchedulerBase(Scheduler):
         """Converts time value to timedelta"""
 
         if isinstance(timespan, datetime):
-            timespan = timespan - datetime.fromtimestamp(0)
+            timespan = timespan - datetime.uctfromtimestamp(0)
         elif not isinstance(timespan, timedelta):
             timespan = timedelta(milliseconds=timespan)
 
