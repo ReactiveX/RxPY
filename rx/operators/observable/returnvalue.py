@@ -51,6 +51,8 @@ def from_callable(supplier, scheduler=None) ->Observable:
 
     def subscribe(observer):
         def action(scheduler, state=None):
+            nonlocal observer
+
             try:
                 observer.on_next(supplier())
                 observer.on_completed()

@@ -72,29 +72,20 @@ class Observable(bases.Observable):
     def _subscribe_core(self, observer):
         return NotImplemented
 
-    def map(self, mapper: Callable[[Any], Any]) -> "Observable":
-        """Project each element of an observable sequence into a new form
-        by incorporating the element's index.
+    @classmethod
+    def empty(cls, scheduler: Scheduler=None):
+        """Returns an empty observable sequence, using the specified scheduler
+        to send out the single OnCompleted message.
 
-        1 - source.map(lambda value: value * value)
+        1 - res = rx.Observable.empty()
+        2 - res = rx.Observable.empty(rx.Scheduler.timeout)
 
-        Keyword arguments:
-        mapper -- A transform function to apply to each source element; the
-            second parameter of the function represents the index of the
-            source element.
+        scheduler -- Scheduler to send the termination call on.
 
-        Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of source.
+        Returns an observable sequence with no elements.
         """
-
-        from ..operators.observable.map import map as _map
-        source = self
-        return _map(mapper, source)
-
-    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
-        from ..operators.observable.map import map_indexed
-        source = self
-        return map_indexed(mapper, source)
+        from ..operators.observable.empty import empty
+        return empty(scheduler)
 
     def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
         """Filters the elements of an observable sequence based on a
@@ -151,6 +142,30 @@ class Observable(bases.Observable):
         """
         from ..operators.observable.returnvalue import from_callable
         return from_callable(supplier, scheduler)
+
+    def map(self, mapper: Callable[[Any], Any]) -> "Observable":
+        """Project each element of an observable sequence into a new form
+        by incorporating the element's index.
+
+        1 - source.map(lambda value: value * value)
+
+        Keyword arguments:
+        mapper -- A transform function to apply to each source element; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the transform function on each element of source.
+        """
+
+        from ..operators.observable.map import map as _map
+        source = self
+        return _map(mapper, source)
+
+    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
+        from ..operators.observable.map import map_indexed
+        source = self
+        return map_indexed(mapper, source)
 
     @classmethod
     def return_value(cls, value, scheduler: Scheduler=None) -> "Observable":
