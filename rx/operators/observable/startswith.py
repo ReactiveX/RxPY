@@ -1,11 +1,9 @@
 from rx.core import Scheduler, Observable
 
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def start_with(self, *args, **kw):
+def start_with(self, *args, **kw) -> Observable:
     """Prepends a sequence of values to an observable sequence with an
     optional scheduler and an argument list of values to prepend.
 

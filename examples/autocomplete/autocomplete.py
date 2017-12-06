@@ -1,6 +1,6 @@
 """
 RxPY example running a Tornado server doing search queries against Wikipedia to
-populate the autocomplete dropdown in the web UI. Start using 
+populate the autocomplete dropdown in the web UI. Start using
 `python autocomplete.py` and navigate your web browser to http://localhost:8080
 
 Uses the RxPY IOLoopScheduler (works on both Python 2.7 and 3.4)
@@ -65,7 +65,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe(send_response, on_error)
+        searcher.subscribe_callbacks(send_response, on_error)
 
     def on_message(self, message):
         obj = json_decode(message)

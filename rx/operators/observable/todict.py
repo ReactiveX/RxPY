@@ -26,7 +26,7 @@ def _to_dict(source, map_type, key_selector, element_selector):
             observer.on_next(m)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 

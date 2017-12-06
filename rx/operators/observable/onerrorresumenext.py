@@ -65,7 +65,7 @@ def on_error_resume_next(cls, *args):
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe(observer.on_next, on_resume, on_resume)
+            d.disposable = current.subscribe_callbacks(observer.on_next, on_resume, on_resume)
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

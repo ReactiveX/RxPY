@@ -43,7 +43,7 @@ def to_future(self, future_ctor=None):
         if has_value[0]:
             future.set_result(value[0])
 
-    source.subscribe(on_next, on_error, on_completed)
+    source.subscribe_callbacks(on_next, on_error, on_completed)
 
     # No cancellation can be done
     return future

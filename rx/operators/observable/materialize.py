@@ -26,6 +26,6 @@ def materialize(self):
             observer.on_next(OnCompleted())
             observer.on_completed()
 
-        return source.subscribe(on_next, on_error, on_completed)
+        return source.subscribe_callbacks(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
 

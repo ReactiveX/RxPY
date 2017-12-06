@@ -96,7 +96,7 @@ def sequence_equal(self, second, comparer=None):
                     observer.on_next(True)
                     observer.on_completed()
 
-        subscription1 = first.subscribe(on_next1, observer.on_error, on_completed1)
-        subscription2 = second.subscribe(on_next2, observer.on_error, on_completed2)
+        subscription1 = first.subscribe_callbacks(on_next1, observer.on_error, on_completed1)
+        subscription2 = second.subscribe_callbacks(on_next2, observer.on_error, on_completed2)
         return CompositeDisposable(subscription1, subscription2)
     return AnonymousObservable(subscribe)

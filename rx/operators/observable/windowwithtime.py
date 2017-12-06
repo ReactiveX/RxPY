@@ -92,6 +92,6 @@ def window_with_time(self, timespan, timeshift=None, scheduler=None):
 
             observer.on_completed()
 
-        group_disposable.add(source.subscribe(on_next, on_error, on_completed))
+        group_disposable.add(source.subscribe_callbacks(on_next, on_error, on_completed))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

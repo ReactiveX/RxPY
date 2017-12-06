@@ -30,7 +30,6 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Programming Language :: Python :: Implementation :: IronPython',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     test_suite='nose.collector',

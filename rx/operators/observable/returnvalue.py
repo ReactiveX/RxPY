@@ -1,11 +1,10 @@
+from typing import Any, Callable
 from rx.core import Observable, AnonymousObservable
-
 from rx.concurrency import current_thread_scheduler
-from rx.internal import extensionclassmethod
+from rx.core.bases.scheduler import Scheduler
 
 
-@extensionclassmethod(Observable, alias="just")
-def return_value(cls, value, scheduler=None):
+def return_value(value: Any, scheduler: Scheduler=None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -34,8 +33,7 @@ def return_value(cls, value, scheduler=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionclassmethod(Observable)
-def from_callable(cls, supplier, scheduler=None):
+def from_callable(supplier: Callable, scheduler: Scheduler=None) ->Observable:
     """Returns an observable sequence that contains a single element generate from a supplier,
        using the specified scheduler to send out observer messages.
 
@@ -55,6 +53,8 @@ def from_callable(cls, supplier, scheduler=None):
 
     def subscribe(observer):
         def action(scheduler, state=None):
+            nonlocal observer
+
             try:
                 observer.on_next(supplier())
                 observer.on_completed()

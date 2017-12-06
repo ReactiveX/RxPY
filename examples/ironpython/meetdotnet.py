@@ -24,7 +24,7 @@ stream = rx.subjects.Subject()
 
 def on_next(x):
     print "RxPy: %s" % x
-stream.subscribe(on_next)
+stream.subscribe_callbacks(on_next)
 
 def OnNext(x):
     print "RxNET: %s" % x

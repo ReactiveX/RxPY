@@ -65,7 +65,7 @@ def expand(self, selector, scheduler=None):
                     if active_count[0] == 0:
                         observer.on_completed()
 
-                sad.disposable = work.subscribe(on_next, observer.on_error, on_complete)
+                sad.disposable = work.subscribe_callbacks(on_next, observer.on_error, on_complete)
                 m.disposable = scheduler.schedule(action)
 
             if is_owner:

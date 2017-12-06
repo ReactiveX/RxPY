@@ -61,7 +61,7 @@ def zip(self, *args):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe(on_next, observer.on_error, lambda: done(i))
+            sad.disposable = source.subscribe_callbacks(on_next, observer.on_error, lambda: done(i))
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)
@@ -110,5 +110,5 @@ def _zip_list(source, second, result_selector):
             else:
                 observer.on_completed()
 
-        return first.subscribe(on_next, observer.on_error, observer.on_completed)
+        return first.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

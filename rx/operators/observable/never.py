@@ -1,9 +1,7 @@
 from rx.core import Observable, AnonymousObservable, Disposable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
-def never(cls):
+def never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used to
     denote an infinite duration (e.g. when using reactive joins).
 

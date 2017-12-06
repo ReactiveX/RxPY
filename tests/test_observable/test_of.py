@@ -16,14 +16,14 @@ class TestOf(unittest.TestCase):
     def test_of(self):
         results = []
 
-        Observable.of(1,2,3,4,5).subscribe(results.append)
+        Observable.of(1,2,3,4,5).subscribe_callbacks(results.append)
 
         assert(str([1,2,3,4,5]) == str(results))
 
     def test_of_empty(self):
         results = []
 
-        Observable.of().subscribe(results.append)
+        Observable.of().subscribe_callbacks(results.append)
 
         assert(len(results) == 0)
 

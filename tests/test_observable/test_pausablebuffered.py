@@ -427,7 +427,7 @@ class TestPausable_buffered(unittest.TestCase):
                     controller.on_next(True)
                 scheduler.schedule_relative(100, action2)
 
-            subscription = pausable_buffered.subscribe(on_next, results.on_error, results.on_completed)
+            subscription = pausable_buffered.subscribe_callbacks(on_next, results.on_error, results.on_completed)
             controller.on_next(True)
 
         scheduler.schedule_absolute(200, action1)

@@ -49,9 +49,8 @@ def merge(self, *args, **kwargs):
                     if is_stopped[0] and active_count[0] == 0:
                         observer.on_completed()
 
-            subscription.disposable = xs.subscribe(observer.on_next,
-                                                   observer.on_error,
-                                                   on_completed)
+            subscription.disposable = xs.subscribe_callbacks(observer.on_next, observer.on_error,
+                                                             on_completed)
 
         def on_next(inner_source):
             if active_count[0] < max_concurrent:
@@ -65,7 +64,7 @@ def merge(self, *args, **kwargs):
             if active_count[0] == 0:
                 observer.on_completed()
 
-        group.add(sources.subscribe(on_next, observer.on_error, on_completed))
+        group.add(sources.subscribe_callbacks(on_next, observer.on_error, on_completed))
         return group
     return AnonymousObservable(subscribe)
 
@@ -132,7 +131,7 @@ def merge_all(self):
                 if is_stopped[0] and len(group) == 1:
                     observer.on_completed()
 
-            disposable = inner_source.subscribe(on_next, observer.on_error, on_completed)
+            disposable = inner_source.subscribe_callbacks(on_next, observer.on_error, on_completed)
             inner_subscription.disposable = disposable
 
         def on_completed():
@@ -140,7 +139,7 @@ def merge_all(self):
             if len(group) == 1:
                 observer.on_completed()
 
-        m.disposable = sources.subscribe(on_next, observer.on_error, on_completed)
+        m.disposable = sources.subscribe_callbacks(on_next, observer.on_error, on_completed)
         return group
 
     return AnonymousObservable(subscribe)

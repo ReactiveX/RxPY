@@ -50,5 +50,5 @@ def distinct_until_changed(self, key_selector=None, comparer=None):
                 current_key[0] = key
                 observer.on_next(value)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

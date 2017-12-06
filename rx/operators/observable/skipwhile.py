@@ -40,5 +40,5 @@ def skip_while(self, predicate):
             if running[0]:
                 observer.on_next(value)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

@@ -31,7 +31,7 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
             if should_run:
                 observer.on_next(value)
 
-        return source.subscribe(on_next,
+        return source.subscribe_callbacks(on_next,
                                 observer.on_error,
                                 observer.on_completed)
     return AnonymousObservable(subscribe)
@@ -72,5 +72,5 @@ def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
             if should_run:
                 observer.on_next(value)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

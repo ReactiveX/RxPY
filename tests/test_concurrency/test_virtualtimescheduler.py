@@ -27,12 +27,12 @@ class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
         if not absolute:
             absolute = ''
 
-        return datetime.fromtimestamp(len(absolute))
+        return datetime.utcfromtimestamp(len(absolute))
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
     def test_virtual_now(self):
-        res = VirtualSchedulerTestScheduler().now - datetime.fromtimestamp(0)
+        res = VirtualSchedulerTestScheduler().now - datetime.utcfromtimestamp(0)
         assert(res < timedelta(1000))
 
     def test_virtual_schedule_action(self):

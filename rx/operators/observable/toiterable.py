@@ -1,9 +1,7 @@
 from rx.core import Observable, AnonymousObservable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def to_iterable(self):
+def to_iterable(source: Observable) -> Observable:
     """Creates an iterable from an observable sequence.
 
     :returns: An observable sequence containing a single element with a list
@@ -11,9 +9,9 @@ def to_iterable(self):
     :rtype: Observable
     """
 
-    source = self
-
     def subscribe(observer):
+        nonlocal source
+
         queue = []
 
         def on_next(item):
@@ -23,5 +21,5 @@ def to_iterable(self):
             observer.on_next(queue)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

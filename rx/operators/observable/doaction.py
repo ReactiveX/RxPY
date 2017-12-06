@@ -73,7 +73,7 @@ def do_action(self, on_next=None, on_error=None, on_completed=None,
 
                 observer.on_completed()
 
-        return source.subscribe(_on_next, _on_error, _on_completed)
+        return source.subscribe_callbacks(_on_next, _on_error, _on_completed)
 
     return AnonymousObservable(subscribe)
 
@@ -95,7 +95,7 @@ def do_after_next(self, after_next):
             except Exception as e:
                 observer.on_error(e)
 
-        return self.subscribe(on_next, observer.on_error, observer.on_completed)
+        return self.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
 
     return AnonymousObservable(subscribe)
 
@@ -109,7 +109,7 @@ def do_on_subscribe(self, on_subscribe):
     """
     def subscribe(observer):
         on_subscribe()
-        return self.subscribe(observer.on_next, observer.on_error, observer.on_completed)
+        return self.subscribe_callbacks(observer.on_next, observer.on_error, observer.on_completed)
 
     return AnonymousObservable(subscribe)
 
@@ -130,7 +130,7 @@ def do_on_dispose(self, on_dispose):
     def subscribe(observer):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        disposable = self.subscribe(observer.on_next, observer.on_error, observer.on_completed)
+        disposable = self.subscribe_callbacks(observer.on_next, observer.on_error, observer.on_completed)
         composite_disposable.add(disposable)
         return composite_disposable
 
@@ -164,7 +164,7 @@ def do_on_terminate(self, on_terminate):
             else:
                 observer.on_error(exception)
 
-        return self.subscribe(observer.on_next, on_error, on_completed)
+        return self.subscribe_callbacks(observer.on_next, on_error, on_completed)
 
     return AnonymousObservable(subscribe)
 
@@ -240,7 +240,7 @@ def do_finally(self, finally_action):
 
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose(was_invoked))
-        disposable = self.subscribe(observer.on_next, on_error, on_completed)
+        disposable = self.subscribe_callbacks(observer.on_next, on_error, on_completed)
         composite_disposable.add(disposable)
 
         return composite_disposable

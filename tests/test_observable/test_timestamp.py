@@ -16,7 +16,7 @@ created = ReactiveTest.created
 class Timestamp(object):
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
-            timestamp = timestamp-datetime.fromtimestamp(0)
+            timestamp = timestamp-datetime.utcfromtimestamp(0)
             timestamp = int(timestamp.microseconds/1000)
 
         self.value = value

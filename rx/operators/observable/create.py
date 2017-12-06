@@ -1,7 +1,5 @@
-from rx.core import Observable, AnonymousObservable
-from rx.internal import extensionclassmethod
+from rx.core import AnonymousObservable
 
 
-@extensionclassmethod(Observable, alias="create_with_disposable")
-def create(cls, subscribe):
+def create(subscribe):
     return AnonymousObservable(subscribe)

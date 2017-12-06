@@ -39,5 +39,5 @@ def take_last_buffer(self, count):
             observer.on_next(q)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

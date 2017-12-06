@@ -33,5 +33,5 @@ def skip_last(count: int, source: Observable) -> Observable:
             if front is not None:
                 observer.on_next(front)
 
-        return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return observable.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

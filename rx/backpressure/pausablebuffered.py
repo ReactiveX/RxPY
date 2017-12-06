@@ -47,8 +47,8 @@ def combine_latest_source(source, subject, result_selector):
             next(True, 1)
 
         return CompositeDisposable(
-            source.subscribe(lambda x: next(x, 0), on_error_source, on_completed_source),
-            subject.subscribe(lambda x: next(x, 1), observer.on_error, on_completed_subject)
+            source.subscribe_callbacks(lambda x: next(x, 0), on_error_source, on_completed_source),
+            subject.subscribe_callbacks(lambda x: next(x, 1), observer.on_error, on_completed_subject)
         )
     return AnonymousObservable(subscribe)
 
@@ -106,7 +106,7 @@ class PausableBufferedObservable(Observable):
             self.source,
             self.pauser.distinct_until_changed().start_with(False),
             result_selector
-        ).subscribe(on_next, on_error, on_completed)
+        ).subscribe_callbacks(on_next, on_error, on_completed)
 
         return subscription
 

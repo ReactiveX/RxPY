@@ -93,6 +93,6 @@ def timeout(self, duetime, other=None, scheduler=None):
                 _id[0] += 1
                 observer.on_completed()
 
-        original.disposable = source.subscribe(on_next, on_error, on_completed)
+        original.disposable = source.subscribe_callbacks(on_next, on_error, on_completed)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

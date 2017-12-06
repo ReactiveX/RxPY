@@ -49,20 +49,20 @@ class TestRetry(unittest.TestCase):
     def test_retry_observable_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1).retry()
-        xs.subscribe(lambda x: _raise('ex'))
+        xs.subscribe_callbacks(lambda x: _raise('ex'))
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex', scheduler2).retry()
-        d = ys.subscribe(on_error=lambda ex: _raise('ex'))
+        d = ys.subscribe_callbacks(on_error=lambda ex: _raise('ex'))
 
         scheduler2.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).retry()
-        zs.subscribe(on_completed=lambda: _raise('ex'))
+        zs.subscribe_callbacks(on_completed=lambda: _raise('ex'))
 
         self.assertRaises(RxException, scheduler3.start)
 
@@ -104,20 +104,20 @@ class TestRetry(unittest.TestCase):
     def test_retry_observable_retry_count_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1).retry(3)
-        xs.subscribe(lambda x: _raise('ex'))
+        xs.subscribe_callbacks(lambda x: _raise('ex'))
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex', scheduler2).retry(100)
-        d = ys.subscribe(on_error=lambda ex: _raise('ex'))
+        d = ys.subscribe_callbacks(on_error=lambda ex: _raise('ex'))
 
         scheduler2.schedule_absolute(10, lambda sc, st: d.dispose())
 
         scheduler2.start()
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).retry(100)
-        zs.subscribe(on_completed=lambda: _raise('ex'))
+        zs.subscribe_callbacks(on_completed=lambda: _raise('ex'))
 
         self.assertRaises(RxException, scheduler3.start)
 

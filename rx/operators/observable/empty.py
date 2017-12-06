@@ -1,10 +1,9 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionclassmethod
+from rx.core.bases.scheduler import Scheduler
 
 
-@extensionclassmethod(Observable)
-def empty(cls, scheduler=None):
+def empty(scheduler: Scheduler=None) -> Observable:
     """Returns an empty observable sequence, using the specified scheduler
     to send out the single OnCompleted message.
 
@@ -20,6 +19,8 @@ def empty(cls, scheduler=None):
 
     def subscribe(observer):
         def action(scheduler, state):
+            nonlocal observer
+
             observer.on_completed()
 
         return scheduler.schedule(action)

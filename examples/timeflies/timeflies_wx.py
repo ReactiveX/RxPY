@@ -37,7 +37,7 @@ def main():
             label.MoveXY(x + i*12 + 15, y)
             label.Show()
 
-        frame.mousemove.delay(i*100, scheduler=scheduler).subscribe(on_next)
+        frame.mousemove.delay(i*100, scheduler=scheduler).subscribe_callbacks(on_next)
 
     for i, label in enumerate(labels):
         handle_label(i, label)

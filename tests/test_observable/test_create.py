@@ -114,21 +114,21 @@ class TestCreate(unittest.TestCase):
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe).subscribe(lambda x: _raise('ex'))
+            Observable.create(subscribe).subscribe_callbacks(lambda x: _raise('ex'))
 
         def subscribe2(o):
             o.on_error('exception')
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+            Observable.create(subscribe2).subscribe_callbacks(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.on_completed()
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe3).subscribe(on_completed=lambda: _raise('ex'))
+            Observable.create(subscribe3).subscribe_callbacks(on_completed=lambda: _raise('ex'))
 
     def test_create_with_disposable_next(self):
         scheduler = TestScheduler()
@@ -222,19 +222,19 @@ class TestCreate(unittest.TestCase):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe1).subscribe(on_next)
+            Observable.create_with_disposable(subscribe1).subscribe_callbacks(on_next)
 
         def subscribe2(o):
             o.on_error('exception')
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+            Observable.create_with_disposable(subscribe2).subscribe_callbacks(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.on_completed()
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe3).subscribe(on_completed=_raise('ex'))
+            Observable.create_with_disposable(subscribe3).subscribe_callbacks(on_completed=_raise('ex'))
 
