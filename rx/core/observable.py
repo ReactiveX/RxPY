@@ -168,6 +168,16 @@ class Observable(bases.Observable):
         return map_indexed(mapper, source)
 
     @classmethod
+    def never(cls):
+        """Returns a non-terminating observable sequence, which can be used to
+        denote an infinite duration (e.g. when using reactive joins).
+
+        Returns an observable sequence whose observers will never get called.
+        """
+        from ..operators.observable.never import never
+        return never()
+
+    @classmethod
     def return_value(cls, value, scheduler: Scheduler=None) -> "Observable":
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
