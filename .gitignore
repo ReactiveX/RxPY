@@ -59,3 +59,5 @@ TestResults/Rx.TE.Tests_log.ldf
 .ipynb_checkpoints
 .cache/
 .mypy_cache/
+.vscode/
+.noseids

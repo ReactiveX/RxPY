@@ -22,7 +22,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
         def on_next(value):
             try:
                 result = mapper(value)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=W0703
                 observer.on_error(err)
             else:
                 observer.on_next(result)
@@ -54,7 +54,7 @@ def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Obse
 
             try:
                 result = selector(value, count)
-            except Exception as err:
+            except Exception as err:  # By design. pylint: disable=W0703
                 observer.on_error(err)
             else:
                 count += 1

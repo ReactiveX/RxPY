@@ -24,7 +24,7 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
         def on_next(value):
             try:
                 should_run = predicate(value)
-            except Exception as ex:
+            except Exception as ex:  # By design. pylint: disable=W0703
                 observer.on_error(ex)
                 return
 
@@ -63,7 +63,7 @@ def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
 
             try:
                 should_run = predicate(value, count)
-            except Exception as ex:
+            except Exception as ex:  # By design. pylint: disable=W0703
                 observer.on_error(ex)
                 return
             else:
