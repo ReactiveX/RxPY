@@ -73,6 +73,13 @@ class Observable(bases.Observable):
         return NotImplemented
 
     @classmethod
+    def create(cls, subscribe):
+        from ..operators.observable.create import create
+        return create(subscribe)
+
+    create_with_disposable = create
+
+    @classmethod
     def empty(cls, scheduler: Scheduler=None):
         """Returns an empty observable sequence, using the specified scheduler
         to send out the single OnCompleted message.
