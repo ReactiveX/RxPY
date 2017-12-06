@@ -1,4 +1,4 @@
-class Enumerator(object):
+class Iterator(object):
     """For Python we just wrap the iterator"""
 
     def __init__(self, next):

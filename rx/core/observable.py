@@ -79,6 +79,17 @@ class Observable(bases.Observable):
 
     create_with_disposable = create
 
+    def as_observable(self) -> "Observable":
+        """Hides the identity of an observable sequence.
+
+        :returns: An observable sequence that hides the identity of the source
+            sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.asobservable import as_observable
+        source = self
+        return as_observable(source)
+
     @classmethod
     def empty(cls, scheduler: Scheduler=None):
         """Returns an empty observable sequence, using the specified scheduler
@@ -228,6 +239,8 @@ class Observable(bases.Observable):
         from ..operators.observable.returnvalue import return_value
         return return_value(value, scheduler)
 
+    just = return_value
+
     def skip(self, count: int) -> "Observable":
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.
@@ -258,16 +271,18 @@ class Observable(bases.Observable):
         source = self
         return skip_last(count, source)
 
-    def as_observable(self) -> "Observable":
-        """Hides the identity of an observable sequence.
+    def start_with(self, *args, **kwargs) -> "Observable":
+        """Prepends a sequence of values to an observable sequence with an
+        optional scheduler and an argument list of values to prepend.
 
-        :returns: An observable sequence that hides the identity of the source
-            sequence.
-        :rtype: Observable
+        1 - source.start_with(1, 2, 3)
+        2 - source.start_with(Scheduler.timeout, 1, 2, 3)
+
+        Returns the source sequence prepended with the specified values.
         """
-        from ..operators.observable.asobservable import as_observable
+        from ..operators.observable.startswith import start_with
         source = self
-        return as_observable(source)
+        return start_with(source, *args, **kwargs)
 
     def take(self, count: int, scheduler=None) -> "Observable":
         """Returns a specified number of contiguous elements from the

@@ -1,12 +1,12 @@
-from rx.internal import Enumerable, Enumerator
+from rx.internal import Iterable
 from rx.internal import extensionclassmethod
 
-@extensionclassmethod(Enumerable)
+@extensionclassmethod(Iterable)
 def while_do(cls, condition, source):
     def next():
         while condition(source):
             yield source
 
         raise StopIteration()
-    return Enumerable(next())
+    return Iterable(next())
 

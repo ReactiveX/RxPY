@@ -2,7 +2,7 @@ from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import Enumerable
+from rx.internal import Iterable
 from rx.internal import extensionmethod, extensionclassmethod
 
 
@@ -73,7 +73,7 @@ def catch_exception(cls, *args):
 
     scheduler = current_thread_scheduler
 
-    if isinstance(args[0], list) or isinstance(args[0], Enumerable):
+    if isinstance(args[0], list) or isinstance(args[0], Iterable):
         sources = args[0]
     else:
         sources = list(args)

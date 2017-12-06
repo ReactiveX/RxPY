@@ -1,6 +1,6 @@
 from rx.core import Observable
 
-from rx.internal.enumerable import Enumerable
+from rx.internal.iterable import Iterable
 from rx.internal import extensionclassmethod
 
 
@@ -20,4 +20,4 @@ def while_do(cls, condition, source):
     """
 
     source = Observable.from_future(source)
-    return Observable.concat(Enumerable.while_do(condition, source))
+    return Observable.concat(Iterable.while_do(condition, source))

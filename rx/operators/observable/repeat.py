@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.internal.enumerable import Enumerable
+from rx.internal.iterable import Iterable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 
@@ -19,7 +19,7 @@ def repeat(self, repeat_count=None):
     Returns the observable sequence producing the elements of the given
     sequence repeatedly."""
 
-    return Observable.defer(lambda: Observable.concat(Enumerable.repeat(self, repeat_count)))
+    return Observable.defer(lambda: Observable.concat(Iterable.repeat(self, repeat_count)))
 
 
 @extensionmethod(Observable)

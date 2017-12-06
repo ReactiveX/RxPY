@@ -1,6 +1,6 @@
 from rx import Observable
 from rx.internal import extensionclassmethod
-from rx.internal import Enumerable
+from rx.internal import Iterable
 
 
 @extensionclassmethod(Observable)
@@ -16,4 +16,4 @@ def for_in(cls, sources, result_selector):
     observable sequences.
     """
 
-    return Observable.concat(Enumerable.for_each(sources, result_selector))
+    return Observable.concat(Iterable.for_each(sources, result_selector))

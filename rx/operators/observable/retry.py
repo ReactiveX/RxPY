@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.internal.enumerable import Enumerable
+from rx.internal.iterable import Iterable
 from rx.internal import extensionmethod
 
 
@@ -19,4 +19,4 @@ def retry(self, retry_count=None):
     sequence repeatedly until it terminates successfully.
     """
 
-    return Observable.catch_exception(Enumerable.repeat(self, retry_count))
+    return Observable.catch_exception(Iterable.repeat(self, retry_count))

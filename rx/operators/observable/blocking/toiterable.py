@@ -1,6 +1,6 @@
 from rx.core.blockingobservable import BlockingObservable
 from rx.internal import extensionmethod
-from rx.internal.enumerator import Enumerator
+from rx.internal.iterable import Iterable
 from rx import config
 
 
@@ -45,7 +45,7 @@ def to_iterable(self):
             condition.release()
             yield notification.value
 
-    return Enumerator(gen())
+    return Iterable(gen())
 
 
 @extensionmethod(BlockingObservable)

@@ -3,20 +3,20 @@ import itertools
 from .basic import identity
 
 
-class Enumerable(object):
+class Iterable(object):
 
     def __init__(self, iterator):
         self._iterator = iterator
 
     def __iter__(self):
-        return  self._iterator
+        return self._iterator
 
     def where(self, predicate):
-        return Enumerable(value for value in self if predicate(value))
+        return Iterable(value for value in self if predicate(value))
 
     def select(self, selector=None):
         selector = selector or identity
-        return Enumerable(selector(value) for value in self)
+        return Iterable(selector(value) for value in self)
 
     def take(self, count):
         def next():
@@ -29,7 +29,7 @@ class Enumerable(object):
                 yield value
 
             raise StopIteration
-        return Enumerable(next())
+        return Iterable(next())
 
     @classmethod
     def range(cls, start, count):
@@ -42,15 +42,15 @@ class Enumerable(object):
                 n -= 1
 
             raise StopIteration
-        return Enumerable(next())
+        return Iterable(next())
 
     @classmethod
     def repeat(cls, value, count=None):
         if count is not None:
-            return Enumerable(value for _ in range(count))
-        return Enumerable(itertools.repeat(value))
+            return Iterable(value for _ in range(count))
+        return Iterable(itertools.repeat(value))
 
     @classmethod
     def for_each(cls, source, selector=None):
         selector = selector or identity
-        return Enumerable(selector(value) for value in source)
+        return Iterable(selector(value) for value in source)

@@ -2,7 +2,7 @@ from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import CurrentThreadScheduler
 from rx.internal import extensionmethod, extensionclassmethod
-from rx.internal import Enumerable
+from rx.internal import Iterable
 
 
 @extensionmethod(Observable, instancemethod=True)
@@ -70,7 +70,7 @@ def concat(cls, *args):
 
     scheduler = CurrentThreadScheduler()
 
-    if isinstance(args[0], list) or isinstance(args[0], Enumerable):
+    if isinstance(args[0], list) or isinstance(args[0], Iterable):
         sources = args[0]
     else:
         sources = list(args)
