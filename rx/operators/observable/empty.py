@@ -1,8 +1,9 @@
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import immediate_scheduler
+from rx.core.bases.scheduler import Scheduler
 
 
-def empty(scheduler=None) -> Observable:
+def empty(scheduler: Scheduler=None) -> Observable:
     """Returns an empty observable sequence, using the specified scheduler
     to send out the single OnCompleted message.
 

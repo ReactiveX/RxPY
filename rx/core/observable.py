@@ -1,5 +1,5 @@
 import types
-from typing import Callable, Any
+from typing import Callable, Any, Iterable
 from abc import abstractmethod
 
 from rx import config
@@ -142,6 +142,29 @@ class Observable(bases.Observable):
         """
         from ..operators.observable.returnvalue import from_callable
         return from_callable(supplier, scheduler)
+
+    @classmethod
+    def from_iterable(cls, iterable: Iterable, scheduler: Scheduler=None):
+        """Converts an array to an observable sequence, using an optional
+        scheduler to enumerate the array.
+
+        1 - res = rx.Observable.from_iterable([1,2,3])
+        2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
+
+        Keyword arguments:
+        :param Observable cls: Observable class
+        :param Scheduler scheduler: [Optional] Scheduler to run the
+            enumeration of the input sequence on.
+
+        :returns: The observable sequence whose elements are pulled from the
+            given enumerable sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.fromiterable import from_iterable
+        return from_iterable(iterable, scheduler)
+
+    from_ = from_iterable
+    from_list = from_iterable
 
     def map(self, mapper: Callable[[Any], Any]) -> "Observable":
         """Project each element of an observable sequence into a new form

@@ -1,12 +1,12 @@
+from typing import Iterable
+from rx.core.bases.scheduler import Scheduler
 from rx import config
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable, alias=["from_", "from_list"])
-def from_iterable(cls, iterable, scheduler=None):
+def from_iterable(iterable: Iterable, scheduler: Scheduler=None) -> Observable:
     """Converts an array to an observable sequence, using an optional
     scheduler to enumerate the array.
 
@@ -31,6 +31,8 @@ def from_iterable(cls, iterable, scheduler=None):
         iterator = iter(iterable)
 
         def action(scheduler, state=None):
+            nonlocal observer, sd, iterator
+
             try:
                 with lock:
                     item = next(iterator)
