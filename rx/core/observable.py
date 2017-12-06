@@ -301,3 +301,14 @@ class Observable(bases.Observable):
         from ..operators.observable.takelast import take_last
         source = self
         return take_last(count, source)
+
+    def to_iterable(self) -> "Observable":
+        """Creates an iterable from an observable sequence.
+
+        :returns: An observable sequence containing a single element with a list
+        containing all the elements of the source sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.toiterable import to_iterable
+        source = self
+        return to_iterable(source)
