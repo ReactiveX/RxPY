@@ -30,5 +30,5 @@ def skip(count: int, source: Observable):
             else:
                 remaining -= 1
 
-        return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return observable.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

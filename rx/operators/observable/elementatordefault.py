@@ -30,7 +30,7 @@ def _element_at_or_default(source, index, has_default=False,
                 observer.on_next(default_value)
                 observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 @extensionmethod(Observable)

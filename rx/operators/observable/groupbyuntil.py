@@ -113,7 +113,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
                 def on_completed():
                     expire()
 
-                md.disposable = duration.take(1).subscribe(on_next, on_error, on_completed)
+                md.disposable = duration.take(1).subscribe_callbacks(on_next, on_error, on_completed)
 
             try:
                 element = element_selector(x)
@@ -138,6 +138,6 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
 
             observer.on_completed()
 
-        group_disposable.add(source.subscribe(on_next, on_error, on_completed))
+        group_disposable.add(source.subscribe_callbacks(on_next, on_error, on_completed))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

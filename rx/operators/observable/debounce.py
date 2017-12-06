@@ -62,7 +62,7 @@ def debounce(self, duetime, scheduler=None):
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe(on_next, on_error, on_completed)
+        subscription = source.subscribe_callbacks(on_next, on_error, on_completed)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
@@ -118,7 +118,7 @@ def throttle_with_selector(self, throttle_duration_selector):
                 has_value[0] = False
                 d.dispose()
 
-            d.disposable = throttle.subscribe(on_next, observer.on_error,
+            d.disposable = throttle.subscribe_callbacks(on_next, observer.on_error,
                                               on_completed)
 
         def on_error(e):
@@ -136,6 +136,6 @@ def throttle_with_selector(self, throttle_duration_selector):
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe(on_next, on_error, on_completed)
+        subscription = source.subscribe_callbacks(on_next, on_error, on_completed)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)

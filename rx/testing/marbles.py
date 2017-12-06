@@ -129,7 +129,7 @@ def to_marbles(self, scheduler=None):
             observer.on_next("".join(n for n in result))
             observer.on_completed()
 
-        return source.subscribe(on_next, on_error, on_completed)
+        return source.subscribe_callbacks(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 
@@ -150,7 +150,7 @@ def to_marbles(self, scheduler=None):
     def on_next(value):
         ret[0] = value
 
-    self.observable.to_marbles(scheduler=scheduler).subscribe(on_next, on_completed=latch.set)
+    self.observable.to_marbles(scheduler=scheduler).subscribe_callbacks(on_next, on_completed=latch.set)
 
     # Block until the subscription completes and then return
     latch.wait()

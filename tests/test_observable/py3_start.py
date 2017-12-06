@@ -32,7 +32,7 @@ class TestStart(unittest.TestCase):
 
             def on_next(x):
                 success[0] = (42 == x)
-            source.subscribe(on_next)
+            source.subscribe_callbacks(on_next)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -52,7 +52,7 @@ class TestStart(unittest.TestCase):
 
             def on_error(ex):
                 success[0] = (str(42) == str(ex))
-            source.subscribe(on_error=on_error)
+            source.subscribe_callbacks(on_error=on_error)
 
         loop.run_until_complete(go())
         assert(all(success))

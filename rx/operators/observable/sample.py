@@ -27,8 +27,8 @@ def sample_observable(source, sampler):
             at_end[0] = True
 
         return CompositeDisposable(
-            source.subscribe(on_next, observer.on_error, on_completed),
-            sampler.subscribe(sample_subscribe, observer.on_error, sample_subscribe)
+            source.subscribe_callbacks(on_next, observer.on_error, on_completed),
+            sampler.subscribe_callbacks(sample_subscribe, observer.on_error, sample_subscribe)
         )
     return AnonymousObservable(subscribe)
 

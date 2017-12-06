@@ -25,7 +25,7 @@ def catch_handler(source, handler):
             subscription.disposable = d
             d.disposable = result.subscribe(observer)
 
-        d1.disposable = source.subscribe(
+        d1.disposable = source.subscribe_callbacks(
             observer.on_next,
             on_error,
             observer.on_completed
@@ -105,7 +105,7 @@ def catch_exception(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe(observer.on_next, on_error, observer.on_completed)
+                d.disposable = current.subscribe_callbacks(observer.on_next, on_error, observer.on_completed)
 
         cancelable.disposable = scheduler.schedule(action)
 

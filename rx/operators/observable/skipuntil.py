@@ -30,7 +30,7 @@ def skip_until(self, other):
             if is_open[0]:
                 observer.on_completed()
 
-        subs = source.subscribe(on_next, observer.on_error, on_completed)
+        subs = source.subscribe_callbacks(on_next, observer.on_error, on_completed)
         disposables = CompositeDisposable(subs)
 
         right_subscription = SingleAssignmentDisposable()
@@ -43,7 +43,7 @@ def skip_until(self, other):
         def on_completed2():
             right_subscription.dispose()
 
-        right_subscription.disposable = other.subscribe(on_next2, observer.on_error, on_completed2)
+        right_subscription.disposable = other.subscribe_callbacks(on_next2, observer.on_error, on_completed2)
 
         return disposables
     return AnonymousObservable(subscribe)

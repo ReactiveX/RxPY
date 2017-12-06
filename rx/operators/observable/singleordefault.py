@@ -21,7 +21,7 @@ def single_or_default_async(source, has_default=False, default_value=None):
                 observer.on_next(value[0])
                 observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 

@@ -17,5 +17,5 @@ def dematerialize(self):
         def on_next(value):
             return value.accept(observer)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

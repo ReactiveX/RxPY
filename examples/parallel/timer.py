@@ -18,7 +18,7 @@ def output(result):
 with concurrent.futures.ProcessPoolExecutor(5) as executor:
     rx.Observable.from_(seconds).flat_map(
         lambda s: executor.submit(sleep, s)
-    ).subscribe(output)
+    ).subscribe_callbacks(output)
 
 # 1 seconds
 # 2 seconds

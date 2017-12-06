@@ -25,7 +25,7 @@ def to_iterable(self):
         condition.notify()  # signal that a new item is available
         condition.release()
 
-    self.observable.materialize().subscribe(on_next)
+    self.observable.materialize().subscribe_callbacks(on_next)
 
     def gen():
         """Generator producing values for the iterator"""

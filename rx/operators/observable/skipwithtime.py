@@ -46,7 +46,7 @@ def skip_with_time(self, duration, scheduler=None):
             if open[0]:
                 observer.on_next(x)
 
-        d = source.subscribe(on_next, observer.on_error, observer.on_completed)
+        d = source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
         return CompositeDisposable(t, d)
     return AnonymousObservable(subscribe)
 

@@ -20,7 +20,7 @@ def failing(x):
 
 def main():
     xs = rx.Observable.from_string("1-2-3-4-5-6-7-9-|").publish()
-    xs.map(failing).retry().subscribe(print)
+    xs.map(failing).retry().subscribe_callbacks(print)
 
     xs.connect()  # Must connect. Cannot use ref_count() with publish()
 

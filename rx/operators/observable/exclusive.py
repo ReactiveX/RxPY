@@ -39,7 +39,7 @@ def exclusive(self):
                     if is_stopped[0] and len(g) == 1:
                         observer.on_completed()
 
-                inner_subscription.disposable = inner_source.subscribe(
+                inner_subscription.disposable = inner_source.subscribe_callbacks(
                     observer.on_next,
                     observer.on_error,
                     on_completed_inner
@@ -50,6 +50,6 @@ def exclusive(self):
             if not has_current[0] and len(g) == 1:
                 observer.on_completed()
 
-        m.disposable = sources.subscribe(on_next, observer.on_error, on_completed)
+        m.disposable = sources.subscribe_callbacks(on_next, observer.on_error, on_completed)
         return g
     return AnonymousObservable(subscribe)

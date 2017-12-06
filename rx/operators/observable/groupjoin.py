@@ -95,7 +95,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
                 observer.on_error(e)
 
-            md.disposable = duration.take(1).subscribe(
+            md.disposable = duration.take(1).subscribe_callbacks(
                 nothing,
                 on_error,
                 expire)
@@ -106,7 +106,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
             observer.on_error(e)
 
-        group.add(left.subscribe(on_next_left, on_error_left,
+        group.add(left.subscribe_callbacks(on_next_left, on_error_left,
                   observer.on_completed))
 
         def on_next_right(value):
@@ -138,7 +138,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
                     observer.on_error(e)
 
-            md.disposable = duration.take(1).subscribe(
+            md.disposable = duration.take(1).subscribe_callbacks(
                 nothing,
                 on_error,
                 expire)
@@ -153,6 +153,6 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
             observer.on_error(e)
 
-        group.add(right.subscribe(on_next_right, on_error_right))
+        group.add(right.subscribe_callbacks(on_next_right, on_error_right))
         return r
     return AnonymousObservable(subscribe)

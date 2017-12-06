@@ -17,7 +17,7 @@ async def __aiter__(self):
             self.notifications = []
             self.future = future_ctor()
 
-            source.materialize().subscribe(self.on_next)
+            source.materialize().subscribe_callbacks(self.on_next)
 
         def feeder(self):
             if not self.notifications or self.future.done():

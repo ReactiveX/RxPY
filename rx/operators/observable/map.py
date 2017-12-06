@@ -27,7 +27,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
             else:
                 observer.on_next(result)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)
 
 
@@ -60,5 +60,5 @@ def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Obse
                 count += 1
                 observer.on_next(result)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

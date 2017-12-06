@@ -39,7 +39,7 @@ def extrema_by(source, key_selector, comparer):
             observer.on_next(list)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 

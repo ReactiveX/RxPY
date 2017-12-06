@@ -118,7 +118,7 @@ from rx import Observable
 
 source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
 
-source.subscribe(on_next=lambda value: print("Received {0}".format(value)),
+source.subscribe_callbacks(on_next=lambda value: print("Received {0}".format(value)),
                  on_completed=lambda: print("Done!"),
                  on_error=lambda error: print("Error Occurred: {0}".format(error))
                  )
@@ -131,7 +131,7 @@ from rx import Observable
 
 source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
 
-source.subscribe(lambda value: print("Received {0}".format(value)))
+source.subscribe_callbacks(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -158,7 +158,7 @@ lengths = source.map(lambda s: len(s))
 
 filtered = lengths.filter(lambda i: i >= 5)
 
-filtered.subscribe(lambda value: print("Received {0}".format(value)))
+filtered.subscribe_callbacks(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -178,7 +178,7 @@ from rx import Observable
 Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
     .map(lambda s: len(s)) \
     .filter(lambda i: i >= 5) \
-    .subscribe(lambda value: print("Received {0}".format(value)))
+    .subscribe_callbacks(lambda value: print("Received {0}".format(value)))
 ```
 
 ### Emitting Events
@@ -191,7 +191,7 @@ from rx import Observable
 
 Observable.interval(1000) \
     .map(lambda i: "{0} Mississippi".format(i)) \
-    .subscribe(lambda s: print(s))
+    .subscribe_callbacks(lambda s: print(s))
 
 input("Press any key to quit\n")
 ```
@@ -224,8 +224,8 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000))
 
-three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 ```
 
 **OUTPUT:**
@@ -250,8 +250,8 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish()
 
-three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 
 three_random_ints.connect()
 ```
@@ -280,8 +280,8 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
 
-three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe_callbacks(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
 
 ```
 
@@ -299,7 +299,7 @@ letters = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
 intervals = Observable.interval(1000)
 
 Observable.zip(letters, intervals, lambda s, i: (s, i)) \
-    .subscribe(lambda t: print(t))
+    .subscribe_callbacks(lambda t: print(t))
 
 input("Press any key to quit\n")
 ```
@@ -332,7 +332,7 @@ def customer_for_id(customer_id):
 # Query customers with IDs 1, 3, and 5
 Observable.from_([1, 3, 5]) \
     .flat_map(lambda id: customer_for_id(id)) \
-    .subscribe(lambda r: print(r))
+    .subscribe_callbacks(lambda r: print(r))
 ```
 
 **OUTPUT:**
@@ -378,7 +378,7 @@ pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
     .map(lambda s: intense_calculation(s)) \
     .subscribe_on(pool_scheduler) \
-    .subscribe(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
+    .subscribe_callbacks(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
                on_error=lambda e: print(e),
                on_completed=lambda: print("PROCESS 1 done!"))
 
@@ -386,7 +386,7 @@ Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
 Observable.range(1, 10) \
     .map(lambda s: intense_calculation(s)) \
     .subscribe_on(pool_scheduler) \
-    .subscribe(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
+    .subscribe_callbacks(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
                on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
 
 # Create Process 3, which is infinite
@@ -394,7 +394,7 @@ Observable.interval(1000) \
     .map(lambda i: i * 100) \
     .observe_on(pool_scheduler) \
     .map(lambda s: intense_calculation(s)) \
-    .subscribe(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
+    .subscribe_callbacks(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
                on_error=lambda e: print(e))
 
 input("Press any key to exit\n")

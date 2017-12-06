@@ -38,5 +38,5 @@ def take_last(count: int, source: Observable):
                 observer.on_next(q.pop(0))
             observer.on_completed()
 
-        return observable.subscribe(on_next, observer.on_error, on_completed)
+        return observable.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

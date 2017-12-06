@@ -55,7 +55,7 @@ def handle_websocket():
     def on_error(ex):
         print(ex)
 
-    searcher.subscribe(send_response, on_error)
+    searcher.subscribe_callbacks(send_response, on_error)
 
     while True:
         try:

@@ -97,7 +97,7 @@ def concat(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe(observer.on_next, observer.on_error, on_completed)
+                d.disposable = current.subscribe_callbacks(observer.on_next, observer.on_error, on_completed)
 
         cancelable.disposable = scheduler.schedule(action)
 

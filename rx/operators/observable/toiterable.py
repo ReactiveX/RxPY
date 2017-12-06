@@ -23,5 +23,5 @@ def to_iterable(self):
             observer.on_next(queue)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

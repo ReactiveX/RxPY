@@ -70,8 +70,7 @@ def with_latest_from(cls, *args):
                 def on_next(value):
                     with parent.lock:
                         values[i] = value
-                subscription.disposable = child.subscribe(
-                    on_next, observer.on_error)
+                subscription.disposable = child.subscribe_callbacks(on_next, observer.on_error)
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
@@ -84,7 +83,7 @@ def with_latest_from(cls, *args):
                             observer.on_error(error)
                         else:
                             observer.on_next(result)
-            parent_subscription.disposable = parent.subscribe(
+            parent_subscription.disposable = parent.subscribe_callbacks(
                 on_next, observer.on_error, observer.on_completed)
 
             return listify_args(

@@ -59,6 +59,6 @@ def distinct(self, key_selector=None, comparer=None):
                     return
 
             hashset.push(key) and observer.on_next(x)
-        return source.subscribe(on_next, observer.on_error,
+        return source.subscribe_callbacks(on_next, observer.on_error,
                                 observer.on_completed)
     return AnonymousObservable(subscribe)

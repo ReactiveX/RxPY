@@ -65,14 +65,14 @@ def observable_window_with_bounaries(self, window_boundaries):
             window[0].on_completed()
             observer.on_completed()
 
-        d.add(source.subscribe(on_next_window, on_error, on_completed))
+        d.add(source.subscribe_callbacks(on_next_window, on_error, on_completed))
 
         def on_next_observer(w):
             window[0].on_completed()
             window[0] = Subject()
             observer.on_next(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe(on_next_observer, on_error, on_completed))
+        d.add(window_boundaries.subscribe_callbacks(on_next_observer, on_error, on_completed))
         return r
     return AnonymousObservable(subscribe)
 
@@ -98,7 +98,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
             window[0].on_completed()
             observer.on_completed()
 
-        d.add(source.subscribe(on_next, on_error, on_completed))
+        d.add(source.subscribe_callbacks(on_next, on_error, on_completed))
 
         def create_window_close():
             try:
@@ -116,7 +116,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe(noop, on_error, on_completed)
+            m1.disposable = window_close.take(1).subscribe_callbacks(noop, on_error, on_completed)
 
         create_window_close()
         return r

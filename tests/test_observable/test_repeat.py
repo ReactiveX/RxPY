@@ -112,21 +112,21 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1).repeat()
-        xs.subscribe(lambda x: _raise('ex'))
+        xs.subscribe_callbacks(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex', scheduler2).repeat()
-        ys.subscribe(lambda ex: _raise('ex'))
+        ys.subscribe_callbacks(lambda ex: _raise('ex'))
 
         with self.assertRaises(Exception):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).repeat()
-        d = zs.subscribe(on_completed=lambda: _raise('ex'))
+        d = zs.subscribe_callbacks(on_completed=lambda: _raise('ex'))
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()
@@ -170,21 +170,21 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1, scheduler1).repeat(3)
-        xs.subscribe(lambda x: _raise('ex'))
+        xs.subscribe_callbacks(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex1', scheduler2).repeat(3)
-        ys.subscribe(on_error=lambda ex: _raise('ex2'))
+        ys.subscribe_callbacks(on_error=lambda ex: _raise('ex2'))
 
         with self.assertRaises(RxException):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1, scheduler3).repeat(100)
-        d = zs.subscribe(on_completed=lambda: _raise('ex3'))
+        d = zs.subscribe_callbacks(on_completed=lambda: _raise('ex3'))
 
         scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())
         scheduler3.start()

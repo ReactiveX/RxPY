@@ -61,7 +61,7 @@ class TestTimeInterval(unittest.TestCase):
     def test_interval_timespan_observer_throws(self):
         scheduler = TestScheduler()
         xs = Observable.interval(1, scheduler=scheduler)
-        xs.subscribe(lambda x: _raise("ex"))
+        xs.subscribe_callbacks(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             scheduler.start()

@@ -61,13 +61,13 @@ class TestTimer(unittest.TestCase):
     def test_oneshot_timer_timespan_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.timer(1, scheduler=scheduler1)
-        xs.subscribe(lambda x: _raise("ex"))
+        xs.subscribe_callbacks(lambda x: _raise("ex"))
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = Observable.timer(1, period=None, scheduler=scheduler2)
-        ys.subscribe(on_completed=lambda: _raise("ex"))
+        ys.subscribe_callbacks(on_completed=lambda: _raise("ex"))
 
         self.assertRaises(RxException, scheduler2.start)
 

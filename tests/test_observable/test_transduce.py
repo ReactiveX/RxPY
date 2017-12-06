@@ -52,7 +52,7 @@ class TestTransduce(unittest.TestCase):
             Observable.throw_exception(RxException()).transduce(
                 compose(
                     filtering(even), mapping(mul10))
-                ).subscribe(noop, throw_error)
+                ).subscribe_callbacks(noop, throw_error)
 
         self.assertRaises(RxException, create)
 
@@ -60,7 +60,7 @@ class TestTransduce(unittest.TestCase):
             Observable.empty().transduce(
                 compose(
                     filtering(even), mapping(mul10))
-                ).subscribe(noop, noop, throw_error)
+                ).subscribe_callbacks(noop, noop, throw_error)
 
         self.assertRaises(RxException, create2)
 

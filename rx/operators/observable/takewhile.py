@@ -45,6 +45,6 @@ def take_while(self, predicate):
             else:
                 observer.on_completed()
 
-        return observable.subscribe(on_next, observer.on_error, observer.on_completed)
+        return observable.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)
 

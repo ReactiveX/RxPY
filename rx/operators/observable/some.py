@@ -28,6 +28,6 @@ def some(self, predicate=None):
         def on_error():
             observer.on_next(False)
             observer.on_completed()
-        return source.subscribe(on_next, observer.on_error, on_error)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_error)
 
     return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)

@@ -43,7 +43,7 @@ def skip_until_with_time(self, start_time, scheduler=None):
         def on_next(x):
             if open[0]:
                 observer.on_next(x)
-        subscription = source.subscribe(on_next, observer.on_error,
+        subscription = source.subscribe_callbacks(on_next, observer.on_error,
                                         observer.on_completed)
 
         def action(scheduler, state):

@@ -68,7 +68,7 @@ def window_with_time_or_count(self, timespan, count, scheduler=None):
             s[0].on_completed()
             observer.on_completed()
 
-        group_disposable.add(source.subscribe(on_next, on_error, on_completed))
+        group_disposable.add(source.subscribe_callbacks(on_next, on_error, on_completed))
         return ref_count_disposable
     return AnonymousObservable(subscribe)
 

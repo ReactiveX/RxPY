@@ -24,7 +24,7 @@ def find_value(source, predicate, yield_index):
             observer.on_next(-1 if yield_index else None)
             observer.on_completed()
 
-        return source.subscribe(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 @extensionmethod(Observable)

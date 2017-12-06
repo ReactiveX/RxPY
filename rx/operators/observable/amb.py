@@ -51,7 +51,7 @@ def amb(self, right_source):
             if choice[0] == left_choice:
                 observer.on_completed()
 
-        ld = left_source.subscribe(on_next_left, on_error_left,
+        ld = left_source.subscribe_callbacks(on_next_left, on_error_left,
                                    on_completed_left)
         left_subscription.disposable = ld
 
@@ -73,7 +73,7 @@ def amb(self, right_source):
             if choice[0] == right_choice:
                 observer.on_completed()
 
-        rd = right_source.subscribe(on_next_right, on_error_right,
+        rd = right_source.subscribe_callbacks(on_next_right, on_error_right,
                                     on_completed_right)
         right_subscription.disposable = rd
         return CompositeDisposable(left_subscription, right_subscription)
