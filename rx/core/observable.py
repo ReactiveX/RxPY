@@ -258,6 +258,17 @@ class Observable(bases.Observable):
         source = self
         return skip_last(count, source)
 
+    def as_observable(self) -> "Observable":
+        """Hides the identity of an observable sequence.
+
+        :returns: An observable sequence that hides the identity of the source
+            sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.asobservable import as_observable
+        source = self
+        return as_observable(source)
+
     def take(self, count: int, scheduler=None) -> "Observable":
         """Returns a specified number of contiguous elements from the
         start of an observable sequence, using the specified scheduler
