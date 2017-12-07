@@ -339,6 +339,25 @@ class Observable(bases.Observable):
 
     just = return_value
 
+    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None):
+        """Applies an accumulator function over an observable sequence and
+        returns each intermediate result. The optional seed value is used as
+        the initial accumulator value. For aggregation behavior with no
+        intermediate results, see Observable.aggregate.
+
+        1 - scanned = source.scan(lambda acc, x: acc + x)
+        2 - scanned = source.scan(lambda acc, x: acc + x, 0)
+
+        Keyword arguments:
+        accumulator -- An accumulator function to be invoked on each element.
+        seed -- [Optional] The initial accumulator value.
+
+        Returns an observable sequence containing the accumulated values.
+        """
+        from ..operators.observable.scan import scan
+        source = self
+        return scan(source, accumulator, seed)
+
     def skip(self, count: int) -> 'Observable':
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.

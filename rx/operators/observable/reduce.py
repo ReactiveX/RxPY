@@ -26,7 +26,6 @@ def reduce(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any
     """
 
     if seed is not None:
-        print("seed is none")
         return source.scan(accumulator, seed=seed).start_with(seed).last()
     else:
         return source.scan(accumulator).last()
