@@ -14,7 +14,7 @@ def from_iterable(iterable: Iterable, scheduler: Scheduler=None) -> Observable:
     2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
     Keyword arguments:
-    :param Observable cls: Observable class
+    :param iterable: an iterable
     :param Scheduler scheduler: [Optional] Scheduler to run the
         enumeration of the input sequence on.
 

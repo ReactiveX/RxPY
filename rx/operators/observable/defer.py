@@ -1,9 +1,8 @@
+from typing import Any, Callable
 from rx.core import Observable, AnonymousObservable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
-def defer(cls, observable_factory):
+def defer(observable_factory: Callable[[Any], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 

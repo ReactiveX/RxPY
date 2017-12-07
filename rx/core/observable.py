@@ -92,6 +92,17 @@ class Observable(bases.Observable):
     def _subscribe_core(self, observer):
         return NotImplemented
 
+    def as_observable(self) -> "Observable":
+        """Hides the identity of an observable sequence.
+
+        :returns: An observable sequence that hides the identity of the source
+            sequence.
+        :rtype: Observable
+        """
+        from ..operators.observable.asobservable import as_observable
+        source = self
+        return as_observable(source)
+
     def concat(self, *args: "Observable") -> "Observable":
         """Concatenates all the observable sequences. This takes in either an
         array or variable arguments to concatenate.
@@ -129,16 +140,25 @@ class Observable(bases.Observable):
 
     create_with_disposable = create
 
-    def as_observable(self) -> "Observable":
-        """Hides the identity of an observable sequence.
+    @classmethod
+    def defer(cls, observable_factory: Callable[[Any], "Observable"]) -> "Observable":
+        """Returns an observable sequence that invokes the specified
+        factory function whenever a new observer subscribes.
 
-        :returns: An observable sequence that hides the identity of the source
-            sequence.
+        Example:
+        1 - res = rx.Observable.defer(lambda: rx.Observable.from_([1,2,3]))
+
+        Keyword arguments:
+        :param types.FunctionType observable_factory: Observable factory
+        function to invoke for each observer that subscribes to the
+        resulting sequence.
+
+        :returns: An observable sequence whose observers trigger an
+        invocation of the given observable factory function.
         :rtype: Observable
         """
-        from ..operators.observable.asobservable import as_observable
-        source = self
-        return as_observable(source)
+        from ..operators.observable.defer import defer
+        return defer(observable_factory)
 
     @classmethod
     def empty(cls, scheduler: Scheduler=None):

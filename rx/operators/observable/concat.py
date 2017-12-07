@@ -3,7 +3,7 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, Seri
 from rx.concurrency import CurrentThreadScheduler
 
 
-def concat(*args: Observable):
+def concat(*args: Observable) -> Observable:
     """Concatenates all the observable sequences.
 
     1 - res = concat(xs, ys, zs)
