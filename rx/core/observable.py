@@ -92,7 +92,7 @@ class Observable(bases.Observable):
     def _subscribe_core(self, observer):
         return NotImplemented
 
-    def as_observable(self) -> "Observable":
+    def as_observable(self) -> 'Observable':
         """Hides the identity of an observable sequence.
 
         :returns: An observable sequence that hides the identity of the source
@@ -103,7 +103,7 @@ class Observable(bases.Observable):
         source = self
         return as_observable(source)
 
-    def concat(self, *args: "Observable") -> "Observable":
+    def concat(self, *args: 'Observable') -> 'Observable':
         """Concatenates all the observable sequences. This takes in either an
         array or variable arguments to concatenate.
 
@@ -141,7 +141,7 @@ class Observable(bases.Observable):
     create_with_disposable = create
 
     @classmethod
-    def defer(cls, observable_factory: Callable[[Any], "Observable"]) -> "Observable":
+    def defer(cls, observable_factory: Callable[[Any], 'Observable']) -> 'Observable':
         """Returns an observable sequence that invokes the specified
         factory function whenever a new observer subscribes.
 
@@ -175,7 +175,7 @@ class Observable(bases.Observable):
         from ..operators.observable.empty import empty
         return empty(scheduler)
 
-    def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
+    def filter(self, predicate: Callable[[Any], bool]) -> 'Observable':
         """Filters the elements of an observable sequence based on a
         predicate.
 
@@ -192,7 +192,7 @@ class Observable(bases.Observable):
         source = self
         return _filter(predicate, source)
 
-    def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> "Observable":
+    def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> 'Observable':
         """Filters the elements of an observable sequence based on a
         predicate by incorporating the element's index.
 
@@ -212,7 +212,7 @@ class Observable(bases.Observable):
         return filter_indexed(predicate, source)
 
     @classmethod
-    def from_callable(cls, supplier: Callable, scheduler: Scheduler=None) -> "Observable":
+    def from_callable(cls, supplier: Callable, scheduler: Scheduler=None) -> 'Observable':
         """Returns an observable sequence that contains a single element generate from a supplier,
         using the specified scheduler to send out observer messages.
 
@@ -232,7 +232,7 @@ class Observable(bases.Observable):
         return from_callable(supplier, scheduler)
 
     @classmethod
-    def from_iterable(cls, iterable: Iterable, scheduler: Scheduler=None):
+    def from_iterable(cls, iterable: Iterable, scheduler: Scheduler=None) -> 'Observable':
         """Converts an array to an observable sequence, using an optional
         scheduler to enumerate the array.
 
@@ -254,7 +254,7 @@ class Observable(bases.Observable):
     from_ = from_iterable
     from_list = from_iterable
 
-    def map(self, mapper: Callable[[Any], Any]) -> "Observable":
+    def map(self, mapper: Callable[[Any], Any]) -> 'Observable':
         """Project each element of an observable sequence into a new form
         by incorporating the element's index.
 
@@ -273,7 +273,7 @@ class Observable(bases.Observable):
         source = self
         return _map(mapper, source)
 
-    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> "Observable":
+    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> 'Observable':
         from ..operators.observable.map import map_indexed
         source = self
         return map_indexed(mapper, source)
@@ -288,8 +288,36 @@ class Observable(bases.Observable):
         from ..operators.observable.never import never
         return never()
 
+    def reduce(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
+        """Applies an accumulator function over an observable sequence,
+        returning the result of the aggregation as a single element in the
+        result sequence. The specified seed value is used as the initial
+        accumulator value.
+
+        For aggregation behavior with incremental intermediate results, see
+        Observable.scan.
+
+        Example:
+        1 - res = source.reduce(lambda acc, x: acc + x)
+        2 - res = source.reduce(lambda acc, x: acc + x, 0)
+
+        Keyword arguments:
+        :param types.FunctionType accumulator: An accumulator function to be
+            invoked on each element.
+        :param T seed: Optional initial accumulator value.
+
+        :returns: An observable sequence containing a single element with the
+            final accumulator value.
+        :rtype: Observable
+        """
+        from ..operators.observable.reduce import reduce
+        source = self
+        return reduce(source, accumulator, seed)
+
+    aggregate = reduce
+
     @classmethod
-    def return_value(cls, value, scheduler: Scheduler=None) -> "Observable":
+    def return_value(cls, value, scheduler: Scheduler=None) -> 'Observable':
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
         There is an alias called 'just'.
@@ -311,7 +339,7 @@ class Observable(bases.Observable):
 
     just = return_value
 
-    def skip(self, count: int) -> "Observable":
+    def skip(self, count: int) -> 'Observable':
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.
 
@@ -326,7 +354,7 @@ class Observable(bases.Observable):
         source = self
         return skip(count, source)
 
-    def skip_last(self, count: int) -> "Observable":
+    def skip_last(self, count: int) -> 'Observable':
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.
 
@@ -341,7 +369,7 @@ class Observable(bases.Observable):
         source = self
         return skip_last(count, source)
 
-    def start_with(self, *args, **kwargs) -> "Observable":
+    def start_with(self, *args, **kwargs) -> 'Observable':
         """Prepends a sequence of values to an observable sequence with an
         optional scheduler and an argument list of values to prepend.
 
@@ -354,7 +382,7 @@ class Observable(bases.Observable):
         source = self
         return start_with(source, *args, **kwargs)
 
-    def take(self, count: int, scheduler=None) -> "Observable":
+    def take(self, count: int, scheduler=None) -> 'Observable':
         """Returns a specified number of contiguous elements from the
         start of an observable sequence, using the specified scheduler
         for the edge case of take(0).
@@ -374,7 +402,7 @@ class Observable(bases.Observable):
         source = self
         return take(source, count, scheduler)
 
-    def take_last(self, count: int) -> "Observable":
+    def take_last(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
         end of an observable sequence.
 
@@ -398,7 +426,7 @@ class Observable(bases.Observable):
         source = self
         return take_last(count, source)
 
-    def to_iterable(self) -> "Observable":
+    def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
         :returns: An observable sequence containing a single element with a list

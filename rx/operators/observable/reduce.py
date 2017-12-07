@@ -1,9 +1,8 @@
+from typing import Any, Callable
 from rx import Observable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable, alias="aggregate")
-def reduce(self, accumulator, seed=None):
+def reduce(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> Observable:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
@@ -27,6 +26,7 @@ def reduce(self, accumulator, seed=None):
     """
 
     if seed is not None:
-        return self.scan(accumulator, seed=seed).start_with(seed).last()
+        print("seed is none")
+        return source.scan(accumulator, seed=seed).start_with(seed).last()
     else:
-        return self.scan(accumulator).last()
+        return source.scan(accumulator).last()
