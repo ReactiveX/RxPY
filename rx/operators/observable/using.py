@@ -19,7 +19,7 @@ def using(cls, resource_factory, observable_factory):
     the dependent resource object.
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         disposable = Disposable.empty()
         try:
             resource = resource_factory()

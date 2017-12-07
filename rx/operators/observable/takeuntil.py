@@ -21,7 +21,7 @@ def take_until(self, other):
     source = self
     other = Observable.from_future(other)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         def close(x):
             observer.close()

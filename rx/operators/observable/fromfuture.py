@@ -16,7 +16,7 @@ def from_future(cls, future):
     future success and failure.
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def done(future):
             try:
                 value = future.result()

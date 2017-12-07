@@ -18,7 +18,7 @@ def switch_latest(self):
 
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_latest = [False]
         inner_subscription = SerialDisposable()
         is_stopped = [False]

@@ -26,7 +26,7 @@ def distinct_until_changed(self, key_selector=None, comparer=None):
     key_selector = key_selector or identity
     comparer = comparer or default_comparer
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_current_key = [False]
         current_key = [None]
 

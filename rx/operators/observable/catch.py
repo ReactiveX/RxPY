@@ -7,7 +7,7 @@ from rx.internal import extensionmethod, extensionclassmethod
 
 
 def catch_handler(source, handler):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
 
@@ -78,7 +78,7 @@ def catch_exception(cls, *args):
     else:
         sources = list(args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
         last_exception = [None]

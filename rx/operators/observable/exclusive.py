@@ -16,7 +16,7 @@ def exclusive(self):
 
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_current = [False]
         is_stopped = [False]
         m = SingleAssignmentDisposable()

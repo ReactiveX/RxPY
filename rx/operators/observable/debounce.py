@@ -26,7 +26,7 @@ def debounce(self, duetime, scheduler=None):
     scheduler = scheduler or timeout_scheduler
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         cancelable = SerialDisposable()
         has_value = [False]
         value = [None]
@@ -83,7 +83,7 @@ def throttle_with_selector(self, throttle_duration_selector):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         cancelable = SerialDisposable()
         has_value = [False]
         value = [None]

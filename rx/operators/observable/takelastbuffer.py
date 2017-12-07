@@ -27,7 +27,7 @@ def take_last_buffer(self, count):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
         def send(x):
             with self.lock:

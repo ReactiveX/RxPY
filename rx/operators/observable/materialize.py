@@ -14,7 +14,7 @@ def materialize(self):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def send(value):
             observer.send(OnNext(value))
 

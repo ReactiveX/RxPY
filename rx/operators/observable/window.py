@@ -47,7 +47,7 @@ def observable_window_with_openings(self, window_openings, window_closing_select
 def observable_window_with_bounaries(self, window_boundaries):
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         window = [Subject()]
         d = CompositeDisposable()
         r = RefCountDisposable(d)
@@ -65,21 +65,21 @@ def observable_window_with_bounaries(self, window_boundaries):
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send_window, throw, close))
+        d.add(source.subscribe_callbacks(send_window, throw, close, scheduler))
 
         def send_observer(w):
             window[0].close()
             window[0] = Subject()
             observer.send(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close))
+        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close, scheduler))
         return r
     return AnonymousObservable(subscribe)
 
 def observable_window_with_closing_selector(self, window_closing_selector):
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         m = SerialDisposable()
         d = CompositeDisposable(m)
         r = RefCountDisposable(d)
@@ -98,7 +98,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send, throw, close))
+        d.add(source.subscribe_callbacks(send, throw, close, scheduler))
 
         def create_window_close():
             try:
@@ -116,7 +116,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close)
+            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close, scheduler)
 
         create_window_close()
         return r

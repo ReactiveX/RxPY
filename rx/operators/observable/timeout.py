@@ -52,7 +52,7 @@ def timeout(self, duetime, other=None, scheduler=None):
     else:
         scheduler_method = scheduler.schedule_relative
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         switched = [False]
         _id = [0]
 

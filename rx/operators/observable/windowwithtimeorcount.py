@@ -8,11 +8,12 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def window_with_time_or_count(self, timespan, count, scheduler=None):
+def window_with_time_or_count(self, timespan, count):
     source = self
-    scheduler = scheduler or timeout_scheduler
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
+
         n = [0]
         s = [None]
         timer_d = SerialDisposable()

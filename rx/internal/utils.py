@@ -7,7 +7,7 @@ from .exceptions import DisposedException
 
 
 def add_ref(xs, r):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return AnonymousObservable(subscribe)

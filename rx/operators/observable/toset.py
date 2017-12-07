@@ -2,7 +2,7 @@ from rx import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 def _to_set(source, set_type):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         s = set_type()
 
         def close():

@@ -37,7 +37,7 @@ def skip_until_with_time(self, start_time, scheduler=None):
     else:
         scheduler_method = 'schedule_relative'
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         open = [False]
 
         def send(x):

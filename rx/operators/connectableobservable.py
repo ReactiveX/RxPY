@@ -14,7 +14,7 @@ class ConnectableObservable(Observable):
 
         super(ConnectableObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer)
 
     def connect(self):
@@ -41,7 +41,7 @@ class ConnectableObservable(Observable):
         count = [0]
         source = self
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             count[0] += 1
             should_connect = count[0] == 1
             subscription = source.subscribe(observer)
@@ -74,7 +74,7 @@ class ConnectableObservable(Observable):
             connectable_subscription[0] = source.connect()
             is_connected[0] = True
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)

@@ -59,7 +59,7 @@ def with_latest_from(cls, *args):
 
     NO_VALUE = object()
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         def subscribe_all(parent, *children):
 

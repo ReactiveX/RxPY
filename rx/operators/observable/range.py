@@ -25,7 +25,7 @@ def range(cls, start, count, scheduler=None):
     scheduler = scheduler or current_thread_scheduler
     end = start + count
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, n):

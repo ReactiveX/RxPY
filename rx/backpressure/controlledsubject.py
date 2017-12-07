@@ -19,7 +19,7 @@ class ControlledSubject(Observable, Observer):
         self.has_completed = False
         self.scheduler = scheduler or current_thread_scheduler
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer)
 
     def close(self):

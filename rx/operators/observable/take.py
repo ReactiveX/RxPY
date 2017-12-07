@@ -2,18 +2,14 @@ from rx import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 
-def take(source: Observable, count: int, scheduler=None):
+def take(count: int, source: Observable):
     """Returns a specified number of contiguous elements from the start of
-    an observable sequence, using the specified scheduler for the edge case
-    of take(0).
+    an observable sequence.
 
     1 - source.take(5)
-    2 - source.take(0, rx.Scheduler.timeout)
 
     Keyword arguments:
     count -- The number of elements to return.
-    scheduler -- [Optional] Scheduler used to produce an OnCompleted
-        message in case count is set to 0.
 
     Returns an observable sequence that contains the specified number of
     elements from the start of the input sequence.
@@ -23,11 +19,11 @@ def take(source: Observable, count: int, scheduler=None):
         raise ArgumentOutOfRangeException()
 
     if not count:
-        return Observable.empty(scheduler)
+        return Observable.empty()
 
     observable = source
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         remaining = count
 
         def send(value):

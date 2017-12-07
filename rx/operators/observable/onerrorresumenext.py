@@ -44,7 +44,7 @@ def throw_resume_next(cls, *args):
     else:
         sources = iter(args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
 

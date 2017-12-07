@@ -27,7 +27,7 @@ class TestCreate(unittest.TestCase):
     def test_create_next(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.send(1)
                 o.send(2)
                 return lambda: None
@@ -40,7 +40,7 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.close()
                 o.send(100)
                 o.throw('ex')
@@ -56,7 +56,7 @@ class TestCreate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.throw(ex)
                 o.send(100)
                 o.throw('foo')
@@ -75,7 +75,7 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 is_stopped = [False]
                 o.send(1)
                 o.send(2)
@@ -109,7 +109,7 @@ class TestCreate(unittest.TestCase):
         results.messages.assert_equal(send(200, 1), send(200, 2), send(800, 3), send(900, 4))
 
     def test_create_observer_throws(self):
-        def subscribe(o):
+        def subscribe(o, observer=None):
             o.send(1)
             return lambda: None
 
@@ -133,7 +133,7 @@ class TestCreate(unittest.TestCase):
     def test_create_with_disposable_next(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.send(1)
                 o.send(2)
                 return Disposable.empty()
@@ -145,7 +145,7 @@ class TestCreate(unittest.TestCase):
     def test_create_with_disposable_completed(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.close()
                 o.send(100)
                 o.throw('ex')
@@ -160,7 +160,7 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
         ex = 'ex'
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.throw(ex)
                 o.send(100)
                 o.throw('foo')
@@ -180,7 +180,7 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 d = BooleanDisposable()
                 o.send(1)
                 o.send(2)

@@ -13,7 +13,7 @@ def dematerialize(self):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def send(value):
             return value.accept(observer)
 

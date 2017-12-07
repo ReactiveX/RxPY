@@ -15,10 +15,12 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source, duetime, scheduler):
-    duetime = scheduler.to_timedelta(duetime)
+def observable_delay_timespan(source, duetime):
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
+        duetime = scheduler.to_timedelta(duetime)
+
         cancelable = SerialDisposable()
         exception = [None]
         active = [False]
@@ -90,10 +92,10 @@ def observable_delay_timespan(source, duetime, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_delay_date(source, duetime, scheduler):
+def observable_delay_date(source, duetime):
     def defer():
         timespan = scheduler.to_datetime(duetime) - scheduler.now
-        return observable_delay_timespan(source, timespan, scheduler)
+        return observable_delay_timespan(source, timespan)
 
     return Observable.defer(defer)
 
@@ -120,10 +122,9 @@ def delay(self, duetime, scheduler=None):
     :rtype: Observable
     """
 
-    scheduler = scheduler or timeout_scheduler
     if isinstance(duetime, datetime):
-        observable = observable_delay_date(self, duetime, scheduler)
+        observable = observable_delay_date(self, duetime)
     else:
-        observable = observable_delay_timespan(self, duetime, scheduler)
+        observable = observable_delay_timespan(self, duetime)
 
     return observable

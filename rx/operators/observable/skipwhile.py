@@ -24,7 +24,7 @@ def skip_while(self, predicate):
     predicate = adapt_call(predicate)
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         i, running = [0], [False]
 
         def send(value):

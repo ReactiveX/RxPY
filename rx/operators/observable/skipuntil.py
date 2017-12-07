@@ -19,7 +19,7 @@ def skip_until(self, other):
     source = self
     other = Observable.from_future(other)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         is_open = [False]
 
         def send(left):

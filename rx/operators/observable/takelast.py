@@ -25,7 +25,7 @@ def take_last(count: int, source: Observable):
 
     observable = source
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
 
         def send(x):

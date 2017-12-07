@@ -21,7 +21,7 @@ def default_if_empty(self, default_value=None):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         found = [False]
 
         def send(x):

@@ -14,7 +14,7 @@ def ignore_elements(self):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         return source.subscribe_callbacks(noop, observer.throw, observer.close)
 
     return AnonymousObservable(subscribe)

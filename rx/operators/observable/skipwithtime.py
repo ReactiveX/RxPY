@@ -34,7 +34,7 @@ def skip_with_time(self, duration, scheduler=None):
     source = self
     scheduler = scheduler or timeout_scheduler
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         open = [False]
 
         def action(scheduler, state):

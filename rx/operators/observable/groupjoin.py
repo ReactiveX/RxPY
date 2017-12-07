@@ -38,7 +38,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
     left = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         nothing = lambda _: None
         group = CompositeDisposable()
         r = RefCountDisposable(group)

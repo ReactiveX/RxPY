@@ -34,7 +34,7 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
 
     scheduler = scheduler or current_thread_scheduler
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         first = [True]
         state = [initial_state]
         mad = MultipleAssignmentDisposable()

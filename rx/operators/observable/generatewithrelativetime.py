@@ -32,7 +32,7 @@ def generate_with_relative_time(cls, initial_state, condition, iterate,
     """
     scheduler = scheduler or timeout_scheduler
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         mad = MultipleAssignmentDisposable()
         state = [initial_state]
         has_result = [False]

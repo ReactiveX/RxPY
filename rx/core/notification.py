@@ -45,7 +45,7 @@ class Notification(object):
         notification = self
         scheduler = scheduler or immediate_scheduler
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             def action(scheduler, state):
                 notification._accept_observable(observer)
                 if notification.kind == 'N':

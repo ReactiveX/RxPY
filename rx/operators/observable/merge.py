@@ -29,7 +29,7 @@ def merge(self, *args, **kwargs):
     max_concurrent = args[0]
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         active_count = [0]
         group = CompositeDisposable()
         is_stopped = [False]
@@ -111,7 +111,7 @@ def merge_all(self):
 
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         group = CompositeDisposable()
         is_stopped = [False]
         m = SingleAssignmentDisposable()

@@ -45,7 +45,7 @@ def distinct(self, key_selector=None, comparer=None):
     source = self
     comparer = comparer or default_comparer
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         hashset = HashSet(comparer)
 
         def send(x):

@@ -10,7 +10,7 @@ log = logging.getLogger("Rx")
 
 
 def observable_timer_date(duetime, scheduler):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.send(0)
             observer.close()
@@ -22,7 +22,7 @@ def observable_timer_date(duetime, scheduler):
 def observable_timer_date_and_period(duetime, period, scheduler):
     p = scheduler.normalize(period)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
@@ -45,7 +45,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
 def observable_timer_timespan(duetime, scheduler):
     d = scheduler.normalize(duetime)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.send(0)
             observer.close()
@@ -56,7 +56,7 @@ def observable_timer_timespan(duetime, scheduler):
 
 def observable_timer_timespan_and_period(duetime, period, scheduler):
     if duetime == period:
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             def action(count):
                 observer.send(count)
                 return count + 1

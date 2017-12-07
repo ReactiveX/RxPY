@@ -31,7 +31,7 @@ def skip_last_with_time(self, duration, scheduler=None):
     duration = scheduler.to_timedelta(duration)
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
 
         def send(x):

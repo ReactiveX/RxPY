@@ -19,7 +19,7 @@ def defer(cls, observable_factory):
     :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         try:
             result = observable_factory()
         except Exception as ex:

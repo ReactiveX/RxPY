@@ -32,7 +32,7 @@ def take_until_with_time(self, end_time, scheduler=None):
     else:
         scheduler_method = scheduler.schedule_relative
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.close()
 

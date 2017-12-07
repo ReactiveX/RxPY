@@ -8,7 +8,7 @@ def _element_at_or_default(source, index, has_default=False,
     if index < 0:
         raise ArgumentOutOfRangeException()
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         i = [index]
 
         def send(x):

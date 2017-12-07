@@ -35,7 +35,7 @@ def window_with_count(self, count, skip=None):
     if skip <= 0:
         raise ArgumentOutOfRangeException()
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         m = SingleAssignmentDisposable()
         refCountDisposable = RefCountDisposable(m)
         n = [0]

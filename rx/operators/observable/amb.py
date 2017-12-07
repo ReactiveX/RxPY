@@ -16,7 +16,7 @@ def amb(self, right_source):
     left_source = self
     right_source = Observable.from_future(right_source)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         choice = [None]
         left_choice = 'L'
         right_choice = 'R',

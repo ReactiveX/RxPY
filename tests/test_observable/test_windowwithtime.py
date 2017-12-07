@@ -35,7 +35,7 @@ class TestWindowWithTime(unittest.TestCase):
                 def proj(y):
                     return "%s %s" % (i, y)
                 return ys.map(proj).concat(Observable.return_value('%s end' % i))
-            return xs.window_with_time(100, scheduler=scheduler).map_indexed(selector).merge_observable()
+            return xs.window_with_time(100).map_indexed(selector).merge_observable()
 
         results = scheduler.start(create)
 

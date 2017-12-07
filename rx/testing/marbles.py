@@ -101,7 +101,7 @@ def to_marbles(self, scheduler=None):
     scheduler = scheduler or new_thread_scheduler
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         result = []
         previously = [scheduler.now]
 

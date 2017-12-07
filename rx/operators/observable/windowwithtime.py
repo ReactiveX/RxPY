@@ -10,7 +10,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def window_with_time(self, timespan, timeshift=None, scheduler=None):
+def window_with_time(self, timespan, timeshift=None):
     source = self
 
     if timeshift is None:
@@ -21,9 +21,9 @@ def window_with_time(self, timespan, timeshift=None, scheduler=None):
     if not isinstance(timeshift, timedelta):
         timeshift = timedelta(milliseconds=timeshift)
 
-    scheduler = scheduler or timeout_scheduler
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
 
-    def subscribe(observer):
         timer_d = SerialDisposable()
         next_shift = [timeshift]
         next_span = [timespan]

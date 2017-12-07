@@ -1,28 +1,23 @@
-from rx.core import Observable, AnonymousObservable
+from typing import Any
+
+from rx.core import Observable, Observer, AnonymousObservable
 from rx.concurrency import immediate_scheduler
 from rx.core.bases.scheduler import Scheduler
 
 
-def empty(scheduler: Scheduler=None) -> Observable:
-    """Returns an empty observable sequence, using the specified scheduler
-    to send out the single OnCompleted message.
+def empty() -> Observable:
+    """Returns an empty observable sequence.
 
     1 - res = rx.Observable.empty()
-    2 - res = rx.Observable.empty(rx.Scheduler.timeout)
-
-    scheduler -- Scheduler to send the termination call on.
 
     Returns an observable sequence with no elements.
     """
 
-    scheduler = scheduler or immediate_scheduler
+    def subscribe(observer: Observer, scheduler: Scheduler=None) -> Observable:
+        scheduler = scheduler or immediate_scheduler
 
-    def subscribe(observer):
-        def action(scheduler, state):
-            nonlocal observer
-
+        def action(_: Scheduler, __: Any) -> None:
             observer.close()
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)
-

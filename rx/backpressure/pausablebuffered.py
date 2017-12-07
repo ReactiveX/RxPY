@@ -5,7 +5,7 @@ from rx.disposables import CompositeDisposable
 
 
 def combine_latest_source(source, subject, result_selector):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_value = [False, False]
         has_value_all = [False]
         values = [None, None]
@@ -66,7 +66,7 @@ class PausableBufferedObservable(Observable):
 
         super(PausableBufferedObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         previous_should_fire = [None]
         queue = []
 

@@ -121,7 +121,7 @@ class TestSkipUntil(unittest.TestCase):
         disposed = [False]
         l = scheduler.create_hot_observable(l_msgs)
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             disposed[0] = True
 
         r = AnonymousObservable(subscribe)

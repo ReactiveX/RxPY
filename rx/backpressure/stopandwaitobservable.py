@@ -53,7 +53,7 @@ class StopAndWaitObservable(Observable):
         self.source = source
         self.subscription = None
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         observer = StopAndWaitObserver(observer, self, self.subscription, self.scheduler)
         self.subscription = self.source.subscribe(observer)
 

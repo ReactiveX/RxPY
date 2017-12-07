@@ -3,7 +3,7 @@ from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import extensionmethod
 
 def single_or_default_async(source, has_default=False, default_value=None):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         value = [default_value]
         seen_value = [False]
 

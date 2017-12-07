@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.concurrency import CurrentThreadScheduler
+from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 from rx.internal import Iterable
 
@@ -68,14 +68,14 @@ def concat(cls, *args):
     sequence, in sequential order.
     """
 
-    scheduler = CurrentThreadScheduler()
-
     if isinstance(args[0], list) or isinstance(args[0], Iterable):
         sources = args[0]
     else:
         sources = list(args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
+
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
         enum = iter(sources)

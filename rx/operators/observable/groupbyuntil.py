@@ -54,7 +54,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
     element_selector = element_selector or identity
     comparer = comparer or default_comparer
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         mapping = OrderedDict()
         group_disposable = CompositeDisposable()
         ref_count_disposable = RefCountDisposable(group_disposable)

@@ -53,7 +53,7 @@ class ReplaySubject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
 

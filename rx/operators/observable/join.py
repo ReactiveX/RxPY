@@ -35,7 +35,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
 
     left = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         group = CompositeDisposable()
         left_done = [False]
         left_map = OrderedDict()

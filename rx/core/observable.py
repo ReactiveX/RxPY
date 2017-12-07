@@ -25,7 +25,7 @@ class Observable(bases.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer=None):
+    def subscribe(self, observer=None, scheduler=None):
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -42,9 +42,9 @@ class Observable(bases.Observable):
 
         from .subscribe import subscribe
         source = self
-        return subscribe(source, observer)
+        return subscribe(source, observer, scheduler)
 
-    def subscribe_callbacks(self, send=None, throw=None, close=None):
+    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -66,10 +66,10 @@ class Observable(bases.Observable):
         """
 
         observer = AnonymousObserver(send, throw, close)
-        return self.subscribe(observer)
+        return self.subscribe(observer, scheduler)
 
     @abstractmethod
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         return NotImplemented
 
     @classmethod
@@ -91,19 +91,17 @@ class Observable(bases.Observable):
         return as_observable(source)
 
     @classmethod
-    def empty(cls, scheduler: Scheduler=None):
-        """Returns an empty observable sequence, using the specified scheduler
-        to send out the single OnCompleted message.
+    def empty(cls):
+        """Returns an empty observable sequence.
 
         1 - res = rx.Observable.empty()
-        2 - res = rx.Observable.empty(rx.Scheduler.timeout)
 
         scheduler -- Scheduler to send the termination call on.
 
         Returns an observable sequence with no elements.
         """
         from ..operators.observable.empty import empty
-        return empty(scheduler)
+        return empty()
 
     def filter(self, predicate: Callable[[Any], bool]) -> "Observable":
         """Filters the elements of an observable sequence based on a
@@ -142,7 +140,7 @@ class Observable(bases.Observable):
         return filter_indexed(predicate, source)
 
     @classmethod
-    def from_callable(cls, supplier: Callable, scheduler: Scheduler=None) -> "Observable":
+    def from_callable(cls, supplier: Callable) -> "Observable":
         """Returns an observable sequence that contains a single element generate from a supplier,
         using the specified scheduler to send out observer messages.
 
@@ -159,10 +157,10 @@ class Observable(bases.Observable):
         element derived from the supplier
         """
         from ..operators.observable.returnvalue import from_callable
-        return from_callable(supplier, scheduler)
+        return from_callable(supplier)
 
     @classmethod
-    def from_iterable(cls, iterable: Iterable, scheduler: Scheduler=None):
+    def from_iterable(cls, iterable: Iterable):
         """Converts an array to an observable sequence, using an optional
         scheduler to enumerate the array.
 
@@ -179,7 +177,7 @@ class Observable(bases.Observable):
         :rtype: Observable
         """
         from ..operators.observable.fromiterable import from_iterable
-        return from_iterable(iterable, scheduler)
+        return from_iterable(iterable)
 
     from_ = from_iterable
     from_list = from_iterable
@@ -219,25 +217,22 @@ class Observable(bases.Observable):
         return never()
 
     @classmethod
-    def return_value(cls, value, scheduler: Scheduler=None) -> "Observable":
+    def return_value(cls, value) -> "Observable":
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
         There is an alias called 'just'.
 
         example
         res = rx.Observable.return(42)
-        res = rx.Observable.return(42, rx.Scheduler.timeout)
 
         Keyword arguments:
         value -- Single element in the resulting observable sequence.
-        scheduler -- [Optional] Scheduler to send the single element on. If
-            not specified, defaults to Scheduler.immediate.
 
         Returns an observable sequence containing the single specified
         element.
         """
         from ..operators.observable.returnvalue import return_value
-        return return_value(value, scheduler)
+        return return_value(value)
 
     just = return_value
 
@@ -272,11 +267,9 @@ class Observable(bases.Observable):
         return skip_last(count, source)
 
     def start_with(self, *args, **kwargs) -> "Observable":
-        """Prepends a sequence of values to an observable sequence with an
-        optional scheduler and an argument list of values to prepend.
+        """Prepends a sequence of values to an observable.
 
         1 - source.start_with(1, 2, 3)
-        2 - source.start_with(Scheduler.timeout, 1, 2, 3)
 
         Returns the source sequence prepended with the specified values.
         """
@@ -284,25 +277,21 @@ class Observable(bases.Observable):
         source = self
         return start_with(source, *args, **kwargs)
 
-    def take(self, count: int, scheduler=None) -> "Observable":
+    def take(self, count: int) -> "Observable":
         """Returns a specified number of contiguous elements from the
-        start of an observable sequence, using the specified scheduler
-        for the edge case of take(0).
+        start of an observable sequence.
 
         1 - source.take(5)
-        2 - source.take(0, rx.Scheduler.timeout)
 
         Keyword arguments:
         count -- The number of elements to return.
-        scheduler -- [Optional] Scheduler used to produce an OnCompleted
-            message in case count is set to 0.
 
         Returns an observable sequence that contains the specified
         number of elements from the start of the input sequence.
         """
         from ..operators.observable.take import take
         source = self
-        return take(source, count, scheduler)
+        return take(count, source)
 
     def take_last(self, count: int) -> "Observable":
         """Returns a specified number of contiguous elements from the

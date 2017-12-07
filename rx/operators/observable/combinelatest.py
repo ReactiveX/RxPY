@@ -52,7 +52,7 @@ def combine_latest(cls, *args):
         args = args[0]
     parent = args[0]
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         n = len(args)
         has_value = [False] * n
         has_value_all = [False]

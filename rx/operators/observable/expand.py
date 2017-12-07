@@ -24,7 +24,7 @@ def expand(self, selector, scheduler=None):
     scheduler = scheduler or immediate_scheduler
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
         m = SerialDisposable()
         d = CompositeDisposable(m)

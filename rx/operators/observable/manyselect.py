@@ -9,7 +9,7 @@ from rx.internal import extensionmethod
 
 class ChainObservable(Observable):
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         g = CompositeDisposable()
 
         def action(scheduler, state):

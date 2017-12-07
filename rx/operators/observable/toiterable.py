@@ -9,7 +9,7 @@ def to_iterable(source: Observable) -> Observable:
     :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         nonlocal source
 
         queue = []

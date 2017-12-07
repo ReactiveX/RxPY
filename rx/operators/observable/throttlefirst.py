@@ -25,7 +25,7 @@ def throttle_first(self, window_duration, scheduler=None):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         last_send = [0]
 
         def send(x):

@@ -33,7 +33,7 @@ def take_last_with_time(self, duration, scheduler=None):
     scheduler = scheduler or timeout_scheduler
     duration = scheduler.to_timedelta(duration)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
 
         def send(x):

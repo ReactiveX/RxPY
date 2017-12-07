@@ -66,7 +66,7 @@ class TestWhile(unittest.TestCase):
             def predicate(x):
                 n[0] += 1
                 return n[0] < 1000
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.send(1)
                 o.close()
                 return lambda: None

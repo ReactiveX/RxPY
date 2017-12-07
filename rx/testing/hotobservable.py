@@ -28,16 +28,14 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def subscribe(self, send=None, throw=None, close=None, observer=None):
-        # Be forgiving and accept an un-named observer as first parameter
-        if isinstance(send, Observer):
-            observer = send
-        elif not observer:
-            observer = AnonymousObserver(send, throw, close)
+    def subscribe(self, observer=None, scheduler=None):
+        return self._subscribe_core(observer, scheduler)
 
-        return self._subscribe_core(observer)
+    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
+        observer = AnonymousObserver(send, throw, close)
+        return self.subscribe(observer, scheduler)
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         observable = self
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))

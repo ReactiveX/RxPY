@@ -20,7 +20,7 @@ def skip_last(count: int, source: Observable) -> Observable:
 
     observable = source
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
 
         def send(value):

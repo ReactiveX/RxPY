@@ -17,7 +17,7 @@ class PausableObservable(Observable):
 
         super(PausableObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         conn = self.source.publish()
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]

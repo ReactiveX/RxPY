@@ -9,7 +9,7 @@ def as_observable(source) -> Observable:
     :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         nonlocal source
         return source.subscribe(observer)
 

@@ -19,7 +19,7 @@ def finally_action(self, action):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         try:
             subscription = source.subscribe(observer)
         except Exception:

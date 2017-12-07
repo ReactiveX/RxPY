@@ -6,7 +6,7 @@ from rx.internal import extensionmethod
 
 def sample_observable(source, sampler):
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         at_end = [None]
         has_value = [None]
         value = [None]
