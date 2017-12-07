@@ -21,5 +21,5 @@ def to_iterable(source: Observable) -> Observable:
             observer.send(queue)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

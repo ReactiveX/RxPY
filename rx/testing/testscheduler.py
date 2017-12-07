@@ -21,6 +21,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def comparer(a, b):
             return a - b
+
         super(TestScheduler, self).__init__(0)
 
     def schedule_absolute(self, duetime, action, state=None):
@@ -87,7 +88,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            subscription[0] = source[0].subscribe(observer)
+            subscription[0] = source[0].subscribe(observer, scheduler)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action_subscribe)
 

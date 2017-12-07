@@ -27,7 +27,7 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
 
         results = scheduler.start(create)
 
@@ -46,7 +46,7 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
         results = scheduler.start(create)
 
         results.messages.assert_equal(close(201))

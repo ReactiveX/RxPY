@@ -36,5 +36,5 @@ def take_with_time(self, duration) -> Observable:
             observer.close()
 
         disposable = scheduler.schedule_relative(duration, action)
-        return CompositeDisposable(disposable, source.subscribe(observer))
+        return CompositeDisposable(disposable, source.subscribe(observer, scheduler))
     return AnonymousObservable(subscribe)

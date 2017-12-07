@@ -22,6 +22,7 @@ def throttle_first(self, window_duration):
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
+
         duration = scheduler.to_timedelta(+window_duration or 0)
         if duration <= scheduler.to_timedelta(0):
             raise ValueError('window_duration cannot be less or equal zero.')
@@ -38,5 +39,5 @@ def throttle_first(self, window_duration):
             if emit:
                 observer.send(x)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler=scheduler)
     return AnonymousObservable(subscribe)

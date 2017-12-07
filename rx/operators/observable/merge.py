@@ -50,7 +50,7 @@ def merge(self, *args, **kwargs):
                         observer.close()
 
             subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw,
-                                                             close)
+                                                             close, scheduler)
 
         def send(inner_source):
             if active_count[0] < max_concurrent:

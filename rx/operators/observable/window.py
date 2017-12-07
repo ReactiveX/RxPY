@@ -34,7 +34,7 @@ def window(self, window_openings=None, window_closing_selector=None):
         window_openings = None
 
     if window_openings and not window_closing_selector:
-        return observable_window_with_bounaries(self, window_openings)
+        return observable_window_with_boundaries(self, window_openings)
 
     if not window_openings and window_closing_selector:
         return observable_window_with_closing_selector(self, window_closing_selector)
@@ -44,7 +44,7 @@ def window(self, window_openings=None, window_closing_selector=None):
 def observable_window_with_openings(self, window_openings, window_closing_selector):
     return window_openings.group_join(self, window_closing_selector, lambda _: Observable.empty(), lambda _, window: window)
 
-def observable_window_with_bounaries(self, window_boundaries):
+def observable_window_with_boundaries(self, window_boundaries):
     source = self
 
     def subscribe(observer, scheduler=None):

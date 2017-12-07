@@ -9,7 +9,7 @@ from rx.internal import extensionclassmethod
 log = logging.getLogger("Rx")
 
 
-def observable_timer_date(duetime, scheduler):
+def observable_timer_date(duetime):
     def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.send(0)
@@ -19,10 +19,9 @@ def observable_timer_date(duetime, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_date_and_period(duetime, period, scheduler):
-    p = scheduler.normalize(period)
-
+def observable_timer_date_and_period(duetime, period):
     def subscribe(observer, scheduler=None):
+        p = scheduler.normalize(period)
         mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
@@ -42,10 +41,11 @@ def observable_timer_date_and_period(duetime, period, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan(duetime, scheduler):
-    d = scheduler.normalize(duetime)
+def observable_timer_timespan(duetime):
 
     def subscribe(observer, scheduler=None):
+        d = scheduler.normalize(duetime)
+
         def action(scheduler, state):
             observer.send(0)
             observer.close()
@@ -54,7 +54,7 @@ def observable_timer_timespan(duetime, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime, period, scheduler):
+def observable_timer_timespan_and_period(duetime, period):
     if duetime == period:
         def subscribe(observer, scheduler=None):
             def action(count):

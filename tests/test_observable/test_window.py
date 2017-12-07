@@ -43,7 +43,7 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -66,7 +66,7 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -106,7 +106,7 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing():
-                return Observable.throw_exception(ex, scheduler=scheduler)
+                return Observable.throw_exception(ex)
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
@@ -126,7 +126,7 @@ class TestWindow(unittest.TestCase):
             def closings():
                 w = window[0]
                 window[0] += 1
-                return Observable.timer(w * 100, scheduler=scheduler)
+                return Observable.timer(w * 100)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -144,7 +144,7 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -184,7 +184,7 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -203,7 +203,7 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -222,7 +222,7 @@ class TestWindow(unittest.TestCase):
         ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), throw(415, ex))
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))

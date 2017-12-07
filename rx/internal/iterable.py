@@ -1,21 +1,18 @@
 import itertools
+from collections import abc
 
 from .basic import identity
 
 
-class Iterable(object):
+class Iterable(abc.Iterable):
 
-    def __init__(self, iterator):
-        self._iterator = iterator
+    def filter(self, predicate):
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(value for value in self if predicate(value))
 
-    def __iter__(self):
-        return self._iterator
-
-    def where(self, predicate):
-        return Iterable(value for value in self if predicate(value))
-
-    def select(self, selector=None):
+    def map(self, selector=None):
         selector = selector or identity
+
         return Iterable(selector(value) for value in self)
 
     def take(self, count):
@@ -29,7 +26,9 @@ class Iterable(object):
                 yield value
 
             raise StopIteration
-        return Iterable(next())
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(next())
 
     @classmethod
     def range(cls, start, count):
@@ -42,15 +41,21 @@ class Iterable(object):
                 n -= 1
 
             raise StopIteration
-        return Iterable(next())
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(next())
 
     @classmethod
     def repeat(cls, value, count=None):
         if count is not None:
             return Iterable(value for _ in range(count))
-        return Iterable(itertools.repeat(value))
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(itertools.repeat(value))
 
     @classmethod
     def for_each(cls, source, selector=None):
         selector = selector or identity
-        return Iterable(selector(value) for value in source)
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(selector(value) for value in source)

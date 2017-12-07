@@ -1,4 +1,6 @@
 from typing import Any
+import types
+
 from rx.concurrency import current_thread_scheduler
 
 from .observable import Observable
@@ -25,7 +27,7 @@ def subscribe(source: Observable, observer=None, scheduler=None):
     """
 
     observer = observer or AnonymousObserver()
-    assert isinstance(observer, bases.Observer)
+    assert isinstance(observer, bases.Observer) or isinstance(observer, types.GeneratorType)
 
     auto_detach_observer = AutoDetachObserver(observer)
 

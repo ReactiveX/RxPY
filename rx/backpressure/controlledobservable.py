@@ -13,7 +13,7 @@ class ControlledObservable(Observable):
         self.source = source.multicast(self.subject).ref_count()
 
     def _subscribe_core(self, observer, scheduler=None):
-        return self.source.subscribe(observer)
+        return self.source.subscribe(observer, scheduler)
 
     def request(self, number_of_items):
         if number_of_items is None:

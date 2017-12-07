@@ -1,7 +1,7 @@
 from rx.core import Observable
 
 
-def start_with(self, *args, **kw) -> Observable:
+def start_with(self, *args) -> Observable:
     """Prepends a sequence of values to an observable sequence.
 
     1 - source.start_with(1, 2, 3)

@@ -9,7 +9,7 @@ def _to_set(source, set_type):
             observer.send(s)
             observer.close()
 
-        return source.subscribe(s.add, observer.throw, close)
+        return source.subscribe_callbacks(s.add, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

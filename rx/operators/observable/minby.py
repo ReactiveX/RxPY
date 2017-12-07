@@ -39,7 +39,7 @@ def extrema_by(source, key_selector, comparer):
             observer.send(list)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

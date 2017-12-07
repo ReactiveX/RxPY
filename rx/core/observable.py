@@ -3,11 +3,8 @@ from typing import Callable, Any, Iterable
 from abc import abstractmethod
 
 from rx import config
-from rx.concurrency import current_thread_scheduler
-
-from . import Observer, Disposable, bases
 from .anonymousobserver import AnonymousObserver
-from .autodetachobserver import AutoDetachObserver
+from . import bases
 from . import Scheduler
 
 

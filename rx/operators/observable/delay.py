@@ -18,6 +18,8 @@ class Timestamp(object):
 def observable_delay_timespan(source, duetime):
 
     def subscribe(observer, scheduler=None):
+        nonlocal duetime
+
         scheduler = scheduler or timeout_scheduler
         duetime = scheduler.to_timedelta(duetime)
 
@@ -101,25 +103,19 @@ def observable_delay_date(source, duetime):
 
 
 @extensionmethod(Observable)
-def delay(self, duetime, scheduler=None):
+def delay(self, duetime):
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
     1 - res = rx.Observable.delay(datetime())
-    2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
-
-    3 - res = rx.Observable.delay(5000)
-    4 - res = rx.Observable.delay(5000, Scheduler.timeout)
+    2 - res = rx.Observable.delay(5000)
 
     Keyword arguments:
-    :param datetime|int duetime: Absolute (specified as a datetime object) or
-        relative time (specified as an integer denoting milliseconds) by which
+    duetime -- Absolute (specified as a datetime object) or relative
+        time (specified as an integer denoting milliseconds) by which
         to shift the observable sequence.
-    :param Scheduler scheduler: [Optional] Scheduler to run the delay timers on.
-        If not specified, the timeout scheduler is used.
 
-    :returns: Time-shifted sequence.
-    :rtype: Observable
+    Returns time-shifted sequence.
     """
 
     if isinstance(duetime, datetime):
