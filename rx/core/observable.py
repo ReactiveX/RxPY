@@ -17,9 +17,29 @@ class Observable(bases.Observable):
     def __init__(self):
         self.lock = config["concurrency"].RLock()
 
-        # Deferred instance method assignment: TODO will be removed when extensionmethods are gone
+        # Deferred instance method assignment:
+        # TODO will be removed when extensionmethods are gone
         for name, method in self._methods:
             setattr(self, name, types.MethodType(method, self))
+
+    def __add__(self, other):
+        """Pythonic version of concat
+
+        Example:
+        zs = xs + ys
+        Returns self.concat(other)"""
+        from ..operators.observable.concat import concat
+        return concat(self, other)
+
+    def __iadd__(self, other):
+        """Pythonic use of concat
+
+        Example:
+        xs += ys
+
+        Returns self.concat(self, other)"""
+        from ..operators.observable.concat import concat
+        return concat(self, other)
 
     def __or__(self, other):
         """Forward pipe operator."""
@@ -71,6 +91,36 @@ class Observable(bases.Observable):
     @abstractmethod
     def _subscribe_core(self, observer):
         return NotImplemented
+
+    def concat(self, *args: "Observable") -> "Observable":
+        """Concatenates all the observable sequences. This takes in either an
+        array or variable arguments to concatenate.
+
+        1 - concatenated = xs.concat(ys, zs)
+
+        Returns an observable sequence that contains the elements of each given
+        sequence, in sequential order.
+        """
+        from ..operators.observable.concat import concat
+        source = self
+        return concat(source, *args)
+
+    def concat_all(self):
+        """Concatenates an observable sequence of observable sequences.
+
+        Returns an observable sequence that contains the elements of each
+        observed inner sequence, in sequential order.
+        """
+
+        return self.merge(1)
+
+    def concat_map(self, mapper: Callable[[Any], Any]):
+        """Maps each emission to an Observable and fires its emissions.
+        It will only fire each resulting Observable sequentially.
+        The next derived Observable will not start its emissions until
+        the current one calls close
+        """
+        return self.map(mapper).concat_all()
 
     @classmethod
     def create(cls, subscribe):
