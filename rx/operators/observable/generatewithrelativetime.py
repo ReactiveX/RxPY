@@ -6,8 +6,7 @@ from rx.internal import extensionclassmethod
 
 @extensionclassmethod(Observable)
 def generate_with_relative_time(cls, initial_state, condition, iterate,
-                                result_selector, time_selector,
-                                scheduler=None):
+                                result_selector, time_selector):
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
@@ -25,14 +24,12 @@ def generate_with_relative_time(cls, initial_state, condition, iterate,
     time_selector -- Time selector function to control the speed of values
         being produced each iteration, returning integer values denoting
         milliseconds.
-    scheduler -- [Optional] Scheduler on which to run the generator loop.
-        If not specified, the timeout scheduler is used.
 
     Returns the generated sequence.
     """
-    scheduler = scheduler or timeout_scheduler
 
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
         mad = MultipleAssignmentDisposable()
         state = [initial_state]
         has_result = [False]

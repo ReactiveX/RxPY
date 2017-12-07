@@ -97,7 +97,7 @@ def concat(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_callbacks(observer.send, observer.throw, close)
+                d.disposable = current.subscribe_callbacks(observer.send, observer.throw, close, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 
@@ -105,7 +105,6 @@ def concat(cls, *args):
             is_disposed.append(True)
 
         return CompositeDisposable(subscription, cancelable, Disposable.create(dispose))
-
     return AnonymousObservable(subscribe)
 
 

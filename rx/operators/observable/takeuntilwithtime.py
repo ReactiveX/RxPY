@@ -24,19 +24,19 @@ def take_until_with_time(self, end_time, scheduler=None):
     until the specified end time.
     """
 
-    scheduler = scheduler or timeout_scheduler
-    source = self
-
-    if isinstance(end_time, datetime):
-        scheduler_method = scheduler.schedule_absolute
-    else:
-        scheduler_method = scheduler.schedule_relative
-
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
+        source = self
+
+        if isinstance(end_time, datetime):
+            scheduler_method = scheduler.schedule_absolute
+        else:
+            scheduler_method = scheduler.schedule_relative
+
         def action(scheduler, state):
             observer.close()
 
         task = scheduler_method(end_time, action)
-        return CompositeDisposable(task,  source.subscribe(observer))
+        return CompositeDisposable(task,  source.subscribe(observer, scheduler))
     return AnonymousObservable(subscribe)
 

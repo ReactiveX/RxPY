@@ -4,13 +4,12 @@ from rx.concurrency import timeout_scheduler
 
 
 @extensionmethod(Observable)
-def take_last_with_time(self, duration, scheduler=None):
+def take_last_with_time(self, duration):
     """Returns elements within the specified duration from the end of the
-    observable source sequence, using the specified schedulers to run timers
-    and to drain the collected elements.
+    observable source sequence.
 
     Example:
-    res = source.take_last_with_time(5000, scheduler)
+    res = source.take_last_with_time(5000)
 
     Description:
     This operator accumulates a queue with a length enough to store elements
@@ -22,18 +21,18 @@ def take_last_with_time(self, duration, scheduler=None):
     Keyword arguments:
     duration -- {Number} Duration for taking elements from the end of the
         sequence.
-    scheduler -- {Scheduler} [Optional] Scheduler to run the timer on. If
-        not specified, defaults to rx.Scheduler.timeout.
 
-    Returns {Observable} An observable sequence with the elements taken
+    Returns an observable sequence with the elements taken
     during the specified duration from the end of the source sequence.
     """
 
     source = self
-    scheduler = scheduler or timeout_scheduler
-    duration = scheduler.to_timedelta(duration)
 
     def subscribe(observer, scheduler=None):
+        nonlocal duration
+
+        scheduler = scheduler or timeout_scheduler
+        duration = scheduler.to_timedelta(duration)
         q = []
 
         def send(x):

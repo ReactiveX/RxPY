@@ -7,28 +7,25 @@ from rx.concurrency import timeout_scheduler
 
 
 @extensionmethod(Observable)
-def skip_until_with_time(self, start_time, scheduler=None):
+def skip_until_with_time(self, start_time):
     """Skips elements from the observable source sequence until the
-    specified start time, using the specified scheduler to run timers.
+    specified start time.
     Errors produced by the source sequence are always forwarded to the
     result sequence, even if the error occurs before the start time.
 
     Examples:
-    res = source.skip_until_with_time(new Date(), [optional scheduler]);
-    res = source.skip_until_with_time(5000, [optional scheduler]);
+    res = source.skip_until_with_time(new Date());
+    res = source.skip_until_with_time(5000);
 
     Keyword arguments:
     start_time -- Time to start taking elements from the source sequence. If
         this value is less than or equal to Date(), no elements will be
         skipped.
-    scheduler -- Scheduler to run the timer on. If not specified, defaults
-        to rx.Scheduler.timeout.
 
-    Returns {Observable} An observable sequence with the elements skipped
+    Returns an observable sequence with the elements skipped
     until the specified start time.
     """
 
-    scheduler = scheduler or timeout_scheduler
 
     source = self
 
@@ -38,13 +35,13 @@ def skip_until_with_time(self, start_time, scheduler=None):
         scheduler_method = 'schedule_relative'
 
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
         open = [False]
 
         def send(x):
             if open[0]:
                 observer.send(x)
-        subscription = source.subscribe_callbacks(send, observer.throw,
-                                        observer.close)
+        subscription = source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
 
         def action(scheduler, state):
             open[0] = True

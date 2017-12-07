@@ -5,7 +5,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def time_interval(self, scheduler=None):
+def time_interval(self):
     """Records the time interval between consecutive values in an
     observable sequence.
 

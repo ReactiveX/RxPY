@@ -10,8 +10,7 @@ log = logging.getLogger("Rx")
 
 
 @extensionmethod(Observable)
-def join(self, right, left_duration_selector, right_duration_selector,
-         result_selector):
+def join(self, right, left_duration_selector, right_duration_selector, result_selector):
     """Correlates the elements of two sequences based on overlapping
     durations.
 
@@ -68,7 +67,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire())
+            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire(), scheduler)
 
             for val in right_map.values():
                 try:
@@ -85,7 +84,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
             if right_done[0] or not len(left_map):
                 observer.close()
 
-        group.add(left.subscribe_callbacks(send_left, observer.throw, close_left))
+        group.add(left.subscribe_callbacks(send_left, observer.throw, close_left, scheduler))
 
         def send_right(value):
             duration = None
@@ -110,7 +109,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire())
+            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire(), scheduler)
 
             for val in left_map.values():
                 try:

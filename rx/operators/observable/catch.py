@@ -71,14 +71,14 @@ def catch_exception(cls, *args):
     source sequences until a source sequence terminates successfully.
     """
 
-    scheduler = current_thread_scheduler
-
     if isinstance(args[0], list) or isinstance(args[0], Iterable):
         sources = args[0]
     else:
         sources = list(args)
 
     def subscribe(observer, scheduler=None):
+        scheduler = current_thread_scheduler
+
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
         last_exception = [None]

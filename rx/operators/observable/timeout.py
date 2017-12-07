@@ -8,7 +8,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def timeout(self, duetime, other=None, scheduler=None):
+def timeout(self, duetime, other=None):
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
@@ -45,14 +45,14 @@ def timeout(self, duetime, other=None, scheduler=None):
     other = other or Observable.throw_exception(Exception("Timeout"))
     other = Observable.from_future(other)
 
-    scheduler = scheduler or timeout_scheduler
-
-    if isinstance(duetime, datetime):
-        scheduler_method = scheduler.schedule_absolute
-    else:
-        scheduler_method = scheduler.schedule_relative
-
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
+
+        if isinstance(duetime, datetime):
+            scheduler_method = scheduler.schedule_absolute
+        else:
+            scheduler_method = scheduler.schedule_relative
+
         switched = [False]
         _id = [0]
 
@@ -69,7 +69,7 @@ def timeout(self, duetime, other=None, scheduler=None):
                 timer_wins = switched[0]
                 if timer_wins:
 
-                    subscription.disposable = other.subscribe(observer)
+                    subscription.disposable = other.subscribe(observer, scheduler)
 
             timer.disposable = scheduler_method(duetime, action)
 
@@ -93,6 +93,6 @@ def timeout(self, duetime, other=None, scheduler=None):
                 _id[0] += 1
                 observer.close()
 
-        original.disposable = source.subscribe_callbacks(send, throw, close)
+        original.disposable = source.subscribe_callbacks(send, throw, close, scheduler)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

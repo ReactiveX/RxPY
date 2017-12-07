@@ -3,7 +3,7 @@ from rx.internal import extensionclassmethod
 
 
 @extensionclassmethod(Observable)
-def if_then(cls, condition, then_source, else_source=None, scheduler=None):
+def if_then(cls, condition, then_source, else_source=None):
     """Determines whether an observable collection contains values.
 
     Example:
@@ -25,7 +25,7 @@ def if_then(cls, condition, then_source, else_source=None, scheduler=None):
     then_source or else_source.
     """
 
-    else_source = else_source or Observable.empty(scheduler=scheduler)
+    else_source = else_source or Observable.empty()
 
     then_source = Observable.from_future(then_source)
     else_source = Observable.from_future(else_source)

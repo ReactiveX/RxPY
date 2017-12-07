@@ -5,7 +5,7 @@ from rx.internal import extensionclassmethod
 
 
 @extensionclassmethod(Observable)
-def generate(cls, initial_state, condition, iterate, result_selector, scheduler=None):
+def generate(cls, initial_state, condition, iterate, result_selector):
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
@@ -14,11 +14,6 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
         lambda x: x < 10,
         lambda x: x + 1,
         lambda x: x)
-    2 - res = rx.Observable.generate(0,
-        lambda x: x < 10,
-        lambda x: x + 1,
-        lambda x: x,
-        Rx.Scheduler.timeout)
 
     Keyword arguments:
     initial_state -- Initial state.
@@ -26,15 +21,12 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
     iterate -- Iteration step function.
     result_selector -- Selector function for results produced in the
         sequence.
-    scheduler -- [Optional] Scheduler on which to run the generator loop.
-        If not provided, defaults to CurrentThreadScheduler.
 
     Returns the generated sequence.
     """
 
-    scheduler = scheduler or current_thread_scheduler
-
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
         first = [True]
         state = [initial_state]
         mad = MultipleAssignmentDisposable()

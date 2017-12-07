@@ -94,7 +94,7 @@ def combine_latest(cls, *args):
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw, close)
+            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw, close, scheduler)
 
         for idx in range(n):
             func(idx)

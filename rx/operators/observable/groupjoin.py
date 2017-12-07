@@ -12,8 +12,7 @@ log = logging.getLogger("Rx")
 
 
 @extensionmethod(Observable)
-def group_join(self, right, left_duration_selector, right_duration_selector,
-               result_selector):
+def group_join(self, right, left_duration_selector, right_duration_selector, result_selector):
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
@@ -95,10 +94,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
                 observer.throw(e)
 
-            md.disposable = duration.take(1).subscribe_callbacks(
-                nothing,
-                throw,
-                expire)
+            md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
 
         def throw_left(e):
             for left_value in left_map.values():
@@ -106,8 +102,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
             observer.throw(e)
 
-        group.add(left.subscribe_callbacks(send_left, throw_left,
-                  observer.close))
+        group.add(left.subscribe_callbacks(send_left, throw_left, observer.close, scheduler))
 
         def send_right(value):
             with self.lock:
@@ -138,10 +133,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
                     observer.throw(e)
 
-            md.disposable = duration.take(1).subscribe_callbacks(
-                nothing,
-                throw,
-                expire)
+            md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
 
             with self.lock:
                 for left_value in left_map.values():
@@ -153,6 +145,6 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
 
             observer.throw(e)
 
-        group.add(right.subscribe_callbacks(send_right, throw_right))
+        group.add(right.subscribe_callbacks(send_right, throw_right, scheduler))
         return r
     return AnonymousObservable(subscribe)

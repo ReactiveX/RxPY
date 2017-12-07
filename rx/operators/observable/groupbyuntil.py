@@ -10,8 +10,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def group_by_until(self, key_selector, element_selector, duration_selector,
-                   comparer=None):
+def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None):
     """Groups the elements of an observable sequence according to a
     specified key selector function. A duration selector function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -113,7 +112,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
                 def close():
                     expire()
 
-                md.disposable = duration.take(1).subscribe_callbacks(send, throw, close)
+                md.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
 
             try:
                 element = element_selector(x)
@@ -138,6 +137,6 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
 
             observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(send, throw, close))
+        group_disposable.add(source.subscribe_callbacks(send, throw, close, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

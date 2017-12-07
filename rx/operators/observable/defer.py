@@ -26,5 +26,5 @@ def defer(cls, observable_factory):
             return Observable.throw_exception(ex).subscribe(observer)
 
         result = Observable.from_future(result)
-        return result.subscribe(observer)
+        return result.subscribe(observer, scheduler)
     return AnonymousObservable(subscribe)
