@@ -5,9 +5,9 @@ from rx.subjects import Subject
 from rx.backpressure.controlledsubject import ControlledSubject
 from rx.backpressure.windowedobservable import WindowedObservable
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -23,13 +23,13 @@ class TestWindowedObservable(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
         )
 
         def action1(scheduler, state=None):
@@ -51,14 +51,14 @@ class TestWindowedObservable(unittest.TestCase):
 
         scheduler.start()
         results1.messages.assert_equal(
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
         )
 
         results2.messages.assert_equal(
-            on_next(399, 6),
-            on_completed(500)
+            send(399, 6),
+            close(500)
         )

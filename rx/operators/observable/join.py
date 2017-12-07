@@ -44,7 +44,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
         right_map = OrderedDict()
         right_id = [0]
 
-        def on_next_left(value):
+        def send_left(value):
             duration = None
             current_id = left_id[0]
             left_id[0] += 1
@@ -57,7 +57,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 if current_id in left_map:
                     del left_map[current_id]
                 if not len(left_map) and left_done[0]:
-                    observer.on_completed()
+                    observer.close()
 
                 return group.remove(md)
 
@@ -65,29 +65,29 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 duration = left_duration_selector(value)
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
-                observer.on_error(exception)
+                observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.on_error, lambda: expire())
+            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire())
 
             for val in right_map.values():
                 try:
                     result = result_selector(value, val)
                 except Exception as exception:
                     log.error("*** Exception: %s" % exception)
-                    observer.on_error(exception)
+                    observer.throw(exception)
                     return
 
-                observer.on_next(result)
+                observer.send(result)
 
-        def on_completed_left():
+        def close_left():
             left_done[0] = True
             if right_done[0] or not len(left_map):
-                observer.on_completed()
+                observer.close()
 
-        group.add(left.subscribe_callbacks(on_next_left, observer.on_error, on_completed_left))
+        group.add(left.subscribe_callbacks(send_left, observer.throw, close_left))
 
-        def on_next_right(value):
+        def send_right(value):
             duration = None
             current_id = right_id[0]
             right_id[0] += 1
@@ -99,7 +99,7 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 if current_id in right_map:
                     del right_map[current_id]
                 if not len(right_map) and right_done[0]:
-                    observer.on_completed()
+                    observer.close()
 
                 return group.remove(md)
 
@@ -107,26 +107,26 @@ def join(self, right, left_duration_selector, right_duration_selector,
                 duration = right_duration_selector(value)
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
-                observer.on_error(exception)
+                observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.on_error, lambda: expire())
+            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire())
 
             for val in left_map.values():
                 try:
                     result = result_selector(val, value)
                 except Exception as exception:
                     log.error("*** Exception: %s" % exception)
-                    observer.on_error(exception)
+                    observer.throw(exception)
                     return
 
-                observer.on_next(result)
+                observer.send(result)
 
-        def on_completed_right():
+        def close_right():
             right_done[0] = True
             if left_done[0] or not len(right_map):
-                observer.on_completed()
+                observer.close()
 
-        group.add(right.subscribe_callbacks(on_next_right, observer.on_error, on_completed_right))
+        group.add(right.subscribe_callbacks(send_right, observer.throw, close_right))
         return group
     return AnonymousObservable(subscribe)

@@ -17,15 +17,15 @@ def to_iterable(self):
     condition = config["concurrency"].Condition()
     notifications = []
 
-    def on_next(value):
-        """Takes on_next values and appends them to the notification queue"""
+    def send(value):
+        """Takes send values and appends them to the notification queue"""
 
         condition.acquire()
         notifications.append(value)
         condition.notify()  # signal that a new item is available
         condition.release()
 
-    self.observable.materialize().subscribe_callbacks(on_next)
+    self.observable.materialize().subscribe_callbacks(send)
 
     def gen():
         """Generator producing values for the iterator"""

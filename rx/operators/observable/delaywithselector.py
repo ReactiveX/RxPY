@@ -39,47 +39,47 @@ def delay_with_selector(self, subscription_delay=None,
 
         def done():
             if (at_end[0] and delays.length == 0):
-                observer.on_completed()
+                observer.close()
 
         subscription = SerialDisposable()
 
         def start():
-            def on_next(x):
+            def send(x):
                 try:
                     delay = selector(x)
                 except Exception as error:
-                    observer.on_error(error)
+                    observer.throw(error)
                     return
 
                 d = SingleAssignmentDisposable()
                 delays.add(d)
 
-                def on_next(_):
-                    observer.on_next(x)
+                def send(_):
+                    observer.send(x)
                     delays.remove(d)
                     done()
 
-                def on_completed():
-                    observer.on_next(x)
+                def close():
+                    observer.send(x)
                     delays.remove(d)
                     done()
 
-                d.disposable = delay.subscribe_callbacks(on_next, observer.on_error, on_completed)
+                d.disposable = delay.subscribe_callbacks(send, observer.throw, close)
 
-            def on_completed():
+            def close():
                 at_end[0] = True
                 subscription.dispose()
                 done()
 
-            subscription.disposable = source.subscribe_callbacks(on_next, observer.on_error,
-                                                       on_completed)
+            subscription.disposable = source.subscribe_callbacks(send, observer.throw,
+                                                       close)
 
         if not sub_delay:
             start()
         else:
             subscription.disposable(sub_delay.subscribe_callbacks(
                 lambda _: start(),
-                observer.on_error,
+                observer.throw,
                 start))
 
         return CompositeDisposable(subscription, delays)

@@ -26,8 +26,8 @@ def return_value(value: Any, scheduler: Scheduler=None) -> Observable:
 
     def subscribe(observer):
         def action(scheduler, state=None):
-            observer.on_next(value)
-            observer.on_completed()
+            observer.send(value)
+            observer.close()
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)
@@ -56,10 +56,10 @@ def from_callable(supplier: Callable, scheduler: Scheduler=None) ->Observable:
             nonlocal observer
 
             try:
-                observer.on_next(supplier())
-                observer.on_completed()
+                observer.send(supplier())
+                observer.close()
             except Exception as e:
-                observer.on_error(e)
+                observer.throw(e)
         return scheduler.schedule(action)
 
     return AnonymousObservable(subscribe)

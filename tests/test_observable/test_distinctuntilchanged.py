@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -33,7 +33,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -44,7 +44,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -56,7 +56,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
 
         def create():
             return xs.distinct_until_changed()
@@ -68,12 +68,12 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_all_changes(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(220, 3),
-            on_next(230, 4),
-            on_next(240, 5),
-            on_completed(250))
+            send(150, 1),
+            send(210, 2),
+            send(220, 3),
+            send(230, 4),
+            send(240, 5),
+            close(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -88,7 +88,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_all_same(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 2), send(230, 2), send(240, 2), close(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -100,7 +100,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_some_changes(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(215, 3), on_next(220, 3), on_next(225, 2), on_next(230, 2), on_next(230, 1), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(215, 3), send(220, 3), send(225, 2), send(230, 2), send(230, 1), send(240, 2), close(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -116,7 +116,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_comparer_all_equal(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.distinct_until_changed(comparer=lambda x, y: True)
@@ -128,7 +128,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_comparer_all_different(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 2), send(230, 2), send(240, 2), close(250))
 
         def create():
             return xs.distinct_until_changed(comparer=lambda x, y: False)
@@ -143,7 +143,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_key_selector_div2(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 4), send(230, 3), send(240, 5), close(250))
 
         def create():
             return xs.distinct_until_changed(lambda x: x % 2)
@@ -157,20 +157,20 @@ class TestDistinctUntilChanged(unittest.TestCase):
     def test_distinct_until_changed_key_selector_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
 
         def create():
             return xs.distinct_until_changed(lambda x: _raise(ex))
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(210, ex))
+        results.messages.assert_equal(throw(210, ex))
 
     def test_distinct_until_changed_comparer_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), close(250))
 
         def create():
             return xs.distinct_until_changed(comparer=lambda x,y: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
+        results.messages.assert_equal(send(210, 2), throw(220, ex))

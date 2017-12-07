@@ -32,18 +32,18 @@ def to_future(self, future_ctor=None):
     value = [None]
     has_value = [False]
 
-    def on_next(v):
+    def send(v):
         value[0] = v
         has_value[0] = True
 
-    def on_error(err):
+    def throw(err):
         future.set_exception(err)
 
-    def on_completed():
+    def close():
         if has_value[0]:
             future.set_result(value[0])
 
-    source.subscribe_callbacks(on_next, on_error, on_completed)
+    source.subscribe_callbacks(send, throw, close)
 
     # No cancellation can be done
     return future

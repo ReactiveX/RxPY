@@ -23,12 +23,12 @@ def take_until(self, other):
 
     def subscribe(observer):
 
-        def on_completed(x):
-            observer.on_completed()
+        def close(x):
+            observer.close()
 
         return CompositeDisposable(
             source.subscribe(observer),
-            other.subscribe_callbacks(on_completed, observer.on_error, noop)
+            other.subscribe_callbacks(close, observer.throw, noop)
         )
     return AnonymousObservable(subscribe)
 

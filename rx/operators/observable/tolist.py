@@ -27,6 +27,6 @@ def to_sorted_list(self, key_selector=None, reverse=False):
     containing all the sorted elements of the source sequence."""
 
     if key_selector:
-        return self.to_list().do_action(on_next=lambda l: l.sort(key=key_selector, reverse=reverse))
+        return self.to_list().do_action(send=lambda l: l.sort(key=key_selector, reverse=reverse))
     else:
         return self.to_list().do_action(lambda l: l.sort(reverse=reverse))

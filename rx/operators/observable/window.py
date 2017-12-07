@@ -52,27 +52,27 @@ def observable_window_with_bounaries(self, window_boundaries):
         d = CompositeDisposable()
         r = RefCountDisposable(d)
 
-        observer.on_next(add_ref(window[0], r))
+        observer.send(add_ref(window[0], r))
 
-        def on_next_window(x):
-            window[0].on_next(x)
+        def send_window(x):
+            window[0].send(x)
 
-        def on_error(err):
-            window[0].on_error(err)
-            observer.on_error(err)
+        def throw(err):
+            window[0].throw(err)
+            observer.throw(err)
 
-        def on_completed():
-            window[0].on_completed()
-            observer.on_completed()
+        def close():
+            window[0].close()
+            observer.close()
 
-        d.add(source.subscribe_callbacks(on_next_window, on_error, on_completed))
+        d.add(source.subscribe_callbacks(send_window, throw, close))
 
-        def on_next_observer(w):
-            window[0].on_completed()
+        def send_observer(w):
+            window[0].close()
             window[0] = Subject()
-            observer.on_next(add_ref(window[0], r))
+            observer.send(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe_callbacks(on_next_observer, on_error, on_completed))
+        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close))
         return r
     return AnonymousObservable(subscribe)
 
@@ -85,38 +85,38 @@ def observable_window_with_closing_selector(self, window_closing_selector):
         r = RefCountDisposable(d)
         window = [Subject()]
 
-        observer.on_next(add_ref(window[0], r))
+        observer.send(add_ref(window[0], r))
 
-        def on_next(x):
-            window[0].on_next(x)
+        def send(x):
+            window[0].send(x)
 
-        def on_error(ex):
-            window[0].on_error(ex)
-            observer.on_error(ex)
+        def throw(ex):
+            window[0].throw(ex)
+            observer.throw(ex)
 
-        def on_completed():
-            window[0].on_completed()
-            observer.on_completed()
+        def close():
+            window[0].close()
+            observer.close()
 
-        d.add(source.subscribe_callbacks(on_next, on_error, on_completed))
+        d.add(source.subscribe_callbacks(send, throw, close))
 
         def create_window_close():
             try:
                 window_close = window_closing_selector()
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
-                observer.on_error(exception)
+                observer.throw(exception)
                 return
 
-            def on_completed():
-                window[0].on_completed()
+            def close():
+                window[0].close()
                 window[0] = Subject()
-                observer.on_next(add_ref(window[0], r))
+                observer.send(add_ref(window[0], r))
                 create_window_close()
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_callbacks(noop, on_error, on_completed)
+            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close)
 
         create_window_close()
         return r

@@ -11,11 +11,11 @@ class MockObserver(Observer):
         self.scheduler = scheduler
         self.messages = AssertList()
 
-    def on_next(self, value):
+    def send(self, value):
         self.messages.append(Recorded(self.scheduler.clock, OnNext(value)))
 
-    def on_error(self, exception):
+    def throw(self, exception):
         self.messages.append(Recorded(self.scheduler.clock, OnError(exception)))
 
-    def on_completed(self):
+    def close(self):
         self.messages.append(Recorded(self.scheduler.clock, OnCompleted()))

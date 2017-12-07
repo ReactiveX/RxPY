@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -33,7 +33,7 @@ def sequence_equal(arr1, arr2):
 class TestBufferCount(unittest.TestCase):
     def test_buffer_count_partial_window(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.buffer_with_count(5)
@@ -44,7 +44,7 @@ class TestBufferCount(unittest.TestCase):
 
     def test_buffer_count_full_windows(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.buffer_with_count(2)
@@ -56,7 +56,7 @@ class TestBufferCount(unittest.TestCase):
 
     def test_buffer_count_full_and_partial_windows(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.buffer_with_count(3)
@@ -69,7 +69,7 @@ class TestBufferCount(unittest.TestCase):
 
     def test_buffer_count_error(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, 'ex'))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), throw(250, 'ex'))
 
         def create():
             return xs.buffer_with_count(5)
@@ -80,7 +80,7 @@ class TestBufferCount(unittest.TestCase):
 
     def test_buffer_count_skip_less(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.buffer_with_count(3, 1)
@@ -95,7 +95,7 @@ class TestBufferCount(unittest.TestCase):
 
     def test_buffer_count_skip_more(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.buffer_with_count(2, 3)

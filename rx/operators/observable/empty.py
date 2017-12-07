@@ -21,7 +21,7 @@ def empty(scheduler: Scheduler=None) -> Observable:
         def action(scheduler, state):
             nonlocal observer
 
-            observer.on_completed()
+            observer.close()
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)

@@ -38,17 +38,17 @@ def zip(self, *args):
                     queued_values = [x.pop(0) for x in queues]
                     res = result_selector(*queued_values)
                 except Exception as ex:
-                    observer.on_error(ex)
+                    observer.throw(ex)
                     return
 
-                observer.on_next(res)
+                observer.send(res)
             elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.on_completed()
+                observer.close()
 
         def done(i):
             is_done[i] = True
             if all(is_done):
-                observer.on_completed()
+                observer.close()
 
         subscriptions = [None]*n
 
@@ -57,11 +57,11 @@ def zip(self, *args):
             sad = SingleAssignmentDisposable()
             source = Observable.from_future(source)
 
-            def on_next(x):
+            def send(x):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_callbacks(on_next, observer.on_error, lambda: done(i))
+            sad.disposable = source.subscribe_callbacks(send, observer.throw, lambda: done(i))
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)
@@ -97,18 +97,18 @@ def _zip_list(source, second, result_selector):
         length = len(second)
         index = [0]
 
-        def on_next(left):
+        def send(left):
             if index[0] < length:
                 right = second[index[0]]
                 index[0] += 1
                 try:
                     result = result_selector(left, right)
                 except Exception as ex:
-                    observer.on_error(ex)
+                    observer.throw(ex)
                     return
-                observer.on_next(result)
+                observer.send(result)
             else:
-                observer.on_completed()
+                observer.close()
 
-        return first.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return first.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

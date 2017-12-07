@@ -3,9 +3,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -25,22 +25,22 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
     def test_takeuntil_zero(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
+        xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
             return xs.take_until_with_time(datetime.utcfromtimestamp(0), scheduler=scheduler)
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_completed(201))
+        res.messages.assert_equal(close(201))
         xs.subscriptions.assert_equal(subscribe(200, 201))
 
     def test_takeuntil_late(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_completed(230)
+            send(210, 1),
+            send(220, 2),
+            close(230)
         )
 
         def create():
@@ -48,19 +48,19 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
+        res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
         xs.subscriptions.assert_equal(subscribe(200, 230))
 
     def test_takeuntil_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_error(210, ex))
+        xs = scheduler.create_hot_observable(throw(210, ex))
         def create():
             dt = datetime.utcfromtimestamp(0.250)
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_error(210, ex))
+        res.messages.assert_equal(throw(210, ex))
         xs.subscriptions.assert_equal(subscribe(200, 210))
 
     def test_takeuntil_never(self):
@@ -73,19 +73,19 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_completed(250))
+        res.messages.assert_equal(close(250))
         xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_takeuntil_twice1(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_next(250, 5),
-            on_next(260, 6),
-            on_completed(270)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            send(250, 5),
+            send(260, 6),
+            close(270)
         )
         def create():
             dt235 = datetime.utcfromtimestamp(0.235)
@@ -93,19 +93,19 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt255, scheduler).take_until_with_time(dt235, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
+        res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
         xs.subscriptions.assert_equal(subscribe(200, 235))
 
     def test_takeuntil_twice2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_next(250, 5),
-            on_next(260, 6),
-            on_completed(270)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            send(250, 5),
+            send(260, 6),
+            close(270)
         )
 
         def create():
@@ -114,5 +114,5 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt235, scheduler).take_until_with_time(dt255, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235))
+        res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
         xs.subscriptions.assert_equal(subscribe(200, 235))

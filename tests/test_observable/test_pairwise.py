@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,8 +17,8 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_completed(210)
+            send(180, 5),
+            close(210)
         )
 
         def create():
@@ -27,7 +27,7 @@ class TestPairwise(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_completed(210)
+            close(210)
         )
 
         xs.subscriptions.assert_equal(
@@ -38,9 +38,9 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_completed(220)
+            send(180, 5),
+            send(210, 4),
+            close(220)
         )
 
         def create():
@@ -50,7 +50,7 @@ class TestPairwise(unittest.TestCase):
 
 
         results.messages.assert_equal(
-            on_completed(220)
+            close(220)
         )
 
         xs.subscriptions.assert_equal(
@@ -62,12 +62,12 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1),
+            close(360)
         )
 
         def create():
@@ -76,10 +76,10 @@ class TestPairwise(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(240, (4,3)),
-            on_next(290, (3, 2)),
-            on_next(350, (2, 1)),
-            on_completed(360)
+            send(240, (4,3)),
+            send(290, (3, 2)),
+            send(350, (2, 1)),
+            close(360)
         )
 
         xs.subscriptions.assert_equal(
@@ -91,11 +91,11 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1)
           )
 
         def create():
@@ -105,9 +105,9 @@ class TestPairwise(unittest.TestCase):
 
 
         results.messages.assert_equal(
-            on_next(240, (4,3)),
-            on_next(290, (3, 2)),
-            on_next(350, (2, 1))
+            send(240, (4,3)),
+            send(290, (3, 2)),
+            send(350, (2, 1))
         )
 
         xs.subscriptions.assert_equal(
@@ -120,12 +120,12 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_error(290, error),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            throw(290, error),
+            send(350, 1),
+            close(360)
           )
 
         def create():
@@ -135,8 +135,8 @@ class TestPairwise(unittest.TestCase):
 
 
         results.messages.assert_equal(
-            on_next(240, (4,3)),
-            on_error(290, error)
+            send(240, (4,3)),
+            throw(290, error)
         )
 
         xs.subscriptions.assert_equal(
@@ -147,12 +147,12 @@ class TestPairwise(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1),
+            close(360)
           )
 
         def create():
@@ -161,7 +161,7 @@ class TestPairwise(unittest.TestCase):
         results = scheduler.start(create, disposed=280)
 
         results.messages.assert_equal(
-            on_next(240, (4,3))
+            send(240, (4,3))
         )
 
         xs.subscriptions.assert_equal(

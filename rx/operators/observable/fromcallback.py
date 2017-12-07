@@ -27,17 +27,17 @@ def from_callback(cls, func, selector=None):
                     try:
                         results = selector(args)
                     except Exception as err:
-                        observer.on_error(err)
+                        observer.throw(err)
                         return
 
-                    observer.on_next(results)
+                    observer.send(results)
                 else:
                     if isinstance(results, list) and len(results) <= 1:
-                        observer.on_next(*results)
+                        observer.send(*results)
                     else:
-                        observer.on_next(results)
+                        observer.send(results)
 
-                    observer.on_completed()
+                    observer.close()
 
             arguments.append(handler)
             func(*arguments)

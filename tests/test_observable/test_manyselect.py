@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -26,11 +26,11 @@ class TestManySelect(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(100, 1),
-            on_next(220, 2),
-            on_next(270, 3),
-            on_next(410, 4),
-            on_completed(500)
+            send(100, 1),
+            send(220, 2),
+            send(270, 3),
+            send(410, 4),
+            close(500)
         )
 
         def create():
@@ -39,10 +39,10 @@ class TestManySelect(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(221, 2),
-            on_next(271, 3),
-            on_next(411, 4),
-            on_completed(501)
+            send(221, 2),
+            send(271, 3),
+            send(411, 4),
+            close(501)
         )
 
         xs.subscriptions.assert_equal(
@@ -55,11 +55,11 @@ class TestManySelect(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            on_next(100, 1),
-            on_next(220, 2),
-            on_next(270, 3),
-            on_next(410, 4),
-            on_error(500, ex)
+            send(100, 1),
+            send(220, 2),
+            send(270, 3),
+            send(410, 4),
+            throw(500, ex)
         )
 
         def create():
@@ -68,10 +68,10 @@ class TestManySelect(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(221, 2),
-            on_next(271, 3),
-            on_next(411, 4),
-            on_error(501, ex)
+            send(221, 2),
+            send(271, 3),
+            send(411, 4),
+            throw(501, ex)
         )
 
         xs.subscriptions.assert_equal(

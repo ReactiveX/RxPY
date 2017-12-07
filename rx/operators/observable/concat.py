@@ -85,19 +85,19 @@ def concat(cls, *args):
             if is_disposed:
                 return
 
-            def on_completed():
+            def close():
                 cancelable.disposable = scheduler.schedule(action)
 
             try:
                 current = next(enum)
             except StopIteration:
-                observer.on_completed()
+                observer.close()
             except Exception as ex:
-                observer.on_error(ex)
+                observer.throw(ex)
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_callbacks(observer.on_next, observer.on_error, on_completed)
+                d.disposable = current.subscribe_callbacks(observer.send, observer.throw, close)
 
         cancelable.disposable = scheduler.schedule(action)
 

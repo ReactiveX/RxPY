@@ -24,14 +24,14 @@ def default_if_empty(self, default_value=None):
     def subscribe(observer):
         found = [False]
 
-        def on_next(x):
+        def send(x):
             found[0] = True
-            observer.on_next(x)
+            observer.send(x)
 
-        def on_completed():
+        def close():
             if not found[0]:
-                observer.on_next(default_value)
-            observer.on_completed()
+                observer.send(default_value)
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)

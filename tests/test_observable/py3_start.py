@@ -6,9 +6,9 @@ Future = rx.config['Future']
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -30,9 +30,9 @@ class TestStart(unittest.TestCase):
 
             source = Observable.start_async(func)
 
-            def on_next(x):
+            def send(x):
                 success[0] = (42 == x)
-            source.subscribe_callbacks(on_next)
+            source.subscribe_callbacks(send)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -50,9 +50,9 @@ class TestStart(unittest.TestCase):
 
             source = Observable.start_async(func)
 
-            def on_error(ex):
+            def throw(ex):
                 success[0] = (str(42) == str(ex))
-            source.subscribe_callbacks(on_error=on_error)
+            source.subscribe_callbacks(throw=throw)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -70,8 +70,8 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, None),
-            on_completed(200)
+            send(200, None),
+            close(200)
         )
 
         assert(done)
@@ -87,8 +87,8 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 1),
-            on_completed(200)
+            send(200, 1),
+            close(200)
         )
 
     def test_start_funcerror(self):
@@ -103,5 +103,5 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )

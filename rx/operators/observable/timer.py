@@ -12,8 +12,8 @@ log = logging.getLogger("Rx")
 def observable_timer_date(duetime, scheduler):
     def subscribe(observer):
         def action(scheduler, state):
-            observer.on_next(0)
-            observer.on_completed()
+            observer.send(0)
+            observer.close()
 
         return scheduler.schedule_absolute(duetime, action)
     return AnonymousObservable(subscribe)
@@ -34,7 +34,7 @@ def observable_timer_date_and_period(duetime, period, scheduler):
                 if dt[0] <= now:
                     dt[0] = now + scheduler.to_timedelta(p)
 
-            observer.on_next(count[0])
+            observer.send(count[0])
             count[0] += 1
             mad.disposable = scheduler.schedule_absolute(dt[0], action)
         mad.disposable = scheduler.schedule_absolute(dt[0], action)
@@ -47,8 +47,8 @@ def observable_timer_timespan(duetime, scheduler):
 
     def subscribe(observer):
         def action(scheduler, state):
-            observer.on_next(0)
-            observer.on_completed()
+            observer.send(0)
+            observer.close()
 
         return scheduler.schedule_relative(d, action)
     return AnonymousObservable(subscribe)
@@ -58,7 +58,7 @@ def observable_timer_timespan_and_period(duetime, period, scheduler):
     if duetime == period:
         def subscribe(observer):
             def action(count):
-                observer.on_next(count)
+                observer.send(count)
                 return count + 1
 
             return scheduler.schedule_periodic(period, action, state=0)

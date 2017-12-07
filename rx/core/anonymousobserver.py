@@ -3,18 +3,18 @@ from .observerbase import ObserverBase
 
 
 class AnonymousObserver(ObserverBase):
-    def __init__(self, on_next=None, on_error=None, on_completed=None):
+    def __init__(self, send=None, throw=None, close=None):
         super(AnonymousObserver, self).__init__()
 
-        self._next = on_next or noop
-        self._error = on_error or default_error
-        self._completed = on_completed or noop
+        self._next = send or noop
+        self._error = throw or default_error
+        self._completed = close or noop
 
-    def _on_next_core(self, value):
+    def _send_core(self, value):
         self._next(value)
 
-    def _on_error_core(self, error):
+    def _throw_core(self, error):
         self._error(error)
 
-    def _on_completed_core(self):
+    def _close_core(self):
         self._completed()

@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -29,7 +29,7 @@ class TestScan(unittest.TestCase):
     def test_scan_seed_empty(self):
         scheduler = TestScheduler()
         seed = 42
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
 
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
@@ -41,7 +41,7 @@ class TestScan(unittest.TestCase):
     def test_scan_seed_return(self):
         scheduler = TestScheduler()
         seed = 42
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
@@ -55,7 +55,7 @@ class TestScan(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         seed = 42
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
 
         def create():
             return xs.scan(seed, lambda acc, x: acc + x)
@@ -67,7 +67,7 @@ class TestScan(unittest.TestCase):
     def test_scan_seed_somedata(self):
         scheduler = TestScheduler()
         seed = 1
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
@@ -91,7 +91,7 @@ class TestScan(unittest.TestCase):
 
     def test_scan_noseed_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
 
         def create():
             return xs.scan(lambda acc, x: acc + x)
@@ -102,7 +102,7 @@ class TestScan(unittest.TestCase):
 
     def test_scan_noseed_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
             def func(acc, x):
@@ -119,7 +119,7 @@ class TestScan(unittest.TestCase):
     def test_scan_noseed_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
 
         def create():
             def func(acc, x):
@@ -134,7 +134,7 @@ class TestScan(unittest.TestCase):
 
     def test_scan_noseed_somedata(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
 
         def create():
             def func(acc, x):

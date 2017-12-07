@@ -4,20 +4,20 @@ from rx.disposables import SingleAssignmentDisposable
 
 class JoinObserver(ObserverBase):
 
-    def __init__(self, source, on_error):
+    def __init__(self, source, throw):
         super(JoinObserver, self).__init__()
 
         self.source = source
-        self.on_error = on_error
+        self.throw = throw
         self.queue = []
         self.active_plans = []
         self.subscription = SingleAssignmentDisposable()
         self.is_disposed = False
 
-    def _on_next_core(self, notification):
+    def _send_core(self, notification):
         if not self.is_disposed:
             if notification.kind == 'E':
-                self.on_error(notification.exception)
+                self.throw(notification.exception)
                 return
 
             self.queue.append(notification)
@@ -25,10 +25,10 @@ class JoinObserver(ObserverBase):
             for plan in active_plans:
                 plan.match()
 
-    def _on_error_core(self, error):
+    def _throw_core(self, error):
         return NotImplemented
 
-    def _on_completed_core(self):
+    def _close_core(self):
         return NotImplemented
 
     def add_active_plan(self, active_plan):

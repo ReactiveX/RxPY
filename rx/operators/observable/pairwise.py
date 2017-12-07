@@ -20,7 +20,7 @@ def pairwise(self):
         has_previous = [False]
         previous = [None]
 
-        def on_next(x):
+        def send(x):
             pair = None
 
             with self.lock:
@@ -32,7 +32,7 @@ def pairwise(self):
                 previous[0] = x
 
             if pair:
-                observer.on_next(pair)
+                observer.send(pair)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,26 +17,26 @@ class TestBuffer(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(90, 1),
-            on_next(180, 2),
-            on_next(250, 3),
-            on_next(260, 4),
-            on_next(310, 5),
-            on_next(340, 6),
-            on_next(410, 7),
-            on_next(420, 8),
-            on_next(470, 9),
-            on_next(550, 10),
-            on_completed(590)
+            send(90, 1),
+            send(180, 2),
+            send(250, 3),
+            send(260, 4),
+            send(310, 5),
+            send(340, 6),
+            send(410, 7),
+            send(420, 8),
+            send(470, 9),
+            send(550, 10),
+            close(590)
         )
 
         ys = scheduler.create_hot_observable(
-            on_next(255, True),
-            on_next(330, True),
-            on_next(350, True),
-            on_next(400, True),
-            on_next(500, True),
-            on_completed(900)
+            send(255, True),
+            send(330, True),
+            send(350, True),
+            send(400, True),
+            send(500, True),
+            close(900)
         )
 
         def create():
@@ -45,13 +45,13 @@ class TestBuffer(unittest.TestCase):
         res = scheduler.start(create=create)
 
         res.messages.assert_equal(
-            on_next(255, lambda b: b == [3]),
-            on_next(330, lambda b: b == [4, 5]),
-            on_next(350, lambda b: b == [6]),
-            on_next(400, lambda b: b == [ ]),
-            on_next(500, lambda b: b == [7, 8, 9]),
-            on_next(590, lambda b: b == [10]),
-            on_completed(590)
+            send(255, lambda b: b == [3]),
+            send(330, lambda b: b == [4, 5]),
+            send(350, lambda b: b == [6]),
+            send(400, lambda b: b == [ ]),
+            send(500, lambda b: b == [7, 8, 9]),
+            send(590, lambda b: b == [10]),
+            close(590)
         )
 
         xs.subscriptions.assert_equal(
@@ -62,28 +62,28 @@ class TestBuffer(unittest.TestCase):
             subscribe(200, 590)
         )
 
-    def test_buffer_boundaries_on_completedboundaries(self):
+    def test_buffer_boundaries_closeboundaries(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(90, 1),
-            on_next(180, 2),
-            on_next(250, 3),
-            on_next(260, 4),
-            on_next(310, 5),
-            on_next(340, 6),
-            on_next(410, 7),
-            on_next(420, 8),
-            on_next(470, 9),
-            on_next(550, 10),
-            on_completed(590)
+            send(90, 1),
+            send(180, 2),
+            send(250, 3),
+            send(260, 4),
+            send(310, 5),
+            send(340, 6),
+            send(410, 7),
+            send(420, 8),
+            send(470, 9),
+            send(550, 10),
+            close(590)
         )
 
         ys = scheduler.create_hot_observable(
-            on_next(255, True),
-            on_next(330, True),
-            on_next(350, True),
-            on_completed(400)
+            send(255, True),
+            send(330, True),
+            send(350, True),
+            close(400)
         )
 
         def create():
@@ -93,11 +93,11 @@ class TestBuffer(unittest.TestCase):
 
 
         res.messages.assert_equal(
-            on_next(255, lambda b: b == [3]),
-            on_next(330, lambda b: b == [4, 5]),
-            on_next(350, lambda b: b == [6]),
-            on_next(400, lambda b: b == []),
-            on_completed(400)
+            send(255, lambda b: b == [3]),
+            send(330, lambda b: b == [4, 5]),
+            send(350, lambda b: b == [6]),
+            send(400, lambda b: b == []),
+            close(400)
         )
 
         xs.subscriptions.assert_equal(
@@ -109,27 +109,27 @@ class TestBuffer(unittest.TestCase):
         )
 
 
-    def test_buffer_boundaries_on_errorsource(self):
+    def test_buffer_boundaries_throwsource(self):
         ex = 'ex'
 
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                on_next(90, 1),
-                on_next(180, 2),
-                on_next(250, 3),
-                on_next(260, 4),
-                on_next(310, 5),
-                on_next(340, 6),
-                on_next(380, 7),
-                on_error(400, ex)
+                send(90, 1),
+                send(180, 2),
+                send(250, 3),
+                send(260, 4),
+                send(310, 5),
+                send(340, 6),
+                send(380, 7),
+                throw(400, ex)
         )
 
         ys = scheduler.create_hot_observable(
-                on_next(255, True),
-                on_next(330, True),
-                on_next(350, True),
-                on_completed(500)
+                send(255, True),
+                send(330, True),
+                send(350, True),
+                close(500)
         )
 
         def create():
@@ -138,10 +138,10 @@ class TestBuffer(unittest.TestCase):
         res = scheduler.start(create=create)
 
         res.messages.assert_equal(
-            on_next(255, lambda b: b == [3]),
-            on_next(330, lambda b: b == [4, 5]),
-            on_next(350, lambda b: b == [6]),
-            on_error(400, ex)
+            send(255, lambda b: b == [3]),
+            send(330, lambda b: b == [4, 5]),
+            send(350, lambda b: b == [6]),
+            throw(400, ex)
         )
 
         xs.subscriptions.assert_equal(
@@ -152,30 +152,30 @@ class TestBuffer(unittest.TestCase):
             subscribe(200, 400)
         )
 
-    def test_buffer_boundaries_on_errorboundaries(self):
+    def test_buffer_boundaries_throwboundaries(self):
         ex = 'ex'
 
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                on_next(90, 1),
-                on_next(180, 2),
-                on_next(250, 3),
-                on_next(260, 4),
-                on_next(310, 5),
-                on_next(340, 6),
-                on_next(410, 7),
-                on_next(420, 8),
-                on_next(470, 9),
-                on_next(550, 10),
-                on_completed(590)
+                send(90, 1),
+                send(180, 2),
+                send(250, 3),
+                send(260, 4),
+                send(310, 5),
+                send(340, 6),
+                send(410, 7),
+                send(420, 8),
+                send(470, 9),
+                send(550, 10),
+                close(590)
         )
 
         ys = scheduler.create_hot_observable(
-                on_next(255, True),
-                on_next(330, True),
-                on_next(350, True),
-                on_error(400, ex)
+                send(255, True),
+                send(330, True),
+                send(350, True),
+                throw(400, ex)
         )
 
         def create():
@@ -183,10 +183,10 @@ class TestBuffer(unittest.TestCase):
         res = scheduler.start(create=create)
 
         res.messages.assert_equal(
-            on_next(255, lambda b: b == [3]),
-            on_next(330, lambda b: b == [4, 5]),
-            on_next(350, lambda b: b == [6]),
-            on_error(400, ex)
+            send(255, lambda b: b == [3]),
+            send(330, lambda b: b == [4, 5]),
+            send(350, lambda b: b == [6]),
+            throw(400, ex)
         )
 
         xs.subscriptions.assert_equal(

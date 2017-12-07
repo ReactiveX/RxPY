@@ -38,65 +38,65 @@ def sequence_equal(self, second, comparer=None):
         ql = []
         qr = []
 
-        def on_next1(x):
+        def send1(x):
             if len(qr) > 0:
                 v = qr.pop(0)
                 try:
                     equal = comparer(v, x)
                 except Exception as e:
-                    observer.on_error(e)
+                    observer.throw(e)
                     return
 
                 if not equal:
-                    observer.on_next(False)
-                    observer.on_completed()
+                    observer.send(False)
+                    observer.close()
 
             elif doner[0]:
-                observer.on_next(False)
-                observer.on_completed()
+                observer.send(False)
+                observer.close()
             else:
                 ql.append(x)
 
-        def on_completed1():
+        def close1():
             donel[0] = True
             if not len(ql):
                 if len(qr) > 0:
-                    observer.on_next(False)
-                    observer.on_completed()
+                    observer.send(False)
+                    observer.close()
                 elif doner[0]:
-                    observer.on_next(True)
-                    observer.on_completed()
+                    observer.send(True)
+                    observer.close()
 
-        def on_next2(x):
+        def send2(x):
             if len(ql) > 0:
                 v = ql.pop(0)
                 try:
                     equal = comparer(v, x)
                 except Exception as exception:
-                    observer.on_error(exception)
+                    observer.throw(exception)
                     return
 
                 if not equal:
-                    observer.on_next(False)
-                    observer.on_completed()
+                    observer.send(False)
+                    observer.close()
 
             elif donel[0]:
-                observer.on_next(False)
-                observer.on_completed()
+                observer.send(False)
+                observer.close()
             else:
                 qr.append(x)
 
-        def on_completed2():
+        def close2():
             doner[0] = True
             if not len(qr):
                 if len(ql) > 0:
-                    observer.on_next(False)
-                    observer.on_completed()
+                    observer.send(False)
+                    observer.close()
                 elif donel[0]:
-                    observer.on_next(True)
-                    observer.on_completed()
+                    observer.send(True)
+                    observer.close()
 
-        subscription1 = first.subscribe_callbacks(on_next1, observer.on_error, on_completed1)
-        subscription2 = second.subscribe_callbacks(on_next2, observer.on_error, on_completed2)
+        subscription1 = first.subscribe_callbacks(send1, observer.throw, close1)
+        subscription2 = second.subscribe_callbacks(send2, observer.throw, close2)
         return CompositeDisposable(subscription1, subscription2)
     return AnonymousObservable(subscribe)

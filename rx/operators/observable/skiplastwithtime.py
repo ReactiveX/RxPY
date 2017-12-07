@@ -34,18 +34,18 @@ def skip_last_with_time(self, duration, scheduler=None):
     def subscribe(observer):
         q = []
 
-        def on_next(x):
+        def send(x):
             now = scheduler.now
             q.append({"interval": now, "value": x})
             while len(q) and now - q[0]["interval"] >= duration:
-                observer.on_next(q.pop(0)["value"])
+                observer.send(q.pop(0)["value"])
 
-        def on_completed():
+        def close():
             now = scheduler.now
             while len(q) and now - q[0]["interval"] >= duration:
-                observer.on_next(q.pop(0)["value"])
+                observer.send(q.pop(0)["value"])
 
-            observer.on_completed()
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)

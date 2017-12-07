@@ -25,4 +25,4 @@ def as_observer(self):
     Returns an observer that hides the identity of the specified observer.
     """
 
-    return AnonymousObserver(self.on_next, self.on_error, self.on_completed)
+    return AnonymousObserver(self.send, self.throw, self.close)

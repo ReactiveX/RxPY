@@ -47,13 +47,13 @@ def expand(self, selector, scheduler=None):
                 sad = SingleAssignmentDisposable()
                 d.add(sad)
 
-                def on_next(x):
-                    observer.on_next(x)
+                def send(x):
+                    observer.send(x)
                     result = None
                     try:
                         result = selector(x)
                     except Exception as ex:
-                        observer.on_error(ex)
+                        observer.throw(ex)
 
                     q.append(result)
                     active_count[0] += 1
@@ -63,9 +63,9 @@ def expand(self, selector, scheduler=None):
                     d.remove(sad)
                     active_count[0] -= 1
                     if active_count[0] == 0:
-                        observer.on_completed()
+                        observer.close()
 
-                sad.disposable = work.subscribe_callbacks(on_next, observer.on_error, on_complete)
+                sad.disposable = work.subscribe_callbacks(send, observer.throw, on_complete)
                 m.disposable = scheduler.schedule(action)
 
             if is_owner:

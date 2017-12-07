@@ -27,18 +27,18 @@ def skip_while(self, predicate):
     def subscribe(observer):
         i, running = [0], [False]
 
-        def on_next(value):
+        def send(value):
             if not running[0]:
                 try:
                     running[0] = not predicate(value, i[0])
                 except Exception as exn:
-                    observer.on_error(exn)
+                    observer.throw(exn)
                     return
                 else:
                     i[0] += 1
 
             if running[0]:
-                observer.on_next(value)
+                observer.send(value)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

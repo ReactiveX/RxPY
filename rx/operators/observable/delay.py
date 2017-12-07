@@ -25,8 +25,8 @@ def observable_delay_timespan(source, duetime, scheduler):
         running = [False]
         queue = []
 
-        def on_next(notification):
-            log.debug("observable_delay_timespan:subscribe:on_next()")
+        def send(notification):
+            log.debug("observable_delay_timespan:subscribe:send()")
             should_run = False
 
             with source.lock:
@@ -43,14 +43,14 @@ def observable_delay_timespan(source, duetime, scheduler):
             if should_run:
                 if exception[0]:
                     log.error("*** Exception: %s", exception[0])
-                    observer.on_error(exception[0])
+                    observer.throw(exception[0])
                 else:
                     mad = MultipleAssignmentDisposable()
                     cancelable.disposable = mad
 
                     def action(scheduler, state):
                         if exception[0]:
-                            log.error("observable_delay_timespan:subscribe:on_next:action(), exception: %s", exception[0])
+                            log.error("observable_delay_timespan:subscribe:send:action(), exception: %s", exception[0])
                             return
 
                         with source.lock:
@@ -80,12 +80,12 @@ def observable_delay_timespan(source, duetime, scheduler):
                             running[0] = False
 
                         if ex:
-                            observer.on_error(ex)
+                            observer.throw(ex)
                         elif should_continue:
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp(scheduler).subscribe_callbacks(on_next)
+        subscription = source.materialize().timestamp(scheduler).subscribe_callbacks(send)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 

@@ -33,48 +33,48 @@ def amb(self, right_source):
                 choice[0] = right_choice
                 left_subscription.dispose()
 
-        def on_next_left(value):
+        def send_left(value):
             with self.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.on_next(value)
+                observer.send(value)
 
-        def on_error_left(err):
+        def throw_left(err):
             with self.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.on_error(err)
+                observer.throw(err)
 
-        def on_completed_left():
+        def close_left():
             with self.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.on_completed()
+                observer.close()
 
-        ld = left_source.subscribe_callbacks(on_next_left, on_error_left,
-                                   on_completed_left)
+        ld = left_source.subscribe_callbacks(send_left, throw_left,
+                                   close_left)
         left_subscription.disposable = ld
 
-        def on_next_right(value):
+        def send_right(value):
             with self.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.on_next(value)
+                observer.send(value)
 
-        def on_error_right(err):
+        def throw_right(err):
             with self.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.on_error(err)
+                observer.throw(err)
 
-        def on_completed_right():
+        def close_right():
             with self.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.on_completed()
+                observer.close()
 
-        rd = right_source.subscribe_callbacks(on_next_right, on_error_right,
-                                    on_completed_right)
+        rd = right_source.subscribe_callbacks(send_right, throw_right,
+                                    close_right)
         right_subscription.disposable = rd
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)

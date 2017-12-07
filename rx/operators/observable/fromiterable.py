@@ -38,9 +38,9 @@ def from_iterable(iterable: Iterable, scheduler: Scheduler=None) -> Observable:
                     item = next(iterator)
 
             except StopIteration:
-                observer.on_completed()
+                observer.close()
             else:
-                observer.on_next(item)
+                observer.send(item)
                 sd.disposable = scheduler.schedule(action)
 
         sd.disposable = scheduler.schedule(action)

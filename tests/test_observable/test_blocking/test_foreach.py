@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -82,12 +82,12 @@ class TestForEach(unittest.TestCase):
         assert(lstX == [x for x in range(10, 20)])
         assert(lstI == [x for x in range(10)])
 
-    def test_for_each_on_next_throws(self):
+    def test_for_each_send_throws(self):
         ex = Exception()
         xs = Observable.range(0, 10)
         self.assertRaises(RxException, lambda: xs.to_blocking().for_each(lambda x: _raise(ex)))
 
-    def test_for_each_index_on_next_throws(self):
+    def test_for_each_index_send_throws(self):
         ex = Exception()
         xs = Observable.range(0, 10)
 

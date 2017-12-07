@@ -7,8 +7,8 @@ from .innersubscription import InnerSubscription
 
 class AsyncSubject(Observable, Observer):
     """Represents the result of an asynchronous operation. The last value
-    before the on_completed notification, or the error received through
-    on_error, is sent to all subscribed observers."""
+    before the close notification, or the error received through
+    throw, is sent to all subscribed observers."""
 
     def __init__(self):
         """Creates a subject that can only receive one value and that value is
@@ -41,16 +41,16 @@ class AsyncSubject(Observable, Observer):
             v = self.value
 
         if ex:
-            observer.on_error(ex)
+            observer.throw(ex)
         elif hv:
-            observer.on_next(v)
-            observer.on_completed()
+            observer.send(v)
+            observer.close()
         else:
-            observer.on_completed()
+            observer.close()
 
         return Disposable.empty()
 
-    def on_completed(self):
+    def close(self):
         value = None
         os = None
         hv = None
@@ -68,13 +68,13 @@ class AsyncSubject(Observable, Observer):
         if os:
             if hv:
                 for o in os:
-                    o.on_next(value)
-                    o.on_completed()
+                    o.send(value)
+                    o.close()
             else:
                 for o in os:
-                    o.on_completed()
+                    o.close()
 
-    def on_error(self, exception):
+    def throw(self, exception):
         os = None
 
         with self.lock:
@@ -87,9 +87,9 @@ class AsyncSubject(Observable, Observer):
 
         if os:
             for o in os:
-                o.on_error(exception)
+                o.throw(exception)
 
-    def on_next(self, value):
+    def send(self, value):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

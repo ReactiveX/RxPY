@@ -4,9 +4,9 @@ from datetime import timedelta
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -32,14 +32,14 @@ class TestTimeInterval(unittest.TestCase):
 
     def test_time_interval_regular(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
             def selector(x):
                 return TimeInterval(x.value, x.interval)
             return xs.time_interval(scheduler).map(selector)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, TimeInterval(2, 10)), on_next(230, TimeInterval(3, 20)), on_next(260, TimeInterval(4, 30)), on_next(300, TimeInterval(5, 40)), on_next(350, TimeInterval(6, 50)), on_completed(400))
+        results.messages.assert_equal(send(210, TimeInterval(2, 10)), send(230, TimeInterval(3, 20)), send(260, TimeInterval(4, 30)), send(300, TimeInterval(5, 40)), send(350, TimeInterval(6, 50)), close(400))
 
     def test_time_interval_empty(self):
         scheduler = TestScheduler()
@@ -48,7 +48,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.empty(scheduler).time_interval(scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(201))
+        results.messages.assert_equal(close(201))
 
     def test_time_interval_error(self):
         ex = 'ex'
@@ -58,7 +58,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.throw_exception(ex, scheduler).time_interval(scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        results.messages.assert_equal(throw(201, ex))
 
     def test_time_interval_never(self):
         scheduler = TestScheduler()

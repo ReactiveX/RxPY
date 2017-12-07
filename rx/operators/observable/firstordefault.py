@@ -4,18 +4,18 @@ from rx.internal import extensionmethod
 
 def first_or_default_async(source, has_default=False, default_value=None):
     def subscribe(observer):
-        def on_next(x):
-            observer.on_next(x)
-            observer.on_completed()
+        def send(x):
+            observer.send(x)
+            observer.close()
 
-        def on_completed():
+        def close():
             if not has_default:
-                observer.on_error(SequenceContainsNoElementsError())
+                observer.throw(SequenceContainsNoElementsError())
             else:
-                observer.on_next(default_value)
-                observer.on_completed()
+                observer.send(default_value)
+                observer.close()
 
-        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)
 
 

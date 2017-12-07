@@ -9,7 +9,7 @@ def slice_(self, start=None, stop=None, step=1):
 
     This marble diagram helps you remember how slices works with streams.
     Positive numbers is relative to the start of the events, while negative
-    numbers are relative to the end (on_completed) of the stream.
+    numbers are relative to the end (close) of the stream.
 
     r---e---a---c---t---i---v---e---|
     0   1   2   3   4   5   6   7   8
@@ -64,7 +64,7 @@ def __getitem__(self, key):
 
     This marble diagram helps you remember how slices works with streams.
     Positive numbers is relative to the start of the events, while negative
-    numbers are relative to the end (on_completed) of the stream.
+    numbers are relative to the end (close) of the stream.
 
     r---e---a---c---t---i---v---e---|
     0   1   2   3   4   5   6   7   8

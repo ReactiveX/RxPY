@@ -44,34 +44,34 @@ def window_with_count(self, count, skip=None):
         def create_window():
             s = Subject()
             q.append(s)
-            observer.on_next(add_ref(s, refCountDisposable))
+            observer.send(add_ref(s, refCountDisposable))
 
         create_window()
 
-        def on_next(x):
+        def send(x):
             for item in q:
-                item.on_next(x)
+                item.send(x)
 
             c = n[0] - count + 1
             if c >= 0 and c % skip == 0:
                 s = q.pop(0);
-                s.on_completed()
+                s.close()
 
             n[0] += 1
             if (n[0] % skip) == 0:
                 create_window()
 
-        def on_error(exception):
+        def throw(exception):
             while len(q):
-                q.pop(0).on_error(exception)
-            observer.on_error(exception)
+                q.pop(0).throw(exception)
+            observer.throw(exception)
 
-        def on_completed():
+        def close():
             while len(q):
-                q.pop(0).on_completed()
-            observer.on_completed()
+                q.pop(0).close()
+            observer.close()
 
-        m.disposable = source.subscribe_callbacks(on_next, on_error, on_completed)
+        m.disposable = source.subscribe_callbacks(send, throw, close)
         return refCountDisposable
     return AnonymousObservable(subscribe)
 

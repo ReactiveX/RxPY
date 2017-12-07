@@ -13,7 +13,7 @@ class ChainObservable(Observable):
         g = CompositeDisposable()
 
         def action(scheduler, state):
-            observer.on_next(self.head)
+            observer.send(self.head)
             g.add(self.tail.merge_observable().subscribe(observer))
 
         g.add(current_thread_scheduler.schedule(action))
@@ -24,15 +24,15 @@ class ChainObservable(Observable):
         self.head = head
         self.tail = AsyncSubject()
 
-    def on_completed(self):
-        self.on_next(Observable.empty())
+    def close(self):
+        self.send(Observable.empty())
 
-    def on_error(self, e):
-        self.on_next(Observable.throw_exception(e))
+    def throw(self, e):
+        self.send(Observable.throw_exception(e))
 
-    def on_next(self, v):
-        self.tail.on_next(v)
-        self.tail.on_completed()
+    def send(self, v):
+        self.tail.send(v)
+        self.tail.close()
 
 
 @extensionmethod(Observable)
@@ -59,23 +59,23 @@ def many_select(self, selector, scheduler=None):
         def mapper(x):
             curr = ChainObservable(x)
 
-            chain[0] and chain[0].on_next(x)
+            chain[0] and chain[0].send(x)
             chain[0] = curr
 
             return curr
 
-        def on_error(e):
+        def throw(e):
             if chain[0]:
-                chain[0].on_error(e)
+                chain[0].throw(e)
 
-        def on_completed():
+        def close():
             if chain[0]:
-                chain[0].on_completed()
+                chain[0].close()
 
         return source.map(
             mapper
         ).tap(
-            noop, on_error, on_completed
+            noop, throw, close
         ).observe_on(
             scheduler
         ).map(

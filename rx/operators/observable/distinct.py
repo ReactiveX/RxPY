@@ -48,17 +48,17 @@ def distinct(self, key_selector=None, comparer=None):
     def subscribe(observer):
         hashset = HashSet(comparer)
 
-        def on_next(x):
+        def send(x):
             key = x
 
             if key_selector:
                 try:
                     key = key_selector(x)
                 except Exception as ex:
-                    observer.on_error(ex)
+                    observer.throw(ex)
                     return
 
-            hashset.push(key) and observer.on_next(x)
-        return source.subscribe_callbacks(on_next, observer.on_error,
-                                observer.on_completed)
+            hashset.push(key) and observer.send(x)
+        return source.subscribe_callbacks(send, observer.throw,
+                                observer.close)
     return AnonymousObservable(subscribe)

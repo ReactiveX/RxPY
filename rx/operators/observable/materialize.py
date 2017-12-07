@@ -15,17 +15,17 @@ def materialize(self):
     source = self
 
     def subscribe(observer):
-        def on_next(value):
-            observer.on_next(OnNext(value))
+        def send(value):
+            observer.send(OnNext(value))
 
-        def on_error(exception):
-            observer.on_next(OnError(exception))
-            observer.on_completed()
+        def throw(exception):
+            observer.send(OnError(exception))
+            observer.close()
 
-        def on_completed():
-            observer.on_next(OnCompleted())
-            observer.on_completed()
+        def close():
+            observer.send(OnCompleted())
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, on_error, on_completed)
+        return source.subscribe_callbacks(send, throw, close)
     return AnonymousObservable(subscribe)
 

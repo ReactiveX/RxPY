@@ -14,21 +14,21 @@ def sample_observable(source, sampler):
         def sample_subscribe(x=None):
             if has_value[0]:
                 has_value[0] = False
-                observer.on_next(value[0])
+                observer.send(value[0])
 
             if at_end[0]:
-                observer.on_completed()
+                observer.close()
 
-        def on_next(new_value):
+        def send(new_value):
             has_value[0] = True
             value[0] = new_value
 
-        def on_completed():
+        def close():
             at_end[0] = True
 
         return CompositeDisposable(
-            source.subscribe_callbacks(on_next, observer.on_error, on_completed),
-            sampler.subscribe_callbacks(sample_subscribe, observer.on_error, sample_subscribe)
+            source.subscribe_callbacks(send, observer.throw, close),
+            sampler.subscribe_callbacks(sample_subscribe, observer.throw, sample_subscribe)
         )
     return AnonymousObservable(subscribe)
 

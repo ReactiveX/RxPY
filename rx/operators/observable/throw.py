@@ -28,7 +28,7 @@ def throw(cls, exception, scheduler=None):
 
     def subscribe(observer):
         def action(scheduler, state):
-            observer.on_error(exception)
+            observer.throw(exception)
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)

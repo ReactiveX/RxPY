@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,12 +17,12 @@ class TestToDict(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(110, 1),
-            on_next(220, 2),
-            on_next(330, 3),
-            on_next(440, 4),
-            on_next(550, 5),
-            on_completed(660)
+            send(110, 1),
+            send(220, 2),
+            send(330, 3),
+            send(440, 4),
+            send(550, 5),
+            close(660)
         )
 
         def create():
@@ -31,8 +31,8 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
         print(res.messages)
         res.messages.assert_equal(
-            on_next(660, {4: 8, 6: 12, 8: 16, 10: 20}),
-            on_completed(660)
+            send(660, {4: 8, 6: 12, 8: 16, 10: 20}),
+            close(660)
         )
 
         xs.subscriptions.assert_equal(
@@ -45,12 +45,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            on_next(110, 1),
-            on_next(220, 2),
-            on_next(330, 3),
-            on_next(440, 4),
-            on_next(550, 5),
-            on_error(660, ex)
+            send(110, 1),
+            send(220, 2),
+            send(330, 3),
+            send(440, 4),
+            send(550, 5),
+            throw(660, ex)
         )
 
         def create():
@@ -59,7 +59,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(660, ex)
+            throw(660, ex)
         )
 
         xs.subscriptions.assert_equal(
@@ -73,12 +73,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            on_next(110, 1),
-            on_next(220, 2),
-            on_next(330, 3),
-            on_next(440, 4),
-            on_next(550, 5),
-            on_completed(600)
+            send(110, 1),
+            send(220, 2),
+            send(330, 3),
+            send(440, 4),
+            send(550, 5),
+            close(600)
           )
 
         def create():
@@ -92,7 +92,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(440, ex)
+            throw(440, ex)
         )
 
         xs.subscriptions.assert_equal(
@@ -105,12 +105,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            on_next(110, 1),
-            on_next(220, 2),
-            on_next(330, 3),
-            on_next(440, 4),
-            on_next(550, 5),
-            on_completed(600)
+            send(110, 1),
+            send(220, 2),
+            send(330, 3),
+            send(440, 4),
+            send(550, 5),
+            close(600)
         )
 
         def value_selector(x):
@@ -125,7 +125,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(440, ex)
+            throw(440, ex)
         )
 
         xs.subscriptions.assert_equal(
@@ -136,11 +136,11 @@ class TestToDict(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(110, 1),
-            on_next(220, 2),
-            on_next(330, 3),
-            on_next(440, 4),
-            on_next(550, 5)
+            send(110, 1),
+            send(220, 2),
+            send(330, 3),
+            send(440, 4),
+            send(550, 5)
         )
 
         def create():

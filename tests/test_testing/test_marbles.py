@@ -6,6 +6,7 @@ from rx.concurrency import timeout_scheduler, new_thread_scheduler
 # marble sequences to test:
 tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
 
+
 def test_alias():
     assert rx.Observable.from_string == rx.Observable.from_marbles
 

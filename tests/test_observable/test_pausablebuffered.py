@@ -4,9 +4,9 @@ from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -25,26 +25,26 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
         )
 
         def action0(scheduler, state):
             subscription[0] = xs.pausable_buffered(controller).subscribe(results)
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(200, action0)
 
         def action1(scheduler, state):
-            controller.on_next(False)
+            controller.send(False)
         scheduler.schedule_absolute(205, action1)
 
         def action2(scheduler, state):
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(209, action2)
 
         def action3(scheduler, state):
@@ -54,12 +54,12 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
           )
 
     def test_paused_skips(self):
@@ -71,26 +71,26 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
         )
 
         def action0(schedler, state):
             subscription[0] = xs.pausable_buffered(controller).subscribe(results)
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(200, action0)
 
         def action1(scheduler, state):
-            controller.on_next(False)
+            controller.send(False)
         scheduler.schedule_absolute(300, action1)
 
         def action2(scheduler, state):
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(400, action2)
 
         def action3(scheduler, state):
@@ -100,12 +100,12 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(400, 4),
-            on_next(400, 5),
-            on_next(400, 6),
-            on_completed(500)
+            send(210, 2),
+            send(230, 3),
+            send(400, 4),
+            send(400, 5),
+            send(400, 6),
+            close(500)
         )
 
     def test_paused_error(self):
@@ -119,26 +119,26 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_error(230, err),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            throw(230, err),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            close(500)
          )
 
         def action0(scheduler, state):
             subscription[0] = xs.pausable_buffered(controller).subscribe(results)
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(200, action0)
 
         def action1(scheduler, state):
-            controller.on_next(False)
+            controller.send(False)
         scheduler.schedule_absolute(300, action1)
 
         def action2(scheduler, state):
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(400, action2)
 
 
@@ -149,8 +149,8 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-        on_next(210, 2),
-            on_error(230, err)
+        send(210, 2),
+            throw(230, err)
         )
 
     def test_paused_skip_initial_elements(self):
@@ -161,19 +161,19 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(230, 2),
-            on_next(270, 3),
-            on_completed(400)
+            send(150, 1),
+            send(230, 2),
+            send(270, 3),
+            close(400)
         )
 
         def action1(scheduler, state):
             subscription[0] = xs.pausable_buffered(controller).subscribe(results)
-            controller.on_next(False)
+            controller.send(False)
         scheduler.schedule_absolute(200, action1)
 
         def action2(scheduler, state):
-            controller.on_next(True)
+            controller.send(True)
         scheduler.schedule_absolute(280, action2)
 
         def action3(scheduler, state):
@@ -182,9 +182,9 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
         results.messages.assert_equal(
-            on_next(280, 2),
-            on_next(280, 3),
-            on_completed(400)
+            send(280, 2),
+            send(280, 3),
+            close(400)
         )
 
     def test_paused_with_observable_controller_and_pause_and_unpause(self):
@@ -195,21 +195,21 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_next(450, 7),
-            on_next(470, 8),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            send(450, 7),
+            send(470, 8),
+            close(500)
          )
 
         controller = scheduler.create_hot_observable(
-            on_next(201, True),
-            on_next(300, False),
-            on_next(400, True)
+            send(201, True),
+            send(300, False),
+            send(400, True)
         )
 
         pausable_buffered = xs.pausable_buffered(controller)
@@ -233,14 +233,14 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(400, 4),
-            on_next(400, 5),
-            on_next(400, 6),
-            on_next(450, 7),
-            on_next(480, 8),
-            on_completed(500)
+            send(210, 2),
+            send(230, 3),
+            send(400, 4),
+            send(400, 5),
+            send(400, 6),
+            send(450, 7),
+            send(480, 8),
+            close(500)
         )
 
     def test_paused_with_immediate_unpause(self):
@@ -251,9 +251,9 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            close(500)
         )
 
         controller = Observable.just(True)
@@ -267,8 +267,8 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_completed(500)
+            send(210, 2),
+            close(500)
         )
 
     def test_paused_when_finishing(self):
@@ -279,21 +279,21 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_next(450, 7),
-            on_next(470, 8),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            send(450, 7),
+            send(470, 8),
+            close(500)
         )
 
         controller = scheduler.create_hot_observable(
-            on_next(201, True),
-            on_next(300, False),
-            on_next(400, True)
+            send(201, True),
+            send(300, False),
+            send(400, True)
         )
 
         pausable_buffered = xs.pausable_buffered(controller)
@@ -313,12 +313,12 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(400, 4),
-            on_next(400, 5),
-            on_next(400, 6),
-            on_next(450, 7)
+            send(210, 2),
+            send(230, 3),
+            send(400, 4),
+            send(400, 5),
+            send(400, 6),
+            send(450, 7)
         )
 
     def test_paused_with_observable_controller_and_pause_and_unpause_after_end(self):
@@ -327,21 +327,21 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_next(450, 7),
-            on_next(470, 8),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            send(450, 7),
+            send(470, 8),
+            close(500)
           )
 
         controller = scheduler.create_hot_observable(
-            on_next(201, True),
-            on_next(300, False),
-            on_next(600, True)
+            send(201, True),
+            send(300, False),
+            send(600, True)
         )
 
         def create():
@@ -349,14 +349,14 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(600, 4),
-            on_next(600, 5),
-            on_next(600, 6),
-            on_next(600, 7),
-            on_next(600, 8),
-            on_completed(600)
+            send(210, 2),
+            send(230, 3),
+            send(600, 4),
+            send(600, 5),
+            send(600, 6),
+            send(600, 7),
+            send(600, 8),
+            close(600)
         )
 
     def test_paused_with_observable_controller_and_pause_and_unpause_after_error(self):
@@ -367,21 +367,21 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(301, 4),
-            on_next(350, 5),
-            on_next(399, 6),
-            on_next(450, 7),
-            on_next(470, 8),
-            on_error(500, error)
+            send(150, 1),
+            send(210, 2),
+            send(230, 3),
+            send(301, 4),
+            send(350, 5),
+            send(399, 6),
+            send(450, 7),
+            send(470, 8),
+            throw(500, error)
         )
 
         controller = scheduler.create_hot_observable(
-            on_next(201, True),
-            on_next(300, False),
-            on_next(600, True)
+            send(201, True),
+            send(300, False),
+            send(600, True)
         )
 
         def create():
@@ -390,14 +390,14 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.start(create=create)
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(230, 3),
-            on_next(600, 4),
-            on_next(600, 5),
-            on_next(600, 6),
-            on_next(600, 7),
-            on_next(600, 8),
-            on_error(600, error)
+            send(210, 2),
+            send(230, 3),
+            send(600, 4),
+            send(600, 5),
+            send(600, 6),
+            send(600, 7),
+            send(600, 8),
+            throw(600, error)
         )
 
     def test_paused_with_state_change_in_subscriber(self):
@@ -406,12 +406,12 @@ class TestPausable_buffered(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(250, 3),
-            on_next(270, 4),
-            on_next(330, 5),
-            on_completed(500)
+            send(150, 1),
+            send(210, 2),
+            send(250, 3),
+            send(270, 4),
+            send(330, 5),
+            close(500)
         )
 
         controller = Subject()
@@ -419,25 +419,25 @@ class TestPausable_buffered(unittest.TestCase):
         pausable_buffered = xs.pausable_buffered(controller)
 
         def action1(scheduler, state):
-            def on_next(value):
-                results.on_next(value)
-                controller.on_next(False)
+            def send(value):
+                results.send(value)
+                controller.send(False)
 
                 def action2(scheduler, state):
-                    controller.on_next(True)
+                    controller.send(True)
                 scheduler.schedule_relative(100, action2)
 
-            subscription = pausable_buffered.subscribe_callbacks(on_next, results.on_error, results.on_completed)
-            controller.on_next(True)
+            subscription = pausable_buffered.subscribe_callbacks(send, results.throw, results.close)
+            controller.send(True)
 
         scheduler.schedule_absolute(200, action1)
 
         scheduler.start()
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(310, 3),
-            on_next(310, 4),
-            on_next(410, 5),
-            on_completed(500)
+            send(210, 2),
+            send(310, 3),
+            send(310, 4),
+            send(410, 5),
+            close(500)
         )

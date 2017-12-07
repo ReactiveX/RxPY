@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -16,7 +16,7 @@ class TestFind(unittest.TestCase):
     def test_find_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1)
+            send(150, 1)
         )
 
         def create():
@@ -30,8 +30,8 @@ class TestFind(unittest.TestCase):
     def test_find_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_completed(210)
+            send(150, 1),
+            close(210)
         )
 
         def create():
@@ -40,16 +40,16 @@ class TestFind(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(210, None),
-            on_completed(210)
+            send(210, None),
+            close(210)
         )
 
     def test_find_single(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_completed(220)
+            send(150, 1),
+            send(210, 2),
+            close(220)
         )
 
         def create():
@@ -57,16 +57,16 @@ class TestFind(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(210, 2),
-            on_completed(210)
+            send(210, 2),
+            close(210)
         )
 
     def test_find_notfound(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_completed(220)
+            send(150, 1),
+            send(210, 2),
+            close(220)
         )
 
         def create():
@@ -74,17 +74,17 @@ class TestFind(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(220, None),
-            on_completed(220)
+            send(220, None),
+            close(220)
         )
 
     def test_find_Error(self):
         ex = Exception('error')
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_error(220, ex)
+            send(150, 1),
+            send(210, 2),
+            throw(220, ex)
         )
 
         def create():
@@ -92,16 +92,16 @@ class TestFind(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(220, ex)
+            throw(220, ex)
         )
 
     def test_find_throws(self):
         ex = 'error'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_completed(220)
+            send(150, 1),
+            send(210, 2),
+            close(220)
         )
 
         def create():
@@ -111,5 +111,5 @@ class TestFind(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(210, ex)
+            throw(210, ex)
         )

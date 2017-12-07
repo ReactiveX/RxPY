@@ -21,7 +21,7 @@ class TestImmediateScheduler(unittest.TestCase):
         scheduler.schedule(action)
         assert ran[0]
 
-    def test_immediate_schedule_action_error(self):
+    def test_immediate_schedule_actithrow(self):
         scheduler = ImmediateScheduler()
 
         class MyException(Exception):

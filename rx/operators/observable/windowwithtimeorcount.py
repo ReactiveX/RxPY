@@ -31,44 +31,44 @@ def window_with_time_or_count(self, timespan, count, scheduler=None):
                 n[0] = 0
                 window_id[0] += 1
                 new_id = window_id[0]
-                s[0].on_completed()
+                s[0].close()
                 s[0] = Subject()
-                observer.on_next(add_ref(s[0], ref_count_disposable))
+                observer.send(add_ref(s[0], ref_count_disposable))
                 create_timer(new_id)
 
             m.disposable = scheduler.schedule_relative(timespan, action)
 
         s[0] = Subject()
-        observer.on_next(add_ref(s[0], ref_count_disposable))
+        observer.send(add_ref(s[0], ref_count_disposable))
         create_timer(0)
 
-        def on_next(x):
+        def send(x):
             new_window = False
             new_id = 0
 
-            s[0].on_next(x)
+            s[0].send(x)
             n[0] += 1
             if n[0] == count:
                 new_window = True
                 n[0] = 0
                 window_id[0] += 1
                 new_id = window_id[0]
-                s[0].on_completed()
+                s[0].close()
                 s[0] = Subject()
-                observer.on_next(add_ref(s[0], ref_count_disposable))
+                observer.send(add_ref(s[0], ref_count_disposable))
 
             if new_window:
                 create_timer(new_id)
 
-        def on_error(e):
-            s[0].on_error(e)
-            observer.on_error(e)
+        def throw(e):
+            s[0].throw(e)
+            observer.throw(e)
 
-        def on_completed():
-            s[0].on_completed()
-            observer.on_completed()
+        def close():
+            s[0].close()
+            observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(on_next, on_error, on_completed))
+        group_disposable.add(source.subscribe_callbacks(send, throw, close))
         return ref_count_disposable
     return AnonymousObservable(subscribe)
 

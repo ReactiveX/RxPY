@@ -44,28 +44,28 @@ class Observable(bases.Observable):
         source = self
         return subscribe(source, observer)
 
-    def subscribe_callbacks(self, on_next=None, on_error=None, on_completed=None):
+    def subscribe_callbacks(self, send=None, throw=None, close=None):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
         1 - source.subscribe()
-        2 - source.subscribe_callbacks(on_next)
-        3 - source.subscribe_callbacks(on_next, on_error)
-        4 - source.subscribe_callbacks(on_next, on_error, on_completed)
+        2 - source.subscribe_callbacks(send)
+        3 - source.subscribe_callbacks(send, throw)
+        4 - source.subscribe_callbacks(send, throw, close)
 
         Keyword arguments:
-        on_next -- [Optional] Action to invoke for each element in the
+        send -- [Optional] Action to invoke for each element in the
             observable sequence.
-        on_error -- [Optional] Action to invoke upon exceptional
+        throw -- [Optional] Action to invoke upon exceptional
             termination of the observable sequence.
-        on_completed -- [Optional] Action to invoke upon graceful
+        close -- [Optional] Action to invoke upon graceful
             termination of the observable sequence.
 
         Return disposable object representing an observer's subscription
             to the observable sequence.
         """
 
-        observer = AnonymousObserver(on_next, on_error, on_completed)
+        observer = AnonymousObserver(send, throw, close)
         return self.subscribe(observer)
 
     @abstractmethod

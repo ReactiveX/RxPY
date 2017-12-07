@@ -5,11 +5,11 @@ def _to_set(source, set_type):
     def subscribe(observer):
         s = set_type()
 
-        def on_completed():
-            observer.on_next(s)
-            observer.on_completed()
+        def close():
+            observer.send(s)
+            observer.close()
 
-        return source.subscribe(s.add, observer.on_error, on_completed)
+        return source.subscribe(s.add, observer.throw, close)
     return AnonymousObservable(subscribe)
 
 

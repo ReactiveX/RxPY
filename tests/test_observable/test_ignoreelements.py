@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,7 +15,7 @@ class TestIgnoreElements(unittest.TestCase):
 
     def test_ignore_values_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9))
+        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(250, 3), send(270, 4), send(310, 5), send(360, 6), send(380, 7), send(410, 8), send(590, 9))
         results = scheduler.start(create=lambda: xs.ignore_elements())
 
         results.messages.assert_equal()
@@ -23,17 +23,17 @@ class TestIgnoreElements(unittest.TestCase):
 
     def test_ignore_values_completed(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9), on_completed(610))
+        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(250, 3), send(270, 4), send(310, 5), send(360, 6), send(380, 7), send(410, 8), send(590, 9), close(610))
         results = scheduler.start(create=lambda: xs.ignore_elements())
 
-        results.messages.assert_equal(on_completed(610))
+        results.messages.assert_equal(close(610))
         xs.subscriptions.assert_equal(subscribe(200, 610))
 
     def test_ignore_values_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9), on_error(610, ex))
+        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(250, 3), send(270, 4), send(310, 5), send(360, 6), send(380, 7), send(410, 8), send(590, 9), throw(610, ex))
         results = scheduler.start(create=lambda: xs.ignore_elements())
 
-        results.messages.assert_equal(on_error(610, ex))
+        results.messages.assert_equal(throw(610, ex))
         xs.subscriptions.assert_equal(subscribe(200, 610))

@@ -63,12 +63,12 @@ class ReplaySubject(Observable, Observer):
             self.observers.append(so)
 
             for item in self.queue:
-                so.on_next(item['value'])
+                so.send(item['value'])
 
             if self.has_error:
-                so.on_error(self.error)
+                so.throw(self.error)
             elif self.is_stopped:
-                so.on_completed()
+                so.close()
 
         so.ensure_active()
         return subscription
@@ -80,7 +80,7 @@ class ReplaySubject(Observable, Observer):
         while len(self.queue) > 0 and (now - self.queue[0]['interval']) > self.window:
             self.queue.pop(0)
 
-    def on_next(self, value):
+    def send(self, value):
         """Notifies all subscribed observers with the value."""
 
         os = None
@@ -93,12 +93,12 @@ class ReplaySubject(Observable, Observer):
                 self._trim(now)
 
                 for observer in os:
-                    observer.on_next(value)
+                    observer.send(value)
         if os:
             for observer in os:
                 observer.ensure_active()
 
-    def on_error(self, error):
+    def throw(self, error):
         """Notifies all subscribed observers with the exception."""
 
         os = None
@@ -114,12 +114,12 @@ class ReplaySubject(Observable, Observer):
                 self._trim(now)
 
                 for observer in os:
-                    observer.on_error(error)
+                    observer.throw(error)
         if os:
             for observer in os:
                 observer.ensure_active()
 
-    def on_completed(self):
+    def close(self):
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -132,7 +132,7 @@ class ReplaySubject(Observable, Observer):
                 now = self.scheduler.now
                 self._trim(now)
                 for observer in os:
-                    observer.on_completed()
+                    observer.close()
         if os:
             for observer in os:
                 observer.ensure_active()

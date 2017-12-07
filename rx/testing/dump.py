@@ -16,16 +16,16 @@ def dump(self, name = "test"):
     """
 
     def subscribe(observer):
-        def on_next(value):
+        def send(value):
             print("{%s}-->{%s}" % (name, value))
-            observer.on_next(value)
-        def on_error(ex):
+            observer.send(value)
+        def throw(ex):
             print("{%s} error -->{%s}" % (name, ex))
-            observer.on_error(ex)
-        def on_completed():
+            observer.throw(ex)
+        def close():
             print("{%s} completed" % name)
-            observer.on_completed()
+            observer.close()
 
-        return self.subscribe_callbacks(on_next, on_error, on_completed)
+        return self.subscribe_callbacks(send, throw, close)
     return AnonymousObservable(subscribe)
 

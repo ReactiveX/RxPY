@@ -74,25 +74,25 @@ def timeout(self, duetime, other=None, scheduler=None):
             timer.disposable = scheduler_method(duetime, action)
 
         create_timer()
-        def on_next(x):
-            on_next_wins = not switched[0]
-            if on_next_wins:
+        def send(x):
+            send_wins = not switched[0]
+            if send_wins:
                 _id[0] += 1
-                observer.on_next(x)
+                observer.send(x)
                 create_timer()
 
-        def on_error(e):
-            on_error_wins = not switched[0]
-            if on_error_wins:
+        def throw(e):
+            throw_wins = not switched[0]
+            if throw_wins:
                 _id[0] += 1
-                observer.on_error(e)
+                observer.throw(e)
 
-        def on_completed():
-            on_completed_wins = not switched[0]
-            if on_completed_wins:
+        def close():
+            close_wins = not switched[0]
+            if close_wins:
                 _id[0] += 1
-                observer.on_completed()
+                observer.close()
 
-        original.disposable = source.subscribe_callbacks(on_next, on_error, on_completed)
+        original.disposable = source.subscribe_callbacks(send, throw, close)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

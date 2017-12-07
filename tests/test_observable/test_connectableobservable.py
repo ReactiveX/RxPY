@@ -5,9 +5,9 @@ from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 from rx.operators.connectableobservable import ConnectableObservable
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -38,16 +38,16 @@ class MySubject(Observable, Observer):
     def dispose_on(self, value, disposable):
         self.dispose_on_map[value] = disposable
 
-    def on_next(self, value):
-        self.observer.on_next(value)
+    def send(self, value):
+        self.observer.send(value)
         if value in self.dispose_on_map:
             self.dispose_on_map[value].dispose()
 
-    def on_error(self, exception):
-        self.observer.on_error(exception)
+    def throw(self, exception):
+        self.observer.throw(exception)
 
-    def on_completed(self):
-        self.observer.on_completed()
+    def close(self):
+        self.observer.close()
 
 
 class TestConnectableObservable(unittest.TestCase):
@@ -58,9 +58,9 @@ class TestConnectableObservable(unittest.TestCase):
         s2 = Subject()
         co2 = ConnectableObservable(Observable.return_value(1), s2)
 
-        def on_next(x):
+        def send(x):
             y[0] = x
-        co2.subscribe_callbacks(on_next=on_next)
+        co2.subscribe_callbacks(send=send)
         self.assertNotEqual(1, y[0])
 
         co2.connect()
@@ -70,11 +70,11 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_completed(250)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            close(250)
         )
 
         subject = MySubject()
@@ -85,22 +85,22 @@ class TestConnectableObservable(unittest.TestCase):
         res = scheduler.start(lambda: conn)
 
         res.messages.assert_equal(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_completed(250)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            close(250)
         )
 
     def test_connectable_observable_not_connected(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_completed(250)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            close(250)
         )
 
         subject = MySubject()
@@ -116,11 +116,11 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_completed(250)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            close(250)
         )
 
         subject = MySubject()
@@ -138,11 +138,11 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_completed(250)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            close(250)
         )
 
         subject = MySubject()
@@ -153,25 +153,25 @@ class TestConnectableObservable(unittest.TestCase):
         res = scheduler.start(lambda: conn)
 
         res.messages.assert_equal(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3)
         )
 
     def test_connectable_observable_multiple_non_overlapped_connections(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(210, 1),
-            on_next(220, 2),
-            on_next(230, 3),
-            on_next(240, 4),
-            on_next(250, 5),
-            on_next(260, 6),
-            on_next(270, 7),
-            on_next(280, 8),
-            on_next(290, 9),
-            on_completed(300)
+            send(210, 1),
+            send(220, 2),
+            send(230, 3),
+            send(240, 4),
+            send(250, 5),
+            send(260, 6),
+            send(270, 7),
+            send(280, 8),
+            send(290, 9),
+            close(300)
         )
 
         subject = Subject()
@@ -228,11 +228,11 @@ class TestConnectableObservable(unittest.TestCase):
         res = scheduler.start(lambda: conn)
 
         res.messages.assert_equal(
-            on_next(230, 3),
-            on_next(240, 4),
-            on_next(250, 5),
-            on_next(280, 8),
-            on_next(290, 9)
+            send(230, 3),
+            send(240, 4),
+            send(250, 5),
+            send(280, 8),
+            send(290, 9)
         )
 
         xs.subscriptions.assert_equal(

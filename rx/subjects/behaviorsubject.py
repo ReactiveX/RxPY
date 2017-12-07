@@ -42,18 +42,18 @@ class BehaviorSubject(Observable, Observer):
             self.check_disposed()
             if not self.is_stopped:
                 self.observers.append(observer)
-                observer.on_next(self.value)
+                observer.send(self.value)
                 return InnerSubscription(self, observer)
             ex = self.exception
 
         if ex:
-            observer.on_error(ex)
+            observer.throw(ex)
         else:
-            observer.on_completed()
+            observer.close()
 
         return Disposable.empty()
 
-    def on_completed(self):
+    def close(self):
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -66,9 +66,9 @@ class BehaviorSubject(Observable, Observer):
 
         if os:
             for o in os:
-                o.on_completed()
+                o.close()
 
-    def on_error(self, error):
+    def throw(self, error):
         """Notifie all subscribed observers with the exception."""
         os = None
         with self.lock:
@@ -81,9 +81,9 @@ class BehaviorSubject(Observable, Observer):
 
         if os:
             for o in os:
-                o.on_error(error)
+                o.throw(error)
 
-    def on_next(self, value):
+    def send(self, value):
         """Notifie all subscribed observers with the value."""
         os = None
         with self.lock:
@@ -93,7 +93,7 @@ class BehaviorSubject(Observable, Observer):
                 self.value = value
         if os:
             for o in os:
-                o.on_next(value)
+                o.send(value)
 
     def dispose(self):
         """Release all resources.

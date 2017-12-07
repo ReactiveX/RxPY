@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -28,7 +28,7 @@ class TestFinally(unittest.TestCase):
 
     def test_finally_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
         invasserted = [False]
 
         def create():
@@ -44,7 +44,7 @@ class TestFinally(unittest.TestCase):
 
     def test_finally_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
         invasserted = [False]
 
         def create():
@@ -63,7 +63,7 @@ class TestFinally(unittest.TestCase):
     def test_finally_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
         invasserted = [False]
 
         def create():

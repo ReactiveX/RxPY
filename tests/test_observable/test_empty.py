@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -29,7 +29,7 @@ class TestEmpty(unittest.TestCase):
             return Observable.empty(scheduler)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(on_completed(201))
+        results.messages.assert_equal(close(201))
 
     def test_empty_disposed(self):
         scheduler = TestScheduler()

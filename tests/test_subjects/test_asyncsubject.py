@@ -4,9 +4,9 @@ from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import AsyncSubject
 from rx.internal.exceptions import DisposedException
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -31,18 +31,18 @@ def test_infinite():
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        on_next(70, 1),
-        on_next(110, 2),
-        on_next(220, 3),
-        on_next(270, 4),
-        on_next(340, 5),
-        on_next(410, 6),
-        on_next(520, 7),
-        on_next(630, 8),
-        on_next(710, 9),
-        on_next(870, 10),
-        on_next(940, 11),
-        on_next(1020, 12)
+        send(70, 1),
+        send(110, 2),
+        send(220, 3),
+        send(270, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7),
+        send(630, 8),
+        send(710, 9),
+        send(870, 10),
+        send(940, 11),
+        send(1020, 12)
     )
     results1 = scheduler.create_observer()
     results2 = scheduler.create_observer()
@@ -103,17 +103,17 @@ def test_finite():
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        on_next(70, 1),
-        on_next(110, 2),
-        on_next(220, 3),
-        on_next(270, 4),
-        on_next(340, 5),
-        on_next(410, 6),
-        on_next(520, 7),
-        on_completed(630),
-        on_next(640, 9),
-        on_completed(650),
-        on_error(660, 'ex')
+        send(70, 1),
+        send(110, 2),
+        send(220, 3),
+        send(270, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7),
+        close(630),
+        send(640, 9),
+        close(650),
+        throw(660, 'ex')
     )
     results1 = scheduler.create_observer()
     results2 = scheduler.create_observer()
@@ -161,8 +161,8 @@ def test_finite():
 
     scheduler.start()
     results1.messages.assert_equal()
-    results2.messages.assert_equal(on_next(630, 7), on_completed(630))
-    results3.messages.assert_equal(on_next(900, 7), on_completed(900))
+    results2.messages.assert_equal(send(630, 7), close(630))
+    results3.messages.assert_equal(send(900, 7), close(900))
 
 def test_error():
     subject = [None]
@@ -174,17 +174,17 @@ def test_error():
     ex = 'ex'
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        on_next(70, 1),
-        on_next(110, 2),
-        on_next(220, 3),
-        on_next(270, 4),
-        on_next(340, 5),
-        on_next(410, 6),
-        on_next(520, 7),
-        on_error(630, ex),
-        on_next(640, 9),
-        on_completed(650),
-        on_error(660, 'ex2')
+        send(70, 1),
+        send(110, 2),
+        send(220, 3),
+        send(270, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7),
+        throw(630, ex),
+        send(640, 9),
+        close(650),
+        throw(660, 'ex2')
     )
     results1 = scheduler.create_observer()
     results2 = scheduler.create_observer()
@@ -232,8 +232,8 @@ def test_error():
 
     scheduler.start()
     results1.messages.assert_equal()
-    results2.messages.assert_equal(on_error(630, ex))
-    results3.messages.assert_equal(on_error(900, ex))
+    results2.messages.assert_equal(throw(630, ex))
+    results3.messages.assert_equal(throw(900, ex))
 
 
 def test_canceled():
@@ -245,10 +245,10 @@ def test_canceled():
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        on_completed(630),
-        on_next(640, 9),
-        on_completed(650),
-        on_error(660, 'ex')
+        close(630),
+        send(640, 9),
+        close(650),
+        throw(660, 'ex')
         )
 
     results1 = scheduler.create_observer()
@@ -297,8 +297,8 @@ def test_canceled():
 
     scheduler.start()
     results1.messages.assert_equal()
-    results2.messages.assert_equal(on_completed(630))
-    results3.messages.assert_equal(on_completed(900))
+    results2.messages.assert_equal(close(630))
+    results3.messages.assert_equal(close(900))
 
 def test_subject_disposed():
     subject = [None]
@@ -344,38 +344,38 @@ def test_subject_disposed():
     scheduler.schedule_absolute(800, action8)
 
     def action9(scheduler, state=None):
-        subject[0].on_next(1)
+        subject[0].send(1)
     scheduler.schedule_absolute(150, action9)
 
     def action10(scheduler, state=None):
-        subject[0].on_next(2)
+        subject[0].send(2)
     scheduler.schedule_absolute(250, action10)
 
     def action11(scheduler, state=None):
-        subject[0].on_next(3)
+        subject[0].send(3)
     scheduler.schedule_absolute(350, action11)
 
     def action12(scheduler, state=None):
-        subject[0].on_next(4)
+        subject[0].send(4)
     scheduler.schedule_absolute(450, action12)
 
     def action13(scheduler, state=None):
-        subject[0].on_next(5)
+        subject[0].send(5)
     scheduler.schedule_absolute(550, action13)
 
     @raises(DisposedException)
     def action14(scheduler, state=None):
-        subject[0].on_next(6)
+        subject[0].send(6)
     scheduler.schedule_absolute(650, action14)
 
     @raises(DisposedException)
     def action15(scheduler, state=None):
-        subject[0].on_completed()
+        subject[0].close()
     scheduler.schedule_absolute(750, action15)
 
     @raises(DisposedException)
     def action16(scheduler, state=None):
-        subject[0].on_error('ex')
+        subject[0].throw('ex')
     scheduler.schedule_absolute(850, action16)
 
     @raises(DisposedException)

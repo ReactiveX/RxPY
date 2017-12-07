@@ -11,22 +11,22 @@ class AutoDetachObserver(ObserverBase):
         self.observer = observer
         self.m = SingleAssignmentDisposable()
 
-    def _on_next_core(self, value):
+    def _send_core(self, value):
         try:
-            self.observer.on_next(value)
+            self.observer.send(value)
         except Exception:
             self.dispose()
             raise
 
-    def _on_error_core(self, error):
+    def _throw_core(self, error):
         try:
-            self.observer.on_error(error)
+            self.observer.throw(error)
         finally:
             self.dispose()
 
-    def _on_completed_core(self):
+    def _close_core(self):
         try:
-            self.observer.on_completed()
+            self.observer.close()
         finally:
             self.dispose()
 

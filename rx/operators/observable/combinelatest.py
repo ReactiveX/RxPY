@@ -66,35 +66,35 @@ def combine_latest(cls, *args):
                 try:
                     res = result_selector(*values)
                 except Exception as ex:
-                    observer.on_error(ex)
+                    observer.throw(ex)
                     return
 
-                observer.on_next(res)
+                observer.send(res)
             elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.on_completed()
+                observer.close()
 
             has_value_all[0] = all(has_value)
 
         def done(i):
             is_done[i] = True
             if all(is_done):
-                observer.on_completed()
+                observer.close()
 
         subscriptions = [None] * n
 
         def func(i):
             subscriptions[i] = SingleAssignmentDisposable()
 
-            def on_next(x):
+            def send(x):
                 with parent.lock:
                     values[i] = x
                     next(i)
 
-            def on_completed():
+            def close():
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = args[i].subscribe_callbacks(on_next, observer.on_error, on_completed)
+            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw, close)
 
         for idx in range(n):
             func(idx)

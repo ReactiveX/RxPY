@@ -6,17 +6,17 @@ from rx.internal.exceptions import CompletedException
 
 
 class MyObserver(Observer):
-    def on_next(self, value):
-        self.has_on_next = value
+    def send(self, value):
+        self.has_send = value
 
-    def on_error(self, err):
-        self.has_on_error = err
+    def throw(self, err):
+        self.has_throw = err
 
-    def on_completed(self):
-        self.has_on_completed = True
+    def close(self):
+        self.has_close = True
 
 
-def test_to_observer_notification_on_next():
+def test_to_observer_notification_send():
     i = 0
 
     def next(n):
@@ -26,10 +26,10 @@ def test_to_observer_notification_on_next():
         assert(not hasattr(n, "exception"))
         assert(n.has_value)
 
-    Observer.from_notifier(next).on_next(42)
+    Observer.from_notifier(next).send(42)
 
 
-def test_to_observer_notification_on_error():
+def test_to_observer_notification_throw():
     ex = 'ex'
     i = 0
 
@@ -39,10 +39,10 @@ def test_to_observer_notification_on_error():
         assert(n.exception == ex)
         assert(not n.has_value)
 
-    Observer.from_notifier(next).on_error(ex)
+    Observer.from_notifier(next).throw(ex)
 
 
-def test_to_observer_notification_on_completed():
+def test_to_observer_notification_close():
     i = 0
 
     def next(n):
@@ -50,54 +50,54 @@ def test_to_observer_notification_on_completed():
         assert(n.kind == 'C')
         assert(not n.has_value)
 
-    Observer.from_notifier(next).on_completed()
+    Observer.from_notifier(next).close()
 
 
 def test_to_notifier_forwards():
     obsn = MyObserver()
     obsn.to_notifier()(OnNext(42))
-    assert(obsn.has_on_next == 42)
+    assert(obsn.has_send == 42)
 
     ex = 'ex'
     obse = MyObserver()
     obse.to_notifier()(OnError(ex))
-    assert(ex == obse.has_on_error)
+    assert(ex == obse.has_throw)
 
     obsc = MyObserver()
     obsc.to_notifier()(OnCompleted())
-    assert(obsc.has_on_completed)
+    assert(obsc.has_close)
 
 
-def test_create_on_next():
+def test_create_send():
     next = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(on_next)
+    res = AnonymousObserver(send)
 
-    res.on_next(42)
+    res.send(42)
     assert(next[0])
-    return res.on_completed()
+    return res.close()
 
 
-def test_create_on_next_has_error():
+def test_create_send_has_error():
     ex = 'ex'
     next = [False]
     _e = None
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(on_next)
+    res = AnonymousObserver(send)
 
-    res.on_next(42)
+    res.send(42)
     assert(next[0])
 
     try:
-        res.on_error(ex)
+        res.throw(ex)
         assert(False)
     except Exception as e:
         e_ = e.args[0]
@@ -105,51 +105,51 @@ def test_create_on_next_has_error():
     assert(ex == e_)
 
 
-def test_create_on_next_on_completed():
+def test_create_send_close():
     next = [False]
     completed = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
         return next[0]
 
-    def on_completed():
+    def close():
         completed[0] = True
         return completed[0]
 
-    res = AnonymousObserver(on_next, None, on_completed)
+    res = AnonymousObserver(send, None, close)
 
-    res.on_next(42)
+    res.send(42)
 
     assert(next[0])
     assert(not completed[0])
 
-    res.on_completed()
+    res.close()
 
     assert(completed[0])
 
 
-def test_create_on_next_on_completed_has_error():
+def test_create_send_close_has_error():
     e_ = None
     ex = 'ex'
     next = [False]
     completed = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    def on_completed():
+    def close():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, None, on_completed)
+    res = AnonymousObserver(send, None, close)
 
-    res.on_next(42)
+    res.send(42)
     assert(next[0])
     assert(not completed[0])
     try:
-        res.on_error(ex)
+        res.throw(ex)
         assert(False)
     except Exception as e:
         e_ = e.args[0]
@@ -158,111 +158,111 @@ def test_create_on_next_on_completed_has_error():
     assert(not completed[0])
 
 
-def test_create_on_next_on_error():
+def test_create_send_throw():
     ex = 'ex'
     next = [True]
     error = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    def on_error(e):
+    def throw(e):
         assert(ex == e)
         error[0] = True
 
-    res = AnonymousObserver(on_next, on_error)
+    res = AnonymousObserver(send, throw)
 
-    res.on_next(42)
+    res.send(42)
 
     assert(next[0])
     assert(not error[0])
 
-    res.on_error(ex)
+    res.throw(ex)
     assert(error[0])
 
 
-def test_create_on_next_on_error_hit_completed():
+def test_create_send_throw_hit_completed():
     ex = 'ex'
     next = [True]
     error = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    def on_error(e):
+    def throw(e):
         assert(ex == e)
         error[0] = True
 
-    res = AnonymousObserver(on_next, on_error)
+    res = AnonymousObserver(send, throw)
 
-    res.on_next(42)
+    res.send(42)
     assert(next[0])
     assert(not error[0])
 
-    res.on_completed()
+    res.close()
 
     assert(not error[0])
 
 
-def test_create_on_next_on_error_on_completed1():
+def test_create_send_throw_close1():
     ex = 'ex'
     next = [True]
     error = [False]
     completed = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    def on_error(e):
+    def throw(e):
         assert(ex == e)
         error[0] = True
 
-    def on_completed():
+    def close():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, on_error, on_completed)
+    res = AnonymousObserver(send, throw, close)
 
-    res.on_next(42)
+    res.send(42)
 
     assert(next[0])
     assert(not error[0])
     assert(not completed[0])
 
-    res.on_completed()
+    res.close()
 
     assert(completed[0])
     assert(not error[0])
 
 
-def test_create_on_next_on_error_on_completed2():
+def test_create_send_throw_close2():
     ex = 'ex'
     next = [True]
     error = [False]
     completed = [False]
 
-    def on_next(x):
+    def send(x):
         assert(42 == x)
         next[0] = True
 
-    def on_error(e):
+    def throw(e):
         assert(ex == e)
         error[0] = True
 
-    def on_completed():
+    def close():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, on_error, on_completed)
+    res = AnonymousObserver(send, throw, close)
 
-    res.on_next(42)
+    res.send(42)
 
     assert(next[0])
     assert(not error[0])
     assert(not completed[0])
 
-    res.on_error(ex)
+    res.throw(ex)
 
     assert(not completed[0])
     assert(error[0])
@@ -279,41 +279,41 @@ def test_as_observer_hides():
 
 def test_as_observer_forwards():
     obsn = MyObserver()
-    obsn.as_observer().on_next(42)
-    assert(obsn.has_on_next == 42)
+    obsn.as_observer().send(42)
+    assert(obsn.has_send == 42)
 
     ex = 'ex'
     obse = MyObserver()
-    obse.as_observer().on_error(ex)
-    assert(obse.has_on_error == ex)
+    obse.as_observer().throw(ex)
+    assert(obse.has_throw == ex)
 
     obsc = MyObserver()
-    obsc.as_observer().on_completed()
-    assert(obsc.has_on_completed)
+    obsc.as_observer().close()
+    assert(obsc.has_close)
 
 
 def test_observer_checked_already_terminated_completed():
     m, n = [0], [0]
 
-    def on_next(x):
+    def send(x):
         m[0] += 1
 
-    def on_error(x):
+    def throw(x):
         assert(False)
 
-    def on_completed():
+    def close():
         n[0] += 1
 
-    o = AnonymousObserver(on_next, on_error, on_completed).checked()
+    o = AnonymousObserver(send, throw, close).checked()
 
-    o.on_next(1)
-    o.on_next(2)
-    o.on_completed()
+    o.send(1)
+    o.send(2)
+    o.close()
 
-    assert_raises(CompletedException, o.on_completed)
+    assert_raises(CompletedException, o.close)
 
     try:
-        o.on_error(Exception('error'))
+        o.throw(Exception('error'))
     except Exception:
         pass
 
@@ -324,28 +324,28 @@ def test_observer_checked_already_terminated_completed():
 def test_observer_checked_already_terminated_error():
     m, n = [0], [0]
 
-    def on_next(x):
+    def send(x):
         m[0] += 1
 
-    def on_error(x):
+    def throw(x):
         n[0] += 1
 
-    def on_completed():
+    def close():
         assert(False)
 
-    o = AnonymousObserver(on_next, on_error, on_completed).checked()
+    o = AnonymousObserver(send, throw, close).checked()
 
-    o.on_next(1)
-    o.on_next(2)
-    o.on_error(Exception('error'))
+    o.send(1)
+    o.send(2)
+    o.throw(Exception('error'))
 
     try:
-        o.on_completed()
+        o.close()
     except Exception:
         pass
 
     try:
-        o.on_error(Exception('error'))
+        o.throw(Exception('error'))
     except Exception:
         pass
 
@@ -357,32 +357,32 @@ def test_observer_checked_reentrant_next():
     ex = "Re-entrancy detected"
     n = [0]
 
-    def on_next(x):
+    def send(x):
         n[0] += 1
 
         try:
-            o.on_next(9)
+            o.send(9)
         except Exception as e:
             assert str(e) == ex
 
         try:
-            o.on_error(Exception('error'))
+            o.throw(Exception('error'))
         except Exception as e:
             assert str(e) == ex
 
         try:
-            o.on_completed()
+            o.close()
         except Exception as e:
             assert str(e) == ex
 
-    def on_error(ex):
+    def throw(ex):
         assert(False)
 
-    def on_completed():
+    def close():
         assert(False)
-    o = AnonymousObserver(on_next, on_error, on_completed).checked()
+    o = AnonymousObserver(send, throw, close).checked()
 
-    o.on_next(1)
+    o.send(1)
     assert(1 == n[0])
 
 
@@ -390,32 +390,32 @@ def test_observer_checked_reentrant_error():
     msg = "Re-entrancy detected"
     n = [0]
 
-    def on_next(x):
+    def send(x):
         assert(False)
 
-    def on_error(ex):
+    def throw(ex):
         n[0] += 1
 
         try:
-            o.on_next(9)
+            o.send(9)
         except Exception as e:
             assert str(e) == msg
 
         try:
-            o.on_error(Exception('error'))
+            o.throw(Exception('error'))
         except Exception as e:
             assert str(e) == msg
 
         try:
-            o.on_completed()
+            o.close()
         except Exception as e:
             assert str(e) == msg
 
-    def on_completed():
+    def close():
         assert(False)
 
-    o = AnonymousObserver(on_next, on_error, on_completed).checked()
-    o.on_error(Exception('error'))
+    o = AnonymousObserver(send, throw, close).checked()
+    o.throw(Exception('error'))
     assert(1 == n[0])
 
 
@@ -423,33 +423,33 @@ def test_observer_checked_reentrant_completed():
     msg = "Re-entrancy detected"
     n = [0]
 
-    def on_next(x):
+    def send(x):
         assert(False)
 
-    def on_error(ex):
+    def throw(ex):
         assert(False)
 
-    def on_completed():
+    def close():
         n[0] += 1
         try:
-            o.on_next(9)
+            o.send(9)
         except Exception as e:
             print(str(e))
             assert str(e) == msg
 
         try:
-            o.on_error(Exception('error'))
+            o.throw(Exception('error'))
         except Exception as e:
             assert str(e) == msg
 
         try:
-            o.on_completed()
+            o.close()
         except Exception as e:
             assert str(e) == msg
 
-    o = AnonymousObserver(on_next, on_error, on_completed).checked()
+    o = AnonymousObserver(send, throw, close).checked()
 
-    o.on_completed()
+    o.close()
     assert(1 == n[0])
 
 if __name__ == '__main__':

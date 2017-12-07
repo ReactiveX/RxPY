@@ -54,14 +54,14 @@ def generate(cls, initial_state, condition, iterate, result_selector, scheduler=
                     result = result_selector(state[0])
 
             except Exception as exception:
-                observer.on_error(exception)
+                observer.throw(exception)
                 return
 
             if has_result:
-                observer.on_next(result)
+                observer.send(result)
                 mad.disposable = scheduler.schedule(action)
             else:
-                observer.on_completed()
+                observer.close()
 
         mad.disposable = scheduler.schedule(action)
         return mad

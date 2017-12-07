@@ -10,24 +10,24 @@ class CheckedObserver(Observer):
         self._observer = observer
         self._state = 0  # 0 - idle, 1 - busy, 2 - done
 
-    def on_next(self, value):
+    def send(self, value):
         self.check_access()
         try:
-            self._observer.on_next(value)
+            self._observer.send(value)
         finally:
             self._state = 0
 
-    def on_error(self, error):
+    def throw(self, error):
         self.check_access()
         try:
-            self._observer.on_error(error)
+            self._observer.throw(error)
         finally:
             self._state = 2
 
-    def on_completed(self):
+    def close(self):
         self.check_access()
         try:
-            self._observer.on_completed()
+            self._observer.close()
         finally:
             self._state = 2
 

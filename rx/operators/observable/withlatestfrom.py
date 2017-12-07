@@ -67,24 +67,24 @@ def with_latest_from(cls, *args):
 
             def subscribe_child(i, child):
                 subscription = SingleAssignmentDisposable()
-                def on_next(value):
+                def send(value):
                     with parent.lock:
                         values[i] = value
-                subscription.disposable = child.subscribe_callbacks(on_next, observer.on_error)
+                subscription.disposable = child.subscribe_callbacks(send, observer.throw)
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
-            def on_next(value):
+            def send(value):
                 with parent.lock:
                     if NO_VALUE not in values:
                         try:
                             result = result_selector(value, *values)
                         except Exception as error:
-                            observer.on_error(error)
+                            observer.throw(error)
                         else:
-                            observer.on_next(result)
+                            observer.send(result)
             parent_subscription.disposable = parent.subscribe_callbacks(
-                on_next, observer.on_error, observer.on_completed)
+                send, observer.throw, observer.close)
 
             return listify_args(
                 parent_subscription,

@@ -12,24 +12,24 @@ class Notification(object):
         """Default constructor used by derived types."""
         self.has_value = False
 
-    def accept(self, on_next, on_error=None, on_completed=None):
+    def accept(self, send, throw=None, close=None):
         """Invokes the delegate corresponding to the notification or an
         observer and returns the produced result.
 
         1 - notification.accept(observer)
-        2 - notification.accept(on_next, on_error, on_completed)
+        2 - notification.accept(send, throw, close)
 
         Keyword arguments:
-        on_next -- Delegate to invoke for an OnNext notification.
-        on_error -- [Optional] Delegate to invoke for an OnError notification.
-        on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
+        send -- Delegate to invoke for an OnNext notification.
+        throw -- [Optional] Delegate to invoke for an OnError notification.
+        close -- [Optional] Delegate to invoke for an OnCompleted notification.
 
         Returns result produced by the observation."""
 
-        if isinstance(on_next, Observer):
-            return self._accept_observable(on_next)
+        if isinstance(send, Observer):
+            return self._accept_observable(send)
         else:
-            return self._accept(on_next, on_error, on_completed)
+            return self._accept(send, throw, close)
 
     def to_observable(self, scheduler=None):
         """Returns an observable sequence with a single notification, using the
@@ -49,7 +49,7 @@ class Notification(object):
             def action(scheduler, state):
                 notification._accept_observable(observer)
                 if notification.kind == 'N':
-                    observer.on_completed()
+                    observer.close()
 
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
@@ -75,11 +75,11 @@ class OnNext(Notification):
         self.has_value = True
         self.kind = 'N'
 
-    def _accept(self, on_next, on_error=None, on_completed=None):
-        return on_next(self.value)
+    def _accept(self, send, throw=None, close=None):
+        return send(self.value)
 
     def _accept_observable(self, observer):
-        return observer.on_next(self.value)
+        return observer.send(self.value)
 
     def __str__(self):
         return "OnNext(%s)" % str(self.value)
@@ -95,11 +95,11 @@ class OnError(Notification):
         self.exception = exception
         self.kind = 'E'
 
-    def _accept(self, on_next, on_error, on_completed):
-        return on_error(self.exception)
+    def _accept(self, send, throw, close):
+        return throw(self.exception)
 
     def _accept_observable(self, observer):
-        return observer.on_error(self.exception)
+        return observer.throw(self.exception)
 
     def __str__(self):
         return "OnError(%s)" % str(self.exception)
@@ -114,11 +114,11 @@ class OnCompleted(Notification):
         super(OnCompleted, self).__init__()
         self.kind = 'C'
 
-    def _accept(self, on_next, on_error, on_completed):
-        return on_completed()
+    def _accept(self, send, throw, close):
+        return close()
 
     def _accept_observable(self, observer):
-        return observer.on_completed()
+        return observer.close()
 
     def __str__(self):
         return "OnCompleted()"
@@ -134,16 +134,16 @@ class OnCompleted(Notification):
         notification corresponding to each message it receives.
         """
 
-        def _on_next(value):
+        def _send(value):
             return handler(OnNext(value))
 
-        def _on_error(ex):
+        def _throw(ex):
             return handler(OnError(ex))
 
-        def _on_completed():
+        def _close():
             return handler(OnCompleted())
 
-        return AnonymousObserver(_on_next, _on_error, _on_completed)
+        return AnonymousObserver(_send, _throw, _close)
 
 
 @extensionclassmethod(Observer)
@@ -158,13 +158,13 @@ def from_notifier(cls, handler):
     :rtype: Observer
     """
 
-    def _on_next(value):
+    def _send(value):
         return handler(OnNext(value))
 
-    def _on_error(ex):
+    def _throw(ex):
         return handler(OnError(ex))
 
-    def _on_completed():
+    def _close():
         return handler(OnCompleted())
 
-    return AnonymousObserver(_on_next, _on_error, _on_completed)
+    return AnonymousObserver(_send, _throw, _close)

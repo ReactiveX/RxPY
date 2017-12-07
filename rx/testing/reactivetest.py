@@ -55,21 +55,21 @@ class ReactiveTest(object):
     disposed = 1000
 
     @classmethod
-    def on_next(cls, ticks, value):
+    def send(cls, ticks, value):
         if isinstance(value, types.FunctionType):
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
     @classmethod
-    def on_error(cls, ticks, exception):
+    def throw(cls, ticks, exception):
         if isinstance(exception, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
 
     @classmethod
-    def on_completed(cls, ticks):
+    def close(cls, ticks):
         return Recorded(ticks, OnCompleted())
 
     @classmethod

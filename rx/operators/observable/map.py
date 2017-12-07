@@ -19,15 +19,15 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     """
 
     def subscribe(observer: Observer) -> Disposable:
-        def on_next(value):
+        def send(value):
             try:
                 result = mapper(value)
             except Exception as err:  # pylint: disable=W0703
-                observer.on_error(err)
+                observer.throw(err)
             else:
-                observer.on_next(result)
+                observer.send(result)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)
 
 
@@ -49,16 +49,16 @@ def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Obse
     def subscribe(observer: Observer) -> Disposable:
         count = 0
 
-        def on_next(value):
+        def send(value):
             nonlocal count
 
             try:
                 result = selector(value, count)
             except Exception as err:  # By design. pylint: disable=W0703
-                observer.on_error(err)
+                observer.throw(err)
             else:
                 count += 1
-                observer.on_next(result)
+                observer.send(result)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

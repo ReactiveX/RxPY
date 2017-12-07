@@ -39,7 +39,7 @@ def merge(self, *args, **kwargs):
             subscription = SingleAssignmentDisposable()
             group.add(subscription)
 
-            def on_completed():
+            def close():
                 group.remove(subscription)
                 if len(q):
                     s = q.pop(0)
@@ -47,24 +47,24 @@ def merge(self, *args, **kwargs):
                 else:
                     active_count[0] -= 1
                     if is_stopped[0] and active_count[0] == 0:
-                        observer.on_completed()
+                        observer.close()
 
-            subscription.disposable = xs.subscribe_callbacks(observer.on_next, observer.on_error,
-                                                             on_completed)
+            subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw,
+                                                             close)
 
-        def on_next(inner_source):
+        def send(inner_source):
             if active_count[0] < max_concurrent:
                 active_count[0] += 1
                 subscribe(inner_source)
             else:
                 q.append(inner_source)
 
-        def on_completed():
+        def close():
             is_stopped[0] = True
             if active_count[0] == 0:
-                observer.on_completed()
+                observer.close()
 
-        group.add(sources.subscribe_callbacks(on_next, observer.on_error, on_completed))
+        group.add(sources.subscribe_callbacks(send, observer.throw, close))
         return group
     return AnonymousObservable(subscribe)
 
@@ -117,29 +117,29 @@ def merge_all(self):
         m = SingleAssignmentDisposable()
         group.add(m)
 
-        def on_next(inner_source):
+        def send(inner_source):
             inner_subscription = SingleAssignmentDisposable()
             group.add(inner_subscription)
 
             inner_source = Observable.from_future(inner_source)
 
-            def on_next(x):
-                observer.on_next(x)
+            def send(x):
+                observer.send(x)
 
-            def on_completed():
+            def close():
                 group.remove(inner_subscription)
                 if is_stopped[0] and len(group) == 1:
-                    observer.on_completed()
+                    observer.close()
 
-            disposable = inner_source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+            disposable = inner_source.subscribe_callbacks(send, observer.throw, close)
             inner_subscription.disposable = disposable
 
-        def on_completed():
+        def close():
             is_stopped[0] = True
             if len(group) == 1:
-                observer.on_completed()
+                observer.close()
 
-        m.disposable = sources.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        m.disposable = sources.subscribe_callbacks(send, observer.throw, close)
         return group
 
     return AnonymousObservable(subscribe)

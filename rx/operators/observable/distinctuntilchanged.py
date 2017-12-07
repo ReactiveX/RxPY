@@ -30,25 +30,25 @@ def distinct_until_changed(self, key_selector=None, comparer=None):
         has_current_key = [False]
         current_key = [None]
 
-        def on_next(value):
+        def send(value):
             comparer_equals = False
             try:
                 key = key_selector(value)
             except Exception as exception:
-                observer.on_error(exception)
+                observer.throw(exception)
                 return
 
             if has_current_key[0]:
                 try:
                     comparer_equals = comparer(current_key[0], key)
                 except Exception as exception:
-                    observer.on_error(exception)
+                    observer.throw(exception)
                     return
 
             if not has_current_key[0] or not comparer_equals:
                 has_current_key[0] = True
                 current_key[0] = key
-                observer.on_next(value)
+                observer.send(value)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

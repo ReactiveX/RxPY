@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -29,8 +29,8 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 84),
-            on_completed(200)
+            send(200, 84),
+            close(200)
         )
 
     def test_to_async0(self):
@@ -45,8 +45,8 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 0),
-            on_completed(200)
+            send(200, 0),
+            close(200)
         )
 
     def test_to_async1(self):
@@ -61,8 +61,8 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 1),
-            on_completed(200)
+            send(200, 1),
+            close(200)
          )
 
     def test_to_async2(self):
@@ -77,8 +77,8 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 3),
-            on_completed(200)
+            send(200, 3),
+            close(200)
         )
 
     def test_to_async3(self):
@@ -94,8 +94,8 @@ class TestToAsync(unittest.TestCase):
 
 
         res.messages.assert_equal(
-            on_next(200, 6),
-            on_completed(200)
+            send(200, 6),
+            close(200)
         )
 
     def test_to_async4(self):
@@ -109,8 +109,8 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_next(200, 10),
-            on_completed(200)
+            send(200, 10),
+            close(200)
         )
 
     def test_to_async_error0(self):
@@ -126,7 +126,7 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )
 
     def test_to_async_error1(self):
@@ -142,7 +142,7 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )
 
     def test_to_async_error2(self):
@@ -158,7 +158,7 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )
 
     def test_to_async_error0(self):
@@ -174,7 +174,7 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )
 
     def test_to_async_error0(self):
@@ -190,5 +190,5 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            on_error(200, ex)
+            throw(200, ex)
         )

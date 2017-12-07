@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -23,7 +23,7 @@ def _raise(ex):
 class TestMinBy(unittest.TestCase):
     def test_min_by_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, { "key": 1, "value": 'z' }), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, { "key": 1, "value": 'z' }), close(250))
 
         def create():
             return xs.min_by(lambda x: x["key"])
@@ -36,9 +36,9 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_return(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, { "key": 1, "value": 'z' }),
-            on_next(210, { "key": 2, "value": 'a' }),
-            on_completed(250))
+            send(150, { "key": 1, "value": 'z' }),
+            send(210, { "key": 2, "value": 'a' }),
+            close(250))
 
         def create():
             return xs.min_by(lambda x: x["key"])
@@ -54,19 +54,19 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_some(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 3,
                 "value": 'b'
-            }), on_next(220, {
+            }), send(220, {
                 "key": 2,
                 "value": 'c'
-            }), on_next(230, {
+            }), send(230, {
                 "key": 4,
                 "value": 'a'
-            }), on_completed(250)
+            }), close(250)
         ]
 
         xs = scheduler.create_hot_observable(msgs)
@@ -84,28 +84,28 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_multiple(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 3,
                 "value": 'b'
-            }), on_next(215, {
+            }), send(215, {
                 "key": 2,
                 "value": 'd'
-            }), on_next(220, {
+            }), send(220, {
                 "key": 3,
                 "value": 'c'
-            }), on_next(225, {
+            }), send(225, {
                 "key": 2,
                 "value": 'y'
-            }), on_next(230, {
+            }), send(230, {
                 "key": 4,
                 "value": 'a'
-            }), on_next(235, {
+            }), send(235, {
                 "key": 4,
                 "value": 'r'
-            }), on_completed(250)
+            }), close(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
@@ -125,21 +125,21 @@ class TestMinBy(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_error(210, ex)
+            }), throw(210, ex)
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
             return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        res.assert_equal(throw(210, ex))
 
     def test_min_by_never(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
             })
@@ -154,10 +154,10 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_comparer_empty(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_completed(250)
+            }), close(250)
         ]
         def reverse_comparer(a, b):
             if a > b:
@@ -180,13 +180,13 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_comparer_return(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 2,
                 "value": 'a'
-            }), on_completed(250)
+            }), close(250)
         ]
         def reverse_comparer(a, b):
             if a > b:
@@ -212,19 +212,19 @@ class TestMinBy(unittest.TestCase):
     def test_min_by_comparer_some(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 3,
                 "value": 'b'
-            }), on_next(220, {
+            }), send(220, {
                 "key": 20,
                 "value": 'c'
-            }), on_next(230, {
+            }), send(230, {
                 "key": 4,
                 "value": 'a'
-            }), on_completed(250)
+            }), close(250)
         ]
         def reverse_comparer(a, b):
             if a > b:
@@ -251,10 +251,10 @@ class TestMinBy(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_error(210, ex)
+            }), throw(210, ex)
         ]
         def reverse_comparer(a, b):
             if a > b:
@@ -269,12 +269,12 @@ class TestMinBy(unittest.TestCase):
 
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        res.assert_equal(throw(210, ex))
 
     def test_min_by_comparer_never(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
             })
@@ -300,19 +300,19 @@ class TestMinBy(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 3,
                 "value": 'b'
-            }), on_next(220, {
+            }), send(220, {
                 "key": 2,
                 "value": 'c'
-            }), on_next(230, {
+            }), send(230, {
                 "key": 4,
                 "value": 'a'
-            }), on_completed(250)
+            }), close(250)
         ]
         def reverse_comparer(a, b):
             if a > b:
@@ -329,25 +329,25 @@ class TestMinBy(unittest.TestCase):
            return xs.min_by(lambda x: _raise(ex), reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        res.assert_equal(throw(210, ex))
 
     def test_min_by_comparer_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, {
+            send(150, {
                 "key": 1,
                 "value": 'z'
-            }), on_next(210, {
+            }), send(210, {
                 "key": 3,
                 "value": 'b'
-            }), on_next(220, {
+            }), send(220, {
                 "key": 2,
                 "value": 'c'
-            }), on_next(230, {
+            }), send(230, {
                 "key": 4,
                 "value": 'a'
-            }), on_completed(250)
+            }), close(250)
         ]
         def reverse_comparer(a, b):
             _raise(ex)
@@ -358,4 +358,4 @@ class TestMinBy(unittest.TestCase):
            return xs.min_by(lambda x: x["key"], reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(220, ex))
+        res.assert_equal(throw(220, ex))

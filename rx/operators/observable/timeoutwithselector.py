@@ -53,21 +53,21 @@ def timeout_with_selector(self, first_timeout=None,
             d = SingleAssignmentDisposable()
             timer.disposable = d
 
-            def on_next(x):
+            def send(x):
                 if timer_wins():
                     subscription.disposable = other.subscribe(observer)
 
                 d.dispose()
 
-            def on_error(e):
+            def throw(e):
                 if timer_wins():
-                    observer.on_error(e)
+                    observer.throw(e)
 
-            def on_completed():
+            def close():
                 if timer_wins():
                     subscription.disposable = other.subscribe(observer)
 
-            d.disposable = timeout.subscribe_callbacks(on_next, on_error, on_completed)
+            d.disposable = timeout.subscribe_callbacks(send, throw, close)
 
         set_timer(first_timeout)
 
@@ -78,26 +78,26 @@ def timeout_with_selector(self, first_timeout=None,
 
             return res
 
-        def on_next(x):
+        def send(x):
             if observer_wins():
-                observer.on_next(x)
+                observer.send(x)
                 timeout = None
                 try:
                     timeout = timeout_duration_selector(x)
                 except Exception as e:
-                    observer.on_error(e)
+                    observer.throw(e)
                     return
 
                 set_timer(timeout)
 
-        def on_error(e):
+        def throw(e):
             if observer_wins():
-                observer.on_error(e)
+                observer.throw(e)
 
-        def on_completed():
+        def close():
             if observer_wins():
-                observer.on_completed()
+                observer.close()
 
-        original.disposable = source.subscribe_callbacks(on_next, on_error, on_completed)
+        original.disposable = source.subscribe_callbacks(send, throw, close)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

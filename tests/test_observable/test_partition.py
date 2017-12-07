@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -20,8 +20,8 @@ class TestPartition(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_completed(210)
+            send(180, 5),
+            close(210)
         )
 
         subscription1 = [None]
@@ -47,11 +47,11 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
         results1.messages.assert_equal(
-            on_completed(210)
+            close(210)
         )
 
         results2.messages.assert_equal(
-            on_completed(210)
+            close(210)
         )
 
         xs.subscriptions.assert_equal(
@@ -62,9 +62,9 @@ class TestPartition(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_completed(220)
+            send(180, 5),
+            send(210, 4),
+            close(220)
         )
 
         observables = []
@@ -91,12 +91,12 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4),
-            on_completed(220)
+            send(210, 4),
+            close(220)
         )
 
         results2.messages.assert_equal(
-            on_completed(220)
+            close(220)
         )
 
         xs.subscriptions.assert_equal(
@@ -107,10 +107,10 @@ class TestPartition(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(220, 3),
-            on_completed(230)
+            send(180, 5),
+            send(210, 4),
+            send(220, 3),
+            close(230)
         )
 
         observables = []
@@ -139,29 +139,29 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4),
-            on_completed(230)
+            send(210, 4),
+            close(230)
         )
 
         results2.messages.assert_equal(
-            on_next(220, 3),
-            on_completed(230)
+            send(220, 3),
+            close(230)
         )
 
         xs.subscriptions.assert_equal(
             subscribe(200, 230)
         )
 
-    def test_partition_completed(self):
+    def test_partiticlose(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1),
+            close(360)
         )
 
         observables = []
@@ -188,15 +188,15 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4),
-            on_next(290, 2),
-            on_completed(360)
+            send(210, 4),
+            send(290, 2),
+            close(360)
         )
 
         results2.messages.assert_equal(
-            on_next(240, 3),
-            on_next(350, 1),
-            on_completed(360)
+            send(240, 3),
+            send(350, 1),
+            close(360)
         )
 
         xs.subscriptions.assert_equal(
@@ -207,11 +207,11 @@ class TestPartition(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1)
         )
 
         observables = []
@@ -239,30 +239,30 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4),
-            on_next(290, 2)
+            send(210, 4),
+            send(290, 2)
         )
 
         results2.messages.assert_equal(
-            on_next(240, 3),
-            on_next(350, 1)
+            send(240, 3),
+            send(350, 1)
         )
 
         xs.subscriptions.assert_equal(
             subscribe(200, 1000)
         )
 
-    def test_partition_error(self):
+    def test_partitithrow(self):
         error = Exception()
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_error(290, error),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            throw(290, error),
+            send(350, 1),
+            close(360)
         )
 
         observables = []
@@ -289,13 +289,13 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4),
-            on_error(290, error)
+            send(210, 4),
+            throw(290, error)
         )
 
         results2.messages.assert_equal(
-            on_next(240, 3),
-            on_error(290, error)
+            send(240, 3),
+            throw(290, error)
         )
 
         xs.subscriptions.assert_equal(
@@ -306,12 +306,12 @@ class TestPartition(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(240, 3),
-            on_next(290, 2),
-            on_next(350, 1),
-            on_completed(360)
+            send(180, 5),
+            send(210, 4),
+            send(240, 3),
+            send(290, 2),
+            send(350, 1),
+            close(360)
         )
 
         observables = []
@@ -339,11 +339,11 @@ class TestPartition(unittest.TestCase):
         scheduler.start()
 
         results1.messages.assert_equal(
-            on_next(210, 4)
+            send(210, 4)
         )
 
         results2.messages.assert_equal(
-            on_next(240, 3)
+            send(240, 3)
         )
 
         xs.subscriptions.assert_equal(

@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -21,20 +21,20 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            close(600))
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -75,12 +75,12 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler.start()
         results.messages.assert_equal(
-            on_next(200, 1979),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(520, 11)
+            send(200, 1979),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(520, 11)
         )
         xs.subscriptions.assert_equal(
             subscribe(300, 400),
@@ -96,20 +96,20 @@ class TestPublishValue(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_error(600, ex))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            throw(600, ex))
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -142,14 +142,14 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler.start()
         results.messages.assert_equal(
-            on_next(200, 1979),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_error(600, ex))
+            send(200, 1979),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(520, 11),
+            send(560, 20),
+            throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
 
     def test_publish_with_initial_value_complete(self):
@@ -158,20 +158,20 @@ class TestPublishValue(unittest.TestCase):
         ys = [None]
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            close(600))
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
@@ -204,14 +204,14 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler.start()
         results.messages.assert_equal(
-            on_next(200, 1979),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(200, 1979),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(520, 11),
+            send(560, 20),
+            close(600))
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
 
     def test_publish_with_initial_value_dispose(self):
@@ -221,20 +221,20 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            close(600))
 
         results = scheduler.create_observer()
 
@@ -276,8 +276,8 @@ class TestPublishValue(unittest.TestCase):
 
         scheduler.start()
         results.messages.assert_equal(
-            on_next(200, 1979),
-            on_next(340, 8))
+            send(200, 1979),
+            send(340, 8))
         xs.subscriptions.assert_equal(
             subscribe(300, 400),
             subscribe(500, 550),
@@ -297,20 +297,20 @@ class TestPublishValue(unittest.TestCase):
     def test_publish_with_initial_value_lambda_zip_complete(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            close(600))
 
         def create():
             def selector(_xs):
@@ -319,39 +319,39 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(220, 1982),
-            on_next(280, 7),
-            on_next(290, 5),
-            on_next(340, 9),
-            on_next(360, 13),
-            on_next(370, 11),
-            on_next(390, 13),
-            on_next(410, 20),
-            on_next(430, 15),
-            on_next(450, 11),
-            on_next(520, 20),
-            on_next(560, 31),
-            on_completed(600))
+            send(220, 1982),
+            send(280, 7),
+            send(290, 5),
+            send(340, 9),
+            send(360, 13),
+            send(370, 11),
+            send(390, 13),
+            send(410, 20),
+            send(430, 15),
+            send(450, 11),
+            send(520, 20),
+            send(560, 31),
+            close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
     def test_publish_with_initial_value_lambda_zip_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_error(600, ex))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            throw(600, ex))
 
         def create():
             def selector(_xs):
@@ -361,38 +361,38 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(220, 1982),
-            on_next(280, 7),
-            on_next(290, 5),
-            on_next(340, 9),
-            on_next(360, 13),
-            on_next(370, 11),
-            on_next(390, 13),
-            on_next(410, 20),
-            on_next(430, 15),
-            on_next(450, 11),
-            on_next(520, 20),
-            on_next(560, 31),
-            on_error(600, ex))
+            send(220, 1982),
+            send(280, 7),
+            send(290, 5),
+            send(340, 9),
+            send(360, 13),
+            send(370, 11),
+            send(390, 13),
+            send(410, 20),
+            send(430, 15),
+            send(450, 11),
+            send(520, 20),
+            send(560, 31),
+            throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
     def test_publish_with_initial_value_lambda_zip_dispose(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(110, 7),
-            on_next(220, 3),
-            on_next(280, 4),
-            on_next(290, 1),
-            on_next(340, 8),
-            on_next(360, 5),
-            on_next(370, 6),
-            on_next(390, 7),
-            on_next(410, 13),
-            on_next(430, 2),
-            on_next(450, 9),
-            on_next(520, 11),
-            on_next(560, 20),
-            on_completed(600))
+            send(110, 7),
+            send(220, 3),
+            send(280, 4),
+            send(290, 1),
+            send(340, 8),
+            send(360, 5),
+            send(370, 6),
+            send(390, 7),
+            send(410, 13),
+            send(430, 2),
+            send(450, 9),
+            send(520, 11),
+            send(560, 20),
+            close(600))
 
         def create():
             def selector(_xs):
@@ -401,14 +401,14 @@ class TestPublishValue(unittest.TestCase):
 
         results = scheduler.start(create, disposed=470)
         results.messages.assert_equal(
-            on_next(220, 1982),
-            on_next(280, 7),
-            on_next(290, 5),
-            on_next(340, 9),
-            on_next(360, 13),
-            on_next(370, 11),
-            on_next(390, 13),
-            on_next(410, 20),
-            on_next(430, 15),
-            on_next(450, 11))
+            send(220, 1982),
+            send(280, 7),
+            send(290, 5),
+            send(340, 9),
+            send(360, 13),
+            send(370, 11),
+            send(390, 13),
+            send(410, 20),
+            send(430, 15),
+            send(450, 11))
         xs.subscriptions.assert_equal(subscribe(200, 470))

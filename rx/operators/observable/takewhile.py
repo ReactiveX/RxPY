@@ -27,7 +27,7 @@ def take_while(self, predicate):
     def subscribe(observer):
         running, i = [True], [0]
 
-        def on_next(value):
+        def send(value):
             with self.lock:
                 if not running[0]:
                     return
@@ -35,16 +35,16 @@ def take_while(self, predicate):
                 try:
                     running[0] = predicate(value, i[0])
                 except Exception as exn:
-                    observer.on_error(exn)
+                    observer.throw(exn)
                     return
                 else:
                     i[0] += 1
 
             if running[0]:
-                observer.on_next(value)
+                observer.send(value)
             else:
-                observer.on_completed()
+                observer.close()
 
-        return observable.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return observable.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)
 

@@ -60,7 +60,7 @@ class TestUtil(unittest.TestCase):
 
         self.assertEqual(err_msg, str(e.exception))
 
-    def test_adapt_call_adaptation_error(self):
+    def test_adapt_call_adaptatithrow(self):
 
         def not_adaptable(a, b, c):
             pass

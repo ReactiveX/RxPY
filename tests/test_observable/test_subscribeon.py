@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -16,24 +16,24 @@ class TestSubscribeOn(unittest.TestCase):
     def test_subscribe_on_normal(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_completed(250)
+            send(150, 1),
+            send(210, 2),
+            close(250)
         )
 
         def create():
             return xs.subscribe_on(scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_completed(250))
+        results.messages.assert_equal(send(210, 2), close(250))
         xs.subscriptions.assert_equal(subscribe(201, 251))
 
-    def test_subscribe_on_error(self):
+    def test_subscribe_throw(self):
         scheduler = TestScheduler()
         ex = 'ex'
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_error(210, ex)
+            send(150, 1),
+            throw(210, ex)
         )
 
         def create():
@@ -41,14 +41,14 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(210, ex))
+        results.messages.assert_equal(throw(210, ex))
         xs.subscriptions.assert_equal(subscribe(201, 211))
 
     def test_subscribe_on_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_completed(250)
+            send(150, 1),
+            close(250)
         )
 
         def create():
@@ -56,13 +56,13 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_completed(250))
+        results.messages.assert_equal(close(250))
         xs.subscriptions.assert_equal(subscribe(201, 251))
 
     def test_subscribe_on_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1)
+            send(150, 1)
         )
 
         def create():

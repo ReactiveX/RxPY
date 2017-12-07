@@ -46,7 +46,7 @@ class TestVirtualTimeScheduler(unittest.TestCase):
         scheduler.start()
         assert(ran[0])
 
-    def test_virtual_schedule_action_error(self):
+    def test_virtual_schedule_actithrow(self):
         ex = 'ex'
         try:
             scheduler = VirtualSchedulerTestScheduler()

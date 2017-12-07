@@ -9,9 +9,9 @@ from rx import config
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 
 _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
@@ -24,10 +24,10 @@ def from_marbles(cls, string, scheduler=None):
 
     Special characters:
     - = Timespan of 100 ms
-    x = on_error()
-    | = on_completed()
+    x = throw()
+    | = close()
 
-    All other characters are treated as an on_next() event at the given
+    All other characters are treated as an send() event at the given
     moment they are found on the string.
 
     Examples:
@@ -52,38 +52,38 @@ def from_marbles(cls, string, scheduler=None):
     def handle_timespan(value):
         timespan[0] += 100
 
-    def handle_on_next(value):
+    def handle_send(value):
         timespan[0] += 10
         if value in ('T', 'F'):
             value = True if value == 'T' else False
-        messages.append(on_next(timespan[0], value))
+        messages.append(send(timespan[0], value))
 
 
-    def handle_on_completed(value):
+    def handle_close(value):
         timespan[0] += 10
-        messages.append(on_completed(timespan[0]))
+        messages.append(close(timespan[0]))
         completed[0] = True
 
-    def handle_on_error(value):
+    def handle_throw(value):
         timespan[0] += 10
-        messages.append(on_error(timespan[0], value))
+        messages.append(throw(timespan[0], value))
         completed[0] = True
 
     specials = {
         '-': handle_timespan,
-        'x': handle_on_error,
-        'X': handle_on_error,
-        '|': handle_on_completed
+        'x': handle_throw,
+        'X': handle_throw,
+        '|': handle_close
     }
 
     for groups in _tokens.findall(string):
         for token in groups:
             if token:
-                func = specials.get(token, handle_on_next)
+                func = specials.get(token, handle_send)
                 func(token)
 
     if not completed[0]:
-        messages.append(on_completed(timespan[0]))
+        messages.append(close(timespan[0]))
 
     return ColdObservable(scheduler, messages)
 
@@ -113,23 +113,23 @@ def to_marbles(self, scheduler=None):
             dashes = "-" * int((msecs + 50) / 100)
             result.append(dashes)
 
-        def on_next(value):
+        def send(value):
             add_timespan()
             result.append(stringify(value))
 
-        def on_error(exception):
+        def throw(exception):
             add_timespan()
             result.append(stringify(exception))
-            observer.on_next("".join(n for n in result))
-            observer.on_completed()
+            observer.send("".join(n for n in result))
+            observer.close()
 
-        def on_completed():
+        def close():
             add_timespan()
             result.append("|")
-            observer.on_next("".join(n for n in result))
-            observer.on_completed()
+            observer.send("".join(n for n in result))
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, on_error, on_completed)
+        return source.subscribe_callbacks(send, throw, close)
     return AnonymousObservable(subscribe)
 
 
@@ -147,10 +147,10 @@ def to_marbles(self, scheduler=None):
     latch = config["concurrency"].Event()
     ret = [None]
 
-    def on_next(value):
+    def send(value):
         ret[0] = value
 
-    self.observable.to_marbles(scheduler=scheduler).subscribe_callbacks(on_next, on_completed=latch.set)
+    self.observable.to_marbles(scheduler=scheduler).subscribe_callbacks(send, close=latch.set)
 
     # Block until the subscription completes and then return
     latch.wait()

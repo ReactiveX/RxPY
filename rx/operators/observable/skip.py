@@ -22,13 +22,13 @@ def skip(count: int, source: Observable) -> Observable:
     def subscribe(observer):
         remaining = count
 
-        def on_next(value):
+        def send(value):
             nonlocal remaining
 
             if remaining <= 0:
-                observer.on_next(value)
+                observer.send(value)
             else:
                 remaining -= 1
 
-        return observable.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return observable.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

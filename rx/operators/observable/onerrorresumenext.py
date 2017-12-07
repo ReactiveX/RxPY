@@ -6,7 +6,7 @@ from rx.internal import extensionmethod, extensionclassmethod
 
 
 @extensionmethod(Observable, instancemethod=True)
-def on_error_resume_next(self, second):
+def throw_resume_next(self, second):
     """Continues an observable sequence that is terminated normally or by
     an exception with the next observable sequence.
 
@@ -21,21 +21,21 @@ def on_error_resume_next(self, second):
     if not second:
         raise Exception('Second observable is required')
 
-    return Observable.on_error_resume_next([self, second])
+    return Observable.throw_resume_next([self, second])
 
 @extensionclassmethod(Observable)
-def on_error_resume_next(cls, *args):
+def throw_resume_next(cls, *args):
     """Continues an observable sequence that is terminated normally or by
     an exception with the next observable sequence.
 
-    1 - res = Observable.on_error_resume_next(xs, ys, zs)
-    2 - res = Observable.on_error_resume_next([xs, ys, zs])
+    1 - res = Observable.throw_resume_next(xs, ys, zs)
+    2 - res = Observable.throw_resume_next([xs, ys, zs])
 
     Returns an observable sequence that concatenates the source sequences,
     even if a sequence terminates exceptionally.
     """
     # curently not in:
-    # 3 - res = Observable.on_error_resume_next(xs, factory)
+    # 3 - res = Observable.throw_resume_next(xs, factory)
 
     scheduler = current_thread_scheduler
 
@@ -52,7 +52,7 @@ def on_error_resume_next(cls, *args):
             try:
                 source = next(sources)
             except StopIteration:
-                observer.on_completed()
+                observer.close()
                 return
 
             # Allow source to be a factory method taking an error
@@ -65,7 +65,7 @@ def on_error_resume_next(cls, *args):
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_callbacks(observer.on_next, on_resume, on_resume)
+            d.disposable = current.subscribe_callbacks(observer.send, on_resume, on_resume)
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

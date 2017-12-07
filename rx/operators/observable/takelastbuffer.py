@@ -29,15 +29,15 @@ def take_last_buffer(self, count):
 
     def subscribe(observer):
         q = []
-        def on_next(x):
+        def send(x):
             with self.lock:
                 q.append(x)
                 if len(q) > count:
                     q.pop(0)
 
-        def on_completed():
-            observer.on_next(q)
-            observer.on_completed()
+        def close():
+            observer.send(q)
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)

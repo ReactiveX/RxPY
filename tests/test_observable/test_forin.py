@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -19,11 +19,11 @@ class TestForIn(unittest.TestCase):
 
         def create():
             def selector(x):
-                return scheduler.create_cold_observable(on_next(x * 100 + 10, x * 10 + 1), on_next(x * 100 + 20, x * 10 + 2), on_next(x * 100 + 30, x * 10 + 3), on_completed(x * 100 + 40))
+                return scheduler.create_cold_observable(send(x * 100 + 10, x * 10 + 1), send(x * 100 + 20, x * 10 + 2), send(x * 100 + 30, x * 10 + 3), close(x * 100 + 40))
             return Observable.for_in([1, 2, 3], selector)
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(on_next(310, 11), on_next(320, 12), on_next(330, 13), on_next(550, 21), on_next(560, 22), on_next(570, 23), on_next(890, 31), on_next(900, 32), on_next(910, 33), on_completed(920))
+        results.messages.assert_equal(send(310, 11), send(320, 12), send(330, 13), send(550, 21), send(560, 22), send(570, 23), send(890, 31), send(900, 32), send(910, 33), close(920))
 
     def test_for_throws(self):
         ex = 'ex'
@@ -34,4 +34,4 @@ class TestForIn(unittest.TestCase):
                 raise Exception(ex)
             return Observable.for_in([1, 2, 3], selector)
         results = scheduler.start(create=create)
-        results.messages.assert_equal(on_error(200, ex))
+        results.messages.assert_equal(throw(200, ex))

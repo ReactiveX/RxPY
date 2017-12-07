@@ -21,17 +21,17 @@ def when(cls, *args):
         active_plans = []
         external_subscriptions = {}
 
-        def on_error(err):
+        def throw(err):
             for v in external_subscriptions.values():
-                v.on_error(err)
-            observer.on_error(err)
+                v.throw(err)
+            observer.throw(err)
 
-        out_observer = AnonymousObserver(observer.on_next, on_error, observer.on_completed)
+        out_observer = AnonymousObserver(observer.send, throw, observer.close)
 
         def deactivate(active_plan):
             active_plans.remove(active_plan)
             if not len(active_plans):
-                observer.on_completed()
+                observer.close()
         try:
             for plan in plans:
                 active_plans.append(plan.activate(external_subscriptions, 

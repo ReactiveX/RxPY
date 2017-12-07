@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -32,12 +32,12 @@ class TestFromIterable(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-                            on_next(201, 1),
-                            on_next(202, 2),
-                            on_next(203, 3),
-                            on_next(204, 4),
-                            on_next(205, 5),
-                            on_completed(206)
+                            send(201, 1),
+                            send(202, 2),
+                            send(203, 3),
+                            send(204, 4),
+                            send(205, 5),
+                            close(206)
                         )
 
     def test_subscribe_to_iterable_empty(self):
@@ -49,7 +49,7 @@ class TestFromIterable(unittest.TestCase):
             return Observable.from_(iterable_finite, scheduler=scheduler)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_completed(201))
+        results.messages.assert_equal(close(201))
 
     def test_double_subscribe_to_iterable(self):
         iterable_finite = [1, 2, 3]
@@ -57,7 +57,7 @@ class TestFromIterable(unittest.TestCase):
         obs = Observable.from_(iterable_finite)
 
         results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200))
+        results.messages.assert_equal(send(200, 1), send(200, 2), send(200, 3), close(200))
 
         results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(on_next(1001, 1), on_next(1001, 2), on_next(1001, 3), on_completed(1001))
+        results.messages.assert_equal(send(1001, 1), send(1001, 2), send(1001, 3), close(1001))

@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,24 +17,24 @@ class TestPluck(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, {"prop": 1}),
-            on_next(210, {"prop": 2}),
-            on_next(240, {"prop": 3}),
-            on_next(290, {"prop": 4}),
-            on_next(350, {"prop": 5}),
-            on_completed(400),
-            on_next(410, {"prop": -1}),
-            on_completed(420),
-            on_error(430, Exception('ex'))
+            send(180, {"prop": 1}),
+            send(210, {"prop": 2}),
+            send(240, {"prop": 3}),
+            send(290, {"prop": 4}),
+            send(350, {"prop": 5}),
+            close(400),
+            send(410, {"prop": -1}),
+            close(420),
+            throw(430, Exception('ex'))
         )
         results = scheduler.start(create=lambda: xs.pluck('prop'))
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(240, 3),
-            on_next(290, 4),
-            on_next(350, 5),
-            on_completed(400)
+            send(210, 2),
+            send(240, 3),
+            send(290, 4),
+            send(350, 5),
+            close(400)
         )
         xs.subscriptions.assert_equal(subscribe(200, 400))
 
@@ -50,23 +50,23 @@ class TestPluckAttr(unittest.TestCase):
                 self.prop = prop
 
         xs = scheduler.create_hot_observable(
-            on_next(180, DummyClass(1)),
-            on_next(210, DummyClass(2)),
-            on_next(240, DummyClass(3)),
-            on_next(290, DummyClass(4)),
-            on_next(350, DummyClass(5)),
-            on_completed(400),
-            on_next(410, DummyClass(-1)),
-            on_completed(420),
-            on_error(430, Exception('ex'))
+            send(180, DummyClass(1)),
+            send(210, DummyClass(2)),
+            send(240, DummyClass(3)),
+            send(290, DummyClass(4)),
+            send(350, DummyClass(5)),
+            close(400),
+            send(410, DummyClass(-1)),
+            close(420),
+            throw(430, Exception('ex'))
         )
         results = scheduler.start(create=lambda: xs.pluck_attr('prop'))
 
         results.messages.assert_equal(
-            on_next(210, 2),
-            on_next(240, 3),
-            on_next(290, 4),
-            on_next(350, 5),
-            on_completed(400)
+            send(210, 2),
+            send(240, 3),
+            send(290, 4),
+            send(350, 5),
+            close(400)
         )
         xs.subscriptions.assert_equal(subscribe(200, 400))

@@ -24,7 +24,7 @@ def switch_latest(self):
         is_stopped = [False]
         latest = [0]
 
-        def on_next(inner_source):
+        def send(inner_source):
             d = SingleAssignmentDisposable()
             with self.lock:
                 latest[0] += 1
@@ -35,27 +35,27 @@ def switch_latest(self):
             # Check if Future or Observable
             inner_source = Observable.from_future(inner_source)
 
-            def on_next(x):
+            def send(x):
                 if latest[0] == _id:
-                    observer.on_next(x)
+                    observer.send(x)
 
-            def on_error(e):
+            def throw(e):
                 if latest[0] == _id:
-                    observer.on_error(e)
+                    observer.throw(e)
 
-            def on_completed():
+            def close():
                 if latest[0] == _id:
                     has_latest[0] = False
                     if is_stopped[0]:
-                        observer.on_completed()
+                        observer.close()
 
-            d.disposable = inner_source.subscribe_callbacks(on_next, on_error, on_completed)
+            d.disposable = inner_source.subscribe_callbacks(send, throw, close)
 
-        def on_completed():
+        def close():
             is_stopped[0] = True
             if not has_latest[0]:
-                observer.on_completed()
+                observer.close()
 
-        subscription = sources.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        subscription = sources.subscribe_callbacks(send, observer.throw, close)
         return CompositeDisposable(subscription, inner_subscription)
     return AnonymousObservable(subscribe)

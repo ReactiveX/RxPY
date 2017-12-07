@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -25,7 +25,7 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
 
         def create():
             return xs.materialize()
@@ -37,7 +37,7 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
 
         def create():
             return xs.materialize()
@@ -51,7 +51,7 @@ class TestMaterialize(unittest.TestCase):
     def test_materialize_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
 
         def create():
             return xs.materialize()
@@ -72,7 +72,7 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_dematerialize_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), close(250))
 
         def create():
             return xs.materialize().dematerialize()
@@ -83,7 +83,7 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_dematerialize_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
 
         def create():
             return xs.materialize().dematerialize()
@@ -96,7 +96,7 @@ class TestMaterialize(unittest.TestCase):
     def test_materialize_dematerialize_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
+        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
 
         def create():
             return xs.materialize().dematerialize()

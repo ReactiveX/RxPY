@@ -5,9 +5,9 @@ from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -36,14 +36,14 @@ class TestFilter(unittest.TestCase):
     def test_filter_complete(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1),
-                                             on_next(180, 2), on_next(230, 3),
-                                             on_next(270, 4), on_next(340, 5),
-                                             on_next(380, 6), on_next(390, 7),
-                                             on_next(450, 8), on_next(470, 9),
-                                             on_next(560, 10), on_next(580, 11),
-                                             on_completed(600), on_next(610, 12),
-                                             on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1),
+                                             send(180, 2), send(230, 3),
+                                             send(270, 4), send(340, 5),
+                                             send(380, 6), send(390, 7),
+                                             send(450, 8), send(470, 9),
+                                             send(560, 10), send(580, 11),
+                                             close(600), send(610, 12),
+                                             throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x):
@@ -54,16 +54,16 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(230, 3),
-                                      on_next(340, 5), on_next(390, 7),
-                                      on_next(580, 11), on_completed(600))
+        results.messages.assert_equal(send(230, 3),
+                                      send(340, 5), send(390, 7),
+                                      send(580, 11), close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
     def test_filter_true(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x):
@@ -72,14 +72,14 @@ class TestFilter(unittest.TestCase):
             return xs.filter(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        results.messages.assert_equal(send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
     def test_filter_false(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x):
@@ -90,14 +90,14 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_completed(600))
+        results.messages.assert_equal(close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert invoked[0] == 9
 
     def test_filter_dispose(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x):
@@ -106,7 +106,7 @@ class TestFilter(unittest.TestCase):
             return xs.filter(predicate)
 
         results = scheduler.start(create, disposed=400)
-        results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7))
+        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7))
         xs.subscriptions.assert_equal(subscribe(200, 400))
         assert(invoked[0] == 5)
 
@@ -114,7 +114,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), throw(600, ex), send(610, 12), throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x):
@@ -124,7 +124,7 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7), on_next(580, 11), on_error(600, ex))
+        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7), send(580, 11), throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
@@ -132,7 +132,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600), send(610, 12), throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x):
@@ -145,7 +145,7 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_error(380, ex))
+        results.messages.assert_equal(send(230, 3), send(340, 5), throw(380, ex))
         xs.subscriptions.assert_equal(subscribe(200, 380))
         assert(invoked[0] == 4)
 
@@ -153,7 +153,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ys = [None]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600), send(610, 12), throw(620, 'ex'), close(630))
         results = scheduler.create_observer()
         d = SerialDisposable()
 
@@ -181,14 +181,14 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         scheduler.start()
-        results.messages.assert_equal(on_next(230, 3), on_next(340, 5), on_next(390, 7))
+        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7))
         xs.subscriptions.assert_equal(subscribe(200, 450))
         assert(invoked[0] == 6)
 
     def test_filter_indexed_complete(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600), send(610, 12), throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x, index):
@@ -198,14 +198,14 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_completed(600))
+        results.messages.assert_equal(send(230, 3), send(390, 7), close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
     def test_filter_indexed_true(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x, index):
@@ -215,14 +215,14 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        results.messages.assert_equal(send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
     def test_filter_indexed_false(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x, index):
@@ -232,14 +232,14 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_completed(600))
+        results.messages.assert_equal(close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
     def test_filter_indexed_dispose(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
 
         def create():
             def predicate(x, index):
@@ -249,7 +249,7 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create, disposed=400)
-        results.messages.assert_equal(on_next(230, 3), on_next(390, 7))
+        results.messages.assert_equal(send(230, 3), send(390, 7))
         xs.subscriptions.assert_equal(subscribe(200, 400))
         assert(invoked[0] == 5)
 
@@ -257,7 +257,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), throw(600, ex), send(610, 12), throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x, index):
@@ -267,7 +267,7 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(230, 3), on_next(390, 7), on_error(600, ex))
+        results.messages.assert_equal(send(230, 3), send(390, 7), throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(200, 600))
         assert(invoked[0] == 9)
 
@@ -275,7 +275,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600), send(610, 12), throw(620, 'ex'), close(630))
 
         def create():
             def predicate(x, index):
@@ -287,7 +287,7 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(230, 3), on_error(380, ex))
+        results.messages.assert_equal(send(230, 3), throw(380, ex))
         xs.subscriptions.assert_equal(subscribe(200, 380))
         assert(invoked[0] == 4)
 
@@ -295,7 +295,7 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         ys = [None]
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(send(110, 1), send(180, 2), send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600), send(610, 12), throw(620, 'ex'), close(630))
         results = scheduler.create_observer()
         d = SerialDisposable()
 
@@ -321,6 +321,6 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action3)
 
         scheduler.start()
-        results.messages.assert_equal(on_next(230, 3), on_next(390, 7))
+        results.messages.assert_equal(send(230, 3), send(390, 7))
         xs.subscriptions.assert_equal(subscribe(200, 450))
         assert(invoked[0] == 6)

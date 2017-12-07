@@ -14,12 +14,12 @@ def to_iterable(source: Observable) -> Observable:
 
         queue = []
 
-        def on_next(item):
+        def send(item):
             queue.append(item)
 
-        def on_completed():
-            observer.on_next(queue)
-            observer.on_completed()
+        def close():
+            observer.send(queue)
+            observer.close()
 
-        return source.subscribe_callbacks(on_next, observer.on_error, on_completed)
+        return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)

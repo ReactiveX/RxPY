@@ -8,7 +8,7 @@ def last(self):
     """
     Blocks until the last element emits from a BlockingObservable.
 
-    If no item is emitted when on_completed() is called, an exception is thrown
+    If no item is emitted when close() is called, an exception is thrown
 
     Note: This will block even if the underlying Observable is asynchronous.
 
@@ -33,7 +33,7 @@ def last_or_default(self, default_value):
     """
     Blocks until the last element emits from a BlockingObservable.
 
-    If no item is emitted when on_completed() is called, the provided default_value will be returned
+    If no item is emitted when close() is called, the provided default_value will be returned
 
     Note: This will block even if the underlying Observable is asynchronous.
 

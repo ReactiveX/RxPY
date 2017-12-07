@@ -34,7 +34,7 @@ def take_until_with_time(self, end_time, scheduler=None):
 
     def subscribe(observer):
         def action(scheduler, state):
-            observer.on_completed()
+            observer.close()
 
         task = scheduler_method(end_time, action)
         return CompositeDisposable(task,  source.subscribe(observer))

@@ -11,9 +11,9 @@ try:
 except ImportError:
     raise SkipTest("Transducers not available")
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -76,7 +76,7 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1)
+            send(150, 1)
         )
 
         def create():
@@ -94,8 +94,8 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_completed(250)
+            send(150, 1),
+            close(250)
         )
 
         def create():
@@ -104,7 +104,7 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_completed(250)
+            close(250)
         )
 
         xs.subscriptions.assert_equal(
@@ -115,12 +115,12 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(220, 3),
-            on_next(230, 4),
-            on_next(240, 5),
-            on_completed(250)
+            send(150, 1),
+            send(210, 2),
+            send(220, 3),
+            send(230, 4),
+            send(240, 5),
+            close(250)
         )
 
         i = [0]
@@ -137,9 +137,9 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(210, 20),
-            on_next(230, 40),
-            on_completed(250)
+            send(210, 20),
+            send(230, 40),
+            close(250)
         )
 
         xs.subscriptions.assert_equal(
@@ -152,11 +152,11 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(220, 3),
-            on_next(230, 4),
-            on_next(240, 5)
+            send(150, 1),
+            send(210, 2),
+            send(220, 3),
+            send(230, 4),
+            send(240, 5)
         )
 
         i = [0]
@@ -173,8 +173,8 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(210, 20),
-            on_next(230, 40)
+            send(210, 20),
+            send(230, 40)
         )
 
         xs.subscriptions.assert_equal(
@@ -189,8 +189,8 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_error(210, error)
+            send(150, 1),
+            throw(210, error)
         )
 
         def create():
@@ -199,7 +199,7 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_error(210, error)
+            throw(210, error)
         )
 
         xs.subscriptions.assert_equal(
@@ -212,12 +212,12 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(150, 1),
-            on_next(210, 2),
-            on_next(220, 3),
-            on_next(230, 4),
-            on_next(240, 5),
-            on_completed(250)
+            send(150, 1),
+            send(210, 2),
+            send(220, 3),
+            send(230, 4),
+            send(240, 5),
+            close(250)
         )
 
         i = [0]
@@ -237,9 +237,9 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            on_next(210, 20),
-            on_next(230, 40),
-            on_error(240, error)
+            send(210, 20),
+            send(230, 40),
+            throw(240, error)
         )
 
         xs.subscriptions.assert_equal(

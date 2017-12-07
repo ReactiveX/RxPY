@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -31,15 +31,15 @@ class TestDefer(unittest.TestCase):
             def defer():
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                                    on_next(100, scheduler.clock),
-                                    on_completed(200)
+                                    send(100, scheduler.clock),
+                                    close(200)
                                 )
                 return xs[0]
             return Observable.defer(defer)
         results = scheduler.start(create)
         results.messages.assert_equal(
-                            on_next(300, 200),
-                            on_completed(400)
+                            send(300, 200),
+                            close(400)
                         )
         assert(1 == invoked[0])
         return xs[0].subscriptions.assert_equal(subscribe(200, 400))
@@ -53,13 +53,13 @@ class TestDefer(unittest.TestCase):
         def create():
             def defer():
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+                xs[0] = scheduler.create_cold_observable(send(100, scheduler.clock), throw(200, ex))
                 return xs[0]
             return Observable.defer(defer)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
+        results.messages.assert_equal(send(300, 200), throw(400, ex))
         assert (1 == invoked[0])
         return xs[0].subscriptions.assert_equal(subscribe(200, 400))
 
@@ -71,12 +71,12 @@ class TestDefer(unittest.TestCase):
         def create():
             def defer():
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
+                xs[0] = scheduler.create_cold_observable(send(100, scheduler.clock), send(200, invoked[0]), send(1100, 1000))
                 return xs[0]
             return Observable.defer(defer)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(300, 200), on_next(400, 1))
+        results.messages.assert_equal(send(300, 200), send(400, 1))
         assert(1 == invoked[0])
         return xs[0].subscriptions.assert_equal(subscribe(200, 1000))
 
@@ -93,5 +93,5 @@ class TestDefer(unittest.TestCase):
             return Observable.defer(defer)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(200, ex))
+        results.messages.assert_equal(throw(200, ex))
         assert(1 == invoked[0])

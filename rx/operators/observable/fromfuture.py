@@ -21,10 +21,10 @@ def from_future(cls, future):
             try:
                 value = future.result()
             except Exception as ex:
-                observer.on_error(ex)
+                observer.throw(ex)
             else:
-                observer.on_next(value)
-                observer.on_completed()
+                observer.send(value)
+                observer.close()
 
         future.add_done_callback(done)
 

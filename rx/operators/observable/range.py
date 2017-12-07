@@ -30,10 +30,10 @@ def range(cls, start, count, scheduler=None):
 
         def action(scheduler, n):
             if n < end:
-                observer.on_next(n)
+                observer.send(n)
                 sd.disposable = scheduler.schedule(action, n + 1)
             else:
-                observer.on_completed()
+                observer.close()
 
         sd.disposable = scheduler.schedule(action, start)
         return sd

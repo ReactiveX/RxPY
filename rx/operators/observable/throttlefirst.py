@@ -26,18 +26,18 @@ def throttle_first(self, window_duration, scheduler=None):
     source = self
 
     def subscribe(observer):
-        last_on_next = [0]
+        last_send = [0]
 
-        def on_next(x):
+        def send(x):
             emit = False
             now = scheduler.now
 
             with self.lock:
-                if not last_on_next[0] or now - last_on_next[0] >= duration:
-                    last_on_next[0] = now
+                if not last_send[0] or now - last_send[0] >= duration:
+                    last_send[0] = now
                     emit = True
             if emit:
-                observer.on_next(x)
+                observer.send(x)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

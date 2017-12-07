@@ -11,11 +11,11 @@ class AnonymousSubject(Observable):
     def _subscribe_core(self, observer):
         return self.observable.subscribe(observer)
 
-    def on_completed(self):
-        self.observer.on_completed()
+    def close(self):
+        self.observer.close()
 
-    def on_error(self, exception):
-        self.observer.on_error(exception)
+    def throw(self, exception):
+        self.observer.throw(exception)
 
-    def on_next(self, value):
-        self.observer.on_next(value)
+    def send(self, value):
+        self.observer.send(value)

@@ -21,19 +21,19 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
     """
 
     def subscribe(observer):
-        def on_next(value):
+        def send(value):
             try:
                 should_run = predicate(value)
             except Exception as ex:  # By design. pylint: disable=W0703
-                observer.on_error(ex)
+                observer.throw(ex)
                 return
 
             if should_run:
-                observer.on_next(value)
+                observer.send(value)
 
-        return source.subscribe_callbacks(on_next,
-                                observer.on_error,
-                                observer.on_completed)
+        return source.subscribe_callbacks(send,
+                                observer.throw,
+                                observer.close)
     return AnonymousObservable(subscribe)
 
 
@@ -58,19 +58,19 @@ def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
     def subscribe(observer):
         count = 0
 
-        def on_next(value):
+        def send(value):
             nonlocal count
 
             try:
                 should_run = predicate(value, count)
             except Exception as ex:  # By design. pylint: disable=W0703
-                observer.on_error(ex)
+                observer.throw(ex)
                 return
             else:
                 count += 1
 
             if should_run:
-                observer.on_next(value)
+                observer.send(value)
 
-        return source.subscribe_callbacks(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

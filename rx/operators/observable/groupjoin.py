@@ -47,7 +47,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
         left_id = [0]
         right_id = [0]
 
-        def on_next_left(value):
+        def send_left(value):
             s = Subject()
 
             with self.lock:
@@ -60,15 +60,15 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
             except Exception as e:
                 log.error("*** Exception: %s" % e)
                 for left_value in left_map.values():
-                    left_value.on_error(e)
+                    left_value.throw(e)
 
-                observer.on_error(e)
+                observer.throw(e)
                 return
 
-            observer.on_next(result)
+            observer.send(result)
 
             for right_value in right_map.values():
-                s.on_next(right_value)
+                s.send(right_value)
 
             md = SingleAssignmentDisposable()
             group.add(md)
@@ -76,7 +76,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
             def expire():
                 if _id in left_map:
                     del left_map[_id]
-                    s.on_completed()
+                    s.close()
 
                 group.remove(md)
 
@@ -84,32 +84,32 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
                 duration = left_duration_selector(value)
             except Exception as e:
                 for left_value in left_map.values():
-                    left_value.on_error(e)
+                    left_value.throw(e)
 
-                observer.on_error(e)
+                observer.throw(e)
                 return
 
-            def on_error(e):
+            def throw(e):
                 for left_value in left_map.values():
-                    left_value.on_error(e)
+                    left_value.throw(e)
 
-                observer.on_error(e)
+                observer.throw(e)
 
             md.disposable = duration.take(1).subscribe_callbacks(
                 nothing,
-                on_error,
+                throw,
                 expire)
 
-        def on_error_left(e):
+        def throw_left(e):
             for left_value in left_map.values():
-                left_value.on_error(e)
+                left_value.throw(e)
 
-            observer.on_error(e)
+            observer.throw(e)
 
-        group.add(left.subscribe_callbacks(on_next_left, on_error_left,
-                  observer.on_completed))
+        group.add(left.subscribe_callbacks(send_left, throw_left,
+                  observer.close))
 
-        def on_next_right(value):
+        def send_right(value):
             with self.lock:
                 _id = right_id[0]
                 right_id[0] += 1
@@ -126,33 +126,33 @@ def group_join(self, right, left_duration_selector, right_duration_selector,
                 duration = right_duration_selector(value)
             except Exception as e:
                 for left_value in left_map.values():
-                    left_value.on_error(e)
+                    left_value.throw(e)
 
-                observer.on_error(e)
+                observer.throw(e)
                 return
 
-            def on_error(e):
+            def throw(e):
                 with self.lock:
                     for left_value in left_map.values():
-                        left_value.on_error(e)
+                        left_value.throw(e)
 
-                    observer.on_error(e)
+                    observer.throw(e)
 
             md.disposable = duration.take(1).subscribe_callbacks(
                 nothing,
-                on_error,
+                throw,
                 expire)
 
             with self.lock:
                 for left_value in left_map.values():
-                    left_value.on_next(value)
+                    left_value.send(value)
 
-        def on_error_right(e):
+        def throw_right(e):
             for left_value in left_map.values():
-                left_value.on_error(e)
+                left_value.throw(e)
 
-            observer.on_error(e)
+            observer.throw(e)
 
-        group.add(right.subscribe_callbacks(on_next_right, on_error_right))
+        group.add(right.subscribe_callbacks(send_right, throw_right))
         return r
     return AnonymousObservable(subscribe)

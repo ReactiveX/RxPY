@@ -4,9 +4,9 @@ from datetime import datetime
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
+send = ReactiveTest.send
+close = ReactiveTest.close
+throw = ReactiveTest.throw
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -33,7 +33,7 @@ class TestTimeInterval(unittest.TestCase):
 
     def test_timestamp_regular(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
+        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
             def selector(x):
@@ -41,7 +41,7 @@ class TestTimeInterval(unittest.TestCase):
             return xs.timestamp(scheduler).map(selector)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)), on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)), on_next(350, Timestamp(6, 350)), on_completed(400))
+        results.messages.assert_equal(send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)), send(260, Timestamp(4, 260)), send(300, Timestamp(5, 300)), send(350, Timestamp(6, 350)), close(400))
 
     def test_timestamp_empty(self):
         scheduler = TestScheduler()
@@ -50,7 +50,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.empty(scheduler).time_interval(scheduler=scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(201))
+        results.messages.assert_equal(close(201))
 
     def test_timestamp_error(self):
         ex = 'ex'
@@ -60,7 +60,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.throw_exception(ex, scheduler).time_interval(scheduler=scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        results.messages.assert_equal(throw(201, ex))
 
     def test_timestamp_never(self):
         scheduler = TestScheduler()
