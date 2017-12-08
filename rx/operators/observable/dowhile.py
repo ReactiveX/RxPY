@@ -3,7 +3,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def do_while(self, condition):
+def do_while(source, condition):
     """Repeats source as long as condition holds emulating a do while loop.
 
     Keyword arguments:
@@ -14,4 +14,4 @@ def do_while(self, condition):
     as the condition holds.
     """
 
-    return self.concat(Observable.while_do(condition, self))
+    return source.concat(Observable.while_do(condition, source))

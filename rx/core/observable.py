@@ -492,3 +492,17 @@ class Observable(bases.Observable):
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
+
+    def while_do(self, condition):
+        """Repeats source as long as condition holds emulating a while loop.
+
+        Keyword arguments:
+        condition -- The condition which determines if the source will be
+            repeated.
+
+        Returns an observable sequence which is repeated as long as the
+            condition holds.
+        """
+        from ..operators.observable.whiledo import while_do
+        source = self
+        return while_do(condition, source)

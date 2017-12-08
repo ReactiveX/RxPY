@@ -16,7 +16,7 @@ class Iterable(abc.Iterable):
         return Iterable(selector(value) for value in self)
 
     def take(self, count):
-        def next():
+        def _next():
             n = count
 
             for value in self:
@@ -28,11 +28,11 @@ class Iterable(abc.Iterable):
             raise StopIteration
 
         from .anonymousiterable import AnonymousIterable
-        return AnonymousIterable(next())
+        return AnonymousIterable(_next())
 
     @classmethod
     def range(cls, start, count):
-        def next():
+        def _next():
             value = start
             n = count
             while n > 0:
@@ -43,7 +43,7 @@ class Iterable(abc.Iterable):
             raise StopIteration
 
         from .anonymousiterable import AnonymousIterable
-        return AnonymousIterable(next())
+        return AnonymousIterable(_next())
 
     @classmethod
     def repeat(cls, value, count=None):
@@ -59,3 +59,8 @@ class Iterable(abc.Iterable):
 
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(selector(value) for value in source)
+
+    def while_do(self, condition):
+        from ..operators.enumerable.whiledo import while_do
+        source = self
+        return while_do(condition, source)
