@@ -1,4 +1,5 @@
 from rx.core import Observable
+from .concat import concat
 
 
 def start_with(self, *args) -> Observable:
@@ -9,5 +10,6 @@ def start_with(self, *args) -> Observable:
     Returns the source sequence prepended with the specified values.
     """
 
-    sequence = [Observable.from_(args), self]
-    return Observable.concat(sequence)
+    source = self
+    sequence = [Observable.from_(args), source]
+    return concat(*sequence)

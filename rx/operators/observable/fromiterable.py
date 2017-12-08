@@ -1,5 +1,5 @@
 from typing import Iterable
-from rx.core.bases.scheduler import Scheduler
+
 from rx import config
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
@@ -11,6 +11,9 @@ def from_iterable(iterable: Iterable) -> Observable:
     scheduler to enumerate the array.
 
     1 - res = rx.Observable.from_iterable([1,2,3])
+
+    Keyword arguments:
+    iterable - An python iterable
 
     Returns the observable sequence whose elements are pulled from the
         given enumerable sequence.
