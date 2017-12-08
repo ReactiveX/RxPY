@@ -30,7 +30,7 @@ class TestExpand(unittest.TestCase):
             def selector():
                 return scheduler.create_cold_observable(send(100, 1), send(200, 2), close(300))
 
-            return xs.expand(selector, scheduler)
+            return xs.expand(selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(close(300))
@@ -44,7 +44,7 @@ class TestExpand(unittest.TestCase):
         def create():
             def selector(x):
                 return scheduler.create_cold_observable(send(100 + x, 2 * x), send(200 + x, 3 * x), close(300 + x))
-            return xs.expand(selector, scheduler)
+            return xs.expand(selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(throw(300, ex))
@@ -57,7 +57,7 @@ class TestExpand(unittest.TestCase):
         def create():
             def selector(x):
                 return scheduler.create_cold_observable(send(100 + x, 2 * x), send(200 + x, 3 * x), close(300 + x))
-            return xs.expand(selector, scheduler)
+            return xs.expand(selector)
 
         results = scheduler.start(create)
 
@@ -72,7 +72,7 @@ class TestExpand(unittest.TestCase):
         def create():
             def selector(x):
                 return scheduler.create_cold_observable(send(100, 2 * x), send(200, 3 * x), close(300))
-            return xs.expand(selector, scheduler)
+            return xs.expand(selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(send(550, 1), send(651, 2), send(751, 3), send(752, 4), send(850, 2), send(852, 6), send(852, 6), send(853, 8), send(951, 4), send(952, 9), send(952, 12), send(953, 12), send(953, 12), send(954, 16))
@@ -86,7 +86,7 @@ class TestExpand(unittest.TestCase):
         def create():
             def selector(x):
                 raise Exception(ex)
-            return xs.expand(selector, scheduler)
+            return xs.expand(selector)
         results = scheduler.start(create)
 
         results.messages.assert_equal(send(550, 1), throw(550, ex))

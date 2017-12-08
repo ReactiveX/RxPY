@@ -26,7 +26,7 @@ class TestEmpty(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.empty(scheduler)
+            return Observable.empty()
         results = scheduler.start(factory)
 
         results.messages.assert_equal(close(201))
@@ -35,15 +35,15 @@ class TestEmpty(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.empty(scheduler)
+            return Observable.empty()
 
         results = scheduler.start(factory, disposed=200)
         results.messages.assert_equal()
 
     def test_empty_observer_throw_exception(self):
         scheduler = TestScheduler()
-        xs = Observable.empty(scheduler)
-        xs.subscribe_callbacks(lambda x: None, lambda ex: None, lambda: _raise('ex'))
+        xs = Observable.empty()
+        xs.subscribe_callbacks(lambda x: None, lambda ex: None, lambda: _raise('ex'), scheduler)
 
         with self.assertRaises(RxException):
             scheduler.start()

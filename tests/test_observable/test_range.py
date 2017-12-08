@@ -17,7 +17,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(0, 0, scheduler)
+            return Observable.range(0, 0)
 
         results = scheduler.start(create)
         results.messages.assert_equal(close(201))
@@ -26,7 +26,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(0, 1, scheduler)
+            return Observable.range(0, 1)
         results = scheduler.start(create)
 
         results.messages.assert_equal(send(201, 0), close(202))
@@ -35,7 +35,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(10, 5, scheduler)
+            return Observable.range(10, 5)
 
         results = scheduler.start(create)
 
@@ -51,7 +51,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(-10, 5, scheduler)
+            return Observable.range(-10, 5)
 
         results = scheduler.start(create, disposed=204)
         results.messages.assert_equal(send(201, -10), send(202, -9), send(203, -8))
@@ -60,8 +60,6 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
         obs = Observable.range(1, 3)
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(send(200, 1), send(200, 2), send(200, 3), close(200))
+        results = scheduler.start(lambda: obs.concat(obs))
+        results.messages.assert_equal(send(202, 1), send(203, 2), send(204, 3), send(207, 1), send(208, 2), send(209, 3), close(211))
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(send(1001, 1), send(1001, 2), send(1001, 3), close(1001))

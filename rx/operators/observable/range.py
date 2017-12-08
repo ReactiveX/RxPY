@@ -5,7 +5,7 @@ from rx.disposables import MultipleAssignmentDisposable
 
 
 @extensionclassmethod(Observable)
-def range(cls, start, count, scheduler=None):
+def range(cls, start, count):
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -22,16 +22,17 @@ def range(cls, start, count, scheduler=None):
     Returns an observable sequence that contains a range of sequential
     integral numbers.
     """
-    scheduler = scheduler or current_thread_scheduler
     end = start + count
 
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, n):
+            print(n)
             if n < end:
                 observer.send(n)
-                sd.disposable = scheduler.schedule(action, n + 1)
+                sd.disposable = scheduler.schedule(action, state=n + 1)
             else:
                 observer.close()
 

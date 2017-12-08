@@ -113,7 +113,7 @@ class TestScheduler(VirtualTimeScheduler):
         of subscriptions and notifications.
         """
 
-        if len(args) and isinstance(args[0], list):
+        if args and isinstance(args[0], list):
             messages = args[0]
         else:
             messages = list(args)
@@ -133,7 +133,7 @@ class TestScheduler(VirtualTimeScheduler):
         :rtype: Observable
         """
 
-        if len(args) and isinstance(args[0], list):
+        if args and isinstance(args[0], list):
             messages = args[0]
         else:
             messages = list(args)

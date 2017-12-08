@@ -27,7 +27,7 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(200, 2), send(250, 3), send(300, 4), send(350, 5), send(400, 6), send(450, 7), send(500, 8), close(550))
 
         def create():
-            return xs.debounce(40, scheduler)
+            return xs.debounce(40)
 
         results = scheduler.start(create)
 
@@ -39,7 +39,7 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(200, 2), send(250, 3), send(300, 4), send(350, 5), send(400, 6), send(450, 7), send(500, 8), throw(550, ex))
 
         def create():
-            return xs.debounce(40, scheduler)
+            return xs.debounce(40)
 
         results = scheduler.start(create)
         return results.messages.assert_equal(send(290, 3), send(340, 4), send(390, 5), send(440, 6), send(490, 7), send(540, 8), throw(550, ex))
@@ -49,7 +49,7 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(200, 2), send(250, 3), send(300, 4), send(350, 5), send(400, 6), send(450, 7), send(500, 8), close(550))
 
         def create():
-            return xs.debounce(60, scheduler)
+            return xs.debounce(60)
 
         results = scheduler.start(create)
         return results.messages.assert_equal(send(550, 8), close(550))
@@ -60,7 +60,7 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(200, 2), send(250, 3), send(300, 4), send(350, 5), send(400, 6), send(450, 7), send(500, 8), throw(550, ex))
 
         def create():
-            return xs.debounce(60, scheduler)
+            return xs.debounce(60)
 
         results = scheduler.start(create)
         return results.messages.assert_equal(throw(550, ex))
@@ -70,7 +70,7 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(250, 2), send(350, 3), send(370, 4), send(421, 5), send(480, 6), send(490, 7), send(500, 8), close(600))
 
         def create():
-            return xs.debounce(50, scheduler)
+            return xs.debounce(50)
 
         results = scheduler.start(create)
         return results.messages.assert_equal(send(300, 2), send(420, 4), send(471, 5), send(550, 8), close(600))
@@ -79,27 +79,27 @@ class TestDebounce(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.empty(scheduler).debounce(10, scheduler)
+            return Observable.empty().debounce(10)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_debounce_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex, scheduler).debounce(10, scheduler)
+            return Observable.throw_exception(ex).debounce(10)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_debounce_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().debounce(10, scheduler)
+            return Observable.never().debounce(10)
 
         results = scheduler.start(create)
         results.messages.assert_equal()
