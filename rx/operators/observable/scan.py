@@ -1,13 +1,12 @@
+from typing import Any, Callable
 from rx import Observable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def scan(self, accumulator, seed=None):
+def scan(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> Observable:
     """Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used as
     the initial accumulator value. For aggregation behavior with no
-    intermediate results, see Observable.aggregate.
+    intermediate results, see Observable.aggregate or Observable.reduce.
 
     1 - scanned = source.scan(lambda acc, x: acc + x)
     2 - scanned = source.scan(lambda acc, x: acc + x, 0)
@@ -20,12 +19,12 @@ def scan(self, accumulator, seed=None):
     """
 
     has_seed = False
-    if not seed is None:
+    if seed is not None:
         has_seed = True
 
-    source = self
-
     def defer():
+        nonlocal source
+
         has_accumulation = [False]
         accumulation = [None]
 
@@ -33,7 +32,7 @@ def scan(self, accumulator, seed=None):
             if has_accumulation[0]:
                 accumulation[0] = accumulator(accumulation[0], x)
             else:
-                accumulation[0] =  accumulator(seed, x) if has_seed else x
+                accumulation[0] = accumulator(seed, x) if has_seed else x
                 has_accumulation[0] = True
 
             return accumulation[0]

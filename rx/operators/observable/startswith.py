@@ -1,9 +1,9 @@
 from rx.core import Scheduler, Observable
-
+from .concat import concat
 from rx.concurrency import immediate_scheduler
 
 
-def start_with(self, *args, **kw) -> Observable:
+def start_with(source, *args, **kw) -> Observable:
     """Prepends a sequence of values to an observable sequence with an
     optional scheduler and an argument list of values to prepend.
 
@@ -19,5 +19,5 @@ def start_with(self, *args, **kw) -> Observable:
     else:
         scheduler = kw.get("scheduler", immediate_scheduler)
 
-    sequence = [Observable.from_(args, scheduler), self]
-    return Observable.concat(sequence)
+    sequence = [Observable.from_(args, scheduler), source]
+    return concat(*sequence)

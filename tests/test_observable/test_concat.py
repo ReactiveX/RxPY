@@ -2,6 +2,7 @@ import unittest
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
+from rx.operators.observable.concat import concat
 
 send = ReactiveTest.send
 close = ReactiveTest.close
@@ -14,6 +15,7 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
@@ -105,6 +107,7 @@ class TestConcat(unittest.TestCase):
 
         def create():
             return e1.concat(e2)
+
         results = scheduler.start(create)
         results.messages.assert_equal(throw(230, ex))
 
