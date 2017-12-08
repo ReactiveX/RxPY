@@ -8,7 +8,7 @@ class AnonymousObserver(ObserverBase):
 
         self._next = send or noop
         self._error = throw or default_error
-        self._completed = close or noop
+        self._close = close or noop
 
     def _send_core(self, value):
         self._next(value)
@@ -17,4 +17,5 @@ class AnonymousObserver(ObserverBase):
         self._error(error)
 
     def _close_core(self):
-        self._completed()
+        print(self._next, self._error)
+        self._close()

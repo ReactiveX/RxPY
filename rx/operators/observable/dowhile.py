@@ -14,4 +14,4 @@ def do_while(self, condition):
     as the condition holds.
     """
 
-    return Observable.concat([self, Observable.while_do(condition, self)])
+    return self.concat(Observable.while_do(condition, self))

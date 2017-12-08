@@ -221,7 +221,7 @@ class TestSelectMany(unittest.TestCase):
 
         def factory():
             def projection(x):
-                return Observable.interval(10, scheduler).map_indexed(lambda a, b: x).take(x)
+                return Observable.interval(10).map_indexed(lambda a, b: x).take(x)
             return xs.select_many(projection)
         results = scheduler.start(factory)
 
@@ -249,17 +249,17 @@ class TestSelectMany(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            send(210, 2),
-            send(210, 2),
-            send(340, 4),
-            send(340, 4),
-            send(340, 4),
-            send(340, 4),
-            send(420, 3),
-            send(420, 3),
-            send(420, 3),
-            send(510, 2),
-            send(510, 2),
+            send(211, 2),
+            send(212, 2),
+            send(341, 4),
+            send(342, 4),
+            send(343, 4),
+            send(344, 4),
+            send(421, 3),
+            send(422, 3),
+            send(423, 3),
+            send(511, 2),
+            send(512, 2),
             close(600)
         )
 
@@ -285,17 +285,17 @@ class TestSelectMany(unittest.TestCase):
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            send(210, 4),
-            send(210, 4),
-            send(340, 8),
-            send(340, 8),
-            send(340, 8),
-            send(340, 8),
-            send(420, 6),
-            send(420, 6),
-            send(420, 6),
-            send(510, 4),
-            send(510, 4),
+            send(211, 4),
+            send(212, 4),
+            send(341, 8),
+            send(342, 8),
+            send(343, 8),
+            send(344, 8),
+            send(421, 6),
+            send(422, 6),
+            send(423, 6),
+            send(511, 4),
+            send(512, 4),
             close(600)
         )
 

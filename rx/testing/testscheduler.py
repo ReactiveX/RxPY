@@ -8,13 +8,13 @@ from .hotobservable import HotObservable
 from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
 
-log = logging.getLogger("Rx")
-
 
 class TestScheduler(VirtualTimeScheduler):
     """Test time scheduler used for testing applications and libraries
     built using Reactive Extensions. All time, both absolute and relative is
     specified as integer ticks"""
+
+    __test__ = False
 
     def __init__(self):
         """Initializes a new instance of the TestScheduler class."""

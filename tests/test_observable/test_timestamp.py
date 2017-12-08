@@ -47,7 +47,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.empty(scheduler).time_interval(scheduler=scheduler)
+            return Observable.empty(scheduler).time_interval()
 
         results = scheduler.start(create)
         results.messages.assert_equal(close(201))
@@ -57,7 +57,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex, scheduler).time_interval(scheduler=scheduler)
+            return Observable.throw_exception(ex, scheduler).time_interval()
 
         results = scheduler.start(create)
         results.messages.assert_equal(throw(201, ex))
@@ -66,7 +66,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().time_interval(scheduler=scheduler)
+            return Observable.never().time_interval()
 
         results = scheduler.start(create)
         results.messages.assert_equal()

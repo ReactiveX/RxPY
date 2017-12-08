@@ -1,19 +1,21 @@
+from typing import Union
+from asyncio.futures import Future
+
 from rx.core import Observable, AnonymousObservable
 from rx.internal.utils import is_future
 from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
-def from_future(cls, future):
+def from_future(future: Union[Observable, Future]) -> Observable:
     """Converts a Future to an Observable sequence
 
     Keyword Arguments:
-    future -- {Future} A Python 3 compatible future.
+    future -- A Python 3 compatible future.
         https://docs.python.org/3/library/asyncio-task.html#future
         http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
-    Returns {Observable} An Observable sequence which wraps the existing
-    future success and failure.
+    Returns an Observable sequence which wraps the existing future
+    success and failure.
     """
 
     def subscribe(observer, scheduler=None):

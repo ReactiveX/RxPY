@@ -87,12 +87,12 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
         observer.send(add_ref(window[0], r))
 
-        def send(x):
-            window[0].send(x)
+        def send(value):
+            window[0].send(value)
 
-        def throw(ex):
-            window[0].throw(ex)
-            observer.throw(ex)
+        def throw(error):
+            window[0].throw(error)
+            observer.throw(error)
 
         def close():
             window[0].close()

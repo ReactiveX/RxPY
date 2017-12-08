@@ -20,4 +20,5 @@ def while_do(cls, condition, source):
     """
 
     source = Observable.from_future(source)
-    return Observable.concat(Iterable.while_do(condition, source))
+    from .concat import concat
+    return concat(Iterable.while_do(condition, source))

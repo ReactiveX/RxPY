@@ -49,8 +49,7 @@ def merge(self, *args, **kwargs):
                     if is_stopped[0] and active_count[0] == 0:
                         observer.close()
 
-            subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw,
-                                                             close, scheduler)
+            subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw, close, scheduler)
 
         def send(inner_source):
             if active_count[0] < max_concurrent:
@@ -64,7 +63,7 @@ def merge(self, *args, **kwargs):
             if active_count[0] == 0:
                 observer.close()
 
-        group.add(sources.subscribe_callbacks(send, observer.throw, close))
+        group.add(sources.subscribe_callbacks(send, observer.throw, close, scheduler))
         return group
     return AnonymousObservable(subscribe)
 
@@ -86,7 +85,7 @@ def merge(cls, *args):
     if isinstance(sources[0], list):
         sources = sources[0]
 
-    return Observable.from_(sources).merge_all()
+    return Observable.from_iterable(sources).merge_all()
 
 
 @extensionmethod(Observable, alias="merge_observable")

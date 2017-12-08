@@ -18,27 +18,27 @@ class TestBufferWithCount(unittest.TestCase):
             send(100, 1),
             send(210, 2),
             send(240, 3),
-            send(280, 4),
-            send(320, 5),
-            send(350, 6),
-            send(380, 7),
-            send(420, 8),
-            send(470, 9),
+            send(281, 4),
+            send(321, 5),
+            send(351, 6),
+            send(381, 7),
+            send(421, 8),
+            send(471, 9),
             close(600))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(300, "2,3,4"),
-            send(370, "4,5,6"),
-            send(440, "6,7,8"),
-            send(510, "8,9"),
-            send(580, ""),
-            send(600, ""),
-            close(600))
+            send(301, "2,3,4"),
+            send(371, "4,5,6"),
+            send(441, "6,7,8"),
+            send(511, "8,9"),
+            send(581, ""),
+            send(601, ""),
+            close(601))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
     def test_buffer_with_time_error(self):
@@ -57,16 +57,16 @@ class TestBufferWithCount(unittest.TestCase):
             throw(600, ex))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(300, "2,3,4"),
-            send(370, "4,5,6"),
-            send(440, "6,7,8"),
-            send(510, "8,9"),
-            send(580, ""),
+            send(301, "2,3,4"),
+            send(371, "4,5,6"),
+            send(441, "6,7,8"),
+            send(511, "8,9"),
+            send(581, ""),
             throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
@@ -76,19 +76,19 @@ class TestBufferWithCount(unittest.TestCase):
             send(100, 1),
             send(210, 2),
             send(240, 3),
-            send(280, 4),
-            send(320, 5),
-            send(350, 6),
-            send(380, 7),
-            send(420, 8),
-            send(470, 9),
+            send(281, 4),
+            send(321, 5),
+            send(351, 6),
+            send(381, 7),
+            send(421, 8),
+            send(471, 9),
             close(600))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create, disposed=370)
-        results.messages.assert_equal(send(300, "2,3,4"))
+        results.messages.assert_equal(send(301, "2,3,4"))
         xs.subscriptions.assert_equal(subscribe(200, 370))
 
     def test_buffer_with_time_basic_same(self):
@@ -106,14 +106,14 @@ class TestBufferWithCount(unittest.TestCase):
             close(600))
 
         def create():
-            return xs.buffer_with_time(100, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(300, "2,3,4"),
-            send(400, "5,6,7"),
-            send(500, "8,9"),
-            send(600, ""),
-            close(600))
+            send(301, "2,3,4"),
+            send(401, "5,6,7"),
+            send(501, "8,9"),
+            send(601, ""),
+            close(601))
         xs.subscriptions.assert_equal(subscribe(200, 600))

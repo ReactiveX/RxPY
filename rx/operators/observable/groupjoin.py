@@ -88,19 +88,19 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 observer.throw(e)
                 return
 
-            def throw(e):
+            def throw(error):
                 for left_value in left_map.values():
-                    left_value.throw(e)
+                    left_value.throw(error)
 
-                observer.throw(e)
+                observer.throw(error)
 
             md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
 
-        def throw_left(e):
+        def throw_left(error):
             for left_value in left_map.values():
-                left_value.throw(e)
+                left_value.throw(error)
 
-            observer.throw(e)
+            observer.throw(error)
 
         group.add(left.subscribe_callbacks(send_left, throw_left, observer.close, scheduler))
 
@@ -126,12 +126,12 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 observer.throw(e)
                 return
 
-            def throw(e):
+            def throw(error):
                 with self.lock:
                     for left_value in left_map.values():
-                        left_value.throw(e)
+                        left_value.throw(error)
 
-                    observer.throw(e)
+                    observer.throw(error)
 
             md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
 
@@ -139,12 +139,12 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 for left_value in left_map.values():
                     left_value.send(value)
 
-        def throw_right(e):
+        def throw_right(error):
             for left_value in left_map.values():
-                left_value.throw(e)
+                left_value.throw(error)
 
-            observer.throw(e)
+            observer.throw(error)
 
-        group.add(right.subscribe_callbacks(send_right, throw_right, scheduler))
+        group.add(right.subscribe_callbacks(send_right, throw_right, scheduler=scheduler))
         return r
     return AnonymousObservable(subscribe)

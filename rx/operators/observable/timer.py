@@ -104,12 +104,12 @@ def timer(cls, duetime, period=None, scheduler=None):
     scheduler = scheduler or timeout_scheduler
 
     if isinstance(duetime, datetime) and period is None:
-        return observable_timer_date(duetime, scheduler)
+        return observable_timer_date(duetime)
 
     if isinstance(duetime, datetime) and period:
-        return observable_timer_date_and_period(duetime, period, scheduler)
+        return observable_timer_date_and_period(duetime, period)
 
     if period is None:
-        return observable_timer_timespan(duetime, scheduler)
+        return observable_timer_timespan(duetime)
 
-    return observable_timer_timespan_and_period(duetime, period, scheduler)
+    return observable_timer_timespan_and_period(duetime, period)

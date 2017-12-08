@@ -1,6 +1,8 @@
 import types
-from typing import Callable, Any, Iterable
+from datetime import datetime
+from typing import Callable, Any, Iterable, Union
 from abc import abstractmethod
+from asyncio.futures import Future
 
 from rx import config
 from .anonymousobserver import AnonymousObserver
@@ -226,21 +228,31 @@ class Observable(bases.Observable):
         return from_callable(supplier)
 
     @classmethod
+    def from_future(cls, future: Union['Observable', Future]) -> 'Observable':
+        """Converts a Future to an Observable sequence
+
+        Keyword Arguments:
+        future -- A Python 3 compatible future.
+            https://docs.python.org/3/library/asyncio-task.html#future
+            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
+
+        Returns an Observable sequence which wraps the existing future
+        success and failure.
+        """
+        from ..operators.observable.fromfuture import from_future
+        return from_future(future)
+
+    @classmethod
     def from_iterable(cls, iterable: Iterable) -> 'Observable':
-        """Converts an array to an observable sequence, using an optional
-        scheduler to enumerate the array.
+        """Converts an array to an observable sequence.
 
         1 - res = rx.Observable.from_iterable([1,2,3])
-        2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
         Keyword arguments:
-        :param Observable cls: Observable class
-        :param Scheduler scheduler: [Optional] Scheduler to run the
-            enumeration of the input sequence on.
+        iterable - An python iterable
 
-        :returns: The observable sequence whose elements are pulled from the
-            given enumerable sequence.
-        :rtype: Observable
+        Returns the observable sequence whose elements are pulled from
+            the given enumerable sequence.
         """
         from ..operators.observable.fromiterable import from_iterable
         return from_iterable(iterable)
@@ -249,15 +261,13 @@ class Observable(bases.Observable):
     from_list = from_iterable
 
     def map(self, mapper: Callable[[Any], Any]) -> 'Observable':
-        """Project each element of an observable sequence into a new form
-        by incorporating the element's index.
+        """Project each element of an observable sequence into a new
+        form.
 
         1 - source.map(lambda value: value * value)
 
         Keyword arguments:
-        mapper -- A transform function to apply to each source element; the
-            second parameter of the function represents the index of the
-            source element.
+        mapper -- A transform function to apply to each source element.
 
         Returns an observable sequence whose elements are the result of
         invoking the transform function on each element of source.
@@ -274,10 +284,13 @@ class Observable(bases.Observable):
 
     @classmethod
     def never(cls):
-        """Returns a non-terminating observable sequence, which can be used to
-        denote an infinite duration (e.g. when using reactive joins).
+        """Returns a non-terminating observable sequence.
 
-        Returns an observable sequence whose observers will never get called.
+        Such a sequence can be used to denote an infinite duration (e.g.
+        when using reactive joins).
+
+        Returns an observable sequence whose observers will never get
+        called.
         """
         from ..operators.observable.never import never
         return never()
@@ -340,10 +353,12 @@ class Observable(bases.Observable):
         2 - scanned = source.scan(lambda acc, x: acc + x, 0)
 
         Keyword arguments:
-        accumulator -- An accumulator function to be invoked on each element.
+        accumulator -- An accumulator function to be invoked on each
+            element.
         seed -- [Optional] The initial accumulator value.
 
-        Returns an observable sequence containing the accumulated values.
+        Returns an observable sequence containing the accumulated
+        values.
         """
         from ..operators.observable.scan import scan
         source = self
@@ -430,12 +445,49 @@ class Observable(bases.Observable):
         source = self
         return take_last(count, source)
 
+    def time_interval(self) -> 'Observable':
+        """Records the time interval between consecutive values in an
+        observable sequence.
+
+        1 - res = source.time_interval()
+
+        Return An observable sequence with time interval information on
+        values.
+        """
+        from ..operators.observable.timeinterval import time_interval
+        source = self
+        return time_interval(source)
+
+    def timeout(self, duetime: Union[int, datetime], other: 'Observable' = None) -> 'Observable':
+        """Returns the source observable sequence or the other
+        observable sequence if duetime elapses.
+
+        1 - res = source.timeout(5000); # 5 seconds
+        # As a date and timeout observable
+        2 - res = source.timeout(datetime(), Observable.return_value(42))
+        # 5 seconds and timeout observable
+        3 - res = source.timeout(5000, Observable.return_value(42))
+        # As a date and timeout observable
+
+        Keyword arguments:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) when a
+            timeout occurs.
+        other -- Sequence to return in case of a timeout. If not
+            specified, a timeout error throwing sequence will be used.
+
+        Returns the source sequence switching to the other sequence in case
+            of a timeout.
+        """
+        from ..operators.observable.timeout import timeout
+        source = self
+        return timeout(source, duetime, other)
+
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
-        :returns: An observable sequence containing a single element with a list
+        Returns an observable sequence containing a single element with a list
         containing all the elements of the source sequence.
-        :rtype: Observable
         """
         from ..operators.observable.toiterable import to_iterable
         source = self

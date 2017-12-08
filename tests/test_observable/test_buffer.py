@@ -115,21 +115,21 @@ class TestBuffer(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                send(90, 1),
-                send(180, 2),
-                send(250, 3),
-                send(260, 4),
-                send(310, 5),
-                send(340, 6),
-                send(380, 7),
-                throw(400, ex)
+            send(90, 1),
+            send(180, 2),
+            send(250, 3),
+            send(260, 4),
+            send(310, 5),
+            send(340, 6),
+            send(380, 7),
+            throw(400, ex)
         )
 
         ys = scheduler.create_hot_observable(
-                send(255, True),
-                send(330, True),
-                send(350, True),
-                close(500)
+            send(255, True),
+            send(330, True),
+            send(350, True),
+            close(500)
         )
 
         def create():
@@ -158,24 +158,24 @@ class TestBuffer(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                send(90, 1),
-                send(180, 2),
-                send(250, 3),
-                send(260, 4),
-                send(310, 5),
-                send(340, 6),
-                send(410, 7),
-                send(420, 8),
-                send(470, 9),
-                send(550, 10),
-                close(590)
+            send(90, 1),
+            send(180, 2),
+            send(250, 3),
+            send(260, 4),
+            send(310, 5),
+            send(340, 6),
+            send(410, 7),
+            send(420, 8),
+            send(470, 9),
+            send(550, 10),
+            close(590)
         )
 
         ys = scheduler.create_hot_observable(
-                send(255, True),
-                send(330, True),
-                send(350, True),
-                throw(400, ex)
+            send(255, True),
+            send(330, True),
+            send(350, True),
+            throw(400, ex)
         )
 
         def create():
