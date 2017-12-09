@@ -4,12 +4,12 @@ from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
 @extensionmethod(Observable)
-def skip_with_time(self, duration, scheduler=None):
+def skip_with_time(self, duration):
     """Skips elements for the specified duration from the start of the
-    observable source sequence, using the specified scheduler to run timers.
+    observable source sequence.
 
     Example:
-    1 - res = source.skip_with_time(5000, [optional scheduler])
+    1 - res = source.skip_with_time(5000)
 
     Description:
     Specifying a zero value for duration doesn't guarantee no elements will
@@ -24,17 +24,15 @@ def skip_with_time(self, duration, scheduler=None):
     Keyword arguments:
     duration -- {Number} Duration for skipping elements from the start of
         the sequence.
-    scheduler -- {Scheduler} Scheduler to run the timer on. If not
-        specified, defaults to Rx.Scheduler.timeout.
 
     Returns n observable {Observable} sequence with the elements skipped
     during the specified duration from the start of the source sequence.
     """
 
     source = self
-    scheduler = scheduler or timeout_scheduler
 
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
         open = [False]
 
         def action(scheduler, state):

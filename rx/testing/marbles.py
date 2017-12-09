@@ -18,7 +18,7 @@ _tokens = re.compile(_pattern)
 
 
 @extensionclassmethod(Observable, alias="from_string")
-def from_marbles(cls, string, scheduler=None):
+def from_marbles(cls, string):
     """Convert a marble diagram string to an observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -42,8 +42,6 @@ def from_marbles(cls, string, scheduler=None):
     Returns the observable sequence whose elements are pulled from the
     given marble diagram string.
     """
-
-    scheduler = scheduler or new_thread_scheduler
 
     completed = [False]
     messages = []
@@ -98,10 +96,10 @@ def to_marbles(self, scheduler=None):
 
     Returns Observable
     """
-    scheduler = scheduler or new_thread_scheduler
     source = self
 
     def subscribe(observer, scheduler=None):
+        scheduler = scheduler or new_thread_scheduler
         result = []
         previously = [scheduler.now]
 

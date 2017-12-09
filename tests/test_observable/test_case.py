@@ -133,7 +133,7 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 3, map)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
         xs.subscriptions.assert_equal()
         ys.subscriptions.assert_equal()
 

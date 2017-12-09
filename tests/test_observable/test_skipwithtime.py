@@ -17,7 +17,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.skip_with_time(0, scheduler=scheduler)
+            return xs.skip_with_time(0)
 
         res = scheduler.start(create)
 
@@ -29,7 +29,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.skip_with_time(15, scheduler=scheduler)
+            return xs.skip_with_time(15)
 
         res = scheduler.start(create)
 
@@ -41,7 +41,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.skip_with_time(50, scheduler)
+            return xs.skip_with_time(50)
 
         res = scheduler.start(create)
 
@@ -54,7 +54,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(throw(210, ex))
 
         def create():
-            return xs.skip_with_time(50, scheduler)
+            return xs.skip_with_time(50)
 
         res = scheduler.start(create)
 
@@ -66,7 +66,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_with_time(50, scheduler)
+            return xs.skip_with_time(50)
 
         res = scheduler.start(create)
 
@@ -78,7 +78,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), send(240, 4), send(250, 5), send(260, 6), close(270))
 
         def create():
-            return xs.skip_with_time(15, scheduler).skip_with_time(30, scheduler)
+            return xs.skip_with_time(15).skip_with_time(30)
 
         res = scheduler.start(create)
 
@@ -90,7 +90,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), send(240, 4), send(250, 5), send(260, 6), close(270))
 
         def create():
-            return xs.skip_with_time(30, scheduler).skip_with_time(15, scheduler)
+            return xs.skip_with_time(30).skip_with_time(15)
 
         res = scheduler.start(create)
 

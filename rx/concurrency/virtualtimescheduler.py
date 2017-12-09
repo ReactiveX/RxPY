@@ -81,7 +81,7 @@ class VirtualTimeScheduler(SchedulerBase):
                 self.clock = item.duetime
                 spinning = 0
 
-            if spinning > 100:
+            if spinning > 15:
                 self.clock += 1
                 spinning = 0
 
