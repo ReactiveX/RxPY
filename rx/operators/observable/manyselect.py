@@ -36,7 +36,7 @@ class ChainObservable(Observable):
 
 
 @extensionmethod(Observable)
-def many_select(self, selector, scheduler=None):
+def many_select(self, selector):
     """Comonadic bind operator. Internally projects a new observable for each
     value, and it pushes each observable into the user-defined selector function
     that projects/queries each observable into some result.
@@ -50,7 +50,6 @@ def many_select(self, selector, scheduler=None):
     comonadic bind operation.
     """
 
-    scheduler = scheduler or immediate_scheduler
     source = self
 
     def factory():
@@ -76,8 +75,6 @@ def many_select(self, selector, scheduler=None):
             mapper
         ).tap(
             noop, throw, close
-        ).observe_on(
-            scheduler
         ).map(
             selector
         )

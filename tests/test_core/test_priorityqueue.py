@@ -5,6 +5,8 @@ from rx.internal.exceptions import InvalidOperationException
 
 
 class TestItem():
+    __test__ = False
+
     def __init__(self, value, label=None):
         self.value = value
         self.label = label

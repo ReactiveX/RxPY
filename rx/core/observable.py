@@ -39,6 +39,16 @@ class Observable(bases.Observable):
         from ..operators.observable.concat import concat
         return concat(self, other)
 
+    def __mul__(self, num: int):
+        """Pythonic version of repeat.
+
+        Example:
+        yx = xs * 5
+
+        Returns self.repeat(num)"""
+
+        return self.repeat(num)
+
     def __or__(self, other):
         """Forward pipe operator."""
         return other(self)
@@ -57,7 +67,6 @@ class Observable(bases.Observable):
         Return disposable object representing an observer's subscription
             to the observable sequence.
         """
-
         from .subscribe import subscribe
         source = self
         return subscribe(source, observer, scheduler)
@@ -82,7 +91,6 @@ class Observable(bases.Observable):
         Return disposable object representing an observer's subscription
             to the observable sequence.
         """
-
         observer = AnonymousObserver(send, throw, close)
         return self.subscribe(observer, scheduler)
 
@@ -93,9 +101,8 @@ class Observable(bases.Observable):
     def as_observable(self) -> 'Observable':
         """Hides the identity of an observable sequence.
 
-        :returns: An observable sequence that hides the identity of the source
-            sequence.
-        :rtype: Observable
+        Returns an observable sequence that hides the identity of the
+        source sequence.
         """
         from ..operators.observable.asobservable import as_observable
         source = self
@@ -120,7 +127,6 @@ class Observable(bases.Observable):
         Returns an observable sequence that contains the elements of each
         observed inner sequence, in sequential order.
         """
-
         return self.merge(1)
 
     def concat_map(self, mapper: Callable[[Any], Any]):
@@ -157,6 +163,20 @@ class Observable(bases.Observable):
         """
         from ..operators.observable.defer import defer
         return defer(observable_factory)
+
+    def do_while(self, condition: Callable[[Any], bool]):
+        """Repeats source as long as condition holds emulating a do while loop.
+
+        Keyword arguments:
+        condition -- {Function} The condition which determines if the source
+            will be repeated.
+
+        Returns an observable {Observable} sequence which is repeated as long
+        as the condition holds.
+        """
+        from ..operators.observable.dowhile import do_while
+        source = self
+        return do_while(condition, source)
 
     @classmethod
     def empty(cls):
@@ -209,8 +229,9 @@ class Observable(bases.Observable):
 
     @classmethod
     def from_callable(cls, supplier: Callable) -> 'Observable':
-        """Returns an observable sequence that contains a single element generate from a supplier,
-        using the specified scheduler to send out observer messages.
+        """Returns an observable sequence that contains a single element
+        generate from a supplier, using the specified scheduler to send
+        out observer messages.
 
         example
         res = rx.Observable.from_callable(lambda: calculate_value())
@@ -343,7 +364,43 @@ class Observable(bases.Observable):
 
     just = return_value
 
-    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None):
+    def repeat(self, repeat_count=None) -> 'Observable':
+        """Repeats the observable sequence a specified number of times. If the
+        repeat count is not specified, the sequence repeats indefinitely.
+
+        1 - repeated = source.repeat()
+        2 - repeated = source.repeat(42)
+
+        Keyword arguments:
+        repeat_count -- Number of times to repeat the sequence. If not
+            provided, repeats the sequence indefinitely.
+
+        Returns the observable sequence producing the elements of the given
+        sequence repeatedly."""
+
+        from ..operators.observable.concat import concat
+        from rx.internal.iterable import Iterable as CoreIterable
+        return Observable.defer(lambda: concat(CoreIterable.repeat(self, repeat_count)))
+
+    @staticmethod
+    def repeat_value(value: Any = None, repeat_count: int = None) -> 'Observable':
+        """Generates an observable sequence that repeats the given element
+        the specified number of times.
+
+        1 - res = Observable.repeat(42)
+        2 - res = Observable.repeat(42, 4)
+
+        Keyword arguments:
+        value -- Element to repeat.
+        repeat_count -- [Optional] Number of times to repeat the element.
+            If not specified, repeats indefinitely.
+
+        Returns an observable sequence that repeats the given element the
+        specified number of times."""
+        from ..operators.observable.repeat import repeat_value
+        return repeat_value(value, repeat_count)
+
+    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
         """Applies an accumulator function over an observable sequence and
         returns each intermediate result. The optional seed value is used as
         the initial accumulator value. For aggregation behavior with no
@@ -493,7 +550,7 @@ class Observable(bases.Observable):
         source = self
         return to_iterable(source)
 
-    def while_do(self, condition):
+    def while_do(self, condition: Callable[[Any], bool]):
         """Repeats source as long as condition holds emulating a while loop.
 
         Keyword arguments:

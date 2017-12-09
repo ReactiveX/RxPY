@@ -24,8 +24,8 @@ class TestTakeWithTime(unittest.TestCase):
             return xs.take_with_time(0)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(201))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        res.messages.assert_equal(close(200))
+        xs.subscriptions.assert_equal(subscribe(200, 200))
 
     def test_take_some(self):
         scheduler = TestScheduler()

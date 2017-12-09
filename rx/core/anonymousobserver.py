@@ -17,5 +17,4 @@ class AnonymousObserver(ObserverBase):
         self._error(error)
 
     def _close_core(self):
-        print(self._next, self._error)
         self._close()

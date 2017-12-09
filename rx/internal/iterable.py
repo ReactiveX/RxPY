@@ -47,10 +47,10 @@ class Iterable(abc.Iterable):
 
     @classmethod
     def repeat(cls, value, count=None):
-        if count is not None:
-            return Iterable(value for _ in range(count))
-
         from .anonymousiterable import AnonymousIterable
+        if count is not None:
+            return AnonymousIterable(value for _ in range(count))
+
         return AnonymousIterable(itertools.repeat(value))
 
     @classmethod

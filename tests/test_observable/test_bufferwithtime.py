@@ -32,13 +32,13 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(301, "2,3,4"),
-            send(371, "4,5,6"),
-            send(441, "6,7,8"),
-            send(511, "8,9"),
-            send(581, ""),
-            send(601, ""),
-            close(601))
+            send(300, "2,3,4"),
+            send(370, "4,5,6"),
+            send(440, "6,7,8"),
+            send(510, "8,9"),
+            send(580, ""),
+            send(600, ""),
+            close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
     def test_buffer_with_time_error(self):
@@ -62,11 +62,11 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(301, "2,3,4"),
-            send(371, "4,5,6"),
-            send(441, "6,7,8"),
-            send(511, "8,9"),
-            send(581, ""),
+            send(300, "2,3,4"),
+            send(370, "4,5,6"),
+            send(440, "6,7,8"),
+            send(510, "8,9"),
+            send(580, ""),
             throw(600, ex))
         xs.subscriptions.assert_equal(subscribe(200, 600))
 
@@ -88,7 +88,7 @@ class TestBufferWithCount(unittest.TestCase):
             return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create, disposed=370)
-        results.messages.assert_equal(send(301, "2,3,4"))
+        results.messages.assert_equal(send(300, "2,3,4"))
         xs.subscriptions.assert_equal(subscribe(200, 370))
 
     def test_buffer_with_time_basic_same(self):
@@ -111,9 +111,9 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-            send(301, "2,3,4"),
-            send(401, "5,6,7"),
-            send(501, "8,9"),
-            send(601, ""),
-            close(601))
+            send(300, "2,3,4"),
+            send(400, "5,6,7"),
+            send(500, "8,9"),
+            send(600, ""),
+            close(600))
         xs.subscriptions.assert_equal(subscribe(200, 600))

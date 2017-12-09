@@ -3,7 +3,7 @@ from rx.core import Observable
 from rx.internal.iterable import Iterable
 
 
-def while_do(condition, source):
+def while_do(condition, source: Observable) -> Observable:
     """Repeats source as long as condition holds emulating a while loop.
 
     Keyword arguments:
@@ -18,5 +18,4 @@ def while_do(condition, source):
 
     source = Observable.from_future(source)
     from .concat import concat
-    sources = list(Iterable.while_do(condition, source))
-    return concat(*sources)
+    return concat(Iterable.while_do(condition, source))

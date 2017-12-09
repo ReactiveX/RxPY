@@ -29,7 +29,6 @@ def range(cls, start, count):
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, n):
-            print(n)
             if n < end:
                 observer.send(n)
                 sd.disposable = scheduler.schedule(action, state=n + 1)

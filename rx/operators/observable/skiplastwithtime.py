@@ -28,6 +28,8 @@ def skip_last_with_time(self, duration):
     source = self
 
     def subscribe(observer, scheduler=None):
+        nonlocal duration
+
         scheduler = scheduler or timeout_scheduler
         duration = scheduler.to_timedelta(duration)
         q = []

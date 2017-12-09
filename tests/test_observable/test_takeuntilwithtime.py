@@ -32,8 +32,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(201))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        res.messages.assert_equal(close(200))
+        xs.subscriptions.assert_equal(subscribe(200, 200))
 
     def test_takeuntil_late(self):
         scheduler = TestScheduler()

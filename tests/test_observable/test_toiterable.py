@@ -21,11 +21,11 @@ class TestToArray(ReactiveTest, unittest.TestCase):
         results = scheduler.start(create=create).messages
 
         assert len(results) == 2
-        assert results[0].time == 661
+        assert results[0].time == 660
         assert results[0].value.kind == 'N'
         assert results[0].value.value == [2, 3, 4, 5]
-        assert self.close(661).equals(results[1])
-        xs.subscriptions.assert_equal(self.subscribe(204, 660))
+        assert self.close(660).equals(results[1])
+        xs.subscriptions.assert_equal(self.subscribe(200, 660))
 
     def test_toiterableerror(self):
         ex = 'ex'
@@ -43,7 +43,7 @@ class TestToArray(ReactiveTest, unittest.TestCase):
             return xs.to_iterable()
         results = scheduler.start(create=create).messages
         results.assert_equal(self.throw(660, ex))
-        xs.subscriptions.assert_equal(self.subscribe(204, 660))
+        xs.subscriptions.assert_equal(self.subscribe(200, 660))
 
     def test_toiterabledisposed(self):
         scheduler = TestScheduler()
@@ -60,4 +60,4 @@ class TestToArray(ReactiveTest, unittest.TestCase):
 
         results = scheduler.start(create=create).messages
         results.assert_equal()
-        xs.subscriptions.assert_equal(self.subscribe(204, 1000))
+        xs.subscriptions.assert_equal(self.subscribe(200, 1000))

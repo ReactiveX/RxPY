@@ -1,13 +1,12 @@
+from typing import Callable, Any
 from rx.core import Observable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def do_while(source, condition):
+def do_while(condition: Callable[[Any], bool], source: Observable) -> Observable:
     """Repeats source as long as condition holds emulating a do while loop.
 
     Keyword arguments:
-    condition -- {Function} The condition which determines if the source
+    condition -- The condition which determines if the source
         will be repeated.
 
     Returns an observable {Observable} sequence which is repeated as long

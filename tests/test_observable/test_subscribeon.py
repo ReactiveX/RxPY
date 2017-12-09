@@ -26,7 +26,7 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(210, 2), close(250))
-        xs.subscriptions.assert_equal(subscribe(201, 251))
+        xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_subscribe_throw(self):
         scheduler = TestScheduler()
@@ -42,7 +42,7 @@ class TestSubscribeOn(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(201, 211))
+        xs.subscriptions.assert_equal(subscribe(200, 210))
 
     def test_subscribe_on_empty(self):
         scheduler = TestScheduler()
@@ -57,7 +57,7 @@ class TestSubscribeOn(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(close(250))
-        xs.subscriptions.assert_equal(subscribe(201, 251))
+        xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_subscribe_on_never(self):
         scheduler = TestScheduler()
@@ -71,7 +71,7 @@ class TestSubscribeOn(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(201, 1001))
+        xs.subscriptions.assert_equal(subscribe(200, 1000))
 
 
 if __name__ == '__main__':

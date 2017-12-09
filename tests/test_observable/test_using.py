@@ -156,7 +156,7 @@ class TestUsing(unittest.TestCase):
             return Observable.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
         assert(0 == create_invoked[0])
         assert(1 == dispose_invoked[0])
 
@@ -180,7 +180,7 @@ class TestUsing(unittest.TestCase):
             return Observable.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
         assert(create_invoked[0] == 1)
         assert(dispose_invoked[0] == 1)
-        return disposable[0].disposes.assert_equal(200, 201)
+        return disposable[0].disposes.assert_equal(200, 200)

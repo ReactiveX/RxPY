@@ -51,7 +51,7 @@ class TestSample(unittest.TestCase):
             return Observable.empty().sample(0)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_sample_error(self):
         ex = 'ex'
@@ -61,7 +61,7 @@ class TestSample(unittest.TestCase):
             return Observable.throw_exception(ex).sample(0)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_sample_never(self):
         scheduler = TestScheduler()

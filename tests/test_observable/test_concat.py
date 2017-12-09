@@ -34,7 +34,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(251))
+        results.messages.assert_equal(close(250))
 
     def test_concat_empty_never(self):
         scheduler = TestScheduler()
@@ -122,7 +122,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), close(251))
+        results.messages.assert_equal(send(210, 2), close(250))
 
     def test_concat_empty_return(self):
         scheduler = TestScheduler()
@@ -135,7 +135,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(240, 2), close(251))
+        results.messages.assert_equal(send(240, 2), close(250))
 
     def test_concat_return_never(self):
         scheduler = TestScheduler()
@@ -172,7 +172,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2), send(240, 3), close(251))
+        results.messages.assert_equal(send(220, 2), send(240, 3), close(250))
 
     def test_concat_throw_return(self):
         ex = 'ex'
@@ -213,4 +213,4 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(251))
+        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))

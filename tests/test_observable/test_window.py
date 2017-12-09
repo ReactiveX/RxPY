@@ -23,7 +23,7 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
@@ -114,8 +114,8 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(201, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        results.messages.assert_equal(throw(200, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 200))
 
     def test_window_closings_default(self):
         scheduler = TestScheduler()

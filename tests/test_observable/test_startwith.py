@@ -22,30 +22,30 @@ class TestStartWith(unittest.TestCase):
         results = scheduler.start(create)
         results.messages.assert_equal(send(200, 1), send(220, 2), close(250))
 
-    def test_start_with_scheduler(self):
-        scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
+    # def test_start_with_scheduler(self):
+    #     scheduler = TestScheduler()
+    #     xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
-        def create():
-            return xs.start_with(scheduler)
-        results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2), close(250))
+    #     def create():
+    #         return xs.start_with(scheduler)
+    #     results = scheduler.start(create)
+    #     results.messages.assert_equal(send(220, 2), close(250))
 
     def test_start_with_scheduler_and_arg(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
-            return xs.start_with(scheduler, 42)
+            return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(201, 42), send(220, 2), close(250))
+        results.messages.assert_equal(send(200, 42), send(220, 2), close(250))
 
     def test_start_with_immediate_scheduler_and_arg(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
-            return xs.start_with(Scheduler.immediate, 42)
+            return xs.start_with(42)
         results = scheduler.start(create)
         results.messages.assert_equal(send(200, 42), send(220, 2), close(250))
 
@@ -54,6 +54,6 @@ class TestStartWith(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
 
         def create():
-            return xs.start_with(42, scheduler=scheduler)
+            return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(201, 42), send(220, 2), close(250))
+        results.messages.assert_equal(send(200, 42), send(220, 2), close(250))

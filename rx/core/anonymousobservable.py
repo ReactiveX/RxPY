@@ -18,7 +18,4 @@ class AnonymousObservable(Observable):
         super(AnonymousObservable, self).__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
-        #import inspect
-        #print(inspect.getsourcelines(self._subscribe))
-
         return self._subscribe(observer, scheduler)

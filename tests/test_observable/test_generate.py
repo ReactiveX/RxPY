@@ -29,17 +29,16 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: x <= 3,
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-                            send(201, 0),
-                            send(202, 1),
-                            send(203, 2),
-                            send(204, 3),
-                            close(205)
+                            send(200, 0),
+                            send(200, 1),
+                            send(200, 2),
+                            send(200, 3),
+                            close(200)
                         )
 
     def test_generate_throw_condition(self):
@@ -50,11 +49,10 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: _raise('ex'),
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_generate_throw_result_selector(self):
         scheduler = TestScheduler()
@@ -64,11 +62,10 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: _raise('ex'),
-                scheduler)
+                lambda x: _raise('ex'))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_generate_throw_iterate(self):
         scheduler = TestScheduler()
@@ -78,13 +75,12 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: _raise(ex),
-                lambda x: x,
-                scheduler)
+                lambda x: x)
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-                            send(201, 0),
-                            throw(202, ex)
+                            send(200, 0),
+                            throw(200, ex)
                         )
 
     def test_generate_dispose(self):
@@ -95,13 +91,12 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
 
         results = scheduler.start(create, disposed=203)
         results.messages.assert_equal(
-                            send(201, 0),
-                            send(202, 1))
+                            send(200, 0),
+                            send(200, 1))
 
     def test_generate_repeat(self):
         scheduler = TestScheduler()
@@ -110,20 +105,19 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                     lambda x: x <= 3,
                     lambda x: x + 1,
-                    lambda x: x,
-                    scheduler) \
+                    lambda x: x) \
                 .repeat(2)
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-                send(201, 0),
-                send(202, 1),
-                send(203, 2),
-                send(204, 3),
-                send(206, 0),
-                send(207, 1),
-                send(208, 2),
-                send(209, 3),
-                close(210)
+                send(200, 0),
+                send(200, 1),
+                send(200, 2),
+                send(200, 3),
+                send(200, 0),
+                send(200, 1),
+                send(200, 2),
+                send(200, 3),
+                close(200)
         )

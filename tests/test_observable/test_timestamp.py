@@ -50,7 +50,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.empty().time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_timestamp_error(self):
         ex = 'ex'
@@ -60,7 +60,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.throw_exception(ex).time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_timestamp_never(self):
         scheduler = TestScheduler()

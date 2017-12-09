@@ -1,5 +1,4 @@
 from rx.core import Observable
-from rx.concurrency import TimeoutScheduler
 from rx.internal import extensionclassmethod
 
 

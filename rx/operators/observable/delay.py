@@ -16,12 +16,14 @@ class Timestamp(object):
 
 
 def observable_delay_timespan(source, duetime):
-
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
         scheduler = scheduler or timeout_scheduler
-        duetime = scheduler.to_timedelta(duetime)
+        if isinstance(duetime, datetime):
+            duetime = scheduler.to_datetime(duetime) - scheduler.now
+        else:
+            duetime = scheduler.to_timedelta(duetime)
 
         cancelable = SerialDisposable()
         exception = [None]
@@ -94,14 +96,6 @@ def observable_delay_timespan(source, duetime):
     return AnonymousObservable(subscribe)
 
 
-def observable_delay_date(source, duetime):
-    def defer():
-        timespan = scheduler.to_datetime(duetime) - scheduler.now
-        return observable_delay_timespan(source, timespan)
-
-    return Observable.defer(defer)
-
-
 @extensionmethod(Observable)
 def delay(self, duetime):
     """Time shifts the observable sequence by duetime. The relative time
@@ -118,9 +112,4 @@ def delay(self, duetime):
     Returns time-shifted sequence.
     """
 
-    if isinstance(duetime, datetime):
-        observable = observable_delay_date(self, duetime)
-    else:
-        observable = observable_delay_timespan(self, duetime)
-
-    return observable
+    return observable_delay_timespan(self, duetime)

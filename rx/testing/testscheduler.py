@@ -1,4 +1,4 @@
-import logging
+from typing import Callable, Any
 
 from rx.core import Observable, Disposable
 from rx.concurrency import VirtualTimeScheduler
@@ -19,28 +19,25 @@ class TestScheduler(VirtualTimeScheduler):
     def __init__(self):
         """Initializes a new instance of the TestScheduler class."""
 
-        def comparer(a, b):
-            return a - b
+        super(TestScheduler, self).__init__()
 
-        super(TestScheduler, self).__init__(0)
-
-    def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed at the specified virtual time.
+    def schedule_absolute(self, duetime: int, action: Callable, state: Any = None) -> Disposable:
+        """Schedules an action to be executed at the specified virtual
+        time.
 
         Keyword arguments:
-        :param int duetime: Absolute virtual time at which to execute the
+        duetime -- Absolute virtual time at which to execute the
             action.
-        :param types.FunctionType action: Action to be executed.
-        :param T state: State passed to the action to be executed.
+        action -- Action to be executed.
+        state -- State passed to the action to be executed.
 
-        :returns: Disposable object used to cancel the scheduled action
+        Returns disposable object used to cancel the scheduled action
             (best effort).
-        :rtype: Disposable
         """
 
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
-        if duetime <= self.clock:
-            duetime = self.clock + 1
+        #if duetime <= self.clock:
+        #    duetime = self.clock + 1
 
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)
 
@@ -50,7 +47,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         return absolute + relative
 
-    def start(self, create=None, created=None, subscribed=None, disposed=None):
+    def start(self, create=None, created=None, subscribed=None, disposed=None) -> MockObserver:
         """Starts the test scheduler and uses the specified virtual times to
         invoke the factory function, subscribe to the resulting sequence, and
         dispose the subscription.
@@ -101,7 +98,7 @@ class TestScheduler(VirtualTimeScheduler):
         super(TestScheduler, self).start()
         return observer
 
-    def create_hot_observable(self, *args):
+    def create_hot_observable(self, *args) -> Observable:
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
 
@@ -119,7 +116,7 @@ class TestScheduler(VirtualTimeScheduler):
             messages = list(args)
         return HotObservable(self, messages)
 
-    def create_cold_observable(self, *args):
+    def create_cold_observable(self, *args) -> Observable:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 
@@ -139,7 +136,7 @@ class TestScheduler(VirtualTimeScheduler):
             messages = list(args)
         return ColdObservable(self, messages)
 
-    def create_observer(self):
+    def create_observer(self) -> MockObserver:
         """Creates an observer that records received notification messages and
         timestamps those. Return an Observer that can be used to assert the
         timing of received notifications.
