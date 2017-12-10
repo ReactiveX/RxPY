@@ -52,7 +52,7 @@ def many_select(self, selector):
 
     source = self
 
-    def factory():
+    def factory(scheduler):
         chain = [None]
 
         def mapper(x):
