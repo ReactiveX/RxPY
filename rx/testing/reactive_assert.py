@@ -26,3 +26,9 @@ class AssertList(list):
     def assert_equal(self, *expected):
         expected = list(expected)
         return are_elements_equal(expected, self, default_comparer)
+
+    def __getitem__(self, key):
+        items = super().__getitem__(key)
+        if isinstance(items, list):
+            return AssertList(items)
+        return items

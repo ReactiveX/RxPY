@@ -22,7 +22,7 @@ def scan(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any=N
     if seed is not None:
         has_seed = True
 
-    def defer():
+    def defer(scheduler):
         nonlocal source
 
         has_accumulation = [False]

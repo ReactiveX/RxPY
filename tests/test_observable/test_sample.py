@@ -67,6 +67,6 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().sample(0)
+            return Observable.never().sample(1)
         results = scheduler.start(create)
         results.messages.assert_equal()

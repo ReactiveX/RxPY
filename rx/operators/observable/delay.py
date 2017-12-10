@@ -20,6 +20,7 @@ def observable_delay_timespan(source, duetime):
         nonlocal duetime
 
         scheduler = scheduler or timeout_scheduler
+        
         if isinstance(duetime, datetime):
             duetime = scheduler.to_datetime(duetime) - scheduler.now
         else:
@@ -91,7 +92,7 @@ def observable_delay_timespan(source, duetime):
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp(scheduler).subscribe_callbacks(send)
+        subscription = source.materialize().timestamp(scheduler).subscribe_callbacks(send, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 

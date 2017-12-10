@@ -119,7 +119,7 @@ class TestPublish(unittest.TestCase):
         disconnected = [False]
         count = [0]
 
-        def factory():
+        def factory(scheduler):
             count[0] += 1
 
             def create(obs):

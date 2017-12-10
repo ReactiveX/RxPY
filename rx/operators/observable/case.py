@@ -26,7 +26,7 @@ def case(cls, selector, sources, default_source=None):
 
     default_source = default_source or Observable.empty()
 
-    def factory():
+    def factory(scheduler):
         try:
             result = sources[selector()]
         except KeyError:

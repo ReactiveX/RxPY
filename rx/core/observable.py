@@ -380,7 +380,7 @@ class Observable(bases.Observable):
 
         from ..operators.observable.concat import concat
         from rx.internal.iterable import Iterable as CoreIterable
-        return Observable.defer(lambda: concat(CoreIterable.repeat(self, repeat_count)))
+        return Observable.defer(lambda _: concat(CoreIterable.repeat(self, repeat_count)))
 
     @staticmethod
     def repeat_value(value: Any = None, repeat_count: int = None) -> 'Observable':
@@ -539,6 +539,18 @@ class Observable(bases.Observable):
         from ..operators.observable.timeout import timeout
         source = self
         return timeout(source, duetime, other)
+
+    def timestamp(self):
+        """Records the timestamp for each value in an observable sequence.
+
+        1 - res = source.timestamp() # produces objects with attributes "value" and
+            "timestamp", where value is the original value.
+        
+        Returns an observable sequence with timestamp information on values.
+        """
+        from ..operators.observable.timestamp import timestamp
+        source = self
+        return timestamp(source)
 
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
