@@ -1,5 +1,6 @@
-import rx
 import unittest
+
+from rx import Observable
 from rx.testing import marbles, TestScheduler
 from rx.concurrency import timeout_scheduler, new_thread_scheduler
 
@@ -8,20 +9,17 @@ tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
 
 
 def test_alias():
-    assert rx.Observable.from_string == rx.Observable.from_marbles
+    assert Observable.from_string == Observable.from_marbles
 
 
 class TestFromToMarbles(unittest.TestCase):
-    def _run_test(self,
-                  expected_results,
-                  src_scheduler,
-                  dest_scheduler=None,
-                  tested_marbles=tested_marbles):
+    def _run_test(self, expected_results, tested_marbles=tested_marbles):
         '''helper method, running the actual tests with given schedulers'''
         dest_scheduler = dest_scheduler or src_scheduler
+
         for marbles, expected in zip(tested_marbles, expected_results):
-            stream = rx.Observable.from_string(marbles, src_scheduler)
-            result = stream.to_blocking().to_marbles(dest_scheduler)
+            stream = Observable.from_string(marbles)
+            result = stream.to_blocking().to_marbles()
             self.assertEqual(result, expected)
 
     def test_new_thread_scheduler(self):

@@ -8,6 +8,7 @@ from .scheduleperiodic import SchedulePeriodic
 
 log = logging.getLogger("Rx")
 
+MAX_SPINNING = 100
 
 class VirtualTimeScheduler(SchedulerBase):
     """Virtual Scheduler. This scheduler should work with either
@@ -81,7 +82,7 @@ class VirtualTimeScheduler(SchedulerBase):
                 self.clock = item.duetime
                 spinning = 0
 
-            if spinning > 15:
+            if spinning > MAX_SPINNING:
                 self.clock += 1
                 spinning = 0
 
@@ -114,18 +115,18 @@ class VirtualTimeScheduler(SchedulerBase):
         self.is_enabled = True
 
         while self.is_enabled:
-            next = self.get_next()
-            if not next:
+            item = self.get_next()
+            if not item:
                 break
 
-            if next.duetime > time:
-                self.queue.enqueue(next)
+            if item.duetime > time:
+                self.queue.enqueue(item)
                 break
 
-            if next.duetime > self.clock:
-                self.clock = next.duetime
+            if item.duetime > self.clock:
+                self.clock = item.duetime
 
-            next.invoke()
+            item.invoke()
 
         self.is_enabled = False
         self.clock = time
