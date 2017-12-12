@@ -80,7 +80,7 @@ class TestConnectableObservable(unittest.TestCase):
         subject = MySubject()
 
         conn = ConnectableObservable(xs, subject)
-        disconnect = conn.connect()
+        disconnect = conn.connect(scheduler)
 
         res = scheduler.start(lambda: conn)
 
@@ -126,13 +126,12 @@ class TestConnectableObservable(unittest.TestCase):
         subject = MySubject()
 
         conn = ConnectableObservable(xs, subject)
-        disconnect = conn.connect()
+        disconnect = conn.connect(scheduler)
         disconnect.dispose()
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal(
-        )
+        res.messages.assert_equal()
 
     def test_connectable_observable_disconnect_future(self):
         scheduler = TestScheduler()
@@ -180,7 +179,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         c1 = [None]
         def action10(scheduler, state):
-            c1[0] = conn.connect()
+            c1[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(225, action10)
 
         def action11(scheduler, state):
@@ -201,7 +200,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         c2 = [None]
         def action20(scheduler, state):
-            c2[0] = conn.connect()
+            c2[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(249, action20)
 
         def action21(scheduler, state):
@@ -218,7 +217,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         c3 = [None]
         def action30(scheduler, state):
-            c3[0] = conn.connect()
+            c3[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(275, action30)
 
         def action31(scheduler, state):

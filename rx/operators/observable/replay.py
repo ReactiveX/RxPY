@@ -33,8 +33,8 @@ def replay(self, selector, buffer_size=None, window=None):
     """
 
     if callable(selector):
-        def subject_selector():
-            return ReplaySubject(buffer_size, window)
+        def subject_selector(scheduler):
+            return ReplaySubject(buffer_size, window, scheduler)
 
         return self.multicast(subject_selector=subject_selector, selector=selector)
     else:

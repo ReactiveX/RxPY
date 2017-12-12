@@ -77,7 +77,7 @@ class ReplaySubject(Observable, Observer):
         while len(self.queue) > self.buffer_size:
             self.queue.pop(0)
 
-        while len(self.queue) > 0 and (now - self.queue[0]['interval']) > self.window:
+        while self.queue and (now - self.queue[0]['interval']) > self.window:
             self.queue.pop(0)
 
     def send(self, value):

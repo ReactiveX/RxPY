@@ -15,9 +15,9 @@ class ConnectableObservable(Observable):
         super(ConnectableObservable, self).__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
-        return self.subject.subscribe(observer)
+        return self.subject.subscribe(observer, scheduler)
 
-    def connect(self):
+    def connect(self, scheduler=None):
         """Connects the observable."""
 
         if not self.has_subscription:
@@ -26,7 +26,7 @@ class ConnectableObservable(Observable):
             def dispose():
                 self.has_subscription = False
 
-            disposable = self.source.subscribe(self.subject)
+            disposable = self.source.subscribe(self.subject, scheduler)
             self.subscription = CompositeDisposable(disposable, Disposable.create(dispose))
 
         return self.subscription
@@ -44,9 +44,9 @@ class ConnectableObservable(Observable):
         def subscribe(observer, scheduler=None):
             count[0] += 1
             should_connect = count[0] == 1
-            subscription = source.subscribe(observer)
+            subscription = source.subscribe(observer, scheduler)
             if should_connect:
-                connectable_subscription[0] = source.connect()
+                connectable_subscription[0] = source.connect(scheduler)
 
             def dispose():
                 subscription.dispose()
@@ -79,7 +79,7 @@ class ConnectableObservable(Observable):
             should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)
             if should_connect:
-                connectable_subscription[0] = source.connect()
+                connectable_subscription[0] = source.connect(scheduler)
                 is_connected[0] = True
 
             def dispose():
@@ -88,5 +88,4 @@ class ConnectableObservable(Observable):
                 is_connected[0] = False
 
             return Disposable.create(dispose)
-
         return AnonymousObservable(subscribe)

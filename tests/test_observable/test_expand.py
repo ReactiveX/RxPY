@@ -64,7 +64,6 @@ class TestExpand(unittest.TestCase):
         results.messages.assert_equal()
         xs.subscriptions.assert_equal(subscribe(200, 1000))
 
-
     def test_expand_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(550, 1), send(850, 2), close(950))
@@ -75,7 +74,7 @@ class TestExpand(unittest.TestCase):
             return xs.expand(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(550, 1), send(650, 2), send(750, 3), send(750, 4), send(850, 2), send(850, 6), send(850, 6), send(850, 8), send(950, 4), send(950, 9), send(950, 12), send(950, 12), send(950, 12), send(950, 16))
+        results.messages.assert_equal(send(550, 1), send(650, 2), send(750, 3), send(750, 4), send(850, 2), send(850, 6), send(850, 6), send(850, 8), send(950, 9), send(950, 12), send(950, 4), send(950, 12), send(950, 12), send(950, 16))
         xs.subscriptions.assert_equal(subscribe(200, 950))
 
     def test_expand_throw(self):

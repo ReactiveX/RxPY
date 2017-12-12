@@ -27,7 +27,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe(results, scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -35,7 +35,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -43,7 +43,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action6(scheduler, state):
@@ -51,7 +51,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(550, action6)
 
         def action7(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(650, action7)
 
         def action8(scheduler, state):
@@ -84,7 +84,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -92,7 +92,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action6(scheduler, state):
@@ -124,7 +124,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -132,7 +132,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action(scheduler, state):
@@ -164,7 +164,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(475, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -172,7 +172,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action6(scheduler, state):
@@ -180,7 +180,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(550, action6)
 
         def action7(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(650, action7)
 
         def action8(scheduler, state):
@@ -192,6 +192,7 @@ class TestReplay(unittest.TestCase):
         xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 550), subscribe(650, 800))
 
     def test_replay_count_multiple_connections(self):
+
         xs = Observable.never()
         ys = xs.replay(None, 3)
         connection1 = ys.connect()
@@ -266,7 +267,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -274,7 +275,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action6(scheduler, state):
@@ -282,7 +283,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(550, action6)
 
         def action7(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(650, action7)
 
         def action8(scheduler, state):
@@ -307,7 +308,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe(results, scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -315,7 +316,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         def action3(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
@@ -323,7 +324,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(400, action4)
 
         def action5(scheduler, state):
-            connection[0] = ys[0].connect()
+            connection[0] = ys[0].connect(scheduler)
         scheduler.schedule_absolute(500, action5)
 
         def action6(scheduler, state):

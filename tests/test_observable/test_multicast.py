@@ -43,7 +43,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(200, action1)
 
         def action2(scheduler, state):
@@ -73,7 +73,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -102,7 +102,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -131,7 +131,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -143,7 +143,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(335, action4)
 
         scheduler.start()
@@ -165,7 +165,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -177,7 +177,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(300, action3)
 
         def action4(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(335, action4)
 
         scheduler.start()
@@ -199,7 +199,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -225,7 +225,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
-            d2[0] = c[0].connect()
+            d2[0] = c[0].connect(scheduler)
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
@@ -241,7 +241,7 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390))
 
         def create():
-            def subject_selector():
+            def subject_selector(scheduler):
                 return Subject()
             def selector(ys):
                 return ys
@@ -257,7 +257,7 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), throw(390, ex))
 
         def create():
-            def subject_selector():
+            def subject_selector(scheduler):
                 return Subject()
             def selector(ys):
                 return ys
@@ -273,7 +273,7 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7))
 
         def create():
-            def subject_selector():
+            def subject_selector(scheduler):
                 return Subject()
             def selector(ys):
                 return ys
@@ -289,7 +289,7 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390))
 
         def create():
-            def subject_selector():
+            def subject_selector(scheduler):
                 return Subject()
             def selector(ys):
                 return ys.zip(ys, lambda a,b: a+b)
