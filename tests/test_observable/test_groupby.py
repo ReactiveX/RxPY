@@ -349,10 +349,10 @@ class TestGroupBy(unittest.TestCase):
                 c["results"][group.key] = result
 
                 def action21(scheduler, state):
-                    c["inner_subscriptions"][group.key] = group.subscribe(result)
+                    c["inner_subscriptions"][group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action21)
-            c["outer_subscription"] = c["outer"].subscribe_callbacks(next)
+            c["outer_subscription"] = c["outer"].subscribe_callbacks(next, scheduler=scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
@@ -424,8 +424,8 @@ class TestGroupBy(unittest.TestCase):
                 c["result"] = scheduler.create_observer()
                 inners[group.key] = group
                 results[group.key] = c["result"]
-                inner_subscriptions[group.key] = group.subscribe(c["result"])
-            c["outer_subscription"] = c["outer"].subscribe_callbacks(send)
+                inner_subscriptions[group.key] = group.subscribe(c["result"], scheduler)
+            c["outer_subscription"] = c["outer"].subscribe_callbacks(send, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -506,10 +506,10 @@ class TestGroupBy(unittest.TestCase):
                 results[group.key] = result
 
                 def action3(scheduler, state):
-                    inner_subscriptions[group.key] = group.subscribe(result)
+                    inner_subscriptions[group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action3)
-            c["outer_subscription"] = c["outer"].subscribe_callbacks(send, lambda e: None)
+            c["outer_subscription"] = c["outer"].subscribe_callbacks(send, lambda e: None, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -553,7 +553,7 @@ class TestGroupBy(unittest.TestCase):
 
         def action2(scheduler, state):
             results[0] = scheduler.create_observer()
-            xs[0].subscribe(results[0])
+            xs[0].subscribe(results[0], scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         scheduler.start()

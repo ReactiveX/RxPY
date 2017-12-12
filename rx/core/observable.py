@@ -545,7 +545,7 @@ class Observable(bases.Observable):
 
         1 - res = source.timestamp() # produces objects with attributes "value" and
             "timestamp", where value is the original value.
-        
+
         Returns an observable sequence with timestamp information on values.
         """
         from ..operators.observable.timestamp import timestamp

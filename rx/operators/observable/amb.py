@@ -51,8 +51,7 @@ def amb(self, right_source):
             if choice[0] == left_choice:
                 observer.close()
 
-        ld = left_source.subscribe_callbacks(send_left, throw_left,
-                                   close_left)
+        ld = left_source.subscribe_callbacks(send_left, throw_left, close_left, scheduler)
         left_subscription.disposable = ld
 
         def send_right(value):
@@ -73,8 +72,7 @@ def amb(self, right_source):
             if choice[0] == right_choice:
                 observer.close()
 
-        rd = right_source.subscribe_callbacks(send_right, throw_right,
-                                    close_right)
+        rd = right_source.subscribe_callbacks(send_right, throw_right, close_right, scheduler)
         right_subscription.disposable = rd
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)
@@ -84,10 +82,10 @@ def amb(self, right_source):
 def amb(cls, *args):
     """Propagates the observable sequence that reacts first.
 
-    E.g. winner = rx.Observable.amb(xs, ys, zs)
+    E.g. winner = Observable.amb(xs, ys, zs)
 
-    Returns an observable sequence that surfaces any of the given sequences,
-    whichever reacted first.
+    Returns an observable sequence that surfaces any of the given
+    sequences, whichever reacted first.
     """
 
     acc = Observable.never()

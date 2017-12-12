@@ -19,11 +19,11 @@ def observable_timer_date(duetime):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_date_and_period(duetime, period) -> Observable:
+def observable_timer_duetime_and_period(duetime, period) -> Observable:
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
-        if isinstance(duetime, timedelta):
+        if isinstance(duetime, int):
             duetime = scheduler.now + scheduler.to_timedelta(duetime)
 
         p = scheduler.normalize(period)
@@ -68,7 +68,7 @@ def observable_timer_timespan_and_period(duetime, period) -> Observable:
 
             return scheduler.schedule_periodic(period, action, state=0)
         return AnonymousObservable(subscribe)
-    return observable_timer_date_and_period(duetime, period)
+    return observable_timer_duetime_and_period(duetime, period)
 
 
 @extensionclassmethod(Observable)
@@ -96,11 +96,11 @@ def timer(cls, duetime, period=None) -> Observable:
 
     log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
-    if isinstance(duetime, datetime) and period is None:
-        return observable_timer_date(duetime)
-
-    if isinstance(duetime, datetime) and period:
-        return observable_timer_date_and_period(duetime, period)
+    if isinstance(duetime, datetime):
+        if period is None:
+            return observable_timer_date(duetime)
+        else:
+            return observable_timer_duetime_and_period(duetime, period)
 
     if period is None:
         return observable_timer_timespan(duetime)

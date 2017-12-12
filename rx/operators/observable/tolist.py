@@ -10,11 +10,12 @@ def to_list(self):
     containing all the elements of the source sequence."""
 
     def accumulator(res, i):
+        print("accumulator", i)
         res = res[:]
         res.append(i)
         return res
 
-    return self.scan(accumulator, seed=[]).start_with([]).last()
+    return self.reduce(accumulator, seed=[])
 
 
 @extensionmethod(Observable)

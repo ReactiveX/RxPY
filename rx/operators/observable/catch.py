@@ -23,12 +23,13 @@ def catch_handler(source, handler):
             result = Observable.from_future(result)
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = result.subscribe(observer)
+            d.disposable = result.subscribe(observer, scheduler)
 
         d1.disposable = source.subscribe_callbacks(
             observer.send,
             throw,
-            observer.close
+            observer.close,
+            scheduler
         )
         return subscription
     return AnonymousObservable(subscribe)
@@ -77,7 +78,7 @@ def catch_exception(cls, *args):
         sources = list(args)
 
     def subscribe(observer, scheduler=None):
-        scheduler = current_thread_scheduler
+        scheduler = scheduler or current_thread_scheduler
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
@@ -105,7 +106,7 @@ def catch_exception(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_callbacks(observer.send, throw, observer.close)
+                d.disposable = current.subscribe_callbacks(observer.send, throw, observer.close, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 

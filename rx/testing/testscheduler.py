@@ -36,9 +36,6 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
-        #if duetime <= self.clock:
-        #    duetime = self.clock + 1
-
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)
 
     @staticmethod
@@ -95,7 +92,7 @@ class TestScheduler(VirtualTimeScheduler):
             return Disposable.empty()
         self.schedule_absolute(disposed, action_dispose)
 
-        super(TestScheduler, self).start()
+        super().start()
         return observer
 
     def create_hot_observable(self, *args) -> Observable:

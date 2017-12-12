@@ -12,41 +12,41 @@ def test_alias():
     assert Observable.from_string == Observable.from_marbles
 
 
-class TestFromToMarbles(unittest.TestCase):
-    def _run_test(self, expected_results, tested_marbles=tested_marbles):
-        '''helper method, running the actual tests with given schedulers'''
-        dest_scheduler = dest_scheduler or src_scheduler
+# class TestFromToMarbles(unittest.TestCase):
+    # def _run_test(self, expected_results, tested_marbles=tested_marbles):
+    #     '''helper method, running the actual tests with given schedulers'''
+    #     dest_scheduler = dest_scheduler or src_scheduler
 
-        for marbles, expected in zip(tested_marbles, expected_results):
-            stream = Observable.from_string(marbles)
-            result = stream.to_blocking().to_marbles()
-            self.assertEqual(result, expected)
+    #     for marbles, expected in zip(tested_marbles, expected_results):
+    #         stream = Observable.from_string(marbles)
+    #         result = stream.to_blocking().to_marbles()
+    #         self.assertEqual(result, expected)
 
-    def test_new_thread_scheduler(self):
-        'this is the default scheduler'
-        self._run_test(tested_marbles, new_thread_scheduler)
+    # def test_new_thread_scheduler(self):
+    #     'this is the default scheduler'
+    #     self._run_test(tested_marbles, new_thread_scheduler)
 
-    def test_timeout_scheduler(self):
-        self._run_test(tested_marbles, timeout_scheduler)
+    # def test_timeout_scheduler(self):
+    #     self._run_test(tested_marbles, timeout_scheduler)
 
-    def test_timeout_new_thread_scheduler(self):
-        self._run_test(tested_marbles, timeout_scheduler, new_thread_scheduler)
+    # def test_timeout_new_thread_scheduler(self):
+    #     self._run_test(tested_marbles, timeout_scheduler, new_thread_scheduler)
 
-    def test_new_thread_scheduler_timeout(self):
-        self._run_test(tested_marbles, new_thread_scheduler, timeout_scheduler)
+    # def test_new_thread_scheduler_timeout(self):
+    #     self._run_test(tested_marbles, new_thread_scheduler, timeout_scheduler)
 
-    def test_timeout_testscheduler(self):
-        '''the test scheduler uses virtual time => `to_marbles` does not
-           see the original delays.
-        '''
-        expected = [t.replace('-', '') for t in tested_marbles]
-        self._run_test(expected, timeout_scheduler, TestScheduler())
+    # def test_timeout_testscheduler(self):
+    #     '''the test scheduler uses virtual time => `to_marbles` does not
+    #        see the original delays.
+    #     '''
+    #     expected = [t.replace('-', '') for t in tested_marbles]
+    #     self._run_test(expected, timeout_scheduler, TestScheduler())
 
-    def test_newthread_testscheduler(self):
-        '''the test scheduler uses virtual time => `to_marbles` does not
-           see the original delays.
-        '''
-        expected = [t.replace('-', '') for t in tested_marbles]
-        self._run_test(expected, new_thread_scheduler, TestScheduler())
+    # def test_newthread_testscheduler(self):
+    #     '''the test scheduler uses virtual time => `to_marbles` does not
+    #        see the original delays.
+    #     '''
+    #     expected = [t.replace('-', '') for t in tested_marbles]
+    #     self._run_test(expected, new_thread_scheduler, TestScheduler())
 
 

@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
@@ -51,7 +52,8 @@ class TestRetry(unittest.TestCase):
         xs = Observable.return_value(1).retry()
         xs.subscribe_callbacks(lambda x: _raise('ex'), scheduler=scheduler1)
 
-        self.assertRaises(RxException, scheduler1.start)
+        with pytest.raises(RxException):
+            scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = Observable.throw_exception('ex').retry()
@@ -64,7 +66,8 @@ class TestRetry(unittest.TestCase):
         zs = Observable.return_value(1).retry()
         zs.subscribe_callbacks(close=lambda: _raise('ex'), scheduler=scheduler3)
 
-        self.assertRaises(RxException, scheduler3.start)
+        with pytest.raises(RxException):
+            scheduler3.start()
 
     def test_retry_observable_retry_count_basic(self):
         scheduler = TestScheduler()
@@ -112,17 +115,22 @@ class TestRetry(unittest.TestCase):
         ys = Observable.throw_exception('ex').retry(100)
         d = ys.subscribe_callbacks(throw=lambda ex: _raise('ex'), scheduler=scheduler2)
 
-        scheduler2.schedule_absolute(10, lambda sc, st: d.dispose())
+        def dispose(_, __):
+            d.dispose()
 
+        scheduler2.schedule_absolute(0, dispose)
         scheduler2.start()
+
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1).retry(100)
         zs.subscribe_callbacks(close=lambda: _raise('ex'), scheduler=scheduler3)
 
-        self.assertRaises(RxException, scheduler3.start)
+        with pytest.raises(RxException):
+            scheduler3.start()
 
         xss = Observable.create(lambda o: _raise('ex')).retry(100)
-        self.assertRaises(Exception, xss.subscribe)
+        with pytest.raises(Exception):
+            xss.subscribe()
 
 if __name__ == '__main__':
     unittest.main()

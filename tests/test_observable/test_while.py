@@ -61,8 +61,6 @@ class TestWhile(unittest.TestCase):
         n = [0]
 
         def create():
-            import sys
-            sys.setrecursionlimit(100)
             def predicate(x):
                 n[0] += 1
                 return n[0] < 100
