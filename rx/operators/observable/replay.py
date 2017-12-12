@@ -1,6 +1,7 @@
 from rx.core import Observable
 from rx.subjects import ReplaySubject
 from rx.internal import extensionmethod
+from rx.internal.basic import identity
 
 
 @extensionmethod(Observable)
@@ -32,11 +33,10 @@ def replay(self, selector, buffer_size=None, window=None):
     selector function.
     """
 
-    if callable(selector):
-        def subject_selector(scheduler):
-            return ReplaySubject(buffer_size, window, scheduler)
 
-        return self.multicast(subject_selector=subject_selector, selector=selector)
-    else:
-        return self.multicast(ReplaySubject(buffer_size, window))
+    def subject_selector(scheduler):
+        return ReplaySubject(buffer_size, window, scheduler)
 
+    selector = selector or identity
+
+    return self.multicast(subject_selector=subject_selector, selector=selector)

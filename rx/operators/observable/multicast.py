@@ -15,7 +15,7 @@ def multicast(self, subject=None, subject_selector=None, selector=None):
 
     Example:
     1 - res = source.multicast(observable)
-    2 - res = source.multicast(subject_selector=lambda: Subject(),
+    2 - res = source.multicast(subject_selector=lambda scheduler: Subject(),
                                selector=lambda x: x)
 
     Keyword arguments:
@@ -34,9 +34,11 @@ def multicast(self, subject=None, subject_selector=None, selector=None):
     """
 
     source = self
+
     if subject_selector:
         def subscribe(observer, scheduler=None):
             connectable = source.multicast(subject=subject_selector(scheduler))
+            return CompositeDisposable(selector(connectable).subscribe(observer, scheduler), connectable.connect(scheduler))
         return AnonymousObservable(subscribe)
-    else:
-        return ConnectableObservable(source, subject)
+
+    return ConnectableObservable(source, subject)
