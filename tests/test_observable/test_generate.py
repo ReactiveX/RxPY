@@ -93,10 +93,8 @@ class TestGenerate(unittest.TestCase):
                 lambda x: x + 1,
                 lambda x: x)
 
-        results = scheduler.start(create, disposed=203)
-        results.messages.assert_equal(
-                            send(200, 0),
-                            send(200, 1))
+        results = scheduler.start(create, disposed=200)
+        results.messages.assert_equal()
 
     def test_generate_repeat(self):
         scheduler = TestScheduler()

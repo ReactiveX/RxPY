@@ -12,7 +12,7 @@ class ConnectableObservable(Observable):
         self.has_subscription = False
         self.subscription = None
 
-        super(ConnectableObservable, self).__init__()
+        super().__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer, scheduler)

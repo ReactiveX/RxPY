@@ -123,7 +123,11 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
                 observer.throw(e)
                 return
 
-            writer.send(element)
+            print("send", element)
+
+            def action(scheduler, state):
+                writer.send(element)
+            scheduler.schedule_relative(1000, action)
 
         def throw(ex):
             for w in mapping.values():

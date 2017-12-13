@@ -5,7 +5,7 @@ from rx.internal.basic import identity
 
 
 @extensionmethod(Observable)
-def replay(self, selector, buffer_size=None, window=None):
+def replay(self, selector=None, buffer_size=None, window=None, scheduler=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications subject
@@ -34,9 +34,9 @@ def replay(self, selector, buffer_size=None, window=None):
     """
 
 
-    def subject_selector(scheduler):
-        return ReplaySubject(buffer_size, window, scheduler)
+    if selector:
+        def subject_selector(scheduler):
+            return ReplaySubject(buffer_size, window, scheduler)
+        return self.multicast(subject_selector=subject_selector,selector=selector)
 
-    selector = selector or identity
-
-    return self.multicast(subject_selector=subject_selector, selector=selector)
+    return self.multicast(ReplaySubject(buffer_size, window, scheduler))
