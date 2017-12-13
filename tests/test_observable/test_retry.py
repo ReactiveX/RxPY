@@ -28,24 +28,24 @@ class TestRetry(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3), close(250))
         results = scheduler.start(lambda: xs.retry())
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3), close(450))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3), close(450)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_retry_observable_infinite(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3))
         results = scheduler.start(lambda: xs.retry())
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3))
-        return xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_retry_observable_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3), throw(250, ex))
         results = scheduler.start(lambda: xs.retry(), disposed=1100)
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3), send(550, 1), send(600, 2), send(650, 3), send(800, 1), send(850, 2), send(900, 3), send(1050, 1))
-        return xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1100))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3), send(550, 1), send(600, 2), send(650, 3), send(800, 1), send(850, 2), send(900, 3), send(1050, 1)]
+        assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1100)]
 
     def test_retry_observable_throws(self):
         scheduler1 = TestScheduler()
@@ -75,16 +75,16 @@ class TestRetry(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(5, 1), send(10, 2), send(15, 3), throw(20, ex))
         results = scheduler.start(lambda: xs.retry(3))
 
-        results.messages.assert_equal(send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2), send(235, 3), send(245, 1), send(250, 2), send(255, 3), throw(260, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
+        assert results.messages == [send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2), send(235, 3), send(245, 1), send(250, 2), send(255, 3), throw(260, ex)]
+        assert xs.subscriptions == [subscribe(200, 220), subscribe(220, 240), subscribe(240, 260)]
 
     def test_retry_observable_retry_count_dispose(self):
         scheduler = TestScheduler()
         ex = 'ex'
         xs = scheduler.create_cold_observable(send(5, 1), send(10, 2), send(15, 3), throw(20, ex))
         results = scheduler.start(lambda: xs.retry(3), disposed=231)
-        results.messages.assert_equal(send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2))
-        xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
+        assert results.messages == [send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2)]
+        assert xs.subscriptions == [subscribe(200, 220), subscribe(220, 231)]
 
     def test_retry_observable_retry_count_dispose_ii(self):
         scheduler = TestScheduler()
@@ -92,8 +92,8 @@ class TestRetry(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3))
         results = scheduler.start(lambda: xs.retry(3))
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_retry_observable_retry_count_dispose_iii(self):
         scheduler = TestScheduler()
@@ -101,8 +101,8 @@ class TestRetry(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3), close(250))
         results = scheduler.start(lambda: xs.retry(3))
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3), close(450))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3), close(450)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_retry_observable_retry_count_throws(self):
         scheduler1 = TestScheduler()

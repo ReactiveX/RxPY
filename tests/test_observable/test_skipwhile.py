@@ -24,8 +24,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(330))
-        xs.subscriptions.assert_equal(subscribe(200, 330))
+        assert results.messages == [close(330)]
+        assert xs.subscriptions == [subscribe(200, 330)]
         assert(invoked[0] == 4)
 
     def test_skip_while_complete_after(self):
@@ -40,8 +40,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 6)
 
     def test_skip_while_error_before(self):
@@ -57,8 +57,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(270, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+        assert results.messages == [throw(270, ex)]
+        assert xs.subscriptions == [subscribe(200, 270)]
         assert(invoked[0] == 2)
 
     def test_skip_while_error_after(self):
@@ -74,8 +74,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(390, 4), send(410, 17), send(450, 8), send(500, 23), throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(390, 4), send(410, 17), send(450, 8), send(500, 23), throw(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 6)
 
     def test_skip_while_dispose_before(self):
@@ -90,8 +90,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create, disposed=300)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 300)]
         assert(invoked[0] == 3)
 
     def test_skip_while_dispose_after(self):
@@ -106,8 +106,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create, disposed=470)
 
-        results.messages.assert_equal(send(390, 4), send(410, 17), send(450, 8))
-        xs.subscriptions.assert_equal(subscribe(200, 470))
+        assert results.messages == [send(390, 4), send(410, 17), send(450, 8)]
+        assert xs.subscriptions == [subscribe(200, 470)]
         assert(invoked[0] == 6)
 
     def test_skip_while_zero(self):
@@ -122,8 +122,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(205, 100), send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(205, 100), send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 1)
 
     def test_skip_while_throw(self):
@@ -141,8 +141,8 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(290, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 290))
+        assert results.messages == [throw(290, ex)]
+        assert xs.subscriptions == [subscribe(200, 290)]
         assert(invoked[0] == 3)
 
     def test_skip_while_index(self):
@@ -155,5 +155,5 @@ class TestSkipWhile(unittest.TestCase):
             return xs.skip_while(predicate)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]

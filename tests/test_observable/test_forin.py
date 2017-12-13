@@ -23,7 +23,7 @@ class TestForIn(unittest.TestCase):
             return Observable.for_in([1, 2, 3], selector)
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(send(310, 11), send(320, 12), send(330, 13), send(550, 21), send(560, 22), send(570, 23), send(890, 31), send(900, 32), send(910, 33), close(920))
+        assert results.messages == [send(310, 11), send(320, 12), send(330, 13), send(550, 21), send(560, 22), send(570, 23), send(890, 31), send(900, 32), send(910, 33), close(920)]
 
     def test_for_throws(self):
         ex = 'ex'
@@ -34,4 +34,4 @@ class TestForIn(unittest.TestCase):
                 raise Exception(ex)
             return Observable.for_in([1, 2, 3], selector)
         results = scheduler.start(create=create)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]

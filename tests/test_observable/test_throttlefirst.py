@@ -41,15 +41,13 @@ class TestThrottleFirst(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(410, 6),
-            close(500)
-        )
+            close(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_throttle_first_never(self):
         scheduler = TestScheduler()
@@ -64,11 +62,10 @@ class TestThrottleFirst(unittest.TestCase):
         results = scheduler.start(create=create)
 
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 
 
     def test_throttle_first_empty(self):
@@ -85,13 +82,11 @@ class TestThrottleFirst(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
-            close(500)
-        )
+        assert results.messages == [
+            close(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_throttle_first_error(self):
         error = RxException()
@@ -114,14 +109,12 @@ class TestThrottleFirst(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
           send(210, 2),
-          throw(410, error)
-        )
+          throw(410, error)]
 
-        xs.subscriptions.assert_equal(
-          subscribe(200, 410)
-        )
+        assert xs.subscriptions == [
+          subscribe(200, 410)]
 
 
     def test_throttle_first_no_end(self):
@@ -142,12 +135,10 @@ class TestThrottleFirst(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
-            send(410, 6)
-        )
+            send(410, 6)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 

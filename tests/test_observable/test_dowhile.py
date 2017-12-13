@@ -18,13 +18,13 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(lambda _: False)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             self.send(250, 1),
             self.send(300, 2),
             self.send(350, 3),
             self.send(400, 4),
-            self.close(450))
-        xs.subscriptions.assert_equal(self.subscribe(200, 450))
+            self.close(450)]
+        assert xs.subscriptions == [self.subscribe(200, 450)]
 
     def test_dowhile_always_true(self):
         scheduler = TestScheduler()
@@ -39,7 +39,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(lambda _: True)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             self.send(250, 1),
             self.send(300, 2),
             self.send(350, 3),
@@ -51,12 +51,12 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             self.send(750, 1),
             self.send(800, 2),
             self.send(850, 3),
-            self.send(900, 4))
-        xs.subscriptions.assert_equal(
+            self.send(900, 4)]
+        assert xs.subscriptions == [
             self.subscribe(200, 450),
             self.subscribe(450, 700),
             self.subscribe(700, 950),
-            self.subscribe(950, 1000))
+            self.subscribe(950, 1000)]
 
     def test_dowhile_always_true_throw(self):
         ex = 'ex'
@@ -67,8 +67,8 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(lambda _: True)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(self.throw(250, ex))
-        xs.subscriptions.assert_equal(self.subscribe(200, 250))
+        assert results.messages == [self.throw(250, ex)]
+        assert xs.subscriptions == [self.subscribe(200, 250)]
 
     def test_dowhile_always_true_infinite(self):
         scheduler = TestScheduler()
@@ -78,9 +78,9 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(lambda _: True)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
-            self.send(250, 1))
-        xs.subscriptions.assert_equal(self.subscribe(200, 1000))
+        assert results.messages == [
+            self.send(250, 1)]
+        assert xs.subscriptions == [self.subscribe(200, 1000)]
 
     def test_dowhile_sometimes_true(self):
         scheduler = TestScheduler()
@@ -99,7 +99,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(condition)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             self.send(250, 1),
             self.send(300, 2),
             self.send(350, 3),
@@ -112,11 +112,11 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             self.send(800, 2),
             self.send(850, 3),
             self.send(900, 4),
-            self.close(950))
-        xs.subscriptions.assert_equal(
+            self.close(950)]
+        assert xs.subscriptions == [
             self.subscribe(200, 450),
             self.subscribe(450, 700),
-            self.subscribe(700, 950))
+            self.subscribe(700, 950)]
 
     def test_dowhile_sometimes_throws(self):
         ex = 'ex'
@@ -139,7 +139,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             return xs.do_while(condition)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             self.send(250, 1),
             self.send(300, 2),
             self.send(350, 3),
@@ -152,8 +152,8 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             self.send(800, 2),
             self.send(850, 3),
             self.send(900, 4),
-            self.throw(950, ex))
-        xs.subscriptions.assert_equal(
+            self.throw(950, ex)]
+        assert xs.subscriptions == [
             self.subscribe(200, 450),
             self.subscribe(450, 700),
-            self.subscribe(700, 950))
+            self.subscribe(700, 950)]

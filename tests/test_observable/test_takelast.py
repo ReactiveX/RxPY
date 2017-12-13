@@ -21,8 +21,8 @@ class TestTakeLast(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_zero_error(self):
         ex = 'ex'
@@ -34,8 +34,8 @@ class TestTakeLast(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(650, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [throw(650, ex)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_zero_disposed(self):
         scheduler = TestScheduler()
@@ -45,8 +45,8 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(0)
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_take_last_one_completed(self):
         scheduler = TestScheduler()
@@ -56,8 +56,8 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(650, 9), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [send(650, 9), close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_one_error(self):
         ex = 'ex'
@@ -68,8 +68,8 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(1)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(650, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [throw(650, ex)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_One_disposed(self):
         scheduler = TestScheduler()
@@ -80,8 +80,8 @@ class TestTakeLast(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_take_last_three_completed(self):
         scheduler = TestScheduler()
@@ -91,8 +91,8 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(3)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(650, 7), send(650, 8), send(650, 9), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [send(650, 7), send(650, 8), send(650, 9), close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_Take_last_three_error(self):
         ex = 'ex'
@@ -103,8 +103,8 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(3)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(650, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert results.messages == [throw(650, ex)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_Take_last_three_disposed(self):
         scheduler = TestScheduler()
@@ -114,5 +114,5 @@ class TestTakeLast(unittest.TestCase):
             return xs.take_last(3)
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]

@@ -21,8 +21,8 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(lambda _: False, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(200))
-        xs.subscriptions.assert_equal()
+        assert results.messages == [close(200)]
+        assert xs.subscriptions == []
 
     def test_while_always_true(self):
         scheduler = TestScheduler()
@@ -32,8 +32,8 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), send(750, 1), send(800, 2), send(850, 3), send(900, 4))
-        xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1000))
+        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), send(750, 1), send(800, 2), send(850, 3), send(900, 4)]
+        assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1000)]
 
     def test_while_always_true_throw(self):
         ex = 'ex'
@@ -43,8 +43,8 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(250, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert results.messages == [throw(250, ex)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_while_always_true_infinite(self):
         scheduler = TestScheduler()
@@ -53,8 +53,8 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250, 1))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(250, 1)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_dowhile_always_true_infinite_with_create(self):
         scheduler = TestScheduler()
@@ -85,8 +85,8 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), close(700))
-        xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700))
+        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), close(700)]
+        assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700)]
 
     def test_while_sometimes_throws(self):
         scheduler = TestScheduler()
@@ -105,5 +105,5 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), throw(700, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 450), subscribe(450, 700))
+        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), throw(700, ex)]
+        assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700)]

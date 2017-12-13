@@ -31,7 +31,7 @@ class TestSample(unittest.TestCase):
             return xs.sample(50)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(250, 3), send(300, 5), send(350, 6), send(400, 7), close(400))
+        assert results.messages == [send(250, 3), send(300, 5), send(350, 6), send(400, 7), close(400)]
 
     def test_sample_error_in_flight(self):
         ex = 'ex'
@@ -42,7 +42,7 @@ class TestSample(unittest.TestCase):
             return xs.sample(50)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(250, 3), send(300, 5), throw(330, ex))
+        assert results.messages == [send(250, 3), send(300, 5), throw(330, ex)]
 
     def test_sample_empty(self):
         scheduler = TestScheduler()
@@ -51,7 +51,7 @@ class TestSample(unittest.TestCase):
             return Observable.empty().sample(0)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_sample_error(self):
         ex = 'ex'
@@ -61,7 +61,7 @@ class TestSample(unittest.TestCase):
             return Observable.throw_exception(ex).sample(0)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_sample_never(self):
         scheduler = TestScheduler()
@@ -69,4 +69,4 @@ class TestSample(unittest.TestCase):
         def create():
             return Observable.never().sample(1)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []

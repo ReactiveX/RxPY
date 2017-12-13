@@ -30,7 +30,7 @@ class TestThrow(unittest.TestCase):
             return Observable.throw_exception(ex)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_throw_disposed(self):
         scheduler = TestScheduler()
@@ -38,7 +38,7 @@ class TestThrow(unittest.TestCase):
             return Observable.throw_exception('ex')
 
         results = scheduler.start(factory, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()

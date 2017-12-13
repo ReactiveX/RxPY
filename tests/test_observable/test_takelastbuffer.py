@@ -25,8 +25,8 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return len(lst) == 0
 
-        res.messages.assert_equal(send(650, predicate), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert res.messages == [send(650, predicate), close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_zero_error(self):
         ex = 'ex'
@@ -38,8 +38,8 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(throw(650, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert res.messages == [throw(650, ex)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_zero_disposed(self):
         scheduler = TestScheduler()
@@ -50,8 +50,8 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_take_last_buffer_one_completed(self):
         scheduler = TestScheduler()
@@ -65,8 +65,8 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return lst == [9]
 
-        res.messages.assert_equal(send(650, predicate), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert res.messages == [send(650, predicate), close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_one_error(self):
         ex = 'ex'
@@ -78,8 +78,8 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(throw(650, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert res.messages == [throw(650, ex)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_one_disposed(self):
         scheduler = TestScheduler()
@@ -91,8 +91,8 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_take_last_buffer_three_completed(self):
         scheduler = TestScheduler()
@@ -106,8 +106,8 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return lst == [7, 8, 9]
 
-        res.messages.assert_equal(send(650, predicate), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 650))
+        assert res.messages == [send(650, predicate), close(650)]
+        assert xs.subscriptions == [subscribe(200, 650)]
 
 # def test_Take_last_buffer_Three_Error():
 #     var ex, res, scheduler, xs
@@ -117,8 +117,8 @@ class TestTakeLastBuffer(unittest.TestCase):
 #     res = scheduler.start(create)
 #         return xs.take_last_buffer(3)
 
-#     res.messages.assert_equal(throw(650, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 650))
+#     assert res.messages == [throw(650, ex)]
+#     assert xs.subscriptions == [subscribe(200, 650)]
 
 # def test_Take_last_buffer_Three_Disposed():
 #     var res, scheduler, xs
@@ -127,6 +127,6 @@ class TestTakeLastBuffer(unittest.TestCase):
 #     res = scheduler.start(create)
 #         return xs.take_last_buffer(3)
 
-#     res.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
+#     assert res.messages == []
+#     assert xs.subscriptions == [subscribe(200, 1000)]
 

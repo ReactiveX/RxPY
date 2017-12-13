@@ -33,8 +33,8 @@ class TestExpand(unittest.TestCase):
             return xs.expand(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert results.messages == [close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
 
     def test_expand_error(self):
         scheduler = TestScheduler()
@@ -47,8 +47,8 @@ class TestExpand(unittest.TestCase):
             return xs.expand(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(300, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert results.messages == [throw(300, ex)]
+        assert xs.subscriptions == [subscribe(200, 300)]
 
     def test_expand_never(self):
         scheduler = TestScheduler()
@@ -61,8 +61,8 @@ class TestExpand(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_expand_basic(self):
         scheduler = TestScheduler()
@@ -74,8 +74,8 @@ class TestExpand(unittest.TestCase):
             return xs.expand(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(550, 1), send(650, 2), send(750, 3), send(750, 4), send(850, 2), send(850, 6), send(850, 6), send(850, 8), send(950, 9), send(950, 12), send(950, 4), send(950, 12), send(950, 12), send(950, 16))
-        xs.subscriptions.assert_equal(subscribe(200, 950))
+        assert results.messages == [send(550, 1), send(650, 2), send(750, 3), send(750, 4), send(850, 2), send(850, 6), send(850, 6), send(850, 8), send(950, 9), send(950, 12), send(950, 4), send(950, 12), send(950, 12), send(950, 16)]
+        assert xs.subscriptions == [subscribe(200, 950)]
 
     def test_expand_throw(self):
         ex = 'ex'
@@ -88,5 +88,5 @@ class TestExpand(unittest.TestCase):
             return xs.expand(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(550, 1), throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(550, 1), throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]

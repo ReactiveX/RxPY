@@ -24,7 +24,7 @@ class TestAsObservable(unittest.TestCase):
             return Observable.never().as_observable()
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_as_observable_empty(self):
         scheduler = TestScheduler()

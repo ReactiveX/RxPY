@@ -70,8 +70,8 @@ class TestSelect(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action)
         scheduler.start()
 
-        results.messages.assert_equal(send(100, 1), send(200, 2))
-        xs.subscriptions.assert_equal(ReactiveTest.subscribe(0, 500))
+        assert results.messages == [send(100, 1), send(200, 2)]
+        assert xs.subscriptions == [ReactiveTest.subscribe(0, 500)]
 
         assert invoked[0] == 3
 
@@ -88,8 +88,8 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400))
-        xs.subscriptions.assert_equal(ReactiveTest.subscribe(200, 400))
+        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400)]
+        assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
 
 
@@ -106,8 +106,8 @@ class TestSelect(unittest.TestCase):
                 return xs.map(projection)
 
             results = scheduler.start(factory)
-            results.messages.assert_equal(send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400))
-            xs.subscriptions.assert_equal(subscribe(200, 400))
+            assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400)]
+            assert xs.subscriptions == [subscribe(200, 400)]
             assert invoked[0] == 4
 
     def test_select_not_completed(self):
@@ -123,8 +123,8 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(290, 5), send(350, 6))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
     def test_select_error(self):
@@ -139,8 +139,8 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(290, 5), send(350, 6), throw(400, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), throw(400, ex)]
+        assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
     def test_select_selector_throws(self):
@@ -159,8 +159,8 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 3), send(240, 4), throw(290, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 290))
+        assert results.messages == [send(210, 3), send(240, 4), throw(290, ex)]
+        assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
     def test_select_with_index_throws(self):
@@ -205,8 +205,8 @@ class TestSelect(unittest.TestCase):
 
         scheduler.schedule_absolute(disposed, action)
         scheduler.start()
-        results.messages.assert_equal(send(100, 4), send(200, 13))
-        xs.subscriptions.assert_equal(subscribe(0, 500))
+        assert results.messages == [send(100, 4), send(200, 13)]
+        assert xs.subscriptions == [subscribe(0, 500)]
         assert invoked[0] == 3
 
     def test_select_with_index_completed(self):
@@ -222,8 +222,8 @@ class TestSelect(unittest.TestCase):
             return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 5), send(240, 14), send(290, 23), send(350, 32), close(400))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32), close(400)]
+        assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
     def test_select_with_index_not_completed(self):
@@ -238,8 +238,8 @@ class TestSelect(unittest.TestCase):
             return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 5), send(240, 14), send(290, 23), send(350, 32))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
     def test_select_with_index_error(self):
@@ -257,8 +257,8 @@ class TestSelect(unittest.TestCase):
 
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 5), send(240, 14), send(290, 23), send(350, 32), throw(400, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32), throw(400, ex)]
+        assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
     def test_select_with_index_selector_throws(self):
@@ -277,8 +277,8 @@ class TestSelect(unittest.TestCase):
             return xs.map_indexed(projection)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(send(210, 5), send(240, 14), throw(290, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 290))
+        assert results.messages == [send(210, 5), send(240, 14), throw(290, ex)]
+        assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
 if __name__ == '__main__':

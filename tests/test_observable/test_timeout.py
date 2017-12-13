@@ -30,7 +30,7 @@ class TestTimeout(unittest.TestCase):
             return xs.timeout(500, None)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
+        assert results.messages == [send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400)]
 
     def test_timeout_out_of_time(self):
         scheduler = TestScheduler()
@@ -40,7 +40,7 @@ class TestTimeout(unittest.TestCase):
             return xs.timeout(205)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
+        assert results.messages == [send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400)]
 
     def test_timeout_timeout_occurs_1(self):
         scheduler = TestScheduler()
@@ -51,9 +51,9 @@ class TestTimeout(unittest.TestCase):
             return xs.timeout(100, ys)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(350, -1), send(500, -2), send(610, -3), close(620))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(300, 620))
+        assert results.messages == [send(350, -1), send(500, -2), send(610, -3), close(620)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(300, 620)]
 
     def test_timeout_timeout_occurs_2(self):
         scheduler = TestScheduler()
@@ -65,9 +65,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(240, 3), send(310, 4), send(460, -1), send(610, -2), send(720, -3), close(730))
-        xs.subscriptions.assert_equal(subscribe(200, 410))
-        ys.subscriptions.assert_equal(subscribe(410, 730))
+        assert results.messages == [send(240, 3), send(310, 4), send(460, -1), send(610, -2), send(720, -3), close(730)]
+        assert xs.subscriptions == [subscribe(200, 410)]
+        assert ys.subscriptions == [subscribe(410, 730)]
 
     def test_timeout_timeout_occurs_never(self):
         scheduler = TestScheduler()
@@ -79,9 +79,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(240, 3), send(310, 4))
-        xs.subscriptions.assert_equal(subscribe(200, 410))
-        ys.subscriptions.assert_equal(subscribe(410, 1000))
+        assert results.messages == [send(240, 3), send(310, 4)]
+        assert xs.subscriptions == [subscribe(200, 410)]
+        assert ys.subscriptions == [subscribe(410, 1000)]
 
     def test_timeout_timeout_occurs_completed(self):
         scheduler = TestScheduler()
@@ -93,9 +93,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, -1))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(300, 1000))
+        assert results.messages == [send(400, -1)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(300, 1000)]
 
     def test_timeout_timeout_occurs_error(self):
         scheduler = TestScheduler()
@@ -107,9 +107,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, -1))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(300, 1000))
+        assert results.messages == [send(400, -1)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(300, 1000)]
 
     def test_timeout_timeout_not_occurs_completed(self):
         scheduler = TestScheduler()
@@ -121,9 +121,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
+        assert ys.subscriptions == []
 
     def test_timeout_timeout_not_occurs_error(self):
         ex = 'ex'
@@ -136,9 +136,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(250, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [throw(250, ex)]
+        assert xs.subscriptions == [subscribe(200, 250)]
+        assert ys.subscriptions == []
 
     def test_timeout_timeout_does_not_occur(self):
         scheduler = TestScheduler()
@@ -150,9 +150,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(240, 3), send(320, 4), send(410, 5), close(500))
-        xs.subscriptions.assert_equal(subscribe(200, 500))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(240, 3), send(320, 4), send(410, 5), close(500)]
+        assert xs.subscriptions == [subscribe(200, 500)]
+        assert ys.subscriptions == []
 
     def test_timeout_datetime_offset_timeout_occurs(self):
         scheduler = TestScheduler()
@@ -164,9 +164,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(500, -1))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(400, 1000))
+        assert results.messages == [send(500, -1)]
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(400, 1000)]
 
     def test_timeout_datetime_offset_timeout_does_not_occur_completed(self):
         scheduler = TestScheduler()
@@ -177,9 +177,9 @@ class TestTimeout(unittest.TestCase):
             return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(310, 1), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
+        assert ys.subscriptions == []
 
     def test_timeout_datetime_offset_timeout_does_not_occur_error(self):
         ex = 'ex'
@@ -192,9 +192,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), throw(390, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(310, 1), throw(390, ex)]
+        assert xs.subscriptions == [subscribe(200, 390)]
+        assert ys.subscriptions == []
 
     def test_timeout_datetime_offset_timeout_occur_2(self):
         scheduler = TestScheduler()
@@ -206,9 +206,9 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), send(350, 2), send(500, -1))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(400, 1000))
+        assert results.messages == [send(310, 1), send(350, 2), send(500, -1)]
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(400, 1000)]
 
     def test_timeout_datetime_offset_timeout_occur_3(self):
         scheduler = TestScheduler()
@@ -220,6 +220,6 @@ class TestTimeout(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), send(350, 2))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(400, 1000))
+        assert results.messages == [send(310, 1), send(350, 2)]
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(400, 1000)]

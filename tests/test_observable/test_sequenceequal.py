@@ -20,9 +20,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(720, True), close(720))
-        xs.subscriptions.assert_equal(subscribe(200, 720))
-        ys.subscriptions.assert_equal(subscribe(200, 720))
+        assert results.messages == [send(720, True), close(720)]
+        assert xs.subscriptions == [subscribe(200, 720)]
+        assert ys.subscriptions == [subscribe(200, 720)]
 
     def test_sequence_equal_equal_sym(self):
         scheduler = TestScheduler()
@@ -32,9 +32,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(720, True), close(720))
-        xs.subscriptions.assert_equal(subscribe(200, 720))
-        ys.subscriptions.assert_equal(subscribe(200, 720))
+        assert results.messages == [send(720, True), close(720)]
+        assert xs.subscriptions == [subscribe(200, 720)]
+        assert ys.subscriptions == [subscribe(200, 720)]
 
     def test_sequence_equal_not_equal_left(self):
         scheduler = TestScheduler()
@@ -44,9 +44,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
+        assert results.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
+        assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequence_equal_not_equal_left_sym(self):
         scheduler = TestScheduler()
@@ -56,9 +56,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
+        assert results.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
+        assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequence_equal_not_equal_right(self):
         scheduler = TestScheduler()
@@ -68,9 +68,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(510, False), close(510))
-        xs.subscriptions.assert_equal(subscribe(200, 510))
-        ys.subscriptions.assert_equal(subscribe(200, 510))
+        assert results.messages == [send(510, False), close(510)]
+        assert xs.subscriptions == [subscribe(200, 510)]
+        assert ys.subscriptions == [subscribe(200, 510)]
 
     def test_sequence_equal_not_equal_right_sym(self):
         scheduler = TestScheduler()
@@ -80,9 +80,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(510, False), close(510))
-        xs.subscriptions.assert_equal(subscribe(200, 510))
-        ys.subscriptions.assert_equal(subscribe(200, 510))
+        assert results.messages == [send(510, False), close(510)]
+        assert xs.subscriptions == [subscribe(200, 510)]
+        assert ys.subscriptions == [subscribe(200, 510)]
 
     def test_sequence_equal_not_equal_2(self):
         scheduler = TestScheduler()
@@ -92,9 +92,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(490, False), close(490))
-        xs.subscriptions.assert_equal(subscribe(200, 490))
-        ys.subscriptions.assert_equal(subscribe(200, 490))
+        assert results.messages == [send(490, False), close(490)]
+        assert xs.subscriptions == [subscribe(200, 490)]
+        assert ys.subscriptions == [subscribe(200, 490)]
 
     def test_sequence_equal_not_equal_2_sym(self):
         scheduler = TestScheduler()
@@ -104,9 +104,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(490, False), close(490))
-        xs.subscriptions.assert_equal(subscribe(200, 490))
-        ys.subscriptions.assert_equal(subscribe(200, 490))
+        assert results.messages == [send(490, False), close(490)]
+        assert xs.subscriptions == [subscribe(200, 490)]
+        assert ys.subscriptions == [subscribe(200, 490)]
 
     def test_sequence_equal_not_equal_3(self):
         scheduler = TestScheduler()
@@ -116,9 +116,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(420, False), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
-        ys.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(420, False), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
+        assert ys.subscriptions == [subscribe(200, 420)]
 
     def test_sequence_equal_not_equal_3_sym(self):
         scheduler = TestScheduler()
@@ -128,9 +128,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(420, False), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
-        ys.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(420, False), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
+        assert ys.subscriptions == [subscribe(200, 420)]
 
     def test_sequence_equal_comparer_throws(self):
         ex = 'ex'
@@ -146,9 +146,9 @@ class TestSequenceEqual(unittest.TestCase):
             return xs.sequence_equal(ys, comparer)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(270, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
-        ys.subscriptions.assert_equal(subscribe(200, 270))
+        assert results.messages == [throw(270, ex)]
+        assert xs.subscriptions == [subscribe(200, 270)]
+        assert ys.subscriptions == [subscribe(200, 270)]
 
     def test_sequence_equal_comparer_throws_sym(self):
         ex = 'ex'
@@ -164,9 +164,9 @@ class TestSequenceEqual(unittest.TestCase):
             return ys.sequence_equal(xs, comparer)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(270, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
-        ys.subscriptions.assert_equal(subscribe(200, 270))
+        assert results.messages == [throw(270, ex)]
+        assert xs.subscriptions == [subscribe(200, 270)]
+        assert ys.subscriptions == [subscribe(200, 270)]
 
     def test_sequence_equal_not_equal_4(self):
         scheduler = TestScheduler()
@@ -176,9 +176,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: xs.sequence_equal(ys))
 
-        results.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
+        assert results.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
+        assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequence_equal_not_equal_4_sym(self):
         scheduler = TestScheduler()
@@ -188,9 +188,9 @@ class TestSequenceEqual(unittest.TestCase):
         ys = scheduler.create_hot_observable(msgs2)
         results = scheduler.start(create=lambda: ys.sequence_equal(xs))
 
-        results.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
+        assert results.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
+        assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequenceequal_enumerable_equal(self):
         scheduler = TestScheduler()
@@ -201,8 +201,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(510, True), close(510))
-        xs.subscriptions.assert_equal(subscribe(200, 510))
+        assert res.messages == [send(510, True), close(510)]
+        assert xs.subscriptions == [subscribe(200, 510)]
 
     def test_sequenceequal_enumerable_notequal_elements(self):
         scheduler = TestScheduler()
@@ -213,8 +213,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
+        assert res.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
 
     def test_sequenceequal_enumerable_comparer_equal(self):
         scheduler = TestScheduler()
@@ -227,8 +227,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(510, True), close(510))
-        xs.subscriptions.assert_equal(subscribe(200, 510))
+        assert res.messages == [send(510, True), close(510)]
+        assert xs.subscriptions == [subscribe(200, 510)]
 
     def test_sequenceequal_enumerable_comparer_notequal(self):
         scheduler = TestScheduler()
@@ -241,8 +241,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(310, False), close(310))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
+        assert res.messages == [send(310, False), close(310)]
+        assert xs.subscriptions == [subscribe(200, 310)]
 
     def test_sequenceequal_enumerable_comparer_throws(self):
         def throw_comparer(value, exn):
@@ -262,8 +262,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(310, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
+        assert res.messages == [throw(310, ex)]
+        assert xs.subscriptions == [subscribe(200, 310)]
 
     def test_sequenceequal_enumerable_notequal_toolong(self):
         scheduler = TestScheduler()
@@ -274,8 +274,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(510, False), close(510))
-        xs.subscriptions.assert_equal(subscribe(200, 510))
+        assert res.messages == [send(510, False), close(510)]
+        assert xs.subscriptions == [subscribe(200, 510)]
 
     def test_sequenceequal_enumerable_notequal_tooshort(self):
         scheduler = TestScheduler()
@@ -286,8 +286,8 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(450, False), close(450))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert res.messages == [send(450, False), close(450)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_sequenceequal_enumerable_throw(self):
         ex = 'ex'
@@ -299,5 +299,5 @@ class TestSequenceEqual(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(310, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 310))
+        assert res.messages == [throw(310, ex)]
+        assert xs.subscriptions == [subscribe(200, 310)]

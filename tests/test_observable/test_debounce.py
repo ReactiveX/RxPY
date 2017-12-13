@@ -31,7 +31,7 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        return results.messages.assert_equal(send(290, 3), send(340, 4), send(390, 5), send(440, 6), send(490, 7), send(540, 8), close(550))
+        assert results.messages == [send(290, 3), send(340, 4), send(390, 5), send(440, 6), send(490, 7), send(540, 8), close(550)]
 
     def test_debounce_timespan_allpass_error_end(self):
         ex = 'ex'
@@ -42,7 +42,7 @@ class TestDebounce(unittest.TestCase):
             return xs.debounce(40)
 
         results = scheduler.start(create)
-        return results.messages.assert_equal(send(290, 3), send(340, 4), send(390, 5), send(440, 6), send(490, 7), send(540, 8), throw(550, ex))
+        assert results.messages == [send(290, 3), send(340, 4), send(390, 5), send(440, 6), send(490, 7), send(540, 8), throw(550, ex)]
 
     def test_debounce_timespan_alldrop(self):
         scheduler = TestScheduler()
@@ -52,7 +52,7 @@ class TestDebounce(unittest.TestCase):
             return xs.debounce(60)
 
         results = scheduler.start(create)
-        return results.messages.assert_equal(send(550, 8), close(550))
+        assert results.messages == [send(550, 8), close(550)]
 
     def test_debounce_timespan_alldrop_error_end(self):
         ex = 'ex'
@@ -63,7 +63,7 @@ class TestDebounce(unittest.TestCase):
             return xs.debounce(60)
 
         results = scheduler.start(create)
-        return results.messages.assert_equal(throw(550, ex))
+        assert results.messages == [throw(550, ex)]
 
     def test_debounce_timespan_some_drop(self):
         scheduler = TestScheduler()
@@ -73,7 +73,7 @@ class TestDebounce(unittest.TestCase):
             return xs.debounce(50)
 
         results = scheduler.start(create)
-        return results.messages.assert_equal(send(300, 2), send(420, 4), send(471, 5), send(550, 8), close(600))
+        assert results.messages == [send(300, 2), send(420, 4), send(471, 5), send(550, 8), close(600)]
 
     def test_debounce_empty(self):
         scheduler = TestScheduler()
@@ -83,7 +83,7 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_debounce_error(self):
         ex = 'ex'
@@ -93,7 +93,7 @@ class TestDebounce(unittest.TestCase):
             return Observable.throw_exception(ex).debounce(10)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_debounce_never(self):
         scheduler = TestScheduler()
@@ -102,7 +102,7 @@ class TestDebounce(unittest.TestCase):
             return Observable.never().debounce(10)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_debounce_duration_delay_behavior(self):
         scheduler = TestScheduler()
@@ -117,19 +117,18 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 20, 0), send(280 + 20, 1), send(310 + 20, 2), send(350 + 20, 3), send(400 + 20, 4), close(550))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
-        ys[0].subscriptions.assert_equal(subscribe(250, 250 + 20))
-        ys[1].subscriptions.assert_equal(subscribe(280, 280 + 20))
-        ys[2].subscriptions.assert_equal(subscribe(310, 310 + 20))
-        ys[3].subscriptions.assert_equal(subscribe(350, 350 + 20))
-        ys[4].subscriptions.assert_equal(subscribe(400, 400 + 20))
+        assert results.messages == [send(250 + 20, 0), send(280 + 20, 1), send(310 + 20, 2), send(350 + 20, 3), send(400 + 20, 4), close(550)]
+        assert xs.subscriptions == [subscribe(200, 550)]
+        assert ys[0].subscriptions == [subscribe(250, 250 + 20)]
+        assert ys[1].subscriptions == [subscribe(280, 280 + 20)]
+        assert ys[2].subscriptions == [subscribe(310, 310 + 20)]
+        assert ys[3].subscriptions == [subscribe(350, 350 + 20)]
+        assert ys[4].subscriptions == [subscribe(400, 400 + 20)]
 
     def test_debounce_duration_throttle_behavior(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, -1), send(250, 0), send(280, 1), send(310, 2), send(350, 3), send(400, 4), close(550))
         ys = [scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(40, 42), send(45, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(60, 42), send(65, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99))]
-
 
         def create():
             def selector(x):
@@ -138,13 +137,13 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 20, 0), send(310 + 20, 2), send(400 + 20, 4), close(550))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
-        ys[0].subscriptions.assert_equal(subscribe(250, 250 + 20))
-        ys[1].subscriptions.assert_equal(subscribe(280, 310))
-        ys[2].subscriptions.assert_equal(subscribe(310, 310 + 20))
-        ys[3].subscriptions.assert_equal(subscribe(350, 400))
-        ys[4].subscriptions.assert_equal(subscribe(400, 400 + 20))
+        assert results.messages == [send(250 + 20, 0), send(310 + 20, 2), send(400 + 20, 4), close(550)]
+        assert xs.subscriptions == [subscribe(200, 550)]
+        assert ys[0].subscriptions == [subscribe(250, 250 + 20)]
+        assert ys[1].subscriptions == [subscribe(280, 310)]
+        assert ys[2].subscriptions == [subscribe(310, 310 + 20)]
+        assert ys[3].subscriptions == [subscribe(350, 400)]
+        assert ys[4].subscriptions == [subscribe(400, 400 + 20)]
 
     def test_debounce_duration_early_completion(self):
         scheduler = TestScheduler()
@@ -158,13 +157,13 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 20, 0), send(310 + 20, 2), send(410, 4), close(410))
-        xs.subscriptions.assert_equal(subscribe(200, 410))
-        ys[0].subscriptions.assert_equal(subscribe(250, 250 + 20))
-        ys[1].subscriptions.assert_equal(subscribe(280, 310))
-        ys[2].subscriptions.assert_equal(subscribe(310, 310 + 20))
-        ys[3].subscriptions.assert_equal(subscribe(350, 400))
-        ys[4].subscriptions.assert_equal(subscribe(400, 410))
+        assert results.messages == [send(250 + 20, 0), send(310 + 20, 2), send(410, 4), close(410)]
+        assert xs.subscriptions == [subscribe(200, 410)]
+        assert ys[0].subscriptions == [subscribe(250, 250 + 20)]
+        assert ys[1].subscriptions == [subscribe(280, 310)]
+        assert ys[2].subscriptions == [subscribe(310, 310 + 20)]
+        assert ys[3].subscriptions == [subscribe(350, 400)]
+        assert ys[4].subscriptions == [subscribe(400, 410)]
 
     def test_debounce_duration_inner_error(self):
         scheduler = TestScheduler()
@@ -182,8 +181,8 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(450 + 4 * 10, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 490))
+        assert results.messages == [send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(450 + 4 * 10, ex)]
+        assert xs.subscriptions == [subscribe(200, 490)]
 
     def test_debounce_duration_outer_error(self):
         ex = 'ex'
@@ -197,8 +196,8 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(460, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 460))
+        assert results.messages == [send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(460, ex)]
+        assert xs.subscriptions == [subscribe(200, 460)]
 
     def test_debounce_duration_selector_throws(self):
         ex = 'ex'
@@ -216,8 +215,8 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(450, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(450, ex)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_debounce_duration_inner_done_delay_behavior(self):
         scheduler = TestScheduler()
@@ -230,8 +229,8 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), send(450 + 4 * 10, 4), close(550))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), send(450 + 4 * 10, 4), close(550)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_debounce_duration_inner_done_throttle_behavior(self):
         scheduler = TestScheduler()
@@ -244,5 +243,5 @@ class TestDebounce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(250 + 2 * 10, 2), send(300 + 4 * 10, 4), send(410 + 6 * 10, 6), close(550))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(250 + 2 * 10, 2), send(300 + 4 * 10, 4), send(410 + 6 * 10, 6), close(550)]
+        assert xs.subscriptions == [subscribe(200, 550)]

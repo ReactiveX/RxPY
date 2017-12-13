@@ -37,8 +37,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(350, 2), send(450, 3), send(550, 4), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(350, 2), send(450, 3), send(550, 4), close(650)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_datetime_offset_simple1_impl(self):
         scheduler = TestScheduler()
@@ -49,8 +49,8 @@ class TestDelay(unittest.TestCase):
             return xs.delay(dt)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(350, 2), send(450, 3), send(550, 4), close(650))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(350, 2), send(450, 3), send(550, 4), close(650)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_timespan_simple2_impl(self):
         scheduler = TestScheduler()
@@ -60,8 +60,8 @@ class TestDelay(unittest.TestCase):
             return xs.delay(50)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(300, 2), send(400, 3), send(500, 4), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(300, 2), send(400, 3), send(500, 4), close(600)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_datetime_offset_simple2_impl(self):
         scheduler = TestScheduler()
@@ -72,8 +72,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(300, 2), send(400, 3), send(500, 4), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(300, 2), send(400, 3), send(500, 4), close(600)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_timespan_simple3_impl(self):
         scheduler = TestScheduler()
@@ -84,8 +84,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, 2), send(500, 3), send(600, 4), close(700))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(400, 2), send(500, 3), send(600, 4), close(700)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_datetime_offset_simple3_impl(self):
         scheduler = TestScheduler()
@@ -96,8 +96,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, 2), send(500, 3), send(600, 4), close(700))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(400, 2), send(500, 3), send(600, 4), close(700)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_timespan_error1_impl(self):
         ex = 'ex'
@@ -109,8 +109,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(300, 2), send(400, 3), send(500, 4), throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(300, 2), send(400, 3), send(500, 4), throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_datetime_offset_error1_impl(self):
         ex = 'ex'
@@ -122,8 +122,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(300, 2), send(400, 3), send(500, 4), throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(300, 2), send(400, 3), send(500, 4), throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_timespan_error2_impl(self):
         ex = 'ex'
@@ -135,8 +135,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, 2), send(500, 3), throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(400, 2), send(500, 3), throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_datetime_offset_error2_impl(self):
         ex = 'ex'
@@ -148,8 +148,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(400, 2), send(500, 3), throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [send(400, 2), send(500, 3), throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_empty(self):
         scheduler = TestScheduler()
@@ -160,8 +160,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(560))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [close(560)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_error(self):
         ex = 'ex'
@@ -173,8 +173,8 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(550, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 550))
+        assert results.messages == [throw(550, ex)]
+        assert xs.subscriptions == [subscribe(200, 550)]
 
     def test_delay_never(self):
         scheduler = TestScheduler()
@@ -185,5 +185,5 @@ class TestDelay(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]

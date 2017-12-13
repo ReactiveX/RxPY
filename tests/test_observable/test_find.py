@@ -24,8 +24,7 @@ class TestFind(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-        )
+        assert res.messages == []
 
     def test_find_empty(self):
         scheduler = TestScheduler()
@@ -39,10 +38,9 @@ class TestFind(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(210, None),
-            close(210)
-        )
+            close(210)]
 
     def test_find_single(self):
         scheduler = TestScheduler()
@@ -56,10 +54,9 @@ class TestFind(unittest.TestCase):
             return xs.find(lambda x,i,s: x==2)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(210, 2),
-            close(210)
-        )
+            close(210)]
 
     def test_find_notfound(self):
         scheduler = TestScheduler()
@@ -73,10 +70,9 @@ class TestFind(unittest.TestCase):
             return xs.find(lambda x,i,s: x==3)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(220, None),
-            close(220)
-        )
+            close(220)]
 
     def test_find_Error(self):
         ex = Exception('error')
@@ -91,9 +87,8 @@ class TestFind(unittest.TestCase):
             return xs.find(lambda x,i,s: x==3)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(220, ex)
-        )
+        assert res.messages == [
+            throw(220, ex)]
 
     def test_find_throws(self):
         ex = 'error'
@@ -110,6 +105,5 @@ class TestFind(unittest.TestCase):
             return xs.find(predicate)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(210, ex)
-        )
+        assert res.messages == [
+            throw(210, ex)]

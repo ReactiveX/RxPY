@@ -26,10 +26,10 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 1, map, zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 1), send(240, 2), send(270, 3), close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal()
-        zs.subscriptions.assert_equal()
+        assert results.messages == [send(210, 1), send(240, 2), send(270, 3), close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == []
+        assert zs.subscriptions == []
 
     def test_case_two(self):
         scheduler = TestScheduler()
@@ -44,10 +44,10 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 2, map, zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(220, 11), send(250, 12), send(280, 13), close(310))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal()
+        assert results.messages == [send(220, 11), send(250, 12), send(280, 13), close(310)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == []
 
     def test_case_three(self):
         scheduler = TestScheduler()
@@ -62,10 +62,10 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 3, map, zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(230, 21), send(240, 22), send(290, 23), close(320))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal()
-        zs.subscriptions.assert_equal(subscribe(200, 320))
+        assert results.messages == [send(230, 21), send(240, 22), send(290, 23), close(320)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == []
+        assert zs.subscriptions == [subscribe(200, 320)]
 
     def test_case_throw(self):
         ex = 'ex'
@@ -83,10 +83,10 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(selector, map, zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal()
-        zs.subscriptions.assert_equal()
+        assert results.messages == [throw(200, ex)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == []
+        assert zs.subscriptions == []
 
     def test_case_with_default_one(self):
         scheduler = TestScheduler()
@@ -101,9 +101,9 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 1, map)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(210, 1), send(240, 2), send(270, 3), close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(210, 1), send(240, 2), send(270, 3), close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == []
 
     def test_case_with_default_two(self):
         scheduler = TestScheduler()
@@ -117,9 +117,9 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 2, map)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(220, 11), send(250, 12), send(280, 13), close(310))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal(subscribe(200, 310))
+        assert results.messages == [send(220, 11), send(250, 12), send(280, 13), close(310)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_case_with_default_three(self):
         scheduler = TestScheduler()
@@ -133,9 +133,9 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(lambda: 3, map)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(close(200))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal()
+        assert results.messages == [close(200)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == []
 
     def test_case_with_default_throw(self):
         ex = 'ex'
@@ -152,6 +152,6 @@ class TestCase(unittest.TestCase):
             return Observable.switch_case(selector, map)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal()
+        assert results.messages == [throw(200, ex)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == []

@@ -20,7 +20,7 @@ class TestStartWith(unittest.TestCase):
         def create():
             return xs.start_with(1)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 1), send(220, 2), close(250))
+        assert results.messages == [send(200, 1), send(220, 2), close(250)]
 
     # def test_start_with_scheduler(self):
     #     scheduler = TestScheduler()
@@ -29,7 +29,7 @@ class TestStartWith(unittest.TestCase):
     #     def create():
     #         return xs.start_with(scheduler)
     #     results = scheduler.start(create)
-    #     results.messages.assert_equal(send(220, 2), close(250))
+    #     assert results.messages == [send(220, 2), close(250)]
 
     def test_start_with_scheduler_and_arg(self):
         scheduler = TestScheduler()
@@ -38,7 +38,7 @@ class TestStartWith(unittest.TestCase):
         def create():
             return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 42), send(220, 2), close(250))
+        assert results.messages == [send(200, 42), send(220, 2), close(250)]
 
     def test_start_with_immediate_scheduler_and_arg(self):
         scheduler = TestScheduler()
@@ -47,7 +47,7 @@ class TestStartWith(unittest.TestCase):
         def create():
             return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 42), send(220, 2), close(250))
+        assert results.messages == [send(200, 42), send(220, 2), close(250)]
 
     def test_start_with_scheduler_keyword_and_arg(self):
         scheduler = TestScheduler()
@@ -56,4 +56,4 @@ class TestStartWith(unittest.TestCase):
         def create():
             return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 42), send(220, 2), close(250))
+        assert results.messages == [send(200, 42), send(220, 2), close(250)]

@@ -26,7 +26,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 4), send(240, 5), close(250))
+        assert results.messages == [send(230, 4), send(240, 5), close(250)]
 
     def test_skip_until_somedata_error(self):
         scheduler = TestScheduler()
@@ -40,7 +40,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(225, ex))
+        assert results.messages == [throw(225, ex)]
 
     def test_skip_until_somedata_empty(self):
         scheduler = TestScheduler()
@@ -53,7 +53,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_next(self):
         scheduler = TestScheduler()
@@ -65,7 +65,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_error(self):
         ex = 'ex'
@@ -78,7 +78,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(225, ex))
+        assert results.messages == [throw(225, ex)]
 
     def test_skip_until_somedata_never(self):
         scheduler = TestScheduler()
@@ -90,7 +90,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_empty(self):
         scheduler = TestScheduler()
@@ -102,7 +102,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_never(self):
         scheduler = TestScheduler()
@@ -113,7 +113,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_has_completed_causes_disposal(self):
         scheduler = TestScheduler()
@@ -130,5 +130,5 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
         assert(disposed[0])

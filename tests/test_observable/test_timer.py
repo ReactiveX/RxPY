@@ -29,7 +29,7 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(duetime=300)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(500, 0), close(500))
+        assert results.messages == [send(500, 0), close(500)]
 
     def test_oneshot_timer_timespan_zero(self):
         scheduler = TestScheduler()
@@ -38,7 +38,7 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(0)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 0), close(200))
+        assert results.messages == [send(200, 0), close(200)]
 
     def test_oneshot_timer_timespan_negative(self):
         scheduler = TestScheduler()
@@ -47,7 +47,7 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(-1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 0), close(200))
+        assert results.messages == [send(200, 0), close(200)]
 
     def test_oneshot_timer_timespan_disposed(self):
         scheduler = TestScheduler()
@@ -56,7 +56,7 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(1000)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_oneshot_timer_timespan_observer_throws(self):
         scheduler1 = TestScheduler()
@@ -78,7 +78,7 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(duetime=300, period=400)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(500, 0), send(900, 1))
+        assert results.messages == [send(500, 0), send(900, 1)]
 
     def test_periodic_timer_equal_time_and_period(self):
         scheduler = TestScheduler()
@@ -87,4 +87,4 @@ class TestTimer(unittest.TestCase):
             return Observable.timer(duetime=300, period=300)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(500, 0), send(800, 1))
+        assert results.messages == [send(500, 0), send(800, 1)]

@@ -38,16 +38,14 @@ class TestManySelect(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(220, 2),
             send(270, 3),
             send(410, 4),
-            close(500)
-        )
+            close(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_many_select_error(self):
         scheduler = TestScheduler()
@@ -67,13 +65,11 @@ class TestManySelect(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(220, 2),
             send(270, 3),
             send(410, 4),
-            throw(500, ex)
-        )
+            throw(500, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]

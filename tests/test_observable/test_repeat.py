@@ -29,7 +29,7 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, 0)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_repeat_value_count_one(self):
         scheduler = TestScheduler()
@@ -38,7 +38,7 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 42), close(200))
+        assert results.messages == [send(200, 42), close(200)]
 
     def test_repeat_value_count_ten(self):
         scheduler = TestScheduler()
@@ -47,7 +47,7 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, 10)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), close(200))
+        assert results.messages == [send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), close(200)]
 
     def test_repeat_value_count_dispose(self):
         scheduler = TestScheduler()
@@ -56,7 +56,7 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, 10)
 
         results = scheduler.start(create, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_repeat_value(self):
         scheduler = TestScheduler()
@@ -65,40 +65,37 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, -1)
 
         results = scheduler.start(create, disposed=201)
-        results.messages[:6].assert_equal(send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42))
+        assert results.messages[:6] == [send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42), send(200, 42)]
 
     def test_repeat_observable_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(
-                            send(100, 1),
-                            send(150, 2),
-                            send(200, 3),
-                            close(250))
+        xs = scheduler.create_cold_observable(send(100, 1),
+                                              send(200, 3),
+                                              send(150, 2),
+                                              close(250))
         results = scheduler.start(lambda: xs.repeat())
 
-        results.messages.assert_equal(
-                            send(300, 1),
-                            send(350, 2),
-                            send(400, 3),
-                            send(550, 1),
-                            send(600, 2),
-                            send(650, 3),
-                            send(800, 1),
-                            send(850, 2),
-                            send(900, 3))
-        xs.subscriptions.assert_equal(
-                            subscribe(200, 450),
-                            subscribe(450, 700),
-                            subscribe(700, 950),
-                            subscribe(950, 1000))
+        assert results.messages == [send(300, 1),
+                                    send(350, 2),
+                                    send(400, 3),
+                                    send(550, 1),
+                                    send(600, 2),
+                                    send(650, 3),
+                                    send(800, 1),
+                                    send(850, 2),
+                                    send(900, 3)]
+        assert xs.subscriptions == [subscribe(200, 450),
+                                    subscribe(450, 700),
+                                    subscribe(700, 950),
+                                    subscribe(950, 1000)]
 
     def test_repeat_observable_infinite(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3))
         results = scheduler.start(lambda: xs.repeat())
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3))
-        return xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_repeat_observable_error(self):
         results = None
@@ -107,8 +104,8 @@ class TestRepeat(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3), throw(250, ex))
         results = scheduler.start(lambda: xs.repeat())
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3), throw(450, ex))
-        return xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3), throw(450, ex)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
@@ -142,23 +139,23 @@ class TestRepeat(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(5, 1), send(10, 2), send(15, 3), close(20))
         results = scheduler.start(lambda: xs.repeat(3))
 
-        results.messages.assert_equal(send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2), send(235, 3), send(245, 1), send(250, 2), send(255, 3), close(260))
-        xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 240), subscribe(240, 260))
+        assert results.messages == [send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2), send(235, 3), send(245, 1), send(250, 2), send(255, 3), close(260)]
+        assert xs.subscriptions == [subscribe(200, 220), subscribe(220, 240), subscribe(240, 260)]
 
     def test_repeat_observable_repeat_count_dispose(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(send(5, 1), send(10, 2), send(15, 3), close(20))
         results = scheduler.start(lambda: xs.repeat(3), disposed=231)
-        results.messages.assert_equal(send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2))
-        return xs.subscriptions.assert_equal(subscribe(200, 220), subscribe(220, 231))
+        assert results.messages == [send(205, 1), send(210, 2), send(215, 3), send(225, 1), send(230, 2)]
+        assert xs.subscriptions == [subscribe(200, 220), subscribe(220, 231)]
 
     def test_repeat_observable_repeat_count_infinite(self):
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3))
         results = scheduler.start(lambda: xs.repeat(3))
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3))
-        return xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_repeat_observable_repeat_count_error(self):
         ex = 'ex'
@@ -166,8 +163,8 @@ class TestRepeat(unittest.TestCase):
         xs = scheduler.create_cold_observable(send(100, 1), send(150, 2), send(200, 3), throw(250, ex))
         results = scheduler.start(lambda: xs.repeat(3))
 
-        results.messages.assert_equal(send(300, 1), send(350, 2), send(400, 3), throw(450, ex))
-        return xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(300, 1), send(350, 2), send(400, 3), throw(450, ex)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()

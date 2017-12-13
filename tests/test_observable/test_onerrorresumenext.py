@@ -32,11 +32,11 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return o1.throw_resume_next(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(220, 3),
             send(240, 4),
-            close(250))
+            close(250)]
 
     def test_throw_resume_next_error(self):
         scheduler = TestScheduler()
@@ -57,11 +57,11 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return o1.throw_resume_next(o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(220, 3),
             send(240, 4),
-            close(250))
+            close(250)]
 
     def test_throw_resume_next_error_multiple(self):
         scheduler = TestScheduler()
@@ -83,8 +83,8 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return Observable.throw_resume_next(o1, o2, o3)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            send(210, 2), send(230, 4), close(250))
+        assert results.messages == [
+            send(210, 2), send(230, 4), close(250)]
 
     def test_throw_resume_next_empty_return_throw_and_more(self):
         scheduler = TestScheduler()
@@ -104,12 +104,12 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return Observable.throw_resume_next(o1, o2, o3, o4, o5)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, 2),
             send(225, 3),
             send(230, 4),
             send(245, 5),
-            close(250))
+            close(250)]
 
     def test_throw_resume_next_empty_return_throw_and_more_ii(self):
         ex = 'ex'
@@ -123,7 +123,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return o1.throw_resume_next(o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), close(230))
+        assert results.messages == [send(210, 2), close(230)]
 
     def test_throw_resume_next_single_source_throws(self):
         ex = 'ex'
@@ -134,7 +134,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return Observable.throw_resume_next(o1)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(230))
+        assert results.messages == [close(230)]
 
     def test_throw_resume_next_end_with_never(self):
         scheduler = TestScheduler()
@@ -146,7 +146,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return Observable.throw_resume_next(o1, o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2))
+        assert results.messages == [send(210, 2)]
 
     def test_throw_resume_next_start_with_never(self):
         scheduler = TestScheduler()
@@ -159,7 +159,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_throw_resume_next_start_with_factory(self):
         scheduler = TestScheduler()
@@ -181,10 +181,10 @@ class TestOnErrorResumeNext(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(220, 3),
             send(240, 4),
-            close(250))
+            close(250)]
 
 

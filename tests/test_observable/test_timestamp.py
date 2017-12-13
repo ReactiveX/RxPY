@@ -16,8 +16,8 @@ created = ReactiveTest.created
 class Timestamp(object):
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
-            timestamp = timestamp-datetime.utcfromtimestamp(0)
-            timestamp = int(timestamp.microseconds/1000)
+            timestamp = timestamp - datetime.utcfromtimestamp(0)
+            timestamp = int(timestamp.microseconds / 1000)
 
         self.value = value
         self.timestamp = timestamp
@@ -41,7 +41,9 @@ class TestTimeInterval(unittest.TestCase):
             return xs.timestamp().map(selector)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)), send(260, Timestamp(4, 260)), send(300, Timestamp(5, 300)), send(350, Timestamp(6, 350)), close(400))
+        assert results.messages == [send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)),
+                                    send(260, Timestamp(4, 260)), send(300, Timestamp(5, 300)),
+                                    send(350, Timestamp(6, 350)), close(400)]
 
     def test_timestamp_empty(self):
         scheduler = TestScheduler()
@@ -50,7 +52,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.empty().time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_timestamp_error(self):
         ex = 'ex'
@@ -60,7 +62,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.throw_exception(ex).time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_timestamp_never(self):
         scheduler = TestScheduler()
@@ -69,5 +71,5 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.never().time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 

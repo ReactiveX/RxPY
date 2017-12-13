@@ -21,7 +21,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), send(510, 301), send(520, 302), send(530, 303), send(540, 304), close(650))
+        assert results.messages == [send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), send(510, 301), send(520, 302), send(530, 303), send(540, 304), close(650)]
 
     def test_switch_inner_throws(self):
         ex = 'ex'
@@ -32,7 +32,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), throw(450, ex))
+        assert results.messages == [send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), throw(450, ex)]
 
     def test_switch_outer_throws(self):
         ex = 'ex'
@@ -42,7 +42,7 @@ class TestSwitch(unittest.TestCase):
         def create():
             return xs.switch_latest()
         results = scheduler.start(create)
-        results.messages.assert_equal(send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), throw(500, ex))
+        assert results.messages == [send(310, 101), send(320, 102), send(410, 201), send(420, 202), send(430, 203), send(440, 204), throw(500, ex)]
 
     def test_switch_no_inner(self):
         scheduler = TestScheduler()
@@ -52,7 +52,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(500))
+        assert results.messages == [close(500)]
 
     def test_switch_inner_completes(self):
         scheduler = TestScheduler()
@@ -62,5 +62,5 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(310, 101), send(320, 102), send(410, 103), send(420, 104), send(510, 105), send(520, 106), close(540))
+        assert results.messages == [send(310, 101), send(320, 102), send(410, 103), send(420, 104), send(510, 105), send(520, 106), close(540)]
 

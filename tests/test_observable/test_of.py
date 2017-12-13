@@ -35,14 +35,13 @@ class TestOf(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
           send(201, 1),
           send(202, 2),
           send(203, 3),
           send(204, 4),
           send(205, 5),
-          close(206)
-        )
+          close(206)]
 
     def teest_of_with_scheduler_empty(self):
         scheduler = TestScheduler()
@@ -52,6 +51,5 @@ class TestOf(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
-            close(201)
-        )
+        assert results.messages == [
+            close(201)]

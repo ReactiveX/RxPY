@@ -32,7 +32,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_combine_latest_never_empty(self):
         scheduler = TestScheduler()
@@ -44,7 +44,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_combine_latest_empty_never(self):
         scheduler = TestScheduler()
@@ -56,7 +56,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_combine_latest_empty_empty(self):
         scheduler = TestScheduler()
@@ -69,7 +69,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(210))
+        assert results.messages == [close(210)]
 
     def test_combine_latest_empty_return(self):
         scheduler = TestScheduler()
@@ -82,7 +82,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(215))
+        assert results.messages == [close(215)]
 
     def test_combine_latest_return_empty(self):
         scheduler = TestScheduler()
@@ -95,7 +95,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(215))
+        assert results.messages == [close(215)]
 
     def test_combine_latest_never_feturn(self):
         scheduler = TestScheduler()
@@ -107,7 +107,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_combine_latest_return_never(self):
         scheduler = TestScheduler()
@@ -119,7 +119,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_combine_latest_return_return(self):
         scheduler = TestScheduler()
@@ -132,7 +132,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2 + 3), close(240))
+        assert results.messages == [send(220, 2 + 3), close(240)]
 
     def test_combine_latest_empty_error(self):
         ex = 'ex'
@@ -146,7 +146,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_error_empty(self):
         ex = 'ex'
@@ -160,7 +160,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_return_throw(self):
         ex = 'ex'
@@ -174,7 +174,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_throw_return(self):
         ex = 'ex'
@@ -188,7 +188,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_throw_throw(self):
         ex1 = 'ex1'
@@ -203,7 +203,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex1))
+        assert results.messages == [throw(220, ex1)]
 
     def test_combine_latest_error_throw(self):
         ex1 = 'ex1'
@@ -218,7 +218,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex1))
+        assert results.messages == [throw(220, ex1)]
 
     def test_combine_latest_throw_error(self):
         ex1 = 'ex1'
@@ -233,7 +233,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex1))
+        assert results.messages == [throw(220, ex1)]
 
     def test_combine_latest_never_throw(self):
         ex = 'ex'
@@ -246,7 +246,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_throw_never(self):
         ex = 'ex'
@@ -259,7 +259,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_some_throw(self):
         ex = 'ex'
@@ -273,7 +273,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_throw_some(self):
         ex = 'ex'
@@ -287,7 +287,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_combine_latest_throw_after_complete_left(self):
         ex = 'ex'
@@ -301,7 +301,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_combine_latest_throw_after_complete_right(self):
         ex = 'ex'
@@ -315,7 +315,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_combine_latest_interleaved_with_tail(self):
         scheduler = TestScheduler()
@@ -328,7 +328,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2 + 3), send(225, 3 + 4), send(230, 4 + 5), send(235, 4 + 6), send(240, 4 + 7), close(250))
+        assert results.messages == [send(220, 2 + 3), send(225, 3 + 4), send(230, 4 + 5), send(235, 4 + 6), send(240, 4 + 7), close(250)]
 
     def test_combine_latest_consecutive(self):
         scheduler = TestScheduler()
@@ -341,7 +341,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(235, 4 + 6), send(240, 4 + 7), close(250))
+        assert results.messages == [send(235, 4 + 6), send(240, 4 + 7), close(250)]
 
     def test_combine_latest_consecutive_end_with_error_left(self):
         ex = 'ex'
@@ -355,7 +355,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_combine_latest_consecutive_end_with_error_right(self):
         ex = 'ex'
@@ -369,7 +369,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.combine_latest(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(235, 4 + 6), send(240, 4 + 7), throw(245, ex))
+        assert results.messages == [send(235, 4 + 6), send(240, 4 + 7), throw(245, ex)]
 
     def test_combine_latest_selector_throws(self):
         ex = 'ex'
@@ -383,7 +383,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.combine_latest(e2, lambda x, y: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
 if __name__ == '__main__':
     unittest.main()

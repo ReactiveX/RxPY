@@ -21,7 +21,7 @@ class TestMaterialize(unittest.TestCase):
             return Observable.never().materialize()
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_materialize_empty(self):
         scheduler = TestScheduler()
@@ -68,7 +68,7 @@ class TestMaterialize(unittest.TestCase):
             return Observable.never().materialize().dematerialize()
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_materialize_dematerialize_empty(self):
         scheduler = TestScheduler()

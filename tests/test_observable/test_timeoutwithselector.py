@@ -36,21 +36,18 @@ class TestTimeoutWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(310, 1),
             send(350, 2),
             send(420, 3),
-            close(450)
-        )
-        xs.subscriptions.assert_equal(
-            subscribe(200, 450)
-        )
-        ys.subscriptions.assert_equal(
+            close(450)]
+        assert xs.subscriptions == [
+            subscribe(200, 450)]
+        assert ys.subscriptions == [
             subscribe(200, 310),
             subscribe(310, 350),
             subscribe(350, 420),
-            subscribe(420, 450)
-        )
+            subscribe(420, 450)]
 
     def test_timeout_duration_simple_timeoutfirst(self):
         scheduler = TestScheduler()
@@ -72,9 +69,9 @@ class TestTimeoutWithSelector(unittest.TestCase):
 
         self.assertEqual(1, len(results.messages))
         assert(results.messages[0].time == 300 and results.messages[0].value.exception)
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(200, 300))
-        zs.subscriptions.assert_equal()
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(200, 300)]
+        assert zs.subscriptions == []
 
     def test_timeout_duration_simple_timeout_later(self):
         scheduler = TestScheduler()
@@ -90,9 +87,9 @@ class TestTimeoutWithSelector(unittest.TestCase):
         assert(send(310, 1).equals(results.messages[0]))
         assert(send(350, 2).equals(results.messages[1]))
         assert(results.messages[2].time == 400 and results.messages[2].value.exception)
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 400)]
 
     def test_timeout_duration_simple_timeout_by_completion(self):
         scheduler = TestScheduler()
@@ -108,9 +105,9 @@ class TestTimeoutWithSelector(unittest.TestCase):
         assert(send(310, 1).equals(results.messages[0]))
         assert(send(350, 2).equals(results.messages[1]))
         assert(results.messages[2].time == 400 and results.messages[2].value.exception)
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 400)]
 
     def test_timeout_duration_simple_timeout_by_completion(self):
         ex = 'ex'
@@ -130,15 +127,14 @@ class TestTimeoutWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(310, 1),
             send(350, 2),
             send(420, 3),
-            throw(420, ex)
-        )
-        xs.subscriptions.assert_equal(subscribe(200, 420))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 420))
+            throw(420, ex)]
+        assert xs.subscriptions == [subscribe(200, 420)]
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 420)]
 
     def test_timeout_duration_simple_inner_throws(self):
         ex = 'ex'
@@ -151,10 +147,10 @@ class TestTimeoutWithSelector(unittest.TestCase):
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), send(350, 2), throw(400, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 400))
+        assert results.messages == [send(310, 1), send(350, 2), throw(400, ex)]
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 400)]
 
     def test_timeout_duration_simple_first_throws(self):
         ex = 'ex'
@@ -167,10 +163,10 @@ class TestTimeoutWithSelector(unittest.TestCase):
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(250, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
-        ys.subscriptions.assert_equal(subscribe(200, 250))
-        zs.subscriptions.assert_equal()
+        assert results.messages == [throw(250, ex)]
+        assert xs.subscriptions == [subscribe(200, 250)]
+        assert ys.subscriptions == [subscribe(200, 250)]
+        assert zs.subscriptions == []
 
     def test_timeout_duration_simple_source_throws(self):
         ex = 'ex'
@@ -183,7 +179,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(310, 1), send(350, 2), send(420, 3), throw(450, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
-        ys.subscriptions.assert_equal(subscribe(200, 310))
-        zs.subscriptions.assert_equal(subscribe(310, 350), subscribe(350, 420), subscribe(420, 450))
+        assert results.messages == [send(310, 1), send(350, 2), send(420, 3), throw(450, ex)]
+        assert xs.subscriptions == [subscribe(200, 450)]
+        assert ys.subscriptions == [subscribe(200, 310)]
+        assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 420), subscribe(420, 450)]

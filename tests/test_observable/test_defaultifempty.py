@@ -30,8 +30,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 42), send(360, 43), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 42), send(360, 43), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_default_if_empty_non_empty2(self):
         scheduler = TestScheduler()
@@ -42,8 +42,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 42), send(360, 43), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 42), send(360, 43), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_default_if_empty_empty1(self):
         scheduler = TestScheduler()
@@ -54,8 +54,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(420, None), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(420, None), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_default_if_empty_empty2(self):
         scheduler = TestScheduler()
@@ -65,5 +65,5 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return xs.default_if_empty(-1)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(420, -1), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(420, -1), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]

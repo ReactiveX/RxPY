@@ -29,14 +29,13 @@ class TestPluck(unittest.TestCase):
         )
         results = scheduler.start(create=lambda: xs.pluck('prop'))
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(240, 3),
             send(290, 4),
             send(350, 5),
-            close(400)
-        )
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+            close(400)]
+        assert xs.subscriptions == [subscribe(200, 400)]
 
 
 class TestPluckAttr(unittest.TestCase):
@@ -62,11 +61,10 @@ class TestPluckAttr(unittest.TestCase):
         )
         results = scheduler.start(create=lambda: xs.pluck_attr('prop'))
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 2),
             send(240, 3),
             send(290, 4),
             send(350, 5),
-            close(400)
-        )
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+            close(400)]
+        assert xs.subscriptions == [subscribe(200, 400)]

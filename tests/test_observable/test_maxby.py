@@ -153,7 +153,7 @@ class TestMaxBy(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
 
-        res.assert_equal(throw(210, ex))
+        assert res == [throw(210, ex)]
 
     def test_maxby_never(self):
         scheduler = TestScheduler()
@@ -169,7 +169,7 @@ class TestMaxBy(unittest.TestCase):
             return xs.max_by(lambda x: x["key"])
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
 # def test_MaxBy_Comparer_Empty():
 #     var msgs, res, reverseComparer, scheduler, xs
@@ -302,7 +302,7 @@ class TestMaxBy(unittest.TestCase):
 #             return x.key
 #         }, reverseComparer)
 #     }).messages
-#     res.assert_equal(throw(210, ex))
+#     assert res == [throw(210, ex)]
 
 # def test_MaxBy_Comparer_Never():
 #     var msgs, res, reverseComparer, scheduler, xs
@@ -328,7 +328,7 @@ class TestMaxBy(unittest.TestCase):
 #             return x.key
 #         }, reverseComparer)
 #     }).messages
-#     res.assert_equal()
+#     assert res == []
 
 # def test_MaxBy_SelectorThrows():
 #     var ex, msgs, res, reverseComparer, scheduler, xs
@@ -364,7 +364,7 @@ class TestMaxBy(unittest.TestCase):
 #             throw ex
 #         }, reverseComparer)
 #     }).messages
-#     res.assert_equal(throw(210, ex))
+#     assert res == [throw(210, ex)]
 
     def test_maxby_comparerthrows(self):
         ex = 'ex'
@@ -393,5 +393,5 @@ class TestMaxBy(unittest.TestCase):
             return xs.max_by(lambda x: x["key"], reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(throw(220, ex))
+        assert res == [throw(220, ex)]
 

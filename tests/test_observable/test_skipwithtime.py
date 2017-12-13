@@ -21,8 +21,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [send(210, 1), send(220, 2), close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skip_some(self):
         scheduler = TestScheduler()
@@ -33,8 +33,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(220, 2), close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [send(220, 2), close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skip_late(self):
         scheduler = TestScheduler()
@@ -45,8 +45,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skip_error(self):
         ex = 'ex'
@@ -58,8 +58,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_skip_never(self):
         scheduler = TestScheduler()
@@ -70,8 +70,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_skip_twice1(self):
         scheduler = TestScheduler()
@@ -82,8 +82,8 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(240, 4), send(250, 5), send(260, 6), close(270))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+        assert res.messages == [send(240, 4), send(250, 5), send(260, 6), close(270)]
+        assert xs.subscriptions == [subscribe(200, 270)]
 
     def test_skip_twice2(self):
         scheduler = TestScheduler()
@@ -94,5 +94,5 @@ class TestSkipWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(240, 4), send(250, 5), send(260, 6), close(270))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+        assert res.messages == [send(240, 4), send(250, 5), send(260, 6), close(270)]
+        assert xs.subscriptions == [subscribe(200, 270)]
