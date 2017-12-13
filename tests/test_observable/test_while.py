@@ -71,7 +71,7 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(predicate, Observable.create(subscribe))
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(*([send(200, 1) for _ in range(99)] + [close(200)]))
+        assert results.messages == [send(200, 1) for _ in range(99)] + [close(200)]
 
     def test_while_sometimes_true(self):
         scheduler = TestScheduler()

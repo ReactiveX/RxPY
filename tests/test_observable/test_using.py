@@ -76,12 +76,12 @@ class TestUsing(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert(disposable == _d)
+        assert disposable == _d
         assert results.messages == [send(300, 200), close(400)]
-        assert(create_invoked[0] == 1)
-        assert(dispose_invoked[0] == 1)
+        assert create_invoked[0] == 1
+        assert dispose_invoked[0] == 1
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        disposable[0].disposes.assert_equal(200, 400)
+        disposable[0].disposes = [200, 400]
 
     def test_using_error(self):
         scheduler = TestScheduler()
@@ -106,12 +106,12 @@ class TestUsing(unittest.TestCase):
             return Observable.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        assert (disposable[0] == _d[0])
+        assert disposable[0] == _d[0]
         assert results.messages == [send(300, 200), throw(400, ex)]
-        assert(create_invoked[0] == 1)
-        assert(dispose_invoked[0] == 1)
+        assert create_invoked[0] == 1
+        assert dispose_invoked[0] == 1
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        disposable[0].disposes.assert_equal(200, 400)
+        assert disposable[0].disposes == [200, 400]
 
     def test_using_dispose(self):
         disposable = [None]
@@ -136,12 +136,12 @@ class TestUsing(unittest.TestCase):
             return Observable.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        assert(disposable[0] == _d[0])
+        assert disposable[0] == _d[0]
         assert results.messages == [send(300, 200)]
-        assert(1 == create_invoked[0])
-        assert(1 == dispose_invoked[0])
+        assert 1 == create_invoked[0]
+        assert 1 == dispose_invoked[0]
         assert xs[0].subscriptions == [subscribe(200, 1000)]
-        disposable[0].disposes.assert_equal(200, 1000)
+        assert disposable[0].disposes == [200, 1000]
 
     def test_using_throw_resource_selector(self):
         scheduler = TestScheduler()
@@ -186,6 +186,6 @@ class TestUsing(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]
-        assert(create_invoked[0] == 1)
-        assert(dispose_invoked[0] == 1)
-        return disposable[0].disposes.assert_equal(200, 200)
+        assert create_invoked[0] == 1
+        assert dispose_invoked[0] == 1
+        assert disposable[0].disposes == [200, 200]

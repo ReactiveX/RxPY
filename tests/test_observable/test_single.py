@@ -33,7 +33,7 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return e is not None
 
-        assert res.messages == [throw(250, predicate)]
+        assert [throw(250, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_one(self):
@@ -61,7 +61,7 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        assert res.messages == [throw(220, predicate)]
+        assert [throw(220, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_single_async_error(self):
@@ -92,7 +92,7 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        assert res.messages == [throw(240, predicate)]
+        assert [throw(240, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 240)]
 
     def test_single_async_predicate_empty(self):
@@ -109,7 +109,7 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        assert res.messages == [throw(250, predicate)]
+        assert [throw(250, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_predicate_one(self):

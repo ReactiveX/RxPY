@@ -25,7 +25,7 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return len(lst) == 0
 
-        assert res.messages == [send(650, predicate), close(650)]
+        assert [send(650, predicate), close(650)] == res.messages
         assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_zero_error(self):
@@ -65,7 +65,7 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return lst == [9]
 
-        assert res.messages == [send(650, predicate), close(650)]
+        assert [send(650, predicate), close(650)] == res.messages
         assert xs.subscriptions == [subscribe(200, 650)]
 
     def test_take_last_buffer_one_error(self):
@@ -106,7 +106,7 @@ class TestTakeLastBuffer(unittest.TestCase):
         def predicate(lst):
             return lst == [7, 8, 9]
 
-        assert res.messages == [send(650, predicate), close(650)]
+        assert [send(650, predicate), close(650)] == res.messages
         assert xs.subscriptions == [subscribe(200, 650)]
 
 # def test_Take_last_buffer_Three_Error():

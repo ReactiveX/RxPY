@@ -1,6 +1,5 @@
-from rx.core import Observer, AnonymousObserver, Observable, Disposable
+from rx.core import AnonymousObserver, Observable, Disposable
 from .subscription import Subscription
-from .reactive_assert import AssertList
 
 
 class HotObservable(Observable):
@@ -9,7 +8,7 @@ class HotObservable(Observable):
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = AssertList()
+        self.subscriptions = []
         self.observers = []
 
         observable = self

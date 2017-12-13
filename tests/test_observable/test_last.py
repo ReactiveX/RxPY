@@ -34,7 +34,7 @@ class TestLast(unittest.TestCase):
         def predicate(e):
             return e is not None
 
-        assert res.messages == [throw(250, predicate)]
+        assert [throw(250, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_last_async_one(self):
@@ -102,7 +102,7 @@ class TestLast(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        assert res.messages == [throw(250, predicate)]
+        assert [throw(250, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_last_async_predicate_throw(self):

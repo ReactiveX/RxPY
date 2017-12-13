@@ -1,8 +1,7 @@
-from rx.core import Observable, Observer, AnonymousObserver, Disposable
+from rx.core import Observable, AnonymousObserver, Disposable
 from rx.disposables import CompositeDisposable
 
 from .subscription import Subscription
-from .reactive_assert import AssertList
 
 
 class ColdObservable(Observable):
@@ -11,7 +10,7 @@ class ColdObservable(Observable):
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = AssertList()
+        self.subscriptions =[]
 
     def subscribe(self, observer=None, scheduler=None):
         return self._subscribe_core(observer, scheduler)

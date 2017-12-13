@@ -44,14 +44,14 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        assert res.messages == [
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
             send(400, lambda b: b == []),
             send(500, lambda b: b == [7, 8, 9]),
             send(590, lambda b: b == [10]),
-            close(590)]
+            close(590)] == res.messages
 
         assert xs.subscriptions == [
             subscribe(200, 590)]
@@ -88,12 +88,12 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        assert res.messages == [
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
             send(400, lambda b: b == []),
-            close(400)]
+            close(400)] == res.messages
 
         assert xs.subscriptions == [
             subscribe(200, 400)]
@@ -129,11 +129,11 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        assert res.messages == [
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            throw(400, ex)]
+            throw(400, ex)] == res.messages
 
         assert xs.subscriptions == [
             subscribe(200, 400)]
@@ -171,11 +171,11 @@ class TestBuffer(unittest.TestCase):
             return xs.buffer(ys)
         res = scheduler.start(create=create)
 
-        assert res.messages == [
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            throw(400, ex)]
+            throw(400, ex)] == res.messages
 
         assert xs.subscriptions == [
             subscribe(200, 400)]

@@ -20,8 +20,7 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        assert res.messages == [throw(250, lambda e: e)]
-
+        assert [throw(250, lambda e: e)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_first_async_one(self):
@@ -69,7 +68,7 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        assert res.messages == [throw(250, lambda e: e)]
+        assert [throw(250, lambda e: e)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
 
 
