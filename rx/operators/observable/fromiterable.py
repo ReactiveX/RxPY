@@ -1,32 +1,29 @@
 from typing import Iterable
-from rx.core.bases.scheduler import Scheduler
+
 from rx import config
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def from_iterable(iterable: Iterable, scheduler: Scheduler=None) -> Observable:
+def from_iterable(iterable: Iterable) -> Observable:
     """Converts an array to an observable sequence, using an optional
     scheduler to enumerate the array.
 
     1 - res = rx.Observable.from_iterable([1,2,3])
-    2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
     Keyword arguments:
-    :param iterable: an iterable
-    :param Scheduler scheduler: [Optional] Scheduler to run the
-        enumeration of the input sequence on.
+    iterable - An python iterable
 
-    :returns: The observable sequence whose elements are pulled from the
+    Returns the observable sequence whose elements are pulled from the
         given enumerable sequence.
-    :rtype: Observable
     """
 
-    scheduler = scheduler or current_thread_scheduler
     lock = config["concurrency"].RLock()
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
+
         sd = MultipleAssignmentDisposable()
         iterator = iter(iterable)
 

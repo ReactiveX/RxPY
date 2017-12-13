@@ -27,23 +27,23 @@ class TestThrow(unittest.TestCase):
         ex = 'ex'
 
         def factory():
-            return Observable.throw_exception(ex, scheduler)
+            return Observable.throw_exception(ex)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_throw_disposed(self):
         scheduler = TestScheduler()
         def factory():
-            return Observable.throw_exception('ex', scheduler)
+            return Observable.throw_exception('ex')
 
         results = scheduler.start(factory, disposed=200)
         results.messages.assert_equal()
 
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()
-        xs = Observable.throw_exception('ex', scheduler)
-        xs.subscribe_callbacks(lambda x: None, lambda ex: _raise('ex'), lambda: None)
+        xs = Observable.throw_exception('ex')
+        xs.subscribe_callbacks(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler   )
 
         self.assertRaises(RxException, scheduler.start)
 

@@ -19,7 +19,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.utcfromtimestamp(0), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(0))
         res = scheduler.start(create)
 
         res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
@@ -30,7 +30,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
@@ -43,7 +43,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(throw(210, ex))
 
         def create():
-            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
@@ -55,7 +55,7 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_until_with_time(datetime.utcfromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
@@ -75,9 +75,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.utcfromtimestamp(0.215), scheduler
+                datetime.utcfromtimestamp(0.215)
             ).skip_until_with_time(
-                datetime.utcfromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230)
             )
 
         res = scheduler.start(create)
@@ -95,10 +95,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.utcfromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230)
             ).skip_until_with_time(
-                datetime.utcfromtimestamp(0.215), scheduler
-            )
+                datetime.utcfromtimestamp(0.215))
 
         res = scheduler.start(create)
 

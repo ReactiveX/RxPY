@@ -24,7 +24,7 @@ def take_while(self, predicate):
 
     predicate = adapt_call(predicate)
     observable = self
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         running, i = [True], [0]
 
         def send(value):
@@ -45,6 +45,6 @@ def take_while(self, predicate):
             else:
                 observer.close()
 
-        return observable.subscribe_callbacks(send, observer.throw, observer.close)
+        return observable.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)
 

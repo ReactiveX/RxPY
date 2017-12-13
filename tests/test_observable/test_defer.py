@@ -28,7 +28,7 @@ class TestDefer(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
                                     send(100, scheduler.clock),
@@ -51,7 +51,7 @@ class TestDefer(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(send(100, scheduler.clock), throw(200, ex))
                 return xs[0]
@@ -69,7 +69,7 @@ class TestDefer(unittest.TestCase):
         xs = [None]
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(send(100, scheduler.clock), send(200, invoked[0]), send(1100, 1000))
                 return xs[0]
@@ -86,7 +86,7 @@ class TestDefer(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 raise Exception(ex)
 

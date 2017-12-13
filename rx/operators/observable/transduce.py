@@ -51,7 +51,7 @@ def transduce(self, transducer):
     """
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         xform = transducer(Observing(observer))
 
         def send(v):

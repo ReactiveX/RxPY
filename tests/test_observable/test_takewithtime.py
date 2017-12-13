@@ -21,18 +21,18 @@ class TestTakeWithTime(unittest.TestCase):
             close(230))
 
         def create():
-            return xs.take_with_time(0, scheduler)
+            return xs.take_with_time(0)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(201))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        res.messages.assert_equal(close(200))
+        xs.subscriptions.assert_equal(subscribe(200, 200))
 
     def test_take_some(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), close(240))
 
         def create():
-            return xs.take_with_time(25, scheduler)
+            return xs.take_with_time(25)
         res = scheduler.start(create)
 
         res.messages.assert_equal(send(210, 1), send(220, 2), close(225))
@@ -43,7 +43,7 @@ class TestTakeWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.take_with_time(50, scheduler)
+            return xs.take_with_time(50)
         res = scheduler.start(create)
 
         res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
@@ -55,7 +55,7 @@ class TestTakeWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(throw(210, ex))
 
         def create():
-            return xs.take_with_time(50, scheduler)
+            return xs.take_with_time(50)
 
         res = scheduler.start(create)
 
@@ -67,7 +67,7 @@ class TestTakeWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.take_with_time(50, scheduler)
+            return xs.take_with_time(50)
         res = scheduler.start(create)
 
         res.messages.assert_equal(close(250))
@@ -78,7 +78,7 @@ class TestTakeWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), send(240, 4), send(250, 5), send(260, 6), close(270))
 
         def create():
-            return xs.take_with_time(55, scheduler).take_with_time(35, scheduler)
+            return xs.take_with_time(55).take_with_time(35)
 
         res = scheduler.start(create)
 
@@ -90,7 +90,7 @@ class TestTakeWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), send(240, 4), send(250, 5), send(260, 6), close(270))
 
         def create():
-            return xs.take_with_time(35, scheduler).take_with_time(55, scheduler)
+            return xs.take_with_time(35).take_with_time(55)
 
         res = scheduler.start(create)
 

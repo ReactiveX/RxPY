@@ -16,7 +16,7 @@ def pairwise(self):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_previous = [False]
         previous = [None]
 

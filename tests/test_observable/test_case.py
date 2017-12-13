@@ -98,7 +98,7 @@ class TestCase(unittest.TestCase):
         }
 
         def create():
-            return Observable.switch_case(lambda: 1, map, scheduler=scheduler)
+            return Observable.switch_case(lambda: 1, map)
         results = scheduler.start(create=create)
 
         results.messages.assert_equal(send(210, 1), send(240, 2), send(270, 3), close(300))
@@ -114,7 +114,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 2, map, scheduler=scheduler)
+            return Observable.switch_case(lambda: 2, map)
         results = scheduler.start(create=create)
 
         results.messages.assert_equal(send(220, 11), send(250, 12), send(280, 13), close(310))
@@ -130,10 +130,10 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 3, map, scheduler=scheduler)
+            return Observable.switch_case(lambda: 3, map)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
         xs.subscriptions.assert_equal()
         ys.subscriptions.assert_equal()
 
@@ -149,7 +149,7 @@ class TestCase(unittest.TestCase):
         def create():
             def selector():
                 raise Exception(ex)
-            return Observable.switch_case(selector, map, scheduler=scheduler)
+            return Observable.switch_case(selector, map)
         results = scheduler.start(create)
 
         results.messages.assert_equal(throw(200, ex))

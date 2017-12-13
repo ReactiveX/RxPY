@@ -3,8 +3,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def group_by(self, key_selector, element_selector=None,
-             key_serializer=None):
+def group_by(self, key_selector, element_selector=None, key_serializer=None):
     """Groups the elements of an observable sequence according to a
     specified key selector function and comparer and selects the resulting
     elements by using a specified function.
@@ -28,7 +27,7 @@ def group_by(self, key_selector, element_selector=None,
     value.
     """
 
-    def duration_selector(x):
+    def duration_selector(_):
         return Observable.never()
 
     return self.group_by_until(key_selector, element_selector, duration_selector, key_serializer)

@@ -46,7 +46,7 @@ class CurrentThreadScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
+        #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
         return self.schedule_relative(timedelta(0), action, state)
 
     def schedule_relative(self, duetime, action, state=None):

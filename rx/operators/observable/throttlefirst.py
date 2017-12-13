@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def throttle_first(self, window_duration, scheduler=None):
+def throttle_first(self, window_duration):
     """Returns an Observable that emits only the first item emitted by the
     source Observable during sequential time windows of a specified
     duration.
@@ -18,14 +18,14 @@ def throttle_first(self, window_duration, scheduler=None):
     Returns {Observable} An Observable that performs the throttle operation.
     """
 
-    scheduler = scheduler or timeout_scheduler
-    duration = scheduler.to_timedelta(+window_duration or 0)
-    if duration <= scheduler.to_timedelta(0):
-        raise ValueError('window_duration cannot be less or equal zero.')
-
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
+
+        duration = scheduler.to_timedelta(+window_duration or 0)
+        if duration <= scheduler.to_timedelta(0):
+            raise ValueError('window_duration cannot be less or equal zero.')
         last_send = [0]
 
         def send(x):
@@ -39,5 +39,5 @@ def throttle_first(self, window_duration, scheduler=None):
             if emit:
                 observer.send(x)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler=scheduler)
     return AnonymousObservable(subscribe)

@@ -17,7 +17,7 @@ def when(cls, *args):
 
     plans = args[0] if len(args) and isinstance(args[0], list) else list(args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         active_plans = []
         external_subscriptions = {}
 

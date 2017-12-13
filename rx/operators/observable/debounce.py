@@ -6,13 +6,12 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable, alias="throttle_with_timeout")
-def debounce(self, duetime, scheduler=None):
+def debounce(self, duetime):
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
     Example:
     1 - res = source.debounce(5000) # 5 seconds
-    2 - res = source.debounce(5000, scheduler)
 
     Keyword arguments:
     duetime -- {Number} Duration of the throttle period for each value
@@ -23,10 +22,10 @@ def debounce(self, duetime, scheduler=None):
     Returns {Observable} The debounced sequence.
     """
 
-    scheduler = scheduler or timeout_scheduler
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or timeout_scheduler
         cancelable = SerialDisposable()
         has_value = [False]
         value = [None]
@@ -83,7 +82,7 @@ def throttle_with_selector(self, throttle_duration_selector):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         cancelable = SerialDisposable()
         has_value = [False]
         value = [None]

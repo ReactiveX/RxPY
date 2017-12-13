@@ -19,7 +19,7 @@ def using(cls, resource_factory, observable_factory):
     the dependent resource object.
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         disposable = Disposable.empty()
         try:
             resource = resource_factory()
@@ -28,8 +28,8 @@ def using(cls, resource_factory, observable_factory):
 
             source = observable_factory(resource)
         except Exception as exception:
-            d = Observable.throw_exception(exception).subscribe(observer)
+            d = Observable.throw_exception(exception).subscribe(observer, scheduler)
             return CompositeDisposable(d, disposable)
 
-        return CompositeDisposable(source.subscribe(observer), disposable)
+        return CompositeDisposable(source.subscribe(observer, scheduler), disposable)
     return AnonymousObservable(subscribe)

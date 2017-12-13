@@ -1,14 +1,12 @@
 import types
-from typing import Callable, Any, Iterable
+from datetime import datetime
+from typing import Callable, Any, Iterable, Union
 from abc import abstractmethod
+from asyncio.futures import Future
 
 from rx import config
-from rx.concurrency import current_thread_scheduler
-
-from . import Observer, Disposable, bases
 from .anonymousobserver import AnonymousObserver
-from .autodetachobserver import AutoDetachObserver
-from . import Scheduler
+from . import bases
 
 
 class Observable(bases.Observable):
@@ -41,11 +39,21 @@ class Observable(bases.Observable):
         from ..operators.observable.concat import concat
         return concat(self, other)
 
+    def __mul__(self, num: int):
+        """Pythonic version of repeat.
+
+        Example:
+        yx = xs * 5
+
+        Returns self.repeat(num)"""
+
+        return self.repeat(num)
+
     def __or__(self, other):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer=None):
+    def subscribe(self, observer=None, scheduler=None):
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -59,12 +67,11 @@ class Observable(bases.Observable):
         Return disposable object representing an observer's subscription
             to the observable sequence.
         """
-
         from .subscribe import subscribe
         source = self
-        return subscribe(source, observer)
+        return subscribe(source, observer, scheduler)
 
-    def subscribe_callbacks(self, send=None, throw=None, close=None):
+    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -84,20 +91,18 @@ class Observable(bases.Observable):
         Return disposable object representing an observer's subscription
             to the observable sequence.
         """
-
         observer = AnonymousObserver(send, throw, close)
-        return self.subscribe(observer)
+        return self.subscribe(observer, scheduler)
 
     @abstractmethod
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         return NotImplemented
 
     def as_observable(self) -> 'Observable':
         """Hides the identity of an observable sequence.
 
-        :returns: An observable sequence that hides the identity of the source
-            sequence.
-        :rtype: Observable
+        Returns an observable sequence that hides the identity of the
+        source sequence.
         """
         from ..operators.observable.asobservable import as_observable
         source = self
@@ -122,7 +127,6 @@ class Observable(bases.Observable):
         Returns an observable sequence that contains the elements of each
         observed inner sequence, in sequential order.
         """
-
         return self.merge(1)
 
     def concat_map(self, mapper: Callable[[Any], Any]):
@@ -160,20 +164,32 @@ class Observable(bases.Observable):
         from ..operators.observable.defer import defer
         return defer(observable_factory)
 
+    def do_while(self, condition: Callable[[Any], bool]):
+        """Repeats source as long as condition holds emulating a do while loop.
+
+        Keyword arguments:
+        condition -- {Function} The condition which determines if the source
+            will be repeated.
+
+        Returns an observable {Observable} sequence which is repeated as long
+        as the condition holds.
+        """
+        from ..operators.observable.dowhile import do_while
+        source = self
+        return do_while(condition, source)
+
     @classmethod
-    def empty(cls, scheduler: Scheduler=None):
-        """Returns an empty observable sequence, using the specified scheduler
-        to send out the single OnCompleted message.
+    def empty(cls):
+        """Returns an empty observable sequence.
 
         1 - res = rx.Observable.empty()
-        2 - res = rx.Observable.empty(rx.Scheduler.timeout)
 
         scheduler -- Scheduler to send the termination call on.
 
         Returns an observable sequence with no elements.
         """
         from ..operators.observable.empty import empty
-        return empty(scheduler)
+        return empty()
 
     def filter(self, predicate: Callable[[Any], bool]) -> 'Observable':
         """Filters the elements of an observable sequence based on a
@@ -212,9 +228,10 @@ class Observable(bases.Observable):
         return filter_indexed(predicate, source)
 
     @classmethod
-    def from_callable(cls, supplier: Callable, scheduler: Scheduler=None) -> 'Observable':
-        """Returns an observable sequence that contains a single element generate from a supplier,
-        using the specified scheduler to send out observer messages.
+    def from_callable(cls, supplier: Callable) -> 'Observable':
+        """Returns an observable sequence that contains a single element
+        generate from a supplier, using the specified scheduler to send
+        out observer messages.
 
         example
         res = rx.Observable.from_callable(lambda: calculate_value())
@@ -229,41 +246,49 @@ class Observable(bases.Observable):
         element derived from the supplier
         """
         from ..operators.observable.returnvalue import from_callable
-        return from_callable(supplier, scheduler)
+        return from_callable(supplier)
 
     @classmethod
-    def from_iterable(cls, iterable: Iterable, scheduler: Scheduler=None) -> 'Observable':
-        """Converts an array to an observable sequence, using an optional
-        scheduler to enumerate the array.
+    def from_future(cls, future: Union['Observable', Future]) -> 'Observable':
+        """Converts a Future to an Observable sequence
+
+        Keyword Arguments:
+        future -- A Python 3 compatible future.
+            https://docs.python.org/3/library/asyncio-task.html#future
+            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
+
+        Returns an Observable sequence which wraps the existing future
+        success and failure.
+        """
+        from ..operators.observable.fromfuture import from_future
+        return from_future(future)
+
+    @classmethod
+    def from_iterable(cls, iterable: Iterable) -> 'Observable':
+        """Converts an array to an observable sequence.
 
         1 - res = rx.Observable.from_iterable([1,2,3])
-        2 - res = rx.Observable.from_iterable([1,2,3], rx.Scheduler.timeout)
 
         Keyword arguments:
-        :param Observable cls: Observable class
-        :param Scheduler scheduler: [Optional] Scheduler to run the
-            enumeration of the input sequence on.
+        iterable - An python iterable
 
-        :returns: The observable sequence whose elements are pulled from the
-            given enumerable sequence.
-        :rtype: Observable
+        Returns the observable sequence whose elements are pulled from
+            the given enumerable sequence.
         """
         from ..operators.observable.fromiterable import from_iterable
-        return from_iterable(iterable, scheduler)
+        return from_iterable(iterable)
 
     from_ = from_iterable
     from_list = from_iterable
 
     def map(self, mapper: Callable[[Any], Any]) -> 'Observable':
-        """Project each element of an observable sequence into a new form
-        by incorporating the element's index.
+        """Project each element of an observable sequence into a new
+        form.
 
         1 - source.map(lambda value: value * value)
 
         Keyword arguments:
-        mapper -- A transform function to apply to each source element; the
-            second parameter of the function represents the index of the
-            source element.
+        mapper -- A transform function to apply to each source element.
 
         Returns an observable sequence whose elements are the result of
         invoking the transform function on each element of source.
@@ -280,10 +305,13 @@ class Observable(bases.Observable):
 
     @classmethod
     def never(cls):
-        """Returns a non-terminating observable sequence, which can be used to
-        denote an infinite duration (e.g. when using reactive joins).
+        """Returns a non-terminating observable sequence.
 
-        Returns an observable sequence whose observers will never get called.
+        Such a sequence can be used to denote an infinite duration (e.g.
+        when using reactive joins).
+
+        Returns an observable sequence whose observers will never get
+        called.
         """
         from ..operators.observable.never import never
         return never()
@@ -317,29 +345,62 @@ class Observable(bases.Observable):
     aggregate = reduce
 
     @classmethod
-    def return_value(cls, value, scheduler: Scheduler=None) -> 'Observable':
+    def return_value(cls, value) -> 'Observable':
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
         There is an alias called 'just'.
 
         example
         res = rx.Observable.return(42)
-        res = rx.Observable.return(42, rx.Scheduler.timeout)
 
         Keyword arguments:
         value -- Single element in the resulting observable sequence.
-        scheduler -- [Optional] Scheduler to send the single element on. If
-            not specified, defaults to Scheduler.immediate.
 
         Returns an observable sequence containing the single specified
         element.
         """
         from ..operators.observable.returnvalue import return_value
-        return return_value(value, scheduler)
+        return return_value(value)
 
     just = return_value
 
-    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None):
+    def repeat(self, repeat_count=None) -> 'Observable':
+        """Repeats the observable sequence a specified number of times. If the
+        repeat count is not specified, the sequence repeats indefinitely.
+
+        1 - repeated = source.repeat()
+        2 - repeated = source.repeat(42)
+
+        Keyword arguments:
+        repeat_count -- Number of times to repeat the sequence. If not
+            provided, repeats the sequence indefinitely.
+
+        Returns the observable sequence producing the elements of the given
+        sequence repeatedly."""
+
+        from ..operators.observable.concat import concat
+        from rx.internal.iterable import Iterable as CoreIterable
+        return Observable.defer(lambda _: concat(CoreIterable.repeat(self, repeat_count)))
+
+    @staticmethod
+    def repeat_value(value: Any = None, repeat_count: int = None) -> 'Observable':
+        """Generates an observable sequence that repeats the given element
+        the specified number of times.
+
+        1 - res = Observable.repeat(42)
+        2 - res = Observable.repeat(42, 4)
+
+        Keyword arguments:
+        value -- Element to repeat.
+        repeat_count -- [Optional] Number of times to repeat the element.
+            If not specified, repeats indefinitely.
+
+        Returns an observable sequence that repeats the given element the
+        specified number of times."""
+        from ..operators.observable.repeat import repeat_value
+        return repeat_value(value, repeat_count)
+
+    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
         """Applies an accumulator function over an observable sequence and
         returns each intermediate result. The optional seed value is used as
         the initial accumulator value. For aggregation behavior with no
@@ -349,10 +410,12 @@ class Observable(bases.Observable):
         2 - scanned = source.scan(lambda acc, x: acc + x, 0)
 
         Keyword arguments:
-        accumulator -- An accumulator function to be invoked on each element.
+        accumulator -- An accumulator function to be invoked on each
+            element.
         seed -- [Optional] The initial accumulator value.
 
-        Returns an observable sequence containing the accumulated values.
+        Returns an observable sequence containing the accumulated
+        values.
         """
         from ..operators.observable.scan import scan
         source = self
@@ -389,11 +452,9 @@ class Observable(bases.Observable):
         return skip_last(count, source)
 
     def start_with(self, *args, **kwargs) -> 'Observable':
-        """Prepends a sequence of values to an observable sequence with an
-        optional scheduler and an argument list of values to prepend.
+        """Prepends a sequence of values to an observable.
 
         1 - source.start_with(1, 2, 3)
-        2 - source.start_with(Scheduler.timeout, 1, 2, 3)
 
         Returns the source sequence prepended with the specified values.
         """
@@ -401,25 +462,21 @@ class Observable(bases.Observable):
         source = self
         return start_with(source, *args, **kwargs)
 
-    def take(self, count: int, scheduler=None) -> 'Observable':
+    def take(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
-        start of an observable sequence, using the specified scheduler
-        for the edge case of take(0).
+        start of an observable sequence.
 
         1 - source.take(5)
-        2 - source.take(0, rx.Scheduler.timeout)
 
         Keyword arguments:
         count -- The number of elements to return.
-        scheduler -- [Optional] Scheduler used to produce an OnCompleted
-            message in case count is set to 0.
 
         Returns an observable sequence that contains the specified
         number of elements from the start of the input sequence.
         """
         from ..operators.observable.take import take
         source = self
-        return take(source, count, scheduler)
+        return take(count, source)
 
     def take_last(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
@@ -445,13 +502,76 @@ class Observable(bases.Observable):
         source = self
         return take_last(count, source)
 
+    def time_interval(self) -> 'Observable':
+        """Records the time interval between consecutive values in an
+        observable sequence.
+
+        1 - res = source.time_interval()
+
+        Return An observable sequence with time interval information on
+        values.
+        """
+        from ..operators.observable.timeinterval import time_interval
+        source = self
+        return time_interval(source)
+
+    def timeout(self, duetime: Union[int, datetime], other: 'Observable' = None) -> 'Observable':
+        """Returns the source observable sequence or the other
+        observable sequence if duetime elapses.
+
+        1 - res = source.timeout(5000); # 5 seconds
+        # As a date and timeout observable
+        2 - res = source.timeout(datetime(), Observable.return_value(42))
+        # 5 seconds and timeout observable
+        3 - res = source.timeout(5000, Observable.return_value(42))
+        # As a date and timeout observable
+
+        Keyword arguments:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) when a
+            timeout occurs.
+        other -- Sequence to return in case of a timeout. If not
+            specified, a timeout error throwing sequence will be used.
+
+        Returns the source sequence switching to the other sequence in case
+            of a timeout.
+        """
+        from ..operators.observable.timeout import timeout
+        source = self
+        return timeout(source, duetime, other)
+
+    def timestamp(self):
+        """Records the timestamp for each value in an observable sequence.
+
+        1 - res = source.timestamp() # produces objects with attributes "value" and
+            "timestamp", where value is the original value.
+
+        Returns an observable sequence with timestamp information on values.
+        """
+        from ..operators.observable.timestamp import timestamp
+        source = self
+        return timestamp(source)
+
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
-        :returns: An observable sequence containing a single element with a list
+        Returns an observable sequence containing a single element with a list
         containing all the elements of the source sequence.
-        :rtype: Observable
         """
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
+
+    def while_do(self, condition: Callable[[Any], bool]):
+        """Repeats source as long as condition holds emulating a while loop.
+
+        Keyword arguments:
+        condition -- The condition which determines if the source will be
+            repeated.
+
+        Returns an observable sequence which is repeated as long as the
+            condition holds.
+        """
+        from ..operators.observable.whiledo import while_do
+        source = self
+        return while_do(condition, source)

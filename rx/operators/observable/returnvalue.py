@@ -1,10 +1,11 @@
 from typing import Any, Callable
+
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.core.bases.scheduler import Scheduler
 
 
-def return_value(value: Any, scheduler: Scheduler=None) -> Observable:
+def return_value(value: Any) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -15,16 +16,14 @@ def return_value(value: Any, scheduler: Scheduler=None) -> Observable:
 
     Keyword arguments:
     value -- Single element in the resulting observable sequence.
-    scheduler -- [Optional] Scheduler to send the single element on. If
-        not specified, defaults to Scheduler.immediate.
 
     Returns an observable sequence containing the single specified
     element.
     """
 
-    scheduler = scheduler or current_thread_scheduler
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
 
-    def subscribe(observer):
         def action(scheduler, state=None):
             observer.send(value)
             observer.close()
@@ -33,7 +32,7 @@ def return_value(value: Any, scheduler: Scheduler=None) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def from_callable(supplier: Callable, scheduler: Scheduler=None) ->Observable:
+def from_callable(supplier: Callable) -> Observable:
     """Returns an observable sequence that contains a single element generate from a supplier,
        using the specified scheduler to send out observer messages.
 
@@ -43,16 +42,15 @@ def from_callable(supplier: Callable, scheduler: Scheduler=None) ->Observable:
 
        Keyword arguments:
        value -- Single element in the resulting observable sequence.
-       scheduler -- [Optional] Scheduler to send the single element on. If
-           not specified, defaults to Scheduler.immediate.
 
        Returns an observable sequence containing the single specified
        element derived from the supplier
        """
-    scheduler = scheduler or current_thread_scheduler
 
-    def subscribe(observer):
-        def action(scheduler, state=None):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
+
+        def action(_: Scheduler, __: Any=None):
             nonlocal observer
 
             try:

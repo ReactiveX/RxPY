@@ -34,15 +34,15 @@ class TestManySelect(unittest.TestCase):
         )
 
         def create():
-            return xs.many_select(lambda ys: ys.first(), scheduler).merge_all()
+            return xs.many_select(lambda ys: ys.first()).merge_all()
 
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            send(221, 2),
-            send(271, 3),
-            send(411, 4),
-            close(501)
+            send(220, 2),
+            send(270, 3),
+            send(410, 4),
+            close(500)
         )
 
         xs.subscriptions.assert_equal(
@@ -63,15 +63,15 @@ class TestManySelect(unittest.TestCase):
         )
 
         def create():
-            return xs.many_select(lambda ys: ys.first(), scheduler).merge_all()
+            return xs.many_select(lambda ys: ys.first()).merge_all()
 
         res = scheduler.start(create)
 
         res.messages.assert_equal(
-            send(221, 2),
-            send(271, 3),
-            send(411, 4),
-            throw(501, ex)
+            send(220, 2),
+            send(270, 3),
+            send(410, 4),
+            throw(500, ex)
         )
 
         xs.subscriptions.assert_equal(

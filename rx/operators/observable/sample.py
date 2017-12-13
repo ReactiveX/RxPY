@@ -1,12 +1,11 @@
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
 def sample_observable(source, sampler):
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         at_end = [None]
         has_value = [None]
         value = [None]
@@ -27,32 +26,28 @@ def sample_observable(source, sampler):
             at_end[0] = True
 
         return CompositeDisposable(
-            source.subscribe_callbacks(send, observer.throw, close),
-            sampler.subscribe_callbacks(sample_subscribe, observer.throw, sample_subscribe)
+            source.subscribe_callbacks(send, observer.throw, close, scheduler),
+            sampler.subscribe_callbacks(sample_subscribe, observer.throw, sample_subscribe, scheduler)
         )
     return AnonymousObservable(subscribe)
 
 
 @extensionmethod(Observable, alias="throttle_last")
-def sample(self, interval=None, sampler=None, scheduler=None):
+def sample(self, interval=None, sampler=None):
     """Samples the observable sequence at each interval.
 
     1 - res = source.sample(sample_observable) # Sampler tick sequence
     2 - res = source.sample(5000) # 5 seconds
-    2 - res = source.sample(5000, rx.scheduler.timeout) # 5 seconds
 
     Keyword arguments:
     source -- Source sequence to sample.
     interval -- Interval at which to sample (specified as an integer
         denoting milliseconds).
-    scheduler -- [Optional] Scheduler to run the sampling timer on. If not
-        specified, the timeout scheduler is used.
 
     Returns sampled observable sequence.
     """
 
-    scheduler = scheduler or timeout_scheduler
     if interval is not None:
-        return sample_observable(self, Observable.interval(interval, scheduler=scheduler))
+        return sample_observable(self, Observable.interval(interval))
 
     return sample_observable(self, sampler)

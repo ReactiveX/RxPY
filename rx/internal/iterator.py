@@ -1,4 +1,4 @@
-class Iterator(object):
+class Iterato2r(object):
     """For Python we just wrap the iterator"""
 
     def __init__(self, next):

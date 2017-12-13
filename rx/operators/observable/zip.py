@@ -27,7 +27,7 @@ def zip(self, *args):
     if args and isinstance(args[0], list):
         return _zip_list(self, *args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         n = len(sources)
         queues = [[] for _ in range(n)]
         is_done = [False] * n
@@ -93,7 +93,7 @@ def zip(cls, *args):
 def _zip_list(source, second, result_selector):
     first = source
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         length = len(second)
         index = [0]
 

@@ -38,7 +38,7 @@ class TestTimeInterval(unittest.TestCase):
         def create():
             def selector(x):
                 return Timestamp(x.value, x.timestamp)
-            return xs.timestamp(scheduler).map(selector)
+            return xs.timestamp().map(selector)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)), send(260, Timestamp(4, 260)), send(300, Timestamp(5, 300)), send(350, Timestamp(6, 350)), close(400))
@@ -47,26 +47,26 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.empty(scheduler).time_interval(scheduler=scheduler)
+            return Observable.empty().time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_timestamp_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex, scheduler).time_interval(scheduler=scheduler)
+            return Observable.throw_exception(ex).time_interval()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_timestamp_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().time_interval(scheduler=scheduler)
+            return Observable.never().time_interval()
 
         results = scheduler.start(create)
         results.messages.assert_equal()

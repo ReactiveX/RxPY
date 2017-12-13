@@ -39,7 +39,7 @@ def do_action(self, send=None, throw=None, close=None,
         close = send.close
         send = send.send
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def _send(x):
             if not send:
                 observer.send(x)
@@ -86,7 +86,7 @@ def do_after_next(self, after_next):
     after_next -- Action to invoke on each element after it has been emitted
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         def send(value):
             try:
@@ -107,7 +107,7 @@ def do_on_subscribe(self, on_subscribe):
 
     on_subscribe -- Action to invoke on subscription
     """
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         on_subscribe()
         return self.subscribe_callbacks(observer.send, observer.throw, observer.close)
 
@@ -127,7 +127,7 @@ def do_on_dispose(self, on_dispose):
         def dispose(self):
             on_dispose()
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
         disposable = self.subscribe_callbacks(observer.send, observer.throw, observer.close)
@@ -146,7 +146,7 @@ def do_on_terminate(self, on_terminate):
     on_terminate -- Action to invoke when on_complete or throw is called
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         def close():
             try:
@@ -177,7 +177,7 @@ def do_after_terminate(self, after_terminate):
 
     on_terminate -- Action to invoke after on_complete or throw is called
     """
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         def close():
             observer.close()
@@ -216,7 +216,7 @@ def do_finally(self, finally_action):
                 finally_action()
                 self.was_invoked[0] = True
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
 
         was_invoked = [False]
 

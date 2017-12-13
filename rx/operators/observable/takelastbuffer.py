@@ -20,14 +20,14 @@ def take_last_buffer(self, count):
     :param int count: Number of elements to take from the end of the source
         sequence.
 
-    :returns: An observable sequence containing a single list with the specified 
+    :returns: An observable sequence containing a single list with the specified
     number of elements from the end of the source sequence.
     :rtype: Observable
     """
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
         def send(x):
             with self.lock:
@@ -39,5 +39,5 @@ def take_last_buffer(self, count):
             observer.send(q)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

@@ -61,19 +61,17 @@ class TestWhile(unittest.TestCase):
         n = [0]
 
         def create():
-            import sys
-            sys.setrecursionlimit(1000)
             def predicate(x):
                 n[0] += 1
-                return n[0] < 1000
-            def subscribe(o):
+                return n[0] < 100
+            def subscribe(o, scheduler=None):
                 o.send(1)
                 o.close()
                 return lambda: None
             return Observable.while_do(predicate, Observable.create(subscribe))
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(*([send(200, 1) for _ in range(999)] + [close(200)]))
+        results.messages.assert_equal(*([send(200, 1) for _ in range(99)] + [close(200)]))
 
     def test_while_sometimes_true(self):
         scheduler = TestScheduler()

@@ -21,7 +21,7 @@ def default_if_empty(self, default_value=None):
 
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         found = [False]
 
         def send(x):
@@ -33,5 +33,5 @@ def default_if_empty(self, default_value=None):
                 observer.send(default_value)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

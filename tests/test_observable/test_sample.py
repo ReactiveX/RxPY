@@ -28,7 +28,7 @@ class TestSample(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), send(380, 7), close(390))
 
         def create():
-            return xs.sample(50, scheduler=scheduler)
+            return xs.sample(50)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(250, 3), send(300, 5), send(350, 6), send(400, 7), close(400))
@@ -39,7 +39,7 @@ class TestSample(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(310, 6), throw(330, ex))
 
         def create():
-            return xs.sample(50, scheduler=scheduler)
+            return xs.sample(50)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(250, 3), send(300, 5), throw(330, ex))
@@ -48,25 +48,25 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.empty(scheduler=scheduler).sample(0, scheduler=scheduler)
+            return Observable.empty().sample(0)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_sample_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex, scheduler=scheduler).sample(0, scheduler=scheduler)
+            return Observable.throw_exception(ex).sample(0)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(201, ex))
+        results.messages.assert_equal(throw(200, ex))
 
     def test_sample_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().sample(0, scheduler=scheduler)
+            return Observable.never().sample(1)
         results = scheduler.start(create)
         results.messages.assert_equal()

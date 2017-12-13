@@ -50,13 +50,13 @@ class TestControlledObservable(unittest.TestCase):
 
         scheduler.start()
         results1.messages.assert_equal(
-            send(381, 4),
-            send(381, 5),
-            send(411, 6),
+            send(380, 4),
+            send(380, 5),
+            send(410, 6),
             close(500)
         )
 
         results2.messages.assert_equal(
-            send(411, 6),
+            send(410, 6),
             close(500)
         )

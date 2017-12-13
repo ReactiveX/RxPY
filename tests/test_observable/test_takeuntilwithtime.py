@@ -28,12 +28,12 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), close(230))
 
         def create():
-            return xs.take_until_with_time(datetime.utcfromtimestamp(0), scheduler=scheduler)
+            return xs.take_until_with_time(datetime.utcfromtimestamp(0))
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(201))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        res.messages.assert_equal(close(200))
+        xs.subscriptions.assert_equal(subscribe(200, 200))
 
     def test_takeuntil_late(self):
         scheduler = TestScheduler()

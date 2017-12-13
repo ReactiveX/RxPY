@@ -339,7 +339,7 @@ def test_to_observable_empty():
         return OnCompleted().to_observable(scheduler)
 
     res = scheduler.start(create)
-    res.messages.assert_equal(ReactiveTest.close(201))
+    res.messages.assert_equal(ReactiveTest.close(200))
 
 
 def test_to_observable_return():
@@ -349,7 +349,7 @@ def test_to_observable_return():
         return OnNext(42).to_observable(scheduler)
 
     res = scheduler.start(create)
-    res.messages.assert_equal(ReactiveTest.send(201, 42), ReactiveTest.close(201))
+    res.messages.assert_equal(ReactiveTest.send(200, 42), ReactiveTest.close(200))
 
 
 def test_to_observable_throw():
@@ -360,4 +360,4 @@ def test_to_observable_throw():
         return OnError(ex).to_observable(scheduler)
 
     res = scheduler.start(create)
-    res.messages.assert_equal(ReactiveTest.throw(201, ex))
+    res.messages.assert_equal(ReactiveTest.throw(200, ex))

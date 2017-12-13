@@ -25,8 +25,8 @@ class TestObserveOn(unittest.TestCase):
             return xs.observe_on(scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(211, 2), close(251))
-        xs.subscriptions.assert_equal(subscribe(200, 251))
+        results.messages.assert_equal(send(210, 2), close(250))
+        xs.subscriptions.assert_equal(subscribe(200, 250))
 
     def test_observe_throw(self):
         scheduler = TestScheduler()
@@ -42,8 +42,8 @@ class TestObserveOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(211, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 211))
+        results.messages.assert_equal(throw(210, ex))
+        xs.subscriptions.assert_equal(subscribe(200, 210))
 
 
     def test_observe_on_empty(self):
@@ -57,8 +57,8 @@ class TestObserveOn(unittest.TestCase):
             return xs.observe_on(scheduler)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(251))
-        xs.subscriptions.assert_equal(subscribe(200, 251))
+        results.messages.assert_equal(close(250))
+        xs.subscriptions.assert_equal(subscribe(200, 250))
 
 
     def test_observe_on_never(self):

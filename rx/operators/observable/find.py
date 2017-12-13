@@ -3,7 +3,7 @@ from rx.internal import extensionmethod
 
 
 def find_value(source, predicate, yield_index):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         i = [0]
 
         def send(x):

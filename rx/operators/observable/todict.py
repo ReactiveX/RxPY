@@ -2,7 +2,7 @@ from rx import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 def _to_dict(source, map_type, key_selector, element_selector):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         m = map_type()
 
         def send(x):
@@ -26,7 +26,7 @@ def _to_dict(source, map_type, key_selector, element_selector):
             observer.send(m)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

@@ -8,6 +8,7 @@ from .scheduleperiodic import SchedulePeriodic
 
 log = logging.getLogger("Rx")
 
+MAX_SPINNING = 100
 
 class VirtualTimeScheduler(SchedulerBase):
     """Virtual Scheduler. This scheduler should work with either
@@ -70,13 +71,23 @@ class VirtualTimeScheduler(SchedulerBase):
             return
 
         self.is_enabled = True
+
+        spinning = 0
         while self.is_enabled:
-            next = self.get_next()
-            if not next:
+            item = self.get_next()
+            if not item:
                 break
-            if next.duetime > self.clock:
-                self.clock = next.duetime
-            next.invoke()
+
+            if item.duetime > self.clock:
+                self.clock = item.duetime
+                spinning = 0
+
+            if spinning > MAX_SPINNING:
+                self.clock += 1
+                spinning = 0
+
+            item.invoke()
+            spinning += 1
 
         self.is_enabled = False
 
@@ -104,18 +115,18 @@ class VirtualTimeScheduler(SchedulerBase):
         self.is_enabled = True
 
         while self.is_enabled:
-            next = self.get_next()
-            if not next:
+            item = self.get_next()
+            if not item:
                 break
 
-            if next.duetime > time:
-                self.queue.enqueue(next)
+            if item.duetime > time:
+                self.queue.enqueue(item)
                 break
 
-            if next.duetime > self.clock:
-                self.clock = next.duetime
+            if item.duetime > self.clock:
+                self.clock = item.duetime
 
-            next.invoke()
+            item.invoke()
 
         self.is_enabled = False
         self.clock = time
@@ -150,10 +161,10 @@ class VirtualTimeScheduler(SchedulerBase):
     def get_next(self):
         """Returns the next scheduled item to be executed."""
 
-        while len(self.queue):
-            next = self.queue.dequeue()
-            if not next.is_cancelled():
-                return next
+        while self.queue:
+            item = self.queue.dequeue()
+            if not item.is_cancelled():
+                return item
 
         return None
 

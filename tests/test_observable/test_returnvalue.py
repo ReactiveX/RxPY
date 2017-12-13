@@ -27,18 +27,18 @@ class TestReturnValue(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42, scheduler)
+            return Observable.return_value(42)
 
         results = scheduler.start(factory)
         results.messages.assert_equal(
-                            send(201, 42),
-                            close(201))
+                            send(200, 42),
+                            close(200))
 
     def test_return_disposed(self):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42, scheduler)
+            return Observable.return_value(42)
 
         results = scheduler.start(factory, disposed=200)
         results.messages.assert_equal()
@@ -46,7 +46,7 @@ class TestReturnValue(unittest.TestCase):
     def test_return_disposed_after_next(self):
         scheduler = TestScheduler()
         d = SerialDisposable()
-        xs = Observable.return_value(42, scheduler)
+        xs = Observable.return_value(42)
         results = scheduler.create_observer()
 
         def action(scheduler, state):
@@ -58,22 +58,22 @@ class TestReturnValue(unittest.TestCase):
             def close():
                 results.close()
 
-            d.disposable = xs.subscribe_callbacks(send, throw, close)
+            d.disposable = xs.subscribe_callbacks(send, throw, close, scheduler)
             return d.disposable
 
         scheduler.schedule_absolute(100, action)
         scheduler.start()
-        results.messages.assert_equal(send(101, 42))
+        results.messages.assert_equal(send(100, 42))
 
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
-        xs = Observable.return_value(1, scheduler1)
-        xs.subscribe_callbacks(lambda x: _raise('ex'))
+        xs = Observable.return_value(1)
+        xs.subscribe_callbacks(lambda x: _raise('ex'), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
-        ys = Observable.return_value(1, scheduler2)
-        ys.subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+        ys = Observable.return_value(1)
+        ys.subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)

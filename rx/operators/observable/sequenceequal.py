@@ -32,7 +32,7 @@ def sequence_equal(self, second, comparer=None):
     if isinstance(second, collections.Iterable):
         second = Observable.from_iterable(second)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         donel = [False]
         doner = [False]
         ql = []
