@@ -53,9 +53,9 @@ class WindowedObservable(Observable):
         self.scheduler = scheduler or current_thread_scheduler
         self.subscription = None
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
-        self.subscription = self.source.subscribe(observer)
+        self.subscription = self.source.subscribe(observer, scheduler)
 
         def action(scheduler, state):
             self.source.request(self.window_size)

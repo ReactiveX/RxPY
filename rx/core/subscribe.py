@@ -1,3 +1,6 @@
+from typing import Any
+import types
+
 from rx.concurrency import current_thread_scheduler
 
 from .observable import Observable
@@ -6,7 +9,8 @@ from .anonymousobserver import AnonymousObserver
 from .disposable import Disposable
 from . import bases
 
-def subscribe(source: Observable, observer=None):
+
+def subscribe(source: Observable, observer=None, scheduler=None):
     """Subscribe an observer to the observable sequence.
 
     Examples:
@@ -23,7 +27,7 @@ def subscribe(source: Observable, observer=None):
     """
 
     observer = observer or AnonymousObserver()
-    assert isinstance(observer, bases.Observer)
+    assert isinstance(observer, bases.Observer) or isinstance(observer, types.GeneratorType)
 
     auto_detach_observer = AutoDetachObserver(observer)
 
@@ -36,9 +40,9 @@ def subscribe(source: Observable, observer=None):
 
         return subscriber
 
-    def set_disposable(scheduler=None, value=None):
+    def set_disposable(_: bases.Scheduler=None, __: Any=None):
         try:
-            subscriber = source._subscribe_core(auto_detach_observer)
+            subscriber = source._subscribe_core(auto_detach_observer, scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
             if not auto_detach_observer.fail(ex):
                 raise

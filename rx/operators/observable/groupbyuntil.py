@@ -10,8 +10,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def group_by_until(self, key_selector, element_selector, duration_selector,
-                   comparer=None):
+def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None):
     """Groups the elements of an observable sequence according to a
     specified key selector function. A duration selector function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -54,7 +53,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
     element_selector = element_selector or identity
     comparer = comparer or default_comparer
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         mapping = OrderedDict()
         group_disposable = CompositeDisposable()
         ref_count_disposable = RefCountDisposable(group_disposable)
@@ -113,7 +112,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
                 def close():
                     expire()
 
-                md.disposable = duration.take(1).subscribe_callbacks(send, throw, close)
+                md.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
 
             try:
                 element = element_selector(x)
@@ -124,7 +123,11 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
                 observer.throw(e)
                 return
 
-            writer.send(element)
+            print("send", element)
+
+            def action(scheduler, state):
+                writer.send(element)
+            scheduler.schedule_relative(1000, action)
 
         def throw(ex):
             for w in mapping.values():
@@ -138,6 +141,6 @@ def group_by_until(self, key_selector, element_selector, duration_selector,
 
             observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(send, throw, close))
+        group_disposable.add(source.subscribe_callbacks(send, throw, close, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

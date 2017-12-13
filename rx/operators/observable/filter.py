@@ -20,7 +20,7 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
     :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def send(value):
             try:
                 should_run = predicate(value)
@@ -31,9 +31,7 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
             if should_run:
                 observer.send(value)
 
-        return source.subscribe_callbacks(send,
-                                observer.throw,
-                                observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -55,7 +53,7 @@ def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
     :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         count = 0
 
         def send(value):
@@ -72,5 +70,5 @@ def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
             if should_run:
                 observer.send(value)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

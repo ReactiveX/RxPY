@@ -9,7 +9,7 @@ from rx.internal import extensionmethod
 
 class ChainObservable(Observable):
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         g = CompositeDisposable()
 
         def action(scheduler, state):
@@ -36,7 +36,7 @@ class ChainObservable(Observable):
 
 
 @extensionmethod(Observable)
-def many_select(self, selector, scheduler=None):
+def many_select(self, selector):
     """Comonadic bind operator. Internally projects a new observable for each
     value, and it pushes each observable into the user-defined selector function
     that projects/queries each observable into some result.
@@ -50,10 +50,9 @@ def many_select(self, selector, scheduler=None):
     comonadic bind operation.
     """
 
-    scheduler = scheduler or immediate_scheduler
     source = self
 
-    def factory():
+    def factory(scheduler):
         chain = [None]
 
         def mapper(x):
@@ -76,8 +75,6 @@ def many_select(self, selector, scheduler=None):
             mapper
         ).tap(
             noop, throw, close
-        ).observe_on(
-            scheduler
         ).map(
             selector
         )

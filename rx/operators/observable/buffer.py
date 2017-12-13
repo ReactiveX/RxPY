@@ -40,10 +40,10 @@ def buffer_with_count(self, count, skip=None):
     if skip is None:
         skip = count
 
-    def selector(x):
-        return x.to_iterable()
+    def selector(value):
+        return value.to_iterable()
 
-    def predicate(x):
-        return len(x) > 0
+    def predicate(value):
+        return len(value) > 0
 
     return self.window_with_count(count, skip).select_many(selector).filter(predicate)

@@ -8,7 +8,7 @@ def never() -> Observable:
     Returns an observable sequence whose observers will never get called.
     """
 
-    def subscribe(_):
+    def subscribe(_, __):
         return Disposable.empty()
 
     return AnonymousObservable(subscribe)

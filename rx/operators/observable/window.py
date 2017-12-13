@@ -34,7 +34,7 @@ def window(self, window_openings=None, window_closing_selector=None):
         window_openings = None
 
     if window_openings and not window_closing_selector:
-        return observable_window_with_bounaries(self, window_openings)
+        return observable_window_with_boundaries(self, window_openings)
 
     if not window_openings and window_closing_selector:
         return observable_window_with_closing_selector(self, window_closing_selector)
@@ -44,10 +44,10 @@ def window(self, window_openings=None, window_closing_selector=None):
 def observable_window_with_openings(self, window_openings, window_closing_selector):
     return window_openings.group_join(self, window_closing_selector, lambda _: Observable.empty(), lambda _, window: window)
 
-def observable_window_with_bounaries(self, window_boundaries):
+def observable_window_with_boundaries(self, window_boundaries):
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         window = [Subject()]
         d = CompositeDisposable()
         r = RefCountDisposable(d)
@@ -65,21 +65,21 @@ def observable_window_with_bounaries(self, window_boundaries):
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send_window, throw, close))
+        d.add(source.subscribe_callbacks(send_window, throw, close, scheduler))
 
         def send_observer(w):
             window[0].close()
             window[0] = Subject()
             observer.send(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close))
+        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close, scheduler))
         return r
     return AnonymousObservable(subscribe)
 
 def observable_window_with_closing_selector(self, window_closing_selector):
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         m = SerialDisposable()
         d = CompositeDisposable(m)
         r = RefCountDisposable(d)
@@ -87,18 +87,18 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
         observer.send(add_ref(window[0], r))
 
-        def send(x):
-            window[0].send(x)
+        def send(value):
+            window[0].send(value)
 
-        def throw(ex):
-            window[0].throw(ex)
-            observer.throw(ex)
+        def throw(error):
+            window[0].throw(error)
+            observer.throw(error)
 
         def close():
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send, throw, close))
+        d.add(source.subscribe_callbacks(send, throw, close, scheduler))
 
         def create_window_close():
             try:
@@ -116,7 +116,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close)
+            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close, scheduler)
 
         create_window_close()
         return r

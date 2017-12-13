@@ -31,10 +31,9 @@ def publish_value(self, initial_value, selector=None):
     """
 
     if selector:
-        def subject_selector():
+        def subject_selector(scheduler):
             return BehaviorSubject(initial_value)
 
-        return self.multicast(subject_selector=subject_selector,
-                              selector=selector)
+        return self.multicast(subject_selector=subject_selector, selector=selector)
     else:
         return self.multicast(BehaviorSubject(initial_value))

@@ -7,7 +7,7 @@ from rx.internal import extensionmethod, extensionclassmethod
 
 
 def catch_handler(source, handler):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
 
@@ -23,12 +23,13 @@ def catch_handler(source, handler):
             result = Observable.from_future(result)
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = result.subscribe(observer)
+            d.disposable = result.subscribe(observer, scheduler)
 
         d1.disposable = source.subscribe_callbacks(
             observer.send,
             throw,
-            observer.close
+            observer.close,
+            scheduler
         )
         return subscription
     return AnonymousObservable(subscribe)
@@ -71,14 +72,14 @@ def catch_exception(cls, *args):
     source sequences until a source sequence terminates successfully.
     """
 
-    scheduler = current_thread_scheduler
-
     if isinstance(args[0], list) or isinstance(args[0], Iterable):
         sources = args[0]
     else:
         sources = list(args)
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or current_thread_scheduler
+
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
         last_exception = [None]
@@ -105,7 +106,7 @@ def catch_exception(cls, *args):
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_callbacks(observer.send, throw, observer.close)
+                d.disposable = current.subscribe_callbacks(observer.send, throw, observer.close, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 

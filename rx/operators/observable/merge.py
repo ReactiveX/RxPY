@@ -29,7 +29,7 @@ def merge(self, *args, **kwargs):
     max_concurrent = args[0]
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         active_count = [0]
         group = CompositeDisposable()
         is_stopped = [False]
@@ -49,8 +49,7 @@ def merge(self, *args, **kwargs):
                     if is_stopped[0] and active_count[0] == 0:
                         observer.close()
 
-            subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw,
-                                                             close)
+            subscription.disposable = xs.subscribe_callbacks(observer.send, observer.throw, close, scheduler)
 
         def send(inner_source):
             if active_count[0] < max_concurrent:
@@ -64,7 +63,7 @@ def merge(self, *args, **kwargs):
             if active_count[0] == 0:
                 observer.close()
 
-        group.add(sources.subscribe_callbacks(send, observer.throw, close))
+        group.add(sources.subscribe_callbacks(send, observer.throw, close, scheduler))
         return group
     return AnonymousObservable(subscribe)
 
@@ -72,32 +71,21 @@ def merge(self, *args, **kwargs):
 @extensionclassmethod(Observable)  # noqa
 def merge(cls, *args):
     """Merges all the observable sequences into a single observable
-    sequence. The scheduler is optional and if not specified, the
-    immediate scheduler is used.
+    sequence.
 
     1 - merged = rx.Observable.merge(xs, ys, zs)
     2 - merged = rx.Observable.merge([xs, ys, zs])
-    3 - merged = rx.Observable.merge(scheduler, xs, ys, zs)
-    4 - merged = rx.Observable.merge(scheduler, [xs, ys, zs])
 
     Returns the observable sequence that merges the elements of the
     observable sequences.
     """
 
-    if not args[0]:
-        scheduler = immediate_scheduler
-        sources = args[1:]
-    elif isinstance(args[0], Scheduler):
-        scheduler = args[0]
-        sources = args[1:]
-    else:
-        scheduler = immediate_scheduler
-        sources = args[:]
+    sources = args[:]
 
     if isinstance(sources[0], list):
         sources = sources[0]
 
-    return Observable.from_(sources, scheduler).merge_all()
+    return Observable.from_iterable(sources).merge_all()
 
 
 @extensionmethod(Observable, alias="merge_observable")
@@ -111,7 +99,7 @@ def merge_all(self):
 
     sources = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         group = CompositeDisposable()
         is_stopped = [False]
         m = SingleAssignmentDisposable()
@@ -131,7 +119,7 @@ def merge_all(self):
                 if is_stopped[0] and len(group) == 1:
                     observer.close()
 
-            disposable = inner_source.subscribe_callbacks(send, observer.throw, close)
+            disposable = inner_source.subscribe_callbacks(send, observer.throw, close, scheduler)
             inner_subscription.disposable = disposable
 
         def close():
@@ -139,7 +127,7 @@ def merge_all(self):
             if len(group) == 1:
                 observer.close()
 
-        m.disposable = sources.subscribe_callbacks(send, observer.throw, close)
+        m.disposable = sources.subscribe_callbacks(send, observer.throw, close, scheduler)
         return group
 
     return AnonymousObservable(subscribe)

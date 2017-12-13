@@ -34,7 +34,7 @@ def timeout_with_selector(self, first_timeout=None,
     other = other or Observable.throw_exception(Exception('Timeout'))
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         subscription = SerialDisposable()
         timer = SerialDisposable()
         original = SingleAssignmentDisposable()

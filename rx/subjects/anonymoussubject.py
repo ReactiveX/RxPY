@@ -8,8 +8,8 @@ class AnonymousSubject(Observable):
         self.observer = observer
         self.observable = observable
 
-    def _subscribe_core(self, observer):
-        return self.observable.subscribe(observer)
+    def _subscribe_core(self, observer, scheduler=None):
+        return self.observable.subscribe(observer, scheduler)
 
     def close(self):
         self.observer.close()

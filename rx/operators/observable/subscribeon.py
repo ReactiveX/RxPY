@@ -25,7 +25,7 @@ def subscribe_on(self, scheduler):
     """
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         m = SingleAssignmentDisposable()
         d = SerialDisposable()
         d.disposable = m

@@ -37,7 +37,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
@@ -59,7 +59,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
@@ -81,7 +81,7 @@ class TestThrottleFirst(unittest.TestCase):
 
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
@@ -110,7 +110,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
@@ -138,7 +138,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 

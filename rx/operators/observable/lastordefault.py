@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 def last_or_default_async(source, has_default=False, default_value=None):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         value = [default_value]
         seen_value = [False]
 
@@ -19,7 +19,7 @@ def last_or_default_async(source, has_default=False, default_value=None):
                 observer.send(value[0])
                 observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

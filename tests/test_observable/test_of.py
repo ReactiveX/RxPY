@@ -31,7 +31,7 @@ class TestOf(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.of(1,2,3,4,5, scheduler=scheduler)
+            return Observable.of(1,2,3,4,5)
 
         results = scheduler.start(create=create)
 

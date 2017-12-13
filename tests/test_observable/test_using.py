@@ -181,6 +181,6 @@ class TestUsing(unittest.TestCase):
         results = scheduler.start(create)
 
         results.messages.assert_equal(throw(200, ex))
-        assert(1 == create_invoked[0])
-        assert(1 == dispose_invoked[0])
+        assert(create_invoked[0] == 1)
+        assert(dispose_invoked[0] == 1)
         return disposable[0].disposes.assert_equal(200, 200)

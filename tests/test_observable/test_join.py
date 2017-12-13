@@ -68,8 +68,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                        lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                        lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                        lambda x: Observable.timer(x.interval),
+                        lambda y: Observable.timer(y.interval),
                         lambda x, y: "%s%s" % (x.value, y.value)
             )
 
@@ -127,8 +127,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                        lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                        lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                        lambda x: Observable.timer(x.interval),
+                        lambda y: Observable.timer(y.interval),
                         lambda x, y: "%s%s" % (x.value, y.value)
             )
 
@@ -185,8 +185,8 @@ class TestJoin(unittest.TestCase):
 
          def create():
              return xs.join(ys,
-                            lambda x: Observable.timer(x.interval, scheduler=scheduler).filter(lambda _: False),
-                            lambda y: Observable.timer(y.interval, scheduler=scheduler).filter(lambda _: False),
+                            lambda x: Observable.timer(x.interval).filter(lambda _: False),
+                            lambda y: Observable.timer(y.interval).filter(lambda _: False),
                             lambda x, y: "%s%s" % (x.value, y.value)
              )
          results = scheduler.start(create=create)
@@ -242,8 +242,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -299,8 +299,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -355,8 +355,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -412,8 +412,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create, disposed=713)
@@ -457,8 +457,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create, disposed=713)
@@ -499,8 +499,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -552,9 +552,9 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler).select_many(
+                lambda x: Observable.timer(x.interval).select_many(
                     Observable.throw_exception(ex) if x.value == 6 else Observable.empty()),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -610,8 +610,8 @@ class TestJoin(unittest.TestCase):
 
         def create():
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler).select_many(
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval).select_many(
                     Observable.throw_exception(ex) if y.value == "tin" else Observable.empty()),
                 lambda x, y: str(x.value) + y.value
             )
@@ -672,7 +672,7 @@ class TestJoin(unittest.TestCase):
 
             return xs.join(ys,
                 left_duration_selector,
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -715,7 +715,7 @@ class TestJoin(unittest.TestCase):
                     return Observable.empty()
 
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
                 right_duration_selector,
                 lambda x, y: str(x.value) + y.value
             )
@@ -759,8 +759,8 @@ class TestJoin(unittest.TestCase):
                     return str(x.value) + y.value
 
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 result_selector,
                 )
         results = scheduler.start(create=create)
@@ -802,8 +802,8 @@ class TestJoin(unittest.TestCase):
                     return str(x.value) + y.value
 
             return xs.join(ys,
-                lambda x: Observable.timer(x.interval, scheduler=scheduler),
-                lambda y: Observable.timer(y.interval, scheduler=scheduler),
+                lambda x: Observable.timer(x.interval),
+                lambda y: Observable.timer(y.interval),
                 result_selector,
                 )
         results = scheduler.start(create=create)

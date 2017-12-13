@@ -27,17 +27,17 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
 
         results = scheduler.start(create)
 
         results.messages.assert_equal(
-                            send(201, 1),
-                            send(202, 2),
-                            send(203, 3),
-                            send(204, 4),
-                            send(205, 5),
-                            close(206)
+                            send(200, 1),
+                            send(200, 2),
+                            send(200, 3),
+                            send(200, 4),
+                            send(200, 5),
+                            close(200)
                         )
 
     def test_subscribe_to_iterable_empty(self):
@@ -46,18 +46,16 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(201))
+        results.messages.assert_equal(close(200))
 
     def test_double_subscribe_to_iterable(self):
         iterable_finite = [1, 2, 3]
         scheduler = TestScheduler()
         obs = Observable.from_(iterable_finite)
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(send(200, 1), send(200, 2), send(200, 3), close(200))
+        results = scheduler.start(lambda: obs.concat(obs))
+        results.messages.assert_equal(send(200, 1), send(200, 2), send(200, 3), send(200, 1), send(200, 2), send(200, 3), close(200))
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(send(1001, 1), send(1001, 2), send(1001, 3), close(1001))

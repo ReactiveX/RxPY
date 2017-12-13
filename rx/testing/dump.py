@@ -15,7 +15,7 @@ def dump(self, name = "test"):
     Return an unmodified observable sequence
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def send(value):
             print("{%s}-->{%s}" % (name, value))
             observer.send(value)

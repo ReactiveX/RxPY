@@ -1,12 +1,11 @@
-from rx.internal import Iterable
-from rx.internal import extensionclassmethod
+from typing import Callable, Any
+from rx.internal import Iterable, AnonymousIterable
 
-@extensionclassmethod(Iterable)
-def while_do(cls, condition, source):
-    def next():
+
+def while_do(condition: Callable[[Any], bool], source: Iterable) -> Iterable:
+    def _next():
         while condition(source):
             yield source
 
         raise StopIteration()
-    return Iterable(next())
-
+    return AnonymousIterable(_next())

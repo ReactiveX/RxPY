@@ -3,7 +3,7 @@ from rx.internal.basic import default_sub_comparer
 from rx.internal import extensionmethod
 
 def extrema_by(source, key_selector, comparer):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_value = [False]
         last_key = [None]
         list = []
@@ -39,7 +39,7 @@ def extrema_by(source, key_selector, comparer):
             observer.send(list)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

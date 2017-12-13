@@ -4,7 +4,7 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def buffer_with_time(self, timespan, timeshift=None, scheduler=None):
+def buffer_with_time(self, timespan, timeshift=None):
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -30,7 +30,4 @@ def buffer_with_time(self, timespan, timeshift=None, scheduler=None):
     if not timeshift:
         timeshift = timespan
 
-    scheduler = scheduler or timeout_scheduler
-
-    return self.window_with_time(timespan, timeshift, scheduler) \
-        .select_many(lambda x: x.to_iterable())
+    return self.window_with_time(timespan, timeshift).select_many(lambda x: x.to_iterable())

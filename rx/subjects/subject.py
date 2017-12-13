@@ -25,7 +25,8 @@ class Subject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
+        print("subscribe")
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -90,6 +91,8 @@ class Subject(Observable, Observer):
         if os:
             for observer in os:
                 observer.send(value)
+        else:
+            print("no observer for", value)
 
     def dispose(self):
         """Unsubscribe all observers and release resources."""

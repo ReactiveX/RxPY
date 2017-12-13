@@ -3,15 +3,13 @@ from rx.internal import extensionclassmethod
 
 
 @extensionclassmethod(Observable, alias="switch_case")
-def case(cls, selector, sources, default_source=None, scheduler=None):
+def case(cls, selector, sources, default_source=None):
     """Uses selector to determine which source in sources to use.
     There is an alias 'switch_case'.
 
     Example:
     1 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 })
     2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
-    3 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 },
-                                 scheduler=scheduler)
 
     Keyword arguments:
     :param types.FunctionType selector: The function which extracts the value
@@ -26,9 +24,9 @@ def case(cls, selector, sources, default_source=None, scheduler=None):
     :rtype: Observable
     """
 
-    default_source = default_source or Observable.empty(scheduler=scheduler)
+    default_source = default_source or Observable.empty()
 
-    def factory():
+    def factory(scheduler):
         try:
             result = sources[selector()]
         except KeyError:

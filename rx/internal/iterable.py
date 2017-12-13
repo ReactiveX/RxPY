@@ -1,25 +1,22 @@
 import itertools
+from collections import abc
 
 from .basic import identity
 
 
-class Iterable(object):
+class Iterable(abc.Iterable):
 
-    def __init__(self, iterator):
-        self._iterator = iterator
+    def filter(self, predicate):
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(value for value in self if predicate(value))
 
-    def __iter__(self):
-        return self._iterator
-
-    def where(self, predicate):
-        return Iterable(value for value in self if predicate(value))
-
-    def select(self, selector=None):
+    def map(self, selector=None):
         selector = selector or identity
+
         return Iterable(selector(value) for value in self)
 
     def take(self, count):
-        def next():
+        def _next():
             n = count
 
             for value in self:
@@ -29,11 +26,13 @@ class Iterable(object):
                 yield value
 
             raise StopIteration
-        return Iterable(next())
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(_next())
 
     @classmethod
     def range(cls, start, count):
-        def next():
+        def _next():
             value = start
             n = count
             while n > 0:
@@ -42,15 +41,26 @@ class Iterable(object):
                 n -= 1
 
             raise StopIteration
-        return Iterable(next())
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(_next())
 
     @classmethod
     def repeat(cls, value, count=None):
+        from .anonymousiterable import AnonymousIterable
         if count is not None:
-            return Iterable(value for _ in range(count))
-        return Iterable(itertools.repeat(value))
+            return AnonymousIterable(value for _ in range(count))
+
+        return AnonymousIterable(itertools.repeat(value))
 
     @classmethod
     def for_each(cls, source, selector=None):
         selector = selector or identity
-        return Iterable(selector(value) for value in source)
+
+        from .anonymousiterable import AnonymousIterable
+        return AnonymousIterable(selector(value) for value in source)
+
+    def while_do(self, condition):
+        from ..operators.enumerable.whiledo import while_do
+        source = self
+        return while_do(condition, source)

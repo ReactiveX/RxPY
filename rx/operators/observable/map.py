@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 from rx import Observable, Observer, AnonymousObservable
-from rx.core import Disposable
+from rx.core import Disposable, bases
 
 
 def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
@@ -18,16 +18,16 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer) -> Disposable:
+    def subscribe(observer: Observer, scheduler: bases.Scheduler) -> Disposable:
         def send(value):
             try:
                 result = mapper(value)
-            except Exception as err:  # pylint: disable=W0703
+            except Exception as err:  # By design. pylint: disable=W0703
                 observer.throw(err)
             else:
                 observer.send(result)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -46,7 +46,7 @@ def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Obse
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer) -> Disposable:
+    def subscribe(observer: Observer, scheduler: bases.Scheduler) -> Disposable:
         count = 0
 
         def send(value):
@@ -60,5 +60,5 @@ def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Obse
                 count += 1
                 observer.send(result)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

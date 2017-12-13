@@ -15,10 +15,17 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source, duetime, scheduler):
-    duetime = scheduler.to_timedelta(duetime)
+def observable_delay_timespan(source, duetime):
+    def subscribe(observer, scheduler=None):
+        nonlocal duetime
 
-    def subscribe(observer):
+        scheduler = scheduler or timeout_scheduler
+        
+        if isinstance(duetime, datetime):
+            duetime = scheduler.to_datetime(duetime) - scheduler.now
+        else:
+            duetime = scheduler.to_timedelta(duetime)
+
         cancelable = SerialDisposable()
         exception = [None]
         active = [False]
@@ -85,45 +92,25 @@ def observable_delay_timespan(source, duetime, scheduler):
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp(scheduler).subscribe_callbacks(send)
+        subscription = source.materialize().timestamp().subscribe_callbacks(send, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
 
-def observable_delay_date(source, duetime, scheduler):
-    def defer():
-        timespan = scheduler.to_datetime(duetime) - scheduler.now
-        return observable_delay_timespan(source, timespan, scheduler)
-
-    return Observable.defer(defer)
-
-
 @extensionmethod(Observable)
-def delay(self, duetime, scheduler=None):
+def delay(self, duetime):
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
     1 - res = rx.Observable.delay(datetime())
-    2 - res = rx.Observable.delay(datetime(), Scheduler.timeout)
-
-    3 - res = rx.Observable.delay(5000)
-    4 - res = rx.Observable.delay(5000, Scheduler.timeout)
+    2 - res = rx.Observable.delay(5000)
 
     Keyword arguments:
-    :param datetime|int duetime: Absolute (specified as a datetime object) or
-        relative time (specified as an integer denoting milliseconds) by which
+    duetime -- Absolute (specified as a datetime object) or relative
+        time (specified as an integer denoting milliseconds) by which
         to shift the observable sequence.
-    :param Scheduler scheduler: [Optional] Scheduler to run the delay timers on.
-        If not specified, the timeout scheduler is used.
 
-    :returns: Time-shifted sequence.
-    :rtype: Observable
+    Returns time-shifted sequence.
     """
 
-    scheduler = scheduler or timeout_scheduler
-    if isinstance(duetime, datetime):
-        observable = observable_delay_date(self, duetime, scheduler)
-    else:
-        observable = observable_delay_timespan(self, duetime, scheduler)
-
-    return observable
+    return observable_delay_timespan(self, duetime)

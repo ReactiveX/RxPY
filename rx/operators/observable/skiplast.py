@@ -20,7 +20,7 @@ def skip_last(count: int, source: Observable) -> Observable:
 
     observable = source
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         q = []
 
         def send(value):
@@ -33,5 +33,5 @@ def skip_last(count: int, source: Observable) -> Observable:
             if front is not None:
                 observer.send(front)
 
-        return observable.subscribe_callbacks(send, observer.throw, observer.close)
+        return observable.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

@@ -13,16 +13,14 @@ class ColdObservable(Observable):
         self.messages = messages
         self.subscriptions = AssertList()
 
-    def subscribe(self, send=None, throw=None, close=None, observer=None):
-        # Be forgiving and accept an un-named observer as first parameter
-        if isinstance(send, Observer):
-            observer = send
-        elif not observer:
-            observer = AnonymousObserver(send, throw, close)
+    def subscribe(self, observer=None, scheduler=None):
+        return self._subscribe_core(observer, scheduler)
 
-        return self._subscribe_core(observer)
+    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
+        observer = AnonymousObserver(send, throw, close)
+        return self.subscribe(observer, scheduler)
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         clock = self.scheduler.to_relative(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1

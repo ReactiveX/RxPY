@@ -4,12 +4,11 @@ from rx.internal import extensionmethod
 
 
 @extensionmethod(Observable)
-def skip_last_with_time(self, duration, scheduler=None):
+def skip_last_with_time(self, duration):
     """Skips elements for the specified duration from the end of the
-    observable source sequence, using the specified scheduler to run timers.
+    observable source sequence.
 
     1 - res = source.skip_last_with_time(5000)
-    2 - res = source.skip_last_with_time(5000, scheduler)
 
     Description:
     This operator accumulates a queue with a length enough to store elements
@@ -21,17 +20,18 @@ def skip_last_with_time(self, duration, scheduler=None):
     Keyword arguments:
     duration -- {Number} Duration for skipping elements from the end of the
         sequence.
-    scheduler -- {Scheduler} [Optional]  Scheduler to run the timer on. If
-        not specified, defaults to Rx.Scheduler.timeout
+
     Returns an observable {Observable} sequence with the elements skipped
     during the specified duration from the end of the source sequence.
     """
 
-    scheduler = scheduler or timeout_scheduler
-    duration = scheduler.to_timedelta(duration)
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        nonlocal duration
+
+        scheduler = scheduler or timeout_scheduler
+        duration = scheduler.to_timedelta(duration)
         q = []
 
         def send(x):

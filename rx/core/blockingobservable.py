@@ -15,5 +15,5 @@ class BlockingObservable(Observable):
         self.observable = observable
         super(BlockingObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
-        return self.observable.subscribe(observer)
+    def _subscribe_core(self, observer, scheduler=None):
+        return self.observable.subscribe(observer, scheduler)

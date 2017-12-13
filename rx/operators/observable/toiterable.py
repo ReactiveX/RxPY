@@ -4,12 +4,11 @@ from rx.core import Observable, AnonymousObservable
 def to_iterable(source: Observable) -> Observable:
     """Creates an iterable from an observable sequence.
 
-    :returns: An observable sequence containing a single element with a list
+    Returns an observable sequence containing a single element with a list
     containing all the elements of the source sequence.
-    :rtype: Observable
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         nonlocal source
 
         queue = []
@@ -21,5 +20,5 @@ def to_iterable(source: Observable) -> Observable:
             observer.send(queue)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

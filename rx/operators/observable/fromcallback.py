@@ -20,7 +20,7 @@ def from_callback(cls, func, selector=None):
     def function(*args):
         arguments = list(args)
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             def handler(*args):
                 results = list(args)
                 if selector:

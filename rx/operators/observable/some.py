@@ -21,7 +21,7 @@ def some(self, predicate=None):
     """
 
     source = self
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def send(_):
             observer.send(True)
             observer.close()

@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
@@ -9,8 +9,8 @@ from rx.internal import extensionclassmethod
 log = logging.getLogger("Rx")
 
 
-def observable_timer_date(duetime, scheduler):
-    def subscribe(observer):
+def observable_timer_date(duetime):
+    def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.send(0)
             observer.close()
@@ -19,10 +19,14 @@ def observable_timer_date(duetime, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_date_and_period(duetime, period, scheduler):
-    p = scheduler.normalize(period)
+def observable_timer_duetime_and_period(duetime, period) -> Observable:
+    def subscribe(observer, scheduler=None):
+        nonlocal duetime
 
-    def subscribe(observer):
+        if isinstance(duetime, int):
+            duetime = scheduler.now + scheduler.to_timedelta(duetime)
+
+        p = scheduler.normalize(period)
         mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
@@ -42,10 +46,11 @@ def observable_timer_date_and_period(duetime, period, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan(duetime, scheduler):
-    d = scheduler.normalize(duetime)
+def observable_timer_timespan(duetime) -> Observable:
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        d = scheduler.normalize(duetime)
+
         def action(scheduler, state):
             observer.send(0)
             observer.close()
@@ -54,36 +59,28 @@ def observable_timer_timespan(duetime, scheduler):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime, period, scheduler):
+def observable_timer_timespan_and_period(duetime, period) -> Observable:
     if duetime == period:
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             def action(count):
                 observer.send(count)
                 return count + 1
 
             return scheduler.schedule_periodic(period, action, state=0)
         return AnonymousObservable(subscribe)
-
-    def defer():
-        dt = scheduler.now + scheduler.to_timedelta(duetime)
-        return observable_timer_date_and_period(dt, period, scheduler)
-    return Observable.defer(defer)
+    return observable_timer_duetime_and_period(duetime, period)
 
 
 @extensionclassmethod(Observable)
-def timer(cls, duetime, period=None, scheduler=None):
+def timer(cls, duetime, period=None) -> Observable:
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 
     1 - res = Observable.timer(datetime(...))
     2 - res = Observable.timer(datetime(...), 1000)
-    3 - res = Observable.timer(datetime(...), Scheduler.timeout)
-    4 - res = Observable.timer(datetime(...), 1000, Scheduler.timeout)
 
     5 - res = Observable.timer(5000)
     6 - res = Observable.timer(5000, 1000)
-    7 - res = Observable.timer(5000, scheduler=Scheduler.timeout)
-    8 - res = Observable.timer(5000, 1000, Scheduler.timeout)
 
     Keyword arguments:
     duetime -- Absolute (specified as a Date object) or relative time
@@ -92,8 +89,6 @@ def timer(cls, duetime, period=None, scheduler=None):
     period -- [Optional] Period to produce subsequent values (specified as
         an integer denoting milliseconds), or the scheduler to run the
         timer on. If not specified, the resulting timer is not recurring.
-    scheduler -- [Optional] Scheduler to run the timer on. If not
-        specified, the timeout scheduler is used.
 
     Returns an observable sequence that produces a value after due time has
     elapsed and then each period.
@@ -101,15 +96,13 @@ def timer(cls, duetime, period=None, scheduler=None):
 
     log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
-    scheduler = scheduler or timeout_scheduler
-
-    if isinstance(duetime, datetime) and period is None:
-        return observable_timer_date(duetime, scheduler)
-
-    if isinstance(duetime, datetime) and period:
-        return observable_timer_date_and_period(duetime, period, scheduler)
+    if isinstance(duetime, datetime):
+        if period is None:
+            return observable_timer_date(duetime)
+        else:
+            return observable_timer_duetime_and_period(duetime, period)
 
     if period is None:
-        return observable_timer_timespan(duetime, scheduler)
+        return observable_timer_timespan(duetime)
 
-    return observable_timer_timespan_and_period(duetime, period, scheduler)
+    return observable_timer_timespan_and_period(duetime, period)

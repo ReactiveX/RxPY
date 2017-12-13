@@ -1,35 +1,29 @@
-from rx.core import Observable
-from rx.concurrency import timeout_scheduler
+from rx.core import Observable, AnonymousObservable
 from rx.internal.utils import TimeInterval
-from rx.internal import extensionmethod
+from rx.concurrency import timeout_scheduler
 
 
-@extensionmethod(Observable)
-def time_interval(self, scheduler=None):
+def time_interval(source: Observable) -> Observable:
     """Records the time interval between consecutive values in an
     observable sequence.
 
-    1 - res = source.time_interval();
-    2 - res = source.time_interval(Scheduler.timeout)
+    1 - res = time_interval(source)
 
-    Keyword arguments:
-    scheduler -- [Optional] Scheduler used to compute time intervals. If
-        not specified, the timeout scheduler is used.
-
-    Return An observable sequence with time interval information on values.
+    Return An observable sequence with time interval information on
+    values.
     """
 
-    source = self
-    scheduler = scheduler or timeout_scheduler
+    def subscribe(observer, scheduler):
+        scheduler = scheduler or timeout_scheduler
+        last = scheduler.now
 
-    def defer():
-        last = [scheduler.now]
+        def selector(value):
+            nonlocal last
 
-        def selector(x):
             now = scheduler.now
-            span = now - last[0]
-            last[0] = now
-            return TimeInterval(value=x, interval=span)
+            span = now - last
+            last = now
+            return TimeInterval(value=value, interval=span)
 
-        return source.map(selector)
-    return Observable.defer(defer)
+        return source.map(selector).subscribe(observer)
+    return AnonymousObservable(subscribe)

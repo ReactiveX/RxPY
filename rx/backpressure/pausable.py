@@ -17,7 +17,7 @@ class PausableObservable(Observable):
 
         super(PausableObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         conn = self.source.publish()
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]
@@ -29,7 +29,7 @@ class PausableObservable(Observable):
                 connection[0].dispose()
                 connection[0] = Disposable.empty()
 
-        pausable = self.pauser.distinct_until_changed().subscribe_callbacks(send)
+        pausable = self.pauser.distinct_until_changed().subscribe_callbacks(send, scheduler=scheduler)
         return CompositeDisposable(subscription, connection[0], pausable)
 
     def pause(self):

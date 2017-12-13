@@ -27,7 +27,7 @@ class TestTimeout(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
-            return xs.timeout(500, None, scheduler=scheduler)
+            return xs.timeout(500, None)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
@@ -37,7 +37,7 @@ class TestTimeout(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
-            return xs.timeout(205, scheduler=scheduler)
+            return xs.timeout(205)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
@@ -48,7 +48,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(50, -1), send(200, -2), send(310, -3), close(320))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
         results.messages.assert_equal(send(350, -1), send(500, -2), send(610, -3), close(620))
@@ -61,7 +61,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(50, -1), send(200, -2), send(310, -3), close(320))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -75,7 +75,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -89,7 +89,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -103,7 +103,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -117,7 +117,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -132,7 +132,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -146,7 +146,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(50, -1), send(200, -2), send(310, -3), close(320))
 
         def create():
-            return xs.timeout(100, ys, scheduler=scheduler)
+            return xs.timeout(100, ys)
 
         results = scheduler.start(create)
 
@@ -160,7 +160,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys, scheduler=scheduler)
+            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
 
         results = scheduler.start(create)
 
@@ -174,7 +174,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys, scheduler=scheduler)
+            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
         results = scheduler.start(create)
 
         results.messages.assert_equal(send(310, 1), close(390))
@@ -188,7 +188,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys, scheduler=scheduler)
+            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
 
         results = scheduler.start(create)
 
@@ -202,7 +202,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(send(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys, scheduler=scheduler)
+            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
 
         results = scheduler.start(create)
 
@@ -216,7 +216,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys, scheduler)
+            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
 
         results = scheduler.start(create)
 

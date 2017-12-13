@@ -39,7 +39,7 @@ class TestSelect(unittest.TestCase):
                 .map_indexed(lambda x, y: x) \
                 .subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             _raise('ex')
 
         with self.assertRaises(RxException):
@@ -181,7 +181,7 @@ class TestSelect(unittest.TestCase):
 
         with self.assertRaises(RxException):
             return Observable.create(lambda o: _raise('ex')) \
-                .map(lambda x, index: x) \
+                .map_indexed(lambda x, index: x) \
                 .subscribe()
 
     def test_select_with_index_dispose_inside_selector(self):

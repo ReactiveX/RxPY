@@ -5,7 +5,7 @@ from rx.disposables import CompositeDisposable
 
 
 def combine_latest_source(source, subject, result_selector):
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         has_value = [False, False]
         has_value_all = [False]
         values = [None, None]
@@ -47,8 +47,8 @@ def combine_latest_source(source, subject, result_selector):
             next(True, 1)
 
         return CompositeDisposable(
-            source.subscribe_callbacks(lambda x: next(x, 0), throw_source, close_source),
-            subject.subscribe_callbacks(lambda x: next(x, 1), observer.throw, close_subject)
+            source.subscribe_callbacks(lambda x: next(x, 0), throw_source, close_source, scheduler),
+            subject.subscribe_callbacks(lambda x: next(x, 1), observer.throw, close_subject, scheduler)
         )
     return AnonymousObservable(subscribe)
 
@@ -66,7 +66,7 @@ class PausableBufferedObservable(Observable):
 
         super(PausableBufferedObservable, self).__init__()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         previous_should_fire = [None]
         queue = []
 
@@ -106,7 +106,7 @@ class PausableBufferedObservable(Observable):
             self.source,
             self.pauser.distinct_until_changed().start_with(False),
             result_selector
-        ).subscribe_callbacks(send, throw, close)
+        ).subscribe_callbacks(send, throw, close, scheduler)
 
         return subscription
 

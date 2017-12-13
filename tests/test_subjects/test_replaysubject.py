@@ -94,23 +94,23 @@ def test_infinite():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(301, 3),
-        send(302, 4),
-        send(341, 5),
-        send(411, 6),
-        send(521, 7)
+        send(300, 3),
+        send(300, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7)
     )
 
     results2.messages.assert_equal(
-        send(401, 5),
-        send(411, 6),
-        send(521, 7),
-        send(631, 8)
+        send(400, 5),
+        send(410, 6),
+        send(520, 7),
+        send(630, 8)
     )
 
     results3.messages.assert_equal(
-        send(901, 10),
-        send(941, 11)
+        send(900, 10),
+        send(940, 11)
     )
 
 
@@ -187,24 +187,24 @@ def test_infinite2():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(301, 4),
-        send(302, -1),
-        send(303, -2),
-        send(341, 5),
-        send(411, 6),
-        send(521, 7)
+        send(300, 4),
+        send(300, -1),
+        send(300, -2),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7)
     )
 
     results2.messages.assert_equal(
-        send(401, 5),
-        send(411, 6),
-        send(521, 7),
-        send(631, 8)
+        send(400, 5),
+        send(410, 6),
+        send(520, 7),
+        send(630, 8)
     )
 
     results3.messages.assert_equal(
-        send(901, 10),
-        send(941, 11)
+        send(900, 10),
+        send(940, 11)
     )
 
 def test_finite():
@@ -277,22 +277,22 @@ def test_finite():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(301, 3),
-        send(302, 4),
-        send(341, 5),
-        send(411, 6),
-        send(521, 7)
+        send(300, 3),
+        send(300, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7)
     )
 
     results2.messages.assert_equal(
-        send(401, 5),
-        send(411, 6),
-        send(521, 7),
-        close(631)
+        send(400, 5),
+        send(410, 6),
+        send(520, 7),
+        close(630)
     )
 
     results3.messages.assert_equal(
-        close(901)
+        close(900)
     )
 
 
@@ -368,22 +368,22 @@ def test_error():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(301, 3),
-        send(302, 4),
-        send(341, 5),
-        send(411, 6),
-        send(521, 7)
+        send(300, 3),
+        send(300, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7)
     )
 
     results2.messages.assert_equal(
-        send(401, 5),
-        send(411, 6),
-        send(521, 7),
-        throw(631, ex)
+        send(400, 5),
+        send(410, 6),
+        send(520, 7),
+        throw(630, ex)
     )
 
     results3.messages.assert_equal(
-        throw(901, ex)
+        throw(900, ex)
     )
 
 
@@ -453,11 +453,11 @@ def test_canceled():
     )
 
     results2.messages.assert_equal(
-        close(631)
+        close(630)
     )
 
     results3.messages.assert_equal(
-        close(901)
+        close(900)
     )
 
 def test_subject_disposed():
@@ -549,26 +549,26 @@ def test_subject_disposed():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(201, 1),
-        send(251, 2),
-        send(351, 3),
-        send(451, 4)
+        send(200, 1),
+        send(250, 2),
+        send(350, 3),
+        send(450, 4)
     )
 
     results2.messages.assert_equal(
-        send(301, 1),
-        send(302, 2),
-        send(351, 3),
-        send(451, 4),
-        send(551, 5)
+        send(300, 1),
+        send(300, 2),
+        send(350, 3),
+        send(450, 4),
+        send(550, 5)
     )
 
     results3.messages.assert_equal(
-        send(401, 1),
-        send(402, 2),
-        send(403, 3),
-        send(451, 4),
-        send(551, 5)
+        send(400, 1),
+        send(400, 2),
+        send(400, 3),
+        send(450, 4),
+        send(550, 5)
     )
 
 
@@ -620,27 +620,27 @@ def test_replay_subject_dies_out():
     scheduler.start()
 
     results1.messages.assert_equal(
-        send(301, 3),
-        send(302, 4),
-        send(341, 5),
-        send(411, 6),
-        send(521, 7),
-        close(581)
+        send(300, 3),
+        send(300, 4),
+        send(340, 5),
+        send(410, 6),
+        send(520, 7),
+        close(580)
     )
 
     results2.messages.assert_equal(
-        send(401, 5),
-        send(411, 6),
-        send(521, 7),
-        close(581)
+        send(400, 5),
+        send(410, 6),
+        send(520, 7),
+        close(580)
     )
 
     results3.messages.assert_equal(
-        send(601, 7),
-        close(602)
+        send(600, 7),
+        close(600)
     )
 
     results4.messages.assert_equal(
-        close(901)
+        close(900)
     )
 

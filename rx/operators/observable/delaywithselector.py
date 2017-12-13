@@ -33,7 +33,7 @@ def delay_with_selector(self, subscription_delay=None,
     else:
         selector = subscription_delay
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         delays = CompositeDisposable()
         at_end = [False]
 
