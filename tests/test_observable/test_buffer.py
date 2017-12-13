@@ -48,7 +48,7 @@ class TestBuffer(unittest.TestCase):
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            send(400, lambda b: b == [ ]),
+            send(400, lambda b: b == []),
             send(500, lambda b: b == [7, 8, 9]),
             send(590, lambda b: b == [10]),
             close(590)]
@@ -88,7 +88,6 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-
         assert res.messages == [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
@@ -101,7 +100,6 @@ class TestBuffer(unittest.TestCase):
 
         assert ys.subscriptions == [
             subscribe(200, 400)]
-
 
     def test_buffer_boundaries_throwsource(self):
         ex = 'ex'
