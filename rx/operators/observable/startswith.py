@@ -3,7 +3,7 @@ from rx.core import Observable
 from .concat import concat
 
 
-def start_with(source, *args: Any) -> Observable:
+def start_with(source: Observable, *args: Any) -> Observable:
     """Prepends a sequence of values to an observable sequence.
 
     1 - source.start_with(1, 2, 3)
@@ -11,5 +11,6 @@ def start_with(source, *args: Any) -> Observable:
     Returns the source sequence prepended with the specified values.
     """
 
-    sequence = [Observable.from_(args), source]
+    start = Observable.from_iterable(args)
+    sequence = [start, source]
     return concat(*sequence)

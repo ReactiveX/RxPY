@@ -1,7 +1,6 @@
 from rx.core import Observable
 from rx.subjects import ReplaySubject
 from rx.internal import extensionmethod
-from rx.internal.basic import identity
 
 
 @extensionmethod(Observable)
