@@ -1,6 +1,6 @@
 import types
 from datetime import datetime
-from typing import Callable, Any, Iterable, Union
+from typing import Callable, Any, Iterable, Union, Generic, TypeVar
 from abc import abstractmethod
 from asyncio.futures import Future
 
@@ -8,8 +8,10 @@ from rx import config
 from .anonymousobserver import AnonymousObserver
 from . import bases
 
+T_out = TypeVar('T_out', covariant=True)
 
-class Observable(bases.Observable):
+
+class Observable(Generic[T_out], bases.Observable):
     """Represents a push-style collection."""
 
     def __init__(self):

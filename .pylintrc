@@ -1,6 +1,6 @@
 [BASIC]
 
-good-names=n,x,xs,obv,obs
+good-names=n,x,xs,obv,obs,T_in,T_out
 
 [MESSAGES CONTROL]
 
