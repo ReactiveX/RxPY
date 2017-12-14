@@ -30,9 +30,9 @@ class TestReturnValue(unittest.TestCase):
             return Observable.return_value(42)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
+        assert results.messages == [
                             send(200, 42),
-                            close(200))
+                            close(200)]
 
     def test_return_disposed(self):
         scheduler = TestScheduler()
@@ -41,7 +41,7 @@ class TestReturnValue(unittest.TestCase):
             return Observable.return_value(42)
 
         results = scheduler.start(factory, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_return_disposed_after_next(self):
         scheduler = TestScheduler()
@@ -63,7 +63,7 @@ class TestReturnValue(unittest.TestCase):
 
         scheduler.schedule_absolute(100, action)
         scheduler.start()
-        results.messages.assert_equal(send(100, 42))
+        assert results.messages == [send(100, 42)]
 
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()

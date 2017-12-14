@@ -44,23 +44,20 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            send(400, lambda b: b == [ ]),
+            send(400, lambda b: b == []),
             send(500, lambda b: b == [7, 8, 9]),
             send(590, lambda b: b == [10]),
-            close(590)
-        )
+            close(590)] == res.messages
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 590)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 590)]
 
     def test_buffer_boundaries_closeboundaries(self):
         scheduler = TestScheduler()
@@ -91,23 +88,18 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-
-        res.messages.assert_equal(
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
             send(400, lambda b: b == []),
-            close(400)
-        )
+            close(400)] == res.messages
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
-
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
     def test_buffer_boundaries_throwsource(self):
         ex = 'ex'
@@ -137,20 +129,17 @@ class TestBuffer(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            throw(400, ex)
-        )
+            throw(400, ex)] == res.messages
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
     def test_buffer_boundaries_throwboundaries(self):
         ex = 'ex'
@@ -182,17 +171,14 @@ class TestBuffer(unittest.TestCase):
             return xs.buffer(ys)
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert [
             send(255, lambda b: b == [3]),
             send(330, lambda b: b == [4, 5]),
             send(350, lambda b: b == [6]),
-            throw(400, ex)
-        )
+            throw(400, ex)] == res.messages
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]

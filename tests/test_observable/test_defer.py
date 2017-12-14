@@ -37,12 +37,9 @@ class TestDefer(unittest.TestCase):
                 return xs[0]
             return Observable.defer(defer)
         results = scheduler.start(create)
-        results.messages.assert_equal(
-                            send(300, 200),
-                            close(400)
-                        )
+        assert results.messages == [send(300, 200), close(400)]
         assert(1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 400))
+        assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_error(self):
         scheduler = TestScheduler()
@@ -59,9 +56,9 @@ class TestDefer(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(300, 200), throw(400, ex))
+        assert results.messages == [send(300, 200), throw(400, ex)]
         assert (1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 400))
+        assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_dispose(self):
         scheduler = TestScheduler()
@@ -76,9 +73,9 @@ class TestDefer(unittest.TestCase):
             return Observable.defer(defer)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(300, 200), send(400, 1))
+        assert results.messages == [send(300, 200), send(400, 1)]
         assert(1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 1000))
+        assert xs[0].subscriptions == [subscribe(200, 1000)]
 
     def test_defer_throw(self):
         scheduler = TestScheduler()
@@ -93,5 +90,5 @@ class TestDefer(unittest.TestCase):
             return Observable.defer(defer)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
         assert(1 == invoked[0])

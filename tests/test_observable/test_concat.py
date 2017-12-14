@@ -34,7 +34,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(250))
+        assert results.messages == [close(250)]
 
     def test_concat_empty_never(self):
         scheduler = TestScheduler()
@@ -45,7 +45,7 @@ class TestConcat(unittest.TestCase):
         def create():
             return e1.concat(e2)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_never_empty(self):
         scheduler = TestScheduler()
@@ -57,7 +57,7 @@ class TestConcat(unittest.TestCase):
             return e2.concat(e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_never_never(self):
         scheduler = TestScheduler()
@@ -67,7 +67,7 @@ class TestConcat(unittest.TestCase):
         def create():
             return e1.concat(e2)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_empty_throw(self):
         ex = 'ex'
@@ -81,7 +81,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(250, ex))
+        assert results.messages == [throw(250, ex)]
 
     def test_concat_throw_empty(self):
         ex = 'ex'
@@ -95,7 +95,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_concat_throw_throw(self):
         ex = 'ex'
@@ -109,7 +109,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_concat_return_empty(self):
         scheduler = TestScheduler()
@@ -122,7 +122,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), close(250))
+        assert results.messages == [send(210, 2), close(250)]
 
     def test_concat_empty_return(self):
         scheduler = TestScheduler()
@@ -135,7 +135,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(240, 2), close(250))
+        assert results.messages == [send(240, 2), close(250)]
 
     def test_concat_return_never(self):
         scheduler = TestScheduler()
@@ -147,7 +147,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2))
+        assert results.messages == [send(210, 2)]
 
     def test_concat_never_return(self):
         scheduler = TestScheduler()
@@ -159,7 +159,7 @@ class TestConcat(unittest.TestCase):
             return e2.concat(e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_return_return(self):
         scheduler = TestScheduler()
@@ -172,7 +172,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2), send(240, 3), close(250))
+        assert results.messages == [send(220, 2), send(240, 3), close(250)]
 
     def test_concat_throw_return(self):
         ex = 'ex'
@@ -186,7 +186,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(230, ex))
+        assert results.messages == [throw(230, ex)]
 
     def test_concat_return_throw(self):
         ex = 'ex'
@@ -200,7 +200,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2), throw(250, ex))
+        assert results.messages == [send(220, 2), throw(250, ex)]
 
     def test_concat_some_data_some_data(self):
         scheduler = TestScheduler()
@@ -213,4 +213,4 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        assert results.messages == [send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250)]

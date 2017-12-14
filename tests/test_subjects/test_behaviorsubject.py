@@ -92,24 +92,21 @@ def test_infinite():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         send(300, 4),
         send(340, 5),
         send(410, 6),
-        send(520, 7)
-    )
+        send(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         send(400, 5),
         send(410, 6),
         send(520, 7),
-        send(630, 8)
-    )
+        send(630, 8)]
 
-    results3.messages.assert_equal(
+    assert results3.messages == [
         send(900, 10),
-        send(940, 11)
-    )
+        send(940, 11)]
 
 
 def test_finite():
@@ -181,23 +178,20 @@ def test_finite():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         send(300, 4),
         send(340, 5),
         send(410, 6),
-        send(520, 7)
-    )
+        send(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         send(400, 5),
         send(410, 6),
         send(520, 7),
-        close(630)
-    )
+        close(630)]
 
-    results3.messages.assert_equal(
-        close(900)
-    )
+    assert results3.messages == [
+        close(900)]
 
 
 def test_error():
@@ -271,23 +265,20 @@ def test_error():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         send(300, 4),
         send(340, 5),
         send(410, 6),
-        send(520, 7)
-    )
+        send(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         send(400, 5),
         send(410, 6),
         send(520, 7),
-        throw(630, ex)
-    )
+        throw(630, ex)]
 
-    results3.messages.assert_equal(
-        throw(900, ex)
-    )
+    assert results3.messages == [
+        throw(900, ex)]
 
 def test_canceled():
     scheduler = TestScheduler()
@@ -351,18 +342,15 @@ def test_canceled():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
-        send(300, 100)
-    )
+    assert results1.messages == [
+        send(300, 100)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         send(400, 100),
-        close(630)
-    )
+        close(630)]
 
-    results3.messages.assert_equal(
-        close(900)
-    )
+    assert results3.messages == [
+        close(900)]
 
 def test_subject_disposed():
     scheduler = TestScheduler()
@@ -452,22 +440,19 @@ def test_subject_disposed():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         send(200, 1),
         send(250, 2),
         send(350, 3),
-        send(450, 4)
-    )
+        send(450, 4)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         send(300, 2),
         send(350, 3),
         send(450, 4),
-        send(550, 5)
-    )
+        send(550, 5)]
 
-    results3.messages.assert_equal(
+    assert results3.messages == [
         send(400, 3),
         send(450, 4),
-        send(550, 5)
-    )
+        send(550, 5)]

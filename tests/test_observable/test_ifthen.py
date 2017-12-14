@@ -22,9 +22,9 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(lambda: True, xs, ys)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(210, 1), send(250, 2), close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(210, 1), send(250, 2), close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == []
 
     def test_if_false(self):
         scheduler = TestScheduler()
@@ -34,9 +34,9 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(lambda: False, xs, ys)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(310, 3), send(350, 4), close(400))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(310, 3), send(350, 4), close(400)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == [subscribe(200, 400)]
 
     def test_if_throw(self):
         ex = 'ex'
@@ -50,9 +50,9 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(condition, xs, ys)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(200, ex))
-        xs.subscriptions.assert_equal()
-        ys.subscriptions.assert_equal()
+        assert results.messages == [throw(200, ex)]
+        assert xs.subscriptions == []
+        assert ys.subscriptions == []
 
     def test_if_dispose(self):
         scheduler = TestScheduler()
@@ -63,9 +63,9 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(lambda: True, xs, ys)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(210, 1), send(250, 2))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
-        ys.subscriptions.assert_equal()
+        assert results.messages == [send(210, 1), send(250, 2)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
+        assert ys.subscriptions == []
 
     def test_if_default_completed(self):
         b = [False]
@@ -82,8 +82,8 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(condition, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(220, 2), send(330, 3), close(440))
-        xs.subscriptions.assert_equal(subscribe(200, 440))
+        assert results.messages == [send(220, 2), send(330, 3), close(440)]
+        assert xs.subscriptions == [subscribe(200, 440)]
 
     def test_if_default_error(self):
         ex = 'ex'
@@ -101,8 +101,8 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(condition, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(220, 2), send(330, 3), throw(440, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 440))
+        assert results.messages == [send(220, 2), send(330, 3), throw(440, ex)]
+        assert xs.subscriptions == [subscribe(200, 440)]
 
 
     def test_if_default_never(self):
@@ -120,8 +120,8 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(condition, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(220, 2), send(330, 3))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(220, 2), send(330, 3)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_if_default_other(self):
         b = [True]
@@ -138,5 +138,5 @@ class TestIf_then(unittest.TestCase):
             return Observable.if_then(condition, xs)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(200))
-        xs.subscriptions.assert_equal()
+        assert results.messages == [close(200)]
+        assert xs.subscriptions == []

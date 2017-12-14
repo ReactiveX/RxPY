@@ -29,15 +29,10 @@ class TestToDict(unittest.TestCase):
             return xs.to_set()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(
-            send(660, set([2,3,4,5])),
-            close(660)
-        )
+        assert results.messages == [send(660, set([2, 3, 4, 5])), close(660)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 660)
-        )
-
+        assert xs.subscriptions == [
+            subscribe(200, 660)]
 
     def test_to_set_error(self):
         error = Exception()
@@ -55,13 +50,11 @@ class TestToDict(unittest.TestCase):
 
         results = scheduler.start(lambda: xs.to_set())
 
-        results.messages.assert_equal(
-            throw(660, error)
-        )
+        assert results.messages == [
+            throw(660, error)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 660)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 660)]
 
     def test_to_set_disposed(self):
         scheduler = TestScheduler()
@@ -76,8 +69,6 @@ class TestToDict(unittest.TestCase):
 
         results = scheduler.start(lambda: xs.to_set())
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [subscribe(200, 1000)]

@@ -28,10 +28,9 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 84),
-            close(200)
-        )
+            close(200)]
 
     def test_to_async0(self):
         scheduler = TestScheduler()
@@ -44,10 +43,9 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 0),
-            close(200)
-        )
+            close(200)]
 
     def test_to_async1(self):
         scheduler = TestScheduler()
@@ -60,10 +58,9 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 1),
-            close(200)
-         )
+            close(200)]
 
     def test_to_async2(self):
         scheduler = TestScheduler()
@@ -76,10 +73,9 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 3),
-            close(200)
-        )
+            close(200)]
 
     def test_to_async3(self):
         scheduler = TestScheduler()
@@ -93,10 +89,9 @@ class TestToAsync(unittest.TestCase):
         res = scheduler.start(create)
 
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 6),
-            close(200)
-        )
+            close(200)]
 
     def test_to_async4(self):
         scheduler = TestScheduler()
@@ -108,10 +103,9 @@ class TestToAsync(unittest.TestCase):
             return Observable.to_async(func, scheduler)(1, 2, 3, 4)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 10),
-            close(200)
-        )
+            close(200)]
 
     def test_to_async_error0(self):
         ex = Exception()
@@ -125,9 +119,8 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]
 
     def test_to_async_error1(self):
         ex = Exception()
@@ -141,9 +134,8 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]
 
     def test_to_async_error2(self):
         ex = Exception()
@@ -157,9 +149,8 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]
 
     def test_to_async_error0(self):
         ex = Exception()
@@ -173,9 +164,8 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]
 
     def test_to_async_error0(self):
         ex = Exception()
@@ -189,6 +179,5 @@ class TestToAsync(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]

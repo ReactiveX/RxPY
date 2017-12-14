@@ -25,7 +25,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), send(220, 3), close(230))
+        assert results.messages == [send(210, 2), send(220, 3), close(230)]
 
     def test_catch_never(self):
         scheduler = TestScheduler()
@@ -37,7 +37,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_catch_empty(self):
         scheduler = TestScheduler()
@@ -50,7 +50,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(230))
+        assert results.messages == [close(230)]
 
     def test_catch_return(self):
         scheduler = TestScheduler()
@@ -63,7 +63,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), close(230))
+        assert results.messages == [send(210, 2), close(230)]
 
     def test_catch_error(self):
         ex = 'ex'
@@ -77,7 +77,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(240, 5), close(250))
+        assert results.messages == [send(210, 2), send(220, 3), send(240, 5), close(250)]
 
     def test_catch_error_never(self):
         ex = 'ex'
@@ -89,7 +89,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3))
+        assert results.messages == [send(210, 2), send(220, 3)]
 
     def test_catch_error_error(self):
         ex = 'ex'
@@ -103,7 +103,7 @@ class TestCatch(unittest.TestCase):
             return o1.catch_exception(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(240, 4), throw(250, ex))
+        assert results.messages == [send(210, 2), send(220, 3), send(240, 4), throw(250, ex)]
 
     def test_catch_multiple(self):
         ex = 'ex'
@@ -119,7 +119,7 @@ class TestCatch(unittest.TestCase):
             return Observable.catch_exception(o1, o2, o3)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), close(235))
+        assert results.messages == [send(210, 2), send(220, 3), send(230, 4), close(235)]
 
     def test_catch_error_specific_caught(self):
         ex = 'ex'
@@ -139,7 +139,7 @@ class TestCatch(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(240, 4), close(250))
+        assert results.messages == [send(210, 2), send(220, 3), send(240, 4), close(250)]
         assert(handler_called[0])
 
     def test_catch_error_specific_caught_immediate(self):
@@ -158,7 +158,7 @@ class TestCatch(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(240, 4), close(250))
+        assert results.messages == [send(240, 4), close(250)]
         assert(handler_called[0])
 
     def test_catch_handler_throws(self):
@@ -177,7 +177,7 @@ class TestCatch(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), send(220, 3), throw(230, ex2))
+        assert results.messages == [send(210, 2), send(220, 3), throw(230, ex2)]
         assert(handler_called[0])
 
     def test_catch_nested_outer_catches(self):
@@ -203,7 +203,7 @@ class TestCatch(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), send(220, 3), close(225))
+        assert results.messages == [send(210, 2), send(220, 3), close(225)]
         assert(first_handler_called[0])
         assert(not second_handler_called[0])
 
@@ -233,6 +233,6 @@ class TestCatch(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), close(235))
+        assert results.messages == [send(210, 2), send(220, 3), send(230, 4), close(235)]
         assert(first_handler_called[0])
         assert(second_handler_called[0])

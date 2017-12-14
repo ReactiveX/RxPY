@@ -29,8 +29,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_first_or_default_async_one(self):
         scheduler = TestScheduler()
@@ -41,8 +41,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(210, 2), close(210))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [send(210, 2), close(210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_or_default_async_many(self):
         scheduler = TestScheduler()
@@ -53,8 +53,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(210, 2), close(210))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [send(210, 2), close(210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_or_default_async_error(self):
         ex = 'ex'
@@ -66,8 +66,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_or_default_async_predicate(self):
         scheduler = TestScheduler()
@@ -81,8 +81,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(220, 3), close(220))
-        xs.subscriptions.assert_equal(subscribe(200, 220))
+        assert res.messages == [send(220, 3), close(220)]
+        assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_first_or_default_async_predicate_none(self):
         scheduler = TestScheduler()
@@ -96,8 +96,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
 
     def test_first_or_default_async_predicate_throw(self):
@@ -113,8 +113,8 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(220, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 220))
+        assert res.messages == [throw(220, ex)]
+        assert xs.subscriptions == [subscribe(200, 220)]
 
 
     def test_first_or_default_async_predicate_throws(self):
@@ -133,6 +133,6 @@ class TestFirst_or_default(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(230, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [throw(230, ex)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 

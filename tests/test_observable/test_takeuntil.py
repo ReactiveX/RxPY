@@ -34,7 +34,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), close(225))
+        assert results.messages == [send(210, 2), send(220, 3), close(225)]
 
     def test_take_until_preempt_somedata_error(self):
         ex = 'ex'
@@ -47,7 +47,7 @@ class TestTakeUntil(unittest.TestCase):
         def create():
             return l.take_until(r)
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), throw(225, ex))
+        assert results.messages == [send(210, 2), send(220, 3), throw(225, ex)]
 
     def test_take_until_nopreempt_somedata_empty(self):
         scheduler = TestScheduler()
@@ -60,7 +60,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        assert results.messages == [send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250)]
 
     def test_take_until_nopreempt_somedata_never(self):
         scheduler = TestScheduler()
@@ -72,7 +72,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        assert results.messages == [send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250)]
 
     def test_take_until_preempt_never_next(self):
         scheduler = TestScheduler()
@@ -84,7 +84,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(225))
+        assert results.messages == [close(225)]
 
     def test_take_until_preempt_never_error(self):
         ex = 'ex'
@@ -97,7 +97,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(225, ex))
+        assert results.messages == [throw(225, ex)]
 
     def test_take_until_nopreempt_never_empty(self):
         scheduler = TestScheduler()
@@ -109,7 +109,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_take_until_nopreempt_never_never(self):
         scheduler = TestScheduler()
@@ -120,7 +120,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_take_until_preempt_beforefirstproduced(self):
         scheduler = TestScheduler()
@@ -133,7 +133,7 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(210))
+        assert results.messages == [close(210)]
 
     def test_take_until_preempt_beforefirstproduced_remain_silent_and_proper_disposed(self):
         scheduler = TestScheduler()
@@ -152,7 +152,7 @@ class TestTakeUntil(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(210))
+        assert results.messages == [close(210)]
         assert(not source_not_disposed[0])
 
     def test_take_until_nopreempt_afterlastproduced_proper_disposed_signal(self):
@@ -170,6 +170,6 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 2), close(240))
+        assert results.messages == [send(230, 2), close(240)]
         assert(not signal_not_disposed[0])
 

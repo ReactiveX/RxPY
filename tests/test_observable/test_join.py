@@ -74,7 +74,7 @@ class TestJoin(unittest.TestCase):
             )
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -96,7 +96,7 @@ class TestJoin(unittest.TestCase):
             send(732, "7wig"),
             send(732, "8wig"),
             send(830, "9rat"),
-            close(900))
+            close(900)]
 
     def test_join_op_normal_ii(self):
         scheduler = TestScheduler()
@@ -133,7 +133,7 @@ class TestJoin(unittest.TestCase):
             )
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -154,7 +154,7 @@ class TestJoin(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(910))
+            close(910)]
 
     def test_join_op_normal_iii(self):
          scheduler = TestScheduler()
@@ -190,7 +190,7 @@ class TestJoin(unittest.TestCase):
                             lambda x, y: "%s%s" % (x.value, y.value)
              )
          results = scheduler.start(create=create)
-         results.messages.assert_equal(
+         assert results.messages == [
              send(215, "0hat"),
              send(217, "0bat"),
              send(219, "1hat"),
@@ -212,7 +212,7 @@ class TestJoin(unittest.TestCase):
              send(732, "7wig"),
              send(732, "8wig"),
              send(830, "9rat"),
-             close(900))
+             close(900)]
 
     def test_join_op_normal_iv(self):
         scheduler = TestScheduler()
@@ -248,7 +248,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -269,7 +269,7 @@ class TestJoin(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(980))
+            close(980)]
 
     def test_join_op_normal_v(self):
         scheduler = TestScheduler()
@@ -305,7 +305,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -326,7 +326,7 @@ class TestJoin(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(922))
+            close(922)]
 
     def test_join_op_normal_vi(self):
         scheduler = TestScheduler()
@@ -361,7 +361,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -382,7 +382,7 @@ class TestJoin(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(900))
+            close(900)]
 
     def test_join_op_normal_vii(self):
         scheduler = TestScheduler()
@@ -417,7 +417,7 @@ class TestJoin(unittest.TestCase):
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create, disposed=713)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -430,8 +430,7 @@ class TestJoin(unittest.TestCase):
             send(702, "6tin"),
             send(710, "7tin"),
             send(712, "6man"),
-            send(712, "7man")
-        )
+            send(712, "7man")]
 
     def test_join_op_error_i(self):
         ex = 'ex'
@@ -462,14 +461,14 @@ class TestJoin(unittest.TestCase):
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create, disposed=713)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
             send(300, "3wag"),
             send(300, "3pig"),
             send(305, "3cup"),
-            throw(310, ex))
+            throw(310, ex)]
 
     def test_join_op_error_ii(self):
         ex = 'ex'
@@ -505,7 +504,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -521,7 +520,7 @@ class TestJoin(unittest.TestCase):
             send(712, "7man"),
             send(720, "8tin"),
             send(720, "8man"),
-            throw(722, ex))
+            throw(722, ex)]
 
     def test_join_op_error_iii(self):
         ex = 'ex'
@@ -559,7 +558,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(215, "0hat"),
+        assert results.messages == [send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
             send(300, "3wag"),
@@ -577,8 +576,7 @@ class TestJoin(unittest.TestCase):
             send(722, "6rat"),
             send(722, "7rat"),
             send(722, "8rat"),
-            throw(725, ex)
-        )
+            throw(725, ex)]
 
     def test_join_op_error_iv(self):
         ex = 'ex'
@@ -617,7 +615,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -633,7 +631,7 @@ class TestJoin(unittest.TestCase):
             send(712, "7man"),
             send(720, "8tin"),
             send(720, "8man"),
-            throw(721, ex))
+            throw(721, ex)]
 
     def test_join_op_error_v(self):
         ex = 'ex'
@@ -677,7 +675,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_join_op_error_vi(self):
         ex = 'ex'
@@ -721,7 +719,7 @@ class TestJoin(unittest.TestCase):
             )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(215, ex))
+        assert results.messages == [throw(215, ex)]
 
     def test_join_op_error_vii(self):
         ex = 'ex'
@@ -764,7 +762,7 @@ class TestJoin(unittest.TestCase):
                 result_selector,
                 )
         results = scheduler.start(create=create)
-        results.messages.assert_equal(throw(215, ex))
+        assert results.messages == [throw(215, ex)]
 
     def test_join_op_error_viii(self):
         ex = 'ex'
@@ -808,4 +806,4 @@ class TestJoin(unittest.TestCase):
                 )
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(215, ex))
+        assert results.messages == [throw(215, ex)]

@@ -33,13 +33,12 @@ class TestGenerate(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
                             send(200, 0),
                             send(200, 1),
                             send(200, 2),
                             send(200, 3),
-                            close(200)
-                        )
+                            close(200)]
 
     def test_generate_throw_condition(self):
         scheduler = TestScheduler()
@@ -52,7 +51,7 @@ class TestGenerate(unittest.TestCase):
                 lambda x: x)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_generate_throw_result_selector(self):
         scheduler = TestScheduler()
@@ -65,7 +64,7 @@ class TestGenerate(unittest.TestCase):
                 lambda x: _raise('ex'))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_generate_throw_iterate(self):
         scheduler = TestScheduler()
@@ -78,10 +77,9 @@ class TestGenerate(unittest.TestCase):
                 lambda x: x)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
                             send(200, 0),
-                            throw(200, ex)
-                        )
+                            throw(200, ex)]
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
@@ -94,7 +92,7 @@ class TestGenerate(unittest.TestCase):
                 lambda x: x)
 
         results = scheduler.start(create, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_generate_repeat(self):
         scheduler = TestScheduler()
@@ -108,7 +106,7 @@ class TestGenerate(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
                 send(200, 0),
                 send(200, 1),
                 send(200, 2),
@@ -117,5 +115,4 @@ class TestGenerate(unittest.TestCase):
                 send(200, 1),
                 send(200, 2),
                 send(200, 3),
-                close(200)
-        )
+                close(200)]

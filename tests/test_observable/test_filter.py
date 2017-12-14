@@ -54,10 +54,10 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(230, 3),
+        assert results.messages == [send(230, 3),
                                       send(340, 5), send(390, 7),
-                                      send(580, 11), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+                                      send(580, 11), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert invoked[0] == 9
 
     def test_filter_true(self):
@@ -72,8 +72,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert invoked[0] == 9
 
     def test_filter_false(self):
@@ -90,8 +90,8 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert invoked[0] == 9
 
     def test_filter_dispose(self):
@@ -106,8 +106,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter(predicate)
 
         results = scheduler.start(create, disposed=400)
-        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(230, 3), send(340, 5), send(390, 7)]
+        assert xs.subscriptions == [subscribe(200, 400)]
         assert(invoked[0] == 5)
 
     def test_filter_error(self):
@@ -124,8 +124,8 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7), send(580, 11), throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(230, 3), send(340, 5), send(390, 7), send(580, 11), throw(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 9)
 
     def test_filter_throw(self):
@@ -145,8 +145,8 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(230, 3), send(340, 5), throw(380, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 380))
+        assert results.messages == [send(230, 3), send(340, 5), throw(380, ex)]
+        assert xs.subscriptions == [subscribe(200, 380)]
         assert(invoked[0] == 4)
 
     def test_filter_dispose_in_predicate(self):
@@ -181,8 +181,8 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action2)
 
         scheduler.start()
-        results.messages.assert_equal(send(230, 3), send(340, 5), send(390, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(230, 3), send(340, 5), send(390, 7)]
+        assert xs.subscriptions == [subscribe(200, 450)]
         assert(invoked[0] == 6)
 
     def test_filter_indexed_complete(self):
@@ -198,8 +198,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 3), send(390, 7), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(230, 3), send(390, 7), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 9)
 
     def test_filter_indexed_true(self):
@@ -215,8 +215,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 9)
 
     def test_filter_indexed_false(self):
@@ -232,8 +232,8 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 9)
 
     def test_filter_indexed_dispose(self):
@@ -249,8 +249,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create, disposed=400)
-        results.messages.assert_equal(send(230, 3), send(390, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(230, 3), send(390, 7)]
+        assert xs.subscriptions == [subscribe(200, 400)]
         assert(invoked[0] == 5)
 
     def test_filter_indexed_error(self):
@@ -267,8 +267,8 @@ class TestFilter(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(230, 3), send(390, 7), throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(230, 3), send(390, 7), throw(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
         assert(invoked[0] == 9)
 
     def test_filter_indexed_throw(self):
@@ -287,8 +287,8 @@ class TestFilter(unittest.TestCase):
             return xs.filter_indexed(predicate)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(230, 3), throw(380, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 380))
+        assert results.messages == [send(230, 3), throw(380, ex)]
+        assert xs.subscriptions == [subscribe(200, 380)]
         assert(invoked[0] == 4)
 
     def test_filter_indexed_dispose_in_predicate(self):
@@ -321,6 +321,6 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action3)
 
         scheduler.start()
-        results.messages.assert_equal(send(230, 3), send(390, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [send(230, 3), send(390, 7)]
+        assert xs.subscriptions == [subscribe(200, 450)]
         assert(invoked[0] == 6)

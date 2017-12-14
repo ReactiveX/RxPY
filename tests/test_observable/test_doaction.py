@@ -248,7 +248,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 
 
-#     results.messages.assert_equal(throw(210, ex))
+#     assert results.messages == [throw(210, ex)]
 
 # def test_do1422_next_completed_next_throws(self):
 #     ex = 'ex'
@@ -259,7 +259,7 @@ class TestDo(unittest.TestCase):
 #             throw ex
 #         }, _undefined, function () {
 
-#     results.messages.assert_equal(throw(210, ex))
+#     assert results.messages == [throw(210, ex)]
 
 # def test_do1422_next_completed_completed_throws(self):
 #     ex = 'ex'
@@ -270,7 +270,7 @@ class TestDo(unittest.TestCase):
 #             throw ex
 
 
-#     results.messages.assert_equal(send(210, 2), throw(250, ex))
+#     assert results.messages == [send(210, 2), throw(250, ex)]
 
 # def test_do1422_next_error_next_throws(self):
 #     ex = 'ex'
@@ -281,7 +281,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () {
 
-#     results.messages.assert_equal(throw(210, ex))
+#     assert results.messages == [throw(210, ex)]
 
 # def test_Do1422_NextError_NextThrows(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -294,7 +294,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 
 
-#     results.messages.assert_equal(throw(210, ex2))
+#     assert results.messages == [throw(210, ex2)]
 
 # def test_Do1422_NextErrorCompleted_NextThrows(self):
 #     var ex, results, scheduler, xs
@@ -306,7 +306,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () { }, function () {
 
-#     results.messages.assert_equal(throw(210, ex))
+#     assert results.messages == [throw(210, ex)]
 
 # def test_do1422_next_error_completed_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -319,7 +319,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 #         }, function () {
 
-#     results.messages.assert_equal(throw(210, ex2))
+#     assert results.messages == [throw(210, ex2)]
 
 # def test_do1422_next_error_completed_completed_throws(self):
 #     ex = 'ex'
@@ -330,7 +330,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 
 
-#     results.messages.assert_equal(send(210, 2), throw(250, ex))
+#     assert results.messages == [send(210, 2), throw(250, ex)]
 
 # def test_do1422_observer_next_throws(self):
 #     ex = 'ex'
@@ -341,7 +341,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () { }, function () { }))
 
-#     results.messages.assert_equal(throw(210, ex))
+#     assert results.messages == [throw(210, ex)]
 
 # def test_do1422_observer_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -354,7 +354,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 #         }, function () { }))
 
-#     results.messages.assert_equal(throw(210, ex2))
+#     assert results.messages == [throw(210, ex2)]
 
 # def test_do1422_observer_completed_throws(self):
 #     var ex, results, scheduler, xs
@@ -366,4 +366,4 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }))
 
-#     results.messages.assert_equal(send(210, 2), throw(250, ex))
+#     assert results.messages == [send(210, 2), throw(250, ex)]

@@ -23,7 +23,7 @@ class TestZip(unittest.TestCase):
             return o1.zip(o2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_zip_never_empty(self):
         scheduler = TestScheduler()
@@ -35,7 +35,7 @@ class TestZip(unittest.TestCase):
             return o1.zip(o2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_zip_empty_empty(self):
         scheduler = TestScheduler()
@@ -48,7 +48,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(210))
+        assert results.messages == [close(210)]
 
     def test_zip_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -61,7 +61,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(215))
+        assert results.messages == [close(215)]
 
     def test_zip_non_empty_empty(self):
         scheduler = TestScheduler()
@@ -74,7 +74,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(215))
+        assert results.messages == [close(215)]
 
     def test_zip_never_non_empty(self):
         scheduler = TestScheduler()
@@ -86,7 +86,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_zip_non_empty_never(self):
         scheduler = TestScheduler()
@@ -97,7 +97,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.zip(e2, lambda x, y: x + y)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_zip_non_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -110,7 +110,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2 + 3), close(240))
+        assert results.messages == [send(220, 2 + 3), close(240)]
 
     def test_zip_empty_error(self):
         ex = 'ex'
@@ -124,7 +124,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_error_empty(self):
         ex = 'ex'
@@ -138,7 +138,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_never_error(self):
         ex = 'ex'
@@ -151,7 +151,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_error_never(self):
         ex = 'ex'
@@ -164,7 +164,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_error_error(self):
         ex1 = 'ex1'
@@ -179,7 +179,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex2))
+        assert results.messages == [throw(220, ex2)]
 
     def test_zip_some_error(self):
         ex = 'ex'
@@ -193,7 +193,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_error_some(self):
         ex = 'ex'
@@ -207,7 +207,7 @@ class TestZip(unittest.TestCase):
             return e2.zip(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(220, ex))
+        assert results.messages == [throw(220, ex)]
 
     def test_zip_some_data_asymmetric1(self):
         scheduler = TestScheduler()
@@ -319,7 +319,7 @@ class TestZip(unittest.TestCase):
             return e1.zip(e2, selector)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 2 + 3), throw(230, ex))
+        assert results.messages == [send(220, 2 + 3), throw(230, ex)]
 
     def test_zip_with_enumerable_never_empty(self):
         scheduler = TestScheduler()
@@ -333,8 +333,8 @@ class TestZip(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        n1.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert n1.subscriptions == [subscribe(200, 1000)]
 
     def test_zip_with_enumerable_empty_empty(self):
         scheduler = TestScheduler()
@@ -348,8 +348,8 @@ class TestZip(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(210))
-        n1.subscriptions.assert_equal(subscribe(200, 210))
+        assert results.messages == [close(210)]
+        assert n1.subscriptions == [subscribe(200, 210)]
 
     def test_zip_with_enumerable_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -363,8 +363,8 @@ class TestZip(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(210))
-        n1.subscriptions.assert_equal(subscribe(200, 210))
+        assert results.messages == [close(210)]
+        assert n1.subscriptions == [subscribe(200, 210)]
 
     def test_zip_with_enumerable_non_empty_empty(self):
         scheduler = TestScheduler()
@@ -377,8 +377,8 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(215))
-        n1.subscriptions.assert_equal(subscribe(200, 215))
+        assert results.messages == [close(215)]
+        assert n1.subscriptions == [subscribe(200, 215)]
 
     def test_zip_with_enumerable_never_non_empty(self):
         scheduler = TestScheduler()
@@ -392,8 +392,8 @@ class TestZip(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        n1.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert n1.subscriptions == [subscribe(200, 1000)]
 
     def test_zip_with_enumerable_non_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -406,8 +406,8 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(215, 2 + 3), close(230))
-        n1.subscriptions.assert_equal(subscribe(200, 230))
+        assert results.messages == [send(215, 2 + 3), close(230)]
+        assert n1.subscriptions == [subscribe(200, 230)]
 
     def test_zip_with_enumerable_error_empty(self):
         ex = 'ex'
@@ -421,8 +421,8 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(220, ex))
-        n1.subscriptions.assert_equal(subscribe(200, 220))
+        assert results.messages == [throw(220, ex)]
+        assert n1.subscriptions == [subscribe(200, 220)]
 
     def test_zip_with_enumerable_error_some(self):
         ex = 'ex'
@@ -436,8 +436,8 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(220, ex))
-        n1.subscriptions.assert_equal(subscribe(200, 220))
+        assert results.messages == [throw(220, ex)]
+        assert n1.subscriptions == [subscribe(200, 220)]
 
     def test_zip_with_enumerable_some_data_both_sides(self):
         scheduler = TestScheduler()
@@ -450,8 +450,8 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 7), send(220, 7), send(230, 7), send(240, 7))
-        n1.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(210, 7), send(220, 7), send(230, 7), send(240, 7)]
+        assert n1.subscriptions == [subscribe(200, 1000)]
 
     def test_zip_with_enumerable_selectorthrows(self):
         ex = 'ex'
@@ -467,6 +467,6 @@ class TestZip(unittest.TestCase):
             return n1.zip(n2, selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(215, 2 + 3), throw(225, ex))
-        n1.subscriptions.assert_equal(subscribe(200, 225))
+        assert results.messages == [send(215, 2 + 3), throw(225, ex)]
+        assert n1.subscriptions == [subscribe(200, 225)]
 

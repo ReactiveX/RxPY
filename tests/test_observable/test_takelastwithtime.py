@@ -24,8 +24,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_takelast_zero2(self):
         scheduler = TestScheduler()
@@ -36,8 +36,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_takelast_some1(self):
         scheduler = TestScheduler()
@@ -48,8 +48,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(240, 2), send(240, 3), close(240))
-        xs.subscriptions.assert_equal(subscribe(200, 240))
+        assert res.messages == [send(240, 2), send(240, 3), close(240)]
+        assert xs.subscriptions == [subscribe(200, 240)]
 
     def test_takelast_some2(self):
         scheduler = TestScheduler()
@@ -60,8 +60,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert res.messages == [close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
 
     def test_takelast_some3(self):
         scheduler = TestScheduler()
@@ -72,8 +72,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(300, 6), send(300, 7), send(300, 8), send(300, 9), close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert res.messages == [send(300, 6), send(300, 7), send(300, 8), send(300, 9), close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
 
     def test_takelast_some4(self):
         scheduler = TestScheduler()
@@ -84,8 +84,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(350))
-        xs.subscriptions.assert_equal(subscribe(200, 350))
+        assert res.messages == [close(350)]
+        assert xs.subscriptions == [subscribe(200, 350)]
 
     def test_takelast_all(self):
         scheduler = TestScheduler()
@@ -96,8 +96,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(230, 1), send(230, 2), close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [send(230, 1), send(230, 2), close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_takelast_error(self):
         ex = 'ex'
@@ -109,8 +109,8 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_takelast_never(self):
         scheduler = TestScheduler()
@@ -121,6 +121,6 @@ class TestTakeLast(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 

@@ -90,7 +90,7 @@ class TestGroup_join(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -112,16 +112,13 @@ class TestGroup_join(unittest.TestCase):
             send(732, "7wig"),
             send(732, "8wig"),
             send(830, "9rat"),
-            close(990)
-        )
+            close(990)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 990)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 990)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 990)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 990)]
 
     def test_group_join_op_normal_ii(self):
         scheduler = TestScheduler()
@@ -166,7 +163,7 @@ class TestGroup_join(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -187,16 +184,13 @@ class TestGroup_join(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(910)
-        )
+            close(910)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 910)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 910)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 910)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 910)]
 
     def test_group_join_op_normal_iii(self):
         scheduler = TestScheduler()
@@ -234,7 +228,7 @@ class TestGroup_join(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -256,7 +250,7 @@ class TestGroup_join(unittest.TestCase):
             send(732, "7wig"),
             send(732, "8wig"),
             send(830, "9rat"),
-            close(990))
+            close(990)]
 
     def test_group_join_op_normal_iv(self):
         scheduler = TestScheduler()
@@ -293,7 +287,7 @@ class TestGroup_join(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -314,7 +308,7 @@ class TestGroup_join(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(990))
+            close(990)]
 
     def test_group_join_op_normal_v(self):
         scheduler = TestScheduler()
@@ -351,7 +345,7 @@ class TestGroup_join(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -372,7 +366,7 @@ class TestGroup_join(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(990))
+            close(990)]
 
     def test_group_join_op_normal_vi(self):
         scheduler = TestScheduler()
@@ -409,7 +403,7 @@ class TestGroup_join(unittest.TestCase):
             ).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -430,7 +424,7 @@ class TestGroup_join(unittest.TestCase):
             send(722, "8rat"),
             send(732, "7wig"),
             send(732, "8wig"),
-            close(920))
+            close(920)]
 
     def test_group_join_op_normal_vii(self):
         scheduler = TestScheduler()
@@ -456,7 +450,7 @@ class TestGroup_join(unittest.TestCase):
             ).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(close(210))
+        assert results.messages == [close(210)]
 
     def test_group_join_op_normal_viii(self):
         scheduler = TestScheduler()
@@ -472,7 +466,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)
-        results.messages.assert_equal(send(220, "0hat"))
+        assert results.messages == [send(220, "0hat")]
 
     def test_group_join_op_normal_ix(self):
         scheduler = TestScheduler()
@@ -507,7 +501,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create, disposed=713)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -520,7 +514,7 @@ class TestGroup_join(unittest.TestCase):
             send(702, "6tin"),
             send(710, "7tin"),
             send(712, "6man"),
-            send(712, "7man"))
+            send(712, "7man")]
 
     def test_group_join_op_error_i(self):
         ex = 'ex'
@@ -551,14 +545,14 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
             send(300, "3wag"),
             send(300, "3pig"),
             send(305, "3cup"),
-            throw(310, ex))
+            throw(310, ex)]
 
     def test_group_join_op_error_ii(self):
         ex = 'ex'
@@ -593,7 +587,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -609,7 +603,7 @@ class TestGroup_join(unittest.TestCase):
             send(712, "7man"),
             send(720, "8tin"),
             send(720, "8man"),
-            throw(722, ex))
+            throw(722, ex)]
 
     def test_group_join_op_error_iii(self):
         ex = 'ex'
@@ -646,7 +640,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -665,7 +659,7 @@ class TestGroup_join(unittest.TestCase):
             send(722, "6rat"),
             send(722, "7rat"),
             send(722, "8rat"),
-            throw(725, ex))
+            throw(725, ex)]
 
     def test_group_join_op_error_iv(self):
         ex = 'ex'
@@ -703,7 +697,7 @@ class TestGroup_join(unittest.TestCase):
             ).merge_observable()
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(215, "0hat"),
             send(217, "0bat"),
             send(219, "1hat"),
@@ -719,7 +713,7 @@ class TestGroup_join(unittest.TestCase):
             send(712, "7man"),
             send(720, "8tin"),
             send(720, "8man"),
-            throw(721, ex))
+            throw(721, ex)]
 
     def test_group_join_op_error_v(self):
         ex = 'ex'
@@ -762,7 +756,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_group_join_op_error_vi(self):
         ex = 'ex'
@@ -812,7 +806,7 @@ class TestGroup_join(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(215, ex))
+        assert results.messages == [throw(215, ex)]
 
     def test_group_join_op_error_vii(self):
         ex = 'ex'
@@ -857,7 +851,7 @@ class TestGroup_join(unittest.TestCase):
             ).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(throw(215, ex))
+        assert results.messages == [throw(215, ex)]
 
     def test_group_join_op_error_viii(self):
         ex = 'ex'
@@ -903,7 +897,7 @@ class TestGroup_join(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
 if __name__ == '__main__':
     unittest.main()

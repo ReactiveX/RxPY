@@ -30,14 +30,12 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
         print(res.messages)
-        res.messages.assert_equal(
+        assert res.messages == [
             send(660, {4: 8, 6: 12, 8: 16, 10: 20}),
-            close(660)
-        )
+            close(660)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 660)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 660)]
 
     def test_to_dict_error(self):
         scheduler = TestScheduler()
@@ -58,13 +56,11 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(660, ex)
-        )
+        assert res.messages == [
+            throw(660, ex)]
 
-        xs.subscriptions.assert_equal(
-           subscribe(200, 660)
-        )
+        assert xs.subscriptions == [
+           subscribe(200, 660)]
 
 
     def test_to_dict_keyselectorthrows(self):
@@ -91,13 +87,11 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(440, ex)
-        )
+        assert res.messages == [
+            throw(440, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 440)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 440)]
 
     def test_to_dict_elementselectorthrows(self):
         scheduler = TestScheduler()
@@ -124,13 +118,11 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(440, ex)
-        )
+        assert res.messages == [
+            throw(440, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 440)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 440)]
 
     def test_to_dict_disposed(self):
         scheduler = TestScheduler()
@@ -148,8 +140,7 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
+        assert res.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]

@@ -25,8 +25,8 @@ class TestSubscribeOn(unittest.TestCase):
             return xs.subscribe_on(scheduler)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert results.messages == [send(210, 2), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_subscribe_throw(self):
         scheduler = TestScheduler()
@@ -41,8 +41,8 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert results.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_subscribe_on_empty(self):
         scheduler = TestScheduler()
@@ -56,8 +56,8 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert results.messages == [close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_subscribe_on_never(self):
         scheduler = TestScheduler()
@@ -70,8 +70,8 @@ class TestSubscribeOn(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
 
 if __name__ == '__main__':

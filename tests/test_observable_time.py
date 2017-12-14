@@ -36,7 +36,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(230, function (lst) {
 #         return lst.length === 0
 #     }), close(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
+#     assert xs.subscriptions == [subscribe(200, 230)]
 
 # def test_takeLastBuffer_with_time_Zero2():
 #     var res, scheduler, xs
@@ -48,7 +48,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(230, function (lst) {
 #         return lst.length === 0
 #     }), close(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
+#     assert xs.subscriptions == [subscribe(200, 230)]
 
 
 # function arrayEqual(arr1, arr2) {
@@ -69,7 +69,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(240, function (lst) {
 #         return arrayEqual(lst, [2, 3])
 #     }), close(240))
-#     xs.subscriptions.assert_equal(subscribe(200, 240))
+#     assert xs.subscriptions == [subscribe(200, 240)]
 
 # def test_takeLastBuffer_with_time_Some2():
 #     var res, scheduler, xs
@@ -81,7 +81,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(300, function (lst) {
 #         return lst.length === 0
 #     }), close(300))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
+#     assert xs.subscriptions == [subscribe(200, 300)]
 
 # def test_takeLastBuffer_with_time_Some3():
 #     var res, scheduler, xs
@@ -93,7 +93,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(300, function (lst) {
 #         return arrayEqual(lst, [6, 7, 8, 9])
 #     }), close(300))
-#     xs.subscriptions.assert_equal(subscribe(200, 300))
+#     assert xs.subscriptions == [subscribe(200, 300)]
 
 # def test_takeLastBuffer_with_time_Some4():
 #     var res, scheduler, xs
@@ -105,7 +105,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(350, function (lst) {
 #         return lst.length === 0
 #     }), close(350))
-#     xs.subscriptions.assert_equal(subscribe(200, 350))
+#     assert xs.subscriptions == [subscribe(200, 350)]
 
 # def test_takeLastBuffer_with_time_All():
 #     var res, scheduler, xs
@@ -117,7 +117,7 @@ def _raise(ex):
 #     res.messages.assert_equal(send(230, function (lst) {
 #         return arrayEqual(lst, [1, 2])
 #     }), close(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
+#     assert xs.subscriptions == [subscribe(200, 230)]
 
 # def test_takeLastBuffer_with_time_Error():
 #     var ex, res, scheduler, xs
@@ -127,8 +127,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeLastBuffer_with_time(50, scheduler)
 
-#     res.messages.assert_equal(throw(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
+#     assert res.messages == [throw(210, ex)]
+#     assert xs.subscriptions == [subscribe(200, 210)]
 
 # def test_takeLastBuffer_with_time_Never():
 #     var res, scheduler, xs
@@ -137,8 +137,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeLastBuffer_with_time(50, scheduler)
 
-#     res.messages.assert_equal()
-#     xs.subscriptions.assert_equal(subscribe(200, 1000))
+#     assert res.messages == []
+#     assert xs.subscriptions == [subscribe(200, 1000)]
 
 # def test_Take_Zero():
 #     var res, scheduler, xs
@@ -147,8 +147,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(0, scheduler)
 
-#     res.messages.assert_equal(close(201))
-#     xs.subscriptions.assert_equal(subscribe(200, 201))
+#     assert res.messages == [close(201)]
+#     assert xs.subscriptions == [subscribe(200, 201)]
 
 # def test_Take_Some():
 #     var res, scheduler, xs
@@ -157,8 +157,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(25, scheduler)
 
-#     res.messages.assert_equal(send(210, 1), send(220, 2), close(225))
-#     xs.subscriptions.assert_equal(subscribe(200, 225))
+#     assert res.messages == [send(210, 1), send(220, 2), close(225)]
+#     assert xs.subscriptions == [subscribe(200, 225)]
 
 # def test_Take_Late():
 #     var res, scheduler, xs
@@ -167,8 +167,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(50, scheduler)
 
-#     res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
-#     xs.subscriptions.assert_equal(subscribe(200, 230))
+#     assert res.messages == [send(210, 1), send(220, 2), close(230)]
+#     assert xs.subscriptions == [subscribe(200, 230)]
 
 # def test_Take_Error():
 #     var ex, res, scheduler, xs
@@ -178,8 +178,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(50, scheduler)
 
-#     res.messages.assert_equal(throw(210, ex))
-#     xs.subscriptions.assert_equal(subscribe(200, 210))
+#     assert res.messages == [throw(210, ex)]
+#     assert xs.subscriptions == [subscribe(200, 210)]
 
 # def test_Take_Never():
 #     var res, scheduler, xs
@@ -188,8 +188,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(50, scheduler)
 
-#     res.messages.assert_equal(close(250))
-#     xs.subscriptions.assert_equal(subscribe(200, 250))
+#     assert res.messages == [close(250)]
+#     assert xs.subscriptions == [subscribe(200, 250)]
 
 # def test_Take_Twice1():
 #     var res, scheduler, xs
@@ -198,8 +198,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(55, scheduler).takeWithTime(35, scheduler)
 
-#     res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
+#     assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]
+#     assert xs.subscriptions == [subscribe(200, 235)]
 
 # def test_Take_Twice2():
 #     var res, scheduler, xs
@@ -208,8 +208,8 @@ def _raise(ex):
 #     res = scheduler.start(create)
 #         return xs.takeWithTime(35, scheduler).takeWithTime(55, scheduler)
 
-#     res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
-#     xs.subscriptions.assert_equal(subscribe(200, 235))
+#     assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]
+#     assert xs.subscriptions == [subscribe(200, 235)]
 
 
 

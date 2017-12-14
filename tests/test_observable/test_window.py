@@ -31,8 +31,8 @@ class TestWindow(unittest.TestCase):
             return xs.window(closing).map_indexed(selector).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_closings_dispose(self):
         scheduler = TestScheduler()
@@ -52,8 +52,8 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create, disposed=400)
 
-        results.messages.assert_equal(send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6")]
+        assert xs.subscriptions == [subscribe(200, 400)]
 
 
     def test_window_closings_error(self):
@@ -75,8 +75,8 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), throw(590, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), throw(590, ex)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_closings_throw(self):
         ex = 'ex'
@@ -95,8 +95,8 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(200, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 200))
+        assert results.messages == [throw(200, ex)]
+        assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_window_close_error(self):
         ex = 'ex'
@@ -114,8 +114,8 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(200, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 200))
+        assert results.messages == [throw(200, ex)]
+        assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_default(self):
         scheduler = TestScheduler()
@@ -134,8 +134,8 @@ class TestWindow(unittest.TestCase):
             return xs.window(window_closing_selector=closings).map_indexed(selector).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_opening_closings_basic(self):
         scheduler = TestScheduler()
@@ -152,9 +152,9 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map_indexed(selector).merge_observable()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), send(420, "1 8"), send(420, "3 8"), send(470, "3 9"), close(900))
-        xs.subscriptions.assert_equal(subscribe(200, 900))
-        ys.subscriptions.assert_equal(subscribe(200, 900))
+        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), send(420, "1 8"), send(420, "3 8"), send(470, "3 9"), close(900)]
+        assert xs.subscriptions == [subscribe(200, 900)]
+        assert ys.subscriptions == [subscribe(200, 900)]
 
     def test_window_opening_closings_throw(self):
         ex = 'ex'
@@ -173,9 +173,9 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(throw(255, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 255))
-        ys.subscriptions.assert_equal(subscribe(200, 255))
+        assert results.messages == [throw(255, ex)]
+        assert xs.subscriptions == [subscribe(200, 255)]
+        assert ys.subscriptions == [subscribe(200, 255)]
 
     def test_window_opening_closings_dispose(self):
         scheduler = TestScheduler()
@@ -191,9 +191,9 @@ class TestWindow(unittest.TestCase):
 
             return xs.window(ys, closing).map_indexed(selector).merge_observable()
         results = scheduler.start(create=create, disposed=415)
-        results.messages.assert_equal(send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7")]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_data_error(self):
         ex = 'ex'
@@ -211,9 +211,9 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map_indexed(selector).merge_observable()
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_window_error(self):
         ex = 'ex'
@@ -230,9 +230,9 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map_indexed(selector).merge_observable()
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_boundaries_simple(self):
         scheduler = TestScheduler()
@@ -266,7 +266,7 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys).map_indexed(selector).merge_observable()
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(250, "0 3"),
             send(260, "1 4"),
             send(310, "1 5"),
@@ -275,16 +275,13 @@ class TestWindow(unittest.TestCase):
             send(420, "4 8"),
             send(470, "4 9"),
             send(550, "5 10"),
-            close(590)
-        )
+            close(590)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 590)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 590)]
 
     def test_window_boundaries_close_boundaries(self):
         scheduler = TestScheduler()
@@ -317,21 +314,18 @@ class TestWindow(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 send(250, "0 3"),
                 send(260, "1 4"),
                 send(310, "1 5"),
                 send(340, "2 6"),
-                close(400)
-        )
+                close(400)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
     def test_window_boundaries_throwSource(self):
         ex = 'ex'
@@ -361,22 +355,19 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys).map_indexed(selector).merge_observable()
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 send(250, "0 3"),
                 send(260, "1 4"),
                 send(310, "1 5"),
                 send(340, "2 6"),
                 send(380, "3 7"),
-                throw(400, ex)
-        )
+                throw(400, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
     def test_window_boundaries_throw_boundaries(self):
         ex = 'ex'
@@ -409,21 +400,18 @@ class TestWindow(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 send(250, "0 3"),
                 send(260, "1 4"),
                 send(310, "1 5"),
                 send(340, "2 6"),
-                throw(400, ex)
-        )
+                throw(400, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
 if __name__ == '__main__':
     unittest.main()

@@ -24,7 +24,7 @@ class TestScan(unittest.TestCase):
             return Observable.never().scan(seed=seed, accumulator=func)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_scan_seed_empty(self):
         scheduler = TestScheduler()
@@ -87,7 +87,7 @@ class TestScan(unittest.TestCase):
             return Observable.never().scan(lambda acc, x: acc + x)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_scan_noseed_empty(self):
         scheduler = TestScheduler()

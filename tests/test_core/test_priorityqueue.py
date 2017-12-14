@@ -17,8 +17,11 @@ class TestItem():
         else:
             return "%s" % self.value
 
+    def __repr__(self):
+        return str(self)
+
     def __eq__(self, other):
-        return self.value == other.value
+        return self.value == other.value #and self.label == other.label
 
     def __lt__(self, other):
         return self.value < other.value
@@ -26,9 +29,9 @@ class TestItem():
     def __gt__(self, other):
         return self.value > other.value
 
-    def assert_equal(self, other):
-        assert(self.value == other.value)
-        assert(self.label == other.label)
+    #def assert_equal(self, other):
+    #    assert(self.value == other.value)
+    #    assert(self.label == other.label)
 
 class TestPriorityQueue(unittest.TestCase):
     def test_priorityqueue_empty(self):
@@ -48,17 +51,17 @@ class TestPriorityQueue(unittest.TestCase):
 
         p = PriorityQueue()
 
-        assert(len(p) == 0)
+        assert len(p) == 0
         for n in range(42):
             p.enqueue(n)
-        assert(len(p) == 42)
+        assert len(p) == 42
         p.dequeue()
-        assert(len(p) == 41)
+        assert len(p) == 41
         p.remove(10)
-        assert(len(p) == 40)
+        assert len(p) == 40
         for n in range(len(p)):
             p.dequeue()
-        assert(len(p) == 0)
+        assert len(p) == 0
 
     def test_priorityqueue_enqueue_dequeue(self):
         """Enqueue followed by dequeue should give the same result"""
@@ -84,13 +87,13 @@ class TestPriorityQueue(unittest.TestCase):
         p.enqueue(TestItem(42, "last"))
         p.enqueue(TestItem(41, "low"))
 
-        assert(len(p) == 5)
+        assert len(p) == 5
 
-        p.dequeue().assert_equal(TestItem(41, "low"))
-        p.dequeue().assert_equal(TestItem(42, "first"))
-        p.dequeue().assert_equal(TestItem(42, "second"))
-        p.dequeue().assert_equal(TestItem(42, "last"))
-        p.dequeue().assert_equal(TestItem(43, "high"))
+        assert p.dequeue() == TestItem(41, "low")
+        assert p.dequeue() == TestItem(42, "first")
+        assert p.dequeue() == TestItem(42, "second")
+        assert p.dequeue() == TestItem(42, "last")
+        assert p.dequeue() == TestItem(43, "high")
 
     def test_priorityqueue_remove(self):
         """Remove item from queue"""
@@ -101,20 +104,20 @@ class TestPriorityQueue(unittest.TestCase):
         p.enqueue(42)
         p.enqueue(41)
         p.enqueue(43)
-        assert(p.remove(42) == True)
-        assert([p.dequeue(), p.dequeue()] == [41, 43])
+        assert p.remove(42) == True
+        assert [p.dequeue(), p.dequeue()] == [41, 43]
 
         p.enqueue(42)
         p.enqueue(41)
         p.enqueue(43)
-        assert(p.remove(41) == True)
-        assert([p.dequeue(), p.dequeue()] == [42, 43])
+        assert p.remove(41) == True
+        assert [p.dequeue(), p.dequeue()] == [42, 43]
 
         p.enqueue(42)
         p.enqueue(41)
         p.enqueue(43)
-        assert(p.remove(43) == True)
-        assert([p.dequeue(), p.dequeue()] == [41, 42])
+        assert p.remove(43) == True
+        assert [p.dequeue(), p.dequeue()] == [41, 42]
 
     def test_priorityqueue_peek(self):
         """Peek at first element in queue"""
@@ -123,11 +126,11 @@ class TestPriorityQueue(unittest.TestCase):
 
         self.assertRaises(InvalidOperationException, p.peek)
         p.enqueue(42)
-        assert(p.peek() == 42)
+        assert p.peek() == 42
         p.enqueue(41)
-        assert(p.peek() == 41)
+        assert p.peek() == 41
         p.enqueue(43)
-        assert(p.peek() == 41)
+        assert p.peek() == 41
 
     def test_priorityqueue_remove_at(self):
         """Remove item at index"""
@@ -139,7 +142,7 @@ class TestPriorityQueue(unittest.TestCase):
         p.enqueue(41)
         p.enqueue(43)
 
-        assert(p.remove_at(2) == 43)
-        assert(p.remove_at(1) == 42)
-        assert(p.remove_at(0) == 41)
+        assert p.remove_at(2) == 43
+        assert p.remove_at(1) == 42
+        assert p.remove_at(0) == 41
         self.assertRaises(IndexError, p.remove_at, 0)

@@ -29,7 +29,7 @@ class TestEmpty(unittest.TestCase):
             return Observable.empty()
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_empty_disposed(self):
         scheduler = TestScheduler()
@@ -38,7 +38,7 @@ class TestEmpty(unittest.TestCase):
             return Observable.empty()
 
         results = scheduler.start(factory, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_empty_observer_throw_exception(self):
         scheduler = TestScheduler()

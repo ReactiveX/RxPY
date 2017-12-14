@@ -34,7 +34,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 1), send(200, 2))
+        assert results.messages == [send(200, 1), send(200, 2)]
 
     def test_create_completed(self):
         scheduler = TestScheduler()
@@ -49,7 +49,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_create_error(self):
         scheduler = TestScheduler()
@@ -65,7 +65,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_create_exception(self):
         with self.assertRaises(RxException):
@@ -106,7 +106,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(200, 1), send(200, 2), send(800, 3), send(900, 4))
+        assert results.messages == [send(200, 1), send(200, 2), send(800, 3), send(900, 4)]
 
     def test_create_observer_throws(self):
         def subscribe(o, observer=None):
@@ -140,7 +140,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create_with_disposable(subscribe)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(200, 1), send(200, 2))
+        assert results.messages == [send(200, 1), send(200, 2)]
 
     def test_create_with_disposable_completed(self):
         scheduler = TestScheduler()
@@ -154,7 +154,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create_with_disposable(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(200))
+        assert results.messages == [close(200)]
 
     def test_create_with_disposable_error(self):
         scheduler = TestScheduler()
@@ -170,7 +170,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create_with_disposable(subscribe)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(throw(200, ex))
+        assert results.messages == [throw(200, ex)]
 
     def test_create_with_disposable_exception(self):
         with self.assertRaises(RxException):
@@ -210,7 +210,7 @@ class TestCreate(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(200, 1), send(200, 2), send(800, 3), send(900, 4))
+        assert results.messages == [send(200, 1), send(200, 2), send(800, 3), send(900, 4)]
 
 
     def test_create_with_disposable_observer_throws(self):

@@ -36,10 +36,9 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, 1),
-            close(220)
-        )
+            close(220)]
 
     def test_then1_error(self):
         ex = Exception()
@@ -57,9 +56,8 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            throw(210, ex)
-       )
+        assert results.messages == [
+            throw(210, ex)]
 
     def test_then1_throws(self):
         ex = Exception()
@@ -78,9 +76,8 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            throw(210, ex)
-        )
+        assert results.messages == [
+            throw(210, ex)]
 
     def test_and2(self):
         scheduler = TestScheduler()
@@ -96,10 +93,9 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).then_do(selector))
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, N),
-            close(220)
-        )
+            close(220)]
 
     def test_and2_error(self):
         ex = Exception()
@@ -122,9 +118,8 @@ class TestWhen(unittest.TestCase):
 
             results = scheduler.start(create)
 
-            results.messages.assert_equal(
-                throw(210, ex)
-            )
+            assert results.messages == [
+                throw(210, ex)]
 
     def test_then2_throws(self):
         scheduler = TestScheduler()
@@ -142,9 +137,8 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            throw(210, ex)
-        )
+        assert results.messages == [
+            throw(210, ex)]
 
     def test_and3(self):
         scheduler = TestScheduler()
@@ -161,10 +155,9 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(210, N),
-            close(220)
-        )
+            close(220)]
 
     def test_and3_error(self):
         ex = Exception()
@@ -186,9 +179,8 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(selector))
             results = scheduler.start(create)
 
-            results.messages.assert_equal(
-                throw(210, ex)
-            )
+            assert results.messages == [
+                throw(210, ex)]
 
 
     def test_then3_throws(self):
@@ -208,9 +200,8 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            throw(210, ex)
-        )
+        assert results.messages == [
+            throw(210, ex)]
 
     def test_and4(self):
         N = 4
@@ -225,7 +216,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
     def test_and4_error(self):
         ex = 'ex'
@@ -246,7 +237,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
 
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_then4_throws(self):
         ex = 'ex'
@@ -262,7 +253,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_and5(self):
         N = 5
@@ -277,7 +268,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
     def test_and5_error(self):
         ex = 'ex'
@@ -297,7 +288,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
 
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_then5_throws(self):
         ex = 'ex'
@@ -313,7 +304,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_and6(self):
         N = 6
@@ -328,7 +319,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
     def test_and6_error(self):
         ex = 'ex'
@@ -348,7 +339,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
 
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_Then6Throws(self):
         ex = 'ex'
@@ -365,7 +356,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_and7(self):
         N = 7
@@ -380,7 +371,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
 
     def test_and7_error(self):
@@ -401,7 +392,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_then7_throws(self):
         ex = 'ex'
@@ -418,7 +409,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
 
     def test_and8(self):
@@ -434,7 +425,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
     def test_and8_error(self):
         ex = 'ex'
@@ -453,7 +444,7 @@ class TestWhen(unittest.TestCase):
                     return a + b + c + d + e + f + g + h
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_then8_throws(self):
         ex = 'ex'
@@ -470,7 +461,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_And9(self):
         N = 9
@@ -484,7 +475,7 @@ class TestWhen(unittest.TestCase):
                 return a + b + c + d + e + f + g + h + _i
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, N), close(220))
+        assert results.messages == [send(210, N), close(220)]
 
     def test_and9_error(self):
         ex = 'ex'
@@ -504,7 +495,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
 
             results = scheduler.start(create)
-            results.messages.assert_equal(throw(210, ex))
+            assert results.messages == [throw(210, ex)]
 
     def test_then9_throws(self):
         ex = 'ex'
@@ -520,7 +511,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_WhenMultipleDataSymmetric(self):
         scheduler = TestScheduler()
@@ -546,12 +537,11 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(240, 1 + 4),
             send(250, 2 + 5),
             send(260, 3 + 6),
-            close(270)
-        )
+            close(270)]
 
     def test_WhenMultipleDataAsymmetric(self):
         scheduler = TestScheduler()
@@ -576,11 +566,10 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(240, 1 + 4),
             send(250, 2 + 5),
-            close(270)
-        )
+            close(270)]
 
     def test_when_empty_empty(self):
         scheduler = TestScheduler()
@@ -593,7 +582,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(close(270))
+        assert results.messages == [close(270)]
 
     def test_when_never_never(self):
         scheduler = TestScheduler()
@@ -606,7 +595,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_when_throw_non_empty(self):
         ex = 'ex'
@@ -620,7 +609,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(selector))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(240, ex))
+        assert results.messages == [throw(240, ex)]
 
     def test_complicated_when(self):
         scheduler = TestScheduler()
@@ -638,7 +627,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(sel1), xs.and_(zs).then_do(sel2), ys.and_(zs).then_do(sel3))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(220, 1 * 7), send(230, 2 * 8), send(240, 3 + 4), send(250, 5 - 9), close(300))
+        assert results.messages == [send(220, 1 * 7), send(230, 2 * 8), send(240, 3 + 4), send(250, 5 - 9), close(300)]
 
 if __name__ == '__main__':
     unittest.main()

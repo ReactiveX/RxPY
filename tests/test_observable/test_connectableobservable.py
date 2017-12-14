@@ -84,13 +84,12 @@ class TestConnectableObservable(unittest.TestCase):
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(210, 1),
             send(220, 2),
             send(230, 3),
             send(240, 4),
-            close(250)
-        )
+            close(250)]
 
     def test_connectable_observable_not_connected(self):
         scheduler = TestScheduler()
@@ -109,8 +108,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal(
-        )
+        assert res.messages == []
 
     def test_connectable_observable_disconnected(self):
         scheduler = TestScheduler()
@@ -131,7 +129,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal()
+        assert res.messages == []
 
     def test_connectable_observable_disconnect_future(self):
         scheduler = TestScheduler()
@@ -151,11 +149,10 @@ class TestConnectableObservable(unittest.TestCase):
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(210, 1),
             send(220, 2),
-            send(230, 3)
-        )
+            send(230, 3)]
 
     def test_connectable_observable_multiple_non_overlapped_connections(self):
         scheduler = TestScheduler()
@@ -226,16 +223,14 @@ class TestConnectableObservable(unittest.TestCase):
 
         res = scheduler.start(lambda: conn)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(230, 3),
             send(240, 4),
             send(250, 5),
             send(280, 8),
-            send(290, 9)
-        )
+            send(290, 9)]
 
-        xs.subscriptions.assert_equal(
+        assert xs.subscriptions == [
             subscribe(225, 241),
             subscribe(249, 255),
-            subscribe(275, 295)
-        )
+            subscribe(275, 295)]

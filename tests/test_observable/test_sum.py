@@ -20,7 +20,7 @@ class TestSum(unittest.TestCase):
             return xs.sum()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(250, 0), close(250))
+        assert res == [send(250, 0), close(250)]
 
     def test_sum_int32_return(self):
         scheduler = TestScheduler()
@@ -29,7 +29,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(250, 2), close(250))
+        assert res == [send(250, 2), close(250)]
 
     def test_sum_int32_some(self):
         scheduler = TestScheduler()
@@ -37,7 +37,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(250, 2 + 3 + 4), close(250))
+        assert res == [send(250, 2 + 3 + 4), close(250)]
 
     def test_sum_int32_throw(self):
         ex = 'ex'
@@ -47,7 +47,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(throw(210, ex))
+        assert res == [throw(210, ex)]
 
     def test_sum_int32_never(self):
         scheduler = TestScheduler()
@@ -55,7 +55,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_sum_selector_regular_int32(self):
         scheduler = TestScheduler()
@@ -66,5 +66,5 @@ class TestSum(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(240, 6), close(240))
-        xs.subscriptions.assert_equal(subscribe(200, 240))
+        assert res.messages == [send(240, 6), close(240)]
+        assert xs.subscriptions == [subscribe(200, 240)]

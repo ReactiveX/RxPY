@@ -20,25 +20,24 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(250, lambda e: e))
-
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert [throw(250, lambda e: e)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_first_async_one(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
         res = scheduler.start(lambda: xs.first())
 
-        res.messages.assert_equal(send(210, 2), close(210))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [send(210, 2), close(210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_async_many(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), close(250))
         res = scheduler.start(lambda: xs.first())
 
-        res.messages.assert_equal(send(210, 2), close(210))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [send(210, 2), close(210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_async_error(self):
         ex = 'ex'
@@ -46,8 +45,8 @@ class TestFirst(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex))
         res = scheduler.start(lambda: xs.first())
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_async_predicate(self):
         scheduler = TestScheduler()
@@ -57,8 +56,8 @@ class TestFirst(unittest.TestCase):
             return xs.first(lambda x: x % 2 == 1)
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(220, 3), close(220))
-        xs.subscriptions.assert_equal(subscribe(200, 220))
+        assert res.messages == [send(220, 3), close(220)]
+        assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_first_async_predicate_none(self):
         scheduler = TestScheduler()
@@ -69,8 +68,8 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(250, lambda e: e))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert [throw(250, lambda e: e)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 250)]
 
 
     def test_first_async_predicate_throw(self):
@@ -83,8 +82,8 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(220, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 220))
+        assert res.messages == [throw(220, ex)]
+        assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_first_async_predicate_throws(self):
         ex = 'ex'
@@ -102,8 +101,8 @@ class TestFirst(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(230, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [throw(230, ex)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
 if __name__ == '__main__':
     unittest.main()

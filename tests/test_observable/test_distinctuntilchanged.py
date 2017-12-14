@@ -29,7 +29,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return Observable.never().distinct_until_changed()
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_distinct_until_changed_empty(self):
         scheduler = TestScheduler()
@@ -162,7 +162,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         def create():
             return xs.distinct_until_changed(lambda x: _raise(ex))
         results = scheduler.start(create)
-        results.messages.assert_equal(throw(210, ex))
+        assert results.messages == [throw(210, ex)]
 
     def test_distinct_until_changed_comparer_throws(self):
         ex = 'ex'
@@ -173,4 +173,4 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return xs.distinct_until_changed(comparer=lambda x,y: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(send(210, 2), throw(220, ex))
+        assert results.messages == [send(210, 2), throw(220, ex)]

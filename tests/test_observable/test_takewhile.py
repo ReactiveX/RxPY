@@ -25,8 +25,8 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(predicate)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 2), send(260, 5), send(290, 13), send(320, 3), close(330))
-        xs.subscriptions.assert_equal(subscribe(200, 330))
+        assert results.messages == [send(210, 2), send(260, 5), send(290, 13), send(320, 3), close(330)]
+        assert xs.subscriptions == [subscribe(200, 330)]
         assert(invoked[0] == 4)
 
     def test_take_while_complete_after(self):
@@ -41,8 +41,8 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(predicate)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
         assert(invoked[0] == 6)
 
     def test_take_while_error_before(self):
@@ -58,8 +58,8 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(predicate)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 2), send(260, 5), throw(270, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+        assert results.messages == [send(210, 2), send(260, 5), throw(270, ex)]
+        assert xs.subscriptions == [subscribe(200, 270)]
         assert(invoked[0] == 2)
 
     def test_take_while_error_after(self):
@@ -74,8 +74,8 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(predicate)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
         assert(invoked[0] == 6)
 
     def test_take_while_dispose_before(self):
@@ -89,8 +89,8 @@ class TestTakeWhile(unittest.TestCase):
                 return is_prime(x)
             return xs.take_while(predicate)
         results = scheduler.start(create, disposed=300)
-        results.messages.assert_equal(send(210, 2), send(260, 5), send(290, 13))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
+        assert results.messages == [send(210, 2), send(260, 5), send(290, 13)]
+        assert xs.subscriptions == [subscribe(200, 300)]
         assert(invoked[0] == 3)
 
     def test_take_while_dispose_after(self):
@@ -104,8 +104,8 @@ class TestTakeWhile(unittest.TestCase):
                 return is_prime(x)
             return xs.take_while(predicate)
         results = scheduler.start(create, disposed=400)
-        results.messages.assert_equal(send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
         assert(invoked[0] == 6)
 
     def test_take_while_zero(self):
@@ -119,8 +119,8 @@ class TestTakeWhile(unittest.TestCase):
                 return is_prime(x)
             return xs.take_while(predicate)
         results = scheduler.start(create, disposed=300)
-        results.messages.assert_equal(close(205))
-        xs.subscriptions.assert_equal(subscribe(200, 205))
+        assert results.messages == [close(205)]
+        assert xs.subscriptions == [subscribe(200, 205)]
         assert (invoked[0] == 1)
 
     def test_take_while_throw(self):
@@ -139,8 +139,8 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(predicate)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(210, 2), send(260, 5), throw(290, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 290))
+        assert results.messages == [send(210, 2), send(260, 5), throw(290, ex)]
+        assert xs.subscriptions == [subscribe(200, 290)]
         assert(invoked[0] == 3)
 
     def test_take_while_index(self):
@@ -151,5 +151,5 @@ class TestTakeWhile(unittest.TestCase):
             return xs.take_while(lambda x, i: i < 5)
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(send(205, 100), send(210, 2), send(260, 5), send(290, 13), send(320, 3), close(350))
-        xs.subscriptions.assert_equal(subscribe(200, 350))
+        assert results.messages == [send(205, 100), send(210, 2), send(260, 5), send(290, 13), send(320, 3), close(350)]
+        assert xs.subscriptions == [subscribe(200, 350)]

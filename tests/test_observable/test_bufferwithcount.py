@@ -31,13 +31,13 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            send(280, str([2,3,4])),
-            send(350, str([4,5,6])),
-            send(420, str([6,7,8])),
-            send(600, str([8,9])),
-            close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [
+            send(280, str([2, 3, 4])),
+            send(350, str([4, 5, 6])),
+            send(420, str([6, 7, 8])),
+            send(600, str([8, 9])),
+            close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_count_disposed(self):
         scheduler = TestScheduler()
@@ -58,9 +58,9 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create, disposed=370)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(280, str([2, 3, 4])),
-            send(350, str([4, 5, 6])))
-        xs.subscriptions.assert_equal(subscribe(200, 370))
+            send(350, str([4, 5, 6]))]
+        assert xs.subscriptions == [subscribe(200, 370)]
 
 

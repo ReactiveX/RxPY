@@ -69,10 +69,9 @@ class TestStart(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, None),
-            close(200)
-        )
+            close(200)]
 
         assert(done)
 
@@ -86,10 +85,9 @@ class TestStart(unittest.TestCase):
             return Observable.start(func, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(200, 1),
-            close(200)
-        )
+            close(200)]
 
     def test_start_funcerror(self):
         ex = Exception()
@@ -102,6 +100,5 @@ class TestStart(unittest.TestCase):
             return Observable.start(func, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            throw(200, ex)
-        )
+        assert res.messages == [
+            throw(200, ex)]

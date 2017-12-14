@@ -52,12 +52,11 @@ class TestMulticast(unittest.TestCase):
 
         scheduler.start()
 
-        o.messages.assert_equal(
+        assert o.messages == [
             send(210, 3),
             send(240, 4),
-            send(270, 5)
-        )
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+            send(270, 5)]
+        assert xs.subscriptions == [subscribe(200, 390)]
 
     def test_multicast_hot_2(self):
         c = [None]
@@ -85,8 +84,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(300, action3)
 
         scheduler.start()
-        o.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5))
-        xs.subscriptions.assert_equal(subscribe(100, 390))
+        assert o.messages == [send(210, 3), send(240, 4), send(270, 5)]
+        assert xs.subscriptions == [subscribe(100, 390)]
 
     def test_multicast_hot_21(self):
         c = [None]
@@ -114,8 +113,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(300, action3)
 
         scheduler.start()
-        o.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5))
-        xs.subscriptions.assert_equal(subscribe(100, 390))
+        assert o.messages == [send(210, 3), send(240, 4), send(270, 5)]
+        assert xs.subscriptions == [subscribe(100, 390)]
 
     def test_multicast_hot_3(self):
         c = [None]
@@ -147,8 +146,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(335, action4)
 
         scheduler.start()
-        o.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5), send(340, 7), close(390))
-        xs.subscriptions.assert_equal(subscribe(100, 300), subscribe(335, 390))
+        assert o.messages == [send(210, 3), send(240, 4), send(270, 5), send(340, 7), close(390)]
+        assert xs.subscriptions == [subscribe(100, 300), subscribe(335, 390)]
 
     def test_multicast_hot_4(self):
         c = [None]
@@ -181,8 +180,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(335, action4)
 
         scheduler.start()
-        o.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5), send(340, 7), throw(390, ex))
-        xs.subscriptions.assert_equal(subscribe(100, 300), subscribe(335, 390))
+        assert o.messages == [send(210, 3), send(240, 4), send(270, 5), send(340, 7), throw(390, ex)]
+        assert xs.subscriptions == [subscribe(100, 300), subscribe(335, 390)]
 
     def test_multicast_hot_5(self):
         c = [None]
@@ -207,8 +206,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
-        o.messages.assert_equal(throw(400, ex))
-        xs.subscriptions.assert_equal(subscribe(100, 390))
+        assert o.messages == [throw(400, ex)]
+        assert xs.subscriptions == [subscribe(100, 390)]
 
     def test_multicast_hot_6(self):
         c = [None]
@@ -233,8 +232,8 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
-        o.messages.assert_equal(close(400))
-        xs.subscriptions.assert_equal(subscribe(100, 390))
+        assert o.messages == [close(400)]
+        assert xs.subscriptions == [subscribe(100, 390)]
 
     def test_multicast_cold_completed(self):
         scheduler = TestScheduler()
@@ -248,8 +247,8 @@ class TestMulticast(unittest.TestCase):
             return xs.multicast(subject_selector=subject_selector, selector=selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
 
     def test_multicast_cold_error(self):
         ex = 'ex'
@@ -265,8 +264,8 @@ class TestMulticast(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), throw(390, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), throw(390, ex)]
+        assert xs.subscriptions == [subscribe(200, 390)]
 
     def test_multicast_cold_dispose(self):
         scheduler = TestScheduler()
@@ -281,8 +280,8 @@ class TestMulticast(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert results.messages == [send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_multicast_cold_zip(self):
         scheduler = TestScheduler()
@@ -296,5 +295,5 @@ class TestMulticast(unittest.TestCase):
             return xs.multicast(subject_selector=subject_selector, selector=selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 6), send(240, 8), send(270, 10), send(330, 12), send(340, 14), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+        assert results.messages == [send(210, 6), send(240, 8), send(270, 10), send(330, 12), send(340, 14), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]

@@ -20,8 +20,8 @@ class TestIsEmpty(unittest.TestCase):
             return xs.is_empty()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(250, True), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res == [send(250, True), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_is_empty_return(self):
         scheduler = TestScheduler()
@@ -30,8 +30,8 @@ class TestIsEmpty(unittest.TestCase):
         def create():
             return xs.is_empty()
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(210, False), close(210))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res == [send(210, False), close(210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_is_empty_throw(self):
         ex = 'ex'
@@ -41,8 +41,8 @@ class TestIsEmpty(unittest.TestCase):
         def create():
             return xs.is_empty()
         res = scheduler.start(create=create).messages
-        res.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_is_empty_never(self):
         scheduler = TestScheduler()
@@ -50,6 +50,6 @@ class TestIsEmpty(unittest.TestCase):
         def create():
             return xs.is_empty()
         res = scheduler.start(create=create).messages
-        res.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 

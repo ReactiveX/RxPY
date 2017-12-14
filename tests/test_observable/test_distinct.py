@@ -31,8 +31,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 4), send(300, 2), send(350, 1), send(380, 3), send(400, 5), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 4), send(300, 2), send(350, 1), send(380, 3), send(400, 5), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_distinct_default_comparer_some_duplicates(self):
         scheduler = TestScheduler()
@@ -43,8 +43,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 4), send(300, 2), send(380, 3), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 4), send(300, 2), send(380, 3), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_distinct_key_selector_all_distinct(self):
         scheduler = TestScheduler()
@@ -57,8 +57,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 8), send(300, 4), send(350, 2), send(380, 6), send(400, 10), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 8), send(300, 4), send(350, 2), send(380, 6), send(400, 10), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_distinct_key_selector_some_duplicates(self):
         scheduler = TestScheduler()
@@ -71,8 +71,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return xs.distinct(key_selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 4), send(300, 2), send(380, 7), close(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [send(280, 4), send(300, 2), send(380, 7), close(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_distinct_key_selector_throws(self):
         ex = 'ex'
@@ -90,5 +90,5 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(280, 3), send(350, 1), throw(380, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 380))
+        assert results.messages == [send(280, 3), send(350, 1), throw(380, ex)]
+        assert xs.subscriptions == [subscribe(200, 380)]

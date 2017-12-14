@@ -82,12 +82,12 @@ class TestPublish(unittest.TestCase):
             return xs.publish(selector=selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, 6),
+        assert results.messages == [send(210, 6),
             send(240, 8),
             send(270, 10),
             send(330, 12),
-            send(340, 14), close(390))
-        xs.subscriptions.assert_equal(subscribe(200, 390))
+            send(340, 14), close(390)]
+        assert xs.subscriptions == [subscribe(200, 390)]
 
     def test_ref_count_connects_on_first(self):
         scheduler = TestScheduler()
@@ -106,13 +106,12 @@ class TestPublish(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             send(210, 1),
             send(220, 2),
             send(230, 3),
             send(240, 4),
-            close(250)
-        )
+            close(250)]
         assert(subject.disposed)
 
     def test_ref_count_notconnected(self):
@@ -214,14 +213,13 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(800, action8)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             send(340, 8),
             send(360, 5),
             send(370, 6),
             send(390, 7),
-            send(520, 11)
-        )
-        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 550), subscribe(650, 800))
+            send(520, 11)]
+        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 550), subscribe(650, 800)]
 
     def test_publish_error(self):
         ex = 'ex'
@@ -276,15 +274,15 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(800, action6)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             send(340, 8),
             send(360, 5),
             send(370, 6),
             send(390, 7),
             send(520, 11),
             send(560, 20),
-            throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
+            throw(600, ex)]
+        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 600)]
 
     def test_publish_complete(self):
         connection = [None]
@@ -338,15 +336,15 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(800, action6)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             send(340, 8),
             send(360, 5),
             send(370, 6),
             send(390, 7),
             send(520, 11),
             send(560, 20),
-            close(600))
-        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
+            close(600)]
+        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 600)]
 
     def test_publish_dispose(self):
         connection = [None]
@@ -408,11 +406,11 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(800, action8)
 
         scheduler.start()
-        results.messages.assert_equal(send(340, 8))
-        xs.subscriptions.assert_equal(
+        assert results.messages == [send(340, 8)]
+        assert xs.subscriptions == [
             subscribe(300, 400),
             subscribe(500, 550),
-            subscribe(650, 800))
+            subscribe(650, 800)]
 
     def test_publish_multipleconnections(self):
         xs = Observable.never()
@@ -451,7 +449,7 @@ class TestPublish(unittest.TestCase):
             return xs.publish(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(280, 7),
             send(290, 5),
             send(340, 9),
@@ -463,8 +461,8 @@ class TestPublish(unittest.TestCase):
             send(450, 11),
             send(520, 20),
             send(560, 31),
-            close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_publish_lambda_zip_error(self):
         ex = 'ex'
@@ -491,7 +489,7 @@ class TestPublish(unittest.TestCase):
             return xs.publish(selector)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             send(280, 7),
             send(290, 5),
             send(340, 9),
@@ -503,8 +501,8 @@ class TestPublish(unittest.TestCase):
             send(450, 11),
             send(520, 20),
             send(560, 31),
-            throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            throw(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_publish_lambda_zip_dispose(self):
         scheduler = TestScheduler()
@@ -530,7 +528,7 @@ class TestPublish(unittest.TestCase):
             return xs.publish(selector)
 
         results = scheduler.start(create, disposed=470)
-        results.messages.assert_equal(
+        assert results.messages == [
             send(280, 7),
             send(290, 5),
             send(340, 9),
@@ -539,5 +537,5 @@ class TestPublish(unittest.TestCase):
             send(390, 13),
             send(410, 20),
             send(430, 15),
-            send(450, 11))
-        xs.subscriptions.assert_equal(subscribe(200, 470))
+            send(450, 11)]
+        assert xs.subscriptions == [subscribe(200, 470)]

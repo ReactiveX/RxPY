@@ -49,14 +49,12 @@ class TestControlledObservable(unittest.TestCase):
         scheduler.schedule_absolute(410, action3)
 
         scheduler.start()
-        results1.messages.assert_equal(
+        assert results1.messages == [
             send(380, 4),
             send(380, 5),
             send(410, 6),
-            close(500)
-        )
+            close(500)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             send(410, 6),
-            close(500)
-        )
+            close(500)]

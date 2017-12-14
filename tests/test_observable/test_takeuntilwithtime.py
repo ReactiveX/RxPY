@@ -32,8 +32,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(200))
-        xs.subscriptions.assert_equal(subscribe(200, 200))
+        assert res.messages == [close(200)]
+        assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_takeuntil_late(self):
         scheduler = TestScheduler()
@@ -48,8 +48,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(210, 1), send(220, 2), close(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [send(210, 1), send(220, 2), close(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_takeuntil_error(self):
         ex = 'ex'
@@ -60,8 +60,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_takeuntil_never(self):
         scheduler = TestScheduler()
@@ -73,8 +73,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_takeuntil_twice1(self):
         scheduler = TestScheduler()
@@ -93,8 +93,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt255, scheduler).take_until_with_time(dt235, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
-        xs.subscriptions.assert_equal(subscribe(200, 235))
+        assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]
+        assert xs.subscriptions == [subscribe(200, 235)]
 
     def test_takeuntil_twice2(self):
         scheduler = TestScheduler()
@@ -114,5 +114,5 @@ class TestTakeUntilWithTime(unittest.TestCase):
             return xs.take_until_with_time(dt235, scheduler).take_until_with_time(dt255, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(send(210, 1), send(220, 2), send(230, 3), close(235))
-        xs.subscriptions.assert_equal(subscribe(200, 235))
+        assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]
+        assert xs.subscriptions == [subscribe(200, 235)]

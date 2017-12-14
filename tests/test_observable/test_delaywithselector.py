@@ -34,8 +34,8 @@ class TestDelayWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210 + 10, 10), send(220 + 30, 30), send(250 + 20, 20), send(240 + 35, 35), send(230 + 50, 50), close(280))
-        xs.subscriptions.assert_equal(subscribe(200, 260))
+        assert results.messages == [send(210 + 10, 10), send(220 + 30, 30), send(250 + 20, 20), send(240 + 35, 35), send(230 + 50, 50), close(280)]
+        assert xs.subscriptions == [subscribe(200, 260)]
 
     def test_delay_duration_simple2(self):
         scheduler = TestScheduler()
@@ -47,9 +47,9 @@ class TestDelayWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210 + 10, 2), send(220 + 10, 3), send(230 + 10, 4), send(240 + 10, 5), send(250 + 10, 6), close(300))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(210, 220), subscribe(220, 230), subscribe(230, 240), subscribe(240, 250), subscribe(250, 260))
+        assert results.messages == [send(210 + 10, 2), send(220 + 10, 3), send(230 + 10, 4), send(240 + 10, 5), send(250 + 10, 6), close(300)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(210, 220), subscribe(220, 230), subscribe(230, 240), subscribe(240, 250), subscribe(250, 260)]
 
     def test_delay_duration_simple3(self):
         scheduler = TestScheduler()
@@ -61,9 +61,9 @@ class TestDelayWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210 + 100, 2), send(220 + 100, 3), send(230 + 100, 4), send(240 + 100, 5), send(250 + 100, 6), close(350))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
+        assert results.messages == [send(210 + 100, 2), send(220 + 100, 3), send(230 + 100, 4), send(240 + 100, 5), send(250 + 100, 6), close(350)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350)]
 
     def test_delay_duration_simple4_inner_empty(self):
         scheduler = TestScheduler()
@@ -75,9 +75,9 @@ class TestDelayWithSelector(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210 + 100, 2), send(220 + 100, 3), send(230 + 100, 4), send(240 + 100, 5), send(250 + 100, 6), close(350))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350))
+        assert results.messages == [send(210 + 100, 2), send(220 + 100, 3), send(230 + 100, 4), send(240 + 100, 5), send(250 + 100, 6), close(350)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(210, 310), subscribe(220, 320), subscribe(230, 330), subscribe(240, 340), subscribe(250, 350)]
 
     def test_delay_duration_dispose1(self):
         scheduler = TestScheduler()
@@ -88,9 +88,9 @@ class TestDelayWithSelector(unittest.TestCase):
             return xs.delay_with_selector(lambda _: ys)
 
         results = scheduler.start(create, disposed=425)
-        results.messages.assert_equal(send(210 + 200, 2), send(220 + 200, 3))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(210, 410), subscribe(220, 420), subscribe(230, 425), subscribe(240, 425), subscribe(250, 425))
+        assert results.messages == [send(210 + 200, 2), send(220 + 200, 3)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(210, 410), subscribe(220, 420), subscribe(230, 425), subscribe(240, 425), subscribe(250, 425)]
 
     def test_delay_duration_dispose2(self):
         scheduler = TestScheduler()
@@ -101,7 +101,7 @@ class TestDelayWithSelector(unittest.TestCase):
             return xs.delay_with_selector(lambda _: ys)
 
         results = scheduler.start(create, disposed=300)
-        results.messages.assert_equal(send(210 + 50, 2))
-        xs.subscriptions.assert_equal(subscribe(200, 300))
-        ys.subscriptions.assert_equal(subscribe(210, 260))
+        assert results.messages == [send(210 + 50, 2)]
+        assert xs.subscriptions == [subscribe(200, 300)]
+        assert ys.subscriptions == [subscribe(210, 260)]
 

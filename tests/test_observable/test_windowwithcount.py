@@ -21,8 +21,8 @@ class TestWindowWithCount(unittest.TestCase):
             return xs.window_with_count(3, 2).map_indexed(proj).merge_observable()
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"), send(380, "2 7"), send(420, "2 8"), send(420, "3 8"), send(470, "3 9"), close(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"), send(380, "2 7"), send(420, "2 8"), send(420, "3 8"), send(470, "3 9"), close(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_window_with_count_disposed(self):
         scheduler = TestScheduler()
@@ -34,8 +34,8 @@ class TestWindowWithCount(unittest.TestCase):
             return xs.window_with_count(3, 2).map_indexed(proj).merge_observable()
 
         results = scheduler.start(create, disposed=370)
-        results.messages.assert_equal(send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"))
-        xs.subscriptions.assert_equal(subscribe(200, 370))
+        assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6")]
+        assert xs.subscriptions == [subscribe(200, 370)]
 
     def test_window_with_count_error(self):
         ex = 'ex'
@@ -51,5 +51,5 @@ class TestWindowWithCount(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"), send(380, "2 7"), send(420, "2 8"), send(420, "3 8"), send(470, "3 9"), throw(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"), send(380, "2 7"), send(420, "2 8"), send(420, "3 8"), send(470, "3 9"), throw(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]

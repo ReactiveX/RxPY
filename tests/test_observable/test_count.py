@@ -16,7 +16,7 @@ class TestCount(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), close(250))
         res = scheduler.start(create=lambda: xs.count()).messages
-        res.assert_equal(send(250, 0), close(250))
+        assert res == [send(250, 0), close(250)]
 
     def test_count_empty_ii(self):
         scheduler = TestScheduler()
@@ -26,26 +26,26 @@ class TestCount(unittest.TestCase):
             return xs.count()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(send(250, 1), close(250))
+        assert res == [send(250, 1), close(250)]
 
     def test_count_some(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), close(250))
         res = scheduler.start(create=lambda: xs.count()).messages
-        res.assert_equal(send(250, 3), close(250))
+        assert res == [send(250, 3), close(250)]
 
     def test_count_throw(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex))
         res = scheduler.start(create=lambda: xs.count()).messages
-        res.assert_equal(throw(210, ex))
+        assert res == [throw(210, ex)]
 
     def test_count_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1))
         res = scheduler.start(create=lambda: xs.count()).messages
-        res.assert_equal()
+        assert res == []
 
     def test_count_predicate_empty_true(self):
         scheduler = TestScheduler()
@@ -56,8 +56,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_empty_false(self):
         scheduler = TestScheduler()
@@ -68,8 +68,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_return_true(self):
         scheduler = TestScheduler()
@@ -80,8 +80,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 1), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 1), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_return_false(self):
         scheduler = TestScheduler()
@@ -92,8 +92,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_some_all(self):
         scheduler = TestScheduler()
@@ -104,8 +104,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 3), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 3), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_some_none(self):
         scheduler = TestScheduler()
@@ -116,8 +116,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 0), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 0), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_some_even(self):
         scheduler = TestScheduler()
@@ -128,8 +128,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(send(250, 2), close(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [send(250, 2), close(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_throw_true(self):
         ex = 'ex'
@@ -141,8 +141,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_count_predicate_throw_false(self):
         ex = 'ex'
@@ -154,8 +154,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [throw(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_count_predicate_never(self):
         scheduler = TestScheduler()
@@ -166,8 +166,8 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_count_predicate_predicate_throws(self):
         ex = 'ex'
@@ -185,5 +185,5 @@ class TestCount(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(throw(230, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [throw(230, ex)]
+        assert xs.subscriptions == [subscribe(200, 230)]
