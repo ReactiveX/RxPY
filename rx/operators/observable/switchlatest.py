@@ -2,7 +2,7 @@ from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
-def switch_latest(sources: Observable):
+def switch_latest(sources: Observable[Observable]):
     """Transforms an observable sequence of observable sequences into an
     observable sequence producing values only from the most recent
     observable sequence.
