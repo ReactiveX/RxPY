@@ -13,15 +13,12 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
-
 class RxException(Exception):
     pass
-
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
-
 
 class TestWithLatestFrom(unittest.TestCase):
 
@@ -31,7 +28,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = Observable.never()
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -43,7 +40,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -55,7 +52,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(210)]
@@ -68,7 +65,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(210)]
@@ -81,7 +78,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(210)]
@@ -94,7 +91,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(220)]
@@ -106,7 +103,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = Observable.never()
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(220)]
@@ -118,7 +115,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = Observable.never()
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -131,7 +128,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(230)]
@@ -145,7 +142,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -159,7 +156,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -173,7 +170,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -187,7 +184,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -202,7 +199,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex1)]
@@ -217,7 +214,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex1)]
@@ -232,7 +229,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex1)]
@@ -245,7 +242,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -258,7 +255,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -272,7 +269,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -286,7 +283,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -300,7 +297,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(220)]
@@ -314,7 +311,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(230, ex)]
@@ -327,7 +324,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [send(225, 3 + 4), close(230)]
@@ -340,7 +337,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(230)]
@@ -354,7 +351,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(230, ex)]
@@ -368,7 +365,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.with_latest_from([e1], lambda x, y: x + y)
+            return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [send(235, 4 + 6), send(240, 4 + 7), throw(245, ex)]
@@ -382,7 +379,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: _raise(ex))
+            return e1.with_latest_from(e2, lambda x, y: _raise(ex))
 
         results = scheduler.start(create)
         assert results.messages == [throw(225, ex)]
@@ -395,7 +392,7 @@ class TestWithLatestFrom(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.with_latest_from([e2], lambda x, y: x + y)
+            return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [send(225, 3 + 4), send(230, 3 + 5), close(235)]
