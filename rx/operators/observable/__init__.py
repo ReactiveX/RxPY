@@ -39,6 +39,7 @@ from . import find
 from . import findindex
 from . import first
 from . import firstordefault
+from . import flatmap
 from . import forin
 from . import fromiterable
 from . import fromcallback
@@ -83,7 +84,6 @@ from . import scan
 from . import sample
 from . import map
 from . import selectswitch
-from . import selectmany
 from . import sequenceequal
 from . import single
 from . import singleordefault

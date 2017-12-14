@@ -16,14 +16,13 @@ def _flat_map(source, selector):
     return source.map_indexed(projection).merge_all()
 
 
-@extensionmethod(Observable, alias="flat_map")
-def select_many(self, selector, result_selector=None):
+def flat_map(source, selector, result_selector=None):
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
 
-    1 - source.select_many(lambda x: Observable.range(0, x))
+    1 - source.flat_map(lambda x: Observable.range(0, x))
 
     Or:
     Projects each element of an observable sequence to an observable
@@ -31,14 +30,14 @@ def select_many(self, selector, result_selector=None):
     of the corresponding inner sequence's elements, and merges the results
     into one observable sequence.
 
-    1 - source.select_many(lambda x: Observable.range(0, x), lambda x, y: x + y)
+    1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
 
     Or:
     Projects each element of the source observable sequence to the other
     observable sequence and merges the resulting observable sequences into
     one observable sequence.
 
-    1 - source.select_many(Observable.from_([1,2,3]))
+    1 - source.flat_map(Observable.from_([1,2,3]))
 
     Keyword arguments:
     selector -- A transform function to apply to each element or an
@@ -62,12 +61,12 @@ def select_many(self, selector, result_selector=None):
                 result = Observable.from_future(selector_result)
             return result.map_indexed(lambda y, i: result_selector(x, y, i))
 
-        return self.flat_map(projection)
+        return source.flat_map(projection)
 
     if callable(selector):
         selector = adapt_call(selector)
-        ret = _flat_map(self, selector)
+        ret = _flat_map(source, selector)
     else:
-        ret = _flat_map(self, lambda _, __: selector)
+        ret = _flat_map(source, lambda _, __: selector)
 
     return ret

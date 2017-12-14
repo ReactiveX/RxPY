@@ -250,6 +250,45 @@ class Observable(bases.Observable):
         source = self
         return filter_indexed(predicate, source)
 
+    def flat_map(self, selector, result_selector=None):
+        """One of the Following:
+        Projects each element of an observable sequence to an observable
+        sequence and merges the resulting observable sequences into one
+        observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x))
+
+        Or:
+        Projects each element of an observable sequence to an observable
+        sequence, invokes the result selector for the source element and each
+        of the corresponding inner sequence's elements, and merges the results
+        into one observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
+
+        Or:
+        Projects each element of the source observable sequence to the other
+        observable sequence and merges the resulting observable sequences into
+        one observable sequence.
+
+        1 - source.flat_map(Observable.from_([1,2,3]))
+
+        Keyword arguments:
+        selector -- A transform function to apply to each element or an
+            observable sequence to project each element from the source
+            sequence onto.
+        result_selector -- [Optional] A transform function to apply to each
+            element of the intermediate sequence.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the one-to-many transform function collectionSelector on each
+        element of the input sequence and then mapping each of those sequence
+        elements and their corresponding source element to a result element.
+        """
+        from ..operators.observable.flatmap import flat_map
+        source = self
+        return flat_map(source, selector, result_selector)
+
     @classmethod
     def from_callable(cls, supplier: Callable) -> 'Observable':
         """Returns an observable sequence that contains a single element
