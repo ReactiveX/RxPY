@@ -30,4 +30,4 @@ def buffer_with_time(self, timespan, timeshift=None):
     if not timeshift:
         timeshift = timespan
 
-    return self.window_with_time(timespan, timeshift).select_many(lambda x: x.to_iterable())
+    return self.window_with_time(timespan, timeshift).flat_map(lambda x: x.to_iterable())

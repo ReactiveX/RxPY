@@ -25,7 +25,7 @@ class WSHandler(WebSocketHandler):
                 lambda obj: obj["keycode"] # 1. stream of keycodes
             ).window_with_count(
                 10, 1 # 2. stream of windows (10 ints long)
-            ).select_many(
+            ).flat_map(
                 # 3. stream of booleans, True or False
                 lambda win: win.sequence_equal(codes)
             ).filter(

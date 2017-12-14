@@ -112,7 +112,7 @@
 - Aligned backpressure with RxJS
 - Renamed all `select()` to `map()` and `where()` to `map()`
 - `from_` is now an alias for `from_iterable`. Removed `from_array`
-- Fixes for `select_many`/`flat_map`. Selector may return iterable
+- Fixes for `flat_map`/`flat_map`. Selector may return iterable
 
 ## 0.14
 

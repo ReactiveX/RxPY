@@ -4,8 +4,7 @@ from rx.disposables import CompositeDisposable
 
 
 @extensionmethod(Observable, alias="tap")
-def do_action(self, send=None, throw=None, close=None,
-              observer=None):
+def do_action(self, send=None, throw=None, close=None, observer=None):
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -109,7 +108,7 @@ def do_on_subscribe(self, on_subscribe):
     """
     def subscribe(observer, scheduler=None):
         on_subscribe()
-        return self.subscribe_callbacks(observer.send, observer.throw, observer.close)
+        return self.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
 
     return AnonymousObservable(subscribe)
 
@@ -130,7 +129,7 @@ def do_on_dispose(self, on_dispose):
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        disposable = self.subscribe_callbacks(observer.send, observer.throw, observer.close)
+        disposable = self.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
         composite_disposable.add(disposable)
         return composite_disposable
 
@@ -164,7 +163,7 @@ def do_on_terminate(self, on_terminate):
             else:
                 observer.throw(exception)
 
-        return self.subscribe_callbacks(observer.send, throw, close)
+        return self.subscribe_callbacks(observer.send, throw, close, scheduler)
 
     return AnonymousObservable(subscribe)
 
@@ -193,7 +192,7 @@ def do_after_terminate(self, after_terminate):
             except Exception as err:
                 observer.throw(err)
 
-        return self.subscribe(observer.send, throw, close)
+        return self.subscribe(observer.send, throw, close, scheduler)
 
     return AnonymousObservable(subscribe)
 
@@ -240,7 +239,7 @@ def do_finally(self, finally_action):
 
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose(was_invoked))
-        disposable = self.subscribe_callbacks(observer.send, throw, close)
+        disposable = self.subscribe_callbacks(observer.send, throw, close, scheduler)
         composite_disposable.add(disposable)
 
         return composite_disposable
