@@ -83,7 +83,6 @@ from . import returnvalue
 from . import scan
 from . import sample
 from . import map
-from . import selectswitch
 from . import sequenceequal
 from . import single
 from . import singleordefault
