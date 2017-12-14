@@ -108,6 +108,29 @@ class Observable(bases.Observable):
         source = self
         return as_observable(source)
 
+    def combine_latest(self, observables: Union['Observable', Iterable['Observable']],
+                       selector: Callable[[Any], Any]) -> 'Observable':
+        """Merges the specified observable sequences into one observable
+        sequence by using the selector function whenever any of the
+        observable sequences produces an element. This can be in the form of
+        an argument list of observables or an array.
+
+        1 - obs = observable.combine_latest(obs1, obs2, obs3,
+                                            lambda o1, o2, o3: o1 + o2 + o3)
+        2 - obs = observable.combine_latest([obs1, obs2, obs3],
+                                            lambda o1, o2, o3: o1 + o2 + o3)
+
+        Returns an observable sequence containing the result of combining
+        elements of the sources using the specified result selector
+        function.
+        """
+        from ..operators.observable.combinelatest import combine_latest
+        if isinstance(observables, Observable):
+            observables = [observables]
+
+        args = [self] + list(observables)
+        return combine_latest(args, selector)
+
     def concat(self, *args: 'Observable') -> 'Observable':
         """Concatenates all the observable sequences. This takes in either an
         array or variable arguments to concatenate.

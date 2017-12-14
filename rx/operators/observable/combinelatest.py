@@ -1,36 +1,10 @@
+from typing import Any, Callable, Iterable, Union
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import extensionmethod, extensionclassmethod
 
 
-@extensionmethod(Observable, instancemethod=True)
-def combine_latest(self, *args):
-    """Merges the specified observable sequences into one observable
-    sequence by using the selector function whenever any of the
-    observable sequences produces an element. This can be in the form of
-    an argument list of observables or an array.
-
-    1 - obs = observable.combine_latest(obs1, obs2, obs3,
-                                        lambda o1, o2, o3: o1 + o2 + o3)
-    2 - obs = observable.combine_latest([obs1, obs2, obs3],
-                                        lambda o1, o2, o3: o1 + o2 + o3)
-
-    Returns an observable sequence containing the result of combining
-    elements of the sources using the specified result selector
-    function.
-    """
-
-    args = list(args)
-    if args and isinstance(args[0], list):
-        args = args[0]
-
-    args.insert(0, self)
-
-    return Observable.combine_latest(*args)
-
-
-@extensionclassmethod(Observable)  # noqa
-def combine_latest(cls, *args):
+def combine_latest(observables: Union[Observable, Iterable[Observable]],
+                   selector: Callable[[Any], Any]) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by using the selector function whenever any of the
     observable sequences produces an element.
@@ -44,12 +18,11 @@ def combine_latest(cls, *args):
     elements of the sources using the specified result selector
     function.
     """
+    if isinstance(observables, Observable):
+        observables = [observables]
 
-    args = list(args)
-    result_selector = args.pop()
-
-    if isinstance(args[0], list):
-        args = args[0]
+    args = list(observables)
+    result_selector = selector
     parent = args[0]
 
     def subscribe(observer, scheduler=None):
@@ -94,7 +67,8 @@ def combine_latest(cls, *args):
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw, close, scheduler)
+            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw,
+                                                                      close, scheduler)
 
         for idx in range(n):
             func(idx)
