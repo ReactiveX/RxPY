@@ -17,7 +17,7 @@ def buffer(self, buffer_openings=None, buffer_closing_selector=None):
     Returns an observable sequence of windows.
     """
 
-    return self.window(buffer_openings, buffer_closing_selector).select_many(lambda item: item.to_iterable())
+    return self.window(buffer_openings, buffer_closing_selector).flat_map(lambda item: item.to_iterable())
 
 
 @extensionmethod(Observable)
@@ -46,4 +46,4 @@ def buffer_with_count(self, count, skip=None):
     def predicate(value):
         return len(value) > 0
 
-    return self.window_with_count(count, skip).select_many(selector).filter(predicate)
+    return self.window_with_count(count, skip).flat_map(selector).filter(predicate)

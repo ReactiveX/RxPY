@@ -1,7 +1,7 @@
-from . import Observer, AnonymousObserver
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionclassmethod
 
+from . import Observer, AnonymousObserver
 from .anonymousobservable import AnonymousObservable
 
 
@@ -11,6 +11,8 @@ class Notification(object):
     def __init__(self):
         """Default constructor used by derived types."""
         self.has_value = False
+        self.value = None
+        self.kind = ''
 
     def accept(self, send, throw=None, close=None):
         """Invokes the delegate corresponding to the notification or an
@@ -161,8 +163,8 @@ def from_notifier(cls, handler):
     def _send(value):
         return handler(OnNext(value))
 
-    def _throw(ex):
-        return handler(OnError(ex))
+    def _throw(error):
+        return handler(OnError(error))
 
     def _close():
         return handler(OnCompleted())

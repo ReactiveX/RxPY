@@ -1,0 +1,7 @@
+[BASIC]
+
+good-names=n,x,xs,obv,obs
+
+[MESSAGES CONTROL]
+
+disable=C0111
