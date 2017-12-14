@@ -1,61 +1,27 @@
-
+from typing import Any, Iterable, Callable, Union
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def listify_args(*a):
-    return list(a)
-
-
-def with_latest_from(self, *args: Observable):
-    """Merges the specified observable sequences into one observable sequence
-    by using the selector function only when the source observable sequence
-    (the instance) produces an element. The other observables can be passed
-    either as seperate arguments or as a list.
-
-    1 - obs = observable.with_latest_from(obs1, obs2, obs3,
-                                        lambda o1, o2, o3: o1 + o2 + o3)
-    2 - obs = observable.with_latest_from([obs1, obs2, obs3],
-                                        lambda o1, o2, o3: o1 + o2 + o3)
-
-    Returns an observable sequence containing the result of combining
-    elements of the sources using the specified result selector function.
-    """
-
-    if args and isinstance(args[0], list):
-        children = args[0]
-        result_selector = args[1]
-        args_ = [self] + children + [result_selector]
-    else:
-        args_ = [self] + list(args)
-
-    return Observable.with_latest_from(*args_)
-
-
-@extensionclassmethod(Observable)
-def with_latest_from(cls, *args):
-
+def with_latest_from(observables: Union[Observable, Iterable[Observable]],
+                     selector: Callable[[Any], Any]) -> Observable:
     """Merges the specified observable sequences into one observable sequence
     by using the selector function only when the first observable sequence
     produces an element. The observables can be passed either as seperate
     arguments or as a list.
 
-    1 - obs = Observable.with_latest_from(obs1, obs2, obs3,
-                                       lambda o1, o2, o3: o1 + o2 + o3)
+    1 - obs = Observable.with_latest_from(obs1, lambda o1: o1)
+
     2 - obs = Observable.with_latest_from([obs1, obs2, obs3],
                                         lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns an observable sequence containing the result of combining
     elements of the sources using the specified result selector function.
     """
+    if isinstance(observables, Observable):
+        observables = [observables]
 
-    if args and isinstance(args[0], list):
-        observables = args[0]
-        result_selector = args[1]
-    else:
-        observables = list(args[:-1])
-        result_selector = args[-1]
-
+    result_selector = selector
     NO_VALUE = object()
 
     def subscribe(observer, scheduler=None):
@@ -70,7 +36,8 @@ def with_latest_from(cls, *args):
                 def send(value):
                     with parent.lock:
                         values[i] = value
-                subscription.disposable = child.subscribe_callbacks(send, observer.throw)
+                subscription.disposable = child.subscribe_callbacks(
+                    send, observer.throw)
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
@@ -87,10 +54,9 @@ def with_latest_from(cls, *args):
             parent_subscription.disposable = parent.subscribe_callbacks(
                 send, observer.throw, observer.close)
 
-            return listify_args(
-                parent_subscription,
-                *(subscribe_child(*a) for a in enumerate(children))
-            )
+            children_subscription = [subscribe_child(i, child)
+                                     for i, child in enumerate(children)]
 
+            return [parent_subscription] + children_subscription
         return CompositeDisposable(subscribe_all(*observables))
     return AnonymousObservable(subscribe)

@@ -576,20 +576,24 @@ class Observable(bases.Observable):
         source = self
         return while_do(condition, source)
 
-    def with_latest_from(self, *args):
+    def with_latest_from(self, observables: Union['Observable', Iterable['Observable']],
+                         selector: Callable[[Any], Any]) -> 'Observable':
         """Merges the specified observable sequences into one observable sequence
         by using the selector function only when the source observable sequence
         (the instance) produces an element. The other observables can be passed
         either as seperate arguments or as a list.
 
-        1 - obs = observable.with_latest_from(obs1, obs2, obs3,
-                                            lambda o1, o2, o3: o1 + o2 + o3)
-        2 - obs = observable.with_latest_from([obs1, obs2, obs3],
+        1 - obs = observable.with_latest_from(obs, lambda o1, o2: o1 + o2)
+
+        2 - obs = observable.with_latest_from([obs1, obs2],
                                             lambda o1, o2, o3: o1 + o2 + o3)
 
         Returns an observable sequence containing the result of combining
         elements of the sources using the specified result selector function.
         """
         from ..operators.observable.withlatestfrom import with_latest_from
-        source = self
-        return with_latest_from(source, *args)
+        if isinstance(observables, Observable):
+            observables = [observables]
+
+        sources = [self] + list(observables)
+        return with_latest_from(sources, selector)
