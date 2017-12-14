@@ -35,17 +35,16 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(10, 5)
+            return Observable.range(10, 15)
 
         results = scheduler.start(create)
 
-        assert results.messages == [
-                            send(200, 10),
-                            send(200, 11),
-                            send(200, 12),
-                            send(200, 13),
-                            send(200, 14),
-                            close(200)]
+        assert results.messages == [send(200, 10),
+                                    send(200, 11),
+                                    send(200, 12),
+                                    send(200, 13),
+                                    send(200, 14),
+                                    close(200)]
 
     # def test_range_dispose(self):
     #     scheduler = TestScheduler()
@@ -58,8 +57,38 @@ class TestRange(unittest.TestCase):
 
     def test_range_double_subscribe(self):
         scheduler = TestScheduler()
-        obs = Observable.range(1, 3)
+        obs = Observable.range(1, 4)
 
         results = scheduler.start(lambda: obs.concat(obs))
-        assert results.messages == [send(200, 1), send(200, 2), send(200, 3), send(200, 1), send(200, 2), send(200, 3), close(200)]
+        assert results.messages == [send(200, 1), send(200, 2),
+                                    send(200, 3), send(200, 1),
+                                    send(200, 2), send(200, 3),
+                                    close(200)]
 
+    def test_range_only_start(self):
+        scheduler = TestScheduler()
+
+        def create():
+            return Observable.range(5)
+
+        results = scheduler.start(create)
+        assert results.messages == [send(200, 0),
+                                    send(200, 1),
+                                    send(200, 2),
+                                    send(200, 3),
+                                    send(200, 4),
+                                    close(200)]
+
+    def test_range_step_also(self):
+        scheduler = TestScheduler()
+
+        def create():
+            return Observable.range(0, 10, 2)
+
+        results = scheduler.start(create)
+        assert results.messages == [send(200, 0),
+                                    send(200, 2),
+                                    send(200, 4),
+                                    send(200, 6),
+                                    send(200, 8),
+                                    close(200)]

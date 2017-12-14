@@ -380,6 +380,28 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.never import never
         return never()
 
+    @classmethod
+    def range(cls, start: int, stop: int=None, step: int=None) -> 'Observable':
+        """Generates an observable sequence of integral numbers within a
+        specified range, using the specified scheduler to send out observer
+        messages.
+
+        1 - res = Rx.Observable.range(10)
+        2 - res = Rx.Observable.range(0, 10)
+        3 - res = Rx.Observable.range(0, 10, 1)
+
+        Keyword arguments:
+        start -- The value of the first integer in the sequence.
+        count -- The number of sequential integers to generate.
+        scheduler -- [Optional] Scheduler to run the generator loop on. If not
+            specified, defaults to Scheduler.current_thread.
+
+        Returns an observable sequence that contains a range of sequential
+        integral numbers.
+        """
+        from ..operators.observable.range import from_range
+        return from_range(start, stop, step)
+
     def reduce(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
         """Applies an accumulator function over an observable sequence,
         returning the result of the aggregation as a single element in the
