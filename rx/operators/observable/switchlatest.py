@@ -1,11 +1,8 @@
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
-from rx.internal import extensionmethod
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
-@extensionmethod(Observable)
-def switch_latest(self):
+def switch_latest(sources: Observable):
     """Transforms an observable sequence of observable sequences into an
     observable sequence producing values only from the most recent
     observable sequence.
@@ -16,8 +13,6 @@ def switch_latest(self):
     :rtype: Observable
     """
 
-    sources = self
-
     def subscribe(observer, scheduler=None):
         has_latest = [False]
         inner_subscription = SerialDisposable()
@@ -25,8 +20,10 @@ def switch_latest(self):
         latest = [0]
 
         def send(inner_source):
+            nonlocal sources
+
             d = SingleAssignmentDisposable()
-            with self.lock:
+            with sources.lock:
                 latest[0] += 1
                 _id = latest[0]
             has_latest[0] = True

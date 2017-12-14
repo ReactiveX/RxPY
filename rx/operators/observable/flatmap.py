@@ -1,7 +1,7 @@
+import collections
 from rx import Observable
 from rx.internal.utils import adapt_call
 from rx.internal import extensionmethod
-import collections
 
 
 def _flat_map(source, selector):

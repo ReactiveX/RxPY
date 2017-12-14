@@ -524,6 +524,20 @@ class Observable(bases.Observable):
         source = self
         return start_with(source, *args)
 
+    def switch_latest(self):
+        """Transforms an observable sequence of observable sequences into an
+        observable sequence producing values only from the most recent
+        observable sequence.
+
+        :returns: The observable sequence that at any point in time produces the
+        elements of the most recent inner observable sequence that has been
+        received.
+        :rtype: Observable
+        """
+        from ..operators.observable.switchlatest import switch_latest
+        sources = self
+        return switch_latest(source)
+
     def take(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
         start of an observable sequence.
