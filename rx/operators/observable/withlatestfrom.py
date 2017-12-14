@@ -1,14 +1,13 @@
+
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import extensionmethod, extensionclassmethod
 
 
 def listify_args(*a):
     return list(a)
 
 
-@extensionmethod(Observable, instancemethod=True)
-def with_latest_from(self, *args):
+def with_latest_from(self, *args: Observable):
     """Merges the specified observable sequences into one observable sequence
     by using the selector function only when the source observable sequence
     (the instance) produces an element. The other observables can be passed
@@ -67,6 +66,7 @@ def with_latest_from(cls, *args):
 
             def subscribe_child(i, child):
                 subscription = SingleAssignmentDisposable()
+
                 def send(value):
                     with parent.lock:
                         values[i] = value
@@ -74,6 +74,7 @@ def with_latest_from(cls, *args):
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
+
             def send(value):
                 with parent.lock:
                     if NO_VALUE not in values:

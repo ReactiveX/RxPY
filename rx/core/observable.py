@@ -451,7 +451,7 @@ class Observable(bases.Observable):
         source = self
         return skip_last(count, source)
 
-    def start_with(self, *args, **kwargs) -> 'Observable':
+    def start_with(self, *args: Any) -> 'Observable':
         """Prepends a sequence of values to an observable.
 
         1 - source.start_with(1, 2, 3)
@@ -460,7 +460,7 @@ class Observable(bases.Observable):
         """
         from ..operators.observable.startswith import start_with
         source = self
-        return start_with(source, *args, **kwargs)
+        return start_with(source, *args)
 
     def take(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
@@ -575,3 +575,21 @@ class Observable(bases.Observable):
         from ..operators.observable.whiledo import while_do
         source = self
         return while_do(condition, source)
+
+    def with_latest_from(self, *args):
+        """Merges the specified observable sequences into one observable sequence
+        by using the selector function only when the source observable sequence
+        (the instance) produces an element. The other observables can be passed
+        either as seperate arguments or as a list.
+
+        1 - obs = observable.with_latest_from(obs1, obs2, obs3,
+                                            lambda o1, o2, o3: o1 + o2 + o3)
+        2 - obs = observable.with_latest_from([obs1, obs2, obs3],
+                                            lambda o1, o2, o3: o1 + o2 + o3)
+
+        Returns an observable sequence containing the result of combining
+        elements of the sources using the specified result selector function.
+        """
+        from ..operators.observable.withlatestfrom import with_latest_from
+        source = self
+        return with_latest_from(source, *args)
