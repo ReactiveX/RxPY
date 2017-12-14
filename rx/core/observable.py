@@ -146,7 +146,7 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return concat(source, *args)
 
-    def concat_all(self):
+    def concat_all(self) -> 'Observable':
         """Concatenates an observable sequence of observable sequences.
 
         Returns an observable sequence that contains the elements of each
@@ -154,7 +154,7 @@ class Observable(Generic[T_out], bases.Observable):
         """
         return self.merge(1)
 
-    def concat_map(self, mapper: Callable[[Any], Any]):
+    def concat_map(self, mapper: Callable[[Any], Any]) -> 'Observable':
         """Maps each emission to an Observable and fires its emissions.
         It will only fire each resulting Observable sequentially.
         The next derived Observable will not start its emissions until
@@ -163,7 +163,7 @@ class Observable(Generic[T_out], bases.Observable):
         return self.map(mapper).concat_all()
 
     @classmethod
-    def create(cls, subscribe):
+    def create(cls, subscribe) -> 'Observable':
         from ..operators.observable.create import create
         return create(subscribe)
 
@@ -189,7 +189,7 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.defer import defer
         return defer(observable_factory)
 
-    def do_while(self, condition: Callable[[Any], bool]):
+    def do_while(self, condition: Callable[[Any], bool]) -> 'Observable':
         """Repeats source as long as condition holds emulating a do while loop.
 
         Keyword arguments:
@@ -204,7 +204,7 @@ class Observable(Generic[T_out], bases.Observable):
         return do_while(condition, source)
 
     @classmethod
-    def empty(cls):
+    def empty(cls) -> 'Observable':
         """Returns an empty observable sequence.
 
         1 - res = rx.Observable.empty()
@@ -252,7 +252,7 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return filter_indexed(predicate, source)
 
-    def flat_map(self, selector, result_selector=None):
+    def flat_map(self, selector: Callable, result_selector: Callable=None) -> 'Observable':
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
@@ -368,7 +368,7 @@ class Observable(Generic[T_out], bases.Observable):
         return map_indexed(mapper, source)
 
     @classmethod
-    def never(cls):
+    def never(cls) -> 'Observable':
         """Returns a non-terminating observable sequence.
 
         Such a sequence can be used to denote an infinite duration (e.g.
@@ -548,7 +548,7 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return start_with(source, *args)
 
-    def switch_latest(self):
+    def switch_latest(self) -> 'Observable':
         """Transforms an observable sequence of observable sequences into an
         observable sequence producing values only from the most recent
         observable sequence.
@@ -562,7 +562,7 @@ class Observable(Generic[T_out], bases.Observable):
         sources = self
         return switch_latest(sources)
 
-    def select_switch(self, selector):
+    def select_switch(self, selector: Callable) -> 'Observable':
         """Projects each element of an observable sequence into a new sequence
         of observable sequences by incorporating the element's index and then
         transforms an observable sequence of observable sequences into an
@@ -663,7 +663,7 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return timeout(source, duetime, other)
 
-    def timestamp(self):
+    def timestamp(self) -> 'Observable':
         """Records the timestamp for each value in an observable sequence.
 
         1 - res = source.timestamp() # produces objects with attributes "value" and
@@ -685,7 +685,7 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return to_iterable(source)
 
-    def while_do(self, condition: Callable[[Any], bool]):
+    def while_do(self, condition: Callable[[Any], bool]) -> 'Observable':
         """Repeats source as long as condition holds emulating a while loop.
 
         Keyword arguments:

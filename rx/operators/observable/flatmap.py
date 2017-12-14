@@ -1,4 +1,5 @@
 import collections
+from typing import Callable
 from rx import Observable
 from rx.internal.utils import adapt_call
 from rx.internal import extensionmethod
@@ -16,7 +17,7 @@ def _flat_map(source, selector):
     return source.map_indexed(projection).merge_all()
 
 
-def flat_map(source, selector, result_selector=None):
+def flat_map(source: Observable, selector: Callable, result_selector=None) -> Observable:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
