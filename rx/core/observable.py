@@ -1,6 +1,6 @@
 import types
 from datetime import datetime
-from typing import Callable, Any, Iterable, Union, Generic, TypeVar
+from typing import Callable, Any, Iterable, List, Union, Generic, TypeVar
 from abc import abstractmethod
 from asyncio.futures import Future
 
@@ -454,6 +454,46 @@ class Observable(Generic[T_out], bases.Observable):
         """
         from ..operators.observable.never import never
         return never()
+
+    def partition(self, predicate: Callable[[Any], Any]) -> List['Observable']:
+        """Returns two observables which partition the observations of the
+        source by the given function. The first will trigger observations for
+        those values for which the predicate returns true. The second will
+        trigger observations for those values where the predicate returns false.
+        The predicate is executed once for each subscribed observer. Both also
+        propagate all error observations arising from the source and each
+        completes when the source completes.
+
+        Keyword arguments:
+        predicate -- The function to determine which output Observable will
+            trigger a particular observation.
+
+        Returns a list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate returns False.
+        """
+        from ..operators.observable.partition import partition
+        source = self
+        return partition(source, predicate)
+
+    def partition_indexed(self, predicate: Callable[[Any, int], Any]) -> List['Observable']:
+        """Returns two observables which partition the observations of the
+        source by the given function. The first will trigger observations for
+        those values for which the predicate returns true. The second will
+        trigger observations for those values where the predicate returns false.
+        The predicate is executed once for each subscribed observer. Both also
+        propagate all error observations arising from the source and each
+        completes when the source completes.
+
+        Keyword arguments:
+        predicate -- The function to determine which output Observable will
+            trigger a particular observation.
+
+        Returns a list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate returns False.
+        """
+        from ..operators.observable.partition import partition_indexed
+        source = self
+        return partition_indexed(source, predicate)
 
     @classmethod
     def range(cls, start: int, stop: int=None, step: int=None) -> 'Observable':
