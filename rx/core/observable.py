@@ -6,6 +6,7 @@ from asyncio.futures import Future
 
 from rx import config
 from .anonymousobserver import AnonymousObserver
+from .blockingobservable import BlockingObservable
 from . import bases
 
 T_out = TypeVar('T_out', covariant=True)
@@ -55,7 +56,8 @@ class Observable(Generic[T_out], bases.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer=None, scheduler=None):
+    def subscribe(self, observer: bases.Observer = None,
+                  scheduler: bases.Scheduler = None) -> bases.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -675,6 +677,11 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return timestamp(source)
 
+    def to_blocking(self) -> BlockingObservable:
+        from ..operators.observable.toblocking import to_blocking
+        source = self
+        return to_blocking(source)
+
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
@@ -720,3 +727,5 @@ class Observable(Generic[T_out], bases.Observable):
 
         sources = [self] + list(observables)
         return with_latest_from(sources, selector)
+
+

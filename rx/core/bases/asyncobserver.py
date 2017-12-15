@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from .asyncobservable import Observable, AsyncObservable
+from .asyncobservable import AsyncObservable
 
 
 class AsyncObserver(AsyncObservable):
