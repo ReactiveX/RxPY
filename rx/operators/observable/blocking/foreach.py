@@ -1,11 +1,9 @@
 from rx.core.blockingobservable import BlockingObservable
-from rx.internal import extensionmethod
 from rx.internal.utils import adapt_call
 from rx import config
 
 
-@extensionmethod(BlockingObservable)
-def for_each(self, action):
+def for_each(action, source: BlockingObservable):
     """Invokes a method on each item emitted by this BlockingObservable and
     blocks until the Observable completes.
 
@@ -31,10 +29,10 @@ def for_each(self, action):
     count = [0]
 
     def send(value):
-        with self.lock:
-            i = count[0]
+        with source.lock:
+            n = count[0]
             count[0] += 1
-        action(value, i)
+        action(value, n)
 
     def throw(err):
         # If we receive an throw event we set the reference on the
@@ -48,7 +46,7 @@ def for_each(self, action):
     def close():
         latch.set()
 
-    self.observable.subscribe_callbacks(send, throw, close)
+    source.observable.subscribe_callbacks(send, throw, close)
 
     # Block until the subscription completes and then return
     latch.wait()

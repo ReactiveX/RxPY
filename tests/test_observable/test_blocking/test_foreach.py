@@ -34,9 +34,9 @@ class TestForEach(unittest.TestCase):
         assert(lst == [])
 
     def test_For_each_index_empty(self):
-        lstX = []
-        Observable.empty().to_blocking().for_each(lambda x, i: lstX.append(x))
-        assert(lstX == [])
+        lst_x = []
+        Observable.empty().to_blocking().for_each(lambda x, i: lst_x.append(x))
+        assert(lst_x == [])
 
     def test_for_each_return(self):
         lst = []
@@ -44,16 +44,16 @@ class TestForEach(unittest.TestCase):
         assert(lst == [42])
 
     def test_for_each_index_return(self):
-        lstX = []
-        lstI = []
+        lst_x = []
+        lst_i = []
 
         def action(x, i):
-            lstX.append(x)
-            lstI.append(i)
+            lst_x.append(x)
+            lst_i.append(i)
 
         Observable.return_value(42).to_blocking().for_each(action)
-        assert(lstX == [42])
-        assert(lstI == [0])
+        assert(lst_x == [42])
+        assert(lst_i == [0])
 
     def test_for_each_throws(self):
         ex = "ex"
@@ -66,21 +66,21 @@ class TestForEach(unittest.TestCase):
         self.assertRaises(Exception, lambda:xs.to_blocking().for_each(lambda x, i: _raise(ex)))
 
     def test_for_each_some_data(self):
-        lstX = []
-        Observable.range(10, 10).to_blocking().for_each(lambda x: lstX.append(x))
-        assert(lstX == [x for x in range(10, 20)])
+        lst_x = []
+        Observable.range(10, 20).to_blocking().for_each(lambda x: lst_x.append(x))
+        assert(lst_x == [x for x in range(10, 20)])
 
     def test_for_each_index_some_data(self):
-        lstX = []
-        lstI = []
+        lst_x = []
+        lst_i = []
 
         def action(x, i):
-            lstX.append(x)
-            lstI.append(i)
+            lst_x.append(x)
+            lst_i.append(i)
 
-        Observable.range(10, 10).to_blocking().for_each(action)
-        assert(lstX == [x for x in range(10, 20)])
-        assert(lstI == [x for x in range(10)])
+        Observable.range(10, 20).to_blocking().for_each(action)
+        assert(lst_x == [x for x in range(10, 20)])
+        assert(lst_i == [x for x in range(10)])
 
     def test_for_each_send_throws(self):
         ex = Exception()

@@ -46,14 +46,14 @@ class TestRange(unittest.TestCase):
                                     send(200, 14),
                                     close(200)]
 
-    # def test_range_dispose(self):
-    #     scheduler = TestScheduler()
+    def test_range_dispose(self):
+        scheduler = TestScheduler()
 
-    #     def create():
-    #         return Observable.range(-10, 5)
+        def create():
+            return Observable.range(-10, 5)
 
-    #     results = scheduler.start(create, disposed=204)
-    #     assert results.messages == [send(200, -10), send(200, -9), send(203, -8)]
+        results = scheduler.start(create, disposed=200)
+        assert results.messages == []
 
     def test_range_double_subscribe(self):
         scheduler = TestScheduler()
