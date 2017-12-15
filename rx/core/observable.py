@@ -410,6 +410,38 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return map_indexed(mapper, source)
 
+
+    def multicast(self, subject=None, subject_selector=None, selector=None):
+        """Multicasts the source sequence notifications through an instantiated
+        subject into all uses of the sequence within a selector function. Each
+        subscription to the resulting sequence causes a separate multicast
+        invocation, exposing the sequence resulting from the selector function's
+        invocation. For specializations with fixed subject types, see Publish,
+        PublishLast, and Replay.
+
+        Example:
+        1 - res = source.multicast(observable)
+        2 - res = source.multicast(subject_selector=lambda scheduler: Subject(),
+                                selector=lambda x: x)
+
+        Keyword arguments:
+        subject_selector -- {Function} Factory function to create an
+            intermediate subject through which the source sequence's elements
+            will be multicast to the selector function.
+        subject -- Subject {Subject} to push source elements into.
+        selector -- {Function} [Optional] Optional selector function which can
+            use the multicasted source sequence subject to the policies enforced
+            by the created subject. Specified only if subject_selector" is a
+            factory function.
+
+        Returns an observable {Observable} sequence that contains the elements
+        of a sequence produced by multicasting the source sequence within a
+        selector function.
+        """
+        from ..operators.observable.multicast import multicast
+        source = self
+        return multicast(source, subject, subject_selector, selector)
+
     @classmethod
     def never(cls) -> 'Observable':
         """Returns a non-terminating observable sequence.
@@ -786,12 +818,14 @@ class Observable(Generic[T_out], bases.Observable):
         return timeout(source, duetime, other)
 
     def timestamp(self) -> 'Observable':
-        """Records the timestamp for each value in an observable sequence.
+        """Records the timestamp for each value in an observable
+        sequence.
 
-        1 - res = source.timestamp() # produces objects with attributes "value" and
-            "timestamp", where value is the original value.
+        1 - res = source.timestamp() # produces objects with attributes
+            "value" and "timestamp", where value is the original value.
 
-        Returns an observable sequence with timestamp information on values.
+        Returns an observable sequence with timestamp information on
+        values.
         """
         from ..operators.observable.timestamp import timestamp
         source = self
@@ -805,15 +839,16 @@ class Observable(Generic[T_out], bases.Observable):
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
-        Returns an observable sequence containing a single element with a list
-        containing all the elements of the source sequence.
+        Returns an observable sequence containing a single element with
+        a list containing all the elements of the source sequence.
         """
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
 
     def while_do(self, condition: Callable[[Any], bool]) -> 'Observable':
-        """Repeats source as long as condition holds emulating a while loop.
+        """Repeats source as long as condition holds emulating a while
+        loop.
 
         Keyword arguments:
         condition -- The condition which determines if the source will be
