@@ -666,12 +666,14 @@ class Observable(Generic[T_out], bases.Observable):
         return timeout(source, duetime, other)
 
     def timestamp(self) -> 'Observable':
-        """Records the timestamp for each value in an observable sequence.
+        """Records the timestamp for each value in an observable
+        sequence.
 
-        1 - res = source.timestamp() # produces objects with attributes "value" and
-            "timestamp", where value is the original value.
+        1 - res = source.timestamp() # produces objects with attributes
+            "value" and "timestamp", where value is the original value.
 
-        Returns an observable sequence with timestamp information on values.
+        Returns an observable sequence with timestamp information on
+        values.
         """
         from ..operators.observable.timestamp import timestamp
         source = self
@@ -685,15 +687,16 @@ class Observable(Generic[T_out], bases.Observable):
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
-        Returns an observable sequence containing a single element with a list
-        containing all the elements of the source sequence.
+        Returns an observable sequence containing a single element with
+        a list containing all the elements of the source sequence.
         """
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
 
     def while_do(self, condition: Callable[[Any], bool]) -> 'Observable':
-        """Repeats source as long as condition holds emulating a while loop.
+        """Repeats source as long as condition holds emulating a while
+        loop.
 
         Keyword arguments:
         condition -- The condition which determines if the source will be
