@@ -254,7 +254,8 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return filter_indexed(predicate, source)
 
-    def flat_map(self, selector: Callable, result_selector: Callable=None) -> 'Observable':
+    def flat_map(self, selector: Callable[[Any], Any],
+                 result_selector: Callable=None) -> 'Observable':
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
@@ -292,6 +293,46 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.flatmap import flat_map
         source = self
         return flat_map(source, selector, result_selector)
+
+    def flat_map_indexed(self, selector: Callable[[Any, int], Any],
+                         result_selector: Callable=None) -> 'Observable':
+        """One of the Following:
+        Projects each element of an observable sequence to an observable
+        sequence and merges the resulting observable sequences into one
+        observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x))
+
+        Or:
+        Projects each element of an observable sequence to an observable
+        sequence, invokes the result selector for the source element and each
+        of the corresponding inner sequence's elements, and merges the results
+        into one observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
+
+        Or:
+        Projects each element of the source observable sequence to the other
+        observable sequence and merges the resulting observable sequences into
+        one observable sequence.
+
+        1 - source.flat_map(Observable.from_([1,2,3]))
+
+        Keyword arguments:
+        selector -- A transform function to apply to each element or an
+            observable sequence to project each element from the source
+            sequence onto.
+        result_selector -- [Optional] A transform function to apply to each
+            element of the intermediate sequence.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the one-to-many transform function collectionSelector on each
+        element of the input sequence and then mapping each of those sequence
+        elements and their corresponding source element to a result element.
+        """
+        from ..operators.observable.flatmap import flat_map_indexed
+        source = self
+        return flat_map_indexed(source, selector, result_selector)
 
     @classmethod
     def from_callable(cls, supplier: Callable) -> 'Observable':

@@ -279,7 +279,7 @@ class TestFlatMap(unittest.TestCase):
         )
 
         def create():
-            return xs.flat_map(lambda x, i: [x] * x, lambda x,y, i: x + y)
+            return xs.flat_map_indexed(lambda x, i: [x] * x, lambda x, y, i: x + y)
 
         res = scheduler.start(create)
 
