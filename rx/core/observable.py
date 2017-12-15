@@ -666,6 +666,46 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return take_last(count, source)
 
+    def take_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value: value < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while
+        source = self
+        return take_while(source, predicate)
+
+    def take_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value, index: value < 10 or index < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while_indexed
+        source = self
+        return take_while_indexed(source, predicate)
+
     def time_interval(self) -> 'Observable':
         """Records the time interval between consecutive values in an
         observable sequence.
