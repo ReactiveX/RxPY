@@ -11,6 +11,7 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class TestSkipWhile(unittest.TestCase):
     def test_skip_while_complete_before(self):
         scheduler = TestScheduler()
@@ -131,6 +132,7 @@ class TestSkipWhile(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(90, -1), send(110, -1), send(210, 2), send(260, 5), send(290, 13), send(320, 3), send(350, 7), send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600))
         ex = 'ex'
         invoked = [0]
+
         def create():
             def predicate(x):
                 invoked[0] += 1
@@ -152,7 +154,7 @@ class TestSkipWhile(unittest.TestCase):
         def create():
             def predicate(x, i):
                 return i < 5
-            return xs.skip_while(predicate)
+            return xs.skip_while_indexed(predicate)
         results = scheduler.start(create)
 
         assert results.messages == [send(390, 4), send(410, 17), send(450, 8), send(500, 23), close(600)]

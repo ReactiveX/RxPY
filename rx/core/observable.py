@@ -541,6 +541,29 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return scan(source, accumulator, seed)
 
+    def select_switch(self, selector: Callable) -> 'Observable':
+        """Projects each element of an observable sequence into a new sequence
+        of observable sequences by incorporating the element's index and then
+        transforms an observable sequence of observable sequences into an
+        observable sequence producing values only from the most recent
+        observable sequence.
+
+        Keyword arguments:
+        selector -- {Function} A transform function to apply to each source
+            element; the second parameter of the function represents the index
+            of the source element.
+
+        Returns an observable {Observable} sequence whose elements are the
+        result of invoking the transform function on each element of source
+        producing an Observable of Observable sequences and that at any point in
+        time produces the elements of the most recent inner observable sequence
+        that has been received.
+        """
+        return self.map(selector).switch_latest()
+
+    flat_map_latest = select_switch
+    switch_map = select_switch
+
     def skip(self, count: int) -> 'Observable':
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.
@@ -571,6 +594,45 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return skip_last(count, source)
 
+    def skip_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
+        """Bypasses elements in an observable sequence as long as a specified
+        condition is true and then returns the remaining elements. The
+        element's index is used in the logic of the predicate function.
+
+        1 - source.skip_while(lambda value: value < 10)
+        2 - source.skip_while(lambda value, index: value < 10 or index < 10)
+
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence starting at the first element in the linear series that
+        does not pass the test specified by predicate.
+        """
+        from ..operators.observable.skipwhile import skip_while
+        source = self
+        return skip_while(source, predicate)
+
+    def skip_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
+        """Bypasses elements in an observable sequence as long as a specified
+        condition is true and then returns the remaining elements. The
+        element's index is used in the logic of the predicate function.
+
+        1 - source.skip_while(lambda value, index: value < 10 or index < 10)
+
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence starting at the first element in the linear series that
+        does not pass the test specified by predicate.
+        """
+        from ..operators.observable.skipwhile import skip_while_indexed
+        source = self
+        return skip_while_indexed(source, predicate)
+
     def start_with(self, *args: Any) -> 'Observable':
         """Prepends a sequence of values to an observable.
 
@@ -595,29 +657,6 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.switchlatest import switch_latest
         sources = self
         return switch_latest(sources)
-
-    def select_switch(self, selector: Callable) -> 'Observable':
-        """Projects each element of an observable sequence into a new sequence
-        of observable sequences by incorporating the element's index and then
-        transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
-
-        Keyword arguments:
-        selector -- {Function} A transform function to apply to each source
-            element; the second parameter of the function represents the index
-            of the source element.
-
-        Returns an observable {Observable} sequence whose elements are the
-        result of invoking the transform function on each element of source
-        producing an Observable of Observable sequences and that at any point in
-        time produces the elements of the most recent inner observable sequence
-        that has been received.
-        """
-        return self.map(selector).switch_latest()
-
-    flat_map_latest = select_switch
-    switch_map = select_switch
 
     def take(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
@@ -658,6 +697,46 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.takelast import take_last
         source = self
         return take_last(count, source)
+
+    def take_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value: value < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while
+        source = self
+        return take_while(source, predicate)
+
+    def take_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value, index: value < 10 or index < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while_indexed
+        source = self
+        return take_while_indexed(source, predicate)
 
     def time_interval(self) -> 'Observable':
         """Records the time interval between consecutive values in an
