@@ -1,6 +1,10 @@
 import types
 from datetime import datetime
+<<<<<<< HEAD
 from typing import Callable, Any, Iterable, Union
+=======
+from typing import Callable, Any, Iterable, List, Union, Generic, TypeVar
+>>>>>>> a74838ee864cd384e01ab94e59c44183990277c4
 from abc import abstractmethod
 from asyncio.futures import Future
 
@@ -292,7 +296,8 @@ class Observable(ty.Observable):
         source = self
         return filter_indexed(predicate, source)
 
-    def flat_map(self, selector: Callable, result_selector: Callable=None) -> 'Observable':
+    def flat_map(self, selector: Callable[[Any], Any],
+                 result_selector: Callable=None) -> 'Observable':
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
@@ -330,6 +335,46 @@ class Observable(ty.Observable):
         from ..operators.observable.flatmap import flat_map
         source = self
         return flat_map(source, selector, result_selector)
+
+    def flat_map_indexed(self, selector: Callable[[Any, int], Any],
+                         result_selector: Callable=None) -> 'Observable':
+        """One of the Following:
+        Projects each element of an observable sequence to an observable
+        sequence and merges the resulting observable sequences into one
+        observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x))
+
+        Or:
+        Projects each element of an observable sequence to an observable
+        sequence, invokes the result selector for the source element and each
+        of the corresponding inner sequence's elements, and merges the results
+        into one observable sequence.
+
+        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
+
+        Or:
+        Projects each element of the source observable sequence to the other
+        observable sequence and merges the resulting observable sequences into
+        one observable sequence.
+
+        1 - source.flat_map(Observable.from_([1,2,3]))
+
+        Keyword arguments:
+        selector -- A transform function to apply to each element or an
+            observable sequence to project each element from the source
+            sequence onto.
+        result_selector -- [Optional] A transform function to apply to each
+            element of the intermediate sequence.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the one-to-many transform function collectionSelector on each
+        element of the input sequence and then mapping each of those sequence
+        elements and their corresponding source element to a result element.
+        """
+        from ..operators.observable.flatmap import flat_map_indexed
+        source = self
+        return flat_map_indexed(source, selector, result_selector)
 
     @classmethod
     def from_callable(cls, supplier: Callable) -> 'Observable':
@@ -407,6 +452,38 @@ class Observable(ty.Observable):
         source = self
         return map_indexed(mapper, source)
 
+
+    def multicast(self, subject=None, subject_selector=None, selector=None):
+        """Multicasts the source sequence notifications through an instantiated
+        subject into all uses of the sequence within a selector function. Each
+        subscription to the resulting sequence causes a separate multicast
+        invocation, exposing the sequence resulting from the selector function's
+        invocation. For specializations with fixed subject types, see Publish,
+        PublishLast, and Replay.
+
+        Example:
+        1 - res = source.multicast(observable)
+        2 - res = source.multicast(subject_selector=lambda scheduler: Subject(),
+                                selector=lambda x: x)
+
+        Keyword arguments:
+        subject_selector -- {Function} Factory function to create an
+            intermediate subject through which the source sequence's elements
+            will be multicast to the selector function.
+        subject -- Subject {Subject} to push source elements into.
+        selector -- {Function} [Optional] Optional selector function which can
+            use the multicasted source sequence subject to the policies enforced
+            by the created subject. Specified only if subject_selector" is a
+            factory function.
+
+        Returns an observable {Observable} sequence that contains the elements
+        of a sequence produced by multicasting the source sequence within a
+        selector function.
+        """
+        from ..operators.observable.multicast import multicast
+        source = self
+        return multicast(source, subject, subject_selector, selector)
+
     @classmethod
     def never(cls) -> 'Observable':
         """Returns a non-terminating observable sequence.
@@ -419,6 +496,46 @@ class Observable(ty.Observable):
         """
         from ..operators.observable.never import never
         return never()
+
+    def partition(self, predicate: Callable[[Any], Any]) -> List['Observable']:
+        """Returns two observables which partition the observations of the
+        source by the given function. The first will trigger observations for
+        those values for which the predicate returns true. The second will
+        trigger observations for those values where the predicate returns false.
+        The predicate is executed once for each subscribed observer. Both also
+        propagate all error observations arising from the source and each
+        completes when the source completes.
+
+        Keyword arguments:
+        predicate -- The function to determine which output Observable will
+            trigger a particular observation.
+
+        Returns a list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate returns False.
+        """
+        from ..operators.observable.partition import partition
+        source = self
+        return partition(source, predicate)
+
+    def partition_indexed(self, predicate: Callable[[Any, int], Any]) -> List['Observable']:
+        """Returns two observables which partition the observations of the
+        source by the given function. The first will trigger observations for
+        those values for which the predicate returns true. The second will
+        trigger observations for those values where the predicate returns false.
+        The predicate is executed once for each subscribed observer. Both also
+        propagate all error observations arising from the source and each
+        completes when the source completes.
+
+        Keyword arguments:
+        predicate -- The function to determine which output Observable will
+            trigger a particular observation.
+
+        Returns a list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate returns False.
+        """
+        from ..operators.observable.partition import partition_indexed
+        source = self
+        return partition_indexed(source, predicate)
 
     @classmethod
     def range(cls, start: int, stop: int=None, step: int=None) -> 'Observable':
@@ -547,6 +664,29 @@ class Observable(ty.Observable):
         source = self
         return scan(source, accumulator, seed)
 
+    def select_switch(self, selector: Callable) -> 'Observable':
+        """Projects each element of an observable sequence into a new sequence
+        of observable sequences by incorporating the element's index and then
+        transforms an observable sequence of observable sequences into an
+        observable sequence producing values only from the most recent
+        observable sequence.
+
+        Keyword arguments:
+        selector -- {Function} A transform function to apply to each source
+            element; the second parameter of the function represents the index
+            of the source element.
+
+        Returns an observable {Observable} sequence whose elements are the
+        result of invoking the transform function on each element of source
+        producing an Observable of Observable sequences and that at any point in
+        time produces the elements of the most recent inner observable sequence
+        that has been received.
+        """
+        return self.map(selector).switch_latest()
+
+    flat_map_latest = select_switch
+    switch_map = select_switch
+
     def skip(self, count: int) -> 'Observable':
         """Bypasses a specified number of elements in an observable
         sequence and then returns the remaining elements.
@@ -577,6 +717,45 @@ class Observable(ty.Observable):
         source = self
         return skip_last(count, source)
 
+    def skip_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
+        """Bypasses elements in an observable sequence as long as a specified
+        condition is true and then returns the remaining elements. The
+        element's index is used in the logic of the predicate function.
+
+        1 - source.skip_while(lambda value: value < 10)
+        2 - source.skip_while(lambda value, index: value < 10 or index < 10)
+
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence starting at the first element in the linear series that
+        does not pass the test specified by predicate.
+        """
+        from ..operators.observable.skipwhile import skip_while
+        source = self
+        return skip_while(source, predicate)
+
+    def skip_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
+        """Bypasses elements in an observable sequence as long as a specified
+        condition is true and then returns the remaining elements. The
+        element's index is used in the logic of the predicate function.
+
+        1 - source.skip_while(lambda value, index: value < 10 or index < 10)
+
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the
+            source element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence starting at the first element in the linear series that
+        does not pass the test specified by predicate.
+        """
+        from ..operators.observable.skipwhile import skip_while_indexed
+        source = self
+        return skip_while_indexed(source, predicate)
+
     def start_with(self, *args: Any) -> 'Observable':
         """Prepends a sequence of values to an observable.
 
@@ -601,29 +780,6 @@ class Observable(ty.Observable):
         from ..operators.observable.switchlatest import switch_latest
         sources = self
         return switch_latest(sources)
-
-    def select_switch(self, selector: Callable) -> 'Observable':
-        """Projects each element of an observable sequence into a new sequence
-        of observable sequences by incorporating the element's index and then
-        transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
-
-        Keyword arguments:
-        selector -- {Function} A transform function to apply to each source
-            element; the second parameter of the function represents the index
-            of the source element.
-
-        Returns an observable {Observable} sequence whose elements are the
-        result of invoking the transform function on each element of source
-        producing an Observable of Observable sequences and that at any point in
-        time produces the elements of the most recent inner observable sequence
-        that has been received.
-        """
-        return self.map(selector).switch_latest()
-
-    flat_map_latest = select_switch
-    switch_map = select_switch
 
     def take(self, count: int) -> 'Observable':
         """Returns a specified number of contiguous elements from the
@@ -665,6 +821,7 @@ class Observable(ty.Observable):
         source = self
         return take_last(count, source)
 
+<<<<<<< HEAD
     @classmethod
     def throw(cls, exception: Exception) -> 'Observable':
         """Returns an observable sequence that terminates with an exception,
@@ -680,6 +837,47 @@ class Observable(ty.Observable):
         """
         from ..operators.observable.throw import throw
         return throw(exception)
+=======
+    def take_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value: value < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while
+        source = self
+        return take_while(source, predicate)
+
+    def take_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
+        """Returns elements from an observable sequence as long as a specified
+        condition is true. The element's index is used in the logic of the
+        predicate function.
+
+        1 - source.take_while(lambda value, index: value < 10 or index < 10)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition; the
+            second parameter of the function represents the index of the source
+            element.
+
+        Returns an observable sequence that contains the elements from the
+        input sequence that occur before the element at which the test no
+        longer passes.
+        """
+        from ..operators.observable.takewhile import take_while_indexed
+        source = self
+        return take_while_indexed(source, predicate)
+>>>>>>> a74838ee864cd384e01ab94e59c44183990277c4
 
     def time_interval(self) -> 'Observable':
         """Records the time interval between consecutive values in an
@@ -720,12 +918,14 @@ class Observable(ty.Observable):
         return timeout(source, duetime, other)
 
     def timestamp(self) -> 'Observable':
-        """Records the timestamp for each value in an observable sequence.
+        """Records the timestamp for each value in an observable
+        sequence.
 
-        1 - res = source.timestamp() # produces objects with attributes "value" and
-            "timestamp", where value is the original value.
+        1 - res = source.timestamp() # produces objects with attributes
+            "value" and "timestamp", where value is the original value.
 
-        Returns an observable sequence with timestamp information on values.
+        Returns an observable sequence with timestamp information on
+        values.
         """
         from ..operators.observable.timestamp import timestamp
         source = self
@@ -739,15 +939,16 @@ class Observable(ty.Observable):
     def to_iterable(self) -> 'Observable':
         """Creates an iterable from an observable sequence.
 
-        Returns an observable sequence containing a single element with a list
-        containing all the elements of the source sequence.
+        Returns an observable sequence containing a single element with
+        a list containing all the elements of the source sequence.
         """
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
 
     def while_do(self, condition: Callable[[Any], bool]) -> 'Observable':
-        """Repeats source as long as condition holds emulating a while loop.
+        """Repeats source as long as condition holds emulating a while
+        loop.
 
         Keyword arguments:
         condition -- The condition which determines if the source will be
