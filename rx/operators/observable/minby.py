@@ -1,4 +1,4 @@
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable
 from rx.internal.basic import default_sub_comparer
 from rx.internal import extensionmethod
 

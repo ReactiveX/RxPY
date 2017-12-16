@@ -1,4 +1,4 @@
-from rx import Observable, AnonymousObserver, AnonymousObservable
+from rx.core import Observable, AnonymousObserver, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionclassmethod
 
@@ -34,7 +34,7 @@ def when(cls, *args):
                 observer.close()
         try:
             for plan in plans:
-                active_plans.append(plan.activate(external_subscriptions, 
+                active_plans.append(plan.activate(external_subscriptions,
                                                   out_observer, deactivate))
         except Exception as ex:
             Observable.throw(ex).subscribe(observer)

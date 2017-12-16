@@ -16,11 +16,6 @@ class TestScheduler(VirtualTimeScheduler):
 
     __test__ = False
 
-    def __init__(self):
-        """Initializes a new instance of the TestScheduler class."""
-
-        super(TestScheduler, self).__init__()
-
     def schedule_absolute(self, duetime: int, action: Callable, state: Any = None) -> Disposable:
         """Schedules an action to be executed at the specified virtual
         time.

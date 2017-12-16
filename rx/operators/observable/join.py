@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.internal import extensionmethod

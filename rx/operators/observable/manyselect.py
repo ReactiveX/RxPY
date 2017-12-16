@@ -28,7 +28,7 @@ class ChainObservable(Observable):
         self.send(Observable.empty())
 
     def throw(self, e):
-        self.send(Observable.throw_exception(e))
+        self.send(Observable.throw(e))
 
     def send(self, v):
         self.tail.send(v)

@@ -1,7 +1,8 @@
 from typing import Callable, Any
 
-from rx import Observable, Observer, AnonymousObservable
 from rx.core import Disposable, bases
+from rx.core import Observer, Observable, AnonymousObservable
+from rx.core import typing
 
 
 def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
@@ -18,7 +19,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer, scheduler: bases.Scheduler) -> Disposable:
+    def subscribe(observer: Observer, scheduler: typing.Scheduler) -> Disposable:
         def send(value):
             try:
                 result = mapper(value)

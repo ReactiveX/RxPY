@@ -1,4 +1,4 @@
-from rx import Observable
+from rx.core import Observable
 from rx.internal.basic import default_comparer
 from rx.internal import extensionmethod
 

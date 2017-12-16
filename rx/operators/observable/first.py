@@ -1,4 +1,4 @@
-from rx import Observable
+from rx.core import Observable
 from rx.internal import extensionmethod
 
 from .firstordefault import first_or_default_async

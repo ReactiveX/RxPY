@@ -1,4 +1,4 @@
-from rx import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 
 def skip_last(count: int, source: Observable) -> Observable:

@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from rx import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 

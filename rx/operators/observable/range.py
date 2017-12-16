@@ -15,8 +15,6 @@ def from_range(start: int, stop: int = None, step: int = None) -> Observable:
     Keyword arguments:
     start -- The value of the first integer in the sequence.
     count -- The number of sequential integers to generate.
-    scheduler -- [Optional] Scheduler to run the generator loop on. If not
-        specified, defaults to Scheduler.current_thread.
 
     Returns an observable sequence that contains a range of sequential
     integral numbers.

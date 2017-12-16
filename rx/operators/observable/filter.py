@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from rx import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 
 def filter(predicate: Callable[[Any], bool], source: Observable):

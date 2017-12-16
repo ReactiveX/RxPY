@@ -106,7 +106,7 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing():
-                return Observable.throw_exception(ex)
+                return Observable.throw(ex)
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 

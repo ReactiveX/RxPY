@@ -4,7 +4,7 @@ from rx.internal import extensionmethod, extensionclassmethod
 
 
 @extensionmethod(Observable, instancemethod=True)
-def amb(self, right_source):
+def amb(left_source, right_source):
     """Propagates the observable sequence that reacts first.
 
     right_source Second observable sequence.
@@ -13,7 +13,6 @@ def amb(self, right_source):
     sequences, whichever reacted first.
     """
 
-    left_source = self
     right_source = Observable.from_future(right_source)
 
     def subscribe(observer, scheduler=None):
@@ -51,8 +50,8 @@ def amb(self, right_source):
             if choice[0] == left_choice:
                 observer.close()
 
-        ld = left_source.subscribe_callbacks(send_left, throw_left, close_left, scheduler)
-        left_subscription.disposable = ld
+        lelf_d = left_source.subscribe_callbacks(send_left, throw_left, close_left, scheduler)
+        left_subscription.disposable = lelf_d
 
         def send_right(value):
             with self.lock:
@@ -72,8 +71,8 @@ def amb(self, right_source):
             if choice[0] == right_choice:
                 observer.close()
 
-        rd = right_source.subscribe_callbacks(send_right, throw_right, close_right, scheduler)
-        right_subscription.disposable = rd
+        right_d = right_source.subscribe_callbacks(send_right, throw_right, close_right, scheduler)
+        right_subscription.disposable = right_d
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)
 

@@ -1,6 +1,6 @@
 import collections
 from typing import Callable
-from rx import Observable
+from rx.core import Observable
 from rx.internal.utils import adapt_call
 from rx.internal import extensionmethod
 

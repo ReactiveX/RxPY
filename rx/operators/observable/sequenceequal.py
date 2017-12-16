@@ -1,6 +1,6 @@
 import collections
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable
 from rx.disposables import CompositeDisposable
 from rx.internal import default_comparer
 from rx.internal import extensionmethod

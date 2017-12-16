@@ -56,7 +56,7 @@ class TestRetry(unittest.TestCase):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
-        ys = Observable.throw_exception('ex').retry()
+        ys = Observable.throw('ex').retry()
         d = ys.subscribe_callbacks(throw=lambda ex: _raise('ex'), scheduler=scheduler2)
 
         scheduler2.schedule_absolute(210, lambda sc, st: d.dispose())
@@ -112,7 +112,7 @@ class TestRetry(unittest.TestCase):
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
-        ys = Observable.throw_exception('ex').retry(100)
+        ys = Observable.throw('ex').retry(100)
         d = ys.subscribe_callbacks(throw=lambda ex: _raise('ex'), scheduler=scheduler2)
 
         def dispose(_, __):

@@ -635,7 +635,7 @@ class TestGroup_join(unittest.TestCase):
 
         def create():
             return xs.group_join(ys,
-                lambda x: Observable.timer(x.interval).flat_map(Observable.throw_exception(ex) if x.value==6 else Observable.empty()),
+                lambda x: Observable.timer(x.interval).flat_map(Observable.throw(ex) if x.value==6 else Observable.empty()),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
@@ -692,7 +692,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval).flat_map(Observable.throw_exception(ex) if y.value=="tin" else Observable.empty()),
+                lambda y: Observable.timer(y.interval).flat_map(Observable.throw(ex) if y.value=="tin" else Observable.empty()),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_observable()
         results = scheduler.start(create=create)

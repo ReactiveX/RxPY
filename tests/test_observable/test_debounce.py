@@ -90,7 +90,7 @@ class TestDebounce(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex).debounce(10)
+            return Observable.throw(ex).debounce(10)
 
         results = scheduler.start(create)
         assert results.messages == [throw(200, ex)]

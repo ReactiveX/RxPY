@@ -56,7 +56,7 @@ class TestToFuture(unittest.TestCase):
         def go():
             error = Exception('woops')
 
-            source = Observable.throw_exception(error)
+            source = Observable.throw(error)
             future = source.to_future(asyncio.Future)
 
             def done(future):

@@ -1,4 +1,4 @@
-from rx import Observable
+from rx.core import Observable
 from rx.internal import extensionmethod
 
 from .elementatordefault import _element_at_or_default

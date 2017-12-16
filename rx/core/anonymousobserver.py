@@ -4,7 +4,7 @@ from .observerbase import ObserverBase
 
 class AnonymousObserver(ObserverBase):
     def __init__(self, send=None, throw=None, close=None):
-        super(AnonymousObserver, self).__init__()
+        super().__init__()
 
         self._next = send or noop
         self._error = throw or default_error

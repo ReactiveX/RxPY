@@ -23,7 +23,7 @@ def defer(observable_factory: Callable[[bases.Scheduler], Observable]) -> Observ
         try:
             result = observable_factory(scheduler)
         except Exception as ex:
-            return Observable.throw_exception(ex).subscribe(observer)
+            return Observable.throw(ex).subscribe(observer)
 
         result = Observable.from_future(result)
         return result.subscribe(observer, scheduler)

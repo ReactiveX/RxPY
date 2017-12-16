@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Disposable(metaclass=ABCMeta):
+class Disposable(ABC):
     """Abstract disposable class"""
 
     @abstractmethod

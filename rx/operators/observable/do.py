@@ -1,22 +1,18 @@
 from rx.core import Observer, Observable, AnonymousObservable, Disposable
-from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable
 
 
-@extensionmethod(Observable, alias="tap")
-def do_action(self, send=None, throw=None, close=None, observer=None):
+def do_action(source: Observable, send=None, throw=None, close=None) -> Observable:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
     etc. of query behavior by intercepting the message stream to run
     arbitrary actions for messages on the pipeline.
 
-    1 - observable.do_action(observer)
-    2 - observable.do_action(send)
-    3 - observable.do_action(send, throw)
-    4 - observable.do_action(send, throw, close)
+    1 - observable.do_action(send)
+    2 - observable.do_action(send, throw)
+    3 - observable.do_action(send, throw, close)
 
-    observer -- [Optional] Observer, or ...
     send -- [Optional] Action to invoke for each element in the
         observable sequence.
     throw -- [Optional] Action to invoke on exceptional termination
@@ -24,19 +20,9 @@ def do_action(self, send=None, throw=None, close=None, observer=None):
     close -- [Optional] Action to invoke on graceful termination
         of the observable sequence.
 
-    Returns the source sequence with the side-effecting behavior applied.
+    Returns the source sequence with the side-effecting behavior
+    applied.
     """
-
-    source = self
-
-    if isinstance(observer, Observer):
-        send = observer.send
-        throw = observer.throw
-        close = observer.close
-    elif isinstance(send, Observer):
-        throw = send.throw
-        close = send.close
-        send = send.send
 
     def subscribe(observer, scheduler=None):
         def _send(x):
@@ -73,12 +59,28 @@ def do_action(self, send=None, throw=None, close=None, observer=None):
                 observer.close()
 
         return source.subscribe_callbacks(_send, _throw, _close)
-
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_after_next(self, after_next):
+def do(source: Observable, observer: Observer) -> Observable:
+    """Invokes an action for each element in the observable sequence and
+    invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging, logging,
+    etc. of query behavior by intercepting the message stream to run
+    arbitrary actions for messages on the pipeline.
+
+    1 - observable.do(observer)
+
+    observer -- Observer
+
+    Returns the source sequence with the side-effecting behavior
+    applied.
+    """
+
+    return source.do_action(observer.send, observer.throw, observer.close)
+
+
+def do_after_next(source, after_next):
     """Invokes an action with each element after it has been emitted downstream.
     This can be helpful for debugging, logging, and other side effects.
 
@@ -94,13 +96,11 @@ def do_after_next(self, after_next):
             except Exception as e:
                 observer.throw(e)
 
-        return self.subscribe_callbacks(send, observer.throw, observer.close)
-
+        return source.subscribe_callbacks(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_on_subscribe(self, on_subscribe):
+def do_on_subscribe(source, on_subscribe):
     """Invokes an action on subscription.
     This can be helpful for debugging, logging, and other side effects on the start of an operation.
 
@@ -108,13 +108,12 @@ def do_on_subscribe(self, on_subscribe):
     """
     def subscribe(observer, scheduler=None):
         on_subscribe()
-        return self.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
+        return source.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
 
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_on_dispose(self, on_dispose):
+def do_on_dispose(source, on_dispose):
     """Invokes an action on disposal.
      This can be helpful for debugging, logging, and other side effects on the disposal of an operation.
 
@@ -123,21 +122,20 @@ def do_on_dispose(self, on_dispose):
     """
 
     class OnDispose(Disposable):
-        def dispose(self):
+        def dispose(source):
             on_dispose()
 
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        disposable = self.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
+        disposable = source.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
         composite_disposable.add(disposable)
         return composite_disposable
 
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_on_terminate(self, on_terminate):
+def do_on_terminate(source, on_terminate):
     """Invokes an action on an on_complete() or throw() event.
      This can be helpful for debugging, logging, and other side effects when completion or an error terminates an operation.
 
@@ -163,13 +161,11 @@ def do_on_terminate(self, on_terminate):
             else:
                 observer.throw(exception)
 
-        return self.subscribe_callbacks(observer.send, throw, close, scheduler)
-
+        return source.subscribe_callbacks(observer.send, throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_after_terminate(self, after_terminate):
+def do_after_terminate(source, after_terminate):
     """Invokes an action after an on_complete() or throw() event.
      This can be helpful for debugging, logging, and other side effects when completion or an error terminates an operation
 
@@ -192,13 +188,11 @@ def do_after_terminate(self, after_terminate):
             except Exception as err:
                 observer.throw(err)
 
-        return self.subscribe(observer.send, throw, close, scheduler)
-
+        return source.subscribe(observer.send, throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def do_finally(self, finally_action):
+def do_finally(source, finally_action):
     """Invokes an action after an on_complete(), throw(), or disposal event occurs
      This can be helpful for debugging, logging, and other side effects when completion, an error, or disposal terminates an operation.
     Note this operator will strive to execute the finally_action once, and prevent any redudant calls
@@ -239,7 +233,7 @@ def do_finally(self, finally_action):
 
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose(was_invoked))
-        disposable = self.subscribe_callbacks(observer.send, throw, close, scheduler)
+        disposable = source.subscribe_callbacks(observer.send, throw, close, scheduler)
         composite_disposable.add(disposable)
 
         return composite_disposable

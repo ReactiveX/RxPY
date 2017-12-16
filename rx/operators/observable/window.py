@@ -1,6 +1,6 @@
 import logging
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \

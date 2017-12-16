@@ -116,7 +116,7 @@ class TestRepeat(unittest.TestCase):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
-        ys = Observable.throw_exception('ex').repeat()
+        ys = Observable.throw('ex').repeat()
         ys.subscribe_callbacks(lambda ex: _raise('ex'), scheduler=scheduler2)
 
         with self.assertRaises(Exception):
@@ -175,7 +175,7 @@ class TestRepeat(unittest.TestCase):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
-        ys = Observable.throw_exception('ex1').repeat(3)
+        ys = Observable.throw('ex1').repeat(3)
         ys.subscribe_callbacks(throw=lambda ex: _raise('ex2'), scheduler=scheduler2)
 
         with self.assertRaises(RxException):

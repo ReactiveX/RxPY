@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from rx import Observable
+from rx.core import Observable
 
 
 def reduce(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> Observable:

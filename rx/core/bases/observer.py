@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Observer(metaclass=ABCMeta):
+class Observer(ABC):
     __slots__ = ()
 
     @abstractmethod

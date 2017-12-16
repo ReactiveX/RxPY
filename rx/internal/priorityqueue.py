@@ -4,7 +4,7 @@ import rx
 from rx.internal.exceptions import InvalidOperationException
 
 
-class PriorityQueue(object):
+class PriorityQueue:
     """Priority queue for scheduling"""
 
     def __init__(self, capacity=None):

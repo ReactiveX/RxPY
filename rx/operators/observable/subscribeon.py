@@ -1,4 +1,4 @@
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 from rx.internal import extensionmethod
 

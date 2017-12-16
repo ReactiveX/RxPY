@@ -1,27 +1,20 @@
 import types
 from datetime import datetime
-from typing import Callable, Any, Iterable, Union, Generic, TypeVar
+from typing import Callable, Any, Iterable, Union
 from abc import abstractmethod
 from asyncio.futures import Future
 
 from rx import config
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
-from . import bases
-
-T_out = TypeVar('T_out', covariant=True)
+from . import typing as ty
 
 
-class Observable(Generic[T_out], bases.Observable):
+class Observable(ty.Observable):
     """Represents a push-style collection."""
 
     def __init__(self):
         self.lock = config["concurrency"].RLock()
-
-        # Deferred instance method assignment:
-        # TODO will be removed when extensionmethods are gone
-        for name, method in self._methods:
-            setattr(self, name, types.MethodType(method, self))
 
     def __add__(self, other):
         """Pythonic version of concat
@@ -56,8 +49,8 @@ class Observable(Generic[T_out], bases.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer: bases.Observer = None,
-                  scheduler: bases.Scheduler = None) -> bases.Disposable:
+    def subscribe(self, observer: ty.Observer = None,
+                  scheduler: ty.Scheduler = None) -> ty.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -75,7 +68,9 @@ class Observable(Generic[T_out], bases.Observable):
         source = self
         return subscribe(source, observer, scheduler)
 
-    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
+    def subscribe_callbacks(self, send: ty.Send = None, throw: ty.Throw = None,
+                            close: ty.Close = None, scheduler: ty.Scheduler = None
+                           ) -> ty.Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -190,6 +185,49 @@ class Observable(Generic[T_out], bases.Observable):
         """
         from ..operators.observable.defer import defer
         return defer(observable_factory)
+
+    def do(self, observer: ty.Observer) -> 'Observable':
+        """Invokes an action for each element in the observable sequence and
+        invokes an action on graceful or exceptional termination of the
+        observable sequence. This method can be used for debugging, logging,
+        etc. of query behavior by intercepting the message stream to run
+        arbitrary actions for messages on the pipeline.
+
+        1 - observable.do(observer)
+
+        observer -- Observer
+
+        Returns the source sequence with the side-effecting behavior
+        applied.
+        """
+        from ..operators.observable.do import do
+        source = self
+        return do(source, observer)
+
+    def do_action(self, send=None, throw=None, close=None) -> 'Observable':
+        """Invokes an action for each element in the observable sequence and
+        invokes an action on graceful or exceptional termination of the
+        observable sequence. This method can be used for debugging, logging,
+        etc. of query behavior by intercepting the message stream to run
+        arbitrary actions for messages on the pipeline.
+
+        1 - observable.do_action(send)
+        2 - observable.do_action(send, throw)
+        3 - observable.do_action(send, throw, close)
+
+        send -- [Optional] Action to invoke for each element in the
+            observable sequence.
+        throw -- [Optional] Action to invoke on exceptional termination
+            of the observable sequence.
+        close -- [Optional] Action to invoke on graceful termination
+            of the observable sequence.
+
+        Returns the source sequence with the side-effecting behavior
+        applied.
+        """
+        from ..operators.observable.do import do_action
+        source = self
+        return do_action(source, send, throw, close)
 
     def do_while(self, condition: Callable[[Any], bool]) -> 'Observable':
         """Repeats source as long as condition holds emulating a do while loop.
@@ -330,7 +368,7 @@ class Observable(Generic[T_out], bases.Observable):
         return from_future(future)
 
     @classmethod
-    def from_iterable(cls, iterable: Iterable) -> 'Observable':
+    def from_iterable(cls, iterable: Iterable, delay=None) -> 'Observable':
         """Converts an array to an observable sequence.
 
         1 - res = rx.Observable.from_iterable([1,2,3])
@@ -342,7 +380,7 @@ class Observable(Generic[T_out], bases.Observable):
             the given enumerable sequence.
         """
         from ..operators.observable.fromiterable import from_iterable
-        return from_iterable(iterable)
+        return from_iterable(iterable, delay)
 
     from_ = from_iterable
     from_list = from_iterable
@@ -626,6 +664,22 @@ class Observable(Generic[T_out], bases.Observable):
         from ..operators.observable.takelast import take_last
         source = self
         return take_last(count, source)
+
+    @classmethod
+    def throw(cls, exception: Exception) -> 'Observable':
+        """Returns an observable sequence that terminates with an exception,
+        using the specified scheduler to send out the single OnError message.
+
+        1 - res = rx.Observable.throw(Exception('Error'))
+
+        Keyword arguments:
+        exception -- An object used for the sequence's termination.
+
+        Returns the observable sequence that terminates exceptionally with the
+        specified exception object.
+        """
+        from ..operators.observable.throw import throw
+        return throw(exception)
 
     def time_interval(self) -> 'Observable':
         """Records the time interval between consecutive values in an

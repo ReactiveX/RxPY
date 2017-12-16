@@ -28,7 +28,7 @@ def timeout(source, duetime: Union[int, datetime], other: Observable = None) -> 
         of a timeout.
     """
 
-    other = other or Observable.throw_exception(Exception("Timeout"))
+    other = other or Observable.throw(Exception("Timeout"))
     other = Observable.from_future(other)
 
     def subscribe(observer, scheduler=None):

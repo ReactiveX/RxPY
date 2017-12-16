@@ -26,7 +26,7 @@ from . import delaywithselector
 from . import dematerialize
 from . import distinct
 from . import distinctuntilchanged
-from . import doaction
+from . import do
 from . import dowhile
 from . import elementat
 from . import elementatordefault

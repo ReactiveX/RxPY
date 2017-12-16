@@ -1,12 +1,12 @@
 import sys
 
-from rx import AnonymousObservable
 from rx.disposables import CompositeDisposable
-
 from .exceptions import DisposedException
 
 
 def add_ref(xs, r):
+    from rx.core import AnonymousObservable
+
     def subscribe(observer, scheduler=None):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 

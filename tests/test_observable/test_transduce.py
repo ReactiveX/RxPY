@@ -49,7 +49,7 @@ class TestTransduce(unittest.TestCase):
 
     def test_transduce_raises(self):
         def create():
-            Observable.throw_exception(RxException()).transduce(
+            Observable.throw(RxException()).transduce(
                 compose(
                     filtering(even), mapping(mul10))
                 ).subscribe_callbacks(noop, throw_error)
