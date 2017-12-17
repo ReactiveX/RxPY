@@ -1,177 +1,35 @@
-import types
-from datetime import datetime
-<<<<<<< HEAD
-from typing import Callable, Any, Iterable, Union
-=======
-from typing import Callable, Any, Iterable, List, Union, Generic, TypeVar
->>>>>>> a74838ee864cd384e01ab94e59c44183990277c4
-from abc import abstractmethod
+from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
-from rx import config
-from .anonymousobserver import AnonymousObserver
-from .blockingobservable import BlockingObservable
-from . import typing as ty
+from .observablebase import ObservableBase
 
+class Observable:
+    """Observable creation methods.
 
-class Observable(ty.Observable):
-    """Represents a push-style collection."""
+    This class is a container of static Observalble creation methods.
+    """
 
-    def __init__(self):
-        self.lock = config["concurrency"].RLock()
+    @staticmethod
+    def catch_exception(*args):
+        """Continues an observable sequence that is terminated by an
+        exception with the next observable sequence.
 
-    def __add__(self, other):
-        """Pythonic version of concat
+        1 - res = Observable.catch_exception(xs, ys, zs)
+        2 - res = Observable.catch_exception([xs, ys, zs])
 
-        Example:
-        zs = xs + ys
-        Returns self.concat(other)"""
-        from ..operators.observable.concat import concat
-        return concat(self, other)
-
-    def __iadd__(self, other):
-        """Pythonic use of concat
-
-        Example:
-        xs += ys
-
-        Returns self.concat(self, other)"""
-        from ..operators.observable.concat import concat
-        return concat(self, other)
-
-    def __mul__(self, num: int):
-        """Pythonic version of repeat.
-
-        Example:
-        yx = xs * 5
-
-        Returns self.repeat(num)"""
-
-        return self.repeat(num)
-
-    def __or__(self, other):
-        """Forward pipe operator."""
-        return other(self)
-
-    def subscribe(self, observer: ty.Observer = None,
-                  scheduler: ty.Scheduler = None) -> ty.Disposable:
-        """Subscribe an observer to the observable sequence.
-
-        Examples:
-        1 - source.subscribe()
-        2 - source.subscribe(observer)
-
-        Keyword arguments:
-        observer -- [Optional] The object that is to receive
-            notifications.
-
-        Return disposable object representing an observer's subscription
-            to the observable sequence.
+        Returns an observable sequence containing elements from consecutive
+        source sequences until a source sequence terminates successfully.
         """
-        from .subscribe import subscribe
-        source = self
-        return subscribe(source, observer, scheduler)
+        from ..operators.observable.catch import catch_exception_
+        return catch_exception_(*args)
 
-    def subscribe_callbacks(self, send: ty.Send = None, throw: ty.Throw = None,
-                            close: ty.Close = None, scheduler: ty.Scheduler = None
-                           ) -> ty.Disposable:
-        """Subscribe callbacks to the observable sequence.
-
-        Examples:
-        1 - source.subscribe()
-        2 - source.subscribe_callbacks(send)
-        3 - source.subscribe_callbacks(send, throw)
-        4 - source.subscribe_callbacks(send, throw, close)
-
-        Keyword arguments:
-        send -- [Optional] Action to invoke for each element in the
-            observable sequence.
-        throw -- [Optional] Action to invoke upon exceptional
-            termination of the observable sequence.
-        close -- [Optional] Action to invoke upon graceful
-            termination of the observable sequence.
-
-        Return disposable object representing an observer's subscription
-            to the observable sequence.
-        """
-        observer = AnonymousObserver(send, throw, close)
-        return self.subscribe(observer, scheduler)
-
-    @abstractmethod
-    def _subscribe_core(self, observer, scheduler=None):
-        return NotImplemented
-
-    def as_observable(self) -> 'Observable':
-        """Hides the identity of an observable sequence.
-
-        Returns an observable sequence that hides the identity of the
-        source sequence.
-        """
-        from ..operators.observable.asobservable import as_observable
-        source = self
-        return as_observable(source)
-
-    def combine_latest(self, observables: Union['Observable', Iterable['Observable']],
-                       selector: Callable[[Any], Any]) -> 'Observable':
-        """Merges the specified observable sequences into one observable
-        sequence by using the selector function whenever any of the
-        observable sequences produces an element. This can be in the form of
-        an argument list of observables or an array.
-
-        1 - obs = observable.combine_latest(obs1, obs2, obs3,
-                                            lambda o1, o2, o3: o1 + o2 + o3)
-        2 - obs = observable.combine_latest([obs1, obs2, obs3],
-                                            lambda o1, o2, o3: o1 + o2 + o3)
-
-        Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector
-        function.
-        """
-        from ..operators.observable.combinelatest import combine_latest
-        if isinstance(observables, Observable):
-            observables = [observables]
-
-        args = [self] + list(observables)
-        return combine_latest(args, selector)
-
-    def concat(self, *args: 'Observable') -> 'Observable':
-        """Concatenates all the observable sequences. This takes in either an
-        array or variable arguments to concatenate.
-
-        1 - concatenated = xs.concat(ys, zs)
-
-        Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order.
-        """
-        from ..operators.observable.concat import concat
-        source = self
-        return concat(source, *args)
-
-    def concat_all(self) -> 'Observable':
-        """Concatenates an observable sequence of observable sequences.
-
-        Returns an observable sequence that contains the elements of each
-        observed inner sequence, in sequential order.
-        """
-        return self.merge(1)
-
-    def concat_map(self, mapper: Callable[[Any], Any]) -> 'Observable':
-        """Maps each emission to an Observable and fires its emissions.
-        It will only fire each resulting Observable sequentially.
-        The next derived Observable will not start its emissions until
-        the current one calls close
-        """
-        return self.map(mapper).concat_all()
-
-    @classmethod
-    def create(cls, subscribe) -> 'Observable':
+    @staticmethod
+    def create(subscribe) -> ObservableBase:
         from ..operators.observable.create import create
         return create(subscribe)
 
-    create_with_disposable = create
-
-    @classmethod
-    def defer(cls, observable_factory: Callable[[Any], 'Observable']) -> 'Observable':
+    @staticmethod
+    def defer(observable_factory: Callable[[Any], ObservableBase]) -> ObservableBase:
         """Returns an observable sequence that invokes the specified
         factory function whenever a new observer subscribes.
 
@@ -190,65 +48,8 @@ class Observable(ty.Observable):
         from ..operators.observable.defer import defer
         return defer(observable_factory)
 
-    def do(self, observer: ty.Observer) -> 'Observable':
-        """Invokes an action for each element in the observable sequence and
-        invokes an action on graceful or exceptional termination of the
-        observable sequence. This method can be used for debugging, logging,
-        etc. of query behavior by intercepting the message stream to run
-        arbitrary actions for messages on the pipeline.
-
-        1 - observable.do(observer)
-
-        observer -- Observer
-
-        Returns the source sequence with the side-effecting behavior
-        applied.
-        """
-        from ..operators.observable.do import do
-        source = self
-        return do(source, observer)
-
-    def do_action(self, send=None, throw=None, close=None) -> 'Observable':
-        """Invokes an action for each element in the observable sequence and
-        invokes an action on graceful or exceptional termination of the
-        observable sequence. This method can be used for debugging, logging,
-        etc. of query behavior by intercepting the message stream to run
-        arbitrary actions for messages on the pipeline.
-
-        1 - observable.do_action(send)
-        2 - observable.do_action(send, throw)
-        3 - observable.do_action(send, throw, close)
-
-        send -- [Optional] Action to invoke for each element in the
-            observable sequence.
-        throw -- [Optional] Action to invoke on exceptional termination
-            of the observable sequence.
-        close -- [Optional] Action to invoke on graceful termination
-            of the observable sequence.
-
-        Returns the source sequence with the side-effecting behavior
-        applied.
-        """
-        from ..operators.observable.do import do_action
-        source = self
-        return do_action(source, send, throw, close)
-
-    def do_while(self, condition: Callable[[Any], bool]) -> 'Observable':
-        """Repeats source as long as condition holds emulating a do while loop.
-
-        Keyword arguments:
-        condition -- {Function} The condition which determines if the source
-            will be repeated.
-
-        Returns an observable {Observable} sequence which is repeated as long
-        as the condition holds.
-        """
-        from ..operators.observable.dowhile import do_while
-        source = self
-        return do_while(condition, source)
-
-    @classmethod
-    def empty(cls) -> 'Observable':
+    @staticmethod
+    def empty() -> ObservableBase:
         """Returns an empty observable sequence.
 
         1 - res = rx.Observable.empty()
@@ -260,124 +61,8 @@ class Observable(ty.Observable):
         from ..operators.observable.empty import empty
         return empty()
 
-    def filter(self, predicate: Callable[[Any], bool]) -> 'Observable':
-        """Filters the elements of an observable sequence based on a
-        predicate.
-
-        1 - source.filter(lambda value: value < 10)
-
-        Keyword arguments:
-        predicate -- A function to test each source element for a
-            condition.
-
-        Returns an observable sequence that contains elements from the
-        input sequence that satisfy the condition.
-        """
-        from ..operators.observable.filter import filter as _filter
-        source = self
-        return _filter(predicate, source)
-
-    def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> 'Observable':
-        """Filters the elements of an observable sequence based on a
-        predicate by incorporating the element's index.
-
-        1 - source.filter(lambda value, index: value < 10 or index < 10)
-
-        Keyword arguments:
-        predicate - A function to test each source element for a
-            condition; the second parameter of the function represents
-            the index of the source element.
-
-        Returns an observable sequence that contains elements from the
-        input sequence that satisfy the condition.
-        """
-
-        from ..operators.observable.filter import filter_indexed
-        source = self
-        return filter_indexed(predicate, source)
-
-    def flat_map(self, selector: Callable[[Any], Any],
-                 result_selector: Callable=None) -> 'Observable':
-        """One of the Following:
-        Projects each element of an observable sequence to an observable
-        sequence and merges the resulting observable sequences into one
-        observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x))
-
-        Or:
-        Projects each element of an observable sequence to an observable
-        sequence, invokes the result selector for the source element and each
-        of the corresponding inner sequence's elements, and merges the results
-        into one observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
-
-        Or:
-        Projects each element of the source observable sequence to the other
-        observable sequence and merges the resulting observable sequences into
-        one observable sequence.
-
-        1 - source.flat_map(Observable.from_([1,2,3]))
-
-        Keyword arguments:
-        selector -- A transform function to apply to each element or an
-            observable sequence to project each element from the source
-            sequence onto.
-        result_selector -- [Optional] A transform function to apply to each
-            element of the intermediate sequence.
-
-        Returns an observable sequence whose elements are the result of
-        invoking the one-to-many transform function collectionSelector on each
-        element of the input sequence and then mapping each of those sequence
-        elements and their corresponding source element to a result element.
-        """
-        from ..operators.observable.flatmap import flat_map
-        source = self
-        return flat_map(source, selector, result_selector)
-
-    def flat_map_indexed(self, selector: Callable[[Any, int], Any],
-                         result_selector: Callable=None) -> 'Observable':
-        """One of the Following:
-        Projects each element of an observable sequence to an observable
-        sequence and merges the resulting observable sequences into one
-        observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x))
-
-        Or:
-        Projects each element of an observable sequence to an observable
-        sequence, invokes the result selector for the source element and each
-        of the corresponding inner sequence's elements, and merges the results
-        into one observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
-
-        Or:
-        Projects each element of the source observable sequence to the other
-        observable sequence and merges the resulting observable sequences into
-        one observable sequence.
-
-        1 - source.flat_map(Observable.from_([1,2,3]))
-
-        Keyword arguments:
-        selector -- A transform function to apply to each element or an
-            observable sequence to project each element from the source
-            sequence onto.
-        result_selector -- [Optional] A transform function to apply to each
-            element of the intermediate sequence.
-
-        Returns an observable sequence whose elements are the result of
-        invoking the one-to-many transform function collectionSelector on each
-        element of the input sequence and then mapping each of those sequence
-        elements and their corresponding source element to a result element.
-        """
-        from ..operators.observable.flatmap import flat_map_indexed
-        source = self
-        return flat_map_indexed(source, selector, result_selector)
-
-    @classmethod
-    def from_callable(cls, supplier: Callable) -> 'Observable':
+    @staticmethod
+    def from_callable(supplier: Callable) -> ObservableBase:
         """Returns an observable sequence that contains a single element
         generate from a supplier, using the specified scheduler to send
         out observer messages.
@@ -397,8 +82,8 @@ class Observable(ty.Observable):
         from ..operators.observable.returnvalue import from_callable
         return from_callable(supplier)
 
-    @classmethod
-    def from_future(cls, future: Union['Observable', Future]) -> 'Observable':
+    @staticmethod
+    def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
         """Converts a Future to an Observable sequence
 
         Keyword Arguments:
@@ -412,8 +97,8 @@ class Observable(ty.Observable):
         from ..operators.observable.fromfuture import from_future
         return from_future(future)
 
-    @classmethod
-    def from_iterable(cls, iterable: Iterable, delay=None) -> 'Observable':
+    @staticmethod
+    def from_iterable(iterable: Iterable, delay=None) -> ObservableBase:
         """Converts an array to an observable sequence.
 
         1 - res = rx.Observable.from_iterable([1,2,3])
@@ -430,62 +115,39 @@ class Observable(ty.Observable):
     from_ = from_iterable
     from_list = from_iterable
 
-    def map(self, mapper: Callable[[Any], Any]) -> 'Observable':
-        """Project each element of an observable sequence into a new
-        form.
-
-        1 - source.map(lambda value: value * value)
-
-        Keyword arguments:
-        mapper -- A transform function to apply to each source element.
-
-        Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of source.
-        """
-
-        from ..operators.observable.map import map as _map
-        source = self
-        return _map(mapper, source)
-
-    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> 'Observable':
-        from ..operators.observable.map import map_indexed
-        source = self
-        return map_indexed(mapper, source)
-
-
-    def multicast(self, subject=None, subject_selector=None, selector=None):
-        """Multicasts the source sequence notifications through an instantiated
-        subject into all uses of the sequence within a selector function. Each
-        subscription to the resulting sequence causes a separate multicast
-        invocation, exposing the sequence resulting from the selector function's
-        invocation. For specializations with fixed subject types, see Publish,
-        PublishLast, and Replay.
+    @staticmethod
+    def interval(period) -> ObservableBase:
+        """Returns an observable sequence that produces a value after each
+        period.
 
         Example:
-        1 - res = source.multicast(observable)
-        2 - res = source.multicast(subject_selector=lambda scheduler: Subject(),
-                                selector=lambda x: x)
+        1 - res = rx.Observable.interval(1000)
 
         Keyword arguments:
-        subject_selector -- {Function} Factory function to create an
-            intermediate subject through which the source sequence's elements
-            will be multicast to the selector function.
-        subject -- Subject {Subject} to push source elements into.
-        selector -- {Function} [Optional] Optional selector function which can
-            use the multicasted source sequence subject to the policies enforced
-            by the created subject. Specified only if subject_selector" is a
-            factory function.
+        period -- Period for producing the values in the resulting sequence
+            (specified as an integer denoting milliseconds).
 
-        Returns an observable {Observable} sequence that contains the elements
-        of a sequence produced by multicasting the source sequence within a
-        selector function.
+        Returns an observable sequence that produces a value after each period.
         """
-        from ..operators.observable.multicast import multicast
-        source = self
-        return multicast(source, subject, subject_selector, selector)
+        from ..operators.observable.interval import interval
+        return interval(period)
 
-    @classmethod
-    def never(cls) -> 'Observable':
+    @staticmethod
+    def merge(*args):
+        """Merges all the observable sequences into a single observable
+        sequence.
+
+        1 - merged = rx.Observable.merge(xs, ys, zs)
+        2 - merged = rx.Observable.merge([xs, ys, zs])
+
+        Returns the observable sequence that merges the elements of the
+        observable sequences.
+        """
+        from ..operators.observable.merge import merge_
+        return merge_(*args)
+
+    @staticmethod
+    def never() -> ObservableBase:
         """Returns a non-terminating observable sequence.
 
         Such a sequence can be used to denote an infinite duration (e.g.
@@ -497,55 +159,29 @@ class Observable(ty.Observable):
         from ..operators.observable.never import never
         return never()
 
-    def partition(self, predicate: Callable[[Any], Any]) -> List['Observable']:
-        """Returns two observables which partition the observations of the
-        source by the given function. The first will trigger observations for
-        those values for which the predicate returns true. The second will
-        trigger observations for those values where the predicate returns false.
-        The predicate is executed once for each subscribed observer. Both also
-        propagate all error observations arising from the source and each
-        completes when the source completes.
+    @staticmethod
+    def of(*args) -> ObservableBase:
+        """This method creates a new Observable instance with a variable number
+        of arguments, regardless of number or type of the arguments.
 
-        Keyword arguments:
-        predicate -- The function to determine which output Observable will
-            trigger a particular observation.
+        Example:
+        res = rx.Observable.of(1,2,3)
 
-        Returns a list of observables. The first triggers when the predicate
-        returns True, and the second triggers when the predicate returns False.
+        Returns the observable sequence whose elements are pulled from the given
+        arguments
         """
-        from ..operators.observable.partition import partition
-        source = self
-        return partition(source, predicate)
+        from ..operators.observable.of import of
+        return of(*args)
 
-    def partition_indexed(self, predicate: Callable[[Any, int], Any]) -> List['Observable']:
-        """Returns two observables which partition the observations of the
-        source by the given function. The first will trigger observations for
-        those values for which the predicate returns true. The second will
-        trigger observations for those values where the predicate returns false.
-        The predicate is executed once for each subscribed observer. Both also
-        propagate all error observations arising from the source and each
-        completes when the source completes.
-
-        Keyword arguments:
-        predicate -- The function to determine which output Observable will
-            trigger a particular observation.
-
-        Returns a list of observables. The first triggers when the predicate
-        returns True, and the second triggers when the predicate returns False.
-        """
-        from ..operators.observable.partition import partition_indexed
-        source = self
-        return partition_indexed(source, predicate)
-
-    @classmethod
-    def range(cls, start: int, stop: int=None, step: int=None) -> 'Observable':
+    @staticmethod
+    def range(start: int, stop: int=None, step: int=None) -> ObservableBase:
         """Generates an observable sequence of integral numbers within a
         specified range, using the specified scheduler to send out observer
         messages.
 
-        1 - res = Rx.Observable.range(10)
-        2 - res = Rx.Observable.range(0, 10)
-        3 - res = Rx.Observable.range(0, 10, 1)
+        1 - res = rx.Observable.range(10)
+        2 - res = rx.Observable.range(0, 10)
+        3 - res = rx.Observable.range(0, 10, 1)
 
         Keyword arguments:
         start -- The value of the first integer in the sequence.
@@ -559,36 +195,8 @@ class Observable(ty.Observable):
         from ..operators.observable.range import from_range
         return from_range(start, stop, step)
 
-    def reduce(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
-        """Applies an accumulator function over an observable sequence,
-        returning the result of the aggregation as a single element in the
-        result sequence. The specified seed value is used as the initial
-        accumulator value.
-
-        For aggregation behavior with incremental intermediate results, see
-        Observable.scan.
-
-        Example:
-        1 - res = source.reduce(lambda acc, x: acc + x)
-        2 - res = source.reduce(lambda acc, x: acc + x, 0)
-
-        Keyword arguments:
-        :param types.FunctionType accumulator: An accumulator function to be
-            invoked on each element.
-        :param T seed: Optional initial accumulator value.
-
-        :returns: An observable sequence containing a single element with the
-            final accumulator value.
-        :rtype: Observable
-        """
-        from ..operators.observable.reduce import reduce
-        source = self
-        return reduce(source, accumulator, seed)
-
-    aggregate = reduce
-
-    @classmethod
-    def return_value(cls, value) -> 'Observable':
+    @staticmethod
+    def return_value(value) -> ObservableBase:
         """Returns an observable sequence that contains a single element,
         using the specified scheduler to send out observer messages.
         There is an alias called 'just'.
@@ -607,26 +215,8 @@ class Observable(ty.Observable):
 
     just = return_value
 
-    def repeat(self, repeat_count=None) -> 'Observable':
-        """Repeats the observable sequence a specified number of times. If the
-        repeat count is not specified, the sequence repeats indefinitely.
-
-        1 - repeated = source.repeat()
-        2 - repeated = source.repeat(42)
-
-        Keyword arguments:
-        repeat_count -- Number of times to repeat the sequence. If not
-            provided, repeats the sequence indefinitely.
-
-        Returns the observable sequence producing the elements of the given
-        sequence repeatedly."""
-
-        from ..operators.observable.concat import concat
-        from rx.internal.iterable import Iterable as CoreIterable
-        return Observable.defer(lambda _: concat(CoreIterable.repeat(self, repeat_count)))
-
     @staticmethod
-    def repeat_value(value: Any = None, repeat_count: int = None) -> 'Observable':
+    def repeat_value(value: Any = None, repeat_count: int = None) -> ObservableBase:
         """Generates an observable sequence that repeats the given element
         the specified number of times.
 
@@ -643,187 +233,8 @@ class Observable(ty.Observable):
         from ..operators.observable.repeat import repeat_value
         return repeat_value(value, repeat_count)
 
-    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'Observable':
-        """Applies an accumulator function over an observable sequence and
-        returns each intermediate result. The optional seed value is used as
-        the initial accumulator value. For aggregation behavior with no
-        intermediate results, see Observable.aggregate.
-
-        1 - scanned = source.scan(lambda acc, x: acc + x)
-        2 - scanned = source.scan(lambda acc, x: acc + x, 0)
-
-        Keyword arguments:
-        accumulator -- An accumulator function to be invoked on each
-            element.
-        seed -- [Optional] The initial accumulator value.
-
-        Returns an observable sequence containing the accumulated
-        values.
-        """
-        from ..operators.observable.scan import scan
-        source = self
-        return scan(source, accumulator, seed)
-
-    def select_switch(self, selector: Callable) -> 'Observable':
-        """Projects each element of an observable sequence into a new sequence
-        of observable sequences by incorporating the element's index and then
-        transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
-
-        Keyword arguments:
-        selector -- {Function} A transform function to apply to each source
-            element; the second parameter of the function represents the index
-            of the source element.
-
-        Returns an observable {Observable} sequence whose elements are the
-        result of invoking the transform function on each element of source
-        producing an Observable of Observable sequences and that at any point in
-        time produces the elements of the most recent inner observable sequence
-        that has been received.
-        """
-        return self.map(selector).switch_latest()
-
-    flat_map_latest = select_switch
-    switch_map = select_switch
-
-    def skip(self, count: int) -> 'Observable':
-        """Bypasses a specified number of elements in an observable
-        sequence and then returns the remaining elements.
-
-        Keyword arguments:
-        count -- The number of elements to skip before returning the
-            remaining elements.
-
-        Returns an observable sequence that contains the elements that
-        occur after the specified index in the input sequence.
-        """
-        from ..operators.observable.skip import skip
-        source = self
-        return skip(count, source)
-
-    def skip_last(self, count: int) -> 'Observable':
-        """Bypasses a specified number of elements in an observable
-        sequence and then returns the remaining elements.
-
-        Keyword arguments:
-        count -- The number of elements to skip before returning the
-            remaining elements.
-
-        Returns an observable sequence that contains the elements that
-        occur after the specified index in the input sequence.
-        """
-        from ..operators.observable.skiplast import skip_last
-        source = self
-        return skip_last(count, source)
-
-    def skip_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
-        """Bypasses elements in an observable sequence as long as a specified
-        condition is true and then returns the remaining elements. The
-        element's index is used in the logic of the predicate function.
-
-        1 - source.skip_while(lambda value: value < 10)
-        2 - source.skip_while(lambda value, index: value < 10 or index < 10)
-
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the
-            source element.
-
-        Returns an observable sequence that contains the elements from the
-        input sequence starting at the first element in the linear series that
-        does not pass the test specified by predicate.
-        """
-        from ..operators.observable.skipwhile import skip_while
-        source = self
-        return skip_while(source, predicate)
-
-    def skip_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
-        """Bypasses elements in an observable sequence as long as a specified
-        condition is true and then returns the remaining elements. The
-        element's index is used in the logic of the predicate function.
-
-        1 - source.skip_while(lambda value, index: value < 10 or index < 10)
-
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the
-            source element.
-
-        Returns an observable sequence that contains the elements from the
-        input sequence starting at the first element in the linear series that
-        does not pass the test specified by predicate.
-        """
-        from ..operators.observable.skipwhile import skip_while_indexed
-        source = self
-        return skip_while_indexed(source, predicate)
-
-    def start_with(self, *args: Any) -> 'Observable':
-        """Prepends a sequence of values to an observable.
-
-        1 - source.start_with(1, 2, 3)
-
-        Returns the source sequence prepended with the specified values.
-        """
-        from ..operators.observable.startswith import start_with
-        source = self
-        return start_with(source, *args)
-
-    def switch_latest(self) -> 'Observable':
-        """Transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
-
-        :returns: The observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has been
-        received.
-        :rtype: Observable
-        """
-        from ..operators.observable.switchlatest import switch_latest
-        sources = self
-        return switch_latest(sources)
-
-    def take(self, count: int) -> 'Observable':
-        """Returns a specified number of contiguous elements from the
-        start of an observable sequence.
-
-        1 - source.take(5)
-
-        Keyword arguments:
-        count -- The number of elements to return.
-
-        Returns an observable sequence that contains the specified
-        number of elements from the start of the input sequence.
-        """
-        from ..operators.observable.take import take
-        source = self
-        return take(count, source)
-
-    def take_last(self, count: int) -> 'Observable':
-        """Returns a specified number of contiguous elements from the
-        end of an observable sequence.
-
-        Example:
-        res = source.take_last(5)
-
-        Description:
-        This operator accumulates a buffer with a length enough to store
-        elements count elements. Upon completion of the source sequence,
-        this buffer is drained on the result sequence. This causes the
-        elements to be delayed.
-
-        Keyword arguments:
-        count - Number of elements to take from the end of the source
-            sequence.
-
-        Returns an observable sequence containing the specified number
-            of elements from the end of the source sequence.
-        """
-        from ..operators.observable.takelast import take_last
-        source = self
-        return take_last(count, source)
-
-<<<<<<< HEAD
-    @classmethod
-    def throw(cls, exception: Exception) -> 'Observable':
+    @staticmethod
+    def throw(exception: Exception) -> ObservableBase:
         """Returns an observable sequence that terminates with an exception,
         using the specified scheduler to send out the single OnError message.
 
@@ -837,116 +248,47 @@ class Observable(ty.Observable):
         """
         from ..operators.observable.throw import throw
         return throw(exception)
-=======
-    def take_while(self, predicate: Callable[[Any], Any]) -> 'Observable':
-        """Returns elements from an observable sequence as long as a specified
-        condition is true. The element's index is used in the logic of the
-        predicate function.
 
-        1 - source.take_while(lambda value: value < 10)
+    @staticmethod
+    def timer(duetime, period=None) -> ObservableBase:
+        """Returns an observable sequence that produces a value after duetime
+        has elapsed and then after each period.
 
-        Keyword arguments:
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        1 - res = Observable.timer(datetime(...))
+        2 - res = Observable.timer(datetime(...), 1000)
 
-        Returns an observable sequence that contains the elements from the
-        input sequence that occur before the element at which the test no
-        longer passes.
-        """
-        from ..operators.observable.takewhile import take_while
-        source = self
-        return take_while(source, predicate)
-
-    def take_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'Observable':
-        """Returns elements from an observable sequence as long as a specified
-        condition is true. The element's index is used in the logic of the
-        predicate function.
-
-        1 - source.take_while(lambda value, index: value < 10 or index < 10)
+        5 - res = Observable.timer(5000)
+        6 - res = Observable.timer(5000, 1000)
 
         Keyword arguments:
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        duetime -- Absolute (specified as a Date object) or relative time
+            (specified as an integer denoting milliseconds) at which to produce
+            the first value.</param>
+        period -- [Optional] Period to produce subsequent values (specified as
+            an integer denoting milliseconds), or the scheduler to run the
+            timer on. If not specified, the resulting timer is not recurring.
 
-        Returns an observable sequence that contains the elements from the
-        input sequence that occur before the element at which the test no
-        longer passes.
+        Returns an observable sequence that produces a value after due time has
+        elapsed and then each period.
         """
-        from ..operators.observable.takewhile import take_while_indexed
-        source = self
-        return take_while_indexed(source, predicate)
->>>>>>> a74838ee864cd384e01ab94e59c44183990277c4
+        from ..operators.observable.timer import timer
+        return timer(duetime, period)
 
-    def time_interval(self) -> 'Observable':
-        """Records the time interval between consecutive values in an
-        observable sequence.
+    @staticmethod
+    def when(*args) -> ObservableBase:
+        """Joins together the results from several patterns.
 
-        1 - res = source.time_interval()
+        args -- A series of plans (specified as a list of as a series of
+            arguments) created by use of the Then operator on patterns.
 
-        Return An observable sequence with time interval information on
-        values.
+        Returns Observable sequence with the results form matching several
+        patterns.
         """
-        from ..operators.observable.timeinterval import time_interval
-        source = self
-        return time_interval(source)
+        from ..operators.observable.when import when
+        return when(*args)
 
-    def timeout(self, duetime: Union[int, datetime], other: 'Observable' = None) -> 'Observable':
-        """Returns the source observable sequence or the other
-        observable sequence if duetime elapses.
-
-        1 - res = source.timeout(5000); # 5 seconds
-        # As a date and timeout observable
-        2 - res = source.timeout(datetime(), Observable.return_value(42))
-        # 5 seconds and timeout observable
-        3 - res = source.timeout(5000, Observable.return_value(42))
-        # As a date and timeout observable
-
-        Keyword arguments:
-        duetime -- Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) when a
-            timeout occurs.
-        other -- Sequence to return in case of a timeout. If not
-            specified, a timeout error throwing sequence will be used.
-
-        Returns the source sequence switching to the other sequence in case
-            of a timeout.
-        """
-        from ..operators.observable.timeout import timeout
-        source = self
-        return timeout(source, duetime, other)
-
-    def timestamp(self) -> 'Observable':
-        """Records the timestamp for each value in an observable
-        sequence.
-
-        1 - res = source.timestamp() # produces objects with attributes
-            "value" and "timestamp", where value is the original value.
-
-        Returns an observable sequence with timestamp information on
-        values.
-        """
-        from ..operators.observable.timestamp import timestamp
-        source = self
-        return timestamp(source)
-
-    def to_blocking(self) -> BlockingObservable:
-        from ..operators.observable.toblocking import to_blocking
-        source = self
-        return to_blocking(source)
-
-    def to_iterable(self) -> 'Observable':
-        """Creates an iterable from an observable sequence.
-
-        Returns an observable sequence containing a single element with
-        a list containing all the elements of the source sequence.
-        """
-        from ..operators.observable.toiterable import to_iterable
-        source = self
-        return to_iterable(source)
-
-    def while_do(self, condition: Callable[[Any], bool]) -> 'Observable':
+    @staticmethod
+    def while_do(condition: Callable[[Any], bool], source: ObservableBase) -> ObservableBase:
         """Repeats source as long as condition holds emulating a while
         loop.
 
@@ -958,29 +300,4 @@ class Observable(ty.Observable):
             condition holds.
         """
         from ..operators.observable.whiledo import while_do
-        source = self
         return while_do(condition, source)
-
-    def with_latest_from(self, observables: Union['Observable', Iterable['Observable']],
-                         selector: Callable[[Any], Any]) -> 'Observable':
-        """Merges the specified observable sequences into one observable sequence
-        by using the selector function only when the source observable sequence
-        (the instance) produces an element. The other observables can be passed
-        either as seperate arguments or as a list.
-
-        1 - obs = observable.with_latest_from(obs, lambda o1, o2: o1 + o2)
-
-        2 - obs = observable.with_latest_from([obs1, obs2],
-                                            lambda o1, o2, o3: o1 + o2 + o3)
-
-        Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector function.
-        """
-        from ..operators.observable.withlatestfrom import with_latest_from
-        if isinstance(observables, Observable):
-            observables = [observables]
-
-        sources = [self] + list(observables)
-        return with_latest_from(sources, selector)
-
-

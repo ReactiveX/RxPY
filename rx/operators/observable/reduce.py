@@ -1,8 +1,8 @@
 from typing import Any, Callable
-from rx.core import Observable
+from rx.core import ObservableBase
 
 
-def reduce(source: Observable, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> Observable:
+def reduce(source: ObservableBase, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> ObservableBase:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial

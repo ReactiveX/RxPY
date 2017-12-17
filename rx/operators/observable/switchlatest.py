@@ -1,4 +1,5 @@
-from rx.core import AnonymousObservable, typing
+from rx.core import AnonymousObservable, Observable
+from rx.core import typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 

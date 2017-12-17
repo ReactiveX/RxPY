@@ -1,18 +1,15 @@
-from rx.core import Observable, AnonymousObserver, AnonymousObservable
+from rx.core import Observable, ObservableBase, AnonymousObserver, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
-def when(cls, *args):
+def when(*args) -> ObservableBase:
     """Joins together the results from several patterns.
 
-    :param Observable cls: Observable class.
-    :param list[Plan] args: A series of plans (specified as a list of as a
-        series of arguments) created by use of the Then operator on patterns.
-    :returns: Observable sequence with the results form matching several
-        patterns.
-    :rtype: Observable
+    args -- A series of plans (specified as a list of as a series of
+        arguments) created by use of the Then operator on patterns.
+
+    Returns Observable sequence with the results form matching several
+    patterns.
     """
 
     plans = args[0] if len(args) and isinstance(args[0], list) else list(args)

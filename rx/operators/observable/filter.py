@@ -1,8 +1,8 @@
 from typing import Any, Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 
-def filter(predicate: Callable[[Any], bool], source: Observable):
+def filter(predicate: Callable[[Any], bool], source: ObservableBase):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
@@ -35,7 +35,7 @@ def filter(predicate: Callable[[Any], bool], source: Observable):
     return AnonymousObservable(subscribe)
 
 
-def filter_indexed(predicate: Callable[[Any, int], bool], source: Observable):
+def filter_indexed(predicate: Callable[[Any, int], bool], source: ObservableBase):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 

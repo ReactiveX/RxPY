@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def pluck(self, key):
     """Retrieves the value of a specified key using dict-like access (as in
     element[key]) from all elements in the Observable sequence.
@@ -19,7 +19,7 @@ def pluck(self, key):
     return self.map(lambda x: x[key])
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def pluck_attr(self, property):
     """Retrieves the value of a specified property (using getattr) from all
     elements in the Observable sequence.

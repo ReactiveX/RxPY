@@ -1,8 +1,8 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def pairwise(self):
     """Returns a new observable that triggers on the second and subsequent
     triggerings of the input observable. The Nth triggering of the input

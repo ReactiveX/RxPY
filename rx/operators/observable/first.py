@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from .firstordefault import first_or_default_async
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def first(self, predicate=None):
     """Returns the first element of an observable sequence that satisfies
     the condition in the predicate if present else the first item in the

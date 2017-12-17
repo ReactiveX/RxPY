@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 from rx.concurrency import immediate_scheduler
 from rx.internal import extensionclassmethod
 
 
-def throw(exception: Exception) -> Observable:
+def throw(exception: Exception) -> ObservableBase:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError message.
 

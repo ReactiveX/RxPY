@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
 from rx.internal import extensionmethod
 
@@ -20,7 +20,7 @@ class HashSet(object):
         return ret_value
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def distinct(self, key_selector=None, comparer=None):
     """Returns an observable sequence that contains only distinct elements
     according to the key_selector and the comparer. Usage of this operator

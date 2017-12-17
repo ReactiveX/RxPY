@@ -1,11 +1,11 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
-def take_with_time(self, duration) -> Observable:
+@extensionmethod(ObservableBase)
+def take_with_time(self, duration) -> ObservableBase:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 

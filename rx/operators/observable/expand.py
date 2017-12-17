@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 from rx.disposables import SerialDisposable, CompositeDisposable, \
     SingleAssignmentDisposable
@@ -6,7 +6,7 @@ from rx.concurrency import immediate_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def expand(self, selector):
     """Expands an observable sequence by recursively invoking selector.
 

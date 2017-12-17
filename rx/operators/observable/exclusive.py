@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def exclusive(self):
     """Performs a exclusive waiting for the first to finish before
     subscribing to another observable. Observables that come in between

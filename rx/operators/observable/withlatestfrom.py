@@ -1,10 +1,10 @@
 from typing import Any, Iterable, Callable, Union
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def with_latest_from(observables: Union[Observable, Iterable[Observable]],
-                     selector: Callable[[Any], Any]) -> Observable:
+def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]],
+                     selector: Callable[[Any], Any]) -> ObservableBase:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
@@ -21,7 +21,7 @@ def with_latest_from(observables: Union[Observable, Iterable[Observable]],
     elements of the sources using the specified result selector
     function.
     """
-    if isinstance(observables, Observable):
+    if isinstance(observables, ObservableBase):
         observables = [observables]
 
     result_selector = selector

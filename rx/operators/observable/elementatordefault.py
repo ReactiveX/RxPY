@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 from rx.internal import extensionmethod
 
@@ -33,7 +33,7 @@ def _element_at_or_default(source, index, has_default=False,
         return source.subscribe_callbacks(send, observer.throw, close)
     return AnonymousObservable(subscribe)
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def element_at_or_default(self, index, default_value=None):
     """Returns the element at a specified index in a sequence or a default
     value if the index is out of range.

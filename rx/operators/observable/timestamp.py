@@ -1,14 +1,14 @@
-from rx.core import Observable
+from rx.core import Observable, ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
 
 
-def timestamp(source: Observable) -> Observable:
+def timestamp(source: ObservableBase) -> ObservableBase:
     """Records the timestamp for each value in an observable sequence.
 
     1 - res = source.timestamp() # produces objects with attributes "value" and
         "timestamp", where value is the original value.
-    
+
     Returns an observable sequence with timestamp information on values.
     """
 

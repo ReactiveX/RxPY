@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.subjects import Subject
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def publish(self, selector=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
@@ -30,7 +30,7 @@ def publish(self, selector=None):
         return self.multicast(subject=Subject())
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def share(self):
     """Share a single subscription among multple observers.
 

@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import extensionmethod
 
@@ -23,7 +23,7 @@ def last_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def last_or_default(self, predicate=None, default_value=None):
     """Return last or default element.
 

@@ -1,11 +1,11 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable, alias="throttle_with_timeout")
+@extensionmethod(ObservableBase, alias="throttle_with_timeout")
 def debounce(self, duetime):
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
@@ -66,7 +66,7 @@ def debounce(self, duetime):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def throttle_with_selector(self, throttle_duration_selector):
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.

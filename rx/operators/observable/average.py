@@ -1,4 +1,4 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
@@ -9,7 +9,7 @@ class AverageValue(object):
         self.count = count
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def average(self, key_selector=None):
     """Computes the average of an observable sequence of values that are in
     the sequence or obtained by invoking a transform function on each

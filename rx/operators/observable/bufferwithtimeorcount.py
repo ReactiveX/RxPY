@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def buffer_with_time_or_count(self, timespan, count):
     """Projects each element of an observable sequence into a buffer that
     is completed when either it's full or a given amount of time has

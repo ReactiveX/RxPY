@@ -1,7 +1,7 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def is_empty(self):
     """Determines whether an observable sequence is empty.
 

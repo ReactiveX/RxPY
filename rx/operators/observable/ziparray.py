@@ -1,8 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionclassmethod
+from .zip import zip
 
 
-@extensionclassmethod(Observable, alias="zip_array")
+@extensionclassmethod(ObservableBase, alias="zip_array")
 def zip_list(cls, *args):
     """Merge the specified observable sequences into one observable
     sequence by emitting a list with the elements of the observable
@@ -21,4 +22,4 @@ def zip_list(cls, *args):
         return list(args)
 
     args += (result,)
-    return Observable.zip(*args)
+    return zip(*args)

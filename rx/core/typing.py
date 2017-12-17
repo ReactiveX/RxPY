@@ -8,9 +8,9 @@ T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 
 Action = Callable[[bases.Scheduler, Any], None]  # pylint: disable=C0103
-Send = Callable[[Any], None]  # pylint: disable=C0103
-Throw = Callable[[Exception], None]  # pylint: disable=C0103
-Close = Callable[[None], None]  # pylint: disable=C0103
+Send = Callable[[Any], None]                     # pylint: disable=C0103
+Throw = Callable[[Exception], None]              # pylint: disable=C0103
+Close = Callable[[None], None]                   # pylint: disable=C0103
 
 
 class Disposable(bases.Disposable):

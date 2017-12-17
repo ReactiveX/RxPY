@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import extensionmethod
 
@@ -19,7 +19,7 @@ def first_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def first_or_default(self, predicate=None, default_value=None):
     """Returns the first element of an observable sequence that satisfies
     the condition in the predicate, or a default value if no such element

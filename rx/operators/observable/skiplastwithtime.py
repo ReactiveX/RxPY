@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def skip_last_with_time(self, duration):
     """Skips elements for the specified duration from the end of the
     observable source sequence.

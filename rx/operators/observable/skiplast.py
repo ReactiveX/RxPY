@@ -1,7 +1,7 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 
-def skip_last(count: int, source: Observable) -> Observable:
+def skip_last(count: int, source: ObservableBase) -> ObservableBase:
     """Bypasses a specified number of elements at the end of an observable
     sequence.
 

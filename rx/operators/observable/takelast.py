@@ -1,7 +1,7 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 
-def take_last(count: int, source: Observable):
+def take_last(count: int, source: ObservableBase):
     """Returns a specified number of contiguous elements from the end of an
     observable sequence.
 

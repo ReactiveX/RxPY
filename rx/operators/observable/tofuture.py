@@ -1,9 +1,9 @@
 import rx
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def to_future(self, future_ctor=None):
     """Converts an existing observable sequence to a Future
 
@@ -49,7 +49,7 @@ def to_future(self, future_ctor=None):
     return future
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def __await__(self):
     """Awaits the given observable
     :returns: The last item of the observable sequence.

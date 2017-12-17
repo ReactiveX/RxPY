@@ -1,11 +1,11 @@
 
-from rx.core import Observable, Observable, Disposable
+from rx.core import ObservableBase, Disposable
 from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable
 from rx.subjects import Subject
 
 
-class PausableObservable(Observable):
+class PausableObservable(ObservableBase):
     def __init__(self, source, pauser=None):
         self.source = source
         self.controller = Subject()
@@ -39,7 +39,7 @@ class PausableObservable(Observable):
         self.controller.send(True)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def pausable(self, pauser):
     """Pauses the underlying observable sequence based upon the observable
     sequence which yields True/False.

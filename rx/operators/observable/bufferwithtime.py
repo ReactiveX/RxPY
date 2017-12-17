@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def buffer_with_time(self, timespan, timeshift=None):
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.

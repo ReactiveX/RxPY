@@ -1,8 +1,8 @@
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx.core import ObservableBase, AnonymousObservable, Disposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def finally_action(self, action):
     """Invokes a specified action after the source observable sequence
     terminates gracefully or exceptionally.
@@ -21,7 +21,7 @@ def finally_action(self, action):
 
     def subscribe(observer, scheduler=None):
         try:
-            subscription = source.subscribe(observer)
+            subscription = source.subscribe(observer, scheduler)
         except Exception:
             action()
             raise

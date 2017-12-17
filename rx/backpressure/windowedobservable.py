@@ -1,4 +1,4 @@
-from rx.core import Observable, ObserverBase
+from rx.core import ObservableBase, ObserverBase
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import CompositeDisposable
 
@@ -44,7 +44,7 @@ class WindowedObserver(ObserverBase):
         super(WindowedObserver, self).dispose()
 
 
-class WindowedObservable(Observable):
+class WindowedObservable(ObservableBase):
     def __init__(self, source, window_size, scheduler=None):
         super(WindowedObservable, self).__init__()
 

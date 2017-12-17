@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.utils import TimeInterval
 from rx.concurrency import timeout_scheduler
 
 
-def time_interval(source: Observable) -> Observable:
+def time_interval(source: ObservableBase) -> ObservableBase:
     """Records the time interval between consecutive values in an
     observable sequence.
 

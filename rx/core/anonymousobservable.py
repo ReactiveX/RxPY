@@ -1,8 +1,8 @@
 from typing import Callable
-from .observable import Observable
+from .observablebase import ObservableBase
 
 
-class AnonymousObservable(Observable):
+class AnonymousObservable(ObservableBase):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
 

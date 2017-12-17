@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable, alias="to_iterable")
+@extensionmethod(ObservableBase, alias="to_iterable")
 def to_list(self):
     """Creates a list from an observable sequence.
 
@@ -18,7 +18,7 @@ def to_list(self):
     return self.do_action(lambda x: print(x)).reduce(accumulator, seed=[])
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def to_sorted_list(self, key_selector=None, reverse=False):
     """
     Creates a sorted list from an observable sequence,

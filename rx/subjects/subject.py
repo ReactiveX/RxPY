@@ -1,12 +1,12 @@
 from rx import config
-from rx.core import Observer, Observable, Disposable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, Observer):
+class Subject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """

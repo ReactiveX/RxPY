@@ -1,11 +1,11 @@
-from rx.core import Observer, Observable, Disposable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.subjects import Subject
 from rx.disposables import AnonymousDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.core.notification import OnCompleted, OnError, OnNext
 
 
-class ControlledSubject(Observable, Observer):
+class ControlledSubject(ObservableBase, Observer):
     def __init__(self, enable_queue=True, scheduler=None):
         super(ControlledSubject, self).__init__()
 

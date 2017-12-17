@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def timeout_with_selector(self, first_timeout=None,
                           timeout_duration_selector=None, other=None):
     """Returns the source observable sequence, switching to the other

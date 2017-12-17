@@ -1,8 +1,8 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def dematerialize(self):
     """Dematerializes the explicit notification values of an observable
     sequence as implicit notifications.

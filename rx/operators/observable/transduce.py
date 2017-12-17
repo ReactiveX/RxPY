@@ -14,11 +14,11 @@ Other implementations of transducers in Python are:
  - https://github.com/cognitect-labs/transducers-python
 """
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-class Observing(object):
+class Observing:
 
     """An observing transducer."""
 
@@ -38,7 +38,7 @@ class Observing(object):
         return self.step(result, item)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def transduce(self, transducer):
     """Execute a transducer to transform the observable sequence.
 

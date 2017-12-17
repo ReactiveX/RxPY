@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def sum(self, key_selector=None):
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the input

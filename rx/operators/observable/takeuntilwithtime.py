@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def take_until_with_time(self, end_time, scheduler=None):
     """Takes elements for the specified duration until the specified end
     time, using the specified scheduler to run timers.

@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase, Observable
 from rx.internal import extensionclassmethod
 from rx.internal import Iterable
 
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def for_in(cls, sources, result_selector):
     """Concatenates the observable sequences obtained by running the
     specified result selector for each element in source.

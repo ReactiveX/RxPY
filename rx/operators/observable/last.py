@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from .lastordefault import last_or_default_async
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def last(self, predicate=None):
     """Returns the last element of an observable sequence that satisfies the
     condition in the predicate if specified, else the last element.

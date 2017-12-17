@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def buffer(self, buffer_openings=None, buffer_closing_selector=None):
     """Projects each element of an observable sequence into zero or more
     buffers.
@@ -20,7 +20,7 @@ def buffer(self, buffer_openings=None, buffer_closing_selector=None):
     return self.window(buffer_openings, buffer_closing_selector).flat_map(lambda item: item.to_iterable())
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def buffer_with_count(self, count, skip=None):
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.

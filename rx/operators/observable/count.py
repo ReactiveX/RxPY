@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def count(self, predicate=None):
     """Returns an observable sequence containing a value that represents
     how many elements in the specified observable sequence satisfy a

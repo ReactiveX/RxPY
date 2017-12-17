@@ -1,5 +1,4 @@
-from rx.core import Observable
-from rx.internal import extensionmethod
+from rx.core import ObservableBase
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
@@ -11,8 +10,7 @@ def first_only(x):
     return x[0]
 
 
-@extensionmethod(Observable)
-def min(self, comparer=None):
+def min(self, comparer=None) -> ObservableBase:
     """Returns the minimum element in an observable sequence according to
     the optional comparer else a default greater than less than check.
 

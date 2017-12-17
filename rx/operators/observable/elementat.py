@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from .elementatordefault import _element_at_or_default
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def element_at(self, index):
     """Returns the element at a specified index in a sequence.
 

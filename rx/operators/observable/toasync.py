@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
 from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def to_async(cls, func, scheduler=None):
     """Converts the function into an asynchronous function. Each invocation
     of the resulting asynchronous function causes an invocation of the

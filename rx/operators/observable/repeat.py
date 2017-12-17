@@ -1,8 +1,8 @@
 from typing import Any
-from rx.core import Observable
+from rx.core import ObservableBase, Observable
 
 
-def repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
+def repeat_value(value: Any = None, repeat_count: int = None) -> ObservableBase:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 

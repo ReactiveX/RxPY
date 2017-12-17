@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.core.notification import OnNext, OnError, OnCompleted
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def materialize(self):
     """Materializes the implicit notifications of an observable sequence as
     explicit notification values.

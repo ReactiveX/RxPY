@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase, Observable
 
 from rx.internal.iterable import Iterable
 
 
-def while_do(condition, source: Observable) -> Observable:
+def while_do(condition, source: ObservableBase) -> ObservableBase:
     """Repeats source as long as condition holds emulating a while loop.
 
     Keyword arguments:

@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.subjects import BehaviorSubject
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def publish_value(self, initial_value, selector=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single

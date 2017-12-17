@@ -1,8 +1,8 @@
-from rx.core import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def default_if_empty(self, default_value=None):
     """Returns the elements of the specified sequence or the specified value
     in a singleton sequence if the sequence is empty.
