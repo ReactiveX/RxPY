@@ -83,7 +83,7 @@ def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
     return ret
 
 
-def flat_map_indexed(source: Observable, selector: Callable[[Any, int], Any],
+def flat_map_indexed(source: ObservableBase, selector: Callable[[Any, int], Any],
                      result_selector: Callable=None) -> ObservableBase:
     """One of the Following:
     Projects each element of an observable sequence to an observable

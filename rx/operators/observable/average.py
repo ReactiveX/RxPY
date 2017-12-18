@@ -1,5 +1,4 @@
 from rx.core import ObservableBase
-from rx.internal import extensionmethod
 
 
 class AverageValue(object):
@@ -9,8 +8,7 @@ class AverageValue(object):
         self.count = count
 
 
-@extensionmethod(ObservableBase)
-def average(self, key_selector=None):
+def average(source, key_selector=None) -> ObservableBase:
     """Computes the average of an observable sequence of values that are in
     the sequence or obtained by invoking a transform function on each
     element of the input sequence if present.
@@ -19,17 +17,16 @@ def average(self, key_selector=None):
     res = source.average();
     res = source.average(lambda x: x.value)
 
-    :param Observable self: Observable to average.
-    :param types.FunctionType key_selector: A transform function to apply to
-        each element.
+    Keyword arguments:
+    source -- Observable to average.
+    key_selector -- A transform function to apply to each element.
 
-    :returns: An observable sequence containing a single element with the
+    Returns an observable sequence containing a single element with the
         average of the sequence of values.
-    :rtype: Observable
     """
 
     if key_selector:
-        return self.map(key_selector).average()
+        return source.map(key_selector).average()
 
     def accumulator(prev, cur):
         return AverageValue(sum=prev.sum+cur, count=prev.count+1)
@@ -41,4 +38,4 @@ def average(self, key_selector=None):
         return s.sum / float(s.count)
 
     seed = AverageValue(sum=0, count=0)
-    return self.scan(accumulator, seed).last().map(mapper)
+    return source.scan(accumulator, seed).last().map(mapper)

@@ -1,7 +1,7 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 
-def as_observable(source) -> Observable:
+def as_observable(source) -> ObservableBase:
     """Hides the identity of an observable sequence.
 
     Returns an observable sequence that hides the identity of the source

@@ -1,10 +1,10 @@
 from typing import Any, Callable, Iterable, Union
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def combine_latest(observables: Union[Observable, Iterable[Observable]],
-                   selector: Callable[[Any], Any]) -> Observable:
+def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
+                   selector: Callable[[Any], Any]) -> ObservableBase:
     """Merges the specified observable sequences into one observable
     sequence by using the selector function whenever any of the
     observable sequences produces an element.
@@ -18,7 +18,7 @@ def combine_latest(observables: Union[Observable, Iterable[Observable]],
     elements of the sources using the specified result selector
     function.
     """
-    if isinstance(observables, Observable):
+    if isinstance(observables, typing.Observable):
         observables = [observables]
 
     args = list(observables)

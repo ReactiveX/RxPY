@@ -1,7 +1,6 @@
 from rx.core import ObservableBase, AnonymousObservable
 
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionclassmethod
 
 
 def throw(exception: Exception) -> ObservableBase:

@@ -1,9 +1,10 @@
+from typing import Any
+
 from rx.core import ObservableBase
 from rx.internal.basic import default_comparer
-from rx.internal import extensionmethod
 
-@extensionmethod(ObservableBase)
-def contains(self, value, comparer=None):
+
+def contains(source: ObservableBase, value: Any, comparer=None) -> ObservableBase:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
 
@@ -12,13 +13,14 @@ def contains(self, value, comparer=None):
     2 - res = source.contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
 
     Keyword parameters:
+    source -- Observable sequence.
     value -- The value to locate in the source sequence.
-    comparer -- {Function} [Optional] An equality comparer to compare elements.
+    comparer -- [Optional] An equality comparer to compare elements.
 
-    Returns an observable {Observable} sequence containing a single element
+    Returns an observable  sequence containing a single element
     determining whether the source sequence contains an element that has
     the specified value.
     """
 
     comparer = comparer or default_comparer
-    return self.filter(lambda v: comparer(v, value)).some()
+    return source.filter(lambda v: comparer(v, value)).some()

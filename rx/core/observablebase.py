@@ -169,6 +169,85 @@ class ObservableBase(ty.Observable):
         source = self
         return as_observable(source)
 
+    def average(self, key_selector=None) -> 'ObservableBase':
+        """Computes the average of an observable sequence of values that are in
+        the sequence or obtained by invoking a transform function on each
+        element of the input sequence if present.
+
+        Example
+        res = source.average();
+        res = source.average(lambda x: x.value)
+
+        Keyword arguments:
+        key_selector -- A transform function to apply to each element.
+
+        Returns an observable sequence containing a single element with
+        the average of the sequence of values.
+        """
+        from ..operators.observable.average import average
+        source = self
+        return average(source, key_selector)
+
+    def buffer(self, buffer_openings=None, buffer_closing_selector=None) -> 'ObservableBase':
+        """Projects each element of an observable sequence into zero or more
+        buffers.
+
+        Keyword arguments:
+        buffer_openings -- Observable sequence whose elements denote the
+            creation of windows.
+        buffer_closing_selector -- [optional] A function invoked to define
+            the closing of each produced window. If a closing selector
+            function is specified for the first parameter, this parameter is
+            ignored.
+
+        Returns an observable sequence of windows.
+        """
+        from ..operators.observable.buffer import buffer
+        source = self
+        return buffer(source, buffer_openings, buffer_closing_selector)
+
+    def buffer_with_count(self, count: int, skip: int = None) -> 'ObservableBase':
+        """Projects each element of an observable sequence into zero or more
+        buffers which are produced based on element count information.
+
+        Example:
+        res = xs.buffer_with_count(10)
+        res = xs.buffer_with_count(10, 1)
+
+        Keyword parameters:
+        count -- {Number} Length of each buffer.
+        skip -- {Number} [Optional] Number of elements to skip between
+            creation of consecutive buffers. If not provided, defaults to
+            the count.
+
+        Returns an observable {Observable} sequence of buffers.
+        """
+        from ..operators.observable.buffer import buffer_with_count
+        source = self
+        return buffer_with_count(source, count, skip)
+
+    def buffer_with_time_or_count(self, timespan, count) -> 'ObservableBase':
+        """Projects each element of an observable sequence into a buffer that
+        is completed when either it's full or a given amount of time has
+        elapsed.
+
+        # 5s or 50 items in an array
+        1 - res = source.buffer_with_time_or_count(5000, 50)
+        # 5s or 50 items in an array
+        2 - res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
+
+        Keyword arguments:
+        timespan -- Maximum time length of a buffer.
+        count -- Maximum element count of a buffer.
+        scheduler -- [Optional] Scheduler to run bufferin timers on. If not
+            specified, the timeout scheduler is used.
+
+        Returns an observable sequence of buffers.
+        """
+        from ..operators.observable.buffer import buffer_with_time_or_count
+        source = self
+        return buffer_with_time_or_count(source, timespan, count)
+
     def combine_latest(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                        selector: Callable[[Any], Any]) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
@@ -242,6 +321,46 @@ class ObservableBase(ty.Observable):
         the current one calls close
         """
         return self.map(mapper).concat_all()
+
+    def contains(self, value: Any, comparer=None) -> 'ObservableBase':
+        """Determines whether an observable sequence contains a
+        specified element with an optional equality comparer.
+
+        Example
+        1 - res = source.contains(42)
+        2 - res = source.contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
+
+        Keyword parameters:
+        value -- The value to locate in the source sequence.
+        comparer -- [Optional] An equality comparer to compare elements.
+
+        Returns an observable  sequence containing a single element
+        determining whether the source sequence contains an element that
+        has the specified value.
+        """
+        from ..operators.observable.contains import contains
+        source = self
+        return contains(source, value, comparer)
+
+    def count(self, predicate=None) -> 'ObservableBase':
+        """Returns an observable sequence containing a value that represents
+        how many elements in the specified observable sequence satisfy a
+        condition if provided, else the count of items.
+
+        1 - res = source.count()
+        2 - res = source.count(lambda x: x > 3)
+
+        Keyword arguments:
+        predicate -- A function to test each element for a condition.
+
+        Returns an observable sequence containing a single element with a
+        number that represents how many elements in the input sequence
+        satisfy the condition in the predicate function if provided, else
+        the count of items in the sequence.
+        """
+        from ..operators.observable.count import count
+        source = self
+        return count(source, predicate)
 
     def do(self, observer: ty.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence and
@@ -336,6 +455,52 @@ class ObservableBase(ty.Observable):
         source = self
         return filter_indexed(predicate, source)
 
+    def first(self, predicate=None) -> 'ObservableBase':
+        """Returns the first element of an observable sequence that
+        satisfies the condition in the predicate if present else the
+        first item in the sequence.
+
+        Example:
+        res = res = source.first()
+        res = res = source.first(lambda x: x > 3)
+
+        Keyword arguments:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+
+        Returns Observable sequence containing the first element in the
+        observable sequence that satisfies the condition in the
+        predicate if provided, else the first item in the sequence.
+        """
+        from ..operators.observable.first import first
+        source = self
+        return first(source, predicate)
+
+    def first_or_default(self, predicate=None, default_value=None) -> 'ObservableBase':
+        """Returns the first element of an observable sequence that
+        satisfies the condition in the predicate, or a default value if
+        no such element exists.
+
+        Example:
+        res = source.first_or_default()
+        res = source.first_or_default(lambda x: x > 3)
+        res = source.first_or_default(lambda x: x > 3, 0)
+        res = source.first_or_default(null, 0)
+
+        Keyword arguments:
+        predicate -- [optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value -- [Optional] The default value if no such element
+            exists.  If not specified, defaults to None.
+
+        Returns {Observable} Sequence containing the first element in
+        the observable sequence that satisfies the condition in the
+        predicate, or a default value if no such element exists.
+        """
+        from ..operators.observable.firstordefault import first_or_default
+        source = self
+        return first_or_default(source, predicate, default_value)
+
     def flat_map(self, selector: Callable[[Any], Any],
                  result_selector: Callable=None) -> 'ObservableBase':
         """One of the Following:
@@ -415,6 +580,60 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.flatmap import flat_map_indexed
         source = self
         return flat_map_indexed(source, selector, result_selector)
+
+    def is_empty(self) -> 'ObservableBase':
+        """Determines whether an observable sequence is empty.
+
+        Returns an observable sequence containing a single element
+        determining whether the source sequence is empty.
+        """
+
+        return self.some().map(lambda b: not b)
+
+    def last(self, predicate=None) -> 'ObservableBase':
+        """Returns the last element of an observable sequence that satisfies the
+        condition in the predicate if specified, else the last element.
+
+        Example:
+        res = source.last()
+        res = source.last(lambda x: x > 3)
+
+        Keyword arguments:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+
+        Returns sequence containing the last element in the observable
+        sequence that satisfies the condition in the predicate.
+        """
+        from ..operators.observable.last import last
+        source = self
+        return last(source, predicate)
+
+    def last_or_default(self, predicate=None, default_value=None) -> 'ObservableBase':
+        """Return last or default element.
+
+        Returns the last element of an observable sequence that satisfies
+        the condition in the predicate, or a default value if no such
+        element exists.
+
+        Examples:
+        res = source.last_or_default()
+        res = source.last_or_default(lambda x: x > 3)
+        res = source.last_or_default(lambda x: x > 3, 0)
+        res = source.last_or_default(None, 0)
+
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value -- [Optional] The default value if no such element
+            exists. If not specified, defaults to None.
+
+        Returns Observable sequence containing the last element in the
+        observable sequence that satisfies the condition in the predicate,
+        or a default value if no such element exists.
+        """
+        from ..operators.observable.lastordefault import last_or_default
+        source = self
+        return last_or_default(source, predicate, default_value)
 
     def map(self, mapper: Callable[[Any], Any]) -> 'ObservableBase':
         """Project each element of an observable sequence into a new
@@ -614,6 +833,31 @@ class ObservableBase(ty.Observable):
         source = self
         return partition_indexed(source, predicate)
 
+    def publish(self, selector=None) -> 'ObservableBase':
+        """Returns an observable sequence that is the result of invoking the
+        selector on a connectable observable sequence that shares a single
+        subscription to the underlying sequence. This operator is a
+        specialization of Multicast using a regular Subject.
+
+        Example:
+        res = source.publish()
+        res = source.publish(lambda x: x)
+
+        selector -- [Optional] Selector function which can use the
+            multicasted source sequence as many times as needed, without
+            causing multiple subscriptions to the source sequence.
+            Subscribers to the given source will receive all
+            notifications of the source from the time of the
+            subscription on.
+
+        Returns an observable sequence that contains the elements of
+        a sequence produced by multicasting the source sequence
+        within a selector function."""
+
+        from ..operators.observable.publish import publish
+        source = self
+        return publish(source, selector)
+
     def reduce(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'ObservableBase':
         """Applies an accumulator function over an observable sequence,
         returning the result of the aggregation as a single element in the
@@ -704,6 +948,19 @@ class ObservableBase(ty.Observable):
 
     flat_map_latest = select_switch
     switch_map = select_switch
+
+    def share(self):
+        """Share a single subscription among multple observers.
+
+        Returns a new Observable that multicasts (shares) the original
+        Observable. As long as there is at least one Subscriber this
+        Observable will be subscribed and emitting data. When all
+        subscribers have unsubscribed it will unsubscribe from the source
+        Observable.
+
+        This is an alias for Observable.publish().ref_count().
+        """
+        return self.publish().ref_count()
 
     def skip(self, count: int) -> 'ObservableBase':
         """Bypasses a specified number of elements in an observable

@@ -1,4 +1,4 @@
-from rx.core import Observable, ObservableBase, AnonymousObservable, Disposable
+from rx.core import Observable, ObservableBase, AnonymousObservable, Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
@@ -52,7 +52,7 @@ def catch_exception(source, second=None, handler=None) -> ObservableBase:
     exception occurred.
     """
 
-    if handler or not isinstance(second, Observable):
+    if handler or not isinstance(second, typing.Observable):
         return catch_handler(source, handler or second)
 
     return Observable.catch_exception([source, second])

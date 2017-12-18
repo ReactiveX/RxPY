@@ -1,7 +1,7 @@
 from nose.tools import assert_raises
 
 from rx.core import Observer, AnonymousObserver
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
 from rx.internal.exceptions import CompletedException
 
 
@@ -26,7 +26,7 @@ def test_to_observer_notification_send():
         assert(not hasattr(n, "exception"))
         assert(n.has_value)
 
-    Observer.from_notifier(next).send(42)
+    from_notifier(next).send(42)
 
 
 def test_to_observer_notification_throw():
@@ -39,7 +39,7 @@ def test_to_observer_notification_throw():
         assert(n.exception == ex)
         assert(not n.has_value)
 
-    Observer.from_notifier(next).throw(ex)
+    from_notifier(next).throw(ex)
 
 
 def test_to_observer_notification_close():
@@ -50,7 +50,7 @@ def test_to_observer_notification_close():
         assert(n.kind == 'C')
         assert(not n.has_value)
 
-    Observer.from_notifier(next).close()
+    from_notifier(next).close()
 
 
 def test_to_notifier_forwards():

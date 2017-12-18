@@ -2,7 +2,7 @@ from .activeplan import ActivePlan
 from .joinobserver import JoinObserver
 
 
-class Plan(object):
+class Plan:
     def __init__(self, expression, selector):
         self.expression = expression
         self.selector = selector

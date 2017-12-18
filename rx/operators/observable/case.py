@@ -1,32 +1,28 @@
 from rx.core import ObservableBase, Observable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(ObservableBase, alias="switch_case")
-def case(cls, selector, sources, default_source=None):
+def case(selector, sources, default_source=None) -> ObservableBase:
     """Uses selector to determine which source in sources to use.
-    There is an alias 'switch_case'.
 
     Example:
     1 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 })
     2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
 
     Keyword arguments:
-    :param types.FunctionType selector: The function which extracts the value
-        for to test in a case statement.
-    :param list sources: A object which has keys which correspond to the case
+    selector -- The function which extracts the value for to test in a
+        case statement.
+    sources -- An object which has keys which correspond to the case
         statement labels.
-    :param Observable default_source: The observable sequence or Promise that
-        will be run if the sources are not matched. If this is not provided, it
-        defaults to rx.Observabe.empty with the specified scheduler.
+    default_source -- The observable sequence or Future that will be run
+        if the sources are not matched. If this is not provided, it
+        defaults to rx.Observabe.empty.
 
-    :returns: An observable sequence which is determined by a case statement.
-    :rtype: Observable
+    Returns an observable sequence which is determined by a case statement.
     """
 
     default_source = default_source or Observable.empty()
 
-    def factory(scheduler):
+    def factory(_) -> ObservableBase:
         try:
             result = sources[selector()]
         except KeyError:

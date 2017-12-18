@@ -34,18 +34,3 @@ def extensionmethod(base, name=None, decorator=None, instancemethod=False, alias
                 setattr(base, func_name, func)
         return func
     return inner
-
-
-def extensionclassmethod(base, name=None, alias=None):
-    """Function decorator that extends base with the decorated
-    function as a class method.
-
-    Keyword arguments:
-    :param T base: Base class to extend with classmethod
-    :param string name: Name of method to set
-
-    :returns: A function that takes the class to be decorated.
-    :rtype: func -> func
-    """
-
-    return extensionmethod(base=base, name=name, decorator=classmethod, alias=alias)

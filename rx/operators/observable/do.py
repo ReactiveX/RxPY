@@ -1,8 +1,8 @@
-from rx.core import Observer, Observable, AnonymousObservable, Disposable
+from rx.core import Observer, ObservableBase, AnonymousObservable, Disposable
 from rx.disposables import CompositeDisposable
 
 
-def do_action(source: Observable, send=None, throw=None, close=None) -> Observable:
+def do_action(source: ObservableBase, send=None, throw=None, close=None) -> ObservableBase:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -62,7 +62,7 @@ def do_action(source: Observable, send=None, throw=None, close=None) -> Observab
     return AnonymousObservable(subscribe)
 
 
-def do(source: Observable, observer: Observer) -> Observable:
+def do(source: ObservableBase, observer: Observer) -> ObservableBase:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,

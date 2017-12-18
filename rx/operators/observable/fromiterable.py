@@ -1,12 +1,12 @@
 from typing import Iterable
 
 from rx import config
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def from_iterable(iterable: Iterable, delay: int = None) -> Observable:
+def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
     """Converts an array to an observable sequence, using an optional
     scheduler to enumerate the array.
 

@@ -23,7 +23,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 1, map, zs)
+            return Observable.case(lambda: 1, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [send(210, 1), send(240, 2), send(270, 3), close(300)]
@@ -41,7 +41,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 2, map, zs)
+            return Observable.case(lambda: 2, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [send(220, 11), send(250, 12), send(280, 13), close(310)]
@@ -59,7 +59,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 3, map, zs)
+            return Observable.case(lambda: 3, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [send(230, 21), send(240, 22), send(290, 23), close(320)]
@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
         def create():
             def selector():
                 raise Exception(ex)
-            return Observable.switch_case(selector, map, zs)
+            return Observable.case(selector, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]
@@ -98,7 +98,7 @@ class TestCase(unittest.TestCase):
         }
 
         def create():
-            return Observable.switch_case(lambda: 1, map)
+            return Observable.case(lambda: 1, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [send(210, 1), send(240, 2), send(270, 3), close(300)]
@@ -114,7 +114,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 2, map)
+            return Observable.case(lambda: 2, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [send(220, 11), send(250, 12), send(280, 13), close(310)]
@@ -130,7 +130,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.switch_case(lambda: 3, map)
+            return Observable.case(lambda: 3, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [close(200)]
@@ -149,7 +149,7 @@ class TestCase(unittest.TestCase):
         def create():
             def selector():
                 raise Exception(ex)
-            return Observable.switch_case(selector, map)
+            return Observable.case(selector, map)
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]

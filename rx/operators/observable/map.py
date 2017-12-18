@@ -5,7 +5,7 @@ from rx.core import Observer, Observable, ObservableBase, AnonymousObservable
 from rx.core import typing
 
 
-def map(mapper: Callable[[Any], Any], source: Observable) -> ObservableBase:
+def map(mapper: Callable[[Any], Any], source: ObservableBase) -> ObservableBase:
     """Project each element of an observable sequence into a new form.
 
     1 - source.map(lambda value: value * value)
@@ -32,7 +32,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> ObservableBase:
     return AnonymousObservable(subscribe)
 
 
-def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> ObservableBase:
+def map_indexed(selector: Callable[[Any, int], Any], source: ObservableBase) -> ObservableBase:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 

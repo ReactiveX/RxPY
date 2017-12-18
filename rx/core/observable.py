@@ -6,8 +6,44 @@ from .observablebase import ObservableBase
 class Observable:
     """Observable creation methods.
 
-    This class is a container of static Observalble creation methods.
+    This class is a container of static Observable creation methods.
     """
+
+    @staticmethod
+    def amb(*args) -> ObservableBase:
+        """Propagates the observable sequence that reacts first.
+
+        E.g. winner = Observable.amb(xs, ys, zs)
+
+        Returns an observable sequence that surfaces any of the given
+        sequences, whichever reacted first.
+        """
+        from ..operators.observable.amb import amb
+        return amb(*args)
+
+    @staticmethod
+    def case(selector, sources, default_source=None) -> ObservableBase:
+        """Uses selector to determine which source in sources to use.
+
+        Example:
+        1 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 })
+        2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
+
+        Keyword arguments:
+        selector -- The function which extracts the value for to test in a
+            case statement.
+        sources -- An object which has keys which correspond to the case
+            statement labels.
+        default_source -- The observable sequence or Future that will be run
+            if the sources are not matched. If this is not provided, it
+            defaults to rx.Observabe.empty.
+
+        Returns an observable sequence which is determined by a case statement.
+        """
+        from ..operators.observable.case import case
+        return case(selector, sources, default_source)
+
+    switch_case = case
 
     @staticmethod
     def catch_exception(*args):

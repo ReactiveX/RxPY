@@ -1,10 +1,8 @@
 from rx.core import ObservableBase
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def publish(self, selector=None):
+def publish(source, selector=None) -> ObservableBase:
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
@@ -25,13 +23,11 @@ def publish(self, selector=None):
     selector function."""
 
     if selector:
-        return self.multicast(subject_selector=lambda _: Subject(), selector=selector)
+        return source.multicast(subject_selector=lambda _: Subject(), selector=selector)
     else:
-        return self.multicast(subject=Subject())
+        return source.multicast(subject=Subject())
 
-
-@extensionmethod(ObservableBase)
-def share(self):
+def share(source) -> ObservableBase:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original
@@ -42,4 +38,4 @@ def share(self):
 
     This is an alias for Observable.publish().ref_count().
     """
-    return self.publish().ref_count()
+    return source.publish().ref_count()
