@@ -60,6 +60,19 @@ class Observable:
         return catch_exception_(*args)
 
     @staticmethod
+    def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> ObservableBase:
+        """Concatenates all the observable sequences.
+
+        1 - res = Observable.concat(xs, ys, zs)
+        2 - res = Observable.concat([xs, ys, zs])
+
+        Returns an observable sequence that contains the elements of each given
+        sequence, in sequential order.
+        """
+        from ..operators.observable.concat import concat
+        return concat(*args)
+
+    @staticmethod
     def create(subscribe) -> ObservableBase:
         from ..operators.observable.create import create
         return create(subscribe)
@@ -96,6 +109,23 @@ class Observable:
         """
         from ..operators.observable.empty import empty
         return empty()
+
+    @staticmethod
+    def for_in(values: Iterable, result_selector: Callable[[Any], ObservableBase]) -> ObservableBase:
+        """Concatenates the observable sequences obtained by running the
+        specified result selector for each element in source.
+
+        Keyword arguments:
+        values -- A list of values to turn into an observable
+            sequence.
+        result_selector -- A function to apply to each item in the
+            values list to turn it into an observable sequence.
+        Returns an observable sequence from the concatenated
+        observable sequences.
+        """
+
+        from ..operators.observable.forin import for_in
+        return for_in(values, result_selector)
 
     @staticmethod
     def from_callable(supplier: Callable) -> ObservableBase:
