@@ -657,7 +657,7 @@ class ObservableBase(ty.Observable):
         source = self
         return map_indexed(mapper, source)
 
-    def merge(self, *args, max_concurrent=16):
+    def merge(self, *args, max_concurrent=None):
         """Merges an observable sequence of observable sequences into an
         observable sequence, limiting the number of concurrent subscriptions
         to inner sequences. Or merges two observable sequences into a single
@@ -676,7 +676,7 @@ class ObservableBase(ty.Observable):
         """
         from ..operators.observable.merge import merge
         source = self
-        return merge(source, *args, max_concurrent)
+        return merge(source, *args, max_concurrent=max_concurrent)
 
     def merge_all(self) -> 'ObservableBase':
         """Merges an observable sequence of observable sequences into an
