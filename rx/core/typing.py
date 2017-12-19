@@ -11,6 +11,7 @@ Action = Callable[[bases.Scheduler, Any], None]  # pylint: disable=C0103
 Send = Callable[[Any], None]                     # pylint: disable=C0103
 Throw = Callable[[Exception], None]              # pylint: disable=C0103
 Close = Callable[[None], None]                   # pylint: disable=C0103
+Selector = Callable[[Any], Any]                  # pylint: disable=C0103
 
 
 class Disposable(bases.Disposable):

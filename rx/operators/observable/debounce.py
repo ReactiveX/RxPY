@@ -2,11 +2,9 @@ from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase, alias="throttle_with_timeout")
-def debounce(self, duetime):
+def debounce(self, duetime) -> ObservableBase:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -16,10 +14,8 @@ def debounce(self, duetime):
     Keyword arguments:
     duetime -- {Number} Duration of the throttle period for each value
         (specified as an integer denoting milliseconds).
-    scheduler -- {Scheduler} [Optional]  Scheduler to run the throttle
-        timers on. If not specified, the timeout scheduler is used.
 
-    Returns {Observable} The debounced sequence.
+    Returns the debounced sequence.
     """
 
     source = self
@@ -61,13 +57,14 @@ def debounce(self, duetime):
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe_callbacks(send, throw, close)
+        subscription = source.subscribe_callbacks(send, throw, close, scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
+throttle_with_timeout = debounce
 
-@extensionmethod(ObservableBase)
-def throttle_with_selector(self, throttle_duration_selector):
+
+def throttle_with_selector(self, throttle_duration_selector) -> ObservableBase:
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
@@ -118,7 +115,7 @@ def throttle_with_selector(self, throttle_duration_selector):
                 d.dispose()
 
             d.disposable = throttle.subscribe_callbacks(send, observer.throw,
-                                              close)
+                                              close, scheduler)
 
         def throw(e):
             cancelable.dispose()

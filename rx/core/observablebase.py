@@ -292,7 +292,6 @@ class ObservableBase(ty.Observable):
         source = self
         return catch_exception(source, second, handler)
 
-
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
         """Concatenates all the observable sequences. This takes in either an
         array or variable arguments to concatenate.
@@ -361,6 +360,24 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.count import count
         source = self
         return count(source, predicate)
+
+    def delay(self, duetime):
+        """Time shifts the observable sequence by duetime. The relative time
+        intervals between the values are preserved.
+
+        1 - res = rx.Observable.delay(datetime())
+        2 - res = rx.Observable.delay(5000)
+
+        Keyword arguments:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) by which
+            to shift the observable sequence.
+
+        Returns time-shifted sequence.
+        """
+        from ..operators.observable.delay import delay
+        source = self
+        return delay(source, duetime)
 
     def do(self, observer: ty.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence and
@@ -1155,6 +1172,41 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.takewhile import take_while_indexed
         source = self
         return take_while_indexed(source, predicate)
+
+    def throttle_with_timeout(self, duetime) -> 'ObservableBase':
+        """Ignores values from an observable sequence which are followed by
+        another value before duetime.
+
+        Example:
+        1 - res = source.throttle_with_timeout(5000) # 5 seconds
+
+        Keyword arguments:
+        duetime -- {Number} Duration of the throttle period for each value
+            (specified as an integer denoting milliseconds).
+
+        Returns the throttled sequence.
+        """
+        from ..operators.observable.debounce import throttle_with_timeout
+        source = self
+        return throttle_with_timeout(source, duetime)
+
+    debounce = throttle_with_timeout
+
+    def throttle_with_selector(self, throttle_duration_selector) -> 'ObservableBase':
+        """Ignores values from an observable sequence which are followed by
+        another value within a computed throttle duration.
+
+        1 - res = source.throttle_with_selector(lambda x: rx.Scheduler.timer(x+x))
+
+        Keyword arguments:
+        throttle_duration_selector -- Selector function to retrieve a sequence
+            indicating the throttle duration for each given element.
+
+        Returns the throttled sequence.
+        """
+        from ..operators.observable.debounce import throttle_with_selector
+        source = self
+        return throttle_with_selector(source, throttle_duration_selector)
 
     def time_interval(self) -> 'ObservableBase':
         """Records the time interval between consecutive values in an
