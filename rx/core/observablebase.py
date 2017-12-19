@@ -3,6 +3,7 @@ from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
 
 from rx import config
+from .typing import Selector
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing as ty
@@ -244,7 +245,7 @@ class ObservableBase(ty.Observable):
 
         Returns an observable sequence of buffers.
         """
-        from ..operators.observable.buffer import buffer_with_time_or_count
+        from ..operators.observable.bufferwithtimeorcount import buffer_with_time_or_count
         source = self
         return buffer_with_time_or_count(source, timespan, count)
 
@@ -291,7 +292,6 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.catch import catch_exception
         source = self
         return catch_exception(source, second, handler)
-
 
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
         """Concatenates all the observable sequences. This takes in either an
@@ -361,6 +361,24 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.count import count
         source = self
         return count(source, predicate)
+
+    def delay(self, duetime):
+        """Time shifts the observable sequence by duetime. The relative time
+        intervals between the values are preserved.
+
+        1 - res = rx.Observable.delay(datetime())
+        2 - res = rx.Observable.delay(5000)
+
+        Keyword arguments:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) by which
+            to shift the observable sequence.
+
+        Returns time-shifted sequence.
+        """
+        from ..operators.observable.delay import delay
+        source = self
+        return delay(source, duetime)
 
     def do(self, observer: ty.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence and
@@ -1281,7 +1299,8 @@ class ObservableBase(ty.Observable):
         sources = [self] + list(observables)
         return with_latest_from(sources, selector)
 
-    def zip(self, *args: 'ObservableBase') -> 'ObservableBase':
+    def zip(self, *args: 'Union[Iterable[Any], ObservableBase]',
+            result_selector: Selector = None) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
         sequence by using the selector function whenever all of the
         observable sequences or an array have produced an element at a
@@ -1290,13 +1309,14 @@ class ObservableBase(ty.Observable):
         The last element in the arguments must be a function to invoke for
         each series of elements at corresponding indexes in the sources.
 
-        1 - res = obs1.zip(obs2, fn)
-        2 - res = x1.zip([1,2,3], fn)
+        1 - res = obs1.zip(obs2, result_selector=fn)
+        2 - res = x1.zip([1,2,3], result_selector=fn)
 
         Returns an observable sequence containing the result of combining
         elements of the sources using the specified result selector
         function.
         """
-        from ..operators.observable.zip import _zip
+        from ..operators.observable.zip import zip as _zip
         source = self
-        return _zip(source, *args)
+
+        return _zip(source, *args, result_selector=result_selector)

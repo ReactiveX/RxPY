@@ -3,14 +3,15 @@ import types
 
 from rx.concurrency import current_thread_scheduler
 
-from .observable import Observable
+from .observable import ObservableBase
 from .autodetachobserver import AutoDetachObserver
 from .anonymousobserver import AnonymousObserver
 from .disposable import Disposable
 from . import bases
 
 
-def subscribe(source: Observable, observer=None, scheduler=None):
+def subscribe(source: ObservableBase, observer:bases.Observer = None,
+              scheduler: bases.Scheduler = None):
     """Subscribe an observer to the observable sequence.
 
     Examples:
