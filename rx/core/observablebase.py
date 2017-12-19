@@ -244,7 +244,7 @@ class ObservableBase(ty.Observable):
 
         Returns an observable sequence of buffers.
         """
-        from ..operators.observable.buffer import buffer_with_time_or_count
+        from ..operators.observable.bufferwithtimeorcount import buffer_with_time_or_count
         source = self
         return buffer_with_time_or_count(source, timespan, count)
 
