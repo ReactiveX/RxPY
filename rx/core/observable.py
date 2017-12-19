@@ -1,6 +1,7 @@
 from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
+from .typing import Selector
 from .observablebase import ObservableBase
 
 
@@ -368,3 +369,24 @@ class Observable:
         """
         from ..operators.observable.whiledo import while_do
         return while_do(condition, source)
+
+    @staticmethod
+    def zip(*args: Union[Iterable[ObservableBase], ObservableBase],
+            result_selector: Selector = None) -> ObservableBase:
+        """Merges the specified observable sequences into one observable
+        sequence by using the selector function whenever all of the
+        observable sequences or an array have produced an element at a
+        corresponding index.
+
+        The last element in the arguments must be a function to invoke for
+        each series of elements at corresponding indexes in the sources.
+
+        1 - res = Observable.zip(obs2, result_selector=fn)
+        2 - res = Observable.zip([1,2,3], result_selector=fn)
+
+        Returns an observable sequence containing the result of combining
+        elements of the sources using the specified result selector
+        function.
+        """
+        from ..operators.observable.zip import zip as _zip
+        return _zip(*args, result_selector=result_selector)

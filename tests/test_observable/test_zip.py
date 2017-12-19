@@ -20,7 +20,7 @@ class TestZip(unittest.TestCase):
         o2 = Observable.never()
 
         def create():
-            return o1.zip(o2, lambda x, y: x + y)
+            return o1.zip(o2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -32,7 +32,7 @@ class TestZip(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return o1.zip(o2, lambda x, y: x + y)
+            return o1.zip(o2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -45,7 +45,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(210)]
@@ -58,7 +58,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(215)]
@@ -71,7 +71,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [close(215)]
@@ -83,7 +83,7 @@ class TestZip(unittest.TestCase):
         e2 = Observable.never()
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -95,7 +95,7 @@ class TestZip(unittest.TestCase):
         e2 = Observable.never()
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
         results = scheduler.start(create)
         assert results.messages == []
 
@@ -107,7 +107,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [send(220, 2 + 3), close(240)]
@@ -121,7 +121,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -135,7 +135,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -148,7 +148,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -161,7 +161,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -176,7 +176,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex2)]
@@ -190,7 +190,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -204,7 +204,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, lambda x, y: x + y)
+            return e2.zip(e1, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create)
         assert results.messages == [throw(220, ex)]
@@ -231,7 +231,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -262,7 +262,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -292,7 +292,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, lambda x, y: x + y)
+            return e1.zip(e2, result_selector=lambda x, y: x + y)
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -316,7 +316,7 @@ class TestZip(unittest.TestCase):
                 else:
                     return x + y
 
-            return e1.zip(e2, selector)
+            return e1.zip(e2, result_selector=selector)
 
         results = scheduler.start(create)
         assert results.messages == [send(220, 2 + 3), throw(230, ex)]
@@ -329,7 +329,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
 
         results = scheduler.start(create)
 
@@ -344,7 +344,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x,y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
 
         results = scheduler.start(create)
 
@@ -359,7 +359,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x,y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
 
         results = scheduler.start(create)
 
@@ -374,7 +374,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [close(215)]
@@ -388,7 +388,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
 
         results = scheduler.start(create)
 
@@ -403,7 +403,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [send(215, 2 + 3), close(230)]
@@ -418,7 +418,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [throw(220, ex)]
@@ -433,7 +433,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [throw(220, ex)]
@@ -447,7 +447,7 @@ class TestZip(unittest.TestCase):
         def create():
             def selector(x, y):
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [send(210, 7), send(220, 7), send(230, 7), send(240, 7)]
@@ -464,7 +464,7 @@ class TestZip(unittest.TestCase):
                 if y == 5:
                     raise Exception(ex)
                 return x + y
-            return n1.zip(n2, selector)
+            return n1.zip(n2, result_selector=selector)
         results = scheduler.start(create)
 
         assert results.messages == [send(215, 2 + 3), throw(225, ex)]

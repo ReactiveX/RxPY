@@ -3,6 +3,7 @@ from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
 
 from rx import config
+from .typing import Selector
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing as ty
@@ -1297,7 +1298,8 @@ class ObservableBase(ty.Observable):
         sources = [self] + list(observables)
         return with_latest_from(sources, selector)
 
-    def zip(self, *args: 'ObservableBase') -> 'ObservableBase':
+    def zip(self, *args: 'Union[Iterable[Any], ObservableBase]',
+            result_selector: Selector = None) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
         sequence by using the selector function whenever all of the
         observable sequences or an array have produced an element at a
@@ -1306,13 +1308,14 @@ class ObservableBase(ty.Observable):
         The last element in the arguments must be a function to invoke for
         each series of elements at corresponding indexes in the sources.
 
-        1 - res = obs1.zip(obs2, fn)
-        2 - res = x1.zip([1,2,3], fn)
+        1 - res = obs1.zip(obs2, result_selector=fn)
+        2 - res = x1.zip([1,2,3], result_selector=fn)
 
         Returns an observable sequence containing the result of combining
         elements of the sources using the specified result selector
         function.
         """
-        from ..operators.observable.zip import _zip
+        from ..operators.observable.zip import zip as _zip
         source = self
-        return _zip(source, *args)
+
+        return _zip(source, *args, result_selector=result_selector)
