@@ -1,15 +1,15 @@
 from rx.internal import noop
 
-from . import bases
+from . import typing
 
 
-class Disposable(bases.Disposable):
+class Disposable(typing.Disposable):
     @classmethod
-    def empty(cls):
+    def empty(cls) -> 'Disposable':
         from rx.disposables import AnonymousDisposable
         return AnonymousDisposable(noop)
 
     @classmethod
-    def create(cls, action):
+    def create(cls, action) -> 'Disposable':
         from rx.disposables import AnonymousDisposable
         return AnonymousDisposable(action)

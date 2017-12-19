@@ -1,8 +1,8 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def take_last_buffer(self, count):
     """Returns an array with the specified number of contiguous elements
     from the end of an observable sequence.

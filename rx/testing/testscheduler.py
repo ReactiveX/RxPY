@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from rx.core import Observable, Disposable
+from rx.core import ObservableBase, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -15,11 +15,6 @@ class TestScheduler(VirtualTimeScheduler):
     specified as integer ticks"""
 
     __test__ = False
-
-    def __init__(self):
-        """Initializes a new instance of the TestScheduler class."""
-
-        super(TestScheduler, self).__init__()
 
     def schedule_absolute(self, duetime: int, action: Callable, state: Any = None) -> Disposable:
         """Schedules an action to be executed at the specified virtual
@@ -95,7 +90,7 @@ class TestScheduler(VirtualTimeScheduler):
         super().start()
         return observer
 
-    def create_hot_observable(self, *args) -> Observable:
+    def create_hot_observable(self, *args) -> ObservableBase:
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
 
@@ -113,7 +108,7 @@ class TestScheduler(VirtualTimeScheduler):
             messages = list(args)
         return HotObservable(self, messages)
 
-    def create_cold_observable(self, *args) -> Observable:
+    def create_cold_observable(self, *args) -> ObservableBase:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 

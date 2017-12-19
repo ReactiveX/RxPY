@@ -1,19 +1,18 @@
-from rx import Observable
-from rx.internal import extensionclassmethod
+from rx.core import ObservableBase, Observable
 from rx.internal import Iterable
 
 
-@extensionclassmethod(Observable)
-def for_in(cls, sources, result_selector):
+def for_in(values, result_selector) -> ObservableBase:
     """Concatenates the observable sequences obtained by running the
     specified result selector for each element in source.
 
-    sources -- {Array} An array of values to turn into an observable
+    Keyword arguments:
+    values -- A list of values to turn into an observable
         sequence.
-    result_selector -- {Function} A function to apply to each item in the
-        sources array to turn it into an observable sequence.
-    Returns an observable {Observable} sequence from the concatenated
+    result_selector -- A function to apply to each item in the
+        values list to turn it into an observable sequence.
+    Returns an observable sequence from the concatenated
     observable sequences.
     """
 
-    return Observable.concat(Iterable.for_each(sources, result_selector))
+    return Observable.concat(Iterable.for_each(values, result_selector))

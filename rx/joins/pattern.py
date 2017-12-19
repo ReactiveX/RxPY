@@ -1,6 +1,6 @@
 from .plan import Plan
 
-class Pattern(object):
+class Pattern:
     def __init__(self, patterns):
         """Represents a join pattern over observable sequences."""
 

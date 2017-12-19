@@ -1,9 +1,8 @@
-from rx import AnonymousObservable
-from rx.core import Observable, Disposable
+from rx.core import ObservableBase, Disposable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 
 
-class ConnectableObservable(Observable):
+class ConnectableObservable(ObservableBase):
     """Represents an observable that can be connected and disconnected."""
 
     def __init__(self, source, subject):

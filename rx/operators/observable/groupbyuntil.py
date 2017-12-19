@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
@@ -9,7 +9,7 @@ from rx.operators.groupedobservable import GroupedObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None):
     """Groups the elements of an observable sequence according to a
     specified key selector function. A duration selector function is used
@@ -123,11 +123,11 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
                 observer.throw(e)
                 return
 
-            print("send", element)
-
             def action(scheduler, state):
                 writer.send(element)
-            scheduler.schedule_relative(1000, action)
+
+            from datetime import timedelta
+            scheduler.schedule_relative(timedelta(microseconds=1), action)
 
         def throw(ex):
             for w in mapping.values():

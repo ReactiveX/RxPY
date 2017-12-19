@@ -86,7 +86,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: new_timer(xsd, x.interval, scheduler),
                 lambda y: new_timer(ysd, y.interval, scheduler),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         res = scheduler.start(create=create)
 
@@ -159,7 +159,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: new_timer(xsd, x.interval, scheduler),
                 lambda y: new_timer(ysd, y.interval, scheduler),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         res = scheduler.start(create=create)
 
@@ -224,7 +224,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval).filter(lambda _: False),
                 lambda y: Observable.timer(y.interval).filter(lambda _: False),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -283,7 +283,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -341,7 +341,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -400,7 +400,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -447,7 +447,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval).filter(lambda _: False),
                 lambda y: Observable.timer(y.interval).filter(lambda _: False),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [close(210)]
@@ -464,7 +464,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
         assert results.messages == [send(220, "0hat")]
 
@@ -499,7 +499,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create, disposed=713)
         assert results.messages == [
             send(215, "0hat"),
@@ -543,7 +543,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
         assert results.messages == [
             send(215, "0hat"),
@@ -585,7 +585,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
         assert results.messages == [
             send(215, "0hat"),
@@ -635,10 +635,10 @@ class TestGroup_join(unittest.TestCase):
 
         def create():
             return xs.group_join(ys,
-                lambda x: Observable.timer(x.interval).flat_map(Observable.throw_exception(ex) if x.value==6 else Observable.empty()),
+                lambda x: Observable.timer(x.interval).flat_map(Observable.throw(ex) if x.value==6 else Observable.empty()),
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
         assert results.messages == [
             send(215, "0hat"),
@@ -692,9 +692,9 @@ class TestGroup_join(unittest.TestCase):
         def create():
             return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval).flat_map(Observable.throw_exception(ex) if y.value=="tin" else Observable.empty()),
+                lambda y: Observable.timer(y.interval).flat_map(Observable.throw(ex) if y.value=="tin" else Observable.empty()),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -754,7 +754,7 @@ class TestGroup_join(unittest.TestCase):
                 left_duration_selector,
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_observable()
+            ).merge_all()
         results = scheduler.start(create=create)
         assert results.messages == [throw(210, ex)]
 
@@ -802,7 +802,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 right_duration_selector,
                 result_selector
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -848,7 +848,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 result_selector
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [throw(215, ex)]
@@ -893,7 +893,7 @@ class TestGroup_join(unittest.TestCase):
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
                 result_selector
-            ).merge_observable()
+            ).merge_all()
 
         results = scheduler.start(create=create)
 

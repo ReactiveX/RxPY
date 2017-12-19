@@ -6,7 +6,7 @@ from rx.core import Observable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def to_async_generator(self, future_ctor=None, sentinel=None):
     future_ctor = future_ctor or rx.config.get("Future")
     if not future_ctor:

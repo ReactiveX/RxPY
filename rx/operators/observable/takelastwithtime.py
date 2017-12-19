@@ -1,9 +1,9 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def take_last_with_time(self, duration):
     """Returns elements within the specified duration from the end of the
     observable source sequence.

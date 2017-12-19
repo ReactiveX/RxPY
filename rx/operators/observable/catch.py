@@ -1,12 +1,11 @@
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx.core import Observable, ObservableBase, AnonymousObservable, Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import Iterable
-from rx.internal import extensionmethod, extensionclassmethod
 
 
-def catch_handler(source, handler):
+def catch_handler(source, handler) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -35,8 +34,7 @@ def catch_handler(source, handler):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable, instancemethod=True)
-def catch_exception(self, second=None, handler=None):
+def catch_exception(source, second=None, handler=None) -> ObservableBase:
     """Continues an observable sequence that is terminated by an exception
     with the next observable sequence.
 
@@ -54,14 +52,12 @@ def catch_exception(self, second=None, handler=None):
     exception occurred.
     """
 
-    if handler or not isinstance(second, Observable):
-        return catch_handler(self, handler or second)
+    if handler or not isinstance(second, typing.Observable):
+        return catch_handler(source, handler or second)
 
-    return Observable.catch_exception([self, second])
+    return Observable.catch_exception([source, second])
 
-
-@extensionclassmethod(Observable)
-def catch_exception(cls, *args):
+def catch_exception_(*args) -> ObservableBase:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 

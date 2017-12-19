@@ -1,10 +1,10 @@
 from rx.internal import noop
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def take_until(self, other):
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.

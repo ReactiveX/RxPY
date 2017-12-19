@@ -1,8 +1,8 @@
-from rx import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def if_then(cls, condition, then_source, else_source=None):
     """Determines whether an observable collection contains values.
 

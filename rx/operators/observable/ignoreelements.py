@@ -1,9 +1,9 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import noop
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def ignore_elements(self):
     """Ignores all elements in an observable sequence leaving only the
     termination messages.

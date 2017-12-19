@@ -552,7 +552,7 @@ class TestJoin(unittest.TestCase):
         def create():
             return xs.join(ys,
                 lambda x: Observable.timer(x.interval).flat_map(
-                    Observable.throw_exception(ex) if x.value == 6 else Observable.empty()),
+                    Observable.throw(ex) if x.value == 6 else Observable.empty()),
                 lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
@@ -610,7 +610,7 @@ class TestJoin(unittest.TestCase):
             return xs.join(ys,
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval).flat_map(
-                    Observable.throw_exception(ex) if y.value == "tin" else Observable.empty()),
+                    Observable.throw(ex) if y.value == "tin" else Observable.empty()),
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)

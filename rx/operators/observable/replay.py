@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.subjects import ReplaySubject
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def replay(self, selector=None, buffer_size=None, window=None, scheduler=None):
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single

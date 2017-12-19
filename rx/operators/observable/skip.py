@@ -1,8 +1,8 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 
-def skip(count: int, source: Observable) -> Observable:
+def skip(count: int, source: ObservableBase) -> ObservableBase:
     """Bypasses a specified number of elements in an observable sequence
     and then returns the remaining elements.
 

@@ -1,9 +1,9 @@
 from typing import Any
-from rx.core import Observable
+from rx.core import Observable, ObservableBase
 from .concat import concat
 
 
-def start_with(source: Observable, *args: Any) -> Observable:
+def start_with(source: ObservableBase, *args: Any) -> ObservableBase:
     """Prepends a sequence of values to an observable sequence.
 
     1 - source.start_with(1, 2, 3)

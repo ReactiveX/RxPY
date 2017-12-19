@@ -59,7 +59,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex).time_interval()
+            return Observable.throw(ex).time_interval()
 
         results = scheduler.start(create)
         assert results.messages == [throw(200, ex)]

@@ -1,9 +1,7 @@
-from rx.core import Observable, AnonymousObservable
-from rx.internal import extensionmethod
+from rx.core import ObservableBase, AnonymousObservable
 
 
-@extensionmethod(Observable)
-def some(self, predicate=None):
+def some(source, predicate=None) -> ObservableBase:
     """Determines whether some element of an observable sequence satisfies a
     condition if present, else if some items are in the sequence.
 
@@ -14,13 +12,12 @@ def some(self, predicate=None):
     Keyword arguments:
     predicate -- A function to test each element for a condition.
 
-    Returns {Observable} an observable sequence containing a single element
+    Returns an observable sequence containing a single element
     determining whether some elements in the source sequence pass the test
     in the specified predicate if given, else if some items are in the
     sequence.
     """
 
-    source = self
     def subscribe(observer, scheduler=None):
         def send(_):
             observer.send(True)
@@ -28,6 +25,6 @@ def some(self, predicate=None):
         def throw():
             observer.send(False)
             observer.close()
-        return source.subscribe_callbacks(send, observer.throw, throw)
+        return source.subscribe_callbacks(send, observer.throw, throw, scheduler)
 
     return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)

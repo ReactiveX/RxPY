@@ -1,4 +1,4 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 def _to_set(source, set_type):
@@ -13,7 +13,7 @@ def _to_set(source, set_type):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def to_set(self):
     """Converts the observable sequence to a set.
 

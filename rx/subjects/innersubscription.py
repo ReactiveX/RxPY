@@ -1,7 +1,7 @@
 from rx import config
 
 
-class InnerSubscription(object):
+class InnerSubscription:
     def __init__(self, subject, observer):
         self.subject = subject
         self.observer = observer

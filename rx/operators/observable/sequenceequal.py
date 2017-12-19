@@ -1,12 +1,12 @@
 import collections
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase, Observable
 from rx.disposables import CompositeDisposable
 from rx.internal import default_comparer
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def sequence_equal(self, second, comparer=None):
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.

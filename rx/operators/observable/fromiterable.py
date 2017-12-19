@@ -1,12 +1,12 @@
 from typing import Iterable
 
 from rx import config
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def from_iterable(iterable: Iterable) -> Observable:
+def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
     """Converts an array to an observable sequence, using an optional
     scheduler to enumerate the array.
 
@@ -18,17 +18,19 @@ def from_iterable(iterable: Iterable) -> Observable:
     Returns the observable sequence whose elements are pulled from the
         given enumerable sequence.
     """
-
     lock = config["concurrency"].RLock()
+
+    delay = delay or 0
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
+        print(scheduler)
 
-        sd = MultipleAssignmentDisposable()
+        mad = MultipleAssignmentDisposable()
         iterator = iter(iterable)
 
         def action(scheduler, state=None):
-            nonlocal observer, sd, iterator
+            nonlocal observer, mad, iterator
 
             try:
                 with lock:
@@ -38,8 +40,8 @@ def from_iterable(iterable: Iterable) -> Observable:
                 observer.close()
             else:
                 observer.send(item)
-                sd.disposable = scheduler.schedule(action)
+                mad.disposable = scheduler.schedule_relative(delay, action)
 
-        sd.disposable = scheduler.schedule(action)
-        return sd
+        mad.disposable = scheduler.schedule_relative(delay, action)
+        return mad
     return AnonymousObservable(subscribe)

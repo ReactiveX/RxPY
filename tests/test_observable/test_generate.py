@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 send = ReactiveTest.send

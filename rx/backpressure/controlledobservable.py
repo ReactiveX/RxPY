@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from .controlledsubject import ControlledSubject
 
 
-class ControlledObservable(Observable):
+class ControlledObservable(ObservableBase):
 
     def __init__(self, source, enable_queue, scheduler=None):
         super(ControlledObservable, self).__init__()
@@ -21,7 +21,7 @@ class ControlledObservable(Observable):
         return self.subject.request(number_of_items)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def controlled(self, enable_queue=True, scheduler=None):
     """Attach a controller to the observable sequence
 

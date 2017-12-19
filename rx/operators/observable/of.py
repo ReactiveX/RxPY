@@ -1,9 +1,7 @@
-from rx import Observable
-from rx.internal import extensionclassmethod
+from rx.core import ObservableBase, Observable
 
 
-@extensionclassmethod(Observable)
-def of(cls, *args):
+def of(*args) -> ObservableBase:
     """This method creates a new Observable instance with a variable number
     of arguments, regardless of number or type of the arguments.
 

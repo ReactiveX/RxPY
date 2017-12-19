@@ -1,8 +1,8 @@
 from typing import Callable
-from .observable import Observable
+from .observablebase import ObservableBase
 
 
-class AnonymousObservable(Observable):
+class AnonymousObservable(ObservableBase):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
 
@@ -15,7 +15,7 @@ class AnonymousObservable(Observable):
         """
 
         self._subscribe = subscribe
-        super(AnonymousObservable, self).__init__()
+        super().__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
         return self._subscribe(observer, scheduler)

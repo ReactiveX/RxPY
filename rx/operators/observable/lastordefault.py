@@ -1,6 +1,5 @@
-from rx import Observable, AnonymousObservable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.internal.exceptions import SequenceContainsNoElementsError
-from rx.internal import extensionmethod
 
 
 def last_or_default_async(source, has_default=False, default_value=None):
@@ -23,8 +22,7 @@ def last_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def last_or_default(self, predicate=None, default_value=None):
+def last_or_default(self, predicate=None, default_value=None) -> ObservableBase:
     """Return last or default element.
 
     Returns the last element of an observable sequence that satisfies
@@ -37,12 +35,12 @@ def last_or_default(self, predicate=None, default_value=None):
     res = source.last_or_default(lambda x: x > 3, 0)
     res = source.last_or_default(None, 0)
 
-    predicate -- {Function} [Optional] A predicate function to evaluate
-        for elements in the source sequence.
+    predicate -- [Optional] A predicate function to evaluate for
+        elements in the source sequence.
     default_value -- [Optional] The default value if no such element
         exists. If not specified, defaults to None.
 
-    Returns {Observable} Sequence containing the last element in the
+    Returns Observable sequence containing the last element in the
     observable sequence that satisfies the condition in the predicate,
     or a default value if no such element exists.
     """

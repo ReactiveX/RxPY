@@ -154,7 +154,7 @@ class TestCatch(unittest.TestCase):
                 handler_called[0] = True
                 return o2
 
-            return Observable.throw_exception('ex').catch_exception(handler)
+            return Observable.throw('ex').catch_exception(handler)
 
         results = scheduler.start(create)
 

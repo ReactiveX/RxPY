@@ -1,6 +1,6 @@
 import collections
 from typing import Any, Callable
-from rx import Observable
+from rx.core import Observable, ObservableBase
 
 
 def _flat_map(source, selector):
@@ -27,8 +27,8 @@ def _flat_map_indexed(source, selector):
     return source.map_indexed(projection).merge_all()
 
 
-def flat_map(source: Observable, selector: Callable[[Any], Any],
-             result_selector: Callable=None) -> Observable:
+def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
+             result_selector: Callable=None) -> ObservableBase:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
@@ -83,8 +83,8 @@ def flat_map(source: Observable, selector: Callable[[Any], Any],
     return ret
 
 
-def flat_map_indexed(source: Observable, selector: Callable[[Any, int], Any],
-                     result_selector: Callable=None) -> Observable:
+def flat_map_indexed(source: ObservableBase, selector: Callable[[Any, int], Any],
+                     result_selector: Callable=None) -> ObservableBase:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one

@@ -1,10 +1,11 @@
 from typing import Callable, Any
 
-from rx import Observable, Observer, AnonymousObservable
 from rx.core import Disposable, bases
+from rx.core import Observer, Observable, ObservableBase, AnonymousObservable
+from rx.core import typing
 
 
-def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
+def map(mapper: Callable[[Any], Any], source: ObservableBase) -> ObservableBase:
     """Project each element of an observable sequence into a new form.
 
     1 - source.map(lambda value: value * value)
@@ -18,7 +19,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer, scheduler: bases.Scheduler) -> Disposable:
+    def subscribe(observer: Observer, scheduler: typing.Scheduler) -> Disposable:
         def send(value):
             try:
                 result = mapper(value)
@@ -31,7 +32,7 @@ def map(mapper: Callable[[Any], Any], source: Observable) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def map_indexed(selector: Callable[[Any, int], Any], source: Observable) -> Observable:
+def map_indexed(selector: Callable[[Any, int], Any], source: ObservableBase) -> ObservableBase:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 

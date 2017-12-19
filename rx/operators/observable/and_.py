@@ -1,10 +1,8 @@
-from rx.core import Observable
-from rx.internal import extensionmethod
+from rx.core import ObservableBase
 
 from rx.joins import Pattern
 
 
-@extensionmethod(Observable)
 def and_(self, right):
     """Creates a pattern that matches when both observable sequences
     have an available value.

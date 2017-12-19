@@ -1,11 +1,11 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import extensionmethod, extensionclassmethod
 
 
-@extensionmethod(Observable, instancemethod=True)
+@extensionmethod(ObservableBase, instancemethod=True)
 def throw_resume_next(self, second):
     """Continues an observable sequence that is terminated normally or by
     an exception with the next observable sequence.
@@ -23,7 +23,7 @@ def throw_resume_next(self, second):
 
     return Observable.throw_resume_next([self, second])
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def throw_resume_next(cls, *args):
     """Continues an observable sequence that is terminated normally or by
     an exception with the next observable sequence.

@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Scheduler(metaclass=ABCMeta):
+class Scheduler(ABC):
     @property
     @abstractmethod
     def now(self):

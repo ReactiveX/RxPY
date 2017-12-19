@@ -8,7 +8,7 @@ asyncio = rx.config['asyncio']
 future_ctor = rx.config.get("Future") or asyncio.Future
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 async def __aiter__(self):
     source = self
 

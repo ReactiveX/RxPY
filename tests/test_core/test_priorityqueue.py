@@ -21,30 +21,30 @@ class TestItem():
         return str(self)
 
     def __eq__(self, other):
+        print("__eq__")
         return self.value == other.value #and self.label == other.label
 
     def __lt__(self, other):
+        print("__lt__")
         return self.value < other.value
 
     def __gt__(self, other):
+        print("__gt__")
         return self.value > other.value
 
-    #def assert_equal(self, other):
-    #    assert(self.value == other.value)
-    #    assert(self.label == other.label)
 
 class TestPriorityQueue(unittest.TestCase):
     def test_priorityqueue_empty(self):
         """Must be empty on construction"""
 
         p = PriorityQueue()
-        assert(len(p) == 0)
-        assert(p.items == [])
+        assert len(p) == 0
+        assert p.items == []
 
         # Still empty after enqueue/dequeue
         p.enqueue(42)
         p.dequeue()
-        assert(len(p) == 0)
+        assert len(p) == 0
 
     def test_priorityqueue_length(self):
         """Test that length is n after n invocations"""
@@ -145,4 +145,5 @@ class TestPriorityQueue(unittest.TestCase):
         assert p.remove_at(2) == 43
         assert p.remove_at(1) == 42
         assert p.remove_at(0) == 41
+
         self.assertRaises(IndexError, p.remove_at, 0)

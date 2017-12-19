@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def throttle_first(self, window_duration):
     """Returns an Observable that emits only the first item emitted by the
     source Observable during sequential time windows of a specified

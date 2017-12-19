@@ -1,10 +1,10 @@
-from rx.core import AnonymousObserver, Observable, Disposable
+from rx.core import AnonymousObserver, ObservableBase, Disposable
 from .subscription import Subscription
 
 
-class HotObservable(Observable):
+class HotObservable(ObservableBase):
     def __init__(self, scheduler, messages):
-        super(HotObservable, self).__init__()
+        super().__init__()
 
         self.scheduler = scheduler
         self.messages = messages

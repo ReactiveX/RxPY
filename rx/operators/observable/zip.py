@@ -1,31 +1,51 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import extensionmethod, extensionclassmethod
 
 
-@extensionmethod(Observable, instancemethod=True)
-def zip(self, *args):
+def zip(*args: ObservableBase) -> ObservableBase:
     """Merges the specified observable sequences into one observable
-    sequence by using the selector function whenever all of the observable
-    sequences or an array have produced an element at a corresponding index.
+    sequence by using the selector function whenever all of the
+    observable sequences have produced an element at a corresponding
+    index.
 
-    The last element in the arguments must be a function to invoke for each
-    series of elements at corresponding indexes in the sources.
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
+
+    Arguments:
+    args -- Observable sources.
+
+    Returns an observable {Observable} sequence containing the result of
+    combining elements of the sources using the specified result
+    selector function.
+    """
+
+    first = args[0]
+    return _zip(first, *args[1:])
+
+
+def _zip(parent: ObservableBase, *args: ObservableBase) -> ObservableBase:
+    """Merges the specified observable sequences into one observable
+    sequence by using the selector function whenever all of the
+    observable sequences or an array have produced an element at a
+    corresponding index.
+
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
 
     1 - res = obs1.zip(obs2, fn)
     2 - res = x1.zip([1,2,3], fn)
 
     Returns an observable sequence containing the result of combining
-    elements of the sources using the specified result selector function.
+    elements of the sources using the specified result selector
+    function.
     """
 
-    parent = self
     sources = list(args)
     result_selector = sources.pop()
     sources.insert(0, parent)
 
     if args and isinstance(args[0], list):
-        return _zip_list(self, *args)
+        return _zip_list(parent, *args)
 
     def subscribe(observer, scheduler=None):
         n = len(sources)
@@ -61,34 +81,12 @@ def zip(self, *args):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_callbacks(send, observer.throw, lambda: done(i))
+            sad.disposable = source.subscribe_callbacks(send, observer.throw, lambda: done(i), scheduler)
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
     return AnonymousObservable(subscribe)
-
-
-@extensionclassmethod(Observable)
-def zip(cls, *args):
-    """Merges the specified observable sequences into one observable
-    sequence by using the selector function whenever all of the observable
-    sequences have produced an element at a corresponding index.
-
-    The last element in the arguments must be a function to invoke for each
-    series of elements at corresponding indexes in the sources.
-
-    Arguments:
-    args -- Observable sources.
-
-    Returns an observable {Observable} sequence containing the result of
-    combining elements of the sources using the specified result selector
-    function.
-    """
-
-    first = args[0]
-    return first.zip(*args[1:])
-
 
 def _zip_list(source, second, result_selector):
     first = source
@@ -110,5 +108,5 @@ def _zip_list(source, second, result_selector):
             else:
                 observer.close()
 
-        return first.subscribe_callbacks(send, observer.throw, observer.close)
+        return first.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

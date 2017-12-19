@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def timeout_with_selector(self, first_timeout=None,
                           timeout_duration_selector=None, other=None):
     """Returns the source observable sequence, switching to the other
@@ -24,14 +24,14 @@ def timeout_with_selector(self, first_timeout=None,
         observable sequence that represents the timeout between the current
         element and the next element.
     other -- [Optional] Sequence to return in case of a timeout. If not
-        provided, this is set to Observable.throw_exception().
+        provided, this is set to Observable.throw().
 
     Returns the source sequence switching to the other sequence in case of
     a timeout.
     """
 
     first_timeout = first_timeout or Observable.never()
-    other = other or Observable.throw_exception(Exception('Timeout'))
+    other = other or Observable.throw(Exception('Timeout'))
     source = self
 
     def subscribe(observer, scheduler=None):

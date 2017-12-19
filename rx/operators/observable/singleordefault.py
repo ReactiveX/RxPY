@@ -1,4 +1,4 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.internal import extensionmethod
 
@@ -25,7 +25,7 @@ def single_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def single_or_default(self, predicate, default_value):
     """Returns the only element of an observable sequence that matches the
     predicate, or a default value if no such element exists this method
@@ -50,4 +50,3 @@ def single_or_default(self, predicate, default_value):
     """
 
     return self.filter(predicate).single_or_default(None, default_value) if predicate else single_or_default_async(self, True, default_value)
-    

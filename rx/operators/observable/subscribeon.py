@@ -1,9 +1,9 @@
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def subscribe_on(self, scheduler):
     """Subscribe on the specified scheduler.
 

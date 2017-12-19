@@ -58,7 +58,7 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw_exception(ex).sample(0)
+            return Observable.throw(ex).sample(0)
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]

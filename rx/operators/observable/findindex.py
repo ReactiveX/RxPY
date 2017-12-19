@@ -1,10 +1,10 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from .find import find_value
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def find_index(self, predicate):
     """Searches for an element that matches the conditions defined by the
     specified predicate, and returns an Observable sequence with the

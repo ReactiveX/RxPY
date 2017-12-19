@@ -22,8 +22,5 @@ config = {
 }
 
 from .core import Observer, Observable
-from .core.anonymousobserver import AnonymousObserver
-from .core.anonymousobservable import AnonymousObservable
 
 from . import backpressure
-from . import operators

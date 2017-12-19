@@ -1,9 +1,7 @@
-from rx.core import Observable
-from rx.internal import extensionclassmethod
+from rx.core import Observable, ObservableBase
 
 
-@extensionclassmethod(Observable)
-def interval(cls, period):
+def interval(period) -> ObservableBase:
     """Returns an observable sequence that produces a value after each
     period.
 

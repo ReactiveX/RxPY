@@ -23,14 +23,14 @@ def _raise(ex):
 
 class TestSelect(unittest.TestCase):
 
-    def test_select_throws(self):
+    def test_map_throws(self):
         with self.assertRaises(RxException):
             Observable.return_value(1) \
                 .map_indexed(lambda x, y: x) \
                 .subscribe_callbacks(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
-            Observable.throw_exception('ex') \
+            Observable.throw('ex') \
                 .map_indexed(lambda x, y: x) \
                 .subscribe_callbacks(throw=lambda ex: _raise(ex))
 
@@ -47,7 +47,7 @@ class TestSelect(unittest.TestCase):
                 .map(lambda x: x) \
                 .subscribe()
 
-    def test_select_disposeinsideselector(self):
+    def test_map_disposeinsideselector(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(100, 1), send(200, 2), send(500, 3), send(600, 4))
         results = scheduler.create_observer()
@@ -75,7 +75,7 @@ class TestSelect(unittest.TestCase):
 
         assert invoked[0] == 3
 
-    def test_select_completed(self):
+    def test_map_completed(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5), close(400), send(410, -1), close(420), throw(430, 'ex'))
         invoked = [0]
@@ -93,7 +93,7 @@ class TestSelect(unittest.TestCase):
         assert invoked[0] == 4
 
 
-    def test_select_completed_two(self):
+    def test_map_completed_two(self):
         for i in range(100):
             scheduler = TestScheduler()
             invoked = [0]
@@ -110,7 +110,7 @@ class TestSelect(unittest.TestCase):
             assert xs.subscriptions == [subscribe(200, 400)]
             assert invoked[0] == 4
 
-    def test_select_not_completed(self):
+    def test_map_not_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5))
@@ -127,7 +127,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
-    def test_select_error(self):
+    def test_map_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
         invoked = [0]
@@ -143,7 +143,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
-    def test_select_selector_throws(self):
+    def test_map_selector_throws(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -163,14 +163,14 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
-    def test_select_with_index_throws(self):
+    def test_map_with_index_throws(self):
         with self.assertRaises(RxException):
             return Observable.return_value(1) \
                 .map_indexed(lambda x, index: x) \
                 .subscribe_callbacks(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
-            return Observable.throw_exception('ex') \
+            return Observable.throw('ex') \
                 .map_indexed(lambda x, index: x) \
                 .subscribe_callbacks(lambda x: x, lambda ex: _raise(ex))
 
@@ -184,7 +184,7 @@ class TestSelect(unittest.TestCase):
                 .map_indexed(lambda x, index: x) \
                 .subscribe()
 
-    def test_select_with_index_dispose_inside_selector(self):
+    def test_map_with_index_dispose_inside_selector(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(100, 4), send(200, 3), send(500, 2), send(600, 1))
         invoked = [0]
@@ -209,7 +209,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(0, 500)]
         assert invoked[0] == 3
 
-    def test_select_with_index_completed(self):
+    def test_map_with_index_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1), close(400), send(410, -1), close(420), throw(430, 'ex'))
@@ -226,7 +226,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
-    def test_select_with_index_not_completed(self):
+    def test_map_with_index_not_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
         xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1))
@@ -242,7 +242,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
-    def test_select_with_index_error(self):
+    def test_map_with_index_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
         invoked = [0]
@@ -261,7 +261,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
-    def test_select_with_index_selector_throws(self):
+    def test_map_with_index_selector_throws(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'

@@ -1,12 +1,12 @@
 from rx import config
-from rx.core import Observer, Observable, Disposable
+from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, Observer):
+class Subject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well as an
     observer. Each notification is broadcasted to all subscribed observers.
     """
@@ -26,7 +26,7 @@ class Subject(Observable, Observer):
             raise DisposedException()
 
     def _subscribe_core(self, observer, scheduler=None):
-        print("subscribe")
+        print("subscribe", observer)
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -81,7 +81,7 @@ class Subject(Observable, Observer):
         Keyword arguments:
         value -- The value to send to all subscribed observers.
         """
-
+        print("Subject send", value)
         os = None
         with self.lock:
             self.check_disposed()
@@ -96,7 +96,7 @@ class Subject(Observable, Observer):
 
     def dispose(self):
         """Unsubscribe all observers and release resources."""
-
+        print("dispose!")
         with self.lock:
             self.is_disposed = True
             self.observers = None

@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObserver, Disposable
+from rx.core import ObservableBase, AnonymousObserver, Disposable
 from rx.disposables import CompositeDisposable
 
 from .subscription import Subscription
 
 
-class ColdObservable(Observable):
+class ColdObservable(ObservableBase):
     def __init__(self, scheduler, messages):
         super(ColdObservable, self).__init__()
 

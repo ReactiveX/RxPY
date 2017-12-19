@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def distinct_until_changed(self, key_selector=None, comparer=None):
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_selector and the comparer.

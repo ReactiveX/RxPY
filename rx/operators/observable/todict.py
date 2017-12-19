@@ -1,4 +1,4 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import extensionmethod
 
 def _to_dict(source, map_type, key_selector, element_selector):
@@ -30,7 +30,7 @@ def _to_dict(source, map_type, key_selector, element_selector):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def to_dict(self, key_selector, element_selector=None):
     """Converts the observable sequence to a Map if it exists.
 

@@ -1,8 +1,8 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def start(cls, func, scheduler=None):
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.

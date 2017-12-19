@@ -1,8 +1,8 @@
 from typing import Any, Callable
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 
 
-def skip_while(source: Observable, predicate: Callable[[Any], Any]) -> Observable:
+def skip_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> ObservableBase:
     """Bypasses elements in an observable sequence as long as a specified
     condition is true and then returns the remaining elements. The
     element's index is used in the logic of the predicate function.
@@ -38,7 +38,7 @@ def skip_while(source: Observable, predicate: Callable[[Any], Any]) -> Observabl
     return AnonymousObservable(subscribe)
 
 
-def skip_while_indexed(source: Observable, predicate: Callable[[Any, int], Any]) -> Observable:
+def skip_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], Any]) -> ObservableBase:
     """Bypasses elements in an observable sequence as long as a specified
     condition is true and then returns the remaining elements. The
     element's index is used in the logic of the predicate function.

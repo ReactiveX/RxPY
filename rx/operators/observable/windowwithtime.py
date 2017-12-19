@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
@@ -9,7 +9,7 @@ from rx.subjects import Subject
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def window_with_time(self, timespan, timeshift=None):
     source = self
 

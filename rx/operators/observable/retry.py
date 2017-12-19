@@ -1,9 +1,9 @@
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.internal.iterable import Iterable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def retry(self, retry_count=None):
     """Repeats the source observable sequence the specified number of times
     or until it successfully terminates. If the retry count is not

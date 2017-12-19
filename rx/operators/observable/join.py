@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.internal import extensionmethod
@@ -9,7 +9,7 @@ from rx.internal import extensionmethod
 log = logging.getLogger("Rx")
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def join(self, right, left_duration_selector, right_duration_selector, result_selector):
     """Correlates the elements of two sequences based on overlapping
     durations.

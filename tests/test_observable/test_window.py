@@ -28,7 +28,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map_indexed(selector).merge_observable()
+            return xs.window(closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
@@ -48,7 +48,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map_indexed(selector).merge_observable()
+            return xs.window(closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create, disposed=400)
 
@@ -71,7 +71,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map_indexed(selector).merge_observable()
+            return xs.window(closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -91,7 +91,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map_indexed(selector).merge_observable()
+            return xs.window(closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -106,11 +106,11 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing():
-                return Observable.throw_exception(ex)
+                return Observable.throw(ex)
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map_indexed(selector).merge_observable()
+            return xs.window(closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -131,7 +131,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(window_closing_selector=closings).map_indexed(selector).merge_observable()
+            return xs.window(window_closing_selector=closings).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
@@ -149,7 +149,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map_indexed(selector).merge_observable()
+            return xs.window(ys, closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), send(420, "1 8"), send(420, "3 8"), send(470, "3 9"), close(900)]
@@ -169,7 +169,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map_indexed(selector).merge_observable()
+            return xs.window(ys, closing).map_indexed(selector).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -189,7 +189,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map_indexed(selector).merge_observable()
+            return xs.window(ys, closing).map_indexed(selector).merge_all()
         results = scheduler.start(create=create, disposed=415)
         assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7")]
         assert xs.subscriptions == [subscribe(200, 415)]
@@ -208,7 +208,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map_indexed(selector).merge_observable()
+            return xs.window(ys, closing).map_indexed(selector).merge_all()
         results = scheduler.start(create=create)
 
         assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
@@ -227,7 +227,7 @@ class TestWindow(unittest.TestCase):
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map_indexed(selector).merge_observable()
+            return xs.window(ys, closing).map_indexed(selector).merge_all()
         results = scheduler.start(create=create)
 
         assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
@@ -263,7 +263,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map_indexed(selector).merge_observable()
+            return xs.window(ys).map_indexed(selector).merge_all()
         res = scheduler.start(create=create)
 
         assert res.messages == [
@@ -310,7 +310,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map_indexed(selector).merge_observable()
+            return xs.window(ys).map_indexed(selector).merge_all()
 
         res = scheduler.start(create=create)
 
@@ -352,7 +352,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map_indexed(selector).merge_observable()
+            return xs.window(ys).map_indexed(selector).merge_all()
         res = scheduler.start(create=create)
 
         assert res.messages == [
@@ -396,7 +396,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def selector(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map_indexed(selector).merge_observable()
+            return xs.window(ys).map_indexed(selector).merge_all()
 
         res = scheduler.start(create=create)
 

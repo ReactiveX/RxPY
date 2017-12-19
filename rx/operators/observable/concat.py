@@ -1,11 +1,11 @@
 from typing import Iterable, Union, cast
 
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx.core import ObservableBase, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 
 
-def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> ObservableBase:
     """Concatenates all the observable sequences.
 
     1 - res = concat(xs, ys, zs)

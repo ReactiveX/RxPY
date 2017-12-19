@@ -1,9 +1,9 @@
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx.core import ObservableBase, AnonymousObservable, Disposable
 from rx.disposables import CompositeDisposable
 from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
+@extensionclassmethod(ObservableBase)
 def using(cls, resource_factory, observable_factory):
     """Constructs an observable sequence that depends on a resource object,
     whose lifetime is tied to the resulting observable sequence's lifetime.
@@ -28,7 +28,7 @@ def using(cls, resource_factory, observable_factory):
 
             source = observable_factory(resource)
         except Exception as exception:
-            d = Observable.throw_exception(exception).subscribe(observer, scheduler)
+            d = Observable.throw(exception).subscribe(observer, scheduler)
             return CompositeDisposable(d, disposable)
 
         return CompositeDisposable(source.subscribe(observer, scheduler), disposable)

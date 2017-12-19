@@ -1,10 +1,10 @@
 from __future__ import print_function
 
-from rx import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def dump(self, name = "test"):
     """Debug method for inspecting an observable sequence
 

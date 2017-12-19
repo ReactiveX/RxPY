@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Observable(metaclass=ABCMeta):
+class Observable(ABC):
     __slots__ = ()
 
     @abstractmethod

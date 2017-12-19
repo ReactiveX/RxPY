@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 from rx.internal import extensionclassmethod
@@ -19,7 +19,7 @@ def observable_timer_date(duetime):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_duetime_and_period(duetime, period) -> Observable:
+def observable_timer_duetime_and_period(duetime, period) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
@@ -46,7 +46,7 @@ def observable_timer_duetime_and_period(duetime, period) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan(duetime) -> Observable:
+def observable_timer_timespan(duetime) -> ObservableBase:
 
     def subscribe(observer, scheduler=None):
         d = scheduler.normalize(duetime)
@@ -59,7 +59,7 @@ def observable_timer_timespan(duetime) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime, period) -> Observable:
+def observable_timer_timespan_and_period(duetime, period) -> ObservableBase:
     if duetime == period:
         def subscribe(observer, scheduler=None):
             def action(count):
@@ -71,8 +71,7 @@ def observable_timer_timespan_and_period(duetime, period) -> Observable:
     return observable_timer_duetime_and_period(duetime, period)
 
 
-@extensionclassmethod(Observable)
-def timer(cls, duetime, period=None) -> Observable:
+def timer(duetime, period=None) -> ObservableBase:
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 

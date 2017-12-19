@@ -1,8 +1,8 @@
 from typing import Any, Callable, List
-from rx import Observable
+from rx.core import ObservableBase
 
 
-def partition(source: Observable, predicate: Callable[[Any], Any]) -> List[Observable]:
+def partition(source: ObservableBase, predicate: Callable[[Any], Any]) -> List[ObservableBase]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will
@@ -26,7 +26,7 @@ def partition(source: Observable, predicate: Callable[[Any], Any]) -> List[Obser
     ]
 
 
-def partition_indexed(source: Observable, predicate: Callable[[Any, int], Any]) -> List[Observable]:
+def partition_indexed(source: ObservableBase, predicate: Callable[[Any, int], Any]) -> List[ObservableBase]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will

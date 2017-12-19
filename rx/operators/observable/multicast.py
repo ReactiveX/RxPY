@@ -1,9 +1,9 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.operators.connectableobservable import ConnectableObservable
 from rx.disposables import CompositeDisposable
 
 
-def multicast(source: Observable, subject=None, subject_selector=None, selector=None) -> Observable:
+def multicast(source: ObservableBase, subject=None, subject_selector=None, selector=None) -> ObservableBase:
     """Multicasts the source sequence notifications through an instantiated
     subject into all uses of the sequence within a selector function. Each
     subscription to the resulting sequence causes a separate multicast

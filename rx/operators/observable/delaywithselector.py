@@ -1,10 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def delay_with_selector(self, subscription_delay=None,
                         delay_duration_selector=None):
     """Time shifts the observable sequence based on a subscription delay
@@ -27,7 +27,7 @@ def delay_with_selector(self, subscription_delay=None,
     source = self
     sub_delay, selector = None, None
 
-    if isinstance(subscription_delay, Observable):
+    if isinstance(subscription_delay, typing.Observable):
         selector = delay_duration_selector
         sub_delay = subscription_delay
     else:
@@ -64,15 +64,14 @@ def delay_with_selector(self, subscription_delay=None,
                     delays.remove(d)
                     done()
 
-                d.disposable = delay.subscribe_callbacks(send, observer.throw, close)
+                d.disposable = delay.subscribe_callbacks(send, observer.throw, close, scheduler)
 
             def close():
                 at_end[0] = True
                 subscription.dispose()
                 done()
 
-            subscription.disposable = source.subscribe_callbacks(send, observer.throw,
-                                                       close)
+            subscription.disposable = source.subscribe_callbacks(send, observer.throw, close, scheduler)
 
         if not sub_delay:
             start()

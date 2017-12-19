@@ -1,8 +1,7 @@
-from rx import Observable
-from rx.internal import extensionmethod
+from rx.core import ObservableBase
 
-@extensionmethod(Observable)
-def is_empty(self):
+
+def is_empty(self) -> ObservableBase:
     """Determines whether an observable sequence is empty.
 
     Returns an observable {Observable} sequence containing a single element
@@ -10,4 +9,3 @@ def is_empty(self):
     """
 
     return self.some().map(lambda b: not b)
-

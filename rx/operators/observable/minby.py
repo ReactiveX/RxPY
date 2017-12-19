@@ -1,6 +1,5 @@
-from rx import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, ObservableBase
 from rx.internal.basic import default_sub_comparer
-from rx.internal import extensionmethod
 
 def extrema_by(source, key_selector, comparer):
     def subscribe(observer, scheduler=None):
@@ -43,8 +42,7 @@ def extrema_by(source, key_selector, comparer):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable)
-def min_by(self, key_selector, comparer=None):
+def min_by(source, key_selector, comparer=None) -> ObservableBase:
     """Returns the elements in an observable sequence with the minimum key
     value according to the specified comparer.
 
@@ -62,5 +60,4 @@ def min_by(self, key_selector, comparer=None):
 
     comparer = comparer or default_sub_comparer
 
-    return extrema_by(self, key_selector, lambda x, y: comparer(x, y) * -1)
-
+    return extrema_by(source, key_selector, lambda x, y: comparer(x, y) * -1)

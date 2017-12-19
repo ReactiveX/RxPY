@@ -1,8 +1,8 @@
-from rx import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 
-def take(count: int, source: Observable):
+def take(count: int, source: ObservableBase):
     """Returns a specified number of contiguous elements from the start of
     an observable sequence.
 

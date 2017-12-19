@@ -1,5 +1,4 @@
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionclassmethod
 
 from . import Observer, AnonymousObserver
 from .anonymousobservable import AnonymousObservable
@@ -148,8 +147,7 @@ class OnCompleted(Notification):
         return AnonymousObserver(_send, _throw, _close)
 
 
-@extensionclassmethod(Observer)
-def from_notifier(cls, handler):
+def from_notifier(handler):
     """Creates an observer from a notification callback.
 
     Keyword arguments:

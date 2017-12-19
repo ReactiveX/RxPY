@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import Union
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def timeout(source, duetime: Union[int, datetime], other: Observable = None) -> Observable:
+def timeout(source: ObservableBase, duetime: Union[int, datetime], other: ObservableBase = None) -> ObservableBase:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
@@ -28,7 +28,7 @@ def timeout(source, duetime: Union[int, datetime], other: Observable = None) -> 
         of a timeout.
     """
 
-    other = other or Observable.throw_exception(Exception("Timeout"))
+    other = other or Observable.throw(Exception("Timeout"))
     other = Observable.from_future(other)
 
     def subscribe(observer, scheduler=None):

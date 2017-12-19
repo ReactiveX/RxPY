@@ -1,9 +1,9 @@
-from rx import Observable
+from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 from rx.joins import Pattern
 
-@extensionmethod(Observable, alias="then")
+@extensionmethod(ObservableBase, alias="then")
 def then_do(self, selector):
     """Matches when the observable sequence has an available value and projects
     the value.
