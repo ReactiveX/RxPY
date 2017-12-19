@@ -1,10 +1,8 @@
 from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def distinct_until_changed(self, key_selector=None, comparer=None):
+def distinct_until_changed(self, key_selector=None, comparer=None) -> ObservableBase:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_selector and the comparer.
 
@@ -13,13 +11,14 @@ def distinct_until_changed(self, key_selector=None, comparer=None):
     3 - obs = observable.distinct_until_changed(lambda x: x.id,
                                                 lambda x, y: x == y)
 
-    key_selector -- [Optional] A function to compute the comparison key for
-        each element. If not provided, it projects the value.
+    key_selector -- [Optional] A function to compute the comparison key
+        for each element. If not provided, it projects the value.
     comparer -- [Optional] Equality comparer for computed key values. If
         not provided, defaults to an equality comparer function.
 
-    Return An observable sequence only containing the distinct contiguous
-    elements, based on a computed key value, from the source sequence.
+    Return an observable sequence only containing the distinct
+    contiguous elements, based on a computed key value, from the source
+    sequence.
     """
 
     source = self

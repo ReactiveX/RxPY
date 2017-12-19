@@ -6,26 +6,23 @@ from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
     CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
 
-@extensionmethod(ObservableBase)
-def window(self, window_openings=None, window_closing_selector=None):
+def window(self, window_openings=None, window_closing_selector=None) -> ObservableBase:
     """Projects each element of an observable sequence into zero or more
     windows.
 
     Keyword arguments:
-    :param Observable window_openings: Observable sequence whose elements
-        denote the creation of windows.
-    :param types.FunctionType window_closing_selector: [Optional] A function
-        invoked to define the closing of each produced window. It defines the
-        boundaries of the produced windows (a window is started when the
-        previous one is closed, resulting in non-overlapping windows).
+    window_openings -- Observable sequence whose elements denote the
+        creation of windows.
+    window_closing_selector -- [Optional] A function invoked to define
+        the closing of each produced window. It defines the boundaries
+        of the produced windows (a window is started when the previous
+        one is closed, resulting in non-overlapping windows).
 
-    :returns: An observable sequence of windows.
-    :rtype: Observable[Observable]
+    Returns an observable sequence of windows.
     """
 
     # Make it possible to call window with a single unnamed parameter

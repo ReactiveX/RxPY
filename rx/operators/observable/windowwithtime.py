@@ -6,11 +6,9 @@ from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
     RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def window_with_time(self, timespan, timeshift=None):
+def window_with_time(self, timespan, timeshift=None) -> ObservableBase:
     source = self
 
     if timeshift is None:

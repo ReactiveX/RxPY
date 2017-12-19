@@ -5,13 +5,11 @@ from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
 
-@extensionmethod(ObservableBase)
-def window_with_count(self, count, skip=None):
+def window_with_count(self, count, skip=None) -> ObservableBase:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 

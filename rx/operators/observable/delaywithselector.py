@@ -1,12 +1,10 @@
 from rx.core import ObservableBase, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, \
     SingleAssignmentDisposable, SerialDisposable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
 def delay_with_selector(self, subscription_delay=None,
-                        delay_duration_selector=None):
+                        delay_duration_selector=None) -> ObservableBase:
     """Time shifts the observable sequence based on a subscription delay
     and a delay selector function for each element.
 

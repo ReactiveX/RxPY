@@ -1,10 +1,8 @@
 from rx.core import AnonymousObservable, ObservableBase
-from rx.internal import extensionmethod
 from rx.core.observeonobserver import ObserveOnObserver
 
 
-@extensionmethod(ObservableBase)
-def observe_on(self, scheduler):
+def observe_on(source, scheduler) -> ObservableBase:
     """Wraps the source sequence in order to run its observer callbacks on
     the specified scheduler.
 
@@ -18,8 +16,6 @@ def observe_on(self, scheduler):
     subscription and/or unsubscription actions have side-effects
     that require to be run on a scheduler, use subscribe_on.
     """
-
-    source = self
 
     def subscribe(observer, scheduler=None):
         return source.subscribe(ObserveOnObserver(scheduler, observer))

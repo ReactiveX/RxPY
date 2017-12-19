@@ -24,11 +24,10 @@ def find_value(source, predicate, yield_index):
             observer.send(-1 if yield_index else None)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
-@extensionmethod(ObservableBase)
-def find(self, predicate):
+def find(self, predicate) -> ObservableBase:
     """Searches for an element that matches the conditions defined by the
     specified predicate, and returns the first occurrence within the entire
     Observable sequence.

@@ -1,11 +1,10 @@
 import logging
+from typing import Union
 from datetime import datetime, timedelta
 
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
-
-log = logging.getLogger("Rx")
 
 
 class Timestamp(object):
@@ -14,7 +13,7 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source, duetime):
+def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, int]) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
@@ -32,7 +31,6 @@ def observable_delay_timespan(source, duetime):
         queue = []
 
         def send(notification):
-            log.debug("observable_delay_timespan:subscribe:send()")
             should_run = False
 
             with source.lock:
@@ -56,7 +54,6 @@ def observable_delay_timespan(source, duetime):
 
                     def action(scheduler, state):
                         if exception[0]:
-                            log.error("observable_delay_timespan:subscribe:send:action(), exception: %s", exception[0])
                             return
 
                         with source.lock:
@@ -96,7 +93,7 @@ def observable_delay_timespan(source, duetime):
     return AnonymousObservable(subscribe)
 
 
-def delay(source, duetime):
+def delay(source: ObservableBase, duetime: Union[datetime, int]) -> ObservableBase:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 

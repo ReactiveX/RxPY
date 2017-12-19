@@ -4,12 +4,9 @@ from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
     RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def window_with_time_or_count(self, timespan, count):
-    source = self
+def window_with_time_or_count(source, timespan, count) -> ObservableBase:
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler

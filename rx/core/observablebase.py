@@ -3,7 +3,7 @@ from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
 
 from rx import config
-from .typing import Selector
+from .typing import Selector, Predicate
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing as ty
@@ -227,6 +227,30 @@ class ObservableBase(ty.Observable):
         source = self
         return buffer_with_count(source, count, skip)
 
+    def buffer_with_time(self, timespan, timeshift=None) -> 'ObservableBase':
+        """Projects each element of an observable sequence into zero or more
+        buffers which are produced based on timing information.
+
+        # non-overlapping segments of 1 second
+        1 - res = xs.buffer_with_time(1000)
+        # segments of 1 second with time shift 0.5 seconds
+        2 - res = xs.buffer_with_time(1000, 500)
+
+        Keyword arguments:
+        timespan -- Length of each buffer (specified as an integer denoting
+            milliseconds).
+        timeshift -- [Optional] Interval between creation of consecutive
+            buffers (specified as an integer denoting milliseconds), or an
+            optional scheduler parameter. If not specified, the time shift
+            corresponds to the timespan parameter, resulting in non-overlapping
+            adjacent buffers.
+
+        Returns an observable sequence of buffers.
+        """
+        from ..operators.observable.bufferwithtime import buffer_with_time
+        source = self
+        return buffer_with_time(source, timespan, timeshift)
+
     def buffer_with_time_or_count(self, timespan, count) -> 'ObservableBase':
         """Projects each element of an observable sequence into a buffer that
         is completed when either it's full or a given amount of time has
@@ -380,6 +404,53 @@ class ObservableBase(ty.Observable):
         source = self
         return delay(source, duetime)
 
+    def delay_with_selector(self, subscription_delay=None,
+                            delay_duration_selector=None) -> 'ObservableBase':
+        """Time shifts the observable sequence based on a subscription delay
+        and a delay selector function for each element.
+
+        # with selector only
+        1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
+        # with delay and selector
+        2 - res = source.delay_with_selector(Observable.timer(2000),
+                                            lambda x: Observable.timer(x))
+
+        subscription_delay -- [Optional] Sequence indicating the delay for the
+            subscription to the source.
+        delay_duration_selector [Optional] Selector function to retrieve a
+            sequence indicating the delay for each given element.
+
+        Returns time-shifted sequence.
+        """
+        from ..operators.observable.delaywithselector import delay_with_selector
+        source = self
+        return delay_with_selector(source, subscription_delay, delay_duration_selector)
+
+    def distinct_until_changed(self, key_selector=None, comparer=None) -> 'ObservableBase':
+        """Returns an observable sequence that contains only distinct
+        contiguous elements according to the key_selector and the
+        comparer.
+
+        1 - obs = observable.distinct_until_changed()
+        2 - obs = observable.distinct_until_changed(lambda x: x.id)
+        3 - obs = observable.distinct_until_changed(lambda x: x.id,
+                                                    lambda x, y: x == y)
+
+        key_selector -- [Optional] A function to compute the comparison
+            key for each element. If not provided, it projects the
+            value.
+        comparer -- [Optional] Equality comparer for computed key
+            values. If not provided, defaults to an equality comparer
+            function.
+
+        Return an observable sequence only containing the distinct
+        contiguous elements, based on a computed key value, from the source
+        sequence.
+        """
+        from ..operators.observable.distinctuntilchanged import distinct_until_changed
+        source = self
+        return distinct_until_changed(source, key_selector, comparer)
+
     def do(self, observer: ty.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence and
         invokes an action on graceful or exceptional termination of the
@@ -472,6 +543,23 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.filter import filter_indexed
         source = self
         return filter_indexed(predicate, source)
+
+    def find(self, predicate: Predicate) -> 'ObservableBase':
+        """Searches for an element that matches the conditions defined by the
+        specified predicate, and returns the first occurrence within the entire
+        Observable sequence.
+
+        Keyword arguments:
+        predicate -- {Function} The predicate that defines the conditions of the
+            element to search for.
+
+        Returns an Observable {Observable} sequence with the first element that
+        matches the conditions defined by the specified predicate, if found
+        otherwise, None.
+        """
+        from ..operators.observable.find import find
+        source = self
+        return find(source, predicate)
 
     def first(self, predicate=None) -> 'ObservableBase':
         """Returns the first element of an observable sequence that
@@ -675,6 +763,17 @@ class ObservableBase(ty.Observable):
         source = self
         return map_indexed(mapper, source)
 
+    def materialize(self) -> 'ObservableBase':
+        """Materializes the implicit notifications of an observable sequence as
+        explicit notification values.
+
+        Returns an observable sequence containing the materialized notification
+        values from the source sequence.
+        """
+        from ..operators.observable.materialize import materialize
+        source = self
+        return materialize(source)
+
     def merge(self, *args, max_concurrent=None):
         """Merges an observable sequence of observable sequences into an
         observable sequence, limiting the number of concurrent subscriptions
@@ -810,6 +909,24 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.multicast import multicast
         source = self
         return multicast(source, subject, subject_selector, selector)
+
+    def observe_on(self, scheduler) -> 'ObservableBase':
+        """Wraps the source sequence in order to run its observer callbacks on
+        the specified scheduler.
+
+        Keyword arguments:
+        scheduler -- Scheduler to notify observers on.
+
+        Returns the source sequence whose observations happen on the specified
+        scheduler.
+
+        This only invokes observer callbacks on a scheduler. In case the
+        subscription and/or unsubscription actions have side-effects
+        that require to be run on a scheduler, use subscribe_on.
+        """
+        from ..operators.observable.observeon import observe_on
+        source = self
+        return observe_on(source, scheduler)
 
     def partition(self, predicate: Callable[[Any], Any]) -> List['ObservableBase']:
         """Returns two observables which partition the observations of the
@@ -1276,6 +1393,52 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.toiterable import to_iterable
         source = self
         return to_iterable(source)
+
+    def window(self, window_openings=None, window_closing_selector=None) -> 'ObservableBase':
+        """Projects each element of an observable sequence into zero or
+        more windows.
+
+        Keyword arguments:
+        window_openings -- Observable sequence whose elements denote the
+            creation of windows.
+        window_closing_selector -- [Optional] A function invoked to
+            define the closing of each produced window. It defines the
+            boundaries of the produced windows (a window is started when
+            the previous one is closed, resulting in non-overlapping
+            windows).
+
+        Returns an observable sequence of windows.
+        """
+        from ..operators.observable.window import window
+        source = self
+        return window(source, window_openings, window_closing_selector)
+
+    def window_with_count(self, count, skip=None) -> 'ObservableBase':
+        """Projects each element of an observable sequence into zero or more
+        windows which are produced based on element count information.
+
+        1 - xs.window_with_count(10)
+        2 - xs.window_with_count(10, 1)
+
+        count -- Length of each window.
+        skip -- [Optional] Number of elements to skip between creation of
+            consecutive windows. If not specified, defaults to the count.
+
+        Returns an observable sequence of windows.
+        """
+        from ..operators.observable.windowwithcount import window_with_count
+        source = self
+        return window_with_count(source, count, skip)
+
+    def window_with_time(self, timespan, timeshift=None) -> 'ObservableBase':
+        from ..operators.observable.windowwithtime import window_with_time
+        source = self
+        return window_with_time(source, timespan, timeshift)
+
+    def window_with_time_or_count(self, timespan, count) -> 'ObservableBase':
+        from ..operators.observable.windowwithtimeorcount import window_with_time_or_count
+        source = self
+        return window_with_time_or_count(source, timespan, count)
 
     def with_latest_from(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                          selector: Callable[[Any], Any]) -> 'ObservableBase':
