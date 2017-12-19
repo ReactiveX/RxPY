@@ -292,7 +292,6 @@ class ObservableBase(ty.Observable):
         source = self
         return catch_exception(source, second, handler)
 
-
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
         """Concatenates all the observable sequences. This takes in either an
         array or variable arguments to concatenate.
@@ -361,6 +360,24 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.count import count
         source = self
         return count(source, predicate)
+
+    def delay(self, duetime):
+        """Time shifts the observable sequence by duetime. The relative time
+        intervals between the values are preserved.
+
+        1 - res = rx.Observable.delay(datetime())
+        2 - res = rx.Observable.delay(5000)
+
+        Keyword arguments:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) by which
+            to shift the observable sequence.
+
+        Returns time-shifted sequence.
+        """
+        from ..operators.observable.delay import delay
+        source = self
+        return delay(source, duetime)
 
     def do(self, observer: ty.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence and

@@ -23,7 +23,7 @@ def for_each(action, source: BlockingObservable):
     """
 
     latch = config["concurrency"].Event()
-    exception = None
+    exception = [None]
     count = 0
 
     def send(value):
@@ -40,7 +40,7 @@ def for_each(action, source: BlockingObservable):
         #
         # We do this instead of throwing directly since this may be on
         # a different thread and the latch is still waiting.
-        exception = err
+        exception[0] = err
         latch.set()
 
     def close():

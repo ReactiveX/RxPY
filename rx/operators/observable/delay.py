@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
@@ -97,8 +96,7 @@ def observable_delay_timespan(source, duetime):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(ObservableBase)
-def delay(self, duetime):
+def delay(source, duetime):
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
@@ -113,4 +111,4 @@ def delay(self, duetime):
     Returns time-shifted sequence.
     """
 
-    return observable_delay_timespan(self, duetime)
+    return observable_delay_timespan(source, duetime)

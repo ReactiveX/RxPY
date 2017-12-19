@@ -3,6 +3,7 @@ from asyncio.futures import Future
 
 from .observablebase import ObservableBase
 
+
 class Observable:
     """Observable creation methods.
 
