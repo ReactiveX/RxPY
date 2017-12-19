@@ -1,5 +1,4 @@
 from rx.core.blockingobservable import BlockingObservable
-from rx.internal.utils import adapt_call
 from rx import config
 
 
@@ -23,15 +22,16 @@ def for_each(action, source: BlockingObservable):
     :rtype: None
     """
 
-    action = adapt_call(action)
     latch = config["concurrency"].Event()
-    exception = [None]
-    count = [0]
+    exception = None
+    count = 0
 
     def send(value):
+        nonlocal count, exception
+
         with source.lock:
-            n = count[0]
-            count[0] += 1
+            n = count
+            count += 1
         action(value, n)
 
     def throw(err):
@@ -40,7 +40,7 @@ def for_each(action, source: BlockingObservable):
         #
         # We do this instead of throwing directly since this may be on
         # a different thread and the latch is still waiting.
-        exception[0] = err
+        exception = err
         latch.set()
 
     def close():
@@ -51,5 +51,5 @@ def for_each(action, source: BlockingObservable):
     # Block until the subscription completes and then return
     latch.wait()
 
-    if exception[0] is not None:
-        raise Exception(exception[0])
+    if exception is not None:
+        raise Exception(exception)
