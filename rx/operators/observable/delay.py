@@ -64,7 +64,7 @@ def observable_delay_timespan(source, duetime):
                             running[0] = True
                             while True:
                                 result = None
-                                if len(queue) and queue[0].timestamp <= scheduler.now:
+                                if queue and queue[0].timestamp <= scheduler.now:
                                     result = queue.pop(0).value
 
                                 if result:
@@ -75,7 +75,7 @@ def observable_delay_timespan(source, duetime):
 
                             should_continue = False
                             recurse_duetime = 0
-                            if len(queue):
+                            if queue:
                                 should_continue = True
                                 diff = queue[0].timestamp - scheduler.now
                                 zero = timedelta(0) if isinstance(diff, timedelta) else 0
