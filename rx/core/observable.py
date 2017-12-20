@@ -367,6 +367,26 @@ class Observable:
         return to_async(func, scheduler)
 
     @staticmethod
+    def using(resource_factory, observable_factory) -> ObservableBase:
+        """Constructs an observable sequence that depends on a resource
+        object, whose lifetime is tied to the resulting observable
+        sequence's lifetime.
+
+        1 - res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
+
+        Keyword arguments:
+        resource_factory -- Factory function to obtain a resource
+            object.
+        observable_factory -- Factory function to obtain an observable
+            sequence that depends on the obtained resource.
+
+        Returns an observable sequence whose lifetime controls the
+        lifetime of the dependent resource object.
+        """
+        from ..operators.observable.using import using()
+        return using(resource_factory, observable_factory)
+
+    @staticmethod
     def when(*args) -> ObservableBase:
         """Joins together the results from several patterns.
 
