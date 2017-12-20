@@ -1,9 +1,10 @@
-from rx.core import ObservableBase
-from rx.internal import extensionclassmethod
+from typing import Callable
+from rx.core import ObservableBase, Observable
+from rx.core import bases
 
 
-@extensionclassmethod(ObservableBase)
-def if_then(cls, condition, then_source, else_source=None):
+def if_then(condition: Callable[[None], bool], then_source: ObservableBase,
+            else_source: ObservableBase = None) -> ObservableBase:
     """Determines whether an observable collection contains values.
 
     Example:
@@ -12,16 +13,16 @@ def if_then(cls, condition, then_source, else_source=None):
     3 - res = rx.Observable.if(condition, obs1, scheduler=scheduler)
 
     Keyword parameters:
-    condition -- {Function} The condition which determines if the
-        then_source or else_source will be run.
-    then_source -- {Observable} The observable sequence or Promise that
+    condition -- The condition which determines if the then_source or
+        else_source will be run.
+    then_source -- The observable sequence or Promise that
         will be run if the condition function returns true.
-    else_source -- {Observable} [Optional] The observable sequence or
-        Promise that will be run if the condition function returns False.
-        If this is not provided, it defaults to rx.Observable.empty
-    scheduler -- [Optional] Scheduler to use.
+    else_source -- [Optional] The observable sequence or
+        Promise that will be run if the condition function returns
+        False. If this is not provided, it defaults to
+        rx.Observable.empty
 
-    Returns an observable {Observable} sequence which is either the
+    Returns an observable sequence which is either the
     then_source or else_source.
     """
 
@@ -30,6 +31,7 @@ def if_then(cls, condition, then_source, else_source=None):
     then_source = Observable.from_future(then_source)
     else_source = Observable.from_future(else_source)
 
-    def factory(scheduler):
+    def factory(_: bases.Scheduler):
         return then_source if condition() else else_source
+
     return Observable.defer(factory)

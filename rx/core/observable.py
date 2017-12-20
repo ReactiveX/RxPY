@@ -183,6 +183,31 @@ class Observable:
     from_ = from_iterable
     from_list = from_iterable
 
+    def if_then(condition: Callable[[None], bool], then_source: ObservableBase,
+                else_source: ObservableBase = None) -> ObservableBase:
+        """Determines whether an observable collection contains values.
+
+        Example:
+        1 - res = rx.Observable.if(condition, obs1)
+        2 - res = rx.Observable.if(condition, obs1, obs2)
+        3 - res = rx.Observable.if(condition, obs1, scheduler=scheduler)
+
+        Keyword parameters:
+        condition -- The condition which determines if the then_source or
+            else_source will be run.
+        then_source -- The observable sequence or Promise that
+            will be run if the condition function returns true.
+        else_source -- [Optional] The observable sequence or
+            Promise that will be run if the condition function returns
+            False. If this is not provided, it defaults to
+            rx.Observable.empty
+
+        Returns an observable sequence which is either the
+        then_source or else_source.
+        """
+        from ..operators.observable.ifthen import if_then
+        return if_then(condition, then_source, else_source)
+
     @staticmethod
     def interval(period) -> ObservableBase:
         """Returns an observable sequence that produces a value after each
@@ -383,7 +408,7 @@ class Observable:
         Returns an observable sequence whose lifetime controls the
         lifetime of the dependent resource object.
         """
-        from ..operators.observable.using import using()
+        from ..operators.observable.using import using
         return using(resource_factory, observable_factory)
 
     @staticmethod
