@@ -1,16 +1,13 @@
-from rx.core import ObservableBase, AnonymousObservable
-
+from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def exclusive(self):
+def exclusive(self) -> ObservableBase:
     """Performs a exclusive waiting for the first to finish before
     subscribing to another observable. Observables that come in between
     subscriptions will be dropped on the floor.
 
-    Returns an exclusive observable {Observable} with only the results that
+    Returns an exclusive observable with only the results that
     happen when subscribed.
     """
 
@@ -42,7 +39,8 @@ def exclusive(self):
                 inner_subscription.disposable = inner_source.subscribe_callbacks(
                     observer.send,
                     observer.throw,
-                    close_inner
+                    close_inner,
+                    scheduler
                 )
 
         def close():
@@ -50,6 +48,6 @@ def exclusive(self):
             if not has_current[0] and len(g) == 1:
                 observer.close()
 
-        m.disposable = sources.subscribe_callbacks(send, observer.throw, close)
+        m.disposable = sources.subscribe_callbacks(send, observer.throw, close, scheduler)
         return g
     return AnonymousObservable(subscribe)

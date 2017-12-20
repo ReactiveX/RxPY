@@ -2,9 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from rx.core import ObservableBase, AnonymousObservable
-from rx.concurrency import timeout_scheduler
 from rx.disposables import MultipleAssignmentDisposable
-from rx.internal import extensionclassmethod
 
 log = logging.getLogger("Rx")
 

@@ -25,5 +25,5 @@ def time_interval(source: ObservableBase) -> ObservableBase:
             last = now
             return TimeInterval(value=value, interval=span)
 
-        return source.map(selector).subscribe(observer)
+        return source.map(selector).subscribe(observer, scheduler)
     return AnonymousObservable(subscribe)

@@ -303,24 +303,25 @@ class Observable:
 
     @staticmethod
     def throw(exception: Exception) -> ObservableBase:
-        """Returns an observable sequence that terminates with an exception,
-        using the specified scheduler to send out the single OnError message.
+        """Returns an observable sequence that terminates with an
+        exception, using the specified scheduler to send out the single
+        OnError message.
 
         1 - res = rx.Observable.throw(Exception('Error'))
 
         Keyword arguments:
         exception -- An object used for the sequence's termination.
 
-        Returns the observable sequence that terminates exceptionally with the
-        specified exception object.
+        Returns the observable sequence that terminates exceptionally
+        with the specified exception object.
         """
         from ..operators.observable.throw import throw
         return throw(exception)
 
     @staticmethod
     def timer(duetime, period=None) -> ObservableBase:
-        """Returns an observable sequence that produces a value after duetime
-        has elapsed and then after each period.
+        """Returns an observable sequence that produces a value after
+        duetime has elapsed and then after each period.
 
         1 - res = Observable.timer(datetime(...))
         2 - res = Observable.timer(datetime(...), 1000)
@@ -329,18 +330,41 @@ class Observable:
         6 - res = Observable.timer(5000, 1000)
 
         Keyword arguments:
-        duetime -- Absolute (specified as a Date object) or relative time
-            (specified as an integer denoting milliseconds) at which to produce
-            the first value.</param>
-        period -- [Optional] Period to produce subsequent values (specified as
-            an integer denoting milliseconds), or the scheduler to run the
-            timer on. If not specified, the resulting timer is not recurring.
+        duetime -- Absolute (specified as a Date object) or relative
+            time (specified as an integer denoting milliseconds) at
+            which to produce the first value.
+        period -- [Optional] Period to produce subsequent values
+            (specified as an integer denoting milliseconds), or the
+            scheduler to run the timer on. If not specified, the
+            resulting timer is not recurring.
 
-        Returns an observable sequence that produces a value after due time has
-        elapsed and then each period.
+        Returns an observable sequence that produces a value after due
+        time has elapsed and then each period.
         """
         from ..operators.observable.timer import timer
         return timer(duetime, period)
+
+    @staticmethod
+    def to_async(func: Callable, scheduler=None) -> Callable:
+        """Converts the function into an asynchronous function. Each
+        invocation of the resulting asynchronous function causes an
+        invocation of the original synchronous function on the specified
+        scheduler.
+
+        Example:
+        res = Observable.to_async(lambda x, y: x + y)(4, 3)
+        res = Observable.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
+        res = Observable.to_async(lambda x: log.debug(x),
+                                Scheduler.timeout)('hello')
+
+        func -- Function to convert to an asynchronous function.
+        scheduler -- [Optional] Scheduler to run the function on. If not
+            specified, defaults to Scheduler.timeout.
+
+        Returns asynchronous function.
+        """
+        from ..operators.observable.toasync import to_async
+        return to_async(func, scheduler)
 
     @staticmethod
     def when(*args) -> ObservableBase:
@@ -349,8 +373,8 @@ class Observable:
         args -- A series of plans (specified as a list of as a series of
             arguments) created by use of the Then operator on patterns.
 
-        Returns Observable sequence with the results form matching several
-        patterns.
+        Returns Observable sequence with the results form matching
+        several patterns.
         """
         from ..operators.observable.when import when
         return when(*args)
@@ -361,8 +385,8 @@ class Observable:
         loop.
 
         Keyword arguments:
-        condition -- The condition which determines if the source will be
-            repeated.
+        condition -- The condition which determines if the source will
+            be repeated.
 
         Returns an observable sequence which is repeated as long as the
             condition holds.
@@ -378,15 +402,16 @@ class Observable:
         observable sequences or an array have produced an element at a
         corresponding index.
 
-        The last element in the arguments must be a function to invoke for
-        each series of elements at corresponding indexes in the sources.
+        The last element in the arguments must be a function to invoke
+        for each series of elements at corresponding indexes in the
+        sources.
 
         1 - res = Observable.zip(obs2, result_selector=fn)
         2 - res = Observable.zip([1,2,3], result_selector=fn)
 
-        Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector
-        function.
+        Returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        selector function.
         """
         from ..operators.observable.zip import zip as _zip
         return _zip(*args, result_selector=result_selector)

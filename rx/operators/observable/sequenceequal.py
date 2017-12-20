@@ -1,13 +1,13 @@
+from typing import Any, Callable
 import collections
 
 from rx.core import AnonymousObservable, ObservableBase, Observable
 from rx.disposables import CompositeDisposable
 from rx.internal import default_comparer
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def sequence_equal(self, second, comparer=None):
+def sequence_equal(source, second: ObservableBase,
+                   comparer: Callable[[Any, Any], bool] = None) -> ObservableBase:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.
 
@@ -17,8 +17,8 @@ def sequence_equal(self, second, comparer=None):
     4 - res = source.sequence_equal(Observable.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
 
     second -- Second observable sequence or array to compare.
-    comparer -- [Optional] Comparer used to compare elements of both sequences.
-                No guarantees on order of comparer arguments.
+    comparer -- [Optional] Comparer used to compare elements of both
+        sequences. No guarantees on order of comparer arguments.
 
     Returns an observable sequence that contains a single element which
     indicates whether both sequences are of equal length and their
@@ -26,7 +26,7 @@ def sequence_equal(self, second, comparer=None):
     comparer.
     """
 
-    first = self
+    first = source
     comparer = comparer or default_comparer
 
     if isinstance(second, collections.Iterable):
@@ -96,7 +96,7 @@ def sequence_equal(self, second, comparer=None):
                     observer.send(True)
                     observer.close()
 
-        subscription1 = first.subscribe_callbacks(send1, observer.throw, close1)
-        subscription2 = second.subscribe_callbacks(send2, observer.throw, close2)
+        subscription1 = first.subscribe_callbacks(send1, observer.throw, close1, scheduler)
+        subscription2 = second.subscribe_callbacks(send2, observer.throw, close2, scheduler)
         return CompositeDisposable(subscription1, subscription2)
     return AnonymousObservable(subscribe)

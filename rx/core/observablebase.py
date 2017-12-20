@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
 
@@ -159,6 +159,20 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.amb import _amb
         source = self
         return _amb(source, other)
+
+    def and_(self, right):
+        """Creates a pattern that matches when both observable sequences
+        have an available value.
+
+        Keyword arguments:
+        right -- Observable sequence to match with the current sequence.
+
+        Returns Pattern object that matches when both observable
+        sequences have an available value.
+        """
+        from ..operators.observable.and_ import and_
+        source = self
+        return and_(source, right)
 
     def as_observable(self) -> 'ObservableBase':
         """Hides the identity of an observable sequence.
@@ -507,6 +521,55 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.dowhile import do_while
         source = self
         return do_while(condition, source)
+
+    def element_at(self, index: int) -> 'ObservableBase':
+        """Returns the element at a specified index in a sequence.
+
+        Example:
+        res = source.element_at(5)
+
+        Keyword arguments:
+        index -- The zero-based index of the element to retrieve.
+
+        Returns an observable  sequence that produces the element at the
+        specified position in the source sequence.
+        """
+        from ..operators.observable.elementat import element_at
+        source = self
+        return element_at(source, index)
+
+    def element_at_or_default(self, index: int, default_value: Any = None) -> 'ObservableBase':
+        """Returns the element at a specified index in a sequence or a
+        default value if the index is out of range.
+
+        Example:
+        res = source.element_at_or_default(5)
+        res = source.element_at_or_default(5, 0)
+
+        Keyword arguments:
+        index -- The zero-based index of the element to retrieve.
+        default_value -- [Optional] The default value if the index is
+            outside the bounds of the source sequence.
+
+        Returns an observable sequence that produces the element at the
+            specified position in the source sequence, or a default value if
+            the index is outside the bounds of the source sequence.
+        """
+        from ..operators.observable.elementatordefault import element_at_or_default
+        source = self
+        return element_at_or_default(source, index, default_value)
+
+    def exclusive(self) -> 'ObservableBase':
+        """Performs a exclusive waiting for the first to finish before
+        subscribing to another observable. Observables that come in between
+        subscriptions will be dropped on the floor.
+
+        Returns an exclusive observable with only the results that
+        happen when subscribed.
+        """
+        from ..operators.observable.exclusive import exclusive
+        source = self
+        return exclusive(source)
 
     def filter(self, predicate: Callable[[Any], bool]) -> 'ObservableBase':
         """Filters the elements of an observable sequence based on a
@@ -1084,6 +1147,29 @@ class ObservableBase(ty.Observable):
     flat_map_latest = select_switch
     switch_map = select_switch
 
+    def sequence_equal(self, second: 'ObservableBase',
+                   comparer: Callable[[Any, Any], bool] = None) -> 'ObservableBase':
+        """Determines whether two sequences are equal by comparing the
+        elements pairwise using a specified equality comparer.
+
+        1 - res = source.sequence_equal([1,2,3])
+        2 - res = source.sequence_equal([{ "value": 42 }], lambda x, y: x.value == y.value)
+        3 - res = source.sequence_equal(Observable.return_value(42))
+        4 - res = source.sequence_equal(Observable.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
+
+        second -- Second observable sequence or array to compare.
+        comparer -- [Optional] Comparer used to compare elements of both
+            sequences. No guarantees on order of comparer arguments.
+
+        Returns an observable sequence that contains a single element which
+        indicates whether both sequences are of equal length and their
+        corresponding elements are equal according to the specified equality
+        comparer.
+        """
+        from ..operators.observable.sequenceequal import sequence_equal
+        source = self
+        return sequence_equal(source, second, comparer)
+
     def share(self):
         """Share a single subscription among multple observers.
 
@@ -1291,6 +1377,37 @@ class ObservableBase(ty.Observable):
         source = self
         return take_while_indexed(source, predicate)
 
+    def then_do(self, selector: Selector) -> 'ObservableBase':
+        """Matches when the observable sequence has an available value and
+        projects the value.
+
+        selector -- Selector that will be invoked for values in the source
+            sequence.
+
+        Returns Plan that produces the projected values, to be fed (with
+        other plans) to the when operator.
+        """
+        from ..operators.observable.thendo import then_do
+        source = self
+        return then_do(source, selector)
+
+    then = then_do
+
+    def throttle_first(self, window_duration: Union[timedelta, int]) -> 'ObservableBase':
+        """Returns an Observable that emits only the first item emitted
+        by the source Observable during sequential time windows of a
+        specified duration.
+
+        Keyword arguments:
+        window_duration -- time to wait before emitting another item
+            after emitting the last item.
+        Returns an Observable that performs the throttle operation.
+        """
+
+        from ..operators.observable.throttlefirst import throttle_first
+        source = self
+        return throttle_first(source, window_duration)
+
     def throttle_with_timeout(self, duetime) -> 'ObservableBase':
         """Ignores values from an observable sequence which are followed
         by another value before duetime.
@@ -1358,12 +1475,41 @@ class ObservableBase(ty.Observable):
         other -- Sequence to return in case of a timeout. If not
             specified, a timeout error throwing sequence will be used.
 
-        Returns the source sequence switching to the other sequence in case
-            of a timeout.
+        Returns the source sequence switching to the other sequence in
+        case of a timeout.
         """
         from ..operators.observable.timeout import timeout
         source = self
         return timeout(source, duetime, other)
+
+    def timeout_with_selector(self, first_timeout=None,
+                            timeout_duration_selector=None, other=None) -> 'ObservableBase':
+        """Returns the source observable sequence, switching to the
+        other observable sequence if a timeout is signaled.
+
+        1 - res = source.timeout_with_selector(rx.Observable.timer(500))
+        2 - res = source.timeout_with_selector(rx.Observable.timer(500),
+                    lambda x: rx.Observable.timer(200))
+        3 - res = source.timeout_with_selector(rx.Observable.timer(500),
+                    lambda x: rx.Observable.timer(200)),
+                    rx.Observable.return_value(42))
+
+        Keyword arguments:
+        first_timeout -- [Optional] Observable sequence that represents
+            the timeout for the first element. If not provided, this
+            defaults to Observable.never().
+        timeout_Duration_selector -- [Optional] Selector to retrieve an
+            observable sequence that represents the timeout between the
+            current element and the next element.
+        other -- [Optional] Sequence to return in case of a timeout. If
+            not provided, this is set to Observable.throw().
+
+        Returns the source sequence switching to the other sequence in
+        case of a timeout.
+        """
+        from ..operators.observable.timeoutwithselector import timeout_with_selector
+        source = self
+        return timeout_with_selector(source, first_timeout, timeout_duration_selector, other)
 
     def timestamp(self) -> 'ObservableBase':
         """Records the timestamp for each value in an observable

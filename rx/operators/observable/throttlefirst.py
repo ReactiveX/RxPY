@@ -1,24 +1,20 @@
+from datetime import timedelta
+from typing import Union
+
 from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import timeout_scheduler
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def throttle_first(self, window_duration):
-    """Returns an Observable that emits only the first item emitted by the
-    source Observable during sequential time windows of a specified
+def throttle_first(source, window_duration: Union[timedelta, int]) -> ObservableBase:
+    """Returns an Observable that emits only the first item emitted by
+    the source Observable during sequential time windows of a specified
     duration.
 
     Keyword arguments:
-    window_duration -- {timedelta} time to wait before emitting another item
-        after emitting the last item.
-    scheduler -- {Scheduler} [Optional] the Scheduler to use internally to
-        manage the timers that handle timeout for each item. If not
-        provided, defaults to Scheduler.timeout.
-    Returns {Observable} An Observable that performs the throttle operation.
+    window_duration -- time to wait before emitting another item after
+        emitting the last item.
+    Returns an Observable that performs the throttle operation.
     """
-
-    source = self
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
@@ -32,7 +28,7 @@ def throttle_first(self, window_duration):
             emit = False
             now = scheduler.now
 
-            with self.lock:
+            with source.lock:
                 if not last_send[0] or now - last_send[0] >= duration:
                     last_send[0] = now
                     emit = True

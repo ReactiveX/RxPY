@@ -1,14 +1,15 @@
+from typing import Callable
+
 from rx.core import ObservableBase
 from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(ObservableBase)
-def to_async(cls, func, scheduler=None):
-    """Converts the function into an asynchronous function. Each invocation
-    of the resulting asynchronous function causes an invocation of the
-    original synchronous function on the specified scheduler.
+def to_async(func: Callable, scheduler=None) -> Callable:
+    """Converts the function into an asynchronous function. Each
+    invocation of the resulting asynchronous function causes an
+    invocation of the original synchronous function on the specified
+    scheduler.
 
     Example:
     res = Observable.to_async(lambda x, y: x + y)(4, 3)
@@ -17,15 +18,15 @@ def to_async(cls, func, scheduler=None):
                               Scheduler.timeout)('hello')
 
     func -- {Function} Function to convert to an asynchronous function.
-    scheduler -- {Scheduler} [Optional] Scheduler to run the function on. If
-        not specified, defaults to Scheduler.timeout.
+    scheduler -- {Scheduler} [Optional] Scheduler to run the function
+        on. If not specified, defaults to Scheduler.timeout.
 
-    Returns {Function} Asynchronous function.
+    Returns asynchronous function.
     """
 
     scheduler =  scheduler or timeout_scheduler
 
-    def wrapper(*args):
+    def wrapper(*args) -> ObservableBase:
         subject = AsyncSubject()
 
         def action(scheduler, state):
