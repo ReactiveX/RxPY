@@ -1,12 +1,10 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.disposables import MultipleAssignmentDisposable
-from rx.internal import extensionclassmethod
 
 
-@extensionclassmethod(Observable)
-def generate_with_relative_time(cls, initial_state, condition, iterate,
-                                result_selector, time_selector):
+def generate_with_relative_time(initial_state, condition, iterate,
+                                result_selector, time_selector) -> ObservableBase:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
@@ -16,14 +14,16 @@ def generate_with_relative_time(cls, initial_state, condition, iterate,
         lambda x: x,
         lambda x: 500)
 
+    Keyword arguments:
     initial_state -- Initial state.
-    condition -- Condition to terminate generation (upon returning false).
+    condition -- Condition to terminate generation (upon returning
+        false).
     iterate -- Iteration step function.
     result_selector -- Selector function for results produced in the
         sequence.
-    time_selector -- Time selector function to control the speed of values
-        being produced each iteration, returning integer values denoting
-        milliseconds.
+    time_selector -- Time selector function to control the speed of
+        values being produced each iteration, returning integer values
+        denoting milliseconds.
 
     Returns the generated sequence.
     """

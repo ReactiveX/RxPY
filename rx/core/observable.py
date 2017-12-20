@@ -183,6 +183,58 @@ class Observable:
     from_ = from_iterable
     from_list = from_iterable
 
+    @staticmethod
+    def generate(initial_state, condition, iterate, result_selector) -> ObservableBase:
+        """Generates an observable sequence by running a state-driven loop
+        producing the sequence's elements, using the specified scheduler to
+        send out observer messages.
+
+        1 - res = rx.Observable.generate(0,
+            lambda x: x < 10,
+            lambda x: x + 1,
+            lambda x: x)
+
+        Keyword arguments:
+        initial_state -- Initial state.
+        condition -- Condition to terminate generation (upon returning False).
+        iterate -- Iteration step function.
+        result_selector -- Selector function for results produced in the
+            sequence.
+
+        Returns the generated sequence.
+        """
+        from ..operators.observable.generate import generate
+        return generate(initial_state, condition, iterate, result_selector)
+
+    @staticmethod
+    def generate_with_relative_time(initial_state, condition, iterate,
+                                    result_selector, time_selector) -> ObservableBase:
+        """Generates an observable sequence by iterating a state from an
+        initial state until the condition fails.
+
+        res = source.generate_with_relative_time(0,
+            lambda x: True,
+            lambda x: x + 1,
+            lambda x: x,
+            lambda x: 500)
+
+        Keyword arguments:
+        initial_state -- Initial state.
+        condition -- Condition to terminate generation (upon returning
+            false).
+        iterate -- Iteration step function.
+        result_selector -- Selector function for results produced in the
+            sequence.
+        time_selector -- Time selector function to control the speed of
+            values being produced each iteration, returning integer values
+            denoting milliseconds.
+
+        Returns the generated sequence.
+        """
+        from ..operators.observable.generatewithrelativetime import generate_with_relative_time
+        return generate_with_relative_time(initial_state, condition, iterate, result_selector, time_selector)
+
+    @staticmethod
     def if_then(condition: Callable[[None], bool], then_source: ObservableBase,
                 else_source: ObservableBase = None) -> ObservableBase:
         """Determines whether an observable collection contains values.
@@ -279,8 +331,6 @@ class Observable:
         Keyword arguments:
         start -- The value of the first integer in the sequence.
         count -- The number of sequential integers to generate.
-        scheduler -- [Optional] Scheduler to run the generator loop on. If not
-            specified, defaults to Scheduler.current_thread.
 
         Returns an observable sequence that contains a range of sequential
         integral numbers.

@@ -3,14 +3,13 @@ from rx.core import ObservableBase, Observable
 from rx.core import bases
 
 
-def if_then(condition: Callable[[None], bool], then_source: ObservableBase,
+def if_then(condition: Callable[[], bool], then_source: ObservableBase,
             else_source: ObservableBase = None) -> ObservableBase:
     """Determines whether an observable collection contains values.
 
     Example:
     1 - res = rx.Observable.if(condition, obs1)
     2 - res = rx.Observable.if(condition, obs1, obs2)
-    3 - res = rx.Observable.if(condition, obs1, scheduler=scheduler)
 
     Keyword parameters:
     condition -- The condition which determines if the then_source or
