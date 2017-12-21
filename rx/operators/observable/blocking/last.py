@@ -1,19 +1,15 @@
-from rx.internal import extensionmethod
-
-from rx.core.blockingobservable import BlockingObservable
+from typing import Any
 
 
-@extensionmethod(BlockingObservable)
-def last(self):
-    """
-    Blocks until the last element emits from a BlockingObservable.
+def last(self) -> Any:
+    """Blocks until the last element emits from a BlockingObservable.
 
     If no item is emitted when close() is called, an exception is thrown
 
-    Note: This will block even if the underlying Observable is asynchronous.
+    Note: This will block even if the underlying Observable is
+    asynchronous.
 
-    :param self:
-    :return: the last item to be emitted from a BlockingObservable
+    Returns the last item to be emitted from a BlockingObservable
     """
     last_item = None
     is_empty = True
@@ -27,19 +23,19 @@ def last(self):
 
     return last_item
 
+def last_or_default(self, default_value: Any) -> Any:
+    """Blocks until the last element emits from a BlockingObservable.
 
-@extensionmethod(BlockingObservable)
-def last_or_default(self, default_value):
-    """
-    Blocks until the last element emits from a BlockingObservable.
+    If no item is emitted when close() is called, the provided
+    default_value will be returned
 
-    If no item is emitted when close() is called, the provided default_value will be returned
+    Note: This will block even if the underlying Observable is
+    asynchronous.
 
-    Note: This will block even if the underlying Observable is asynchronous.
+    Keyword arguments:
+    default_value -- Value to return if no value has been emitted.
 
-    :param default_value:
-    :param self:
-    :return: the last item to be emitted from a BlockingObservable
+    Returns the last item to be emitted from a BlockingObservable
     """
     last_item = None
     is_empty = True

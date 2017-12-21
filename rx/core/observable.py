@@ -570,6 +570,12 @@ class Observable:
         1 - res = Observable.zip(obs2, result_selector=fn)
         2 - res = Observable.zip([1,2,3], result_selector=fn)
 
+        Keyword arguments:
+        args -- Observable sources to zip.
+        result_selector -- Selector function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
+
         Returns an observable sequence containing the result of
         combining elements of the sources using the specified result
         selector function.

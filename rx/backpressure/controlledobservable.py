@@ -1,5 +1,4 @@
 from rx.core import ObservableBase
-from rx.internal import extensionmethod
 
 from .controlledsubject import ControlledSubject
 
@@ -21,8 +20,7 @@ class ControlledObservable(ObservableBase):
         return self.subject.request(number_of_items)
 
 
-@extensionmethod(ObservableBase)
-def controlled(self, enable_queue=True, scheduler=None):
+def controlled(self, enable_queue: bool = True, scheduler=None) -> ControlledObservable:
     """Attach a controller to the observable sequence
 
     Attach a controller to the observable sequence with the ability to
@@ -33,11 +31,10 @@ def controlled(self, enable_queue=True, scheduler=None):
     source.request(3) # Reads 3 values
 
     Keyword arguments:
-    :param bool enable_queue: truthy value to determine if values should
+    enable_queue -- truthy value to determine if values should
         be queued pending the next request
-    :param Scheduler scheduler: determines how the requests will be scheduled
-    :returns: The observable sequence which only propagates values on request.
-    :rtype: Observable
+    scheduler -- determines how the requests will be scheduled
+    Returns the observable sequence which only propagates values on request.
     """
 
-    return ControlledObservable(self, enable_queue, scheduler)
+    return
