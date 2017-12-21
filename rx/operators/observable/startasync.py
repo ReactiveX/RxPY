@@ -1,19 +1,16 @@
-from rx.core import ObservableBase
-from rx.internal import extensionclassmethod
+from rx.core import ObservableBase, Observable
 
 
-@extensionclassmethod(ObservableBase)
-def start_async(cls, function_async):
-    """Invokes the asynchronous function, surfacing the result through an
-    observable sequence.
+def start_async(function_async) -> ObservableBase:
+    """Invokes the asynchronous function, surfacing the result through
+    an observable sequence.
 
     Keyword arguments:
-    :param types.FunctionType function_async: Asynchronous function which
-        returns a Future to run.
+    function_async -- Asynchronous function which returns a Future to
+        run.
 
-    :returns: An observable sequence exposing the function's result value, or an
-        exception.
-    :rtype: Observable
+    Returns an observable sequence exposing the function's result value,
+    or an exception.
     """
 
     try:

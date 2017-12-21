@@ -1,10 +1,10 @@
-from typing import Union, Iterable
+from typing import Union, Iterable, Any
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.core.typing import Selector
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def zip(*args: Union[Iterable[ObservableBase], ObservableBase],  # pylint: disable=W0622
+def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
         result_selector: Selector = None) -> ObservableBase:
     """Merges the specified observable sequences into one observable
     sequence by using the selector function whenever all of the
@@ -25,8 +25,8 @@ def zip(*args: Union[Iterable[ObservableBase], ObservableBase],  # pylint: disab
     selector function.
     """
 
-    if len(args) > 1 and isinstance(args[1], Iterable):
-        return _zip_list(args[0], *args[1:], result_selector=result_selector)
+    if len(args) == 2 and isinstance(args[1], Iterable):
+        return _zip_list(args[0], args[1], result_selector=result_selector)
 
     sources = list(args)
 

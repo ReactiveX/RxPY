@@ -1284,14 +1284,13 @@ class ObservableBase(ty.Observable):
         return start_with(source, *args)
 
     def switch_latest(self) -> 'ObservableBase':
-        """Transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
+        """Transforms an observable sequence of observable sequences
+        into an observable sequence producing values only from the most
+        recent observable sequence.
 
-        :returns: The observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has been
-        received.
-        :rtype: Observable
+        Returns the observable sequence that at any point in time
+        produces the elements of the most recent inner observable
+        sequence that has been received.
         """
         from ..operators.observable.switchlatest import switch_latest
         sources = self
@@ -1338,20 +1337,20 @@ class ObservableBase(ty.Observable):
         return take_last(count, source)
 
     def take_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
-        """Returns elements from an observable sequence as long as a specified
-        condition is true. The element's index is used in the logic of the
-        predicate function.
+        """Returns elements from an observable sequence as long as a
+        specified condition is true. The element's index is used in the
+        logic of the predicate function.
 
         1 - source.take_while(lambda value: value < 10)
 
         Keyword arguments:
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        predicate -- A function to test each element for a condition;
+            the second parameter of the function represents the index of
+            the source element.
 
-        Returns an observable sequence that contains the elements from the
-        input sequence that occur before the element at which the test no
-        longer passes.
+        Returns an observable sequence that contains the elements from
+        the input sequence that occur before the element at which the
+        test no longer passes.
         """
         from ..operators.observable.takewhile import take_while
         source = self
@@ -1443,6 +1442,25 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.debounce import throttle_with_selector
         source = self
         return throttle_with_selector(source, throttle_duration_selector)
+
+    def throw_resume_next(self, second) -> 'ObservableBase':
+        """Continues an observable sequence that is terminated normally
+        or by an exception with the next observable sequence.
+
+        Keyword arguments:
+        second -- Second observable sequence used to produce results
+            after the first sequence terminates.
+
+        Returns an observable sequence that concatenates the first and
+        second sequence, even if the first sequence terminates
+        exceptionally.
+        """
+
+        if not second:
+            raise Exception('Second observable is required')
+
+        from ..operators.observable.onerrorresumenext import throw_resume_next
+        return throw_resume_next([self, second])
 
     def time_interval(self) -> 'ObservableBase':
         """Records the time interval between consecutive values in an
