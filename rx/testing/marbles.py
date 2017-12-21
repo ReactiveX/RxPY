@@ -56,7 +56,6 @@ def from_marbles(cls, string):
             value = True if value == 'T' else False
         messages.append(send(timespan[0], value))
 
-
     def handle_close(value):
         timespan[0] += 10
         messages.append(close(timespan[0]))

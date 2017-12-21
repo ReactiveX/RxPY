@@ -1,6 +1,5 @@
 from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
-from rx.internal import extensionmethod
 
 # Swap out for Array.findIndex
 def array_index_of_comparer(array, item, comparer):
@@ -20,12 +19,11 @@ class HashSet(object):
         return ret_value
 
 
-@extensionmethod(ObservableBase)
-def distinct(self, key_selector=None, comparer=None):
-    """Returns an observable sequence that contains only distinct elements
-    according to the key_selector and the comparer. Usage of this operator
-    should be considered carefully due to the maintenance of an internal
-    lookup structure which can grow large.
+def distinct(self, key_selector=None, comparer=None) -> ObservableBase:
+    """Returns an observable sequence that contains only distinct
+    elements according to the key_selector and the comparer. Usage of
+    this operator should be considered carefully due to the maintenance
+    of an internal lookup structure which can grow large.
 
     Example:
     res = obs = xs.distinct()
@@ -33,12 +31,11 @@ def distinct(self, key_selector=None, comparer=None):
     obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
 
     Keyword arguments:
-    key_selector -- {Function} [Optional]  A function to compute the
-        comparison key for each element.
-    comparer -- {Function} [Optional]  Used to compare items in the
-        collection.
+    key_selector -- [Optional]  A function to compute the comparison key
+        for each element.
+    comparer -- [Optional]  Used to compare items in the collection.
 
-    Returns an observable {Observable} sequence only containing the distinct
+    Returns an observable sequence only containing the distinct
     elements, based on a computed key value, from the source sequence.
     """
 
@@ -60,5 +57,5 @@ def distinct(self, key_selector=None, comparer=None):
 
             hashset.push(key) and observer.send(x)
         return source.subscribe_callbacks(send, observer.throw,
-                                observer.close)
+                                observer.close, scheduler)
     return AnonymousObservable(subscribe)

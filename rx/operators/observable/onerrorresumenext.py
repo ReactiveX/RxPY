@@ -1,30 +1,9 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
-from rx.concurrency import current_thread_scheduler
-from rx.internal import extensionmethod, extensionclassmethod
 
 
-@extensionmethod(ObservableBase, instancemethod=True)
-def throw_resume_next(self, second):
-    """Continues an observable sequence that is terminated normally or by
-    an exception with the next observable sequence.
-
-    Keyword arguments:
-    second -- Second observable sequence used to produce results after the
-        first sequence terminates.
-
-    Returns an observable sequence that concatenates the first and second
-    sequence, even if the first sequence terminates exceptionally.
-    """
-
-    if not second:
-        raise Exception('Second observable is required')
-
-    return Observable.throw_resume_next([self, second])
-
-@extensionclassmethod(ObservableBase)
-def throw_resume_next(cls, *args):
+def throw_resume_next(*args) -> ObservableBase:
     """Continues an observable sequence that is terminated normally or by
     an exception with the next observable sequence.
 
@@ -36,8 +15,6 @@ def throw_resume_next(cls, *args):
     """
     # curently not in:
     # 3 - res = Observable.throw_resume_next(xs, factory)
-
-    scheduler = current_thread_scheduler
 
     if args and isinstance(args[0], list):
         sources = iter(args[0])
@@ -65,7 +42,7 @@ def throw_resume_next(cls, *args):
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_callbacks(observer.send, on_resume, on_resume)
+            d.disposable = current.subscribe_callbacks(observer.send, on_resume, on_resume, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

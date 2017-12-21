@@ -1,3 +1,4 @@
+# By design, pylint: disable=C0302
 from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
@@ -6,11 +7,14 @@ from rx import config
 from .typing import Selector, Predicate
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
-from . import typing as ty
+from . import typing as ty, bases
 
 
 class ObservableBase(ty.Observable):
-    """Represents a push-style collection."""
+    """Observables base class.
+
+    Represents a push-style collection and contains all operators as
+    methods to allow classic Rx chaining of operators."""
 
     def __init__(self):
         self.lock = config["concurrency"].RLock()
@@ -400,6 +404,47 @@ class ObservableBase(ty.Observable):
         source = self
         return count(source, predicate)
 
+    def controlled(self, enable_queue: bool = True, scheduler=None):
+        """Attach a controller to the observable sequence
+
+        Attach a controller to the observable sequence with the ability to
+        queue.
+
+        Example:
+        source = rx.Observable.interval(100).controlled()
+        source.request(3) # Reads 3 values
+
+        Keyword arguments:
+        enable_queue -- truthy value to determine if values should
+            be queued pending the next request
+        scheduler -- determines how the requests will be scheduled
+
+        Returns the observable sequence which only propagates values on request.
+        """
+        from ..backpressure.controlled import controlled
+        source = self
+        return controlled(source, enable_queue, scheduler)
+
+    def default_if_empty(self, default_value=None) -> 'ObservableBase':
+        """Returns the elements of the specified sequence or the
+        specified value in a singleton sequence if the sequence is
+        empty.
+
+        obs = xs.default_if_empty()
+        obs = xs.default_if_empty(False)
+
+        Keyword arguments:
+        default_value -- The value to return if the sequence is empty. If not
+            provided, this defaults to None.
+
+        Returns an observable sequence that contains the specified
+        default value if the source is empty otherwise, the elements of
+        the source itself.
+        """
+        from ..operators.observable.defaultifempty import default_if_empty
+        source = self
+        return default_if_empty(source, default_value)
+
     def delay(self, duetime):
         """Time shifts the observable sequence by duetime. The relative time
         intervals between the values are preserved.
@@ -417,6 +462,19 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.delay import delay
         source = self
         return delay(source, duetime)
+
+    def delay_subscription(self, duetime: Union[datetime, int]) -> 'ObservableBase':
+        """Time shifts the observable sequence by delaying the subscription.
+
+        1 - res = source.delay_subscription(5000) # 5s
+
+        duetime -- Absolute or relative time to perform the subscription at.
+
+        Returns time-shifted sequence.
+        """
+        from ..operators.observable.delay_subscription import delay_subscription
+        source = self
+        return delay_subscription(source, duetime)
 
     def delay_with_selector(self, subscription_delay=None,
                             delay_duration_selector=None) -> 'ObservableBase':
@@ -439,6 +497,42 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.delaywithselector import delay_with_selector
         source = self
         return delay_with_selector(source, subscription_delay, delay_duration_selector)
+
+    def dematerialize(self) -> 'ObservableBase':
+        """Dematerializes the explicit notification values of an
+        observable sequence as implicit notifications.
+
+        Returns an observable sequence exhibiting the behavior
+        corresponding to the source sequence's notification values.
+        """
+        from ..operators.observable.dematerialize import dematerialize
+        source = self
+        return dematerialize(source)
+
+    def distinct(self, key_selector=None, comparer=None) -> 'ObservableBase':
+        """Returns an observable sequence that contains only distinct
+        elements according to the key_selector and the comparer. Usage
+        of this operator should be considered carefully due to the
+        maintenance of an internal lookup structure which can grow
+        large.
+
+        Example:
+        res = obs = xs.distinct()
+        obs = xs.distinct(lambda x: x.id)
+        obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
+
+        Keyword arguments:
+        key_selector -- [Optional]  A function to compute the comparison
+            key for each element.
+        comparer -- [Optional]  Used to compare items in the collection.
+
+        Returns an observable sequence only containing the distinct
+        elements, based on a computed key value, from the source
+        sequence.
+        """
+        from ..operators.observable.distinct import distinct
+        source = self
+        return distinct(source, key_selector, comparer)
 
     def distinct_until_changed(self, key_selector=None, comparer=None) -> 'ObservableBase':
         """Returns an observable sequence that contains only distinct
@@ -466,11 +560,11 @@ class ObservableBase(ty.Observable):
         return distinct_until_changed(source, key_selector, comparer)
 
     def do(self, observer: ty.Observer) -> 'ObservableBase':
-        """Invokes an action for each element in the observable sequence and
-        invokes an action on graceful or exceptional termination of the
-        observable sequence. This method can be used for debugging, logging,
-        etc. of query behavior by intercepting the message stream to run
-        arbitrary actions for messages on the pipeline.
+        """Invokes an action for each element in the observable sequence
+        and invokes an action on graceful or exceptional termination of
+        the observable sequence. This method can be used for debugging,
+        logging, etc. of query behavior by intercepting the message
+        stream to run arbitrary actions for messages on the pipeline.
 
         1 - observable.do(observer)
 
@@ -484,11 +578,11 @@ class ObservableBase(ty.Observable):
         return do(source, observer)
 
     def do_action(self, send=None, throw=None, close=None) -> 'ObservableBase':
-        """Invokes an action for each element in the observable sequence and
-        invokes an action on graceful or exceptional termination of the
-        observable sequence. This method can be used for debugging, logging,
-        etc. of query behavior by intercepting the message stream to run
-        arbitrary actions for messages on the pipeline.
+        """Invokes an action for each element in the observable sequence
+        and invokes an action on graceful or exceptional termination of
+        the observable sequence. This method can be used for debugging,
+        logging, etc. of query behavior by intercepting the message
+        stream to run arbitrary actions for messages on the pipeline.
 
         1 - observable.do_action(send)
         2 - observable.do_action(send, throw)
@@ -940,7 +1034,7 @@ class ObservableBase(ty.Observable):
         source = self
         return min_(source, comparer)
 
-    def min_by(self, key_selector, comparer=None) -> 'ObservableBase':
+    def min_by(self, key_selector: Selector, comparer=None) -> 'ObservableBase':
         """Returns the elements in an observable sequence with the minimum key
         value according to the specified comparer.
 
@@ -990,7 +1084,7 @@ class ObservableBase(ty.Observable):
         source = self
         return multicast(source, subject, subject_selector, selector)
 
-    def observe_on(self, scheduler) -> 'ObservableBase':
+    def observe_on(self, scheduler: bases.Scheduler) -> 'ObservableBase':
         """Wraps the source sequence in order to run its observer callbacks on
         the specified scheduler.
 
@@ -1301,14 +1395,13 @@ class ObservableBase(ty.Observable):
         return start_with(source, *args)
 
     def switch_latest(self) -> 'ObservableBase':
-        """Transforms an observable sequence of observable sequences into an
-        observable sequence producing values only from the most recent
-        observable sequence.
+        """Transforms an observable sequence of observable sequences
+        into an observable sequence producing values only from the most
+        recent observable sequence.
 
-        :returns: The observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has been
-        received.
-        :rtype: Observable
+        Returns the observable sequence that at any point in time
+        produces the elements of the most recent inner observable
+        sequence that has been received.
         """
         from ..operators.observable.switchlatest import switch_latest
         sources = self
@@ -1354,21 +1447,70 @@ class ObservableBase(ty.Observable):
         source = self
         return take_last(count, source)
 
+    def take_last_buffer(self, count) -> 'ObservableBase':
+        """Returns an array with the specified number of contiguous elements
+        from the end of an observable sequence.
+
+        Example:
+        res = source.take_last(5)
+
+        Description:
+        This operator accumulates a buffer with a length enough to store
+        elements count elements. Upon completion of the source sequence, this
+        buffer is drained on the result sequence. This causes the elements to be
+        delayed.
+
+        Keyword arguments:
+        count -- Number of elements to take from the end of the source
+            sequence.
+
+        Returns: An observable sequence containing a single list with the specified
+        number of elements from the end of the source sequence.
+        """
+        from ..operators.observable.takelastbuffer import take_last_buffer
+        source = self
+        return take_last_buffer(source, count)
+
+    def take_last_with_time(self, duration) -> 'ObservableBase':
+        """Returns elements within the specified duration from the end of the
+        observable source sequence.
+
+        Example:
+        res = source.take_last_with_time(5000)
+
+        Description:
+        This operator accumulates a queue with a length enough to store elements
+        received during the initial duration window. As more elements are
+        received, elements older than the specified duration are taken from the
+        queue and produced on the result sequence. This causes elements to be
+        delayed with duration.
+
+        Keyword arguments:
+        duration -- {Number} Duration for taking elements from the end of the
+            sequence.
+
+        Returns an observable sequence with the elements taken
+        during the specified duration from the end of the source sequence.
+        """
+        from ..operators.observable.takelastwithtime import take_last_with_time
+        source = self
+        return take_last_with_time(source, duration)
+
     def take_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
-        """Returns elements from an observable sequence as long as a specified
-        condition is true. The element's index is used in the logic of the
-        predicate function.
+        """Returns elements from an observable sequence as long as a
+        specified condition is true. The element's index is used in the
+        logic of the predicate function.
 
         1 - source.take_while(lambda value: value < 10)
 
         Keyword arguments:
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the source
-            element.
+        predicate -- A function to test each element for a condition;
+            the second parameter of the function represents the index of
+            the source element.
 
-        Returns an observable sequence that contains the elements from the
-        input sequence that occur before the element at which the test no
-        longer passes.
+        Returns an observable sequence that contains the elements from
+        the input sequence that occur before the element at which the
+        test no longer passes.
         """
         from ..operators.observable.takewhile import take_while
         source = self
@@ -1460,6 +1602,25 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.debounce import throttle_with_selector
         source = self
         return throttle_with_selector(source, throttle_duration_selector)
+
+    def throw_resume_next(self, second) -> 'ObservableBase':
+        """Continues an observable sequence that is terminated normally
+        or by an exception with the next observable sequence.
+
+        Keyword arguments:
+        second -- Second observable sequence used to produce results
+            after the first sequence terminates.
+
+        Returns an observable sequence that concatenates the first and
+        second sequence, even if the first sequence terminates
+        exceptionally.
+        """
+
+        if not second:
+            raise Exception('Second observable is required')
+
+        from ..operators.observable.onerrorresumenext import throw_resume_next
+        return throw_resume_next([self, second])
 
     def time_interval(self) -> 'ObservableBase':
         """Records the time interval between consecutive values in an
@@ -1637,6 +1798,12 @@ class ObservableBase(ty.Observable):
 
         1 - res = obs1.zip(obs2, result_selector=fn)
         2 - res = x1.zip([1,2,3], result_selector=fn)
+
+        Keyword arguments:
+        args -- Observable sources to zip together with self.
+        result_selector -- Selector function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
 
         Returns an observable sequence containing the result of combining
         elements of the sources using the specified result selector

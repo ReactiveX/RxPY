@@ -1,24 +1,20 @@
-from rx.core import ObservableBase
-from rx.concurrency import timeout_scheduler
-from rx.internal import extensionmethod
+from datetime import datetime
+from typing import Union
+
+from rx.core import Observable, ObservableBase
 
 
-@extensionmethod(ObservableBase)
-def delay_subscription(self, duetime, scheduler=None):
+def delay_subscription(source, duetime: Union[datetime, int]) -> ObservableBase:
     """Time shifts the observable sequence by delaying the subscription.
 
     1 - res = source.delay_subscription(5000) # 5s
-    2 - res = source.delay_subscription(5000, Scheduler.timeout) # 5 seconds
 
     duetime -- Absolute or relative time to perform the subscription at.
-    scheduler [Optional] Scheduler to run the subscription delay timer on.
-        If not specified, the timeout scheduler is used.
 
     Returns time-shifted sequence.
     """
 
-    scheduler = scheduler or timeout_scheduler
-
-    def selector(_):
+    def selector(_) -> ObservableBase:
         return Observable.empty()
-    return self.delay_with_selector(Observable.timer(duetime, scheduler), selector)
+
+    return source.delay_with_selector(Observable.timer(duetime), selector)

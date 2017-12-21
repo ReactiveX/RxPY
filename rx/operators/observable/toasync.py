@@ -17,9 +17,10 @@ def to_async(func: Callable, scheduler=None) -> Callable:
     res = Observable.to_async(lambda x: log.debug(x),
                               Scheduler.timeout)('hello')
 
-    func -- {Function} Function to convert to an asynchronous function.
-    scheduler -- {Scheduler} [Optional] Scheduler to run the function
-        on. If not specified, defaults to Scheduler.timeout.
+    Keyword arguments:
+    func -- Function to convert to an asynchronous function.
+    scheduler -- [Optional] Scheduler to run the function on. If not
+        specified, defaults to Scheduler.timeout.
 
     Returns asynchronous function.
     """

@@ -1,18 +1,20 @@
+from typing import Callable, Any
 from rx.core import ObservableBase, AnonymousObservable
+from rx.core.typing import Selector
 
 
-def from_callback(func, selector=None) -> ObservableBase:
+def from_callback(func: Callable, selector: Selector = None) -> "Callable[[...], ObservableBase]":
     """Converts a callback function to an observable sequence.
 
     Keyword arguments:
-    func -- {Function} Function with a callback as the last parameter to
+    func -- Function with a callback as the last parameter to
         convert to an Observable sequence.
-    selector -- {Function} [Optional] A selector which takes the arguments
+    selector -- [Optional] A selector which takes the arguments
         from the callback to produce a single item to yield on next.
 
-    Returns {Function} A function, when executed with the required
-    parameters minus the callback, produces an Observable sequence with a
-    single value of the arguments to the callback as a list.
+    Returns a function, when executed with the required parameters minus
+    the callback, produces an Observable sequence with a single value of
+    the arguments to the callback as a list.
     """
 
     def function(*args):

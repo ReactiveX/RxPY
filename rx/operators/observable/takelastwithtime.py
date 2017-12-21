@@ -1,10 +1,8 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
 
-@extensionmethod(ObservableBase)
-def take_last_with_time(self, duration):
+def take_last_with_time(source, duration) -> ObservableBase:
     """Returns elements within the specified duration from the end of the
     observable source sequence.
 
@@ -26,8 +24,6 @@ def take_last_with_time(self, duration):
     during the specified duration from the end of the source sequence.
     """
 
-    source = self
-
     def subscribe(observer, scheduler=None):
         nonlocal duration
 
@@ -38,7 +34,7 @@ def take_last_with_time(self, duration):
         def send(x):
             now = scheduler.now
             q.append({"interval": now, "value": x})
-            while len(q) and now - q[0]["interval"] >= duration:
+            while q and now - q[0]["interval"] >= duration:
                 q.pop(0)
 
         def close():

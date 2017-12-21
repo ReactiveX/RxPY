@@ -6,7 +6,6 @@ from .typing import Selector
 from .observablebase import ObservableBase
 from . import bases
 
-
 class Observable:
     """Observable creation methods.
 
@@ -136,8 +135,7 @@ class Observable:
     @staticmethod
     def from_callable(supplier: Callable) -> ObservableBase:
         """Returns an observable sequence that contains a single element
-        generate from a supplier, using the specified scheduler to send
-        out observer messages.
+        generate from a supplier.
 
         example
         res = rx.Observable.from_callable(lambda: calculate_value())
@@ -153,17 +151,17 @@ class Observable:
         return from_callable(supplier)
 
     @staticmethod
-    def from_callback(func, selector=None) -> ObservableBase:
+    def from_callback(func: Callable, selector: Selector = None) -> "Callable[[...], ObservableBase]":
         """Converts a callback function to an observable sequence.
 
         Keyword arguments:
-        func -- {Function} Function with a callback as the last parameter to
+        func -- Function with a callback as the last parameter to
             convert to an Observable sequence.
-        selector -- {Function} [Optional] A selector which takes the arguments
+        selector -- [Optional] A selector which takes the arguments
             from the callback to produce a single item to yield on next.
 
-        Returns {Function} A function, when executed with the required
-        parameters minus the callback, produces an Observable sequence with a
+        Returns a function, when executed with the required parameters
+        minus the callback, produces an Observable sequence with a
         single value of the arguments to the callback as a list.
         """
         from ..operators.observable.fromcallback import from_callback
@@ -261,7 +259,6 @@ class Observable:
         Example:
         1 - res = rx.Observable.if(condition, obs1)
         2 - res = rx.Observable.if(condition, obs1, obs2)
-        3 - res = rx.Observable.if(condition, obs1, scheduler=scheduler)
 
         Keyword parameters:
         condition -- The condition which determines if the then_source
@@ -341,8 +338,7 @@ class Observable:
     @staticmethod
     def range(start: int, stop: int=None, step: int=None) -> ObservableBase:
         """Generates an observable sequence of integral numbers within a
-        specified range, using the specified scheduler to send out
-        observer messages.
+        specified range.
 
         1 - res = rx.Observable.range(10)
         2 - res = rx.Observable.range(0, 10)
@@ -360,12 +356,11 @@ class Observable:
 
     @staticmethod
     def return_value(value) -> ObservableBase:
-        """Returns an observable sequence that contains a single element,
-        using the specified scheduler to send out observer messages.
-        There is an alias called 'just'.
+        """Returns an observable sequence that contains a single
+        element. There is an alias called 'just'.
 
         example
-        res = rx.Observable.return(42)
+        res = rx.Observable.return_value(42)
 
         Keyword arguments:
         value -- Single element in the resulting observable sequence.
@@ -433,7 +428,7 @@ class Observable:
         Returns an observable sequence exposing the function's result
         value, or an exception.
         """
-        from ..operators.observable.start_async import start_async
+        from ..operators.observable.startasync import start_async
         return start_async(function_async)
 
     @staticmethod
@@ -454,6 +449,22 @@ class Observable:
         return throw(exception)
 
     @staticmethod
+    def throw_resume_next(*args) -> ObservableBase:
+        """Continues an observable sequence that is terminated normally or by
+        an exception with the next observable sequence.
+
+        1 - res = Observable.throw_resume_next(xs, ys, zs)
+        2 - res = Observable.throw_resume_next([xs, ys, zs])
+
+        Returns an observable sequence that concatenates the source sequences,
+        even if a sequence terminates exceptionally.
+        """
+        from ..operators.observable.onerrorresumenext import throw_resume_next
+        return throw_resume_next(*args)
+
+    on_error_resume_next = throw_resume_next
+
+    @staticmethod
     def timer(duetime: Union[datetime, int], period=None) -> ObservableBase:
         """Returns an observable sequence that produces a value after
         duetime has elapsed and then after each period.
@@ -469,9 +480,8 @@ class Observable:
             time (specified as an integer denoting milliseconds) at
             which to produce the first value.
         period -- [Optional] Period to produce subsequent values
-            (specified as an integer denoting milliseconds), or the
-            scheduler to run the timer on. If not specified, the
-            resulting timer is not recurring.
+            (specified as an integer denoting milliseconds). If not
+            specified, the resulting timer is not recurring.
 
         Returns an observable sequence that produces a value after due
         time has elapsed and then each period.
@@ -563,6 +573,12 @@ class Observable:
 
         1 - res = Observable.zip(obs2, result_selector=fn)
         2 - res = Observable.zip([1,2,3], result_selector=fn)
+
+        Keyword arguments:
+        args -- Observable sources to zip.
+        result_selector -- Selector function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
 
         Returns an observable sequence containing the result of
         combining elements of the sources using the specified result

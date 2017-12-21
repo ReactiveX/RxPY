@@ -1,9 +1,7 @@
 from rx.core import AnonymousObservable, ObservableBase
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def default_if_empty(self, default_value=None):
+def default_if_empty(source, default_value=None) -> ObservableBase:
     """Returns the elements of the specified sequence or the specified value
     in a singleton sequence if the sequence is empty.
 
@@ -16,10 +14,8 @@ def default_if_empty(self, default_value=None):
 
     Returns an observable {Observable} sequence that contains the specified
     default value if the source is empty otherwise, the elements of the
-    source itself.
+    source itsource.
     """
-
-    source = self
 
     def subscribe(observer, scheduler=None):
         found = [False]
