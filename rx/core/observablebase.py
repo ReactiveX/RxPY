@@ -607,6 +607,23 @@ class ObservableBase(ty.Observable):
         source = self
         return filter_indexed(predicate, source)
 
+    def finally_action(self, action) -> 'ObservableBase':
+        """Invokes a specified action after the source observable sequence
+        terminates gracefully or exceptionally.
+
+        Example:
+        res = observable.finally(lambda: print('sequence ended')
+
+        Keyword arguments:
+        action -- {Function} Action to invoke after the source observable
+            sequence terminates.
+        Returns {Observable} Source sequence with the action-invoking
+        termination behavior applied.
+        """
+        from ..operators.observable.finallyaction import finally_action
+        source = self
+        return finally_action(source, action)
+
     def find(self, predicate: Predicate) -> 'ObservableBase':
         """Searches for an element that matches the conditions defined by the
         specified predicate, and returns the first occurrence within the entire

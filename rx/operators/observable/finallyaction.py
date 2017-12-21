@@ -1,9 +1,8 @@
+from typing import Callable
 from rx.core import ObservableBase, AnonymousObservable, Disposable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def finally_action(self, action):
+def finally_action(source: ObservableBase, action: Callable) -> ObservableBase:
     """Invokes a specified action after the source observable sequence
     terminates gracefully or exceptionally.
 
@@ -11,13 +10,13 @@ def finally_action(self, action):
     res = observable.finally(lambda: print('sequence ended')
 
     Keyword arguments:
-    action -- {Function} Action to invoke after the source observable
-        sequence terminates.
-    Returns {Observable} Source sequence with the action-invoking
-    termination behavior applied.
-    """
+    source -- Observable sequence.
+    action -- Action to invoke after the source observable sequence
+        terminates.
 
-    source = self
+    Returns observable sequence with the action-invoking termination
+    behavior applied.
+    """
 
     def subscribe(observer, scheduler=None):
         try:

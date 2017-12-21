@@ -1,9 +1,7 @@
-from rx.core import Observable, AnonymousObservable
-from rx.internal import extensionclassmethod
+from rx.core import ObservableBase, AnonymousObservable
 
 
-@extensionclassmethod(Observable)
-def from_callback(cls, func, selector=None):
+def from_callback(func, selector=None) -> ObservableBase:
     """Converts a callback function to an observable sequence.
 
     Keyword arguments:

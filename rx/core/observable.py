@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
 from .typing import Selector
 from .observablebase import ObservableBase
+from . import bases
 
 
 class Observable:
@@ -32,15 +34,16 @@ class Observable:
         2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
 
         Keyword arguments:
-        selector -- The function which extracts the value for to test in a
-            case statement.
+        selector -- The function which extracts the value for to test in
+            a case statement.
         sources -- An object which has keys which correspond to the case
             statement labels.
-        default_source -- The observable sequence or Future that will be run
-            if the sources are not matched. If this is not provided, it
-            defaults to rx.Observabe.empty.
+        default_source -- The observable sequence or Future that will be
+            run if the sources are not matched. If this is not provided,
+            it defaults to rx.Observabe.empty.
 
-        Returns an observable sequence which is determined by a case statement.
+        Returns an observable sequence which is determined by a case
+        statement.
         """
         from ..operators.observable.case import case
         return case(selector, sources, default_source)
@@ -55,8 +58,9 @@ class Observable:
         1 - res = Observable.catch_exception(xs, ys, zs)
         2 - res = Observable.catch_exception([xs, ys, zs])
 
-        Returns an observable sequence containing elements from consecutive
-        source sequences until a source sequence terminates successfully.
+        Returns an observable sequence containing elements from
+        consecutive source sequences until a source sequence terminates
+        successfully.
         """
         from ..operators.observable.catch import catch_exception_
         return catch_exception_(*args)
@@ -68,8 +72,8 @@ class Observable:
         1 - res = Observable.concat(xs, ys, zs)
         2 - res = Observable.concat([xs, ys, zs])
 
-        Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order.
+        Returns an observable sequence that contains the elements of
+        each given sequence, in sequential order.
         """
         from ..operators.observable.concat import concat
         return concat(*args)
@@ -141,14 +145,29 @@ class Observable:
 
         Keyword arguments:
         supplier -- Single element in the resulting observable sequence.
-        scheduler -- [Optional] Scheduler to send the single element on. If
-            not specified, defaults to Scheduler.immediate.
 
         Returns an observable sequence containing the single specified
         element derived from the supplier
         """
         from ..operators.observable.returnvalue import from_callable
         return from_callable(supplier)
+
+    @staticmethod
+    def from_callback(func, selector=None) -> ObservableBase:
+        """Converts a callback function to an observable sequence.
+
+        Keyword arguments:
+        func -- {Function} Function with a callback as the last parameter to
+            convert to an Observable sequence.
+        selector -- {Function} [Optional] A selector which takes the arguments
+            from the callback to produce a single item to yield on next.
+
+        Returns {Function} A function, when executed with the required
+        parameters minus the callback, produces an Observable sequence with a
+        single value of the arguments to the callback as a list.
+        """
+        from ..operators.observable.fromcallback import from_callback
+        return from_callback(func, selector)
 
     @staticmethod
     def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
@@ -245,8 +264,8 @@ class Observable:
         3 - res = rx.Observable.if(condition, obs1, scheduler=scheduler)
 
         Keyword parameters:
-        condition -- The condition which determines if the then_source or
-            else_source will be run.
+        condition -- The condition which determines if the then_source
+            or else_source will be run.
         then_source -- The observable sequence or Promise that
             will be run if the condition function returns true.
         else_source -- [Optional] The observable sequence or
@@ -262,17 +281,18 @@ class Observable:
 
     @staticmethod
     def interval(period) -> ObservableBase:
-        """Returns an observable sequence that produces a value after each
-        period.
+        """Returns an observable sequence that produces a value after
+        each period.
 
         Example:
         1 - res = rx.Observable.interval(1000)
 
         Keyword arguments:
-        period -- Period for producing the values in the resulting sequence
-            (specified as an integer denoting milliseconds).
+        period -- Period for producing the values in the resulting
+            sequence (specified as an integer denoting milliseconds).
 
-        Returns an observable sequence that produces a value after each period.
+        Returns an observable sequence that produces a value after each
+        period.
         """
         from ..operators.observable.interval import interval
         return interval(period)
@@ -306,14 +326,14 @@ class Observable:
 
     @staticmethod
     def of(*args) -> ObservableBase:
-        """This method creates a new Observable instance with a variable number
-        of arguments, regardless of number or type of the arguments.
+        """This method creates a new Observable instance with a variable
+        number of arguments, regardless of number or type of the arguments.
 
         Example:
         res = rx.Observable.of(1,2,3)
 
-        Returns the observable sequence whose elements are pulled from the given
-        arguments
+        Returns the observable sequence whose elements are pulled from
+        the given arguments
         """
         from ..operators.observable.of import of
         return of(*args)
@@ -321,8 +341,8 @@ class Observable:
     @staticmethod
     def range(start: int, stop: int=None, step: int=None) -> ObservableBase:
         """Generates an observable sequence of integral numbers within a
-        specified range, using the specified scheduler to send out observer
-        messages.
+        specified range, using the specified scheduler to send out
+        observer messages.
 
         1 - res = rx.Observable.range(10)
         2 - res = rx.Observable.range(0, 10)
@@ -332,8 +352,8 @@ class Observable:
         start -- The value of the first integer in the sequence.
         count -- The number of sequential integers to generate.
 
-        Returns an observable sequence that contains a range of sequential
-        integral numbers.
+        Returns an observable sequence that contains a range of
+        sequential integral numbers.
         """
         from ..operators.observable.range import from_range
         return from_range(start, stop, step)
@@ -377,6 +397,46 @@ class Observable:
         return repeat_value(value, repeat_count)
 
     @staticmethod
+    def start(func: Callable, scheduler: bases.Scheduler = None) -> ObservableBase:
+        """Invokes the specified function asynchronously on the specified
+        scheduler, surfacing the result through an observable sequence.
+
+        Example:
+        res = rx.Observable.start(lambda: pprint('hello'))
+        res = rx.Observable.start(lambda: pprint('hello'), rx.Scheduler.timeout)
+
+        Keyword arguments:
+        func -- Function to run asynchronously.
+        scheduler -- [Optional] Scheduler to run the function on. If not
+            specified, defaults to Scheduler.timeout.
+
+        Returns an observable sequence exposing the function's result
+        value, or an exception.
+
+        Remarks:
+        The function is called immediately, not during the subscription
+        of the resulting sequence. Multiple subscriptions to the
+        resulting sequence can observe the function's result.
+        """
+        from ..operators.observable.start import start
+        return start(func, scheduler)
+
+    @staticmethod
+    def start_async(function_async: Callable) -> ObservableBase:
+        """Invokes the asynchronous function, surfacing the result
+        through an observable sequence.
+
+        Keyword arguments:
+        function_async -- Asynchronous function which returns a Future
+            to run.
+
+        Returns an observable sequence exposing the function's result
+        value, or an exception.
+        """
+        from ..operators.observable.start_async import start_async
+        return start_async(function_async)
+
+    @staticmethod
     def throw(exception: Exception) -> ObservableBase:
         """Returns an observable sequence that terminates with an
         exception, using the specified scheduler to send out the single
@@ -394,7 +454,7 @@ class Observable:
         return throw(exception)
 
     @staticmethod
-    def timer(duetime, period=None) -> ObservableBase:
+    def timer(duetime: Union[datetime, int], period=None) -> ObservableBase:
         """Returns an observable sequence that produces a value after
         duetime has elapsed and then after each period.
 
