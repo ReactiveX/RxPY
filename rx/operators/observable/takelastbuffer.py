@@ -1,9 +1,7 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def take_last_buffer(self, count):
+def take_last_buffer(self, count) -> ObservableBase:
     """Returns an array with the specified number of contiguous elements
     from the end of an observable sequence.
 
@@ -17,12 +15,11 @@ def take_last_buffer(self, count):
     delayed.
 
     Keyword arguments:
-    :param int count: Number of elements to take from the end of the source
+    count -- Number of elements to take from the end of the source
         sequence.
 
-    :returns: An observable sequence containing a single list with the specified
+    Returns: An observable sequence containing a single list with the specified
     number of elements from the end of the source sequence.
-    :rtype: Observable
     """
 
     source = self

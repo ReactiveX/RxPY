@@ -1430,6 +1430,55 @@ class ObservableBase(ty.Observable):
         source = self
         return take_last(count, source)
 
+    def take_last_buffer(self, count) -> 'ObservableBase':
+        """Returns an array with the specified number of contiguous elements
+        from the end of an observable sequence.
+
+        Example:
+        res = source.take_last(5)
+
+        Description:
+        This operator accumulates a buffer with a length enough to store
+        elements count elements. Upon completion of the source sequence, this
+        buffer is drained on the result sequence. This causes the elements to be
+        delayed.
+
+        Keyword arguments:
+        count -- Number of elements to take from the end of the source
+            sequence.
+
+        Returns: An observable sequence containing a single list with the specified
+        number of elements from the end of the source sequence.
+        """
+        from ..operators.observable.takelastbuffer import take_last_buffer
+        source = self
+        return take_last_buffer(source, count)
+
+    def take_last_with_time(self, duration) -> 'ObservableBase':
+        """Returns elements within the specified duration from the end of the
+        observable source sequence.
+
+        Example:
+        res = source.take_last_with_time(5000)
+
+        Description:
+        This operator accumulates a queue with a length enough to store elements
+        received during the initial duration window. As more elements are
+        received, elements older than the specified duration are taken from the
+        queue and produced on the result sequence. This causes elements to be
+        delayed with duration.
+
+        Keyword arguments:
+        duration -- {Number} Duration for taking elements from the end of the
+            sequence.
+
+        Returns an observable sequence with the elements taken
+        during the specified duration from the end of the source sequence.
+        """
+        from ..operators.observable.takelastwithtime import take_last_with_time
+        source = self
+        return take_last_with_time(source, duration)
+
     def take_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
         """Returns elements from an observable sequence as long as a
         specified condition is true. The element's index is used in the
