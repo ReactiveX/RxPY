@@ -1,10 +1,8 @@
 from rx.core import AnonymousObservable, ObservableBase
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def subscribe_on(self, scheduler):
+def subscribe_on(self, scheduler) -> ObservableBase:
     """Subscribe on the specified scheduler.
 
     Wrap the source sequence in order to run its subscription and
@@ -25,7 +23,7 @@ def subscribe_on(self, scheduler):
     """
     source = self
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer, _=None):
         m = SingleAssignmentDisposable()
         d = SerialDisposable()
         d.disposable = m

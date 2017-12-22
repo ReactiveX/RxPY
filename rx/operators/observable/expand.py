@@ -1,24 +1,20 @@
 from rx.core import ObservableBase, AnonymousObservable
-
+from rx.core.typing import Selector
 from rx.disposables import SerialDisposable, CompositeDisposable, \
     SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def expand(self, selector):
+def expand(source: ObservableBase, selector: Selector) -> ObservableBase:
     """Expands an observable sequence by recursively invoking selector.
 
-    selector -- {Function} Selector function to invoke for each produced
-        element, resulting in another sequence to which the selector will be
-        invoked recursively again.
+    selector -- Selector function to invoke for each produced
+        element, resulting in another sequence to which the selector
+        will be invoked recursively again.
 
-    Returns an observable {Observable} sequence containing all the elements
-    produced by the recursive expansion.
+    Returns an observable sequence containing all the elements produced
+    by the recursive expansion.
     """
-
-    source = self
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or immediate_scheduler

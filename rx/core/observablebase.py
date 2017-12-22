@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
+from asyncio import Future
 
 from rx import config
 from .typing import Selector, Predicate
@@ -472,7 +473,7 @@ class ObservableBase(ty.Observable):
 
         Returns time-shifted sequence.
         """
-        from ..operators.observable.delay_subscription import delay_subscription
+        from ..operators.observable.delaysubscription import delay_subscription
         source = self
         return delay_subscription(source, duetime)
 
@@ -664,6 +665,21 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.exclusive import exclusive
         source = self
         return exclusive(source)
+
+    def expand(self, selector: Selector) -> 'ObservableBase':
+        """Expands an observable sequence by recursively invoking
+        selector.
+
+        selector -- Selector function to invoke for each produced
+            element, resulting in another sequence to which the selector
+            will be invoked recursively again.
+
+        Returns an observable sequence containing all the elements
+        produced by the recursive expansion.
+        """
+        from ..operators.observable.expand import expand
+        source = self
+        return expand(source, selector)
 
     def filter(self, predicate: Callable[[Any], bool]) -> 'ObservableBase':
         """Filters the elements of an observable sequence based on a
@@ -1768,11 +1784,35 @@ class ObservableBase(ty.Observable):
         source = self
         return start_with(source, *args)
 
+    def subscribe_on(self, scheduler) -> 'ObservableBase':
+        """Subscribe on the specified scheduler.
+
+        Wrap the source sequence in order to run its subscription and
+        unsubscription logic on the specified scheduler. This operation
+        is not commonly used; see the remarks section for more
+        information on the distinction between subscribe_on and
+        observe_on.
+
+        Keyword arguments:
+        scheduler -- Scheduler to perform subscription and
+            unsubscription actions on.
+
+        Returns the source sequence whose subscriptions and
+        unsubscriptions happen on the specified scheduler.
+
+        This only performs the side-effects of subscription and
+        unsubscription on the specified scheduler. In order to invoke
+        observer callbacks on a scheduler, use observe_on.
+        """
+        from ..operators.observable.subscribeon import subscribe_on
+        source = self
+        return subscribe_on(source, scheduler)
+
     def sum(self, key_selector: Selector = None) -> 'ObservableBase':
         """Computes the sum of a sequence of values that are obtained by
-        invoking an optional transform function on each element of the input
-        sequence, else if not specified computes the sum on each item in the
-        sequence.
+        invoking an optional transform function on each element of the
+        input sequence, else if not specified computes the sum on each
+        item in the sequence.
 
         Example
         res = source.sum()
@@ -1967,7 +2007,7 @@ class ObservableBase(ty.Observable):
         source = self
         return take_while_indexed(source, predicate)
 
-    def take_with_time(self, duration) -> 'ObservableBase':
+    def take_with_time(self, duration: Union[timedelta, int]) -> 'ObservableBase':
         """Takes elements for the specified duration from the start of the
         observable source sequence.
 
@@ -2181,6 +2221,25 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.todict import to_dict
         source = self
         return to_dict(source, key_selector, element_selector)
+
+    def to_future(self, future_ctor=None) -> Future:
+        """Converts an existing observable sequence to a Future.
+
+        Example:
+        future = rx.Observable.return_value(42).to_future(trollius.Future);
+
+        With config:
+        rx.config["Future"] = trollius.Future
+        future = rx.Observable.return_value(42).to_future()
+
+        future_ctor -- {Function} [Optional] The constructor of the future.
+            If not provided, it looks for it in rx.config.Future.
+
+        Returns a future with the last value from the observable sequence.
+        """
+        from ..operators.observable.tofuture import to_future
+        source = self
+        return to_future(source, future_ctor)
 
     def to_iterable(self) -> 'ObservableBase':
         """Creates an iterable from an observable sequence.

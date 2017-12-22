@@ -3,9 +3,8 @@ from rx.core import ObservableBase
 from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def to_future(self, future_ctor=None):
-    """Converts an existing observable sequence to a Future
+def to_future(self, future_ctor=None) -> ObservableBase:
+    """Converts an existing observable sequence to a Future.
 
     Example:
     future = rx.Observable.return_value(42).to_future(trollius.Future);
@@ -17,8 +16,7 @@ def to_future(self, future_ctor=None):
     future_ctor -- {Function} [Optional] The constructor of the future.
         If not provided, it looks for it in rx.config.Future.
 
-    Returns {Future} An future with the last value from the observable
-    sequence.
+    Returns a future with the last value from the observable sequence.
     """
 
     future_ctor = future_ctor or rx.config.get("Future")

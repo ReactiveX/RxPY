@@ -1,9 +1,12 @@
+from typing import Union
+from datetime import timedelta
+
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def take_with_time(self, duration) -> ObservableBase:
+def take_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> ObservableBase:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 
@@ -18,14 +21,12 @@ def take_with_time(self, duration) -> ObservableBase:
     delayed with duration.
 
     Keyword arguments:
-    duration -- {Number} Duration for taking elements from the start of the
+    duration -- {Duration for taking elements from the start of the
         sequence.
 
     Returns an observable sequence with the elements taken
     during the specified duration from the start of the source sequence.
     """
-
-    source = self
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
