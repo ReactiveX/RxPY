@@ -1,4 +1,7 @@
+from typing import Any
+
 from rx.core import ObservableBase, AnonymousObservable
+from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
@@ -19,7 +22,8 @@ def first_or_default_async(source, has_default=False, default_value=None):
     return AnonymousObservable(subscribe)
 
 
-def first_or_default(source, predicate=None, default_value=None) -> ObservableBase:
+def first_or_default(source: ObservableBase, predicate: Predicate = None,
+                     default_value: Any = None) -> ObservableBase:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.

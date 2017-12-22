@@ -45,7 +45,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         def create():
             dt = datetime.utcfromtimestamp(250)
-            return xs.take_until_with_time(dt, scheduler)
+            return xs.take_until_with_time(dt)
         res = scheduler.start(create)
 
         assert res.messages == [send(210, 1), send(220, 2), close(230)]
@@ -57,7 +57,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(throw(210, ex))
         def create():
             dt = datetime.utcfromtimestamp(0.250)
-            return xs.take_until_with_time(dt, scheduler)
+            return xs.take_until_with_time(dt)
         res = scheduler.start(create)
 
         assert res.messages == [throw(210, ex)]
@@ -69,7 +69,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         def create():
             dt = datetime.utcfromtimestamp(0.250)
-            return xs.take_until_with_time(dt, scheduler)
+            return xs.take_until_with_time(dt)
 
         res = scheduler.start(create)
 
@@ -90,7 +90,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         def create():
             dt235 = datetime.utcfromtimestamp(0.235)
             dt255 = datetime.utcfromtimestamp(0.255)
-            return xs.take_until_with_time(dt255, scheduler).take_until_with_time(dt235, scheduler)
+            return xs.take_until_with_time(dt255).take_until_with_time(dt235)
         res = scheduler.start(create)
 
         assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]
@@ -111,7 +111,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         def create():
             dt235 = datetime.utcfromtimestamp(0.235)
             dt255 = datetime.utcfromtimestamp(0.255)
-            return xs.take_until_with_time(dt235, scheduler).take_until_with_time(dt255, scheduler)
+            return xs.take_until_with_time(dt235).take_until_with_time(dt255)
         res = scheduler.start(create)
 
         assert res.messages == [send(210, 1), send(220, 2), send(230, 3), close(235)]

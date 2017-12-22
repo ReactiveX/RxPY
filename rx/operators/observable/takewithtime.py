@@ -1,16 +1,14 @@
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
 def take_with_time(self, duration) -> ObservableBase:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 
     Example:
-    res = source.take_with_time(5000,  [optional scheduler])
+    res = source.take_with_time(5000)
 
     Description:
     This operator accumulates a queue with a length enough to store elements

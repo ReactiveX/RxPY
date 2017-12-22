@@ -735,6 +735,24 @@ class ObservableBase(ty.Observable):
         source = self
         return find(source, predicate)
 
+    def find_index(self, predicate: Predicate) -> 'ObservableBase':
+        """Searches for an element that matches the conditions defined by
+        the specified predicate, and returns an Observable sequence with the
+        zero-based index of the first occurrence within the entire
+        Observable sequence.
+
+        Keyword Arguments:
+        predicate -- The predicate that defines the conditions of the
+            element to search for.
+
+        Returns an observable {Observable} sequence with the zero-based index of
+        the first occurrence of an element that matches the conditions defined
+        by match, if found; otherwise, -1.
+        """
+        from ..operators.observable.findindex import find_index
+        source = self
+        return find_index(source, predicate)
+
     def first(self, predicate=None) -> 'ObservableBase':
         """Returns the first element of an observable sequence that
         satisfies the condition in the predicate if present else the
@@ -1907,7 +1925,7 @@ class ObservableBase(ty.Observable):
         """
         from ..operators.observable.takeuntilwithtime import take_until_with_time
         source = self
-        return take_until_with_time()(source, end_time)
+        return take_until_with_time(source, end_time)
 
     def take_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
         """Returns elements from an observable sequence as long as a
@@ -1948,6 +1966,31 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.takewhile import take_while_indexed
         source = self
         return take_while_indexed(source, predicate)
+
+    def take_with_time(self, duration) -> 'ObservableBase':
+        """Takes elements for the specified duration from the start of the
+        observable source sequence.
+
+        Example:
+        res = source.take_with_time(5000)
+
+        Description:
+        This operator accumulates a queue with a length enough to store elements
+        received during the initial duration window. As more elements are
+        received, elements older than the specified duration are taken from the
+        queue and produced on the result sequence. This causes elements to be
+        delayed with duration.
+
+        Keyword arguments:
+        duration -- {Number} Duration for taking elements from the start of the
+            sequence.
+
+        Returns an observable sequence with the elements taken
+        during the specified duration from the start of the source sequence.
+        """
+        from ..operators.observable.takewithtime import take_with_time
+        source = self
+        return take_with_time(source, duration)
 
     def then_do(self, selector: Selector) -> 'ObservableBase':
         """Matches when the observable sequence has an available value and

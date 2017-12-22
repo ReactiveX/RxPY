@@ -1,5 +1,5 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
+from rx.core.typing import Predicate
 
 
 def find_value(source, predicate, yield_index):
@@ -27,7 +27,7 @@ def find_value(source, predicate, yield_index):
         return source.subscribe_callbacks(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
-def find(self, predicate) -> ObservableBase:
+def find(source, predicate: Predicate) -> ObservableBase:
     """Searches for an element that matches the conditions defined by the
     specified predicate, and returns the first occurrence within the entire
     Observable sequence.
@@ -41,4 +41,4 @@ def find(self, predicate) -> ObservableBase:
     otherwise, None.
     """
 
-    return find_value(self, predicate, False)
+    return find_value(source, predicate, False)
