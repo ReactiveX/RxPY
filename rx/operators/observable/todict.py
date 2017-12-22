@@ -30,17 +30,17 @@ def _to_dict(source, map_type, key_selector, element_selector):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(ObservableBase)
-def to_dict(self, key_selector, element_selector=None):
+def to_dict(self, key_selector, element_selector=None) -> ObservableBase:
     """Converts the observable sequence to a Map if it exists.
 
     Keyword arguments:
-    key_selector -- {Function} A function which produces the key for the
-        Map.
-    element_selector -- {Function} [Optional] An optional function which
-        produces the element for the Map. If not present, defaults to the
+    key_selector -- A function which produces the key for the
+        dictionary.
+    element_selector -- [Optional] An optional function which produces
+        the element for the dictionary. If not present, defaults to the
         value from the observable sequence.
-    Returns {Observable} An observable sequence with a single value of a Map
+
+    Returns an observable sequence with a single value of a dictionary
     containing the values from the observable sequence.
     """
 

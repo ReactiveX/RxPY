@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from rx.core import ObservableBase, Disposable
+from rx.core import Observable, ObservableBase, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable

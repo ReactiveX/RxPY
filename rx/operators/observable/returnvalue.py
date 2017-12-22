@@ -33,19 +33,20 @@ def return_value(value: Any) -> ObservableBase:
 
 
 def from_callable(supplier: Callable) -> ObservableBase:
-    """Returns an observable sequence that contains a single element generate from a supplier,
-       using the specified scheduler to send out observer messages.
+    """Returns an observable sequence that contains a single element
+    generate from a supplier, using the specified scheduler to send out
+    observer messages.
 
-       example
-       res = rx.Observable.from_callable(lambda: calculate_value())
-       res = rx.Observable.from_callable(lambda: 1 / 0) # emits an error
+    example
+    res = rx.Observable.from_callable(lambda: calculate_value())
+    res = rx.Observable.from_callable(lambda: 1 / 0) # emits an error
 
-       Keyword arguments:
-       value -- Single element in the resulting observable sequence.
+    Keyword arguments:
+    value -- Single element in the resulting observable sequence.
 
-       Returns an observable sequence containing the single specified
-       element derived from the supplier
-       """
+    Returns an observable sequence containing the single specified
+    element derived from the supplier
+    """
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler

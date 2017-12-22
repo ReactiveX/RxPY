@@ -13,7 +13,7 @@ def while_do(condition, source: ObservableBase) -> ObservableBase:
         function returns true.
 
     Returns an observable sequence which is repeated as long as the
-        condition holds.
+    condition holds.
     """
 
     source = Observable.from_future(source)

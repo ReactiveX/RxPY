@@ -1,9 +1,8 @@
 from rx.core import ObservableBase
-from rx.internal import extensionmethod
+from rx.core.typing import Selector
 
 
-@extensionmethod(ObservableBase)
-def sum(self, key_selector=None):
+def sum(source, key_selector: Selector = None) -> ObservableBase:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the input
     sequence, else if not specified computes the sum on each item in the
@@ -13,14 +12,14 @@ def sum(self, key_selector=None):
     res = source.sum()
     res = source.sum(lambda x: x.value)
 
-    key_selector -- {Function} [Optional] A transform function to apply to
-        each element.
+    key_selector -- [Optional] A transform function to apply to each
+        element.
 
-    Returns an observable {Observable} sequence containing a single element
-    with the sum of the values in the source sequence.
+    Returns an observable sequence containing a single element with the
+    sum of the values in the source sequence.
     """
 
     if key_selector:
-        return self.map(key_selector).sum()
+        return source.map(key_selector).sum()
     else:
-        return self.reduce(seed=0, accumulator=lambda prev, curr: prev + curr)
+        return source.reduce(seed=0, accumulator=lambda prev, curr: prev + curr)

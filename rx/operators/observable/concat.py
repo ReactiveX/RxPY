@@ -25,7 +25,6 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
-        enum = iter(sources)
         is_disposed = False
 
         def action(action1, state=None):
@@ -37,7 +36,7 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
                 cancelable.disposable = scheduler.schedule(action)
 
             try:
-                current = next(enum)
+                current = next(sources)
             except StopIteration:
                 observer.close()
             except Exception as ex:

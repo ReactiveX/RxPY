@@ -39,7 +39,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action)
 
         def action0(scheduler, state):
-            d1[0] = c[0].subscribe(o)
+            d1[0] = c[0].subscribe(o, scheduler)
         scheduler.schedule_absolute(100, action0)
 
         def action1(scheduler, state):
@@ -76,7 +76,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o)
+            d1[0] = c[0].subscribe(o, scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -168,7 +168,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o)
+            d1[0] = c[0].subscribe(o, scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -202,7 +202,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o)
+            d1[0] = c[0].subscribe(o, scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
@@ -228,7 +228,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o)
+            d1[0] = c[0].subscribe(o, scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
@@ -291,7 +291,7 @@ class TestMulticast(unittest.TestCase):
             def subject_selector(scheduler):
                 return Subject()
             def selector(ys):
-                return ys.zip(ys, lambda a,b: a+b)
+                return ys.zip(ys, result_selector=lambda a,b: a+b)
             return xs.multicast(subject_selector=subject_selector, selector=selector)
         results = scheduler.start(create)
 

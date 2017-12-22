@@ -2,7 +2,8 @@ from typing import Any, Callable
 from rx.core import Observable, ObservableBase
 
 
-def scan(source: ObservableBase, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> ObservableBase:
+def scan(source: ObservableBase, accumulator: Callable[[Any, Any], Any],
+         seed: Any=None) -> ObservableBase:
     """Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used as
     the initial accumulator value. For aggregation behavior with no
@@ -12,7 +13,8 @@ def scan(source: ObservableBase, accumulator: Callable[[Any, Any], Any], seed: A
     2 - scanned = source.scan(lambda acc, x: acc + x, 0)
 
     Keyword arguments:
-    accumulator -- An accumulator function to be invoked on each element.
+    accumulator -- An accumulator function to be invoked on each
+        element.
     seed -- [Optional] The initial accumulator value.
 
     Returns an observable sequence containing the accumulated values.

@@ -1,6 +1,5 @@
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import extensionmethod
 
 
 def sample_observable(source, sampler):
@@ -32,8 +31,7 @@ def sample_observable(source, sampler):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(Observable, alias="throttle_last")
-def sample(self, interval=None, sampler=None):
+def sample(source, interval=None, sampler=None):
     """Samples the observable sequence at each interval.
 
     1 - res = source.sample(sample_observable) # Sampler tick sequence
@@ -48,6 +46,6 @@ def sample(self, interval=None, sampler=None):
     """
 
     if interval is not None:
-        return sample_observable(self, Observable.interval(interval))
+        return sample_observable(source, Observable.interval(interval))
 
-    return sample_observable(self, sampler)
+    return sample_observable(source, sampler)

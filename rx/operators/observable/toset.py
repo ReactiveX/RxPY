@@ -1,9 +1,15 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
 
-def _to_set(source, set_type):
+
+def to_set(source: ObservableBase) -> ObservableBase:
+    """Converts the observable sequence to a set.
+
+    Returns an observable sequence with a single value of a set
+    containing the values from the observable sequence.
+    """
+
     def subscribe(observer, scheduler=None):
-        s = set_type()
+        s = set()
 
         def close():
             observer.send(s)
@@ -11,14 +17,3 @@ def _to_set(source, set_type):
 
         return source.subscribe_callbacks(s.add, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
-
-
-@extensionmethod(ObservableBase)
-def to_set(self):
-    """Converts the observable sequence to a set.
-
-    Returns {Observable} An observable sequence with a single value of a set
-    containing the values from the observable sequence.
-    """
-
-    return _to_set(self, set)

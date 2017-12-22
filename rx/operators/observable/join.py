@@ -4,13 +4,11 @@ from collections import OrderedDict
 from rx.core import AnonymousObservable, ObservableBase
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
-from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
 
-@extensionmethod(ObservableBase)
-def join(self, right, left_duration_selector, right_duration_selector, result_selector):
+def join(source, right, left_duration_selector, right_duration_selector, result_selector) -> ObservableBase:
     """Correlates the elements of two sequences based on overlapping
     durations.
 
@@ -32,7 +30,7 @@ def join(self, right, left_duration_selector, right_duration_selector, result_se
     from source elements that have an overlapping duration.
     """
 
-    left = self
+    left = source
 
     def subscribe(observer, scheduler=None):
         group = CompositeDisposable()

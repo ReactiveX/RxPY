@@ -312,7 +312,7 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
+                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
         results = scheduler.start(create)
 
@@ -353,7 +353,7 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
+                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
 
         results = scheduler.start(create)
@@ -394,7 +394,7 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
+                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
             return xs.publish_value(1979, selector)
 
         results = scheduler.start(create, disposed=470)

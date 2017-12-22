@@ -3,7 +3,6 @@ from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import extensionmethod
 
 
 class ChainObservable(ObservableBase):
@@ -34,8 +33,7 @@ class ChainObservable(ObservableBase):
         self.tail.close()
 
 
-@extensionmethod(ObservableBase)
-def many_select(self, selector):
+def many_select(self, selector) -> ObservableBase:
     """Comonadic bind operator. Internally projects a new observable for each
     value, and it pushes each observable into the user-defined selector function
     that projects/queries each observable into some result.
@@ -45,7 +43,7 @@ def many_select(self, selector):
     scheduler -- {Object} [Optional] Scheduler used to execute the
         operation. If not specified, defaults to the ImmediateScheduler.
 
-    Returns {Observable} An observable sequence which results from the
+    Returns an observable sequence which results from the
     comonadic bind operation.
     """
 
@@ -72,7 +70,7 @@ def many_select(self, selector):
 
         return source.map(
             mapper
-        ).tap(
+        ).do_action(
             noop, throw, close
         ).map(
             selector

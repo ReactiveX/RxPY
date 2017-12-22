@@ -1,33 +1,30 @@
 from datetime import datetime
+from typing import Union
 
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
 
-@extensionmethod(ObservableBase)
-def skip_until_with_time(self, start_time):
+def skip_until_with_time(source: ObservableBase,
+                         start_time: Union[datetime, int]) -> ObservableBase:
     """Skips elements from the observable source sequence until the
     specified start time.
     Errors produced by the source sequence are always forwarded to the
     result sequence, even if the error occurs before the start time.
 
     Examples:
-    res = source.skip_until_with_time(new Date());
+    res = source.skip_until_with_time(datetime);
     res = source.skip_until_with_time(5000);
 
     Keyword arguments:
-    start_time -- Time to start taking elements from the source sequence. If
-        this value is less than or equal to Date(), no elements will be
-        skipped.
+    start_time -- Time to start taking elements from the source
+        sequence. If this value is less than or equal to Date(), no
+        elements will be skipped.
 
     Returns an observable sequence with the elements skipped
     until the specified start time.
     """
-
-
-    source = self
 
     if isinstance(start_time, datetime):
         scheduler_method = 'schedule_absolute'

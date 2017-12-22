@@ -2,11 +2,9 @@ from datetime import datetime
 
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
-from rx.internal import extensionmethod
 from rx.concurrency import timeout_scheduler
 
-@extensionmethod(ObservableBase)
-def take_until_with_time(self, end_time, scheduler=None):
+def take_until_with_time(source, end_time) -> ObservableBase:
     """Takes elements for the specified duration until the specified end
     time, using the specified scheduler to run timers.
 
@@ -26,7 +24,6 @@ def take_until_with_time(self, end_time, scheduler=None):
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
-        source = self
 
         if isinstance(end_time, datetime):
             scheduler_method = scheduler.schedule_absolute
@@ -39,4 +36,3 @@ def take_until_with_time(self, end_time, scheduler=None):
         task = scheduler_method(end_time, action)
         return CompositeDisposable(task,  source.subscribe(observer, scheduler))
     return AnonymousObservable(subscribe)
-

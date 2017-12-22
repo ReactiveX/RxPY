@@ -6,13 +6,11 @@ from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable, \
     CompositeDisposable
 from rx.subjects import Subject
-from rx.internal import extensionmethod
 
 log = logging.getLogger("Rx")
 
 
-@extensionmethod(ObservableBase)
-def group_join(self, right, left_duration_selector, right_duration_selector, result_selector):
+def group_join(self, right, left_duration_selector, right_duration_selector, result_selector) -> ObservableBase:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
