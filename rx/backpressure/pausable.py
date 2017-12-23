@@ -1,6 +1,5 @@
 
 from rx.core import ObservableBase, Disposable
-from rx.internal import extensionmethod
 from rx.disposables import CompositeDisposable
 from rx.subjects import Subject
 
@@ -22,8 +21,8 @@ class PausableObservable(ObservableBase):
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]
 
-        def send(b):
-            if b:
+        def send(value):
+            if value:
                 connection[0] = conn.connect()
             else:
                 connection[0].dispose()

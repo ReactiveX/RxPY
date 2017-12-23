@@ -1,5 +1,5 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
+
 
 def _to_dict(source, map_type, key_selector, element_selector):
     def subscribe(observer, scheduler=None):

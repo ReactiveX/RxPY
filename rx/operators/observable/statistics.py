@@ -1,5 +1,4 @@
-from rx.core import ObservableBase
-from rx.internal import extensionmethod
+from rx.core import ObservableBase, Observable
 import math
 
 
@@ -15,34 +14,31 @@ def determine_median(sorted_list):
         return float(median_1 + median_2) / 2.0
 
 
-@extensionmethod(ObservableBase)
-def median(self):
+def median(source: ObservableBase) -> ObservableBase:
     """
     Calculates the statistical median on numerical emissions. The sequence must be finite.
     """
-    return self.to_sorted_list().map(lambda l: determine_median(l))
+    return source.to_sorted_list().map(lambda l: determine_median(l))
 
 
-@extensionmethod(ObservableBase)
-def mode(self):
+def mode(source: ObservableBase) -> ObservableBase:
     """
     Returns the most frequently emitted value (or "values" if they have the same number of occurrences).
     The sequence must be finite.
     """
-    return self.group_by(lambda v: v) \
+    return source.group_by(lambda v: v) \
         .flat_map(lambda grp: grp.count().map(lambda ct: (grp.key, ct))) \
         .to_sorted_list(lambda t: t[1], reverse=True) \
         .flat_map(lambda l: Observable.from_(l).take_while(lambda t: t[1] == l[0][1])) \
         .map(lambda t: t[0])
 
 
-@extensionmethod(ObservableBase)
-def variance(self):
+def variance(source: ObservableBase) -> ObservableBase:
     """
     Returns the statistical variance of the numerical emissions.
     The sequence must be finite.
     """
-    squared_values = self.to_list() \
+    squared_values = source.to_list() \
         .flat_map(lambda l: Observable.from_(l).average().flat_map(lambda avg: Observable.from_(l).map(lambda i: i - avg))) \
         .map(lambda i: i * i) \
         .publish() \
@@ -51,12 +47,11 @@ def variance(self):
     return Observable.zip(squared_values.sum(), squared_values.count(), lambda sum, ct: sum / (ct - 1))
 
 
-@extensionmethod(ObservableBase)
-def standard_deviation(self):
+def standard_deviation(source: ObservableBase) -> ObservableBase:
     """
     Returns the standard deviation of the numerical emissions:
     The sequence must be finite.
     """
-    return self.variance().map(lambda i: math.sqrt(i))
+    return source.variance().map(lambda i: math.sqrt(i))
 
 

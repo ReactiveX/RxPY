@@ -29,15 +29,25 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.concat import concat
         return concat(self, other)
 
+    def __await__(self) -> Any:
+        """Awaits the given observable
+
+        Returns the last item of the observable sequence. Raises
+        TypeError: If key is not of type int or slice
+        """
+        return iter(self.to_future())
+
     def __getitem__(self, key):
         """Slices the given observable using Python slice notation. The
-        arguments to slice is start, stop and step given within brackets [] and
-        separated with the ':' character. It is basically a wrapper around the
-        operators skip(), skip_last(), take(), take_last() and filter().
+        arguments to slice is start, stop and step given within brackets
+        [] and separated with the ':' character. It is basically a
+        wrapper around the operators skip(), skip_last(), take(),
+        take_last() and filter().
 
-        This marble diagram helps you remember how slices works with streams.
-        Positive numbers is relative to the start of the events, while negative
-        numbers are relative to the end (close) of the stream.
+        This marble diagram helps you remember how slices works with
+        streams. Positive numbers is relative to the start of the
+        events, while negative numbers are relative to the end (close)
+        of the stream.
 
         r---e---a---c---t---i---v---e---|
         0   1   2   3   4   5   6   7   8
@@ -137,17 +147,17 @@ class ObservableBase(ty.Observable):
         return NotImplemented
 
     def all(self, predicate):
-        """Determines whether all elements of an observable sequence satisfy a
-        condition.
+        """Determines whether all elements of an observable sequence
+        satisfy a condition.
 
         1 - res = source.all(lambda value: value.length > 3)
 
         Keyword arguments:
         predicate -- A function to test each element for a condition.
 
-        Returns an observable sequence containing a single element determining
-        whether all elements in the source sequence pass the test in the
-        specified predicate.
+        Returns an observable sequence containing a single element
+        determining whether all elements in the source sequence pass the
+        test in the specified predicate.
         """
         from ..operators.observable.all import all as all_
         source = self
@@ -190,9 +200,9 @@ class ObservableBase(ty.Observable):
         return as_observable(source)
 
     def average(self, key_selector=None) -> 'ObservableBase':
-        """Computes the average of an observable sequence of values that are in
-        the sequence or obtained by invoking a transform function on each
-        element of the input sequence if present.
+        """Computes the average of an observable sequence of values that
+        are in the sequence or obtained by invoking a transform function
+        on each element of the input sequence if present.
 
         Example
         res = source.average();
@@ -209,16 +219,16 @@ class ObservableBase(ty.Observable):
         return average(source, key_selector)
 
     def buffer(self, buffer_openings=None, buffer_closing_selector=None) -> 'ObservableBase':
-        """Projects each element of an observable sequence into zero or more
-        buffers.
+        """Projects each element of an observable sequence into zero or
+        more buffers.
 
         Keyword arguments:
         buffer_openings -- Observable sequence whose elements denote the
             creation of windows.
-        buffer_closing_selector -- [optional] A function invoked to define
-            the closing of each produced window. If a closing selector
-            function is specified for the first parameter, this parameter is
-            ignored.
+        buffer_closing_selector -- [optional] A function invoked to
+            define the closing of each produced window. If a closing
+            selector function is specified for the first parameter, this
+            parameter is ignored.
 
         Returns an observable sequence of windows.
         """
@@ -227,18 +237,19 @@ class ObservableBase(ty.Observable):
         return buffer(source, buffer_openings, buffer_closing_selector)
 
     def buffer_with_count(self, count: int, skip: int = None) -> 'ObservableBase':
-        """Projects each element of an observable sequence into zero or more
-        buffers which are produced based on element count information.
+        """Projects each element of an observable sequence into zero or
+        more buffers which are produced based on element count
+        information.
 
         Example:
         res = xs.buffer_with_count(10)
         res = xs.buffer_with_count(10, 1)
 
         Keyword parameters:
-        count -- {Number} Length of each buffer.
-        skip -- {Number} [Optional] Number of elements to skip between
-            creation of consecutive buffers. If not provided, defaults to
-            the count.
+        count -- Length of each buffer.
+        skip -- [Optional] Number of elements to skip between creation
+            of consecutive buffers. If not provided, defaults to the
+            count.
 
         Returns an observable {Observable} sequence of buffers.
         """
@@ -247,8 +258,8 @@ class ObservableBase(ty.Observable):
         return buffer_with_count(source, count, skip)
 
     def buffer_with_time(self, timespan, timeshift=None) -> 'ObservableBase':
-        """Projects each element of an observable sequence into zero or more
-        buffers which are produced based on timing information.
+        """Projects each element of an observable sequence into zero or
+        more buffers which are produced based on timing information.
 
         # non-overlapping segments of 1 second
         1 - res = xs.buffer_with_time(1000)
@@ -2375,8 +2386,7 @@ class ObservableBase(ty.Observable):
         Returns a future with the last value from the observable sequence.
         """
         from ..operators.observable.tofuture import to_future
-        source = self
-        return to_future(source, future_ctor)
+        return to_future(self, future_ctor)
 
     def to_iterable(self) -> 'ObservableBase':
         """Creates an iterable from an observable sequence.
@@ -2407,8 +2417,7 @@ class ObservableBase(ty.Observable):
         containing the values from the observable sequence.
         """
         from ..operators.observable.toset import to_set
-        source = self
-        return to_set(source)
+        return to_set(self)
 
     def window(self, window_openings=None, window_closing_selector=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
@@ -2426,8 +2435,7 @@ class ObservableBase(ty.Observable):
         Returns an observable sequence of windows.
         """
         from ..operators.observable.window import window
-        source = self
-        return window(source, window_openings, window_closing_selector)
+        return window(self, window_openings, window_closing_selector)
 
     def window_with_count(self, count, skip=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or more
@@ -2443,8 +2451,7 @@ class ObservableBase(ty.Observable):
         Returns an observable sequence of windows.
         """
         from ..operators.observable.windowwithcount import window_with_count
-        source = self
-        return window_with_count(source, count, skip)
+        return window_with_count(self, count, skip)
 
     def window_with_time(self, timespan, timeshift=None) -> 'ObservableBase':
         from ..operators.observable.windowwithtime import window_with_time
@@ -2453,8 +2460,7 @@ class ObservableBase(ty.Observable):
 
     def window_with_time_or_count(self, timespan, count) -> 'ObservableBase':
         from ..operators.observable.windowwithtimeorcount import window_with_time_or_count
-        source = self
-        return window_with_time_or_count(source, timespan, count)
+        return window_with_time_or_count(self, timespan, count)
 
     def with_latest_from(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                          selector: Callable[[Any], Any]) -> 'ObservableBase':
@@ -2502,6 +2508,4 @@ class ObservableBase(ty.Observable):
         function.
         """
         from ..operators.observable.zip import zip as _zip
-        source = self
-
-        return _zip(source, *args, result_selector=result_selector)
+        return _zip(self, *args, result_selector=result_selector)

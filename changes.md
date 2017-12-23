@@ -1,5 +1,15 @@
 # Changes
 
+## 3.0.0-alpha
+
+- `on_next`, `on_error` and `on_completed` have been renamed to `send`,
+  `throw` and `close` to align with the enhanced generator interface.
+- Extension methods and extension class methods have been removed. This
+  makes it much easier for editors and IDEs to validate the code and
+  perform code completion.
+- Python 3.6+ only with type hints
+
+
 ## 1.5.0
 
 - Refactored virtual time scheduling. Fixes #95. Thanks to @djarb
@@ -18,11 +28,13 @@
 - Fixed issue #83 with `int + datetime.datetime` in timer.py. Thanks to @AlexMost
 
 ## 1.2.6
+
 - Fixes for TwistedScheduler raising AlreadyCalled error #78. Thanks to
   @mchen402 and @jcwilson.
 - Use CurrentThreadScheduler as default for just/return_value. Fixes #76
 
 ## 1.2.5
+
 - Added wxscheduler.py for use with wxPython applications thanks to
   @bosonogi
 - Added eventletscheduler.py for use with Eventlet thanks to @jalandip

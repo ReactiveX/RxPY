@@ -1,9 +1,10 @@
+from asyncio import Future
+
 import rx
 from rx.core import ObservableBase
-from rx.internal import extensionmethod
 
 
-def to_future(self, future_ctor=None) -> ObservableBase:
+def to_future(self, future_ctor=None) -> Future:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -45,14 +46,4 @@ def to_future(self, future_ctor=None) -> ObservableBase:
 
     # No cancellation can be done
     return future
-
-
-@extensionmethod(ObservableBase)
-def __await__(self):
-    """Awaits the given observable
-    :returns: The last item of the observable sequence.
-    :rtype: Any
-    :raises TypeError: If key is not of type int or slice
-    """
-    return iter(self.to_future())
 
