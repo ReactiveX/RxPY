@@ -8,7 +8,7 @@ from rx import config
 from .typing import Selector, Predicate
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
-from . import typing as ty, bases
+from . import typing as ty, abc
 
 
 class ObservableBase(ty.Observable):
@@ -1301,7 +1301,7 @@ class ObservableBase(ty.Observable):
         source = self
         return multicast(source, subject, subject_selector, selector)
 
-    def observe_on(self, scheduler: bases.Scheduler) -> 'ObservableBase':
+    def observe_on(self, scheduler: abc.Scheduler) -> 'ObservableBase':
         """Wraps the source sequence in order to run its observer callbacks on
         the specified scheduler.
 

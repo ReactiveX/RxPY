@@ -1,6 +1,6 @@
 # flake8: noqa
-from .bases.observer import Observer
-from .bases.scheduler import Scheduler
+from .abc.observer import Observer
+from .abc.scheduler import Scheduler
 
 from .disposable import Disposable
 from .observable import Observable

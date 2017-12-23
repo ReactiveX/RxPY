@@ -1,13 +1,13 @@
 from typing import Any, Callable
 
 from rx import config
-from rx.core import bases
+from rx.core import abc
 from rx.internal import Iterable
 
 from .anonymousobserver import AnonymousObserver
 
 
-class BlockingObservable(bases.Observable):
+class BlockingObservable(abc.Observable):
     def __init__(self, observable=None):
         """Turns an observable into a blocking observable.
 
@@ -18,8 +18,8 @@ class BlockingObservable(bases.Observable):
         self.observable = observable
         self.lock = config["concurrency"].RLock()
 
-    def subscribe(self, observer: bases.Observer = None,
-                  scheduler: bases.Scheduler = None) -> bases.Disposable:
+    def subscribe(self, observer: abc.Observer = None,
+                  scheduler: abc.Scheduler = None) -> abc.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:

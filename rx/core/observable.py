@@ -4,7 +4,7 @@ from asyncio.futures import Future
 
 from .typing import Selector
 from .observablebase import ObservableBase
-from . import bases
+from . import abc
 
 class Observable:
     """Observable creation methods.
@@ -420,7 +420,7 @@ class Observable:
         return repeat_value(value, repeat_count)
 
     @staticmethod
-    def start(func: Callable, scheduler: bases.Scheduler = None) -> ObservableBase:
+    def start(func: Callable, scheduler: abc.Scheduler = None) -> ObservableBase:
         """Invokes the specified function asynchronously on the specified
         scheduler, surfacing the result through an observable sequence.
 

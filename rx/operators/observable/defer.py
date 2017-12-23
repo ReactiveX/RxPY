@@ -1,10 +1,10 @@
 from typing import Any, Callable
 
 from rx.core import Observable, ObservableBase, AnonymousObservable
-from rx.core import bases
+from rx.core import abc
 
 
-def defer(observable_factory: Callable[[bases.Scheduler], ObservableBase]) -> ObservableBase:
+def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> ObservableBase:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 

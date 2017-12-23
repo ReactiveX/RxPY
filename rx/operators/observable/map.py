@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from rx.core import Disposable, bases
+from rx.core import Disposable, abc
 from rx.core import Observer, Observable, ObservableBase, AnonymousObservable
 from rx.core import typing
 
@@ -47,7 +47,7 @@ def map_indexed(selector: Callable[[Any, int], Any], source: ObservableBase) -> 
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer, scheduler: bases.Scheduler) -> Disposable:
+    def subscribe(observer: Observer, scheduler: abc.Scheduler) -> Disposable:
         count = 0
 
         def send(value):

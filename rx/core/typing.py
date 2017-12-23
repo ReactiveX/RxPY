@@ -2,12 +2,12 @@ from abc import abstractmethod
 from typing import Generic, TypeVar, Callable, Any
 from datetime import datetime, timedelta
 
-from . import bases
+from . import abc
 
 T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 
-Action = Callable[[bases.Scheduler, Any], None]  # pylint: disable=C0103
+Action = Callable[[abc.Scheduler, Any], None]  # pylint: disable=C0103
 
 Send = Callable[[Any], None]                     # pylint: disable=C0103
 Throw = Callable[[Exception], None]              # pylint: disable=C0103
@@ -17,7 +17,7 @@ Selector = Callable[[Any], Any]                  # pylint: disable=C0103
 Predicate = Callable[[Any], bool]                # pylint: disable=C0103
 
 
-class Disposable(bases.Disposable):
+class Disposable(abc.Disposable):
     """Abstract disposable class"""
 
     __slots__ = ()
@@ -27,7 +27,7 @@ class Disposable(bases.Disposable):
         raise NotImplementedError
 
 
-class Scheduler(bases.Scheduler):
+class Scheduler(abc.Scheduler):
     __slots__ = ()
 
     @property
@@ -47,7 +47,7 @@ class Scheduler(bases.Scheduler):
     def schedule_absolute(self, duetime, action: Action, state=None):
         return NotImplemented
 
-class Observer(Generic[T_in], bases.Observer):
+class Observer(Generic[T_in], abc.Observer):
     __slots__ = ()
 
     @abstractmethod
@@ -63,7 +63,7 @@ class Observer(Generic[T_in], bases.Observer):
         raise NotImplementedError
 
 
-class Observable(Generic[T_out], bases.Observable):
+class Observable(Generic[T_out], abc.Observable):
     __slots__ = ()
 
     @abstractmethod

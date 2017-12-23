@@ -7,11 +7,11 @@ from .observable import ObservableBase
 from .autodetachobserver import AutoDetachObserver
 from .anonymousobserver import AnonymousObserver
 from .disposable import Disposable
-from . import bases
+from . import abc
 
 
-def subscribe(source: ObservableBase, observer:bases.Observer = None,
-              scheduler: bases.Scheduler = None):
+def subscribe(source: ObservableBase, observer:abc.Observer = None,
+              scheduler: abc.Scheduler = None):
     """Subscribe an observer to the observable sequence.
 
     Examples:
@@ -28,7 +28,7 @@ def subscribe(source: ObservableBase, observer:bases.Observer = None,
     """
 
     observer = observer or AnonymousObserver()
-    assert isinstance(observer, bases.Observer) or isinstance(observer, types.GeneratorType)
+    assert isinstance(observer, abc.Observer) or isinstance(observer, types.GeneratorType)
 
     auto_detach_observer = AutoDetachObserver(observer)
 
@@ -41,7 +41,7 @@ def subscribe(source: ObservableBase, observer:bases.Observer = None,
 
         return subscriber
 
-    def set_disposable(_: bases.Scheduler=None, __: Any=None):
+    def set_disposable(_: abc.Scheduler=None, __: Any=None):
         try:
             subscriber = source._subscribe_core(auto_detach_observer, scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703

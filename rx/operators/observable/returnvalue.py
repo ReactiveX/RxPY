@@ -2,7 +2,7 @@ from typing import Any, Callable
 
 from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.core.bases.scheduler import Scheduler
+from rx.core.abc.scheduler import Scheduler
 
 
 def return_value(value: Any) -> ObservableBase:

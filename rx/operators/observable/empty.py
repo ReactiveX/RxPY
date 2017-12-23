@@ -2,7 +2,7 @@ from typing import Any
 
 from rx.core import ObservableBase, Observer, AnonymousObservable, Disposable
 from rx.concurrency import immediate_scheduler
-from rx.core.bases.scheduler import Scheduler
+from rx.core.abc.scheduler import Scheduler
 
 
 def empty() -> ObservableBase:
