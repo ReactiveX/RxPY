@@ -6,11 +6,9 @@ from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
 from rx.internal.basic import default_comparer, identity
 from rx.operators.groupedobservable import GroupedObservable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None):
+def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None) -> ObservableBase:
     """Groups the elements of an observable sequence according to a
     specified key selector function. A duration selector function is used
     to control the lifetime of groups. When a group expires, it receives

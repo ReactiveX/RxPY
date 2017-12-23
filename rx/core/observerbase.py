@@ -1,7 +1,9 @@
+from typing import Callable
 from abc import abstractmethod
 
 from rx.internal import noop
-from . import Observer, Disposable
+from .disposable import Disposable
+from .typing import Observer
 
 
 class ObserverBase(Observer, Disposable):
@@ -61,3 +63,36 @@ class ObserverBase(Observer, Disposable):
             return True
 
         return False
+
+    def to_notifier(self) -> Callable:
+        """Creates a notification callback from an observer.
+
+        Returns the action that forwards its input notification to the
+        underlying observer."""
+
+        def func(notifier):
+            return notifier.accept(self)
+        return func
+
+    def as_observer(self) -> 'ObserverBase':
+        """Hides the identity of an observer.
+
+        Returns an observer that hides the identity of the specified
+        observer.
+        """
+        from .observerextensions import as_observer
+        return as_observer(self)
+
+    def checked(self) -> 'ObserverBase':
+        """Checks access to the observer for grammar violations. This
+        includes checking for multiple OnError or OnCompleted calls,
+        as well as reentrancy in any of the observer methods. If a
+        violation is detected, an Error is thrown from the offending
+        observer method call.
+
+        Returns an observer that checks callbacks invocations against
+        the observer grammar and, if the checks pass, forwards those to
+        the specified observer."""
+
+        from .checkedobserver import CheckedObserver
+        return CheckedObserver(self)

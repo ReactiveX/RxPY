@@ -1,14 +1,13 @@
+from typing import Any
 from rx.core import ObservableBase
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def pluck(self, key):
+def pluck(source: ObservableBase, key: Any) -> ObservableBase:
     """Retrieves the value of a specified key using dict-like access (as in
     element[key]) from all elements in the Observable sequence.
 
     Keyword arguments:
-    key {String} The key to pluck.
+    key -- The key to pluck.
 
     Returns a new Observable {Observable} sequence of key values.
 
@@ -16,16 +15,15 @@ def pluck(self, key):
 
     """
 
-    return self.map(lambda x: x[key])
+    return source.map(lambda x: x[key])
 
 
-@extensionmethod(ObservableBase)
-def pluck_attr(self, property):
-    """Retrieves the value of a specified property (using getattr) from all
-    elements in the Observable sequence.
+def pluck_attr(source: ObservableBase, prop: str) -> ObservableBase:
+    """Retrieves the value of a specified property (using getattr) from
+    all elements in the Observable sequence.
 
     Keyword arguments:
-    property {String} The property to pluck.
+    property -- The property to pluck.
 
     Returns a new Observable {Observable} sequence of property values.
 
@@ -34,4 +32,4 @@ def pluck_attr(self, property):
 
     """
 
-    return self.map(lambda x: getattr(x, property))
+    return source.map(lambda x: getattr(x, prop))

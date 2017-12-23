@@ -46,7 +46,6 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
 
             if should_run:
                 if exception[0]:
-                    log.error("*** Exception: %s", exception[0])
                     observer.throw(exception[0])
                 else:
                     mad = MultipleAssignmentDisposable()

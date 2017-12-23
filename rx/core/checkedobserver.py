@@ -1,4 +1,3 @@
-from rx.internal import extensionmethod
 from rx.internal.exceptions import ReEntracyException, CompletedException
 
 from . import Observer
@@ -45,15 +44,4 @@ class CheckedObserver(Observer):
             self._state = 1
 
 
-@extensionmethod(Observer)
-def checked(self):
-    """Checks access to the observer for grammar violations. This includes
-    checking for multiple OnError or OnCompleted calls, as well as
-    reentrancy in any of the observer methods. If a violation is detected,
-    an Error is thrown from the offending observer method call.
 
-    Returns an observer that checks callbacks invocations against the
-    observer grammar and, if the checks pass, forwards those to the
-    specified observer."""
-
-    return CheckedObserver(self)

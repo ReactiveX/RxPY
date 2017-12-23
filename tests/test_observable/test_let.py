@@ -19,5 +19,5 @@ class TestLet(unittest.TestCase):
             called[0] = True
             return x
 
-        Observable.empty().let_bind(func)
+        Observable.empty().let(func)
         assert(called[0])

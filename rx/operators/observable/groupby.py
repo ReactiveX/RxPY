@@ -1,9 +1,7 @@
 from rx.core import ObservableBase, Observable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def group_by(self, key_selector, element_selector=None, key_serializer=None):
+def group_by(self, key_selector, element_selector=None, key_serializer=None) -> ObservableBase:
     """Groups the elements of an observable sequence according to a
     specified key selector function and comparer and selects the resulting
     elements by using a specified function.

@@ -22,5 +22,3 @@ config = {
 }
 
 from .core import Observer, Observable
-
-from . import backpressure

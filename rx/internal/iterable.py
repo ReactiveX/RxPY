@@ -30,8 +30,8 @@ class Iterable(abc.Iterable):
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(_next())
 
-    @classmethod
-    def range(cls, start, count):
+    @staticmethod
+    def range(start, count):
         def _next():
             value = start
             n = count
@@ -45,22 +45,22 @@ class Iterable(abc.Iterable):
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(_next())
 
-    @classmethod
-    def repeat(cls, value, count=None):
+    @staticmethod
+    def repeat(value, count=None):
         from .anonymousiterable import AnonymousIterable
         if count is not None:
             return AnonymousIterable(value for _ in range(count))
 
         return AnonymousIterable(itertools.repeat(value))
 
-    @classmethod
-    def for_each(cls, source, selector=None):
+    @staticmethod
+    def for_each(source, selector=None):
         selector = selector or identity
 
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(selector(value) for value in source)
 
-    def while_do(self, condition):
+    @staticmethod
+    def while_do(condition, source):
         from ..operators.enumerable.whiledo import while_do
-        source = self
         return while_do(condition, source)

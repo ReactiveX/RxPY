@@ -292,6 +292,27 @@ class ObservableBase(ty.Observable):
         source = self
         return buffer_with_time_or_count(source, timespan, count)
 
+    def catch_exception(self, second=None, handler=None):
+        """Continues an observable sequence that is terminated by an exception
+        with the next observable sequence.
+
+        1 - xs.catch_exception(ys)
+        2 - xs.catch_exception(lambda ex: ys(ex))
+
+        Keyword arguments:
+        handler -- Exception handler function that returns an observable
+            sequence  given the error that occurred in the first sequence.
+        second -- Second observable sequence used to produce results when an
+            error occurred in the first sequence.
+
+        Returns an observable sequence containing the first sequence's
+        elements, followed by the elements of the handler sequence in case an
+        exception occurred.
+        """
+        from ..operators.observable.catch import catch_exception
+        source = self
+        return catch_exception(source, second, handler)
+
     def combine_latest(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                        selector: Callable[[Any], Any]) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
@@ -314,27 +335,6 @@ class ObservableBase(ty.Observable):
 
         args = [self] + list(observables)
         return combine_latest(args, selector)
-
-    def catch_exception(self, second=None, handler=None):
-        """Continues an observable sequence that is terminated by an exception
-        with the next observable sequence.
-
-        1 - xs.catch_exception(ys)
-        2 - xs.catch_exception(lambda ex: ys(ex))
-
-        Keyword arguments:
-        handler -- Exception handler function that returns an observable
-            sequence  given the error that occurred in the first sequence.
-        second -- Second observable sequence used to produce results when an
-            error occurred in the first sequence.
-
-        Returns an observable sequence containing the first sequence's
-        elements, followed by the elements of the handler sequence in case an
-        exception occurred.
-        """
-        from ..operators.observable.catch import catch_exception
-        source = self
-        return catch_exception(source, second, handler)
 
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
         """Concatenates all the observable sequences. This takes in either an
@@ -419,12 +419,11 @@ class ObservableBase(ty.Observable):
         enable_queue -- truthy value to determine if values should
             be queued pending the next request
         scheduler -- determines how the requests will be scheduled
-
         Returns the observable sequence which only propagates values on request.
         """
-        from ..backpressure.controlled import controlled
-        source = self
-        return controlled(source, enable_queue, scheduler)
+
+        from ..backpressure.observableextensions import controlled
+        return controlled(self, enable_queue, scheduler)
 
     def default_if_empty(self, default_value=None) -> 'ObservableBase':
         """Returns the elements of the specified sequence or the
@@ -895,6 +894,75 @@ class ObservableBase(ty.Observable):
         source = self
         return flat_map_indexed(source, selector, result_selector)
 
+    def group_by(self, key_selector, element_selector=None, key_serializer=None) -> 'ObservableBase':
+        """Groups the elements of an observable sequence according to a
+        specified key selector function and comparer and selects the resulting
+        elements by using a specified function.
+
+        1 - observable.group_by(lambda x: x.id)
+        2 - observable.group_by(lambda x: x.id, lambda x: x.name)
+        3 - observable.group_by(
+            lambda x: x.id,
+            lambda x: x.name,
+            lambda x: str(x))
+
+        Keyword arguments:
+        key_selector -- A function to extract the key for each element.
+        element_selector -- [Optional] A function to map each source element to
+            an element in an observable group.
+        comparer -- {Function} [Optional] Used to determine whether the objects
+            are equal.
+
+        Returns a sequence of observable groups, each of which corresponds to a
+        unique key value, containing all elements that share that same key
+        value.
+        """
+        from ..operators.observable.groupby import group_by
+        source = self
+        return group_by(source, key_selector, element_selector, key_serializer)
+
+    def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None) -> 'ObservableBase':
+        """Groups the elements of an observable sequence according to a
+        specified key selector function. A duration selector function is used
+        to control the lifetime of groups. When a group expires, it receives
+        an OnCompleted notification. When a new element with the same key value
+        as a reclaimed group occurs, the group will be reborn with a new
+        lifetime request.
+
+        1 - observable.group_by_until(
+                lambda x: x.id,
+                None,
+                lambda : Rx.Observable.never()
+            )
+        2 - observable.group_by_until(
+                lambda x: x.id,
+                lambda x: x.name,
+                lambda: Rx.Observable.never()
+            )
+        3 - observable.group_by_until(
+                lambda x: x.id,
+                lambda x: x.name,
+                lambda:  Rx.Observable.never(),
+                lambda x: str(x))
+
+        Keyword arguments:
+        key_selector -- A function to extract the key for each element.
+        duration_selector -- A function to signal the expiration of a group.
+        comparer -- [Optional] {Function} Used to compare objects. When not
+            specified, the default comparer is used. Note: this argument will be
+            ignored in the Python implementation of Rx. Python objects knows,
+            or should know how to compare themselves.
+
+        Returns a sequence of observable groups, each of which corresponds to
+        a unique key value, containing all elements that share that same key
+        value. If a group's lifetime expires, a new group with the same key
+        value can be created once an element with such a key value is
+        encountered.
+        """
+        from ..operators.observable.groupbyuntil import group_by_until
+        source = self
+        return group_by_until(source, key_selector, element_selector, duration_selector, comparer)
+
     def group_join(self, right, left_duration_selector, right_duration_selector,
                    result_selector) -> 'ObservableBase':
         """Correlates the elements of two sequences based on overlapping
@@ -1293,6 +1361,75 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.partition import partition_indexed
         source = self
         return partition_indexed(source, predicate)
+
+    def pausable(self, pauser):
+        """Pauses the underlying observable sequence based upon the observable
+        sequence which yields True/False.
+
+        Example:
+        pauser = rx.Subject()
+        source = rx.Observable.interval(100).pausable(pauser)
+
+        Keyword parameters:
+        pauser -- {Observable} The observable sequence used to pause the
+            underlying sequence.
+
+        Returns the observable {Observable} sequence which is paused based upon
+        the pauser.
+        """
+
+        from ..backpressure.observableextensions import pausable
+        return pausable(self, pauser)
+
+    def pausable_buffered(self, subject):
+        """Pauses the underlying observable sequence based upon the observable
+        sequence which yields True/False, and yields the values that were
+        buffered while paused.
+
+        Example:
+        pauser = rx.Subject()
+        source = rx.Observable.interval(100).pausable_buffered(pauser)
+
+        Keyword arguments:
+        pauser -- {Observable} The observable sequence used to pause the
+            underlying sequence.
+
+        Returns the observable {Observable} sequence which is paused based upon
+        the pauser."""
+
+        from ..backpressure.observableextensions import pausable_buffered
+        return pausable_buffered(self, subject)
+
+    def pluck(self, key: Any) -> 'ObservableBase':
+        """Retrieves the value of a specified key using dict-like access (as in
+        element[key]) from all elements in the Observable sequence.
+
+        Keyword arguments:
+        key -- The key to pluck.
+
+        Returns a new Observable {Observable} sequence of key values.
+
+        To pluck an attribute of each element, use pluck_attr.
+
+        """
+        from ..operators.observable.pluck import pluck
+        return pluck(self, key)
+
+    def pluck_attr(self, attr: str) -> 'ObservableBase':
+        """Retrieves the value of a specified property (using getattr) from
+        all elements in the Observable sequence.
+
+        Keyword arguments:
+        attr -- The property to pluck.
+
+        Returns a new Observable {Observable} sequence of property values.
+
+        To pluck values using dict-like access (as in element[key]) on each
+        element, use pluck.
+        """
+
+        from ..operators.observable.pluck import pluck_attr
+        return pluck_attr(self, attr)
 
     def publish(self, selector: Selector = None) -> 'ObservableBase':
         """Returns an observable sequence that is the result of invoking the

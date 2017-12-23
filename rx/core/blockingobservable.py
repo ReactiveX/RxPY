@@ -1,7 +1,8 @@
-from typing import Any
+from typing import Any, Callable
 
 from rx import config
 from rx.core import bases
+from rx.internal import Iterable
 
 from .anonymousobserver import AnonymousObserver
 
@@ -57,10 +58,73 @@ class BlockingObservable(bases.Observable):
         observer = AnonymousObserver(send, throw, close)
         return self.subscribe(observer, scheduler)
 
-    def for_each(self, action) -> 'BlockingObservable':
-        from ..operators.observable.blocking.foreach import for_each
+    def __iter__(self):
+        """Returns an iterator that can iterate over items emitted by this
+        `BlockingObservable`.
+        """
+
+        return iter(self.to_iterable())
+
+    def first(self) -> Any:
+        """
+        Blocks until the first element emits from a BlockingObservable.
+
+        If no item is emitted when close() is called, an exception is thrown
+
+        Note: This will block even if the underlying Observable is
+        asynchronous.
+
+        Keyword arguments:
+        source -- Blocking observable sequence.
+
+        Returns the first item to be emitted from the blocking observable.
+        """
+        from ..operators.observable.blocking.first import first
         source = self
-        return for_each(action, source)
+        return first(source)
+
+    def first_or_default(self, default_value: Any) -> Any:
+        """
+        Blocks until the first element emits from a BlockingObservable.
+
+        If no item is emitted when close() is called, the provided default
+        value is returned instead
+
+        Note: This will block even if the underlying Observable is
+        asynchronous.
+
+        Keyword arguments:
+        source -- Blocking observable sequence.
+        default_value -- Default value to use
+
+        Returns the first item to be emitted from the blocking observable.
+        """
+        from ..operators.observable.blocking.first import first_or_default
+        source = self
+        return first_or_default(source, default_value)
+
+    def for_each(self, action: Callable[[Any], None] = None,
+                 action_indexed: Callable[[Any, int], None] = None) -> None:
+        """Invokes a method on each item emitted by this BlockingObservable
+        and blocks until the Observable completes.
+
+        Note: This will block even if the underlying Observable is
+        asynchronous.
+
+        This is similar to Observable#subscribe(subscriber), but it blocks.
+        Because it blocks it does not need the Subscriber#close() or
+        Subscriber#throw(Throwable) methods. If the underlying Observable
+        terminates with an error, rather than calling `onError`, this method
+        will throw an exception.
+
+        Keyword arguments:
+        action -- The action to invoke for each item emitted by the
+        `BlockingObservable`.
+
+        Returns None, or raises an exception if an error occured.
+        """
+        from ..operators.observable.blocking.foreach import for_each
+        return for_each(self, action, action_indexed)
 
     def last(self) -> Any:
         """Blocks until the last element emits from a BlockingObservable.
@@ -75,7 +139,6 @@ class BlockingObservable(bases.Observable):
         from ..operators.observable.blocking.last import last
         source = self
         return last(source)
-
 
     def last_or_default(self, default_value: Any) -> Any:
         """Blocks until the last element emits from a BlockingObservable.
@@ -94,3 +157,13 @@ class BlockingObservable(bases.Observable):
         from ..operators.observable.blocking.last import last_or_default
         source = self
         return last_or_default(source, default_value)
+
+    def to_iterable(self) -> Iterable:
+        """Returns an iterator that can iterate over items emitted by this
+        `BlockingObservable`.
+
+        Returns an iterable that can iterate over the items emitted by this
+        `BlockingObservable`.
+        """
+        from ..operators.observable.blocking.toiterable import to_iterable
+        return to_iterable(self)

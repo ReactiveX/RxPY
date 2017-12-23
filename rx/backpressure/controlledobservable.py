@@ -1,6 +1,8 @@
 from rx.core import ObservableBase
 
 from .controlledsubject import ControlledSubject
+from .stopandwaitobservable import StopAndWaitObservable
+from .windowedobservable import WindowedObservable
 
 
 class ControlledObservable(ObservableBase):
@@ -19,22 +21,23 @@ class ControlledObservable(ObservableBase):
             number_of_items = -1
         return self.subject.request(number_of_items)
 
+    def stop_and_wait(self):
+        """Attaches a stop and wait observable to the current observable.
 
-def controlled(self, enable_queue: bool = True, scheduler=None) -> ControlledObservable:
-    """Attach a controller to the observable sequence
+        :returns: A stop and wait observable.
+        :rtype: Observable
+        """
 
-    Attach a controller to the observable sequence with the ability to
-    queue.
+        return StopAndWaitObservable(self)
 
-    Example:
-    source = rx.Observable.interval(100).controlled()
-    source.request(3) # Reads 3 values
+    def windowed(self, window_size):
+        """Creates a sliding windowed observable based upon the window size.
 
-    Keyword arguments:
-    enable_queue -- truthy value to determine if values should
-        be queued pending the next request
-    scheduler -- determines how the requests will be scheduled
-    Returns the observable sequence which only propagates values on request.
-    """
+        Keyword arguments:
+        :param int window_size: The number of items in the window
 
-    return
+        :returns: A windowed observable based upon the window size.
+        :rtype: Observable
+        """
+
+        return WindowedObservable(self, window_size)

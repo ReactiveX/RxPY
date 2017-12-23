@@ -74,9 +74,11 @@ class TestTimeInterval(unittest.TestCase):
 
     def test_time_interval_default_scheduler(self):
         import datetime
+        import time
         xs = Observable.from_((1, 2)).time_interval().pluck_attr('interval')
         l = []
         d = xs.subscribe_callbacks(lambda x: l.append(x))
+        time.sleep(0.1)
         self.assertEqual(len(l), 2)
         [self.assertIsInstance(el, datetime.timedelta) for el in l]
 

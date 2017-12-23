@@ -2,6 +2,7 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
+print(ReactiveTest.send)
 send = ReactiveTest.send
 close = ReactiveTest.close
 throw = ReactiveTest.throw

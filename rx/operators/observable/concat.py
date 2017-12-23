@@ -16,7 +16,7 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
     """
 
     if args and isinstance(args[0], Iterable):
-        sources = args[0]
+        sources = iter(args[0])
     else:
         sources = iter(cast(Iterable, args))
 

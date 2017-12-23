@@ -38,22 +38,3 @@ class PausableObservable(ObservableBase):
     def resume(self):
         self.controller.send(True)
 
-
-@extensionmethod(ObservableBase)
-def pausable(self, pauser):
-    """Pauses the underlying observable sequence based upon the observable
-    sequence which yields True/False.
-
-    Example:
-    pauser = rx.Subject()
-    source = rx.Observable.interval(100).pausable(pauser)
-
-    Keyword parameters:
-    pauser -- {Observable} The observable sequence used to pause the
-        underlying sequence.
-
-    Returns the observable {Observable} sequence which is paused based upon
-    the pauser.
-    """
-
-    return PausableObservable(self, pauser)
