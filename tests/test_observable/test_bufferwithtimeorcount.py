@@ -57,7 +57,6 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create, disposed=370)
         assert results.messages == [
             send(240, "1,2,3"),
-            send(310, "4")]
-            # ,
-            # send(370, "5,6,7")]
+            send(310, "4"),
+            send(370, "5,6,7")]
         assert xs.subscriptions == [subscribe(200, 370)]

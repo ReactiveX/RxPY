@@ -2388,6 +2388,18 @@ class ObservableBase(ty.Observable):
         source = self
         return to_iterable(source)
 
+    def to_marbles(self, scheduler=None):
+        """Convert an observable sequence into a marble diagram string
+
+        Keyword arguments:
+        scheduler -- [Optional] The scheduler used to run the the input
+            sequence on.
+
+        Returns Observable
+        """
+        from ..testing.marbles import to_marbles
+        return to_marbles(self)
+
     def to_set(self) -> 'ObservableBase':
         """Converts the observable sequence to a set.
 

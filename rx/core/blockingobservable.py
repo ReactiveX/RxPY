@@ -158,6 +158,18 @@ class BlockingObservable(bases.Observable):
         source = self
         return last_or_default(source, default_value)
 
+    def to_marbles_blocking(self, scheduler=None):
+        """Convert an observable sequence into a marble diagram string
+
+        Keyword arguments:
+        scheduler -- [Optional] The scheduler used to run the the input
+            sequence on.
+
+        Returns marble string.
+        """
+        from ..testing.marbles import to_marbles_blocking
+        return to_marbles_blocking(self, scheduler)
+
     def to_iterable(self) -> Iterable:
         """Returns an iterator that can iterate over items emitted by this
         `BlockingObservable`.

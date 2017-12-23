@@ -3,7 +3,6 @@ import re
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
 from rx.concurrency import new_thread_scheduler
-from rx.internal import extensionmethod, extensionclassmethod
 from rx import config
 
 from .coldobservable import ColdObservable
@@ -17,8 +16,7 @@ _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
 
-@extensionclassmethod(Observable, alias="from_string")
-def from_marbles(cls, string):
+def from_marbles(string):
     """Convert a marble diagram string to an observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -85,7 +83,6 @@ def from_marbles(cls, string):
     return ColdObservable(scheduler, messages)
 
 
-@extensionmethod(Observable, alias="to_string")
 def to_marbles(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
@@ -130,8 +127,7 @@ def to_marbles(self, scheduler=None):
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(BlockingObservable, alias="to_string")  # noqa
-def to_marbles(self, scheduler=None):
+def to_marbles_blocking(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
     Keyword arguments:

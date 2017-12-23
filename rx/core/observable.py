@@ -201,6 +201,34 @@ class Observable:
     from_list = from_iterable
 
     @staticmethod
+    def from_marbles(string):
+        """Convert a marble diagram string to an observable sequence, using
+        an optional scheduler to enumerate the events.
+
+        Special characters:
+        - = Timespan of 100 ms
+        x = throw()
+        | = close()
+
+        All other characters are treated as an send() event at the given
+        moment they are found on the string.
+
+        Examples:
+        1 - res = rx.Observable.from_string("1-2-3-|")
+        2 - res = rx.Observable.from_string("1-(42)-3-|")
+        3 - res = rx.Observable.from_string("1-2-3-x", rx.Scheduler.timeout)
+
+        Keyword arguments:
+        string -- String with marble diagram
+        scheduler -- [Optional] Scheduler to run the the input sequence on.
+
+        Returns the observable sequence whose elements are pulled from the
+        given marble diagram string.
+        """
+        from ..testing.marbles import from_marbles
+        return from_marbles(string)
+
+    @staticmethod
     def generate(initial_state, condition, iterate, result_selector) -> ObservableBase:
         """Generates an observable sequence by running a state-driven loop
         producing the sequence's elements, using the specified scheduler to

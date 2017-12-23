@@ -1,18 +1,24 @@
 from nose.tools import assert_raises
 
-from rx.core import Observer, AnonymousObserver
+from rx.core import ObserverBase, AnonymousObserver
 from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
 from rx.internal.exceptions import CompletedException
 
 
-class MyObserver(Observer):
-    def send(self, value):
+class MyObserver(ObserverBase):
+    def __init__(self):
+        super().__init__()
+        self.has_send = None
+        self.has_close = None
+        self.has_throw = None
+
+    def _send_core(self, value):
         self.has_send = value
 
-    def throw(self, err):
-        self.has_throw = err
+    def _throw_core(self, error):
+        self.has_throw = error
 
-    def close(self):
+    def _close_core(self):
         self.has_close = True
 
 
