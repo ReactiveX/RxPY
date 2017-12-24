@@ -321,7 +321,7 @@ class TestZip(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [send(220, 2 + 3), throw(230, ex)]
 
-    def test_zip_with_enumerable_never_empty(self):
+    def test_zip_with_iterable_never_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1))
         n2 = []
@@ -336,7 +336,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == []
         assert n1.subscriptions == [subscribe(200, 1000)]
 
-    def test_zip_with_enumerable_empty_empty(self):
+    def test_zip_with_iterable_empty_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), close(210))
         n2 = []
@@ -351,7 +351,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [close(210)]
         assert n1.subscriptions == [subscribe(200, 210)]
 
-    def test_zip_with_enumerable_empty_non_empty(self):
+    def test_zip_with_iterable_empty_non_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), close(210))
         n2 = [2]
@@ -366,7 +366,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [close(210)]
         assert n1.subscriptions == [subscribe(200, 210)]
 
-    def test_zip_with_enumerable_non_empty_empty(self):
+    def test_zip_with_iterable_non_empty_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), send(215, 2), close(220))
         n2 = []
@@ -380,7 +380,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [close(215)]
         assert n1.subscriptions == [subscribe(200, 215)]
 
-    def test_zip_with_enumerable_never_non_empty(self):
+    def test_zip_with_iterable_never_non_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1))
         n2 = [2]
@@ -395,7 +395,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == []
         assert n1.subscriptions == [subscribe(200, 1000)]
 
-    def test_zip_with_enumerable_non_empty_non_empty(self):
+    def test_zip_with_iterable_non_empty_non_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), send(215, 2), close(230))
         n2 = [3]
@@ -409,7 +409,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [send(215, 2 + 3), close(230)]
         assert n1.subscriptions == [subscribe(200, 230)]
 
-    def test_zip_with_enumerable_error_empty(self):
+    def test_zip_with_iterable_error_empty(self):
         ex = 'ex'
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), throw(220, ex))
@@ -424,7 +424,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [throw(220, ex)]
         assert n1.subscriptions == [subscribe(200, 220)]
 
-    def test_zip_with_enumerable_error_some(self):
+    def test_zip_with_iterable_error_some(self):
         ex = 'ex'
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), throw(220, ex))
@@ -439,7 +439,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [throw(220, ex)]
         assert n1.subscriptions == [subscribe(200, 220)]
 
-    def test_zip_with_enumerable_some_data_both_sides(self):
+    def test_zip_with_iterable_some_data_both_sides(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5))
         n2 = [5, 4, 3, 2]
@@ -453,7 +453,7 @@ class TestZip(unittest.TestCase):
         assert results.messages == [send(210, 7), send(220, 7), send(230, 7), send(240, 7)]
         assert n1.subscriptions == [subscribe(200, 1000)]
 
-    def test_zip_with_enumerable_selectorthrows(self):
+    def test_zip_with_iterable_selectorthrows(self):
         ex = 'ex'
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(send(150, 1), send(215, 2), send(225, 4), close(240))

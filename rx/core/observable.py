@@ -193,7 +193,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         iterable - An python iterable
 
         Returns the observable sequence whose elements are pulled from
-            the given enumerable sequence.
+        the given iterable sequence.
         """
         from ..operators.observable.fromiterable import from_iterable
         return from_iterable(iterable, delay)
@@ -366,7 +366,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return of(*args)
 
     @staticmethod
-    def range(start: int, stop: int=None, step: int=None) -> ObservableBase:
+    def range(start: int, stop: int = None, step: int = None) -> ObservableBase:
         """Generates an observable sequence of integral numbers within a
         specified range.
 

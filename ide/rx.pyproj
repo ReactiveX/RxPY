@@ -85,7 +85,7 @@
     <Compile Include="disposables\__init__.py" />
     <Compile Include="internal\basic.py" />
     <Compile Include="internal\concurrency.py" />
-    <Compile Include="internal\enumerable.py" />
+    <Compile Include="internal\iterable.py" />
     <Compile Include="internal\enumerator.py" />
     <Compile Include="internal\exceptions.py" />
     <Compile Include="internal\extensionmethod.py" />
@@ -98,8 +98,8 @@
     <Compile Include="joins\plan.py" />
     <Compile Include="joins\__init__.py" />
     <Compile Include="linq\connectableobservable.py" />
-    <Compile Include="linq\enumerable\whiledo.py" />
-    <Compile Include="linq\enumerable\__init__.py" />
+    <Compile Include="linq\iterable\whiledo.py" />
+    <Compile Include="linq\iterable\__init__.py" />
     <Compile Include="linq\groupedobservable.py" />
     <Compile Include="linq\observable\all.py" />
     <Compile Include="linq\observable\amb.py" />
@@ -272,7 +272,7 @@
     <Folder Include="internal" />
     <Folder Include="joins" />
     <Folder Include="linq" />
-    <Folder Include="linq\enumerable" />
+    <Folder Include="linq\iterable" />
     <Folder Include="linq\observable" />
     <Folder Include="linq\observable\blocking" />
     <Folder Include="subjects" />

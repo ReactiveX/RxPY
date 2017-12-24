@@ -1,7 +1,6 @@
 from typing import Callable
 from abc import abstractmethod
 
-from rx.internal import noop
 from .disposable import Disposable
 from .typing import Observer
 
@@ -53,7 +52,6 @@ class ObserverBase(Observer, Disposable):
         """Disposes the observer, causing it to transition to the stopped
         state."""
 
-        self.send = noop
         self.is_stopped = True
 
     def fail(self, exn):

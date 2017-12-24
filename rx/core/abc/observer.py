@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class Observer(ABC):
+    """Observer abstract base class. Untyped."""
+
     __slots__ = ()
 
     @abstractmethod

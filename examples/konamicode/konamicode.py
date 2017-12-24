@@ -1,9 +1,8 @@
 import os
 
-import tornado
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
-from tornado.escape import json_encode, json_decode
+from tornado.escape import json_decode
 from tornado import ioloop
 
 from rx.subjects import Subject
@@ -21,16 +20,16 @@ class WSHandler(WebSocketHandler):
 
         # Now we take on our magic glasses and project the stream of bytes into
         # a ...
-        query = self.subject.map(
-                lambda obj: obj["keycode"] # 1. stream of keycodes
-            ).window_with_count(
-                10, 1 # 2. stream of windows (10 ints long)
-            ).flat_map(
-                # 3. stream of booleans, True or False
-                lambda win: win.sequence_equal(codes)
-            ).filter(
-                lambda equal: equal # 4. stream of Trues
-            )
+        query = (self.subject
+                 # 1. stream of keycodes
+                 .map(lambda obj: obj["keycode"])
+                 # 2. stream of windows (10 ints long)
+                 .window_with_count(10, 1)
+                 # 3. stream of booleans, True or False
+                 .flat_map(lambda win: win.sequence_equal(codes))
+                 # 4. stream of Trues
+                 .filter(lambda equal: equal)
+                )
         # 4. we then subscribe to the Trues, and signal Konami! if we see any
         query.subscribe_callbacks(lambda x: self.write_message("Konami!"))
 

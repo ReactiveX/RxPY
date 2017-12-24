@@ -26,7 +26,6 @@ class Subject(ObservableBase, Observer):
             raise DisposedException()
 
     def _subscribe_core(self, observer, scheduler=None):
-        print("subscribe", observer)
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -55,7 +54,7 @@ class Subject(ObservableBase, Observer):
             for observer in os:
                 observer.close()
 
-    def throw(self, exception):
+    def throw(self, error):
         """Notifies all subscribed observers with the exception.
 
         Keyword arguments:
@@ -69,11 +68,11 @@ class Subject(ObservableBase, Observer):
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                self.exception = exception
+                self.exception = error
 
         if os:
             for observer in os:
-                observer.throw(exception)
+                observer.throw(error)
 
     def send(self, value):
         """Notifies all subscribed observers with the value.
@@ -81,7 +80,7 @@ class Subject(ObservableBase, Observer):
         Keyword arguments:
         value -- The value to send to all subscribed observers.
         """
-        print("Subject send", value)
+
         os = None
         with self.lock:
             self.check_disposed()
@@ -91,8 +90,6 @@ class Subject(ObservableBase, Observer):
         if os:
             for observer in os:
                 observer.send(value)
-        else:
-            print("no observer for", value)
 
     def dispose(self):
         """Unsubscribe all observers and release resources."""

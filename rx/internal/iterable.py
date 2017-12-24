@@ -62,5 +62,5 @@ class Iterable(abc.Iterable):
 
     @staticmethod
     def while_do(condition, source):
-        from ..operators.enumerable.whiledo import while_do
+        from ..operators.iterable.whiledo import while_do
         return while_do(condition, source)

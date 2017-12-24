@@ -3,7 +3,7 @@ RxPY example running a Tornado server doing search queries against Wikipedia to
 populate the autocomplete dropdown in the web UI. Start using
 `python autocomplete.py` and navigate your web browser to http://localhost:8080
 
-Uses the RxPY IOLoopScheduler (works on both Python 2.7 and 3.4)
+Uses the RxPY IOLoopScheduler.
 """
 
 import os
@@ -31,7 +31,7 @@ def search_wikipedia(term):
         "format": 'json'
     }
     # Must set a user agent for non-browser requests to Wikipedia
-    user_agent = "RxPY/1.0 (https://github.com/dbrattli/RxPY; dag@brattli.net) Tornado/4.0.1"
+    user_agent = "RxPY/3.0 (https://github.com/dbrattli/RxPY; dag@brattli.net) Tornado/4.0.1"
 
     url = url_concat(url, params)
 
@@ -44,19 +44,16 @@ class WSHandler(WebSocketHandler):
         print("WebSocket opened")
 
         # A Subject is both an observable and observer, so we can both subscribe
-        # to it and also feed (on_next) it with new values
+        # to it and also feed (send) it with new values
         self.stream = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = self.stream.map(
-            lambda x: x["term"]
-        ).filter(
-            lambda text: len(text) > 2  # Only if the text is longer than 2 characters
-        ).debounce(
-            0.750,  # Pause for 750ms
-            scheduler=scheduler
-        ).distinct_until_changed()  # Only if the value has changed
-
+        query = (self.stream
+                 .map(lambda x: x["term"])
+                 .filter(lambda text: len(text) > 2)  # Only if the text is longer than 2 characters
+                 .debounce(0.750)                     # Pause for 750ms
+                 .distinct_until_changed()            # Only if the value has changed
+                )
         searcher = query.flat_map_latest(search_wikipedia)
 
         def send_response(x):
@@ -65,11 +62,11 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe_callbacks(send_response, on_error)
+        searcher.subscribe_callbacks(send_response, on_error, scheduler=scheduler)
 
     def on_message(self, message):
         obj = json_decode(message)
-        self.stream.on_next(obj)
+        self.stream.send(obj)
 
     def on_close(self):
         print("WebSocket closed")

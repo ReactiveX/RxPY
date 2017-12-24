@@ -16,7 +16,7 @@ def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
     iterable - An python iterable
 
     Returns the observable sequence whose elements are pulled from the
-        given enumerable sequence.
+        given iterable sequence.
     """
     lock = config["concurrency"].RLock()
 

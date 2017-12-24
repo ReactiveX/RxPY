@@ -14,7 +14,7 @@ def main():
     frame = Frame(root, width=600, height=600)
 
     def move(event):
-        mousemove.on_next(event)
+        mousemove.send(event)
     frame.bind("<Motion>", move)
 
     text = 'TIME FLIES LIKE AN ARROW'
@@ -23,9 +23,9 @@ def main():
     def handle_label(i, label):
         label.config(dict(borderwidth=0, padx=0, pady=0))
 
-        def on_next(ev):
+        def send(ev):
             label.place(x=ev.x + i*12 + 15, y=ev.y)
-        ys = mousemove.delay(i*100, scheduler=scheduler).subscribe_callbacks(on_next)
+        ys = mousemove.delay(i*100).subscribe_callbacks(send, scheduler=scheduler)
 
     for i, label in enumerate(labels):
         handle_label(i, label)

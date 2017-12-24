@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class Disposable(ABC):
-    """Abstract disposable class"""
+    """Disposable abstract base class. Untyped."""
 
     @abstractmethod
     def dispose(self):

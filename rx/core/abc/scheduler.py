@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class Scheduler(ABC):
+    """Scheduler abstract base class. Untyped."""
+
     @property
     @abstractmethod
     def now(self):
