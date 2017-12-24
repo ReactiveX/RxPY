@@ -4,7 +4,7 @@ from rx.internal.basic import identity
 from .min import first_only
 
 
-def max(source, comparer=None) -> ObservableBase:
+def max(source, comparer=None) -> ObservableBase: #  pylint: disable=W0622
     """Returns the maximum value in an observable sequence according to the
     specified comparer.
 

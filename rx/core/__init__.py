@@ -2,8 +2,8 @@
 from .abc.observer import Observer
 from .abc.scheduler import Scheduler
 
-from .disposable import Disposable
 from .observable import Observable
+from .disposable import Disposable
 from .observablebase import ObservableBase
 from .observerbase import ObserverBase
 from .anonymousobserver import AnonymousObserver

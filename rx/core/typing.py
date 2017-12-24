@@ -7,7 +7,7 @@ from . import abc
 T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 
-Action = Callable[[abc.Scheduler, Any], None]  # pylint: disable=C0103
+Action = Callable[[abc.Scheduler, Any], None]   # pylint: disable=C0103
 
 Send = Callable[[Any], None]                     # pylint: disable=C0103
 Throw = Callable[[Exception], None]              # pylint: disable=C0103

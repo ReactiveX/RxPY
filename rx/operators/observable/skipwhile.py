@@ -38,10 +38,12 @@ def skip_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
     return AnonymousObservable(subscribe)
 
 
-def skip_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], Any]) -> ObservableBase:
-    """Bypasses elements in an observable sequence as long as a specified
-    condition is true and then returns the remaining elements. The
-    element's index is used in the logic of the predicate function.
+def skip_while_indexed(source: ObservableBase,
+                       predicate: Callable[[Any, int], Any]
+                      ) -> ObservableBase:
+    """Bypasses elements in an observable sequence as long as a
+    specified condition is true and then returns the remaining elements.
+    The element's index is used in the logic of the predicate function.
 
     1 - source.skip_while(lambda value, index: value < 10 or index < 10)
 
@@ -50,8 +52,8 @@ def skip_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], A
         source element.
 
     Returns an observable sequence that contains the elements from the
-    input sequence starting at the first element in the linear series that
-    does not pass the test specified by predicate.
+    input sequence starting at the first element in the linear series
+    that does not pass the test specified by predicate.
     """
 
     def subscribe(observer, scheduler=None):

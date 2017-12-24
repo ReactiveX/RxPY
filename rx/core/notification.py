@@ -124,38 +124,15 @@ class OnCompleted(Notification):
     def __str__(self):
         return "OnCompleted()"
 
-    @classmethod
-    def observer_from_notifier(cls, handler):
-        """Creates an observer from a notification callback.
-
-        Keyword arguments:
-        handler -- Action that handles a notification.
-
-        Returns the observer object that invokes the specified handler using a
-        notification corresponding to each message it receives.
-        """
-
-        def _send(value):
-            return handler(OnNext(value))
-
-        def _throw(ex):
-            return handler(OnError(ex))
-
-        def _close():
-            return handler(OnCompleted())
-
-        return AnonymousObserver(_send, _throw, _close)
-
 
 def from_notifier(handler):
     """Creates an observer from a notification callback.
 
     Keyword arguments:
-    :param handler: Action that handles a notification.
+    handler -- Action that handles a notification.
 
-    :returns: The observer object that invokes the specified handler using a
+    Returns the observer object that invokes the specified handler using a
     notification corresponding to each message it receives.
-    :rtype: Observer
     """
 
     def _send(value):

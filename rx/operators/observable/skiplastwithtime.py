@@ -1,7 +1,8 @@
-from rx.core import ObservableBase, AnonymousObservable
-from rx.concurrency import timeout_scheduler
 from typing import Union
 from datetime import timedelta
+
+from rx.core import ObservableBase, AnonymousObservable
+from rx.concurrency import timeout_scheduler
 
 
 def skip_last_with_time(self, duration: Union[timedelta, int]) -> ObservableBase:

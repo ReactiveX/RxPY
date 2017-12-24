@@ -45,7 +45,7 @@ def sample(source, interval=None, sampler=None):
     Returns sampled observable sequence.
     """
 
-    if interval is not None:
-        return sample_observable(source, Observable.interval(interval))
+    if interval is None:
+        return sample_observable(source, sampler)
 
-    return sample_observable(source, sampler)
+    return sample_observable(source, Observable.interval(interval))

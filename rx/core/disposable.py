@@ -1,15 +1,16 @@
 from rx.internal import noop
-
 from . import typing
 
 
-class Disposable(typing.Disposable):
-    @classmethod
-    def empty(cls) -> 'Disposable':
+class Disposable(typing.Disposable):  # pylint: disable=W0223
+    """A static helper class for creating disposables."""
+
+    @staticmethod
+    def empty() -> 'Disposable':
         from rx.disposables import AnonymousDisposable
         return AnonymousDisposable(noop)
 
-    @classmethod
-    def create(cls, action) -> 'Disposable':
+    @staticmethod
+    def create(action) -> 'Disposable':
         from rx.disposables import AnonymousDisposable
         return AnonymousDisposable(action)

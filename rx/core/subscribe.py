@@ -10,7 +10,7 @@ from .disposable import Disposable
 from . import abc
 
 
-def subscribe(source: ObservableBase, observer:abc.Observer = None,
+def subscribe(source: ObservableBase, observer: abc.Observer = None,
               scheduler: abc.Scheduler = None):
     """Subscribe an observer to the observable sequence.
 

@@ -1,15 +1,16 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
 from .typing import Selector
 from .observablebase import ObservableBase
-from . import abc
+from . import abc, typing
 
-class Observable:
+
+class Observable(typing.Observable):  # pylint: disable=W0223,R0904
     """Observable creation methods.
 
-    This class is a container of static Observable creation methods.
+    This class is a container of static Observable creation methods,.
     """
 
     @staticmethod
@@ -201,9 +202,9 @@ class Observable:
     from_list = from_iterable
 
     @staticmethod
-    def from_marbles(string):
-        """Convert a marble diagram string to an observable sequence, using
-        an optional scheduler to enumerate the events.
+    def from_marbles(string: str) -> ObservableBase:
+        """Convert a marble diagram string to an observable sequence,
+        using an optional scheduler to enumerate the events.
 
         Special characters:
         - = Timespan of 100 ms
@@ -230,9 +231,9 @@ class Observable:
 
     @staticmethod
     def generate(initial_state, condition, iterate, result_selector) -> ObservableBase:
-        """Generates an observable sequence by running a state-driven loop
-        producing the sequence's elements, using the specified scheduler to
-        send out observer messages.
+        """Generates an observable sequence by running a state-driven
+        loop producing the sequence's elements, using the specified
+        scheduler to send out observer messages.
 
         1 - res = rx.Observable.generate(0,
             lambda x: x < 10,
@@ -241,7 +242,8 @@ class Observable:
 
         Keyword arguments:
         initial_state -- Initial state.
-        condition -- Condition to terminate generation (upon returning False).
+        condition -- Condition to terminate generation (upon returning
+            False).
         iterate -- Iteration step function.
         result_selector -- Selector function for results produced in the
             sequence.
@@ -271,8 +273,8 @@ class Observable:
         result_selector -- Selector function for results produced in the
             sequence.
         time_selector -- Time selector function to control the speed of
-            values being produced each iteration, returning integer values
-            denoting milliseconds.
+            values being produced each iteration, returning integer
+            values denoting milliseconds.
 
         Returns the generated sequence.
         """
@@ -280,7 +282,7 @@ class Observable:
         return generate_with_relative_time(initial_state, condition, iterate, result_selector, time_selector)
 
     @staticmethod
-    def if_then(condition: Callable[[None], bool], then_source: ObservableBase,
+    def if_then(condition: Callable[[], bool], then_source: ObservableBase,
                 else_source: ObservableBase = None) -> ObservableBase:
         """Determines whether an observable collection contains values.
 
@@ -305,7 +307,7 @@ class Observable:
         return if_then(condition, then_source, else_source)
 
     @staticmethod
-    def interval(period) -> ObservableBase:
+    def interval(period: Union[timedelta, int]) -> ObservableBase:
         """Returns an observable sequence that produces a value after
         each period.
 
@@ -411,11 +413,11 @@ class Observable:
 
         Keyword arguments:
         value -- Element to repeat.
-        repeat_count -- [Optional] Number of times to repeat the element.
-            If not specified, repeats indefinitely.
+        repeat_count -- [Optional] Number of times to repeat the
+            element. If not specified, repeats indefinitely.
 
-        Returns an observable sequence that repeats the given element the
-        specified number of times."""
+        Returns an observable sequence that repeats the given element
+        the specified number of times."""
         from ..operators.observable.repeat import repeat_value
         return repeat_value(value, repeat_count)
 
