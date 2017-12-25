@@ -5,7 +5,7 @@ from abc import abstractmethod
 from asyncio import Future
 
 from rx import config
-from .typing import Mapper, Predicate
+from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing, abc
@@ -696,41 +696,27 @@ class ObservableBase(typing.Observable):
         source = self
         return expand(source, selector)
 
-    def filter(self, predicate: Callable[[Any], bool]) -> 'ObservableBase':
-        """Filters the elements of an observable sequence based on a
-        predicate.
+    def filter(self,
+               predicate: Predicate = None,
+               predicate_indexed: PredicateIndexed = None):
+        """Filters the elements of an observable sequence based on a predicate
+        by incorporating the element's index.
 
         1 - source.filter(lambda value: value < 10)
 
         Keyword arguments:
-        predicate -- A function to test each source element for a
+        source -- Observable sequence to filter.
+        predicate --  A function to test each source element for a
             condition.
+        predicate_indexed -- A function to test each source element for a
+            condition; the second parameter of the function represents the
+            index of the source element.
 
-        Returns an observable sequence that contains elements from the
-        input sequence that satisfy the condition.
+        Returns an observable sequence that contains elements from the input
+        sequence that satisfy the condition.
         """
         from ..operators.observable.filter import filter as _filter
-        source = self
-        return _filter(predicate, source)
-
-    def filter_indexed(self, predicate: Callable[[Any, int], bool]) -> 'ObservableBase':
-        """Filters the elements of an observable sequence based on a
-        predicate by incorporating the element's index.
-
-        1 - source.filter(lambda value, index: value < 10 or index < 10)
-
-        Keyword arguments:
-        predicate - A function to test each source element for a
-            condition; the second parameter of the function represents
-            the index of the source element.
-
-        Returns an observable sequence that contains elements from the
-        input sequence that satisfy the condition.
-        """
-
-        from ..operators.observable.filter import filter_indexed
-        source = self
-        return filter_indexed(predicate, source)
+        return _filter(self, predicate, predicate_indexed)
 
     def finally_action(self, action) -> 'ObservableBase':
         """Invokes a specified action after the source observable sequence
@@ -830,8 +816,12 @@ class ObservableBase(typing.Observable):
         source = self
         return first_or_default(source, predicate, default_value)
 
-    def flat_map(self, selector: Callable[[Any], Any],
-                 result_selector: Callable=None) -> 'ObservableBase':
+    def flat_map(self,
+                 mapper: Mapper = None,
+                 result_mapper: Callable[[Any, Any], Any] = None,
+                 mapper_indexed: MapperIndexed = None,
+                 result_mapper_indexed: Callable[[Any, Any, int], Any] = None
+            ) -> 'ObservableBase':
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
@@ -867,48 +857,7 @@ class ObservableBase(typing.Observable):
         elements and their corresponding source element to a result element.
         """
         from ..operators.observable.flatmap import flat_map
-        source = self
-        return flat_map(source, selector, result_selector)
-
-    def flat_map_indexed(self, selector: Callable[[Any, int], Any],
-                         result_selector: Callable=None) -> 'ObservableBase':
-        """One of the Following:
-        Projects each element of an observable sequence to an observable
-        sequence and merges the resulting observable sequences into one
-        observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x))
-
-        Or:
-        Projects each element of an observable sequence to an observable
-        sequence, invokes the result selector for the source element and each
-        of the corresponding inner sequence's elements, and merges the results
-        into one observable sequence.
-
-        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
-
-        Or:
-        Projects each element of the source observable sequence to the other
-        observable sequence and merges the resulting observable sequences into
-        one observable sequence.
-
-        1 - source.flat_map(Observable.from_([1,2,3]))
-
-        Keyword arguments:
-        selector -- A transform function to apply to each element or an
-            observable sequence to project each element from the source
-            sequence onto.
-        result_selector -- [Optional] A transform function to apply to each
-            element of the intermediate sequence.
-
-        Returns an observable sequence whose elements are the result of
-        invoking the one-to-many transform function collectionSelector on each
-        element of the input sequence and then mapping each of those sequence
-        elements and their corresponding source element to a result element.
-        """
-        from ..operators.observable.flatmap import flat_map_indexed
-        source = self
-        return flat_map_indexed(source, selector, result_selector)
+        return flat_map(self, mapper, result_mapper, mapper_indexed, result_mapper_indexed)
 
     def group_by(self, key_selector, element_selector=None) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
@@ -1129,27 +1078,29 @@ class ObservableBase(typing.Observable):
         source = self
         return many_select(source, selector)
 
-    def map(self, mapper: Callable[[Any], Any]) -> 'ObservableBase':
-        """Project each element of an observable sequence into a new
-        form.
+    def map(self,
+            mapper: Mapper = None,
+            mapper_indexed: MapperIndexed = None
+           ) -> 'ObservableBase':
+        """Project each element of an observable sequence into a new form
+        by incorporating the element's index.
 
-        1 - source.map(lambda value: value * value)
+        1 - source.map(lambda value, index: value * value + index)
 
         Keyword arguments:
-        mapper -- A transform function to apply to each source element.
+        mapper -- A transform function to apply to each source element; the
+            second parameter of the function represents the index of the
+            source element
+        mapper_indexed -- A transform function to apply to each source
+            element; the second parameter of the function represents the
+            index of the source element.
 
         Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of source.
+        invoking the transform function on each element of the source.
         """
 
         from ..operators.observable.map import map as _map
-        source = self
-        return _map(mapper, source)
-
-    def map_indexed(self, mapper: Callable[[Any, int], Any]) -> 'ObservableBase':
-        from ..operators.observable.map import map_indexed
-        source = self
-        return map_indexed(mapper, source)
+        return _map(self, mapper, mapper_indexed)
 
     def materialize(self) -> 'ObservableBase':
         """Materializes the implicit notifications of an observable sequence as

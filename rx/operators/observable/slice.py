@@ -42,7 +42,7 @@ def slice(source, start: int = None, stop: int = None, step: int = 1) -> Observa
 
     if step is not None:
         if step > 1:
-            source = source.filter_indexed(lambda x, i: i % step == 0)
+            source = source.filter(predicate_indexed=lambda x, i: i % step == 0)
         elif step < 0:
             # Reversing events is not supported
             raise TypeError("Negative step not supported.")

@@ -45,6 +45,6 @@ def partition_indexed(source: ObservableBase, predicate: Callable[[Any, int], bo
 
     published = source.publish().ref_count()
     return [
-        published.filter_indexed(predicate),
-        published.filter_indexed(lambda x, i: not predicate(x, i))
+        published.filter(predicate_indexed=predicate),
+        published.filter(predicate_indexed=lambda x, i: not predicate(x, i))
     ]

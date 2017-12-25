@@ -18,7 +18,7 @@ class TestWindowWithCount(unittest.TestCase):
         def create():
             def proj(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window_with_count(3, 2).map_indexed(proj).merge_all()
+            return xs.window_with_count(3, 2).map(mapper_indexed=proj).merge_all()
         results = scheduler.start(create)
 
         assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6"), send(380, "2 7"), send(420, "2 8"), send(420, "3 8"), send(470, "3 9"), close(600)]
@@ -31,7 +31,7 @@ class TestWindowWithCount(unittest.TestCase):
         def create():
             def proj(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window_with_count(3, 2).map_indexed(proj).merge_all()
+            return xs.window_with_count(3, 2).map(mapper_indexed=proj).merge_all()
 
         results = scheduler.start(create, disposed=370)
         assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6")]
@@ -47,7 +47,7 @@ class TestWindowWithCount(unittest.TestCase):
                 def mapping(x):
                     return "%s %s" % (i, x)
                 return w.map(mapping)
-            return xs.window_with_count(3, 2).map_indexed(selector).merge_all()
+            return xs.window_with_count(3, 2).map(mapper_indexed=selector).merge_all()
 
         results = scheduler.start(create)
 

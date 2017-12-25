@@ -1,34 +1,27 @@
 import collections
 from typing import Any, Callable
 from rx.core import Observable, ObservableBase
+from rx.core.typing import Mapper, MapperIndexed
 
 
-def _flat_map(source, selector):
-    def projection(x):
-        selector_result = selector(x)
-        if isinstance(selector_result, collections.Iterable):
-            result = Observable.from_(selector_result)
-        else:
-            result = Observable.from_future(selector_result)
-        return result
-
-    return source.map(projection).merge_all()
-
-
-def _flat_map_indexed(source, selector):
+def _flat_map(source, mapper, mapper_indexed=None):
     def projection(x, i):
-        selector_result = selector(x, i)
-        if isinstance(selector_result, collections.Iterable):
-            result = Observable.from_(selector_result)
+        mapper_result = mapper(x) if mapper else mapper_indexed(x, i)
+        if isinstance(mapper_result, collections.Iterable):
+            result = Observable.from_(mapper_result)
         else:
-            result = Observable.from_future(selector_result)
+            result = Observable.from_future(mapper_result)
         return result
 
-    return source.map_indexed(projection).merge_all()
+    return source.map(mapper_indexed=projection).merge_all()
 
 
-def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
-             result_selector: Callable=None) -> ObservableBase:
+def flat_map(source: ObservableBase,
+             mapper: Mapper = None,
+             result_mapper: Callable[[Any, Any], Any] = None,
+             mapper_indexed: MapperIndexed = None,
+             result_mapper_indexed: Callable[[Any, Any, int], Any] = None
+            ) -> ObservableBase:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
@@ -38,7 +31,7 @@ def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
 
     Or:
     Projects each element of an observable sequence to an observable
-    sequence, invokes the result selector for the source element and each
+    sequence, invokes the result mapper for the source element and each
     of the corresponding inner sequence's elements, and merges the results
     into one observable sequence.
 
@@ -52,10 +45,16 @@ def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
     1 - source.flat_map(Observable.from_([1,2,3]))
 
     Keyword arguments:
-    selector -- A transform function to apply to each element or an
+    mapper -- A transform function to apply to each element or an
         observable sequence to project each element from the source
         sequence onto.
-    result_selector -- [Optional] A transform function to apply to each
+    result_mapper -- [Optional] A transform function to apply to each
+        element of the intermediate sequence.
+    mapper_indexed -- [Optional] A transform function to apply to each
+        element or an
+        observable sequence to project each element from the source
+        sequence onto.
+    result_mapper_indexed -- [Optional] A transform function to apply to each
         element of the intermediate sequence.
 
     Returns an observable sequence whose elements are the result of
@@ -64,76 +63,24 @@ def flat_map(source: ObservableBase, selector: Callable[[Any], Any],
     elements and their corresponding source element to a result element.
     """
 
-    if result_selector:
-        def projection(x):
-            selector_result = selector(x)
-            if isinstance(selector_result, collections.Iterable):
-                result = Observable.from_(selector_result)
+    if result_mapper or result_mapper_indexed:
+        def projection(x: Any, idx: int) -> Any:
+            mapper_result = mapper(x) if mapper else mapper_indexed(x, idx)
+            if isinstance(mapper_result, collections.Iterable):
+                result = Observable.from_(mapper_result)
             else:
-                result = Observable.from_future(selector_result)
-            return result.map(lambda y: result_selector(x, y))
+                result = Observable.from_future(mapper_result)
 
-        return source.flat_map(projection)
-
-    if callable(selector):
-        ret = _flat_map(source, selector)
-    else:
-        ret = _flat_map(source, lambda _: selector)
-
-    return ret
-
-
-def flat_map_indexed(source: ObservableBase, selector: Callable[[Any, int], Any],
-                     result_selector: Callable=None) -> ObservableBase:
-    """One of the Following:
-    Projects each element of an observable sequence to an observable
-    sequence and merges the resulting observable sequences into one
-    observable sequence.
-
-    1 - source.flat_map(lambda x: Observable.range(0, x))
-
-    Or:
-    Projects each element of an observable sequence to an observable
-    sequence, invokes the result selector for the source element and each
-    of the corresponding inner sequence's elements, and merges the results
-    into one observable sequence.
-
-    1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
-
-    Or:
-    Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences into
-    one observable sequence.
-
-    1 - source.flat_map(Observable.from_([1,2,3]))
-
-    Keyword arguments:
-    selector -- A transform function to apply to each element or an
-        observable sequence to project each element from the source
-        sequence onto.
-    result_selector -- [Optional] A transform function to apply to each
-        element of the intermediate sequence.
-
-    Returns an observable sequence whose elements are the result of
-    invoking the one-to-many transform function collectionSelector on each
-    element of the input sequence and then mapping each of those sequence
-    elements and their corresponding source element to a result element.
-    """
-
-    if result_selector:
-        def projection(x, i):
-            selector_result = selector(x, i)
-            if isinstance(selector_result, collections.Iterable):
-                result = Observable.from_(selector_result)
+            if result_mapper:
+                return result.map(lambda y: result_mapper(x, y))
             else:
-                result = Observable.from_future(selector_result)
-            return result.map_indexed(lambda y, i: result_selector(x, y, i))
+                return result.map(mapper_indexed=lambda y, i: result_mapper_indexed(x, y, i))
 
-        return source.flat_map_indexed(projection)
+        return source.flat_map(mapper_indexed=projection)
 
-    if callable(selector):
-        ret = _flat_map_indexed(source, selector)
+    if callable(mapper) or callable(mapper_indexed):
+        ret = _flat_map(source, mapper, mapper_indexed)
     else:
-        ret = _flat_map_indexed(source, lambda _, __: selector)
+        ret = _flat_map(source, lambda _: mapper)
 
     return ret

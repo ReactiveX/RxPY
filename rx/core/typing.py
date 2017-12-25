@@ -13,8 +13,10 @@ Send = Callable[[Any], None]                     # pylint: disable=C0103
 Throw = Callable[[Exception], None]              # pylint: disable=C0103
 Close = Callable[[None], None]                   # pylint: disable=C0103
 
-Mapper = Callable[[Any], Any]                  # pylint: disable=C0103
+Mapper = Callable[[Any], Any]                    # pylint: disable=C0103
+MapperIndexed = Callable[[Any, int], Any]        # pylint: disable=C0103
 Predicate = Callable[[Any], bool]                # pylint: disable=C0103
+PredicateIndexed = Callable[[Any, int], bool]    # pylint: disable=C0103
 
 
 class Disposable(abc.Disposable):

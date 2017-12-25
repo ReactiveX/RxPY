@@ -26,17 +26,17 @@ class TestSelect(unittest.TestCase):
     def test_map_throws(self):
         with self.assertRaises(RxException):
             Observable.return_value(1) \
-                .map_indexed(lambda x, y: x) \
+                .map(mapper_indexed=lambda x, y: x) \
                 .subscribe_callbacks(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             Observable.throw('ex') \
-                .map_indexed(lambda x, y: x) \
+                .map(mapper_indexed=lambda x, y: x) \
                 .subscribe_callbacks(throw=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             Observable.empty() \
-                .map_indexed(lambda x, y: x) \
+                .map(mapper_indexed=lambda x, y: x) \
                 .subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         def subscribe(observer, scheduler=None):
@@ -166,12 +166,12 @@ class TestSelect(unittest.TestCase):
     def test_map_with_index_throws(self):
         with self.assertRaises(RxException):
             return Observable.return_value(1) \
-                .map_indexed(lambda x, index: x) \
+                .map(mapper_indexed=lambda x, index: x) \
                 .subscribe_callbacks(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
             return Observable.throw('ex') \
-                .map_indexed(lambda x, index: x) \
+                .map(mapper_indexed=lambda x, index: x) \
                 .subscribe_callbacks(lambda x: x, lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
@@ -181,7 +181,7 @@ class TestSelect(unittest.TestCase):
 
         with self.assertRaises(RxException):
             return Observable.create(lambda o: _raise('ex')) \
-                .map_indexed(lambda x, index: x) \
+                .map(mapper_indexed=lambda x, index: x) \
                 .subscribe()
 
     def test_map_with_index_dispose_inside_selector(self):
@@ -198,7 +198,7 @@ class TestSelect(unittest.TestCase):
 
             return x + index * 10
 
-        d.disposable = xs.map_indexed(projection).subscribe(results)
+        d.disposable = xs.map(mapper_indexed=projection).subscribe(results)
 
         def action(scheduler, state):
             return d.dispose()
@@ -219,7 +219,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map_indexed(projection)
+            return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
         assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32), close(400)]
@@ -235,7 +235,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map_indexed(projection)
+            return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
         assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32)]
@@ -253,7 +253,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.map_indexed(projection)
+            return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
 
@@ -274,7 +274,7 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
                 return (x + 1) + (index * 10)
 
-            return xs.map_indexed(projection)
+            return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
         assert results.messages == [send(210, 5), send(240, 14), throw(290, ex)]

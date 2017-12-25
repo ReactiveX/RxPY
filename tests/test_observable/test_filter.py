@@ -195,7 +195,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create)
         assert results.messages == [send(230, 3), send(390, 7), close(600)]
@@ -212,7 +212,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return True
 
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create)
         assert results.messages == [send(230, 3), send(270, 4), send(340, 5), send(380, 6), send(390, 7), send(450, 8), send(470, 9), send(560, 10), send(580, 11), close(600)]
@@ -228,7 +228,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return False
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create)
 
@@ -246,7 +246,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create, disposed=400)
         assert results.messages == [send(230, 3), send(390, 7)]
@@ -263,7 +263,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create)
 
@@ -284,7 +284,7 @@ class TestFilter(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x + index * 10)
-            return xs.filter_indexed(predicate)
+            return xs.filter(predicate_indexed=predicate)
 
         results = scheduler.start(create)
         assert results.messages == [send(230, 3), throw(380, ex)]
@@ -306,7 +306,7 @@ class TestFilter(unittest.TestCase):
                     d.dispose()
 
                 return is_prime(x + index * 10)
-            ys[0] = xs.filter_indexed(predicate)
+            ys[0] = xs.filter(predicate_indexed=predicate)
 
         scheduler.schedule_absolute(created, action1)
 

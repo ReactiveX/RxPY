@@ -222,7 +222,7 @@ class TestFlatMap(unittest.TestCase):
 
         def factory():
             def projection(x):
-                return Observable.interval(10).map_indexed(lambda a, b: x).take(x)
+                return Observable.interval(10).map(mapper_indexed=lambda a, b: x).take(x)
             return xs.flat_map(projection)
         results = scheduler.start(factory)
 
@@ -279,7 +279,7 @@ class TestFlatMap(unittest.TestCase):
         )
 
         def create():
-            return xs.flat_map_indexed(lambda x, i: [x] * x, lambda x, y, i: x + y)
+            return xs.flat_map(mapper_indexed=lambda x, i: [x] * x, result_mapper_indexed=lambda x, y, i: x + y)
 
         res = scheduler.start(create)
 
