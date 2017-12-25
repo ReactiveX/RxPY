@@ -117,7 +117,8 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return empty()
 
     @staticmethod
-    def for_in(values: Iterable, result_selector: Callable[[Any], ObservableBase]) -> ObservableBase:
+    def for_in(values: Iterable,
+               result_selector: Callable[[Any], ObservableBase]) -> ObservableBase:
         """Concatenates the observable sequences obtained by running the
         specified result selector for each element in source.
 

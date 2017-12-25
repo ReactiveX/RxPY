@@ -5,7 +5,7 @@ from abc import abstractmethod
 from asyncio import Future
 
 from rx import config
-from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
+from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing, abc
@@ -492,7 +492,7 @@ class ObservableBase(typing.Observable):
 
     def delay_with_selector(self,
                             subscription_delay=None,
-                            delay_duration_selector = None
+                            delay_duration_selector=None
                            ) -> 'ObservableBase':
         """Time shifts the observable sequence based on a subscription delay
         and a delay selector function for each element.
@@ -1131,8 +1131,7 @@ class ObservableBase(typing.Observable):
         inner sequences.
         """
         from ..operators.observable.merge import merge
-        source = self
-        return merge(source, *args, max_concurrent=max_concurrent)
+        return merge(self, *args, max_concurrent=max_concurrent)
 
     def merge_all(self) -> 'ObservableBase':
         """Merges an observable sequence of observable sequences into an
@@ -1281,7 +1280,8 @@ class ObservableBase(typing.Observable):
         source = self
         return pairwise(source)
 
-    def partition(self, predicate: Callable[[Any], Any]) -> List['ObservableBase']:
+    def partition(self, predicate: Predicate = None,
+                  predicate_indexed: PredicateIndexed = None) -> List['ObservableBase']:
         """Returns two observables which partition the observations of the
         source by the given function. The first will trigger observations for
         those values for which the predicate returns true. The second will
@@ -1298,28 +1298,7 @@ class ObservableBase(typing.Observable):
         returns True, and the second triggers when the predicate returns False.
         """
         from ..operators.observable.partition import partition
-        source = self
-        return partition(source, predicate)
-
-    def partition_indexed(self, predicate: Callable[[Any, int], Any]) -> List['ObservableBase']:
-        """Returns two observables which partition the observations of the
-        source by the given function. The first will trigger observations for
-        those values for which the predicate returns true. The second will
-        trigger observations for those values where the predicate returns false.
-        The predicate is executed once for each subscribed observer. Both also
-        propagate all error observations arising from the source and each
-        completes when the source completes.
-
-        Keyword arguments:
-        predicate -- The function to determine which output Observable will
-            trigger a particular observation.
-
-        Returns a list of observables. The first triggers when the predicate
-        returns True, and the second triggers when the predicate returns False.
-        """
-        from ..operators.observable.partition import partition_indexed
-        source = self
-        return partition_indexed(source, predicate)
+        return partition(self, predicate, predicate_indexed)
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable
@@ -1443,7 +1422,7 @@ class ObservableBase(typing.Observable):
         source = self
         return publish_value(source, initial_value, selector)
 
-    def reduce(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'ObservableBase':
+    def reduce(self, accumulator: Accumulator, seed: Any = None) -> 'ObservableBase':
         """Applies an accumulator function over an observable sequence,
         returning the result of the aggregation as a single element in the
         result sequence. The specified seed value is used as the initial
@@ -1531,8 +1510,7 @@ class ObservableBase(typing.Observable):
         2 - retried = xs.retry(42)
 
         retry_count -- [Optional] Number of times to retry the sequence.
-            If
-        not provided, retry the sequence indefinitely.
+            If not provided, retry the sequence indefinitely.
 
         Returns an observable sequence producing the elements of the
         given sequence repeatedly until it terminates successfully.
@@ -1555,16 +1533,15 @@ class ObservableBase(typing.Observable):
         Returns sampled observable sequence.
         """
         from ..operators.observable.sample import sample
-        source = self
-        return sample(source, interval, sampler)
+        return sample(self, interval, sampler)
 
     throttle_last = sample
 
-    def scan(self, accumulator: Callable[[Any, Any], Any], seed: Any=None) -> 'ObservableBase':
-        """Applies an accumulator function over an observable sequence and
-        returns each intermediate result. The optional seed value is used as
-        the initial accumulator value. For aggregation behavior with no
-        intermediate results, see Observable.aggregate.
+    def scan(self, accumulator: Accumulator, seed: Any = None) -> 'ObservableBase':
+        """Applies an accumulator function over an observable sequence
+        and returns each intermediate result. The optional seed value is
+        used as the initial accumulator value. For aggregation behavior
+        with no intermediate results, see Observable.aggregate.
 
         1 - scanned = source.scan(lambda acc, x: acc + x)
         2 - scanned = source.scan(lambda acc, x: acc + x, 0)
@@ -1578,8 +1555,7 @@ class ObservableBase(typing.Observable):
         values.
         """
         from ..operators.observable.scan import scan
-        source = self
-        return scan(source, accumulator, seed)
+        return scan(self, accumulator, seed)
 
     def select_switch(self, selector: Mapper) -> 'ObservableBase':
         """Projects each element of an observable sequence into a new
@@ -1605,7 +1581,7 @@ class ObservableBase(typing.Observable):
     switch_map = select_switch
 
     def sequence_equal(self, second: 'ObservableBase',
-                   comparer: Callable[[Any, Any], bool] = None) -> 'ObservableBase':
+                       comparer: Callable[[Any, Any], bool] = None) -> 'ObservableBase':
         """Determines whether two sequences are equal by comparing the
         elements pairwise using a specified equality comparer.
 
@@ -1624,8 +1600,7 @@ class ObservableBase(typing.Observable):
         specified equality comparer.
         """
         from ..operators.observable.sequenceequal import sequence_equal
-        source = self
-        return sequence_equal(source, second, comparer)
+        return sequence_equal(self, second, comparer)
 
     def share(self) -> 'ObservableBase':
         """Share a single subscription among multple observers.
@@ -1642,9 +1617,10 @@ class ObservableBase(typing.Observable):
         return share(self)
 
     def single(self, predicate: Predicate = None) -> 'ObservableBase':
-        """Returns the only element of an observable sequence that satisfies the
-        condition in the optional predicate, and reports an exception if there
-        is not exactly one element in the observable sequence.
+        """Returns the only element of an observable sequence that
+        satisfies the condition in the optional predicate, and reports
+        an exception if there is not exactly one element in the
+        observable sequence.
 
         Example:
         res = source.single()
@@ -1655,18 +1631,18 @@ class ObservableBase(typing.Observable):
             elements in the source sequence.
 
         Returns observable sequence containing the single element in the
-        observable sequence that satisfies the condition in the predicate.
+        observable sequence that satisfies the condition in the
+        predicate.
         """
         from ..operators.observable.single import single
-        source = self
-        return single(source, predicate)
+        return single(self, predicate)
 
     def single_or_default(self, predicate: Predicate = None,
                           default_value: Any = None) -> 'ObservableBase':
-        """Returns the only element of an observable sequence that matches
-        the predicate, or a default value if no such element exists this
-        method reports an exception if there is more than one element in the
-        observable sequence.
+        """Returns the only element of an observable sequence that
+        matches the predicate, or a default value if no such element
+        exists this method reports an exception if there is more than
+        one element in the observable sequence.
 
         Example:
         res = source.single_or_default()
@@ -1675,18 +1651,17 @@ class ObservableBase(typing.Observable):
         res = source.single_or_default(None, 0)
 
         Keyword arguments:
-        predicate -- [Optional] A predicate function to evaluate for elements in the
-            source sequence.
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
         default_value -- [Optional] The default value if the index is
             outside the bounds of the source sequence.
 
         Returns observable Sequence containing the single element in the
-        observable sequence that satisfies the condition in the predicate,
-        or a default value if no such element exists.
+        observable sequence that satisfies the condition in the
+        predicate, or a default value if no such element exists.
         """
         from ..operators.observable.singleordefault import single_or_default
-        source = self
-        return single_or_default(source, predicate, default_value)
+        return single_or_default(self, predicate, default_value)
 
     def skip(self, count: int) -> 'ObservableBase':
         """Bypasses a specified number of elements in an observable
@@ -1700,8 +1675,7 @@ class ObservableBase(typing.Observable):
         occur after the specified index in the input sequence.
         """
         from ..operators.observable.skip import skip
-        source = self
-        return skip(count, source)
+        return skip(count, self)
 
     def skip_last(self, count: int) -> 'ObservableBase':
         """Bypasses a specified number of elements in an observable
@@ -1715,8 +1689,7 @@ class ObservableBase(typing.Observable):
         occur after the specified index in the input sequence.
         """
         from ..operators.observable.skiplast import skip_last
-        source = self
-        return skip_last(count, source)
+        return skip_last(count, self)
 
     def skip_last_with_time(self, duration: Union[timedelta, int]) -> 'ObservableBase':
         """Skips elements for the specified duration from the end of the
@@ -1727,41 +1700,41 @@ class ObservableBase(typing.Observable):
         Description:
         This operator accumulates a queue with a length enough to store
         elements received during the initial duration window. As more
-        elements are received, elements older than the specified duration
-        are taken from the queue and produced on the result sequence. This
-        causes elements to be delayed with duration.
+        elements are received, elements older than the specified
+        duration are taken from the queue and produced on the result
+        sequence. This causes elements to be delayed with duration.
 
         Keyword arguments:
         duration -- Duration for skipping elements from the end of the
             sequence.
 
-        Returns an observable sequence with the elements skipped during the
-        specified duration from the end of the source sequence.
+        Returns an observable sequence with the elements skipped during
+        the specified duration from the end of the source sequence.
         """
         from ..operators.observable.skiplastwithtime import skip_last_with_time
-        source = self
-        return skip_last_with_time(source, duration)
+        return skip_last_with_time(self, duration)
 
     def skip_until(self, other: 'ObservableBase') -> 'ObservableBase':
-        """Returns the values from the source observable sequence only after
-        the other observable sequence produces a value.
+        """Returns the values from the source observable sequence only
+        after the other observable sequence produces a value.
 
         other -- The observable sequence that triggers propagation of
             elements of the source sequence.
 
-        Returns an observable sequence containing the elements of the source
-        sequence starting from the point the other sequence triggered
-        propagation.
+        Returns an observable sequence containing the elements of the
+        source sequence starting from the point the other sequence
+        triggered propagation.
         """
         from ..operators.observable.skipuntil import skip_until
-        source = self
-        return skip_until(source, other)
+        return skip_until(self, other)
 
     def skip_until_with_time(self, start_time: Union[datetime, int]) -> 'ObservableBase':
         """Skips elements from the observable source sequence until the
         specified start time.
-        Errors produced by the source sequence are always forwarded to the
-        result sequence, even if the error occurs before the start time.
+
+        Errors produced by the source sequence are always forwarded to
+        the result sequence, even if the error occurs before the start
+        time.
 
         Examples:
         res = source.skip_until_with_time(datetime);
@@ -1776,8 +1749,7 @@ class ObservableBase(typing.Observable):
         until the specified start time.
         """
         from ..operators.observable.skipuntilwithtime import skip_until_with_time
-        source = self
-        return skip_until_with_time(source, start_time)
+        return skip_until_with_time(self, start_time)
 
     def skip_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
         """Bypasses elements in an observable sequence as long as a specified
@@ -1796,8 +1768,7 @@ class ObservableBase(typing.Observable):
         does not pass the test specified by predicate.
         """
         from ..operators.observable.skipwhile import skip_while
-        source = self
-        return skip_while(source, predicate)
+        return skip_while(self, predicate)
 
     def skip_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'ObservableBase':
         """Bypasses elements in an observable sequence as long as a specified
@@ -1815,8 +1786,7 @@ class ObservableBase(typing.Observable):
         does not pass the test specified by predicate.
         """
         from ..operators.observable.skipwhile import skip_while_indexed
-        source = self
-        return skip_while_indexed(source, predicate)
+        return skip_while_indexed(self, predicate)
 
     def skip_with_time(self, duration: Union[timedelta, int]) -> 'ObservableBase':
         """Skips elements for the specified duration from the start of
@@ -1845,8 +1815,7 @@ class ObservableBase(typing.Observable):
         the specified duration from the start of the source sequence.
         """
         from ..operators.observable.skipwithtime import skip_with_time
-        source = self
-        return skip_with_time(source, duration)
+        return skip_with_time(self, duration)
 
     def some(self, predicate=None) -> 'ObservableBase':
         """Determines whether some element of an observable sequence
@@ -1866,8 +1835,7 @@ class ObservableBase(typing.Observable):
         are in the sequence.
         """
         from ..operators.observable.some import some
-        source = self
-        return some(source, predicate)
+        return some(self, predicate)
 
     def start_with(self, *args: Any) -> 'ObservableBase':
         """Prepends a sequence of values to an observable.
@@ -1877,8 +1845,7 @@ class ObservableBase(typing.Observable):
         Returns the source sequence prepended with the specified values.
         """
         from ..operators.observable.startswith import start_with
-        source = self
-        return start_with(source, *args)
+        return start_with(self, *args)
 
     def subscribe_on(self, scheduler) -> 'ObservableBase':
         """Subscribe on the specified scheduler.
@@ -1950,8 +1917,7 @@ class ObservableBase(typing.Observable):
         number of elements from the start of the input sequence.
         """
         from ..operators.observable.take import take
-        source = self
-        return take(count, source)
+        return take(count, self)
 
     def take_last(self, count: int) -> 'ObservableBase':
         """Returns a specified number of contiguous elements from the
@@ -1974,8 +1940,7 @@ class ObservableBase(typing.Observable):
             of elements from the end of the source sequence.
         """
         from ..operators.observable.takelast import take_last
-        source = self
-        return take_last(count, source)
+        return take_last(count, self)
 
     def take_last_buffer(self, count) -> 'ObservableBase':
         """Returns an array with the specified number of contiguous elements
@@ -1998,8 +1963,7 @@ class ObservableBase(typing.Observable):
         number of elements from the end of the source sequence.
         """
         from ..operators.observable.takelastbuffer import take_last_buffer
-        source = self
-        return take_last_buffer(source, count)
+        return take_last_buffer(self, count)
 
     def take_last_with_time(self, duration) -> 'ObservableBase':
         """Returns elements within the specified duration from the end of the
@@ -2023,8 +1987,7 @@ class ObservableBase(typing.Observable):
         during the specified duration from the end of the source sequence.
         """
         from ..operators.observable.takelastwithtime import take_last_with_time
-        source = self
-        return take_last_with_time(source, duration)
+        return take_last_with_time(self, duration)
 
     def take_until(self, other: 'ObservableBase') -> 'ObservableBase':
         """Returns the values from the source observable sequence until
@@ -2039,8 +2002,7 @@ class ObservableBase(typing.Observable):
         further propagation.
         """
         from ..operators.observable.takeuntil import take_until
-        source = self
-        return take_until(source, other)
+        return take_until(self, other)
 
     def take_until_with_time(self, end_time) -> 'ObservableBase':
         """Takes elements for the specified duration until the specified end
@@ -2060,8 +2022,7 @@ class ObservableBase(typing.Observable):
         until the specified end time.
         """
         from ..operators.observable.takeuntilwithtime import take_until_with_time
-        source = self
-        return take_until_with_time(source, end_time)
+        return take_until_with_time(self, end_time)
 
     def take_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
         """Returns elements from an observable sequence as long as a
@@ -2080,8 +2041,7 @@ class ObservableBase(typing.Observable):
         test no longer passes.
         """
         from ..operators.observable.takewhile import take_while
-        source = self
-        return take_while(source, predicate)
+        return take_while(self, predicate)
 
     def take_while_indexed(self, predicate: Callable[[Any, int], Any]) -> 'ObservableBase':
         """Returns elements from an observable sequence as long as a specified

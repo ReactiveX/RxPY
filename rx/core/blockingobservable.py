@@ -130,9 +130,11 @@ class BlockingObservable(abc.Observable):
         return for_each(self, action, action_indexed)
 
     def last(self) -> Any:
-        """Blocks until the last element emits from a BlockingObservable.
+        """Blocks until the last element emits from a
+        BlockingObservable.
 
-        If no item is emitted when close() is called, an exception is thrown
+        If no item is emitted when close() is called, an exception is
+        thrown
 
         Note: This will block even if the underlying Observable is
         asynchronous.

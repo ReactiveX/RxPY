@@ -1,3 +1,4 @@
+import inspect
 from typing import Any
 import types
 
@@ -30,6 +31,10 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
     observer = observer or AnonymousObserver()
     assert isinstance(observer, abc.Observer) or isinstance(observer, types.GeneratorType)
 
+    if isinstance(observer, types.GeneratorType):
+        if inspect.getgeneratorstate(observer) == inspect.GEN_CREATED:
+            observer.send(None)
+
     auto_detach_observer = AutoDetachObserver(observer)
 
     def fix_subscriber(subscriber):
@@ -58,10 +63,10 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
     # https://social.msdn.microsoft.com/Forums/en-US/eb82f593-9684-4e27-
     # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
     # dulerschedulerequired-behaves?forum=rx
-    #if current_thread_scheduler.schedule_required():
-    #    current_thread_scheduler.schedule(set_disposable)
-    #else:
-    set_disposable()
+    if current_thread_scheduler.schedule_required():
+        current_thread_scheduler.schedule(set_disposable)
+    else:
+        set_disposable()
 
     # Hide the identity of the auto detach observer
     return Disposable.create(auto_detach_observer.dispose)
