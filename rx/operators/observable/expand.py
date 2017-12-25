@@ -1,11 +1,11 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.core.typing import Selector
+from rx.core.typing import Mapper
 from rx.disposables import SerialDisposable, CompositeDisposable, \
     SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
 
 
-def expand(source: ObservableBase, selector: Selector) -> ObservableBase:
+def expand(source: ObservableBase, selector: Mapper) -> ObservableBase:
     """Expands an observable sequence by recursively invoking selector.
 
     selector -- Selector function to invoke for each produced

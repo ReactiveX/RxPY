@@ -1,5 +1,4 @@
-from rx.core import ObservableBase, AnonymousObservable
-from rx.operators.connectableobservable import ConnectableObservable
+from rx.core import ObservableBase, AnonymousObservable, ConnectableObservable
 from rx.disposables import CompositeDisposable
 
 

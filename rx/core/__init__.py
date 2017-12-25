@@ -8,6 +8,8 @@ from .observablebase import ObservableBase
 from .observerbase import ObserverBase
 from .anonymousobserver import AnonymousObserver
 from .anonymousobservable import AnonymousObservable
+from .connectableobservable import ConnectableObservable
+from .groupedobservable import GroupedObservable
 
 from . import checkedobserver
 from . import observerextensions

@@ -1,8 +1,8 @@
-from rx.core import ObservableBase
+from rx.core import ObservableBase, ConnectableObservable
 from rx.subjects import Subject
 
 
-def publish(source, selector=None) -> ObservableBase:
+def publish(source, selector=None) -> ConnectableObservable:
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
@@ -27,7 +27,7 @@ def publish(source, selector=None) -> ObservableBase:
     else:
         return source.multicast(subject=Subject())
 
-def share(source) -> ObservableBase:
+def share(source: ObservableBase) -> ObservableBase:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original

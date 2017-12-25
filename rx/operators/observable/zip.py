@@ -1,11 +1,11 @@
 from typing import Union, Iterable, Any
 from rx.core import Observable, ObservableBase, AnonymousObservable
-from rx.core.typing import Selector
+from rx.core.typing import Mapper
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
 def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
-        result_selector: Selector = None) -> ObservableBase:
+        result_selector: Mapper = None) -> ObservableBase:
     """Merges the specified observable sequences into one observable
     sequence by using the selector function whenever all of the
     observable sequences have produced an element at a corresponding
@@ -19,7 +19,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
 
     Keyword arguments:
     args -- Observable sources to zip.
-    result_selector -- Selector function that produces an element
+    result_selector -- Mapper function that produces an element
         whenever all of the observable sequences have produced an
         element at a corresponding index
 

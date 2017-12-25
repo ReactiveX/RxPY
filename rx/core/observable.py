@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
-from .typing import Selector
+from .typing import Mapper
 from .observablebase import ObservableBase
 from . import abc, typing
 
@@ -152,7 +152,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return from_callable(supplier)
 
     @staticmethod
-    def from_callback(func: Callable, selector: Selector = None) -> "Callable[[...], ObservableBase]":
+    def from_callback(func: Callable, selector: Mapper = None) -> "Callable[[...], ObservableBase]":
         """Converts a callback function to an observable sequence.
 
         Keyword arguments:
@@ -591,7 +591,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
 
     @staticmethod
     def zip(*args: Union[Iterable[ObservableBase], ObservableBase],
-            result_selector: Selector = None) -> ObservableBase:
+            result_selector: Mapper = None) -> ObservableBase:
         """Merges the specified observable sequences into one observable
         sequence by using the selector function whenever all of the
         observable sequences or an array have produced an element at a

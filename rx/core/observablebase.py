@@ -5,13 +5,13 @@ from abc import abstractmethod
 from asyncio import Future
 
 from rx import config
-from .typing import Selector, Predicate
+from .typing import Mapper, Predicate
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
-from . import typing as ty, abc
+from . import typing, abc
 
 
-class ObservableBase(ty.Observable):
+class ObservableBase(typing.Observable):
     """Observables base class.
 
     Represents a push-style collection and contains all operators as
@@ -99,8 +99,10 @@ class ObservableBase(ty.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer: ty.Observer = None,
-                  scheduler: ty.Scheduler = None) -> ty.Disposable:
+    def subscribe(self,
+                  observer: typing.Observer = None,
+                  scheduler: typing.Scheduler = None
+                 ) -> typing.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -118,9 +120,12 @@ class ObservableBase(ty.Observable):
         source = self
         return subscribe(source, observer, scheduler)
 
-    def subscribe_callbacks(self, send: ty.Send = None, throw: ty.Throw = None,
-                            close: ty.Close = None, scheduler: ty.Scheduler = None
-                           ) -> ty.Disposable:
+    def subscribe_callbacks(self,
+                            send: typing.Send = None,
+                            throw: typing.Throw = None,
+                            close: typing.Close = None,
+                            scheduler: typing.Scheduler = None
+                           ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -160,8 +165,7 @@ class ObservableBase(ty.Observable):
         test in the specified predicate.
         """
         from ..operators.observable.all import all as all_
-        source = self
-        return all_(source, predicate)
+        return all_(self, predicate)
 
     def amb(self, other):
         """Propagates the observable sequence that reacts first.
@@ -172,8 +176,7 @@ class ObservableBase(ty.Observable):
         sequences, whichever reacted first.
         """
         from ..operators.observable.amb import _amb
-        source = self
-        return _amb(source, other)
+        return _amb(self, other)
 
     def and_(self, right):
         """Creates a pattern that matches when both observable sequences
@@ -341,7 +344,7 @@ class ObservableBase(ty.Observable):
         function.
         """
         from ..operators.observable.combinelatest import combine_latest
-        if isinstance(observables, ty.Observable):
+        if isinstance(observables, typing.Observable):
             observables = [observables]
 
         args = [self] + list(observables)
@@ -487,8 +490,10 @@ class ObservableBase(ty.Observable):
         source = self
         return delay_subscription(source, duetime)
 
-    def delay_with_selector(self, subscription_delay=None,
-                            delay_duration_selector=None) -> 'ObservableBase':
+    def delay_with_selector(self,
+                            subscription_delay=None,
+                            delay_duration_selector = None
+                           ) -> 'ObservableBase':
         """Time shifts the observable sequence based on a subscription delay
         and a delay selector function for each element.
 
@@ -570,7 +575,7 @@ class ObservableBase(ty.Observable):
         source = self
         return distinct_until_changed(source, key_selector, comparer)
 
-    def do(self, observer: ty.Observer) -> 'ObservableBase':
+    def do(self, observer: typing.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence
         and invokes an action on graceful or exceptional termination of
         the observable sequence. This method can be used for debugging,
@@ -676,7 +681,7 @@ class ObservableBase(ty.Observable):
         source = self
         return exclusive(source)
 
-    def expand(self, selector: Selector) -> 'ObservableBase':
+    def expand(self, selector: Mapper) -> 'ObservableBase':
         """Expands an observable sequence by recursively invoking
         selector.
 
@@ -905,7 +910,7 @@ class ObservableBase(ty.Observable):
         source = self
         return flat_map_indexed(source, selector, result_selector)
 
-    def group_by(self, key_selector, element_selector=None, key_serializer=None) -> 'ObservableBase':
+    def group_by(self, key_selector, element_selector=None) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
         specified key selector function and comparer and selects the resulting
         elements by using a specified function.
@@ -921,18 +926,15 @@ class ObservableBase(ty.Observable):
         key_selector -- A function to extract the key for each element.
         element_selector -- [Optional] A function to map each source element to
             an element in an observable group.
-        comparer -- {Function} [Optional] Used to determine whether the objects
-            are equal.
 
         Returns a sequence of observable groups, each of which corresponds to a
         unique key value, containing all elements that share that same key
         value.
         """
         from ..operators.observable.groupby import group_by
-        source = self
-        return group_by(source, key_selector, element_selector, key_serializer)
+        return group_by(self, key_selector, element_selector)
 
-    def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None) -> 'ObservableBase':
+    def group_by_until(self, key_selector, element_selector, duration_selector) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
         specified key selector function. A duration selector function is used
         to control the lifetime of groups. When a group expires, it receives
@@ -959,10 +961,6 @@ class ObservableBase(ty.Observable):
         Keyword arguments:
         key_selector -- A function to extract the key for each element.
         duration_selector -- A function to signal the expiration of a group.
-        comparer -- [Optional] {Function} Used to compare objects. When not
-            specified, the default comparer is used. Note: this argument will be
-            ignored in the Python implementation of Rx. Python objects knows,
-            or should know how to compare themselves.
 
         Returns a sequence of observable groups, each of which corresponds to
         a unique key value, containing all elements that share that same key
@@ -971,8 +969,7 @@ class ObservableBase(ty.Observable):
         encountered.
         """
         from ..operators.observable.groupbyuntil import group_by_until
-        source = self
-        return group_by_until(source, key_selector, element_selector, duration_selector, comparer)
+        return group_by_until(self, key_selector, element_selector, duration_selector)
 
     def group_join(self, right, left_duration_selector, right_duration_selector,
                    result_selector) -> 'ObservableBase':
@@ -1251,7 +1248,7 @@ class ObservableBase(ty.Observable):
         source = self
         return min_(source, comparer)
 
-    def min_by(self, key_selector: Selector, comparer=None) -> 'ObservableBase':
+    def min_by(self, key_selector: Mapper, comparer=None) -> 'ObservableBase':
         """Returns the elements in an observable sequence with the minimum key
         value according to the specified comparer.
 
@@ -1442,7 +1439,7 @@ class ObservableBase(ty.Observable):
         from ..operators.observable.pluck import pluck_attr
         return pluck_attr(self, attr)
 
-    def publish(self, selector: Selector = None) -> 'ObservableBase':
+    def publish(self, selector: Mapper = None) -> "ConnectableObservable":
         """Returns an observable sequence that is the result of invoking the
         selector on a connectable observable sequence that shares a single
         subscription to the underlying sequence. This operator is a
@@ -1464,10 +1461,9 @@ class ObservableBase(ty.Observable):
         within a selector function."""
 
         from ..operators.observable.publish import publish
-        source = self
-        return publish(source, selector)
+        return publish(self, selector)
 
-    def publish_value(self, initial_value: Any, selector: Selector = None) -> 'ObservableBase':
+    def publish_value(self, initial_value: Any, selector: Mapper = None) -> 'ObservableBase':
         """Returns an observable sequence that is the result of invoking the
         selector on a connectable observable sequence that shares a single
         subscription to the underlying sequence and starts with initial_value.
@@ -1634,7 +1630,7 @@ class ObservableBase(ty.Observable):
         source = self
         return scan(source, accumulator, seed)
 
-    def select_switch(self, selector: Selector) -> 'ObservableBase':
+    def select_switch(self, selector: Mapper) -> 'ObservableBase':
         """Projects each element of an observable sequence into a new
         sequence of observable sequences by incorporating the element's
         index and then transforms an observable sequence of observable
@@ -1691,7 +1687,8 @@ class ObservableBase(ty.Observable):
 
         This is an alias for Observable.publish().ref_count().
         """
-        return self.publish().ref_count()
+        from..operators.observable.publish import share
+        return share(self)
 
     def single(self, predicate: Predicate = None) -> 'ObservableBase':
         """Returns the only element of an observable sequence that satisfies the
@@ -1956,7 +1953,7 @@ class ObservableBase(ty.Observable):
         source = self
         return subscribe_on(source, scheduler)
 
-    def sum(self, key_selector: Selector = None) -> 'ObservableBase':
+    def sum(self, key_selector: Mapper = None) -> 'ObservableBase':
         """Computes the sum of a sequence of values that are obtained by
         invoking an optional transform function on each element of the
         input sequence, else if not specified computes the sum on each
@@ -2180,12 +2177,12 @@ class ObservableBase(ty.Observable):
         source = self
         return take_with_time(source, duration)
 
-    def then_do(self, selector: Selector) -> 'ObservableBase':
-        """Matches when the observable sequence has an available value and
-        projects the value.
+    def then_do(self, selector: Mapper) -> 'ObservableBase':
+        """Matches when the observable sequence has an available value
+        and projects the value.
 
-        selector -- Selector that will be invoked for values in the source
-            sequence.
+        selector -- Selector that will be invoked for values in the
+            source sequence.
 
         Returns Plan that produces the projected values, to be fed (with
         other plans) to the when operator.
@@ -2352,8 +2349,8 @@ class ObservableBase(ty.Observable):
         source = self
         return to_blocking(source)
 
-    def to_dict(self, key_selector: Selector,
-                element_selector: Selector = None) -> 'ObservableBase':
+    def to_dict(self, key_selector: Mapper,
+                element_selector: Mapper = None) -> 'ObservableBase':
         """Converts the observable sequence to a Map if it exists.
 
         Keyword arguments:
@@ -2478,14 +2475,14 @@ class ObservableBase(ty.Observable):
         elements of the sources using the specified result selector function.
         """
         from ..operators.observable.withlatestfrom import with_latest_from
-        if isinstance(observables, ty.Observable):
+        if isinstance(observables, typing.Observable):
             observables = [observables]
 
         sources = [self] + list(observables)
         return with_latest_from(sources, selector)
 
     def zip(self, *args: 'Union[Iterable[Any], ObservableBase]',
-            result_selector: Selector = None) -> 'ObservableBase':
+            result_selector: Mapper = None) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
         sequence by using the selector function whenever all of the
         observable sequences or an array have produced an element at a

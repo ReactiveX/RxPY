@@ -2,10 +2,10 @@ from typing import Any
 
 from rx.core import ObservableBase
 from rx.subjects import BehaviorSubject
-from rx.core.typing import Selector
+from rx.core.typing import Mapper
 
 
-def publish_value(source, initial_value: Any, selector: Selector = None) -> ObservableBase:
+def publish_value(source, initial_value: Any, selector: Mapper = None) -> ObservableBase:
     """Returns an observable sequence that is the result of invoking the
     selector on a connectable observable sequence that shares a single
     subscription to the underlying sequence and starts with

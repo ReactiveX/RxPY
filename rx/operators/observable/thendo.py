@@ -1,13 +1,13 @@
-from rx.core.typing import Selector
+from rx.core.typing import Mapper
 from rx.core import ObservableBase
 from rx.joins import Pattern
 
 
-def then_do(source: ObservableBase, selector: Selector) -> ObservableBase:
+def then_do(source: ObservableBase, selector: Mapper) -> ObservableBase:
     """Matches when the observable sequence has an available value and
     projects the value.
 
-    selector -- Selector that will be invoked for values in the source
+    selector -- Mapper that will be invoked for values in the source
         sequence.
 
     Returns Plan that produces the projected values, to be fed (with

@@ -26,7 +26,7 @@ def partition(source: ObservableBase, predicate: Callable[[Any], Any]) -> List[O
     ]
 
 
-def partition_indexed(source: ObservableBase, predicate: Callable[[Any, int], Any]) -> List[ObservableBase]:
+def partition_indexed(source: ObservableBase, predicate: Callable[[Any, int], bool]) -> List[ObservableBase]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will

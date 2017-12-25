@@ -23,10 +23,11 @@ class ThreadPoolScheduler(NewThreadScheduler):
             self.future.cancel()
 
     def __init__(self, max_workers=None):
-        super(ThreadPoolScheduler, self).__init__(self.thread_factory)
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
-    def thread_factory(self, target, *args):
-        return self.ThreadPoolThread(self.executor, target)
+        def thread_factory(target, *args):
+            return self.ThreadPoolThread(self.executor, target)
+
+        super().__init__(thread_factory)
 
 Scheduler.thread_pool = thread_pool_scheduler = ThreadPoolScheduler()

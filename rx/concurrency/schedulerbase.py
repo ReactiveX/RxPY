@@ -5,7 +5,7 @@ from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
-class SchedulerBase(Scheduler):
+class SchedulerBase(Scheduler): #  pylint: disable=W0223
     """Provides a set of static properties to access commonly used
     schedulers.
     """
@@ -82,7 +82,7 @@ class SchedulerBase(Scheduler):
         """Converts time value to timedelta"""
 
         if isinstance(timespan, datetime):
-            timespan = timespan - datetime.uctfromtimestamp(0)
+            timespan = timespan - datetime.utcfromtimestamp(0)
         elif not isinstance(timespan, timedelta):
             timespan = timedelta(milliseconds=timespan)
 
@@ -95,7 +95,7 @@ class SchedulerBase(Scheduler):
         Keyword arguments:
         :param int|timedelta timespan: The time span value to normalize.
 
-        :returns: The specified Timespan value if it is zero or positive;
+        Returns the specified Timespan value if it is zero or positive;
             otherwise, 0
         :rtype: int|timedelta
         """

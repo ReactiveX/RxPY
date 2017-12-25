@@ -3,7 +3,7 @@ import unittest
 from rx.core import Observer, ObservableBase, Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
-from rx.operators.connectableobservable import ConnectableObservable
+from rx.core import ConnectableObservable
 
 send = ReactiveTest.send
 close = ReactiveTest.close

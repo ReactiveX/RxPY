@@ -1,14 +1,13 @@
 from collections import OrderedDict
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import ObservableBase, AnonymousObservable, GroupedObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, RefCountDisposable, \
     SingleAssignmentDisposable
-from rx.internal.basic import default_comparer, identity
-from rx.operators.groupedobservable import GroupedObservable
+from rx.internal.basic import identity
 
 
-def group_by_until(self, key_selector, element_selector, duration_selector, comparer=None) -> ObservableBase:
+def group_by_until(self, key_selector, element_selector, duration_selector) -> ObservableBase:
     """Groups the elements of an observable sequence according to a
     specified key selector function. A duration selector function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -35,10 +34,6 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
     Keyword arguments:
     key_selector -- A function to extract the key for each element.
     duration_selector -- A function to signal the expiration of a group.
-    comparer -- [Optional] {Function} Used to compare objects. When not
-        specified, the default comparer is used. Note: this argument will be
-        ignored in the Python implementation of Rx. Python objects knows,
-        or should know how to compare themselves.
 
     Returns a sequence of observable groups, each of which corresponds to
     a unique key value, containing all elements that share that same key
@@ -49,10 +44,9 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
 
     source = self
     element_selector = element_selector or identity
-    comparer = comparer or default_comparer
 
     def subscribe(observer, scheduler=None):
-        mapping = OrderedDict()
+        writers = OrderedDict()
         group_disposable = CompositeDisposable()
         ref_count_disposable = RefCountDisposable(group_disposable)
 
@@ -63,17 +57,17 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
             try:
                 key = key_selector(x)
             except Exception as e:
-                for w in mapping.values():
-                    w.throw(e)
+                for wrt in writers.values():
+                    wrt.throw(e)
 
                 observer.throw(e)
                 return
 
             fire_new_map_entry = False
-            writer = mapping.get(key)
+            writer = writers.get(key)
             if not writer:
                 writer = Subject()
-                mapping[key] = writer
+                writers[key] = writer
                 fire_new_map_entry = True
 
             if fire_new_map_entry:
@@ -82,60 +76,56 @@ def group_by_until(self, key_selector, element_selector, duration_selector, comp
                 try:
                     duration = duration_selector(duration_group)
                 except Exception as e:
-                    for w in mapping.values():
-                        w.throw(e)
+                    for wrt in writers.values():
+                        wrt.throw(e)
 
                     observer.throw(e)
                     return
 
                 observer.send(group)
-                md = SingleAssignmentDisposable()
-                group_disposable.add(md)
+                sad = SingleAssignmentDisposable()
+                group_disposable.add(sad)
 
                 def expire():
-                    if mapping[key]:
-                        del mapping[key]
+                    if writers[key]:
+                        del writers[key]
                         writer.close()
 
-                    group_disposable.remove(md)
+                    group_disposable.remove(sad)
 
                 def send(value):
                     pass
 
                 def throw(exn):
-                    for wr in mapping.values():
-                        wr.throw(exn)
+                    for wrt in writers.values():
+                        wrt.throw(exn)
                     observer.throw(exn)
 
                 def close():
                     expire()
 
-                md.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
+                sad.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
 
             try:
                 element = element_selector(x)
-            except Exception as e:
-                for w in mapping.values():
-                    w.throw(e)
+            except Exception as error:
+                for wrt in writers.values():
+                    wrt.throw(error)
 
-                observer.throw(e)
+                observer.throw(error)
                 return
 
-            def action(scheduler, state):
-                writer.send(element)
-
-            from datetime import timedelta
-            scheduler.schedule_relative(timedelta(microseconds=1), action)
+            writer.send(element)
 
         def throw(ex):
-            for w in mapping.values():
-                w.throw(ex)
+            for wrt in writers.values():
+                wrt.throw(ex)
 
             observer.throw(ex)
 
         def close():
-            for w in mapping.values():
-                w.close()
+            for wrt in writers.values():
+                wrt.close()
 
             observer.close()
 

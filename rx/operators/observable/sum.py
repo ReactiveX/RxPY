@@ -1,8 +1,8 @@
 from rx.core import ObservableBase
-from rx.core.typing import Selector
+from rx.core.typing import Mapper
 
 
-def sum(source, key_selector: Selector = None) -> ObservableBase:
+def sum(source, key_selector: Mapper = None) -> ObservableBase:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the input
     sequence, else if not specified computes the sum on each item in the
