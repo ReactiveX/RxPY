@@ -1,6 +1,6 @@
-from rx.core import Disposable, abc
+from rx.core import Disposable
 from rx.core import Observer, ObservableBase, AnonymousObservable
-from rx.core.typing import Mapper, MapperIndexed
+from rx.core.typing import Mapper, MapperIndexed, Scheduler
 
 # pylint: disable=W0622
 def map(source: ObservableBase,
@@ -24,7 +24,7 @@ def map(source: ObservableBase,
     invoking the transform function on each element of the source.
     """
 
-    def subscribe(observer: Observer, scheduler: abc.Scheduler) -> Disposable:
+    def subscribe(observer: Observer, scheduler: Scheduler) -> Disposable:
         count = 0
 
         def send(value):

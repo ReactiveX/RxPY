@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 from datetime import timedelta
 
 from rx import config
@@ -20,17 +21,18 @@ class RemovableDisposable:
 
 
 class ReplaySubject(ObservableBase, Observer):
-    """Represents an object that is both an observable sequence as well as an
-    observer. Each notification is broadcasted to all subscribed and future
-    observers, subject to buffer trimming policies.
+    """Represents an object that is both an observable sequence as well
+    as an observer. Each notification is broadcasted to all subscribed
+    and future observers, subject to buffer trimming policies.
     """
 
     def __init__(self, buffer_size=None, window=None, scheduler=None):
-        """Initializes a new instance of the ReplaySubject class with the
-        specified buffer size, window and scheduler.
+        """Initializes a new instance of the ReplaySubject class with
+        the specified buffer size, window and scheduler.
 
         Keyword arguments:
-        buffer_size -- [Optional] Maximum element count of the replay buffer.
+        buffer_size -- [Optional] Maximum element count of the replay
+            buffer.
         window [Optional] -- Maximum time length of the replay buffer.
         scheduler -- [Optional] Scheduler the observers are invoked on.
         """
@@ -80,7 +82,7 @@ class ReplaySubject(ObservableBase, Observer):
         while self.queue and (now - self.queue[0]['interval']) > self.window:
             self.queue.pop(0)
 
-    def send(self, value):
+    def send(self, value: Any) -> None:
         """Notifies all subscribed observers with the value."""
 
         os = None
@@ -98,7 +100,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def throw(self, error):
+    def throw(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception."""
 
         os = None
@@ -119,7 +121,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def close(self):
+    def close(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -137,7 +139,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Releases all resources used by the current instance of the
         ReplaySubject class and unsubscribe all observers."""
 

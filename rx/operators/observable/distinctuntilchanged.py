@@ -2,16 +2,16 @@ from rx.core import ObservableBase, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
 
 
-def distinct_until_changed(self, key_selector=None, comparer=None) -> ObservableBase:
+def distinct_until_changed(self, key_mapper=None, comparer=None) -> ObservableBase:
     """Returns an observable sequence that contains only distinct
-    contiguous elements according to the key_selector and the comparer.
+    contiguous elements according to the key_mapper and the comparer.
 
     1 - obs = observable.distinct_until_changed();
     2 - obs = observable.distinct_until_changed(lambda x: x.id)
     3 - obs = observable.distinct_until_changed(lambda x: x.id,
                                                 lambda x, y: x == y)
 
-    key_selector -- [Optional] A function to compute the comparison key
+    key_mapper -- [Optional] A function to compute the comparison key
         for each element. If not provided, it projects the value.
     comparer -- [Optional] Equality comparer for computed key values. If
         not provided, defaults to an equality comparer function.
@@ -22,7 +22,7 @@ def distinct_until_changed(self, key_selector=None, comparer=None) -> Observable
     """
 
     source = self
-    key_selector = key_selector or identity
+    key_mapper = key_mapper or identity
     comparer = comparer or default_comparer
 
     def subscribe(observer, scheduler=None):
@@ -32,7 +32,7 @@ def distinct_until_changed(self, key_selector=None, comparer=None) -> Observable
         def send(value):
             comparer_equals = False
             try:
-                key = key_selector(value)
+                key = key_mapper(value)
             except Exception as exception:
                 observer.throw(exception)
                 return

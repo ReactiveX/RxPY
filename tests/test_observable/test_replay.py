@@ -208,9 +208,9 @@ class TestReplay(unittest.TestCase):
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), close(600))
 
     #     def action():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
-    #         return xs.replay(selector, 3, scheduler=scheduler)
+    #         return xs.replay(mapper, 3, scheduler=scheduler)
 
     #     results = scheduler.start(action, disposed=610)
     #     assert results.messages == [send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(370, 8), send(370, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(430, 7), send(430, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), send(560, 9), send(560, 11), send(560, 20), send(600, 9), send(600, 11), send(600, 20), send(600, 9), send(600, 11), send(600, 20)]
@@ -222,10 +222,10 @@ class TestReplay(unittest.TestCase):
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), throw(600, ex))
 
     #     def create():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
 
-    #         return xs.replay(selector, 3, None)
+    #         return xs.replay(mapper, 3, None)
 
     #     results = scheduler.start(create)
 
@@ -237,10 +237,10 @@ class TestReplay(unittest.TestCase):
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), close(600))
 
     #     def create():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
 
-    #         return xs.replay(selector, 3, None)
+    #         return xs.replay(mapper, 3, None)
 
     #     results = scheduler.start(create, disposed=470)
     #     assert results.messages == [send(221, 3), send(281, 4), send(291, 1), send(341, 8), send(361, 5), send(371, 6), send(372, 8), send(373, 5), send(374, 6), send(391, 7), send(411, 13), send(431, 2), send(432, 7), send(433, 13), send(434, 2), send(450, 9)]
@@ -439,9 +439,9 @@ class TestReplay(unittest.TestCase):
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), close(600))
 
     #     def create():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
-    #         return xs.replay(selector, None, 50)
+    #         return xs.replay(mapper, None, 50)
 
     #     results = scheduler.start(create, disposed=610)
     #     assert results.messages == [send(221, 3), send(281, 4), send(291, 1), send(341, 8), send(361, 5), send(371, 6), send(372, 8), send(373, 5), send(374, 6), send(391, 7), send(411, 13), send(431, 2), send(432, 7), send(433, 13), send(434, 2), send(450, 9), send(520, 11), send(560, 20), send(562, 11), send(563, 20), send(602, 20), send(604, 20), send(606, 20), send(608, 20)]
@@ -453,10 +453,10 @@ class TestReplay(unittest.TestCase):
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), throw(600, ex))
 
     #     def create():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
 
-    #         return xs.replay(selector, None, 50)
+    #         return xs.replay(mapper, None, 50)
 
     #     results = scheduler.start(create)
 
@@ -467,9 +467,9 @@ class TestReplay(unittest.TestCase):
     #     scheduler = TestScheduler()
     #     xs = scheduler.create_hot_observable(send(110, 7), send(220, 3), send(280, 4), send(290, 1), send(340, 8), send(360, 5), send(370, 6), send(390, 7), send(410, 13), send(430, 2), send(450, 9), send(520, 11), send(560, 20), close(600))
     #     def create():
-    #         def selector(_xs):
+    #         def mapper(_xs):
     #             return _xs.take(6).repeat()
-    #         return xs.replay(selector, None, 50)
+    #         return xs.replay(mapper, None, 50)
 
     #     results = scheduler.start(create, disposed=470)
     #     assert results.messages == [send(221, 3), send(281, 4), send(291, 1), send(341, 8), send(361, 5), send(371, 6), send(372, 8), send(373, 5), send(374, 6), send(391, 7), send(411, 13), send(431, 2), send(432, 7), send(433, 13), send(434, 2), send(450, 9)]

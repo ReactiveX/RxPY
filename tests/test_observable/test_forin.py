@@ -18,9 +18,9 @@ class TestForIn(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(x * 100 + 10, x * 10 + 1), send(x * 100 + 20, x * 10 + 2), send(x * 100 + 30, x * 10 + 3), close(x * 100 + 40))
-            return Observable.for_in([1, 2, 3], selector)
+            return Observable.for_in([1, 2, 3], mapper)
 
         results = scheduler.start(create=create)
         assert results.messages == [send(310, 11), send(320, 12), send(330, 13), send(550, 21), send(560, 22), send(570, 23), send(890, 31), send(900, 32), send(910, 33), close(920)]
@@ -30,8 +30,8 @@ class TestForIn(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def selector(x):
+            def mapper(x):
                 raise Exception(ex)
-            return Observable.for_in([1, 2, 3], selector)
+            return Observable.for_in([1, 2, 3], mapper)
         results = scheduler.start(create=create)
         assert results.messages == [throw(200, ex)]

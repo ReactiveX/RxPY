@@ -4,32 +4,32 @@ from rx.disposables import CompositeDisposable, \
 
 
 def delay_with_selector(self, subscription_delay=None,
-                        delay_duration_selector=None) -> ObservableBase:
+                        delay_duration_mapper=None) -> ObservableBase:
     """Time shifts the observable sequence based on a subscription delay
-    and a delay selector function for each element.
+    and a delay mapper function for each element.
 
-    # with selector only
+    # with mapper only
     1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
-    # with delay and selector
+    # with delay and mapper
     2 - res = source.delay_with_selector(Observable.timer(2000),
                                          lambda x: Observable.timer(x))
 
     subscription_delay -- [Optional] Sequence indicating the delay for the
         subscription to the source.
-    delay_duration_selector [Optional] Selector function to retrieve a
+    delay_duration_mapper [Optional] Selector function to retrieve a
         sequence indicating the delay for each given element.
 
     Returns time-shifted sequence.
     """
 
     source = self
-    sub_delay, selector = None, None
+    sub_delay, mapper = None, None
 
     if isinstance(subscription_delay, typing.Observable):
-        selector = delay_duration_selector
+        mapper = delay_duration_mapper
         sub_delay = subscription_delay
     else:
-        selector = subscription_delay
+        mapper = subscription_delay
 
     def subscribe(observer, scheduler=None):
         delays = CompositeDisposable()
@@ -44,7 +44,7 @@ def delay_with_selector(self, subscription_delay=None,
         def start():
             def send(x):
                 try:
-                    delay = selector(x)
+                    delay = mapper(x)
                 except Exception as error:
                     observer.throw(error)
                     return

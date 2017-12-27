@@ -57,7 +57,7 @@ class TestSum(unittest.TestCase):
         res = scheduler.start(create=create).messages
         assert res == []
 
-    def test_sum_selector_regular_int32(self):
+    def test_sum_mapper_regular_int32(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(210, "fo"), send(220, "b"), send(230, "qux"), close(240))
 

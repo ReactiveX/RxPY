@@ -50,7 +50,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [throw(200, ex)]
 
-    def test_generate_timespan_throw_result_selector(self):
+    def test_generate_timespan_throw_result_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -78,7 +78,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [send(201, 0), throw(201, ex)]
 
-    def test_generate_timespan_throw_timeselector(self):
+    def test_generate_timespan_throw_timemapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -129,7 +129,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [throw(200, ex)]
 
-    def test_generate_datetime_offset_throw_result_selector(self):
+    def test_generate_datetime_offset_throw_result_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -155,7 +155,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [send(202, 0), throw(202, ex)]
 
-    def test_generate_datetime_offset_throw_time_selector(self):
+    def test_generate_datetime_offset_throw_time_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 

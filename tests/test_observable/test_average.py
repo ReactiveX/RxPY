@@ -67,7 +67,7 @@ class TestAverage(unittest.TestCase):
         res = scheduler.start(create=create).messages
         assert res == []
 
-    def test_average_selector_regular_int32(self):
+    def test_average_mapper_regular_int32(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(210, "b"), send(220, "fo"), send(230, "qux"), close(240))
 

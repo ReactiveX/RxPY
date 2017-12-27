@@ -43,11 +43,11 @@ class TestWindowWithCount(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(100, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(380, 7), send(420, 8), send(470, 9), throw(600, ex))
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 def mapping(x):
                     return "%s %s" % (i, x)
                 return w.map(mapping)
-            return xs.window_with_count(3, 2).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_count(3, 2).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 

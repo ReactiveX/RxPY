@@ -63,7 +63,7 @@ class TestToDict(unittest.TestCase):
            subscribe(200, 660)]
 
 
-    def test_to_dict_keyselectorthrows(self):
+    def test_to_dict_keymapperthrows(self):
         scheduler = TestScheduler()
 
         ex = Exception()
@@ -78,12 +78,12 @@ class TestToDict(unittest.TestCase):
           )
 
         def create():
-            def key_selector(x):
+            def key_mapper(x):
                 if x < 4:
                     return x * 2
                 else:
                     raise ex
-            return xs.to_dict(key_selector, lambda x: x * 4)
+            return xs.to_dict(key_mapper, lambda x: x * 4)
 
         res = scheduler.start(create)
 
@@ -93,7 +93,7 @@ class TestToDict(unittest.TestCase):
         assert xs.subscriptions == [
             subscribe(200, 440)]
 
-    def test_to_dict_elementselectorthrows(self):
+    def test_to_dict_elementmapperthrows(self):
         scheduler = TestScheduler()
 
         ex = Exception()
@@ -107,14 +107,14 @@ class TestToDict(unittest.TestCase):
             close(600)
         )
 
-        def value_selector(x):
+        def value_mapper(x):
             if x < 4:
                 return x * 4
             else:
                 raise ex
 
         def create():
-            return xs.to_dict(lambda x: x * 2 , value_selector)
+            return xs.to_dict(lambda x: x * 2 , value_mapper)
 
         res = scheduler.start(create)
 

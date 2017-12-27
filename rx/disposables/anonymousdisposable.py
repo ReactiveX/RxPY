@@ -7,14 +7,15 @@ class AnonymousDisposable(Disposable):
     """Main disposable class"""
 
     def __init__(self, action=None):
-        """Creates a disposable object that invokes the specified action when
-        disposed.
+        """Creates a disposable object that invokes the specified action
+        when disposed.
 
         Keyword arguments:
-        dispose -- Action to run during the first call to Disposable.dispose.
-            The action is guaranteed to be run at most once.
+        action -- Action to run during the first call to dispose. The
+            action is guaranteed to be run at most once.
 
-        Returns the disposable object that runs the given action upon disposal.
+        Returns the disposable object that runs the given action upon
+        disposal.
         """
 
         self.is_disposed = False
@@ -33,4 +34,3 @@ class AnonymousDisposable(Disposable):
 
         if dispose:
             self.action()
-

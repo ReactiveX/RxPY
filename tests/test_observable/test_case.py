@@ -78,9 +78,9 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            def selector():
+            def mapper():
                 raise Exception(ex)
-            return Observable.case(selector, map, zs)
+            return Observable.case(mapper, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]
@@ -147,9 +147,9 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            def selector():
+            def mapper():
                 raise Exception(ex)
-            return Observable.case(selector, map)
+            return Observable.case(mapper, map)
         results = scheduler.start(create)
 
         assert results.messages == [throw(200, ex)]

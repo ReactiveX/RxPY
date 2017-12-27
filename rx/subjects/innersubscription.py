@@ -1,14 +1,15 @@
 from rx import config
 
+from rx.core import Disposable
 
-class InnerSubscription:
+class InnerSubscription(Disposable):
     def __init__(self, subject, observer):
         self.subject = subject
         self.observer = observer
 
         self.lock = config["concurrency"].RLock()
 
-    def dispose(self):
+    def dispose(self) -> None:
         with self.lock:
             if not self.subject.is_disposed and self.observer:
                 if self.observer in self.subject.observers:

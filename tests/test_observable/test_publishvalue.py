@@ -311,9 +311,9 @@ class TestPublishValue(unittest.TestCase):
             close(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -352,9 +352,9 @@ class TestPublishValue(unittest.TestCase):
             throw(600, ex))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
 
         results = scheduler.start(create)
 
@@ -393,9 +393,9 @@ class TestPublishValue(unittest.TestCase):
             close(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
 
         results = scheduler.start(create, disposed=470)
         assert results.messages == [

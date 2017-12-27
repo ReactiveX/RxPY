@@ -370,7 +370,7 @@ class TestWithLatestFrom(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [send(235, 4 + 6), send(240, 4 + 7), throw(245, ex)]
 
-    def test_with_latest_from_selector_throws(self):
+    def test_with_latest_from_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [send(150, 1), send(225, 2), close(230)]

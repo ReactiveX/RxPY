@@ -3,13 +3,13 @@ from rx.core import ObservableBase, AnonymousObservable
 from rx.core.typing import Mapper
 
 
-def from_callback(func: Callable, selector: Mapper = None) -> "Callable[[...], ObservableBase]":
+def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], ObservableBase]":
     """Converts a callback function to an observable sequence.
 
     Keyword arguments:
     func -- Function with a callback as the last parameter to
         convert to an Observable sequence.
-    selector -- [Optional] A selector which takes the arguments
+    mapper -- [Optional] A mapper which takes the arguments
         from the callback to produce a single item to yield on next.
 
     Returns a function, when executed with the required parameters minus
@@ -23,9 +23,9 @@ def from_callback(func: Callable, selector: Mapper = None) -> "Callable[[...], O
         def subscribe(observer, scheduler=None):
             def handler(*args):
                 results = list(args)
-                if selector:
+                if mapper:
                     try:
-                        results = selector(args)
+                        results = mapper(args)
                     except Exception as err:
                         observer.throw(err)
                         return

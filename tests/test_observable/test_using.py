@@ -143,7 +143,7 @@ class TestUsing(unittest.TestCase):
         assert xs[0].subscriptions == [subscribe(200, 1000)]
         assert disposable[0].disposes == [200, 1000]
 
-    def test_using_throw_resource_selector(self):
+    def test_using_throw_resource_mapper(self):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]

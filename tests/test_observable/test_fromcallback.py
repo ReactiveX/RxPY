@@ -51,7 +51,7 @@ class TestFromCallback(unittest.TestCase):
 
         res.subscribe_callbacks(send, throw, close)
 
-    def test_from_node_callback_selector(self):
+    def test_from_node_callback_mapper(self):
         res = Observable.from_callback(
             lambda f,s,t,cb: cb(f,s,t),
             lambda r: r[0]

@@ -8,7 +8,7 @@ class AverageValue(object):
         self.count = count
 
 
-def average(source, key_selector=None) -> ObservableBase:
+def average(source, key_mapper=None) -> ObservableBase:
     """Computes the average of an observable sequence of values that are in
     the sequence or obtained by invoking a transform function on each
     element of the input sequence if present.
@@ -19,14 +19,14 @@ def average(source, key_selector=None) -> ObservableBase:
 
     Keyword arguments:
     source -- Observable to average.
-    key_selector -- A transform function to apply to each element.
+    key_mapper -- A transform function to apply to each element.
 
     Returns an observable sequence containing a single element with the
         average of the sequence of values.
     """
 
-    if key_selector:
-        return source.map(key_selector).average()
+    if key_mapper:
+        return source.map(key_mapper).average()
 
     def accumulator(prev, cur):
         return AverageValue(sum=prev.sum+cur, count=prev.count+1)

@@ -240,11 +240,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390))
 
         def create():
-            def subject_selector(scheduler):
+            def subject_mapper(scheduler):
                 return Subject()
-            def selector(ys):
+            def mapper(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(subject_mapper=subject_mapper, mapper=mapper)
         results = scheduler.start(create)
 
         assert results.messages == [send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390)]
@@ -256,11 +256,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), throw(390, ex))
 
         def create():
-            def subject_selector(scheduler):
+            def subject_mapper(scheduler):
                 return Subject()
-            def selector(ys):
+            def mapper(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(subject_mapper=subject_mapper, mapper=mapper)
 
         results = scheduler.start(create)
 
@@ -272,11 +272,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7))
 
         def create():
-            def subject_selector(scheduler):
+            def subject_mapper(scheduler):
                 return Subject()
-            def selector(ys):
+            def mapper(ys):
                 return ys
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            return xs.multicast(subject_mapper=subject_mapper, mapper=mapper)
 
         results = scheduler.start(create)
 
@@ -288,11 +288,11 @@ class TestMulticast(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(40, 0), send(90, 1), send(150, 2), send(210, 3), send(240, 4), send(270, 5), send(330, 6), send(340, 7), close(390))
 
         def create():
-            def subject_selector(scheduler):
+            def subject_mapper(scheduler):
                 return Subject()
-            def selector(ys):
-                return ys.zip(ys, result_selector=lambda a,b: a+b)
-            return xs.multicast(subject_selector=subject_selector, selector=selector)
+            def mapper(ys):
+                return ys.zip(ys, result_mapper=lambda a,b: a+b)
+            return xs.multicast(subject_mapper=subject_mapper, mapper=mapper)
         results = scheduler.start(create)
 
         assert results.messages == [send(210, 6), send(240, 8), send(270, 10), send(330, 12), send(340, 14), close(390)]

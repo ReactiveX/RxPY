@@ -6,15 +6,18 @@ class AnonymousObserver(ObserverBase):
     def __init__(self, send=None, throw=None, close=None):
         super().__init__()
 
-        self._next = send or noop
-        self._error = throw or default_error
-        self._close = close or noop
+        self._send_core = send or noop
+        self._throw_core = throw or default_error
+        self._close_core = close or noop
 
     def _send_core(self, value):
-        self._next(value)
+        raise NotImplementedError
 
     def _throw_core(self, error):
-        self._error(error)
+        raise NotImplementedError
 
     def _close_core(self):
-        self._close()
+        raise NotImplementedError
+
+
+NoopObserver = AnonymousObserver

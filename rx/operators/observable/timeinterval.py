@@ -17,7 +17,7 @@ def time_interval(source: ObservableBase) -> ObservableBase:
         scheduler = scheduler or timeout_scheduler
         last = scheduler.now
 
-        def selector(value):
+        def mapper(value):
             nonlocal last
 
             now = scheduler.now
@@ -25,5 +25,5 @@ def time_interval(source: ObservableBase) -> ObservableBase:
             last = now
             return TimeInterval(value=value, interval=span)
 
-        return source.map(selector).subscribe(observer, scheduler)
+        return source.map(mapper).subscribe(observer, scheduler)
     return AnonymousObservable(subscribe)

@@ -1,5 +1,7 @@
+from typing import Any, List
+
 from rx import config
-from rx.core import Observer, ObservableBase, Disposable
+from rx.core import Observer, ObservableBase, Disposable, Scheduler
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
@@ -11,13 +13,13 @@ class Subject(ObservableBase, Observer):
     observer. Each notification is broadcasted to all subscribed observers.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Subject, self).__init__()
 
         self.is_disposed = False
         self.is_stopped = False
-        self.observers = []
-        self.exception = None
+        self.observers = []   # type: List[Observer]
+        self.exception = None # type: Exception
 
         self.lock = config["concurrency"].RLock()
 
@@ -25,7 +27,7 @@ class Subject(ObservableBase, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -39,7 +41,7 @@ class Subject(ObservableBase, Observer):
             observer.close()
             return Disposable.empty()
 
-    def close(self):
+    def close(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -54,7 +56,7 @@ class Subject(ObservableBase, Observer):
             for observer in os:
                 observer.close()
 
-    def throw(self, error):
+    def throw(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception.
 
         Keyword arguments:
@@ -74,7 +76,7 @@ class Subject(ObservableBase, Observer):
             for observer in os:
                 observer.throw(error)
 
-    def send(self, value):
+    def send(self, value: Any) -> None:
         """Notifies all subscribed observers with the value.
 
         Keyword arguments:
@@ -91,7 +93,7 @@ class Subject(ObservableBase, Observer):
             for observer in os:
                 observer.send(value)
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""
         print("dispose!")
         with self.lock:

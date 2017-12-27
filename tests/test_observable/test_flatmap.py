@@ -226,7 +226,21 @@ class TestFlatMap(unittest.TestCase):
             return xs.flat_map(projection)
         results = scheduler.start(factory)
 
-        assert results.messages == [send(220, 4), send(230, 3), send(230, 4), send(240, 3), send(240, 4), send(250, 3), send(250, 4), send(260, 5), send(270, 5), send(280, 1), send(280, 5), send(290, 5), send(300, 5), close(300)]
+        assert results.messages == [
+            send(220, 4),
+            send(230, 3),
+            send(230, 4),
+            send(240, 3),
+            send(240, 4),
+            send(250, 3),
+            send(250, 4),
+            send(260, 5),
+            send(270, 5),
+            send(280, 1),
+            send(280, 5),
+            send(290, 5),
+            send(300, 5),
+            close(300)]
         assert xs.subscriptions == [subscribe(200, 290)]
 
     def test_flat_map_iterable_complete(self):
@@ -267,7 +281,7 @@ class TestFlatMap(unittest.TestCase):
             subscribe(200, 600)]
         assert(4 == len(inners))
 
-    def test_flat_map_iterable_complete_result_selector(self):
+    def test_flat_map_iterable_complete_result_mapper(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(

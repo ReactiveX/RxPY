@@ -296,7 +296,7 @@ class TestMinBy(unittest.TestCase):
         res = scheduler.start(create=create).messages
         assert res == []
 
-    def test_min_by_selector_throws(self):
+    def test_min_by_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [

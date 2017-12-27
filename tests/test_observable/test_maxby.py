@@ -21,9 +21,9 @@ class TestMaxBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return x["key"]
-            return xs.max_by(selector)
+            return xs.max_by(mapper)
 
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
@@ -43,9 +43,9 @@ class TestMaxBy(unittest.TestCase):
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
-            def selector(x):
+            def mapper(x):
                 return x["key"]
-            return xs.max_by(selector)
+            return xs.max_by(mapper)
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
@@ -74,9 +74,9 @@ class TestMaxBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return x["key"]
-            return xs.max_by(selector)
+            return xs.max_by(mapper)
 
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))

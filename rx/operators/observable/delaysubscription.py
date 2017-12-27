@@ -14,7 +14,7 @@ def delay_subscription(source, duetime: Union[datetime, int]) -> ObservableBase:
     Returns time-shifted sequence.
     """
 
-    def selector(_) -> ObservableBase:
+    def mapper(_) -> ObservableBase:
         return Observable.empty()
 
-    return source.delay_with_selector(Observable.timer(duetime), selector)
+    return source.delay_with_selector(Observable.timer(duetime), mapper)

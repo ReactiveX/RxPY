@@ -80,7 +80,7 @@ def timer(duetime, period=None) -> ObservableBase:
     6 - res = Observable.timer(5000, 1000)
 
     Keyword arguments:
-    duetime -- Absolute (specified as a Date object) or relative time
+    duetime -- Absolute (specified as a datetime object) or relative time
         (specified as an integer denoting milliseconds) at which to produce
         the first value.</param>
     period -- [Optional] Period to produce subsequent values (specified as

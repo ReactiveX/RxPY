@@ -35,15 +35,14 @@ class HotObservable(ObservableBase):
         return self.subscribe(observer, scheduler)
 
     def _subscribe_core(self, observer, scheduler=None):
-        observable = self
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
-            observable.observers.remove(observer)
-            start = observable.subscriptions[index].subscribe
-            end = observable.scheduler.clock
-            observable.subscriptions[index] = Subscription(start, end)
+            self.observers.remove(observer)
+            start = self.subscriptions[index].subscribe
+            end = self.scheduler.clock
+            self.subscriptions[index] = Subscription(start, end)
 
         return Disposable.create(dispose_action)

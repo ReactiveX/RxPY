@@ -4,7 +4,7 @@ from rx.disposables import MultipleAssignmentDisposable
 
 
 def generate_with_relative_time(initial_state, condition, iterate,
-                                result_selector, time_selector) -> ObservableBase:
+                                result_mapper, time_mapper) -> ObservableBase:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
@@ -19,9 +19,9 @@ def generate_with_relative_time(initial_state, condition, iterate,
     condition -- Condition to terminate generation (upon returning
         false).
     iterate -- Iteration step function.
-    result_selector -- Selector function for results produced in the
+    result_mapper -- Selector function for results produced in the
         sequence.
-    time_selector -- Time selector function to control the speed of
+    time_mapper -- Time mapper function to control the speed of
         values being produced each iteration, returning integer values
         denoting milliseconds.
 
@@ -49,8 +49,8 @@ def generate_with_relative_time(initial_state, condition, iterate,
 
                 has_result[0] = condition(state[0])
                 if has_result[0]:
-                    result[0] = result_selector(state[0])
-                    time[0] = time_selector(state[0])
+                    result[0] = result_mapper(state[0])
+                    time[0] = time_mapper(state[0])
 
             except Exception as e:
                 observer.throw(e)

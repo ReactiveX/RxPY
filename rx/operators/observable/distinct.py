@@ -19,9 +19,9 @@ class HashSet(object):
         return ret_value
 
 
-def distinct(self, key_selector=None, comparer=None) -> ObservableBase:
+def distinct(self, key_mapper=None, comparer=None) -> ObservableBase:
     """Returns an observable sequence that contains only distinct
-    elements according to the key_selector and the comparer. Usage of
+    elements according to the key_mapper and the comparer. Usage of
     this operator should be considered carefully due to the maintenance
     of an internal lookup structure which can grow large.
 
@@ -31,7 +31,7 @@ def distinct(self, key_selector=None, comparer=None) -> ObservableBase:
     obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
 
     Keyword arguments:
-    key_selector -- [Optional]  A function to compute the comparison key
+    key_mapper -- [Optional]  A function to compute the comparison key
         for each element.
     comparer -- [Optional]  Used to compare items in the collection.
 
@@ -48,9 +48,9 @@ def distinct(self, key_selector=None, comparer=None) -> ObservableBase:
         def send(x):
             key = x
 
-            if key_selector:
+            if key_mapper:
                 try:
-                    key = key_selector(x)
+                    key = key_mapper(x)
                 except Exception as ex:
                     observer.throw(ex)
                     return

@@ -47,7 +47,7 @@ class TestSelect(unittest.TestCase):
                 .map(lambda x: x) \
                 .subscribe()
 
-    def test_map_disposeinsideselector(self):
+    def test_map_disposeinsidemapper(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(100, 1), send(200, 2), send(500, 3), send(600, 4))
         results = scheduler.create_observer()
@@ -143,7 +143,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
-    def test_map_selector_throws(self):
+    def test_map_mapper_throws(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
@@ -184,7 +184,7 @@ class TestSelect(unittest.TestCase):
                 .map(mapper_indexed=lambda x, index: x) \
                 .subscribe()
 
-    def test_map_with_index_dispose_inside_selector(self):
+    def test_map_with_index_dispose_inside_mapper(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(100, 4), send(200, 3), send(500, 2), send(600, 1))
         invoked = [0]
@@ -261,7 +261,7 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
-    def test_map_with_index_selector_throws(self):
+    def test_map_with_index_mapper_throws(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'

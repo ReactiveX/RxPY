@@ -21,16 +21,16 @@ def _raise(ex):
 
 
 class TestDelayWithSelector(unittest.TestCase):
-    # Delay with selector
+    # Delay with mapper
     def test_delay_duration_simple1(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 10), send(220, 30), send(230, 50), send(240, 35), send(250, 20), close(260))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(x, '!'))
 
-            return xs.delay_with_selector(selector)
+            return xs.delay_with_selector(mapper)
 
         results = scheduler.start(create)
 

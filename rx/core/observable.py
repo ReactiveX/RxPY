@@ -26,15 +26,15 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return amb(*args)
 
     @staticmethod
-    def case(selector, sources, default_source=None) -> ObservableBase:
-        """Uses selector to determine which source in sources to use.
+    def case(mapper, sources, default_source=None) -> ObservableBase:
+        """Uses mapper to determine which source in sources to use.
 
         Example:
-        1 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 })
-        2 - res = rx.Observable.case(selector, { '1': obs1, '2': obs2 }, obs0)
+        1 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 })
+        2 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 }, obs0)
 
         Keyword arguments:
-        selector -- The function which extracts the value for to test in
+        mapper -- The function which extracts the value for to test in
             a case statement.
         sources -- An object which has keys which correspond to the case
             statement labels.
@@ -46,7 +46,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         statement.
         """
         from ..operators.observable.case import case
-        return case(selector, sources, default_source)
+        return case(mapper, sources, default_source)
 
     switch_case = case
 
@@ -118,21 +118,21 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
 
     @staticmethod
     def for_in(values: Iterable,
-               result_selector: Callable[[Any], ObservableBase]) -> ObservableBase:
+               result_mapper: Callable[[Any], ObservableBase]) -> ObservableBase:
         """Concatenates the observable sequences obtained by running the
-        specified result selector for each element in source.
+        specified result mapper for each element in source.
 
         Keyword arguments:
         values -- A list of values to turn into an observable
             sequence.
-        result_selector -- A function to apply to each item in the
+        result_mapper -- A function to apply to each item in the
             values list to turn it into an observable sequence.
         Returns an observable sequence from the concatenated
         observable sequences.
         """
 
         from ..operators.observable.forin import for_in
-        return for_in(values, result_selector)
+        return for_in(values, result_mapper)
 
     @staticmethod
     def from_callable(supplier: Callable) -> ObservableBase:
@@ -153,13 +153,13 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return from_callable(supplier)
 
     @staticmethod
-    def from_callback(func: Callable, selector: Mapper = None) -> "Callable[[...], ObservableBase]":
+    def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], ObservableBase]":
         """Converts a callback function to an observable sequence.
 
         Keyword arguments:
         func -- Function with a callback as the last parameter to
             convert to an Observable sequence.
-        selector -- [Optional] A selector which takes the arguments
+        mapper -- [Optional] A mapper which takes the arguments
             from the callback to produce a single item to yield on next.
 
         Returns a function, when executed with the required parameters
@@ -167,7 +167,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         single value of the arguments to the callback as a list.
         """
         from ..operators.observable.fromcallback import from_callback
-        return from_callback(func, selector)
+        return from_callback(func, mapper)
 
     @staticmethod
     def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
@@ -231,7 +231,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return from_marbles(string)
 
     @staticmethod
-    def generate(initial_state, condition, iterate, result_selector) -> ObservableBase:
+    def generate(initial_state, condition, iterate, result_mapper) -> ObservableBase:
         """Generates an observable sequence by running a state-driven
         loop producing the sequence's elements, using the specified
         scheduler to send out observer messages.
@@ -246,17 +246,17 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         condition -- Condition to terminate generation (upon returning
             False).
         iterate -- Iteration step function.
-        result_selector -- Selector function for results produced in the
+        result_mapper -- Selector function for results produced in the
             sequence.
 
         Returns the generated sequence.
         """
         from ..operators.observable.generate import generate
-        return generate(initial_state, condition, iterate, result_selector)
+        return generate(initial_state, condition, iterate, result_mapper)
 
     @staticmethod
     def generate_with_relative_time(initial_state, condition, iterate,
-                                    result_selector, time_selector) -> ObservableBase:
+                                    result_mapper, time_mapper) -> ObservableBase:
         """Generates an observable sequence by iterating a state from an
         initial state until the condition fails.
 
@@ -271,16 +271,16 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         condition -- Condition to terminate generation (upon returning
             false).
         iterate -- Iteration step function.
-        result_selector -- Selector function for results produced in the
+        result_mapper -- Selector function for results produced in the
             sequence.
-        time_selector -- Time selector function to control the speed of
+        time_mapper -- Time mapper function to control the speed of
             values being produced each iteration, returning integer
             values denoting milliseconds.
 
         Returns the generated sequence.
         """
         from ..operators.observable.generatewithrelativetime import generate_with_relative_time
-        return generate_with_relative_time(initial_state, condition, iterate, result_selector, time_selector)
+        return generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper)
 
     @staticmethod
     def if_then(condition: Callable[[], bool], then_source: ObservableBase,
@@ -592,9 +592,9 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
 
     @staticmethod
     def zip(*args: Union[Iterable[ObservableBase], ObservableBase],
-            result_selector: Mapper = None) -> ObservableBase:
+            result_mapper: Mapper = None) -> ObservableBase:
         """Merges the specified observable sequences into one observable
-        sequence by using the selector function whenever all of the
+        sequence by using the mapper function whenever all of the
         observable sequences or an array have produced an element at a
         corresponding index.
 
@@ -602,18 +602,18 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         for each series of elements at corresponding indexes in the
         sources.
 
-        1 - res = Observable.zip(obs2, result_selector=fn)
-        2 - res = Observable.zip([1,2,3], result_selector=fn)
+        1 - res = Observable.zip(obs2, result_mapper=fn)
+        2 - res = Observable.zip([1,2,3], result_mapper=fn)
 
         Keyword arguments:
         args -- Observable sources to zip.
-        result_selector -- Selector function that produces an element
+        result_mapper -- Selector function that produces an element
             whenever all of the observable sequences have produced an
             element at a corresponding index
 
         Returns an observable sequence containing the result of
         combining elements of the sources using the specified result
-        selector function.
+        mapper function.
         """
         from ..operators.observable.zip import zip as _zip
-        return _zip(*args, result_selector=result_selector)
+        return _zip(*args, result_mapper=result_mapper)

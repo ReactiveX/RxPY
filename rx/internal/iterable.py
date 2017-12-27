@@ -10,10 +10,10 @@ class Iterable(abc.Iterable):
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(value for value in self if predicate(value))
 
-    def map(self, selector=None):
-        selector = selector or identity
+    def map(self, mapper=None):
+        mapper = mapper or identity
 
-        return Iterable(selector(value) for value in self)
+        return Iterable(mapper(value) for value in self)
 
     def take(self, count):
         def _next():
@@ -54,11 +54,11 @@ class Iterable(abc.Iterable):
         return AnonymousIterable(itertools.repeat(value))
 
     @staticmethod
-    def for_each(source, selector=None):
-        selector = selector or identity
+    def for_each(source, mapper=None):
+        mapper = mapper or identity
 
         from .anonymousiterable import AnonymousIterable
-        return AnonymousIterable(selector(value) for value in source)
+        return AnonymousIterable(mapper(value) for value in source)
 
     @staticmethod
     def while_do(condition, source):

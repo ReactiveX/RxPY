@@ -36,9 +36,9 @@ class TestTimeInterval(unittest.TestCase):
                                              send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return TimeInterval(x.value, x.interval)
-            return xs.time_interval().map(selector)
+            return xs.time_interval().map(mapper)
         results = scheduler.start(create)
         assert results.messages == [send(210, TimeInterval(2, 10)), send(230, TimeInterval(3, 20)),
                                     send(260, TimeInterval(4, 30)), send(300, TimeInterval(5, 40)),

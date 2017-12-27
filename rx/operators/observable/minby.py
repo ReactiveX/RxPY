@@ -1,7 +1,7 @@
 from rx.core import AnonymousObservable, ObservableBase
 from rx.internal.basic import default_sub_comparer
 
-def extrema_by(source, key_selector, comparer):
+def extrema_by(source, key_mapper, comparer):
     def subscribe(observer, scheduler=None):
         has_value = [False]
         last_key = [None]
@@ -9,7 +9,7 @@ def extrema_by(source, key_selector, comparer):
 
         def send(x):
             try:
-                key = key_selector(x)
+                key = key_mapper(x)
             except Exception as ex:
                 observer.throw(ex)
                 return
@@ -42,7 +42,7 @@ def extrema_by(source, key_selector, comparer):
     return AnonymousObservable(subscribe)
 
 
-def min_by(source, key_selector, comparer=None) -> ObservableBase:
+def min_by(source, key_mapper, comparer=None) -> ObservableBase:
     """Returns the elements in an observable sequence with the minimum key
     value according to the specified comparer.
 
@@ -51,7 +51,7 @@ def min_by(source, key_selector, comparer=None) -> ObservableBase:
     res = source.min_by(lambda x: x.value, lambda x, y: x - y)
 
     Keyword arguments:
-    key_selector -- {Function} Key selector function.
+    key_mapper -- {Function} Key mapper function.
     comparer -- {Function} [Optional] Comparer used to compare key values.
 
     Returns an observable {Observable} sequence containing a list of zero
@@ -60,4 +60,4 @@ def min_by(source, key_selector, comparer=None) -> ObservableBase:
 
     comparer = comparer or default_sub_comparer
 
-    return extrema_by(source, key_selector, lambda x, y: comparer(x, y) * -1)
+    return extrema_by(source, key_mapper, lambda x, y: comparer(x, y) * -1)

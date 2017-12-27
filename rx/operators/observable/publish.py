@@ -2,9 +2,9 @@ from rx.core import ObservableBase, ConnectableObservable
 from rx.subjects import Subject
 
 
-def publish(source, selector=None) -> ConnectableObservable:
+def publish(source, mapper=None) -> ConnectableObservable:
     """Returns an observable sequence that is the result of invoking the
-    selector on a connectable observable sequence that shares a single
+    mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
     specialization of Multicast using a regular Subject.
 
@@ -12,7 +12,7 @@ def publish(source, selector=None) -> ConnectableObservable:
     res = source.publish()
     res = source.publish(lambda x: x)
 
-    selector -- {Function} [Optional] Selector function which can use the
+    mapper -- {Function} [Optional] Selector function which can use the
         multicasted source sequence as many times as needed, without causing
         multiple subscriptions to the source sequence. Subscribers to the
         given source will receive all notifications of the source from the
@@ -20,10 +20,10 @@ def publish(source, selector=None) -> ConnectableObservable:
 
     Returns an observable {Observable} sequence that contains the elements
     of a sequence produced by multicasting the source sequence within a
-    selector function."""
+    mapper function."""
 
-    if selector:
-        return source.multicast(subject_selector=lambda _: Subject(), selector=selector)
+    if mapper:
+        return source.multicast(subject_mapper=lambda _: Subject(), mapper=mapper)
     else:
         return source.multicast(subject=Subject())
 

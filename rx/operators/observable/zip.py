@@ -5,34 +5,34 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
 def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
-        result_selector: Mapper = None) -> ObservableBase:
+        result_mapper: Mapper = None) -> ObservableBase:
     """Merges the specified observable sequences into one observable
-    sequence by using the selector function whenever all of the
+    sequence by using the mapper function whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
     The last element in the arguments must be a function to invoke for
     each series of elements at corresponding indexes in the sources.
 
-    1 - res = zip(obs1, obs2, result_selector=fn)
-    2 - res = zip(xs, [1,2,3], result_selector=fn)
+    1 - res = zip(obs1, obs2, result_mapper=fn)
+    2 - res = zip(xs, [1,2,3], result_mapper=fn)
 
     Keyword arguments:
     args -- Observable sources to zip.
-    result_selector -- Mapper function that produces an element
+    result_mapper -- Mapper function that produces an element
         whenever all of the observable sequences have produced an
         element at a corresponding index
 
     Returns an observable sequence containing the result of
     combining elements of the sources using the specified result
-    selector function.
+    mapper function.
     """
 
     if len(args) == 2 and isinstance(args[1], Iterable):
-        return _zip_with_list(args[0], args[1], result_selector=result_selector)
+        return _zip_with_list(args[0], args[1], result_mapper=result_mapper)
 
     sources = list(args)
-    result_selector = result_selector or list
+    result_mapper = result_mapper or list
 
     def subscribe(observer, scheduler=None):
         n = len(sources)
@@ -43,7 +43,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
             if all([len(q) for q in queues]):
                 try:
                     queued_values = [x.pop(0) for x in queues]
-                    res = result_selector(*queued_values)
+                    res = result_mapper(*queued_values)
                 except Exception as ex:
                     observer.throw(ex)
                     return
@@ -76,7 +76,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
     return AnonymousObservable(subscribe)
 
 
-def _zip_with_list(source, second, result_selector):
+def _zip_with_list(source, second, result_mapper):
     first = source
 
     def subscribe(observer, scheduler=None):
@@ -90,7 +90,7 @@ def _zip_with_list(source, second, result_selector):
                 right = second[index]
                 index += 1
                 try:
-                    result = result_selector(left, right)
+                    result = result_mapper(left, right)
                 except Exception as ex:
                     observer.throw(ex)
                     return

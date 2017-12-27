@@ -10,19 +10,19 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def group_join(self, right, left_duration_selector, right_duration_selector, result_selector) -> ObservableBase:
+def group_join(self, right, left_duration_mapper, right_duration_mapper, result_mapper) -> ObservableBase:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
     Keyword arguments:
     right -- The right observable sequence to join elements for.
-    left_duration_selector -- A function to select the duration (expressed
+    left_duration_mapper -- A function to select the duration (expressed
         as an observable sequence) of each element of the left observable
         sequence, used to determine overlap.
-    right_duration_selector -- A function to select the duration (expressed
+    right_duration_mapper -- A function to select the duration (expressed
         as an observable sequence) of each element of the right observable
         sequence, used to determine overlap.
-    result_selector -- A function invoked to compute a result element for
+    result_mapper -- A function invoked to compute a result element for
         any element of the left sequence with overlapping elements from the
         right observable sequence. The first parameter passed to the
         function is an element of the left sequence. The second parameter
@@ -53,7 +53,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 left_map[_id] = s
 
             try:
-                result = result_selector(value, add_ref(s, r))
+                result = result_mapper(value, add_ref(s, r))
             except Exception as e:
                 log.error("*** Exception: %s" % e)
                 for left_value in left_map.values():
@@ -78,7 +78,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 group.remove(md)
 
             try:
-                duration = left_duration_selector(value)
+                duration = left_duration_mapper(value)
             except Exception as e:
                 for left_value in left_map.values():
                     left_value.throw(e)
@@ -116,7 +116,7 @@ def group_join(self, right, left_duration_selector, right_duration_selector, res
                 group.remove(md)
 
             try:
-                duration = right_duration_selector(value)
+                duration = right_duration_mapper(value)
             except Exception as e:
                 for left_value in left_map.values():
                     left_value.throw(e)

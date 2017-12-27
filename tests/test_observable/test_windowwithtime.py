@@ -31,11 +31,11 @@ class TestWindowWithTime(unittest.TestCase):
         )
 
         def create():
-            def selector(ys, i):
+            def mapper(ys, i):
                 def proj(y):
                     return "%s %s" % (i, y)
                 return ys.map(proj).concat(Observable.return_value('%s end' % i))
-            return xs.window_with_time(100).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 
@@ -72,12 +72,12 @@ class TestWindowWithTime(unittest.TestCase):
         )
 
         def create():
-            def selector(ys, i):
+            def mapper(ys, i):
                 def proj(y):
                     return "%s %s" % (i, y)
 
                 return ys.map(proj).concat(Observable.return_value('%s end' % i))
-            return xs.window_with_time(100, 50).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100, 50).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 
@@ -89,10 +89,10 @@ class TestWindowWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(100, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(380, 7), send(420, 8), send(470, 9), close(600))
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: "%s %s" % (i, x))
 
-            return xs.window_with_time(100, 70).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100, 70).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 
@@ -105,10 +105,10 @@ class TestWindowWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(100, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(380, 7), send(420, 8), send(470, 9), throw(600, ex))
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: "%s %s" % (i, x))
 
-            return xs.window_with_time(100, 70).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100, 70).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 
@@ -120,10 +120,10 @@ class TestWindowWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(100, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(380, 7), send(420, 8), send(470, 9), close(600))
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: "%s %s" % (i, x))
 
-            return xs.window_with_time(100, 70).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100, 70).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create, disposed=370)
         assert results.messages == [send(210, "0 2"), send(240, "0 3"), send(280, "0 4"), send(280, "1 4"), send(320, "1 5"), send(350, "1 6"), send(350, "2 6")]
@@ -135,10 +135,10 @@ class TestWindowWithTime(unittest.TestCase):
 
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: "%s %s" % (i, x))
 
-            return xs.window_with_time(100).map(mapper_indexed=selector).merge_all()
+            return xs.window_with_time(100).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create)
 

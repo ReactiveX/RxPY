@@ -10,14 +10,14 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def window(self, window_openings=None, window_closing_selector=None) -> ObservableBase:
+def window(self, window_openings=None, window_closing_mapper=None) -> ObservableBase:
     """Projects each element of an observable sequence into zero or more
     windows.
 
     Keyword arguments:
     window_openings -- Observable sequence whose elements denote the
         creation of windows.
-    window_closing_selector -- [Optional] A function invoked to define
+    window_closing_mapper -- [Optional] A function invoked to define
         the closing of each produced window. It defines the boundaries
         of the produced windows (a window is started when the previous
         one is closed, resulting in non-overlapping windows).
@@ -27,19 +27,19 @@ def window(self, window_openings=None, window_closing_selector=None) -> Observab
 
     # Make it possible to call window with a single unnamed parameter
     if not isinstance(window_openings, typing.Observable) and callable(window_openings):
-        window_closing_selector = window_openings
+        window_closing_mapper = window_openings
         window_openings = None
 
-    if window_openings and not window_closing_selector:
+    if window_openings and not window_closing_mapper:
         return observable_window_with_boundaries(self, window_openings)
 
-    if not window_openings and window_closing_selector:
-        return observable_window_with_closing_selector(self, window_closing_selector)
+    if not window_openings and window_closing_mapper:
+        return observable_window_with_closing_mapper(self, window_closing_mapper)
 
-    return observable_window_with_openings(self, window_openings, window_closing_selector)
+    return observable_window_with_openings(self, window_openings, window_closing_mapper)
 
-def observable_window_with_openings(self, window_openings, window_closing_selector):
-    return window_openings.group_join(self, window_closing_selector, lambda _: Observable.empty(), lambda _, window: window)
+def observable_window_with_openings(self, window_openings, window_closing_mapper):
+    return window_openings.group_join(self, window_closing_mapper, lambda _: Observable.empty(), lambda _, window: window)
 
 def observable_window_with_boundaries(self, window_boundaries):
     source = self
@@ -73,7 +73,7 @@ def observable_window_with_boundaries(self, window_boundaries):
         return r
     return AnonymousObservable(subscribe)
 
-def observable_window_with_closing_selector(self, window_closing_selector):
+def observable_window_with_closing_mapper(self, window_closing_mapper):
     source = self
 
     def subscribe(observer, scheduler=None):
@@ -99,7 +99,7 @@ def observable_window_with_closing_selector(self, window_closing_selector):
 
         def create_window_close():
             try:
-                window_close = window_closing_selector()
+                window_close = window_closing_mapper()
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
                 observer.throw(exception)

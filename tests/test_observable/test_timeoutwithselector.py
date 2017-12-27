@@ -117,13 +117,13 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable()
 
         def create():
-            def selector(x):
+            def mapper(x):
                 if x < 3:
                     return zs
                 else:
                     raise Exception(ex)
 
-            return xs.timeout_with_selector(ys, selector)
+            return xs.timeout_with_selector(ys, mapper)
 
         results = scheduler.start(create)
 

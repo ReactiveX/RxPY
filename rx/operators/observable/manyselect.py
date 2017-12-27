@@ -1,8 +1,8 @@
 from rx.core import ObservableBase, Observable
+from rx.core.typing import Mapper
 from rx.internal.basic import noop
 from rx.subjects import AsyncSubject
 from rx.disposables import CompositeDisposable
-from rx.concurrency import current_thread_scheduler
 
 
 class ChainObservable(ObservableBase):
@@ -12,34 +12,35 @@ class ChainObservable(ObservableBase):
 
         def action(scheduler, state):
             observer.send(self.head)
-            g.add(self.tail.merge_all().subscribe(observer))
+            g.add(self.tail.merge_all().subscribe(observer, scheduler))
 
-        g.add(current_thread_scheduler.schedule(action))
+        g.add(scheduler.schedule(action))
         return g
 
     def __init__(self, head):
-        super(ChainObservable, self).__init__()
+        super().__init__()
+
         self.head = head
         self.tail = AsyncSubject()
 
     def close(self):
         self.send(Observable.empty())
 
-    def throw(self, e):
-        self.send(Observable.throw(e))
+    def throw(self, error):
+        self.send(Observable.throw(error))
 
-    def send(self, v):
-        self.tail.send(v)
+    def send(self, value):
+        self.tail.send(value)
         self.tail.close()
 
 
-def many_select(self, selector) -> ObservableBase:
+def many_select(source: ObservableBase, mapper: Mapper) -> ObservableBase:
     """Comonadic bind operator. Internally projects a new observable for each
-    value, and it pushes each observable into the user-defined selector function
+    value, and it pushes each observable into the user-defined mapper function
     that projects/queries each observable into some result.
 
     Keyword arguments:
-    selector -- {Function} A transform function to apply to each element.
+    mapper -- {Function} A transform function to apply to each element.
     scheduler -- {Object} [Optional] Scheduler used to execute the
         operation. If not specified, defaults to the ImmediateScheduler.
 
@@ -47,12 +48,10 @@ def many_select(self, selector) -> ObservableBase:
     comonadic bind operation.
     """
 
-    source = self
-
     def factory(scheduler):
         chain = [None]
 
-        def mapper(x):
+        def _mapper(x):
             curr = ChainObservable(x)
 
             chain[0] and chain[0].send(x)
@@ -60,20 +59,18 @@ def many_select(self, selector) -> ObservableBase:
 
             return curr
 
-        def throw(e):
+        def throw(error):
             if chain[0]:
-                chain[0].throw(e)
+                chain[0].throw(error)
 
         def close():
             if chain[0]:
                 chain[0].close()
 
-        return source.map(
-            mapper
-        ).do_action(
-            noop, throw, close
-        ).map(
-            selector
-        )
+        return (source
+                .map(_mapper)
+                .do_action(noop, throw, close)
+                .map(mapper)
+               )
 
     return Observable.defer(factory)

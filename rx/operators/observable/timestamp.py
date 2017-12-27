@@ -15,8 +15,8 @@ def timestamp(source: ObservableBase) -> ObservableBase:
     def factory(scheduler=None):
         scheduler = scheduler or timeout_scheduler
 
-        def selector(value):
+        def mapper(value):
             return Timestamp(value=value, timestamp=scheduler.now)
 
-        return source.map(selector)
+        return source.map(mapper)
     return Observable.defer(factory)

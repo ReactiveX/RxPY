@@ -53,7 +53,7 @@ class TestGenerate(unittest.TestCase):
 
         assert results.messages == [throw(200, ex)]
 
-    def test_generate_throw_result_selector(self):
+    def test_generate_throw_result_mapper(self):
         scheduler = TestScheduler()
         ex = 'ex'
 

@@ -662,14 +662,14 @@ class TestJoin(unittest.TestCase):
             close(800))
 
         def create():
-            def left_duration_selector(x):
+            def left_duration_mapper(x):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
                     return Observable.empty()
 
             return xs.join(ys,
-                left_duration_selector,
+                left_duration_mapper,
                 lambda y: Observable.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
             )
@@ -706,7 +706,7 @@ class TestJoin(unittest.TestCase):
             close(800))
 
         def create():
-            def right_duration_selector(y):
+            def right_duration_mapper(y):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
@@ -714,7 +714,7 @@ class TestJoin(unittest.TestCase):
 
             return xs.join(ys,
                 lambda x: Observable.timer(x.interval),
-                right_duration_selector,
+                right_duration_mapper,
                 lambda x, y: str(x.value) + y.value
             )
         results = scheduler.start(create=create)
@@ -750,7 +750,7 @@ class TestJoin(unittest.TestCase):
             close(800))
 
         def create():
-            def result_selector(x, y):
+            def result_mapper(x, y):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
@@ -759,7 +759,7 @@ class TestJoin(unittest.TestCase):
             return xs.join(ys,
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
-                result_selector,
+                result_mapper,
                 )
         results = scheduler.start(create=create)
         assert results.messages == [throw(215, ex)]
@@ -793,7 +793,7 @@ class TestJoin(unittest.TestCase):
             close(800))
 
         def create():
-            def result_selector(x, y):
+            def result_mapper(x, y):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
@@ -802,7 +802,7 @@ class TestJoin(unittest.TestCase):
             return xs.join(ys,
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
-                result_selector,
+                result_mapper,
                 )
         results = scheduler.start(create=create)
 

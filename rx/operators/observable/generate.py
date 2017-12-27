@@ -3,7 +3,7 @@ from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def generate(initial_state, condition, iterate, result_selector) -> ObservableBase:
+def generate(initial_state, condition, iterate, result_mapper) -> ObservableBase:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
@@ -17,7 +17,7 @@ def generate(initial_state, condition, iterate, result_selector) -> ObservableBa
     initial_state -- Initial state.
     condition -- Condition to terminate generation (upon returning False).
     iterate -- Iteration step function.
-    result_selector -- Selector function for results produced in the
+    result_mapper -- Selector function for results produced in the
         sequence.
 
     Returns the generated sequence.
@@ -41,7 +41,7 @@ def generate(initial_state, condition, iterate, result_selector) -> ObservableBa
 
                 has_result = condition(state[0])
                 if has_result:
-                    result = result_selector(state[0])
+                    result = result_mapper(state[0])
 
             except Exception as exception:
                 observer.throw(exception)

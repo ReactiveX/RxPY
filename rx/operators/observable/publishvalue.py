@@ -5,9 +5,9 @@ from rx.subjects import BehaviorSubject
 from rx.core.typing import Mapper
 
 
-def publish_value(source, initial_value: Any, selector: Mapper = None) -> ObservableBase:
+def publish_value(source, initial_value: Any, mapper: Mapper = None) -> ObservableBase:
     """Returns an observable sequence that is the result of invoking the
-    selector on a connectable observable sequence that shares a single
+    mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence and starts with
     initial_value.
 
@@ -21,7 +21,7 @@ def publish_value(source, initial_value: Any, selector: Mapper = None) -> Observ
     Keyword arguments:
     initial_value -- Initial value received by observers upon
         subscription.
-    selector -- [Optional] Optional selector function which can use the
+    mapper -- [Optional] Optional mapper function which can use the
         multicasted source sequence as many times as needed, without
         causing multiple subscriptions to the source sequence.
         Subscribers to the given source will receive immediately receive
@@ -30,13 +30,13 @@ def publish_value(source, initial_value: Any, selector: Mapper = None) -> Observ
 
     Returns an observable sequence that contains the elements of a
     sequence produced by multicasting the source sequence within a
-    selector function.
+    mapper function.
     """
 
-    if selector:
-        def subject_selector(scheduler):
+    if mapper:
+        def subject_mapper(scheduler):
             return BehaviorSubject(initial_value)
 
-        return source.multicast(subject_selector=subject_selector, selector=selector)
+        return source.multicast(subject_mapper=subject_mapper, mapper=mapper)
     else:
         return source.multicast(BehaviorSubject(initial_value))

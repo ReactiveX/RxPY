@@ -7,9 +7,9 @@ from rx.disposables import CompositeDisposable, RefCountDisposable, \
 from rx.internal.basic import identity
 
 
-def group_by_until(self, key_selector, element_selector, duration_selector) -> ObservableBase:
+def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> ObservableBase:
     """Groups the elements of an observable sequence according to a
-    specified key selector function. A duration selector function is used
+    specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
     an OnCompleted notification. When a new element with the same key value
     as a reclaimed group occurs, the group will be reborn with a new
@@ -32,8 +32,8 @@ def group_by_until(self, key_selector, element_selector, duration_selector) -> O
             lambda x: str(x))
 
     Keyword arguments:
-    key_selector -- A function to extract the key for each element.
-    duration_selector -- A function to signal the expiration of a group.
+    key_mapper -- A function to extract the key for each element.
+    duration_mapper -- A function to signal the expiration of a group.
 
     Returns a sequence of observable groups, each of which corresponds to
     a unique key value, containing all elements that share that same key
@@ -43,7 +43,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector) -> O
     """
 
     source = self
-    element_selector = element_selector or identity
+    element_mapper = element_mapper or identity
 
     def subscribe(observer, scheduler=None):
         writers = OrderedDict()
@@ -55,7 +55,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector) -> O
             key = None
 
             try:
-                key = key_selector(x)
+                key = key_mapper(x)
             except Exception as e:
                 for wrt in writers.values():
                     wrt.throw(e)
@@ -74,7 +74,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector) -> O
                 group = GroupedObservable(key, writer, ref_count_disposable)
                 duration_group = GroupedObservable(key, writer)
                 try:
-                    duration = duration_selector(duration_group)
+                    duration = duration_mapper(duration_group)
                 except Exception as e:
                     for wrt in writers.values():
                         wrt.throw(e)
@@ -107,7 +107,7 @@ def group_by_until(self, key_selector, element_selector, duration_selector) -> O
                 sad.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
 
             try:
-                element = element_selector(x)
+                element = element_mapper(x)
             except Exception as error:
                 for wrt in writers.values():
                     wrt.throw(error)

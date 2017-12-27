@@ -1,5 +1,5 @@
 from rx import config
-from rx.core import Disposable
+from rx.core.disposable import Disposable
 
 
 class SingleAssignmentDisposable(Disposable):

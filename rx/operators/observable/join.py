@@ -8,19 +8,19 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 log = logging.getLogger("Rx")
 
 
-def join(source, right, left_duration_selector, right_duration_selector, result_selector) -> ObservableBase:
+def join(source, right, left_duration_mapper, right_duration_mapper, result_mapper) -> ObservableBase:
     """Correlates the elements of two sequences based on overlapping
     durations.
 
     Keyword arguments:
     right -- The right observable sequence to join elements for.
-    left_duration_selector -- A function to select the duration (expressed
+    left_duration_mapper -- A function to select the duration (expressed
         as an observable sequence) of each element of the left observable
         sequence, used to determine overlap.
-    right_duration_selector -- A function to select the duration (expressed
+    right_duration_mapper -- A function to select the duration (expressed
         as an observable sequence) of each element of the right observable
         sequence, used to determine overlap.
-    result_selector -- A function invoked to compute a result element for
+    result_mapper -- A function invoked to compute a result element for
         any two overlapping elements of the left and right observable
         sequences. The parameters passed to the function correspond with
         the elements from the left and right source sequences for which
@@ -59,7 +59,7 @@ def join(source, right, left_duration_selector, right_duration_selector, result_
                 return group.remove(md)
 
             try:
-                duration = left_duration_selector(value)
+                duration = left_duration_mapper(value)
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
                 observer.throw(exception)
@@ -69,7 +69,7 @@ def join(source, right, left_duration_selector, right_duration_selector, result_
 
             for val in right_map.values():
                 try:
-                    result = result_selector(value, val)
+                    result = result_mapper(value, val)
                 except Exception as exception:
                     log.error("*** Exception: %s" % exception)
                     observer.throw(exception)
@@ -101,7 +101,7 @@ def join(source, right, left_duration_selector, right_duration_selector, result_
                 return group.remove(md)
 
             try:
-                duration = right_duration_selector(value)
+                duration = right_duration_mapper(value)
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
                 observer.throw(exception)
@@ -111,7 +111,7 @@ def join(source, right, left_duration_selector, right_duration_selector, result_
 
             for val in left_map.values():
                 try:
-                    result = result_selector(val, value)
+                    result = result_mapper(val, value)
                 except Exception as exception:
                     log.error("*** Exception: %s" % exception)
                     observer.throw(exception)

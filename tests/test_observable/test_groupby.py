@@ -47,11 +47,11 @@ class TestGroupBy(unittest.TestCase):
             throw(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            return xs.group_by(key_selector, lambda x: x).map(lambda g: g.key)
+            return xs.group_by(key_mapper, lambda x: x).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -89,15 +89,15 @@ class TestGroupBy(unittest.TestCase):
             throw(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1] # Yes, this is reverse string in Python
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -137,14 +137,14 @@ class TestGroupBy(unittest.TestCase):
             throw(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
 
@@ -185,15 +185,15 @@ class TestGroupBy(unittest.TestCase):
             throw(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory, disposed=355)
 
@@ -231,18 +231,18 @@ class TestGroupBy(unittest.TestCase):
             close(600),
             throw(650, 'ex'))
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 if key_invoked[0] == 10:
                     raise Exception(ex)
 
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -282,17 +282,17 @@ class TestGroupBy(unittest.TestCase):
             throw(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 if ele_invoked[0] == 10:
                     raise Exception(ex)
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
         assert results.messages == [

@@ -27,10 +27,10 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable(close(300))
 
         def create():
-            def selector():
+            def mapper():
                 return scheduler.create_cold_observable(send(100, 1), send(200, 2), close(300))
 
-            return xs.expand(selector)
+            return xs.expand(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [close(300)]
@@ -42,9 +42,9 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable(throw(300, ex))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(100 + x, 2 * x), send(200 + x, 3 * x), close(300 + x))
-            return xs.expand(selector)
+            return xs.expand(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [throw(300, ex)]
@@ -55,9 +55,9 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(100 + x, 2 * x), send(200 + x, 3 * x), close(300 + x))
-            return xs.expand(selector)
+            return xs.expand(mapper)
 
         results = scheduler.start(create)
 
@@ -69,9 +69,9 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(550, 1), send(850, 2), close(950))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(100, 2 * x), send(200, 3 * x), close(300))
-            return xs.expand(selector)
+            return xs.expand(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [send(550, 1), send(650, 2), send(750, 3), send(750, 4), send(850, 2), send(850, 6), send(850, 6), send(850, 8), send(950, 9), send(950, 12), send(950, 4), send(950, 12), send(950, 12), send(950, 16)]
@@ -83,9 +83,9 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(550, 1), send(850, 2), close(950))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 raise Exception(ex)
-            return xs.expand(selector)
+            return xs.expand(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [send(550, 1), throw(550, ex)]

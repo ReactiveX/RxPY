@@ -6,6 +6,7 @@ from asyncio import Future
 
 from rx import config
 from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator
+from .disposable import Disposable
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
 from . import typing, abc
@@ -102,7 +103,7 @@ class ObservableBase(typing.Observable):
     def subscribe(self,
                   observer: typing.Observer = None,
                   scheduler: typing.Scheduler = None
-                 ) -> typing.Disposable:
+                 ) -> Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -125,7 +126,7 @@ class ObservableBase(typing.Observable):
                             throw: typing.Throw = None,
                             close: typing.Close = None,
                             scheduler: typing.Scheduler = None
-                           ) -> typing.Disposable:
+                           ) -> Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -202,7 +203,7 @@ class ObservableBase(typing.Observable):
         source = self
         return as_observable(source)
 
-    def average(self, key_selector=None) -> 'ObservableBase':
+    def average(self, key_mapper=None) -> 'ObservableBase':
         """Computes the average of an observable sequence of values that
         are in the sequence or obtained by invoking a transform function
         on each element of the input sequence if present.
@@ -212,32 +213,32 @@ class ObservableBase(typing.Observable):
         res = source.average(lambda x: x.value)
 
         Keyword arguments:
-        key_selector -- A transform function to apply to each element.
+        key_mapper -- A transform function to apply to each element.
 
         Returns an observable sequence containing a single element with
         the average of the sequence of values.
         """
         from ..operators.observable.average import average
         source = self
-        return average(source, key_selector)
+        return average(source, key_mapper)
 
-    def buffer(self, buffer_openings=None, buffer_closing_selector=None) -> 'ObservableBase':
+    def buffer(self, buffer_openings=None, buffer_closing_mapper=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
         more buffers.
 
         Keyword arguments:
         buffer_openings -- Observable sequence whose elements denote the
             creation of windows.
-        buffer_closing_selector -- [optional] A function invoked to
+        buffer_closing_mapper -- [optional] A function invoked to
             define the closing of each produced window. If a closing
-            selector function is specified for the first parameter, this
+            mapper function is specified for the first parameter, this
             parameter is ignored.
 
         Returns an observable sequence of windows.
         """
         from ..operators.observable.buffer import buffer
         source = self
-        return buffer(source, buffer_openings, buffer_closing_selector)
+        return buffer(source, buffer_openings, buffer_closing_mapper)
 
     def buffer_with_count(self, count: int, skip: int = None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
@@ -328,9 +329,9 @@ class ObservableBase(typing.Observable):
         return catch_exception(source, second, handler)
 
     def combine_latest(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
-                       selector: Callable[[Any], Any]) -> 'ObservableBase':
+                       mapper: Callable[[Any], Any]) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
-        sequence by using the selector function whenever any of the
+        sequence by using the mapper function whenever any of the
         observable sequences produces an element. This can be in the form of
         an argument list of observables or an array.
 
@@ -340,7 +341,7 @@ class ObservableBase(typing.Observable):
                                             lambda o1, o2, o3: o1 + o2 + o3)
 
         Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector
+        elements of the sources using the specified result mapper
         function.
         """
         from ..operators.observable.combinelatest import combine_latest
@@ -348,7 +349,7 @@ class ObservableBase(typing.Observable):
             observables = [observables]
 
         args = [self] + list(observables)
-        return combine_latest(args, selector)
+        return combine_latest(args, mapper)
 
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
         """Concatenates all the observable sequences. This takes in either an
@@ -492,27 +493,27 @@ class ObservableBase(typing.Observable):
 
     def delay_with_selector(self,
                             subscription_delay=None,
-                            delay_duration_selector=None
+                            delay_duration_mapper=None
                            ) -> 'ObservableBase':
         """Time shifts the observable sequence based on a subscription delay
-        and a delay selector function for each element.
+        and a delay mapper function for each element.
 
-        # with selector only
+        # with mapper only
         1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
-        # with delay and selector
+        # with delay and mapper
         2 - res = source.delay_with_selector(Observable.timer(2000),
                                             lambda x: Observable.timer(x))
 
         subscription_delay -- [Optional] Sequence indicating the delay for the
             subscription to the source.
-        delay_duration_selector [Optional] Selector function to retrieve a
+        delay_duration_mapper [Optional] Selector function to retrieve a
             sequence indicating the delay for each given element.
 
         Returns time-shifted sequence.
         """
         from ..operators.observable.delaywithselector import delay_with_selector
         source = self
-        return delay_with_selector(source, subscription_delay, delay_duration_selector)
+        return delay_with_selector(source, subscription_delay, delay_duration_mapper)
 
     def dematerialize(self) -> 'ObservableBase':
         """Dematerializes the explicit notification values of an
@@ -525,9 +526,9 @@ class ObservableBase(typing.Observable):
         source = self
         return dematerialize(source)
 
-    def distinct(self, key_selector=None, comparer=None) -> 'ObservableBase':
+    def distinct(self, key_mapper=None, comparer=None) -> 'ObservableBase':
         """Returns an observable sequence that contains only distinct
-        elements according to the key_selector and the comparer. Usage
+        elements according to the key_mapper and the comparer. Usage
         of this operator should be considered carefully due to the
         maintenance of an internal lookup structure which can grow
         large.
@@ -538,7 +539,7 @@ class ObservableBase(typing.Observable):
         obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
 
         Keyword arguments:
-        key_selector -- [Optional]  A function to compute the comparison
+        key_mapper -- [Optional]  A function to compute the comparison
             key for each element.
         comparer -- [Optional]  Used to compare items in the collection.
 
@@ -548,11 +549,11 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.distinct import distinct
         source = self
-        return distinct(source, key_selector, comparer)
+        return distinct(source, key_mapper, comparer)
 
-    def distinct_until_changed(self, key_selector=None, comparer=None) -> 'ObservableBase':
+    def distinct_until_changed(self, key_mapper=None, comparer=None) -> 'ObservableBase':
         """Returns an observable sequence that contains only distinct
-        contiguous elements according to the key_selector and the
+        contiguous elements according to the key_mapper and the
         comparer.
 
         1 - obs = observable.distinct_until_changed()
@@ -560,7 +561,7 @@ class ObservableBase(typing.Observable):
         3 - obs = observable.distinct_until_changed(lambda x: x.id,
                                                     lambda x, y: x == y)
 
-        key_selector -- [Optional] A function to compute the comparison
+        key_mapper -- [Optional] A function to compute the comparison
             key for each element. If not provided, it projects the
             value.
         comparer -- [Optional] Equality comparer for computed key
@@ -573,7 +574,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.distinctuntilchanged import distinct_until_changed
         source = self
-        return distinct_until_changed(source, key_selector, comparer)
+        return distinct_until_changed(source, key_mapper, comparer)
 
     def do(self, observer: typing.Observer) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence
@@ -681,12 +682,12 @@ class ObservableBase(typing.Observable):
         source = self
         return exclusive(source)
 
-    def expand(self, selector: Mapper) -> 'ObservableBase':
+    def expand(self, mapper: Mapper) -> 'ObservableBase':
         """Expands an observable sequence by recursively invoking
-        selector.
+        mapper.
 
-        selector -- Selector function to invoke for each produced
-            element, resulting in another sequence to which the selector
+        mapper -- Selector function to invoke for each produced
+            element, resulting in another sequence to which the mapper
             will be invoked recursively again.
 
         Returns an observable sequence containing all the elements
@@ -694,7 +695,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.expand import expand
         source = self
-        return expand(source, selector)
+        return expand(source, mapper)
 
     def filter(self,
                predicate: Predicate = None,
@@ -831,7 +832,7 @@ class ObservableBase(typing.Observable):
 
         Or:
         Projects each element of an observable sequence to an observable
-        sequence, invokes the result selector for the source element and each
+        sequence, invokes the result mapper for the source element and each
         of the corresponding inner sequence's elements, and merges the results
         into one observable sequence.
 
@@ -845,10 +846,10 @@ class ObservableBase(typing.Observable):
         1 - source.flat_map(Observable.from_([1,2,3]))
 
         Keyword arguments:
-        selector -- A transform function to apply to each element or an
+        mapper -- A transform function to apply to each element or an
             observable sequence to project each element from the source
             sequence onto.
-        result_selector -- [Optional] A transform function to apply to each
+        result_mapper -- [Optional] A transform function to apply to each
             element of the intermediate sequence.
 
         Returns an observable sequence whose elements are the result of
@@ -859,9 +860,9 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.flatmap import flat_map
         return flat_map(self, mapper, result_mapper, mapper_indexed, result_mapper_indexed)
 
-    def group_by(self, key_selector, element_selector=None) -> 'ObservableBase':
+    def group_by(self, key_mapper, element_mapper=None) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
-        specified key selector function and comparer and selects the resulting
+        specified key mapper function and comparer and selects the resulting
         elements by using a specified function.
 
         1 - observable.group_by(lambda x: x.id)
@@ -872,8 +873,8 @@ class ObservableBase(typing.Observable):
             lambda x: str(x))
 
         Keyword arguments:
-        key_selector -- A function to extract the key for each element.
-        element_selector -- [Optional] A function to map each source element to
+        key_mapper -- A function to extract the key for each element.
+        element_mapper -- [Optional] A function to map each source element to
             an element in an observable group.
 
         Returns a sequence of observable groups, each of which corresponds to a
@@ -881,11 +882,11 @@ class ObservableBase(typing.Observable):
         value.
         """
         from ..operators.observable.groupby import group_by
-        return group_by(self, key_selector, element_selector)
+        return group_by(self, key_mapper, element_mapper)
 
-    def group_by_until(self, key_selector, element_selector, duration_selector) -> 'ObservableBase':
+    def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
-        specified key selector function. A duration selector function is used
+        specified key mapper function. A duration mapper function is used
         to control the lifetime of groups. When a group expires, it receives
         an OnCompleted notification. When a new element with the same key value
         as a reclaimed group occurs, the group will be reborn with a new
@@ -908,8 +909,8 @@ class ObservableBase(typing.Observable):
                 lambda x: str(x))
 
         Keyword arguments:
-        key_selector -- A function to extract the key for each element.
-        duration_selector -- A function to signal the expiration of a group.
+        key_mapper -- A function to extract the key for each element.
+        duration_mapper -- A function to signal the expiration of a group.
 
         Returns a sequence of observable groups, each of which corresponds to
         a unique key value, containing all elements that share that same key
@@ -918,22 +919,22 @@ class ObservableBase(typing.Observable):
         encountered.
         """
         from ..operators.observable.groupbyuntil import group_by_until
-        return group_by_until(self, key_selector, element_selector, duration_selector)
+        return group_by_until(self, key_mapper, element_mapper, duration_mapper)
 
-    def group_join(self, right, left_duration_selector, right_duration_selector,
-                   result_selector) -> 'ObservableBase':
+    def group_join(self, right, left_duration_mapper, right_duration_mapper,
+                   result_mapper) -> 'ObservableBase':
         """Correlates the elements of two sequences based on overlapping
         durations, and groups the results.
 
         Keyword arguments:
         right -- The right observable sequence to join elements for.
-        left_duration_selector -- A function to select the duration (expressed
+        left_duration_mapper -- A function to select the duration (expressed
             as an observable sequence) of each element of the left observable
             sequence, used to determine overlap.
-        right_duration_selector -- A function to select the duration (expressed
+        right_duration_mapper -- A function to select the duration (expressed
             as an observable sequence) of each element of the right observable
             sequence, used to determine overlap.
-        result_selector -- A function invoked to compute a result element for
+        result_mapper -- A function invoked to compute a result element for
             any element of the left sequence with overlapping elements from the
             right observable sequence. The first parameter passed to the
             function is an element of the left sequence. The second parameter
@@ -945,8 +946,8 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.groupjoin import group_join
         source = self
-        return group_join(source, right, left_duration_selector, right_duration_selector,
-                          result_selector)
+        return group_join(source, right, left_duration_mapper, right_duration_mapper,
+                          result_mapper)
 
     def ignore_elements(self) -> 'ObservableBase':
         """Ignores all elements in an observable sequence leaving only
@@ -968,20 +969,20 @@ class ObservableBase(typing.Observable):
 
         return self.some().map(lambda b: not b)
 
-    def join(self, right, left_duration_selector, right_duration_selector,
-             result_selector) -> 'ObservableBase':
+    def join(self, right, left_duration_mapper, right_duration_mapper,
+             result_mapper) -> 'ObservableBase':
         """Correlates the elements of two sequences based on overlapping
         durations.
 
         Keyword arguments:
         right -- The right observable sequence to join elements for.
-        left_duration_selector -- A function to select the duration
+        left_duration_mapper -- A function to select the duration
             (expressed as an observable sequence) of each element of the
             left observable sequence, used to determine overlap.
-        right_duration_selector -- A function to select the duration
+        right_duration_mapper -- A function to select the duration
             (expressed as an observable sequence) of each element of the
             right observable sequence, used to determine overlap.
-        result_selector -- A function invoked to compute a result
+        result_mapper -- A function invoked to compute a result
             element for any two overlapping elements of the left and
             right observable sequences. The parameters passed to the
             function correspond with the elements from the left and
@@ -992,7 +993,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.join import join
         source = self
-        return join(source, right, left_duration_selector, right_duration_selector, result_selector)
+        return join(source, right, left_duration_mapper, right_duration_mapper, result_mapper)
 
     def last(self, predicate=None) -> 'ObservableBase':
         """Returns the last element of an observable sequence that satisfies the
@@ -1041,33 +1042,33 @@ class ObservableBase(typing.Observable):
 
     def let(self, func, *args, **kwargs) -> 'ObservableBase':
         """Returns an observable sequence that is the result of invoking
-        the selector on the source sequence, without sharing
+        the mapper on the source sequence, without sharing
         subscriptions. This operator allows for a fluent style of
         writing queries that use the same sequence multiple times.
 
-        selector -- Selector function which can use the source
+        mapper -- Selector function which can use the source
             sequence as many times as needed, without sharing
             subscriptions to the source sequence.
 
         Returns an observable sequence that contains the elements of a
         sequence produced by multicasting the source sequence within a
-        selector function.
+        mapper function.
 
-        Any kwargs given will be passed through to the selector. This
+        Any kwargs given will be passed through to the mapper. This
         allows for a clean syntax when composing with parameterized
-        selectors.
+        mappers.
         """
         from ..operators.observable.let import let
         source = self
         return let(source, func, *args, **kwargs)
 
-    def many_select(self, selector) -> 'ObservableBase':
+    def many_select(self, mapper) -> 'ObservableBase':
         """Comonadic bind operator. Internally projects a new observable for each
-        value, and it pushes each observable into the user-defined selector function
+        value, and it pushes each observable into the user-defined mapper function
         that projects/queries each observable into some result.
 
         Keyword arguments:
-        selector -- {Function} A transform function to apply to each element.
+        mapper -- {Function} A transform function to apply to each element.
         scheduler -- {Object} [Optional] Scheduler used to execute the
             operation. If not specified, defaults to the ImmediateScheduler.
 
@@ -1076,7 +1077,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.manyselect import many_select
         source = self
-        return many_select(source, selector)
+        return many_select(source, mapper)
 
     def map(self,
             mapper: Mapper = None,
@@ -1162,7 +1163,7 @@ class ObservableBase(typing.Observable):
         source = self
         return max_(source, comparer)
 
-    def max_by(self, key_selector, comparer=None) -> 'ObservableBase':
+    def max_by(self, key_mapper, comparer=None) -> 'ObservableBase':
         """Returns the elements in an observable sequence with the maximum
         key value according to the specified comparer.
 
@@ -1171,7 +1172,7 @@ class ObservableBase(typing.Observable):
         res = source.max_by(lambda x: x.value, lambda x, y: x - y)
 
         Keyword arguments:
-        key_selector -- {Function} Key selector function.
+        key_mapper -- {Function} Key mapper function.
         comparer -- {Function} [Optional] Comparer used to compare key values.
 
         Returns an observable {Observable} sequence containing a list of zero
@@ -1179,7 +1180,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.maxby import max_by
         source = self
-        return max_by(source, key_selector, comparer)
+        return max_by(source, key_mapper, comparer)
 
     def min(self, comparer=None) -> 'ObservableBase':
         """Returns the minimum element in an observable sequence according to
@@ -1198,7 +1199,7 @@ class ObservableBase(typing.Observable):
         source = self
         return min_(source, comparer)
 
-    def min_by(self, key_selector: Mapper, comparer=None) -> 'ObservableBase':
+    def min_by(self, key_mapper: Mapper, comparer=None) -> 'ObservableBase':
         """Returns the elements in an observable sequence with the minimum key
         value according to the specified comparer.
 
@@ -1207,7 +1208,7 @@ class ObservableBase(typing.Observable):
         res = source.min_by(lambda x: x.value, lambda x, y: x - y)
 
         Keyword arguments:
-        key_selector -- {Function} Key selector function.
+        key_mapper -- {Function} Key mapper function.
         comparer -- {Function} [Optional] Comparer used to compare key values.
 
         Returns an observable {Observable} sequence containing a list of zero
@@ -1215,38 +1216,38 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.minby import min_by
         source = self
-        return min_by(source, key_selector, comparer)
+        return min_by(source, key_mapper, comparer)
 
-    def multicast(self, subject=None, subject_selector=None, selector=None) -> 'ObservableBase':
+    def multicast(self, subject=None, subject_mapper=None, mapper=None) -> 'ObservableBase':
         """Multicasts the source sequence notifications through an instantiated
-        subject into all uses of the sequence within a selector function. Each
+        subject into all uses of the sequence within a mapper function. Each
         subscription to the resulting sequence causes a separate multicast
-        invocation, exposing the sequence resulting from the selector function's
+        invocation, exposing the sequence resulting from the mapper function's
         invocation. For specializations with fixed subject types, see Publish,
         PublishLast, and Replay.
 
         Example:
         1 - res = source.multicast(observable)
-        2 - res = source.multicast(subject_selector=lambda scheduler: Subject(),
-                                selector=lambda x: x)
+        2 - res = source.multicast(subject_mapper=lambda scheduler: Subject(),
+                                mapper=lambda x: x)
 
         Keyword arguments:
-        subject_selector -- {Function} Factory function to create an
+        subject_mapper -- {Function} Factory function to create an
             intermediate subject through which the source sequence's elements
-            will be multicast to the selector function.
+            will be multicast to the mapper function.
         subject -- Subject {Subject} to push source elements into.
-        selector -- {Function} [Optional] Optional selector function which can
+        mapper -- {Function} [Optional] Optional mapper function which can
             use the multicasted source sequence subject to the policies enforced
-            by the created subject. Specified only if subject_selector" is a
+            by the created subject. Specified only if subject_mapper" is a
             factory function.
 
         Returns an observable {Observable} sequence that contains the elements
         of a sequence produced by multicasting the source sequence within a
-        selector function.
+        mapper function.
         """
         from ..operators.observable.multicast import multicast
         source = self
-        return multicast(source, subject, subject_selector, selector)
+        return multicast(source, subject, subject_mapper, mapper)
 
     def observe_on(self, scheduler: abc.Scheduler) -> 'ObservableBase':
         """Wraps the source sequence in order to run its observer callbacks on
@@ -1369,9 +1370,9 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.pluck import pluck_attr
         return pluck_attr(self, attr)
 
-    def publish(self, selector: Mapper = None) -> "ConnectableObservable":
+    def publish(self, mapper: Mapper = None) -> "ConnectableObservable":
         """Returns an observable sequence that is the result of invoking the
-        selector on a connectable observable sequence that shares a single
+        mapper on a connectable observable sequence that shares a single
         subscription to the underlying sequence. This operator is a
         specialization of Multicast using a regular Subject.
 
@@ -1379,7 +1380,7 @@ class ObservableBase(typing.Observable):
         res = source.publish()
         res = source.publish(lambda x: x)
 
-        selector -- [Optional] Selector function which can use the
+        mapper -- [Optional] Selector function which can use the
             multicasted source sequence as many times as needed, without
             causing multiple subscriptions to the source sequence.
             Subscribers to the given source will receive all
@@ -1388,14 +1389,14 @@ class ObservableBase(typing.Observable):
 
         Returns an observable sequence that contains the elements of
         a sequence produced by multicasting the source sequence
-        within a selector function."""
+        within a mapper function."""
 
         from ..operators.observable.publish import publish
-        return publish(self, selector)
+        return publish(self, mapper)
 
-    def publish_value(self, initial_value: Any, selector: Mapper = None) -> 'ObservableBase':
+    def publish_value(self, initial_value: Any, mapper: Mapper = None) -> 'ObservableBase':
         """Returns an observable sequence that is the result of invoking the
-        selector on a connectable observable sequence that shares a single
+        mapper on a connectable observable sequence that shares a single
         subscription to the underlying sequence and starts with initial_value.
 
         This operator is a specialization of Multicast using a BehaviorSubject.
@@ -1407,7 +1408,7 @@ class ObservableBase(typing.Observable):
         Keyword arguments:
         initial_value -- Initial value received by observers upon
             subscription.
-        selector -- [Optional] Optional selector function which can use the
+        mapper -- [Optional] Optional mapper function which can use the
             multicasted source sequence as many times as needed, without
             causing multiple subscriptions to the source sequence. Subscribers
             to the given source will receive immediately receive the initial
@@ -1416,11 +1417,11 @@ class ObservableBase(typing.Observable):
 
         Returns an observable sequence that contains the elements of a
         sequence produced by multicasting the source sequence within a
-        selector function.
+        mapper function.
         """
         from ..operators.observable.publishvalue import publish_value
         source = self
-        return publish_value(source, initial_value, selector)
+        return publish_value(source, initial_value, mapper)
 
     def reduce(self, accumulator: Accumulator, seed: Any = None) -> 'ObservableBase':
         """Applies an accumulator function over an observable sequence,
@@ -1469,10 +1470,10 @@ class ObservableBase(typing.Observable):
         from .observable import Observable
         return Observable.defer(lambda _: concat(CoreIterable.repeat(self, repeat_count)))
 
-    def replay(self, selector=None, buffer_size=None, window=None,
+    def replay(self, mapper=None, buffer_size=None, window=None,
                scheduler=None) -> 'ObservableBase':
         """Returns an observable sequence that is the result of invoking the
-        selector on a connectable observable sequence that shares a single
+        mapper on a connectable observable sequence that shares a single
         subscription to the underlying sequence replaying notifications subject
         to a maximum time length for the replay buffer.
 
@@ -1485,7 +1486,7 @@ class ObservableBase(typing.Observable):
         res = source.replay(lambda x: x.take(6).repeat(), 3, 500)
 
         Keyword arguments:
-        selector -- [Optional] Selector function which can use the multicasted
+        mapper -- [Optional] Selector function which can use the multicasted
             source sequence as many times as needed, without causing multiple
             subscriptions to the source sequence. Subscribers to the given
             source will receive all the notifications of the source subject to
@@ -1495,11 +1496,11 @@ class ObservableBase(typing.Observable):
 
         Returns {Observable} An observable sequence that contains the elements
         of a sequence produced by multicasting the source sequence within a
-        selector function.
+        mapper function.
         """
         from ..operators.observable.replay import replay
         source = self
-        return replay(source, selector, buffer_size, window, scheduler)
+        return replay(source, mapper, buffer_size, window, scheduler)
 
     def retry(self, retry_count: int = None) -> 'ObservableBase':
         """Repeats the source observable sequence the specified number
@@ -1557,7 +1558,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.scan import scan
         return scan(self, accumulator, seed)
 
-    def select_switch(self, selector: Mapper) -> 'ObservableBase':
+    def select_switch(self, mapper: Mapper) -> 'ObservableBase':
         """Projects each element of an observable sequence into a new
         sequence of observable sequences by incorporating the element's
         index and then transforms an observable sequence of observable
@@ -1565,7 +1566,7 @@ class ObservableBase(typing.Observable):
         the most recent observable sequence.
 
         Keyword arguments:
-        selector -- A transform function to apply to each source
+        mapper -- A transform function to apply to each source
             element; the second parameter of the function represents the
             index of the source element.
 
@@ -1575,7 +1576,7 @@ class ObservableBase(typing.Observable):
         at any point in time produces the elements of the most recent
         inner observable sequence that has been received.
         """
-        return self.map(selector).switch_latest()
+        return self.map(mapper).switch_latest()
 
     flat_map_latest = select_switch
     switch_map = select_switch
@@ -1871,7 +1872,7 @@ class ObservableBase(typing.Observable):
         source = self
         return subscribe_on(source, scheduler)
 
-    def sum(self, key_selector: Mapper = None) -> 'ObservableBase':
+    def sum(self, key_mapper: Mapper = None) -> 'ObservableBase':
         """Computes the sum of a sequence of values that are obtained by
         invoking an optional transform function on each element of the
         input sequence, else if not specified computes the sum on each
@@ -1881,7 +1882,7 @@ class ObservableBase(typing.Observable):
         res = source.sum()
         res = source.sum(lambda x: x.value)
 
-        key_selector -- [Optional] A transform function to apply to each
+        key_mapper -- [Optional] A transform function to apply to each
             element.
 
         Returns an observable sequence containing a single element with the
@@ -1889,7 +1890,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.sum import sum as _sum
         source = self
-        return _sum(source, key_selector)
+        return _sum(source, key_mapper)
 
     def switch_latest(self) -> 'ObservableBase':
         """Transforms an observable sequence of observable sequences
@@ -2088,11 +2089,11 @@ class ObservableBase(typing.Observable):
         source = self
         return take_with_time(source, duration)
 
-    def then_do(self, selector: Mapper) -> 'ObservableBase':
+    def then_do(self, mapper: Mapper) -> 'ObservableBase':
         """Matches when the observable sequence has an available value
         and projects the value.
 
-        selector -- Selector that will be invoked for values in the
+        mapper -- Selector that will be invoked for values in the
             source sequence.
 
         Returns Plan that produces the projected values, to be fed (with
@@ -2100,7 +2101,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.thendo import then_do
         source = self
-        return then_do(source, selector)
+        return then_do(source, mapper)
 
     then = then_do
 
@@ -2138,22 +2139,22 @@ class ObservableBase(typing.Observable):
 
     debounce = throttle_with_timeout
 
-    def throttle_with_selector(self, throttle_duration_selector) -> 'ObservableBase':
+    def throttle_with_mapper(self, throttle_duration_mapper) -> 'ObservableBase':
         """Ignores values from an observable sequence which are followed
         by another value within a computed throttle duration.
 
-        1 - res = source.throttle_with_selector(lambda x: rx.Scheduler.timer(x+x))
+        1 - res = source.throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
 
         Keyword arguments:
-        throttle_duration_selector -- Selector function to retrieve a
+        throttle_duration_mapper -- Selector function to retrieve a
             sequence indicating the throttle duration for each given
             element.
 
         Returns the throttled sequence.
         """
-        from ..operators.observable.debounce import throttle_with_selector
+        from ..operators.observable.debounce import throttle_with_mapper
         source = self
-        return throttle_with_selector(source, throttle_duration_selector)
+        return throttle_with_mapper(source, throttle_duration_mapper)
 
     def throw_resume_next(self, second) -> 'ObservableBase':
         """Continues an observable sequence that is terminated normally
@@ -2213,7 +2214,7 @@ class ObservableBase(typing.Observable):
         return timeout(source, duetime, other)
 
     def timeout_with_selector(self, first_timeout=None,
-                            timeout_duration_selector=None, other=None) -> 'ObservableBase':
+                            timeout_duration_mapper=None, other=None) -> 'ObservableBase':
         """Returns the source observable sequence, switching to the
         other observable sequence if a timeout is signaled.
 
@@ -2228,7 +2229,7 @@ class ObservableBase(typing.Observable):
         first_timeout -- [Optional] Observable sequence that represents
             the timeout for the first element. If not provided, this
             defaults to Observable.never().
-        timeout_Duration_selector -- [Optional] Selector to retrieve an
+        timeout_Duration_mapper -- [Optional] Selector to retrieve an
             observable sequence that represents the timeout between the
             current element and the next element.
         other -- [Optional] Sequence to return in case of a timeout. If
@@ -2239,7 +2240,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.timeoutwithselector import timeout_with_selector
         source = self
-        return timeout_with_selector(source, first_timeout, timeout_duration_selector, other)
+        return timeout_with_selector(source, first_timeout, timeout_duration_mapper, other)
 
     def timestamp(self) -> 'ObservableBase':
         """Records the timestamp for each value in an observable
@@ -2260,14 +2261,14 @@ class ObservableBase(typing.Observable):
         source = self
         return to_blocking(source)
 
-    def to_dict(self, key_selector: Mapper,
-                element_selector: Mapper = None) -> 'ObservableBase':
+    def to_dict(self, key_mapper: Mapper,
+                element_mapper: Mapper = None) -> 'ObservableBase':
         """Converts the observable sequence to a Map if it exists.
 
         Keyword arguments:
-        key_selector -- A function which produces the key for the
+        key_mapper -- A function which produces the key for the
             dictionary.
-        element_selector -- [Optional] An optional function which
+        element_mapper -- [Optional] An optional function which
             produces the element for the dictionary. If not present,
             defaults to the value from the observable sequence.
 
@@ -2276,7 +2277,7 @@ class ObservableBase(typing.Observable):
         """
         from ..operators.observable.todict import to_dict
         source = self
-        return to_dict(source, key_selector, element_selector)
+        return to_dict(source, key_mapper, element_mapper)
 
     def to_future(self, future_ctor=None) -> Future:
         """Converts an existing observable sequence to a Future.
@@ -2327,14 +2328,14 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.toset import to_set
         return to_set(self)
 
-    def window(self, window_openings=None, window_closing_selector=None) -> 'ObservableBase':
+    def window(self, window_openings=None, window_closing_mapper=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
         more windows.
 
         Keyword arguments:
         window_openings -- Observable sequence whose elements denote the
             creation of windows.
-        window_closing_selector -- [Optional] A function invoked to
+        window_closing_mapper -- [Optional] A function invoked to
             define the closing of each produced window. It defines the
             boundaries of the produced windows (a window is started when
             the previous one is closed, resulting in non-overlapping
@@ -2343,7 +2344,7 @@ class ObservableBase(typing.Observable):
         Returns an observable sequence of windows.
         """
         from ..operators.observable.window import window
-        return window(self, window_openings, window_closing_selector)
+        return window(self, window_openings, window_closing_mapper)
 
     def window_with_count(self, count, skip=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or more
@@ -2371,9 +2372,9 @@ class ObservableBase(typing.Observable):
         return window_with_time_or_count(self, timespan, count)
 
     def with_latest_from(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
-                         selector: Callable[[Any], Any]) -> 'ObservableBase':
+                         mapper: Callable[[Any], Any]) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable sequence
-        by using the selector function only when the source observable sequence
+        by using the mapper function only when the source observable sequence
         (the instance) produces an element. The other observables can be passed
         either as seperate arguments or as a list.
 
@@ -2383,37 +2384,37 @@ class ObservableBase(typing.Observable):
                                             lambda o1, o2, o3: o1 + o2 + o3)
 
         Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector function.
+        elements of the sources using the specified result mapper function.
         """
         from ..operators.observable.withlatestfrom import with_latest_from
         if isinstance(observables, typing.Observable):
             observables = [observables]
 
         sources = [self] + list(observables)
-        return with_latest_from(sources, selector)
+        return with_latest_from(sources, mapper)
 
     def zip(self, *args: 'Union[Iterable[Any], ObservableBase]',
-            result_selector: Mapper = None) -> 'ObservableBase':
+            result_mapper: Mapper = None) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
-        sequence by using the selector function whenever all of the
+        sequence by using the mapper function whenever all of the
         observable sequences or an array have produced an element at a
         corresponding index.
 
         The last element in the arguments must be a function to invoke for
         each series of elements at corresponding indexes in the sources.
 
-        1 - res = obs1.zip(obs2, result_selector=fn)
-        2 - res = x1.zip([1,2,3], result_selector=fn)
+        1 - res = obs1.zip(obs2, result_mapper=fn)
+        2 - res = x1.zip([1,2,3], result_mapper=fn)
 
         Keyword arguments:
         args -- Observable sources to zip together with self.
-        result_selector -- Selector function that produces an element
+        result_mapper -- Selector function that produces an element
             whenever all of the observable sequences have produced an
             element at a corresponding index
 
         Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result selector
+        elements of the sources using the specified result mapper
         function.
         """
         from ..operators.observable.zip import zip as _zip
-        return _zip(self, *args, result_selector=result_selector)
+        return _zip(self, *args, result_mapper=result_mapper)

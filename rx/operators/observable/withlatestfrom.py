@@ -4,11 +4,11 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
 def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]],
-                     selector: Callable[[Any], Any]) -> ObservableBase:
+                     mapper: Callable[[Any], Any]) -> ObservableBase:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
-    sequence by using the selector function only when the first
+    sequence by using the mapper function only when the first
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
@@ -18,13 +18,13 @@ def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]
                                         lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns an observable sequence containing the result of combining
-    elements of the sources using the specified result selector
+    elements of the sources using the specified result mapper
     function.
     """
     if isinstance(observables, ObservableBase):
         observables = [observables]
 
-    result_selector = selector
+    result_mapper = mapper
     NO_VALUE = object()
 
     def subscribe(observer, scheduler=None):
@@ -49,7 +49,7 @@ def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]
                 with parent.lock:
                     if NO_VALUE not in values:
                         try:
-                            result = result_selector(value, *values)
+                            result = result_mapper(value, *values)
                         except Exception as error:
                             observer.throw(error)
                         else:

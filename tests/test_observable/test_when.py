@@ -30,9 +30,9 @@ class TestWhen(unittest.TestCase):
         )
 
         def create():
-            def selector(a):
+            def mapper(a):
                 return a
-            return Observable.when(xs.then_do(selector))
+            return Observable.when(xs.then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -50,9 +50,9 @@ class TestWhen(unittest.TestCase):
         )
 
         def create():
-            def selector(a):
+            def mapper(a):
                 return a
-            return Observable.when(xs.then_do(selector))
+            return Observable.when(xs.then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -70,9 +70,9 @@ class TestWhen(unittest.TestCase):
         )
 
         def create():
-            def selector(a):
+            def mapper(a):
                 raise ex
-            return Observable.when(xs.then_do(selector))
+            return Observable.when(xs.then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -88,9 +88,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b):
+            def mapper(a, b):
                 return a + b
-            return Observable.when(obs[0].and_(obs[1]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).then_do(mapper))
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -112,9 +112,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b):
+                def mapper(a, b):
                     return a + b
-                return Observable.when(obs[0].and_(obs[1]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).then_do(mapper))
 
             results = scheduler.start(create)
 
@@ -131,9 +131,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b):
+            def mapper(a, b):
                 raise ex
-            return Observable.when(obs[0].and_(obs[1]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -149,9 +149,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c):
+            def mapper(a, b, c):
                 return a + b + c
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -174,9 +174,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c):
+                def mapper(a, b, c):
                     return a + b + c
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(mapper))
             results = scheduler.start(create)
 
             assert results.messages == [
@@ -194,9 +194,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c):
+            def mapper(a, b, c):
                 raise ex
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -211,9 +211,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d):
+            def mapper(a, b, c, d):
                 return a + b + c + d
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
@@ -232,9 +232,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d):
+                def mapper(a, b, c, d):
                     return a + b + c + d
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
@@ -248,9 +248,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d):
+            def mapper(a, b, c, d):
                 raise Exception(ex)
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -263,9 +263,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e):
+            def mapper(a, b, c, d, e):
                 return a + b + c + d + e
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
@@ -283,9 +283,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d, e):
+                def mapper(a, b, c, d, e):
                     return a + b + c + d + e
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
@@ -299,9 +299,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e):
+            def mapper(a, b, c, d, e):
                 raise Exception(ex)
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -314,9 +314,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e, f):
+            def mapper(a, b, c, d, e, f):
                 return a + b + c + d + e + f
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
@@ -334,9 +334,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d, e, f):
+                def mapper(a, b, c, d, e, f):
                     return a + b + c + d + e + f
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
@@ -351,9 +351,9 @@ class TestWhen(unittest.TestCase):
 
 
         def create():
-            def selector(*args):
+            def mapper(*args):
                 raise Exception(ex)
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -366,9 +366,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e, f, g):
+            def mapper(a, b, c, d, e, f, g):
                 return a + b + c + d + e + f + g
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
@@ -387,9 +387,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d, e, f, g):
+                def mapper(a, b, c, d, e, f, g):
                     return a + b + c + d + e + f + g
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
@@ -403,10 +403,10 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(*args):
+            def mapper(*args):
                 raise Exception(ex)
 
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -420,9 +420,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e, f, g, h):
+            def mapper(a, b, c, d, e, f, g, h):
                 return a + b + c + d + e + f + g + h
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
@@ -440,9 +440,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d, e, f, g, h):
+                def mapper(a, b, c, d, e, f, g, h):
                     return a + b + c + d + e + f + g + h
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
 
@@ -455,10 +455,10 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(*args):
+            def mapper(*args):
                 raise Exception(ex)
 
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -471,9 +471,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(a, b, c, d, e, f, g, h, _i):
+            def mapper(a, b, c, d, e, f, g, h, _i):
                 return a + b + c + d + e + f + g + h + _i
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
         results = scheduler.start(create)
         assert results.messages == [send(210, N), close(220)]
 
@@ -490,9 +490,9 @@ class TestWhen(unittest.TestCase):
                     obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
             def create():
-                def selector(a, b, c, d, e, f, g, h, _i):
+                def mapper(a, b, c, d, e, f, g, h, _i):
                     return a + b + c + d + e + f + g + h + _i
-                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+                return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
 
             results = scheduler.start(create)
             assert results.messages == [throw(210, ex)]
@@ -506,9 +506,9 @@ class TestWhen(unittest.TestCase):
             obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
 
         def create():
-            def selector(*args):
+            def mapper(*args):
                 raise Exception(ex)
-            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(selector))
+            return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(210, ex)]
@@ -531,9 +531,9 @@ class TestWhen(unittest.TestCase):
         )
 
         def create():
-            def selector(x, y):
+            def mapper(x, y):
                 return x + y
-            return Observable.when(xs.and_(ys).then_do(selector))
+            return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -560,9 +560,9 @@ class TestWhen(unittest.TestCase):
         )
 
         def create():
-            def selector(x, y):
+            def mapper(x, y):
                 return x + y
-            return Observable.when(xs.and_(ys).then_do(selector))
+            return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
 
@@ -577,9 +577,9 @@ class TestWhen(unittest.TestCase):
         ys = scheduler.create_hot_observable(close(270))
 
         def create():
-            def selector(x, y):
+            def mapper(x, y):
                 return x + y
-            return Observable.when(xs.and_(ys).then_do(selector))
+            return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [close(270)]
@@ -590,9 +590,9 @@ class TestWhen(unittest.TestCase):
         ys = Observable.never()
 
         def create():
-            def selector(x, y):
+            def mapper(x, y):
                 return x + y
-            return Observable.when(xs.and_(ys).then_do(selector))
+            return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -604,9 +604,9 @@ class TestWhen(unittest.TestCase):
         ys = scheduler.create_hot_observable(close(270))
 
         def create():
-            def selector(x, y):
+            def mapper(x, y):
                 return x + y
-            return Observable.when(xs.and_(ys).then_do(selector))
+            return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
         assert results.messages == [throw(240, ex)]

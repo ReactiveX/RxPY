@@ -64,14 +64,14 @@ def debounce(self, duetime) -> ObservableBase:
 throttle_with_timeout = debounce
 
 
-def throttle_with_selector(self, throttle_duration_selector) -> ObservableBase:
+def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
-    1 - res = source.throttle_with_selector(lambda x: rx.Scheduler.timer(x+x))
+    1 - res = source.throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
 
     Keyword arguments:
-    throttle_duration_selector -- Selector function to retrieve a sequence
+    throttle_duration_mapper -- Selector function to retrieve a sequence
         indicating the throttle duration for each given element.
 
     Returns the throttled sequence.
@@ -88,7 +88,7 @@ def throttle_with_selector(self, throttle_duration_selector) -> ObservableBase:
         def send(x):
             throttle = None
             try:
-                throttle = throttle_duration_selector(x)
+                throttle = throttle_duration_mapper(x)
             except Exception as e:
                 observer.throw(e)
                 return

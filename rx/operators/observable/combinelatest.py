@@ -4,9 +4,9 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
 def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
-                   selector: Callable[[Any], Any]) -> ObservableBase:
+                   mapper: Callable[[Any], Any]) -> ObservableBase:
     """Merges the specified observable sequences into one observable
-    sequence by using the selector function whenever any of the
+    sequence by using the mapper function whenever any of the
     observable sequences produces an element.
 
     1 - obs = Observable.combine_latest(obs1, obs2, obs3,
@@ -15,14 +15,14 @@ def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
                                         lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns an observable sequence containing the result of combining
-    elements of the sources using the specified result selector
+    elements of the sources using the specified result mapper
     function.
     """
     if isinstance(observables, typing.Observable):
         observables = [observables]
 
     args = list(observables)
-    result_selector = selector
+    result_mapper = mapper
     parent = args[0]
 
     def subscribe(observer, scheduler=None):
@@ -37,7 +37,7 @@ def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
 
             if has_value_all[0] or all(has_value):
                 try:
-                    res = result_selector(*values)
+                    res = result_mapper(*values)
                 except Exception as ex:
                     observer.throw(ex)
                     return

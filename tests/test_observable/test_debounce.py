@@ -110,10 +110,10 @@ class TestDebounce(unittest.TestCase):
         ys = [scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99))]
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return ys[x]
 
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -131,9 +131,9 @@ class TestDebounce(unittest.TestCase):
         ys = [scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(40, 42), send(45, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(60, 42), send(65, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99))]
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return ys[x]
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -151,9 +151,9 @@ class TestDebounce(unittest.TestCase):
         ys = [scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(40, 42), send(45, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99)), scheduler.create_cold_observable(send(60, 42), send(65, 99)), scheduler.create_cold_observable(send(20, 42), send(25, 99))]
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return ys[x]
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -171,13 +171,13 @@ class TestDebounce(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            def selector(x):
+            def mapper(x):
                 if x < 4:
                     return scheduler.create_cold_observable(send(x * 10, "Ignore"), send(x * 10 + 5, "Aargh!"))
                 else:
                     return scheduler.create_cold_observable(throw(x * 10, ex))
 
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -190,28 +190,28 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(250, 2), send(350, 3), send(450, 4), throw(460, ex))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(send(x * 10, "Ignore"), send(x * 10 + 5, "Aargh!"))
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
         assert results.messages == [send(250 + 2 * 10, 2), send(350 + 3 * 10, 3), throw(460, ex)]
         assert xs.subscriptions == [subscribe(200, 460)]
 
-    def test_debounce_duration_selector_throws(self):
+    def test_debounce_duration_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(250, 2), send(350, 3), send(450, 4), close(550))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 if x < 4:
                     return scheduler.create_cold_observable(send(x * 10, "Ignore"), send(x * 10 + 5, "Aargh!"))
                 else:
                     _raise(ex)
 
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -223,9 +223,9 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(250, 2), send(350, 3), send(450, 4), close(550))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(close(x * 10))
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 
@@ -237,9 +237,9 @@ class TestDebounce(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(250, 2), send(280, 3), send(300, 4), send(400, 5), send(410, 6), close(550))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return scheduler.create_cold_observable(close(x * 10))
-            return xs.throttle_with_selector(selector)
+            return xs.throttle_with_mapper(mapper)
 
         results = scheduler.start(create)
 

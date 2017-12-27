@@ -744,14 +744,14 @@ class TestGroup_join(unittest.TestCase):
             close(800))
 
         def create():
-            def left_duration_selector(x):
+            def left_duration_mapper(x):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
                     return Observable.empty()
 
             return xs.group_join(ys,
-                left_duration_selector,
+                left_duration_mapper,
                 lambda y: Observable.timer(y.interval),
                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
             ).merge_all()
@@ -789,19 +789,19 @@ class TestGroup_join(unittest.TestCase):
         )
 
         def create():
-            def right_duration_selector(y):
+            def right_duration_mapper(y):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
                     return Observable.empty()
 
-            def result_selector(x, yy):
+            def result_mapper(x, yy):
                 return yy.map(lambda y: x.value + y.value)
 
             return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval),
-                right_duration_selector,
-                result_selector
+                right_duration_mapper,
+                result_mapper
             ).merge_all()
 
         results = scheduler.start(create=create)
@@ -837,7 +837,7 @@ class TestGroup_join(unittest.TestCase):
             close(800)
         )
 
-        def result_selector(x, yy):
+        def result_mapper(x, yy):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
@@ -847,7 +847,7 @@ class TestGroup_join(unittest.TestCase):
             return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
-                result_selector
+                result_mapper
             ).merge_all()
 
         results = scheduler.start(create=create)
@@ -883,7 +883,7 @@ class TestGroup_join(unittest.TestCase):
             close(800)
         )
         def create():
-            def result_selector(x, yy):
+            def result_mapper(x, yy):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
@@ -892,7 +892,7 @@ class TestGroup_join(unittest.TestCase):
             return xs.group_join(ys,
                 lambda x: Observable.timer(x.interval),
                 lambda y: Observable.timer(y.interval),
-                result_selector
+                result_mapper
             ).merge_all()
 
         results = scheduler.start(create=create)

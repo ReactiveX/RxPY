@@ -6,7 +6,8 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, Seri
 from rx.concurrency import timeout_scheduler
 
 
-def timeout(source: ObservableBase, duetime: Union[int, datetime], other: ObservableBase = None) -> ObservableBase:
+def timeout(source: ObservableBase, duetime: Union[int, datetime],
+            other: ObservableBase = None) -> ObservableBase:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 

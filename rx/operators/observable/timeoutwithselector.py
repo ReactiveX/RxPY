@@ -4,7 +4,7 @@ from rx.disposables import CompositeDisposable, \
 
 
 def timeout_with_selector(source, first_timeout=None,
-                          timeout_duration_selector=None, other=None) -> ObservableBase:
+                        timeout_duration_mapper=None, other=None) -> ObservableBase:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
@@ -18,7 +18,7 @@ def timeout_with_selector(source, first_timeout=None,
     first_timeout -- [Optional] Observable sequence that represents the
         timeout for the first element. If not provided, this defaults to
         Observable.never().
-    timeout_Duration_selector -- [Optional] Selector to retrieve an
+    timeout_duration_mapper -- [Optional] Selector to retrieve an
         observable sequence that represents the timeout between the
         current element and the next element.
     other -- [Optional] Sequence to return in case of a timeout. If not
@@ -80,7 +80,7 @@ def timeout_with_selector(source, first_timeout=None,
                 observer.send(x)
                 timeout = None
                 try:
-                    timeout = timeout_duration_selector(x)
+                    timeout = timeout_duration_mapper(x)
                 except Exception as e:
                     observer.throw(e)
                     return

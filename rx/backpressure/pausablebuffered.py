@@ -3,7 +3,7 @@ from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
 
 
-def combine_latest_source(source, subject, result_selector):
+def combine_latest_source(source, subject, result_mapper):
     def subscribe(observer, scheduler=None):
         has_value = [False, False]
         has_value_all = [False]
@@ -22,7 +22,7 @@ def combine_latest_source(source, subject, result_selector):
                     return
 
                 try:
-                    res = result_selector(*values)
+                    res = result_mapper(*values)
                 except Exception as ex:
                     observer.throw(ex)
                     return
@@ -69,7 +69,7 @@ class PausableBufferedObservable(ObservableBase):
         previous_should_fire = [None]
         queue = []
 
-        def result_selector(data, should_fire=False):
+        def result_mapper(data, should_fire=False):
             return {"data": data, "should_fire": should_fire}
 
         def send(results):
@@ -104,7 +104,7 @@ class PausableBufferedObservable(ObservableBase):
         subscription = combine_latest_source(
             self.source,
             self.pauser.distinct_until_changed().start_with(False),
-            result_selector
+            result_mapper
         ).subscribe_callbacks(send, throw, close, scheduler)
 
         return subscription

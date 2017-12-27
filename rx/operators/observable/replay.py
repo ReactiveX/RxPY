@@ -2,9 +2,9 @@ from rx.core import ObservableBase
 from rx.subjects import ReplaySubject
 
 
-def replay(self, selector=None, buffer_size=None, window=None, scheduler=None) -> ObservableBase:
+def replay(self, mapper=None, buffer_size=None, window=None, scheduler=None) -> ObservableBase:
     """Returns an observable sequence that is the result of invoking the
-    selector on a connectable observable sequence that shares a single
+    mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications subject
     to a maximum time length for the replay buffer.
 
@@ -17,7 +17,7 @@ def replay(self, selector=None, buffer_size=None, window=None, scheduler=None) -
     res = source.replay(lambda x: x.take(6).repeat(), 3, 500)
 
     Keyword arguments:
-    selector -- [Optional] Selector function which can use the multicasted
+    mapper -- [Optional] Selector function which can use the multicasted
         source sequence as many times as needed, without causing multiple
         subscriptions to the source sequence. Subscribers to the given
         source will receive all the notifications of the source subject to
@@ -27,13 +27,13 @@ def replay(self, selector=None, buffer_size=None, window=None, scheduler=None) -
 
     Returns {Observable} An observable sequence that contains the elements
     of a sequence produced by multicasting the source sequence within a
-    selector function.
+    mapper function.
     """
 
 
-    if selector:
-        def subject_selector(scheduler):
+    if mapper:
+        def subject_mapper(scheduler):
             return ReplaySubject(buffer_size, window, scheduler)
-        return self.multicast(subject_selector=subject_selector,selector=selector)
+        return self.multicast(subject_mapper=subject_mapper,mapper=mapper)
 
     return self.multicast(ReplaySubject(buffer_size, window, scheduler))

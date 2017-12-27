@@ -24,7 +24,6 @@ def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
-        print(scheduler)
 
         mad = MultipleAssignmentDisposable()
         iterator = iter(iterable)

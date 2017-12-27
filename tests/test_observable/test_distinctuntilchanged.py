@@ -141,7 +141,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert(results[3].value.kind == 'N' and results[3].time == 240 and results[3].value.value == 2)
         assert(results[4].value.kind == 'C' and results[4].time == 250)
 
-    def test_distinct_until_changed_key_selector_div2(self):
+    def test_distinct_until_changed_key_mapper_div2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 4), send(230, 3), send(240, 5), close(250))
 
@@ -154,7 +154,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert(results[1].value.kind == 'N' and results[1].time == 230 and results[1].value.value == 3)
         assert(results[2].value.kind == 'C' and results[2].time == 250)
 
-    def test_distinct_until_changed_key_selector_throws(self):
+    def test_distinct_until_changed_key_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))

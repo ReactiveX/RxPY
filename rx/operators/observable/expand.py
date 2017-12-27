@@ -4,11 +4,11 @@ from rx.disposables import SerialDisposable, CompositeDisposable, SingleAssignme
 from rx.concurrency import immediate_scheduler
 
 
-def expand(source: ObservableBase, selector: Mapper) -> ObservableBase:
-    """Expands an observable sequence by recursively invoking selector.
+def expand(source: ObservableBase, mapper: Mapper) -> ObservableBase:
+    """Expands an observable sequence by recursively invoking mapper.
 
-    selector -- Selector function to invoke for each produced
-        element, resulting in another sequence to which the selector
+    mapper -- Selector function to invoke for each produced
+        element, resulting in another sequence to which the mapper
         will be invoked recursively again.
 
     Returns an observable sequence containing all the elements produced
@@ -44,7 +44,7 @@ def expand(source: ObservableBase, selector: Mapper) -> ObservableBase:
                     observer.send(value)
                     result = None
                     try:
-                        result = selector(value)
+                        result = mapper(value)
                     except Exception as ex:
                         observer.throw(ex)
                         return

@@ -74,12 +74,12 @@ class TestPublish(unittest.TestCase):
         )
 
         def create():
-            def selector(ys):
-                def result_selector(a, b):
+            def mapper(ys):
+                def result_mapper(a, b):
                     return a + b
-                return ys.zip(ys, result_selector=result_selector)
+                return ys.zip(ys, result_mapper=result_mapper)
 
-            return xs.publish(selector=selector)
+            return xs.publish(mapper=mapper)
         results = scheduler.start(create)
 
         assert results.messages == [send(210, 6),
@@ -443,10 +443,10 @@ class TestPublish(unittest.TestCase):
             close(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
 
-            return xs.publish(selector)
+            return xs.publish(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -484,9 +484,9 @@ class TestPublish(unittest.TestCase):
             throw(600, ex))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
-            return xs.publish(selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish(mapper)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -523,9 +523,9 @@ class TestPublish(unittest.TestCase):
             close(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), result_selector=lambda prev, cur: cur + prev)
-            return xs.publish(selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish(mapper)
 
         results = scheduler.start(create, disposed=470)
         assert results.messages == [

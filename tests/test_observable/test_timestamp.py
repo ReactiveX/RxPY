@@ -36,9 +36,9 @@ class TestTimeInterval(unittest.TestCase):
         xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
 
         def create():
-            def selector(x):
+            def mapper(x):
                 return Timestamp(x.value, x.timestamp)
-            return xs.timestamp().map(selector)
+            return xs.timestamp().map(mapper)
 
         results = scheduler.start(create)
         assert results.messages == [send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)),
