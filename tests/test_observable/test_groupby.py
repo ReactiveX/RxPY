@@ -545,7 +545,7 @@ class TestGroupBy(unittest.TestCase):
         results = [None]
 
         def action1(scheduler, state):
-            xs[0] = Observable.from_iterable(["alpha", "apple", "beta", "bat", "gamma"], delay=10) \
+            xs[0] = Observable.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
                               .group_by(lambda s: s[0]) \
                               .map(lambda xs: xs.to_iterable()) \
                               .merge_all()
@@ -559,10 +559,10 @@ class TestGroupBy(unittest.TestCase):
         scheduler.start()
 
         assert results[0].messages == [
-            send(260, ["alpha", "apple"]),
-            send(260, ["beta", "bat"]),
-            send(260, ["gamma"]),
-            close(260)]
+            send(200, ["alpha", "apple"]),
+            send(200, ["beta", "bat"]),
+            send(200, ["gamma"]),
+            close(200)]
 
 if __name__ == '__main__':
     unittest.main()

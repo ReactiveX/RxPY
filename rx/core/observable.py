@@ -185,7 +185,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return from_future(future)
 
     @staticmethod
-    def from_iterable(iterable: Iterable, delay=None) -> ObservableBase:
+    def from_iterable(iterable: Iterable) -> ObservableBase:
         """Converts an array to an observable sequence.
 
         1 - res = rx.Observable.from_iterable([1,2,3])
@@ -197,7 +197,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         the given iterable sequence.
         """
         from ..operators.observable.fromiterable import from_iterable
-        return from_iterable(iterable, delay)
+        return from_iterable(iterable)
 
     from_ = from_iterable
     from_list = from_iterable

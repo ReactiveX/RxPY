@@ -1,14 +1,12 @@
 from typing import Iterable
 
-from rx import config
 from rx.core import ObservableBase, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import MultipleAssignmentDisposable
+from rx.disposables import CompositeDisposable, AnonymousDisposable
 
 
-def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
-    """Converts an array to an observable sequence, using an optional
-    scheduler to enumerate the array.
+def from_iterable(iterable: Iterable) -> ObservableBase:
+    """Converts an iterable to an observable sequence.
 
     1 - res = rx.Observable.from_iterable([1,2,3])
 
@@ -16,31 +14,30 @@ def from_iterable(iterable: Iterable, delay: int = None) -> ObservableBase:
     iterable - An python iterable
 
     Returns the observable sequence whose elements are pulled from the
-        given iterable sequence.
+    given iterable sequence.
     """
-    lock = config["concurrency"].RLock()
-
-    delay = delay or 0
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
-
-        mad = MultipleAssignmentDisposable()
         iterator = iter(iterable)
+        disposed = False
 
         def action(scheduler, state=None):
-            nonlocal observer, mad, iterator
+            nonlocal disposed
 
             try:
-                with lock:
-                    item = next(iterator)
-
+                while not disposed:
+                    value = next(iterator)
+                    observer.send(value)
             except StopIteration:
                 observer.close()
-            else:
-                observer.send(item)
-                mad.disposable = scheduler.schedule_relative(delay, action)
+            except Exception as error:  # pylint: disable=W0703
+                observer.throw(error)
 
-        mad.disposable = scheduler.schedule_relative(delay, action)
-        return mad
+        def dispose():
+            nonlocal disposed
+            disposed = True
+
+        disposable = AnonymousDisposable(dispose)
+        return CompositeDisposable(scheduler.schedule(action), disposable)
     return AnonymousObservable(subscribe)

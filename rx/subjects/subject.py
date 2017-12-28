@@ -9,8 +9,9 @@ from .innersubscription import InnerSubscription
 
 
 class Subject(ObservableBase, Observer):
-    """Represents an object that is both an observable sequence as well as an
-    observer. Each notification is broadcasted to all subscribed observers.
+    """Represents an object that is both an observable sequence as well
+    as an observer. Each notification is broadcasted to all subscribed
+    observers.
     """
 
     def __init__(self) -> None:
@@ -42,18 +43,19 @@ class Subject(ObservableBase, Observer):
             return Disposable.empty()
 
     def close(self) -> None:
-        """Notifies all subscribed observers of the end of the sequence."""
+        """Notifies all subscribed observers of the end of the
+        sequence."""
 
-        os = None
+        observers = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
-                os = self.observers[:]
+                observers = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
 
-        if os:
-            for observer in os:
+        if observers:
+            for observer in observers:
                 observer.close()
 
     def throw(self, error: Exception) -> None:
@@ -95,7 +97,7 @@ class Subject(ObservableBase, Observer):
 
     def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""
-        print("dispose!")
+
         with self.lock:
             self.is_disposed = True
             self.observers = None

@@ -1944,17 +1944,17 @@ class ObservableBase(typing.Observable):
         return take_last(count, self)
 
     def take_last_buffer(self, count) -> 'ObservableBase':
-        """Returns an array with the specified number of contiguous elements
-        from the end of an observable sequence.
+        """Returns an array with the specified number of contiguous
+        elements from the end of an observable sequence.
 
         Example:
         res = source.take_last(5)
 
         Description:
         This operator accumulates a buffer with a length enough to store
-        elements count elements. Upon completion of the source sequence, this
-        buffer is drained on the result sequence. This causes the elements to be
-        delayed.
+        elements count elements. Upon completion of the source sequence,
+        this buffer is drained on the result sequence. This causes the
+        elements to be delayed.
 
         Keyword arguments:
         count -- Number of elements to take from the end of the source
