@@ -1,4 +1,4 @@
-from rx import config
+import threading
 
 from rx.core import Disposable
 
@@ -7,7 +7,7 @@ class InnerSubscription(Disposable):
         self.subject = subject
         self.observer = observer
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
     def dispose(self) -> None:
         with self.lock:

@@ -7,9 +7,7 @@ import unittest
 
 from nose import SkipTest
 import rx
-asyncio = rx.config['asyncio']
-if asyncio is None:
-    raise SkipTest("asyncio not available")
+import asyncio
 
 from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest

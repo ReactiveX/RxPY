@@ -66,4 +66,4 @@ class TimeoutScheduler(SchedulerBase):
         return timer
 
 
-Scheduler.timeout = timeout_scheduler = TimeoutScheduler()
+timeout_scheduler = TimeoutScheduler()

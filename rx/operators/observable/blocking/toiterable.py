@@ -1,6 +1,7 @@
+import threading
+
 from rx.core.blockingobservable import BlockingObservable
 from rx.internal import Iterable, AnonymousIterable
-from rx import config
 
 
 def to_iterable(source: BlockingObservable) -> Iterable:
@@ -11,7 +12,7 @@ def to_iterable(source: BlockingObservable) -> Iterable:
      `BlockingObservable`.
     """
 
-    condition = config["concurrency"].Condition()
+    condition = threading.Condition()
     notifications = []
 
     def send(value):

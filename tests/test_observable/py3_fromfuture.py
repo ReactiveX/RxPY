@@ -2,10 +2,8 @@ import unittest
 
 from nose import SkipTest
 import rx
-asyncio = rx.config['asyncio']
-if asyncio is None:
-    raise SkipTest("asyncio not available")
-Future = rx.config['Future']
+import asyncio
+from asyncio import Future
 
 from rx import Observable
 

@@ -2,7 +2,7 @@ import sys
 from typing import Any
 from datetime import timedelta
 
-from rx import config
+import threading
 from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
@@ -47,7 +47,7 @@ class ReplaySubject(ObservableBase, Observer):
         self.has_error = False
         self.error = None
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
         super(ReplaySubject, self).__init__()
 

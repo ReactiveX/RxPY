@@ -1,4 +1,4 @@
-from rx import config
+import threading
 from rx.disposables import SerialDisposable
 
 from .observerbase import ObserverBase
@@ -11,7 +11,7 @@ class ScheduledObserver(ObserverBase):
         self.scheduler = scheduler
         self.observer = observer
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
         self.is_acquired = False
         self.has_faulted = False
         self.queue = []
@@ -67,5 +67,5 @@ class ScheduledObserver(ObserverBase):
         return self.scheduler.schedule(self.run)
 
     def dispose(self):
-        super(ScheduledObserver, self).dispose()
+        super().dispose()
         self.disposable.dispose()

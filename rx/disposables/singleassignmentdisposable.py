@@ -1,4 +1,4 @@
-from rx import config
+from threading import RLock
 from rx.core.disposable import Disposable
 
 
@@ -16,7 +16,7 @@ class SingleAssignmentDisposable(Disposable):
         """
         self.is_disposed = False
         self.current = None
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
         super().__init__()
 
@@ -27,6 +27,7 @@ class SingleAssignmentDisposable(Disposable):
         if self.current:
             raise Exception('Disposable has already been assigned')
 
+        assert value
         should_dispose = self.is_disposed
         old = None
 

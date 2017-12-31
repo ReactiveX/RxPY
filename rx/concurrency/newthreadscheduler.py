@@ -66,4 +66,4 @@ class NewThreadScheduler(SchedulerBase):
 
         return Disposable.create(dispose)
 
-Scheduler.new_thread = new_thread_scheduler = NewThreadScheduler()
+new_thread_scheduler = NewThreadScheduler()

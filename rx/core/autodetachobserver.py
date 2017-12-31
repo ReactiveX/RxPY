@@ -36,5 +36,5 @@ class AutoDetachObserver(ObserverBase):
     disposable = property(fset=set_disposable)
 
     def dispose(self):
-        super(AutoDetachObserver, self).dispose()
+        super().dispose()
         self.m.dispose()

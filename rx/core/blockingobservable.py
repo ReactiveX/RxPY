@@ -1,6 +1,6 @@
 from typing import Any, Callable
+from threading import RLock
 
-from rx import config
 from rx.core import abc
 from rx.internal import Iterable
 
@@ -16,7 +16,7 @@ class BlockingObservable(abc.Observable):
         """
 
         self.observable = observable
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
     def subscribe(self, observer: abc.Observer = None,
                   scheduler: abc.Scheduler = None) -> abc.Disposable:

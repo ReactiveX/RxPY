@@ -1,9 +1,9 @@
 import re
+import threading
 
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
 from rx.concurrency import new_thread_scheduler
-from rx import config
 
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
@@ -137,7 +137,7 @@ def to_marbles_blocking(self, scheduler=None):
     Returns marble string.
     """
 
-    latch = config["concurrency"].Event()
+    latch = threading.Event()
     ret = [None]
 
     def send(value):

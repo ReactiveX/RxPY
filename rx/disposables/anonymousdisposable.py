@@ -1,12 +1,13 @@
-from rx import config
+from threading import RLock
+
 from rx.internal import noop
-from rx.core import Disposable
+from rx.core.typing import Disposable, Dispose
 
 
 class AnonymousDisposable(Disposable):
     """Main disposable class"""
 
-    def __init__(self, action=None):
+    def __init__(self, action: Dispose = None) -> None:
         """Creates a disposable object that invokes the specified action
         when disposed.
 
@@ -21,9 +22,9 @@ class AnonymousDisposable(Disposable):
         self.is_disposed = False
         self.action = action or noop
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Performs the task of cleaning up resources."""
 
         dispose = False

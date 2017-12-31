@@ -7,9 +7,7 @@ if sys.version_info.major < 3:
     raise SkipTest("Py3 language async language support required")
 
 import rx
-asyncio = rx.config['asyncio']
-if asyncio is None:
-    raise SkipTest("asyncio not available")
+import asyncio
 from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable

@@ -1,6 +1,6 @@
 import heapq
+from threading import RLock
 
-import rx
 from rx.internal.exceptions import InvalidOperationException
 
 
@@ -11,7 +11,7 @@ class PriorityQueue:
         self.items = []
         self.count = 0  # Monotonic increasing for sort stability
 
-        self.lock = rx.config.get("Lock")()
+        self.lock = RLock()
 
     def __len__(self):
         """Returns length of queue"""

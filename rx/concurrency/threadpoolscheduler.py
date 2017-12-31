@@ -30,4 +30,4 @@ class ThreadPoolScheduler(NewThreadScheduler):
 
         super().__init__(thread_factory)
 
-Scheduler.thread_pool = thread_pool_scheduler = ThreadPoolScheduler()
+thread_pool_scheduler = ThreadPoolScheduler()

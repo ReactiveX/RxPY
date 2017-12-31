@@ -1,4 +1,4 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import ObservableBase, Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 

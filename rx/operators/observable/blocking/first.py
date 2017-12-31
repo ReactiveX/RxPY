@@ -17,7 +17,7 @@ def first(source: BlockingObservable) -> Any:
 
     Returns the first item to be emitted from the blocking observable.
     """
-    return next(source.to_iterable())
+    return next(iter(source.to_iterable()))
 
 
 def first_or_default(source: BlockingObservable, default_value: Any) -> Any:
@@ -36,6 +36,5 @@ def first_or_default(source: BlockingObservable, default_value: Any) -> Any:
 
     Returns the first item to be emitted from the blocking observable.
     """
-    return next(source.to_iterable(), default_value)
-
+    return next(iter(source.to_iterable()), default_value)
 

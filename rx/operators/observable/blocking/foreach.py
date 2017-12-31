@@ -1,7 +1,7 @@
+import threading
 from typing import Callable, Any
 
 from rx.core.blockingobservable import BlockingObservable
-from rx import config
 
 
 def for_each(source: BlockingObservable,
@@ -26,7 +26,7 @@ def for_each(source: BlockingObservable,
     Returns None, or raises an exception if an error occured.
     """
 
-    latch = config["concurrency"].Event()
+    latch = threading.Event()
     exception = None
     count = 0
 

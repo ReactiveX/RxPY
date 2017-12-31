@@ -1,4 +1,4 @@
-from rx import config
+from threading import RLock
 from rx.core import Disposable
 
 
@@ -9,7 +9,7 @@ class MultipleAssignmentDisposable(Disposable):
     def __init__(self):
         self.current = None
         self.is_disposed = False
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
         super(MultipleAssignmentDisposable, self).__init__()
 

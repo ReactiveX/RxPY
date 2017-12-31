@@ -1,10 +1,10 @@
+from typing import Callable
 from asyncio import Future
 
-import rx
 from rx.core import ObservableBase
 
 
-def to_future(self, future_ctor=None) -> Future:
+def to_future(source: ObservableBase, future_ctor: Callable[[], Future] = None) -> Future:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -14,18 +14,13 @@ def to_future(self, future_ctor=None) -> Future:
     rx.config["Future"] = trollius.Future
     future = rx.Observable.return_value(42).to_future()
 
-    future_ctor -- {Function} [Optional] The constructor of the future.
+    future_ctor -- {Functi[Optional] The constructor of the future.
         If not provided, it looks for it in rx.config.Future.
 
     Returns a future with the last value from the observable sequence.
     """
 
-    future_ctor = future_ctor or rx.config.get("Future")
-    if not future_ctor:
-        raise Exception('Future type not provided nor in rx.config.Future')
-
-    source = self
-
+    future_ctor = future_ctor or Future
     future = future_ctor()
 
     value = [None]

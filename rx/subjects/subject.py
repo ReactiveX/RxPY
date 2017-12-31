@@ -1,6 +1,6 @@
+import threading
 from typing import Any, List
 
-from rx import config
 from rx.core import Observer, ObservableBase, Disposable, Scheduler
 from rx.internal import DisposedException
 
@@ -22,7 +22,7 @@ class Subject(ObservableBase, Observer):
         self.observers = []   # type: List[Observer]
         self.exception = None # type: Exception
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
     def check_disposed(self):
         if self.is_disposed:
