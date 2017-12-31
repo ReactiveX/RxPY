@@ -1,10 +1,10 @@
 # By design, pylint: disable=C0302
+import threading
 from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
 from abc import abstractmethod
 from asyncio import Future
 
-from rx import config
 from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator
 from .disposable import Disposable
 from .anonymousobserver import AnonymousObserver
@@ -19,7 +19,7 @@ class ObservableBase(typing.Observable):
     methods to allow classic Rx chaining of operators."""
 
     def __init__(self):
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
     def __add__(self, other):
         """Pythonic version of concat
