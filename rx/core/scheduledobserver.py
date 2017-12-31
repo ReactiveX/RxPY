@@ -6,7 +6,7 @@ from .observerbase import ObserverBase
 
 class ScheduledObserver(ObserverBase):
     def __init__(self, scheduler, observer):
-        super(ScheduledObserver, self).__init__()
+        super().__init__()
 
         self.scheduler = scheduler
         self.observer = observer
@@ -46,11 +46,11 @@ class ScheduledObserver(ObserverBase):
         if is_owner:
             self.disposable.disposable = self.scheduler.schedule(self.run)
 
-    def run(self, recurse, state):
+    def run(self, scheduler, state):
         parent = self
 
         with self.lock:
-            if len(parent.queue):
+            if parent.queue:
                 work = parent.queue.pop(0)
             else:
                 parent.is_acquired = False

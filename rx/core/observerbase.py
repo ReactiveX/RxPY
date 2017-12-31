@@ -30,7 +30,7 @@ class ObserverBase(Observer, Disposable):
         error -- The error that has occurred."""
 
         if not self.is_stopped:
-            ObserverBase.dispose(self)
+            self.is_stopped = True
             self._throw_core(error)
 
     @abstractmethod
@@ -41,7 +41,7 @@ class ObserverBase(Observer, Disposable):
         """Notifies the observer of the end of the sequence."""
 
         if not self.is_stopped:
-            ObserverBase.dispose(self)
+            self.is_stopped = True
             self._close_core()
 
     @abstractmethod
@@ -56,7 +56,7 @@ class ObserverBase(Observer, Disposable):
 
     def fail(self, exn):
         if not self.is_stopped:
-            ObserverBase.dispose(self)
+            self.is_stopped = True
             self._throw_core(exn)
             return True
 
