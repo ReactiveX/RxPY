@@ -8,11 +8,11 @@ class ConnectableObservable(ObservableBase):
 
     def __init__(self, source, subject):
         self.subject = subject
-        self.source = source.as_observable()
         self.has_subscription = False
         self.subscription = None
 
-        super().__init__()
+        source = source.as_observable()
+        super().__init__(source)
 
     def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer, scheduler)

@@ -20,4 +20,12 @@ class AnonymousObserver(ObserverBase):
         raise NotImplementedError
 
 
-NoopObserver = AnonymousObserver
+class NoopObserver(ObserverBase):
+    def _send_core(self, value):
+        pass
+
+    def _throw_core(self, error):
+        pass
+
+    def _close_core(self):
+        pass

@@ -1,5 +1,5 @@
 import logging
-asyncio = None
+import asyncio
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
@@ -12,10 +12,6 @@ class AsyncIOScheduler(SchedulerBase):
     """A scheduler that schedules work via the asyncio mainloop."""
 
     def __init__(self, loop=None):
-        global asyncio
-        import rx
-        asyncio = rx.config['asyncio']
-
         self.loop = loop or asyncio.get_event_loop()
 
     def schedule(self, action, state=None):

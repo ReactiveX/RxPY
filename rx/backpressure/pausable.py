@@ -6,7 +6,6 @@ from rx.subjects import Subject
 
 class PausableObservable(ObservableBase):
     def __init__(self, source, pauser=None):
-        self.source = source
         self.controller = Subject()
 
         if pauser and hasattr(pauser, "subscribe"):
@@ -14,7 +13,7 @@ class PausableObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableObservable, self).__init__()
+        super().__init__(source)
 
     def _subscribe_core(self, observer, scheduler=None):
         conn = self.source.publish()

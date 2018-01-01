@@ -27,7 +27,6 @@ class SingleAssignmentDisposable(Disposable):
         if self.current:
             raise Exception('Disposable has already been assigned')
 
-        assert value
         should_dispose = self.is_disposed
         old = None
 

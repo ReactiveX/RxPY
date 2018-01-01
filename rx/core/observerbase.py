@@ -24,7 +24,7 @@ class ObserverBase(Observer, Disposable):
         return NotImplemented
 
     def throw(self, error):
-        """Notifies the observer that an exception has occurred.
+        """Notify the observer that an exception has occurred.
 
         Keyword arguments:
         error -- The error that has occurred."""
@@ -54,8 +54,9 @@ class ObserverBase(Observer, Disposable):
 
         self.is_stopped = True
 
-    def fail(self, exn):
+    def fail(self, exn: Exception) -> bool:
         if not self.is_stopped:
+            print("failing!")
             self.is_stopped = True
             self._throw_core(exn)
             return True

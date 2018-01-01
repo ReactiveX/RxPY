@@ -40,7 +40,6 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
     def fix_subscriber(subscriber):
         """Fixes subscriber to make sure it returns a Disposable instead
         of None or a dispose function"""
-
         if not hasattr(subscriber, "dispose"):
             subscriber = Disposable.create(subscriber)
 
@@ -53,7 +52,7 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
             if not auto_detach_observer.fail(ex):
                 raise
         else:
-            auto_detach_observer.disposable = fix_subscriber(subscriber)
+            auto_detach_observer.subscription = fix_subscriber(subscriber)
 
     # Subscribe needs to set up the trampoline before for subscribing.
     # Actually, the first call to Subscribe creates the trampoline so

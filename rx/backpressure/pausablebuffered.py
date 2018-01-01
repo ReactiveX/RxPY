@@ -55,7 +55,6 @@ def combine_latest_source(source, subject, result_mapper):
 class PausableBufferedObservable(ObservableBase):
 
     def __init__(self, source, pauser=None):
-        self.source = source
         self.controller = Subject()
 
         if pauser and hasattr(pauser, "subscribe"):
@@ -63,7 +62,7 @@ class PausableBufferedObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableBufferedObservable, self).__init__()
+        super().__init__(source)
 
     def _subscribe_core(self, observer, scheduler=None):
         previous_should_fire = [None]

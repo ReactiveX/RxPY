@@ -2,7 +2,6 @@
 import threading
 from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
-from abc import abstractmethod
 from asyncio import Future
 
 from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator
@@ -18,8 +17,9 @@ class ObservableBase(typing.Observable):
     Represents a push-style collection and contains all operators as
     methods to allow classic Rx chaining of operators."""
 
-    def __init__(self):
+    def __init__(self, source: typing.Observable = None) -> None:
         self.lock = threading.RLock()
+        self.source = source
 
     def __add__(self, other):
         """Pythonic version of concat
@@ -100,9 +100,7 @@ class ObservableBase(typing.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self,
-                  observer: typing.Observer = None,
-                  scheduler: typing.Scheduler = None
+    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None
                  ) -> Disposable:
         """Subscribe an observer to the observable sequence.
 
@@ -118,8 +116,7 @@ class ObservableBase(typing.Observable):
         to the observable sequence.
         """
         from .subscribe import subscribe
-        source = self
-        return subscribe(source, observer, scheduler)
+        return subscribe(self, observer, scheduler)
 
     def subscribe_callbacks(self,
                             send: typing.Send = None,
@@ -148,9 +145,8 @@ class ObservableBase(typing.Observable):
         observer = AnonymousObserver(send, throw, close)
         return self.subscribe(observer, scheduler)
 
-    @abstractmethod
     def _subscribe_core(self, observer, scheduler=None):
-        return NotImplemented
+        return self.source.subscribe(observer, scheduler)
 
     def all(self, predicate):
         """Determines whether all elements of an observable sequence
@@ -717,7 +713,7 @@ class ObservableBase(typing.Observable):
         sequence that satisfy the condition.
         """
         from ..operators.observable.filter import filter as _filter
-        return _filter(self, predicate, predicate_indexed)
+        return ObservableBase(_filter(predicate, predicate_indexed)(self))
 
     def finally_action(self, action) -> 'ObservableBase':
         """Invokes a specified action after the source observable sequence
@@ -1101,7 +1097,7 @@ class ObservableBase(typing.Observable):
         """
 
         from ..operators.observable.map import map as _map
-        return _map(self, mapper, mapper_indexed)
+        return ObservableBase(_map(mapper, mapper_indexed)(self))
 
     def materialize(self) -> 'ObservableBase':
         """Materializes the implicit notifications of an observable sequence as

@@ -1,10 +1,54 @@
-from rx.core import ObservableBase, AnonymousObservable
-from rx.core.typing import Predicate, PredicateIndexed
+from typing import Any
 
+from rx.core import Disposable
+from rx.core.typing import  Predicate, PredicateIndexed, Scheduler, Observable, Observer
+from rx.streams import SingleStream
+
+
+class Filter(Observable):
+    """Filter operator implementation."""
+
+    def __init__(self, predicate: Predicate = None,
+                 predicate_indexed: PredicateIndexed = None) -> None:
+        self.source = None  # type: Observable
+        self.predicate = predicate
+        self.predicate_indexed = predicate_indexed
+
+        assert not (self.predicate and self.predicate_indexed)
+
+    def subscribe(self, observer: Observer = None, scheduler: Scheduler = None) -> Disposable:
+        stream = Filter._(self.predicate, self.predicate_indexed).chain(observer, scheduler)
+        stream.subscription = self.source.subscribe(stream, scheduler)
+
+        return Disposable.create(stream.dispose)
+
+    def __call__(self, source: Observable) -> Observable:
+        self.source = source
+        return self
+
+    class _(SingleStream):
+        def __init__(self, predicate: Predicate, predicate_indexed: PredicateIndexed) -> None:
+            super().__init__()
+
+            self.count = 0
+            self.predicate = predicate
+            self.predicate_indexed = predicate_indexed
+
+        def send(self, value: Any) -> None:
+            try:
+                if self.predicate:
+                    should_run = self.predicate(value)
+                else:
+                    should_run = self.predicate_indexed(value, self.count)
+            except Exception as ex:  # By design. pylint: disable=W0703
+                self.throw(ex)
+            else:
+                self.count += 1
+                if should_run:
+                    self._observer.send(value)
 
 # pylint: disable=W0622
-def filter(source: ObservableBase,
-           predicate: Predicate = None,
+def filter(predicate: Predicate = None,
            predicate_indexed: PredicateIndexed = None):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
@@ -23,24 +67,4 @@ def filter(source: ObservableBase,
     sequence that satisfy the condition.
     """
 
-    def subscribe(observer, scheduler=None):
-        count = 0
-
-        def send(value):
-            nonlocal count
-
-            try:
-                should_run = predicate(value) if predicate else predicate_indexed(value, count)
-            except Exception as ex:  # By design. pylint: disable=W0703
-                observer.throw(ex)
-                return
-            else:
-                count += 1
-
-            if should_run:
-                observer.send(value)
-
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
-    return AnonymousObservable(subscribe)
-
-
+    return Filter(predicate, predicate_indexed)
