@@ -26,7 +26,7 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
             observer.send(m)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 

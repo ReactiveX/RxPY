@@ -29,7 +29,7 @@ def _element_at_or_default(source, index, has_default=False, default_value=None)
                 observer.send(default_value)
                 observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 def element_at_or_default(self, index: int, default_value: Any = None) -> ObservableBase:

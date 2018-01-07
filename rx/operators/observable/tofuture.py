@@ -37,7 +37,7 @@ def to_future(source: ObservableBase, future_ctor: Callable[[], Future] = None) 
         if has_value[0]:
             future.set_result(value[0])
 
-    source.subscribe_callbacks(send, throw, close)
+    source.subscribe_(send, throw, close)
 
     # No cancellation can be done
     return future

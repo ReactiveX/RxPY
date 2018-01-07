@@ -20,7 +20,7 @@ class TestManySelect(unittest.TestCase):
         left = xs.many_select(lambda x: x.first())
         right = xs
 
-        left.sequence_equal(right).first().subscribe_callbacks(self.assertTrue)
+        left.sequence_equal(right).first().subscribe_(self.assertTrue)
 
     def test_many_select_basic(self):
         scheduler = TestScheduler()

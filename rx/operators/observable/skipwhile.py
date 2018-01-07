@@ -34,7 +34,7 @@ def skip_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
             if running:
                 observer.send(value)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -74,5 +74,5 @@ def skip_while_indexed(source: ObservableBase,
             if running:
                 observer.send(value)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

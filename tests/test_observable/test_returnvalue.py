@@ -58,7 +58,7 @@ class TestReturnValue(unittest.TestCase):
             def close():
                 results.close()
 
-            d.disposable = xs.subscribe_callbacks(send, throw, close, scheduler)
+            d.disposable = xs.subscribe_(send, throw, close, scheduler)
             return d.disposable
 
         scheduler.schedule_absolute(100, action)
@@ -68,12 +68,12 @@ class TestReturnValue(unittest.TestCase):
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1)
-        xs.subscribe_callbacks(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = Observable.return_value(1)
-        ys.subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler2)
+        ys.subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)

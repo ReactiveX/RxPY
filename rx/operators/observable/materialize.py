@@ -22,6 +22,6 @@ def materialize(source: ObservableBase) -> ObservableBase:
             observer.send(OnCompleted())
             observer.close()
 
-        return source.subscribe_callbacks(send, throw, close, scheduler)
+        return source.subscribe_(send, throw, close, scheduler)
     return AnonymousObservable(subscribe)
 

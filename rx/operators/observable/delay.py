@@ -87,7 +87,7 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp().subscribe_callbacks(send, scheduler=scheduler)
+        subscription = source.materialize().timestamp().subscribe_(send, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 

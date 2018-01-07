@@ -42,7 +42,7 @@ def throw_resume_next(*args) -> ObservableBase:
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_callbacks(observer.send, on_resume, on_resume, scheduler)
+            d.disposable = current.subscribe_(observer.send, on_resume, on_resume, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

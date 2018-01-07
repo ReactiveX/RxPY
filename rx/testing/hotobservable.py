@@ -30,7 +30,7 @@ class HotObservable(ObservableBase):
     def subscribe(self, observer=None, scheduler=None):
         return self._subscribe_core(observer, scheduler)
 
-    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
+    def subscribe_(self, send=None, throw=None, close=None, scheduler=None):
         observer = AnonymousObserver(send, throw, close)
         return self.subscribe(observer, scheduler)
 

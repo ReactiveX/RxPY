@@ -36,5 +36,5 @@ def take_last_buffer(self, count) -> ObservableBase:
             observer.send(q)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

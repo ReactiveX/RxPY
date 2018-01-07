@@ -44,7 +44,7 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_callbacks(observer.send, observer.throw, close, scheduler)
+                d.disposable = current.subscribe_(observer.send, observer.throw, close, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 

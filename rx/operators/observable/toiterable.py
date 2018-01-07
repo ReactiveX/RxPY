@@ -20,5 +20,5 @@ def to_iterable(source: ObservableBase) -> ObservableBase:
             observer.send(queue)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

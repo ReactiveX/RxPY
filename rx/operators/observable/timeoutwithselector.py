@@ -64,7 +64,7 @@ def timeout_with_selector(source, first_timeout=None,
                 if timer_wins():
                     subscription.disposable = other.subscribe(observer)
 
-            d.disposable = timeout.subscribe_callbacks(send, throw, close, scheduler)
+            d.disposable = timeout.subscribe_(send, throw, close, scheduler)
 
         set_timer(first_timeout)
 
@@ -95,6 +95,6 @@ def timeout_with_selector(source, first_timeout=None,
             if observer_wins():
                 observer.close()
 
-        original.disposable = source.subscribe_callbacks(send, throw, close, scheduler)
+        original.disposable = source.subscribe_(send, throw, close, scheduler)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

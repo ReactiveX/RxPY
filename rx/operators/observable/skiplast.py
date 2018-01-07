@@ -33,5 +33,5 @@ def skip_last(count: int, source: ObservableBase) -> ObservableBase:
             if front is not None:
                 observer.send(front)
 
-        return observable.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return observable.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

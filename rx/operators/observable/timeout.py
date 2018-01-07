@@ -79,6 +79,6 @@ def timeout(source: ObservableBase, duetime: Union[int, datetime],
                 _id[0] += 1
                 observer.close()
 
-        original.disposable = source.subscribe_callbacks(send, throw, close, scheduler)
+        original.disposable = source.subscribe_(send, throw, close, scheduler)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

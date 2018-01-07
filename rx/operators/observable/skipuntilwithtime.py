@@ -38,7 +38,7 @@ def skip_until_with_time(source: ObservableBase,
         def send(x):
             if open[0]:
                 observer.send(x)
-        subscription = source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        subscription = source.subscribe_(send, observer.throw, observer.close, scheduler)
 
         def action(scheduler, state):
             open[0] = True

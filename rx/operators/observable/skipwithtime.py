@@ -43,7 +43,7 @@ def skip_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> O
             if open[0]:
                 observer.send(x)
 
-        d = source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        d = source.subscribe_(send, observer.throw, observer.close, scheduler)
         return CompositeDisposable(t, d)
     return AnonymousObservable(subscribe)
 

@@ -92,7 +92,7 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
 
                 observer.throw(error)
 
-            md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
+            md.disposable = duration.take(1).subscribe_(nothing, throw, expire, scheduler)
 
         def throw_left(error):
             for left_value in left_map.values():
@@ -100,7 +100,7 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
 
             observer.throw(error)
 
-        group.add(left.subscribe_callbacks(send_left, throw_left, observer.close, scheduler))
+        group.add(left.subscribe_(send_left, throw_left, observer.close, scheduler))
 
         def send_right(value):
             with self.lock:
@@ -131,7 +131,7 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
 
                     observer.throw(error)
 
-            md.disposable = duration.take(1).subscribe_callbacks(nothing, throw, expire, scheduler)
+            md.disposable = duration.take(1).subscribe_(nothing, throw, expire, scheduler)
 
             with self.lock:
                 for left_value in left_map.values():
@@ -143,6 +143,6 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
 
             observer.throw(error)
 
-        group.add(right.subscribe_callbacks(send_right, throw_right, scheduler=scheduler))
+        group.add(right.subscribe_(send_right, throw_right, scheduler=scheduler))
         return r
     return AnonymousObservable(subscribe)

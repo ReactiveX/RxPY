@@ -56,7 +56,7 @@ def for_each(source: BlockingObservable,
     def close():
         latch.set()
 
-    source.observable.subscribe_callbacks(send, throw, close)
+    source.observable.subscribe_(send, throw, close)
 
     # Block until the subscription completes and then return
     latch.wait()

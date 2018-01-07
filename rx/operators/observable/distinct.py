@@ -56,6 +56,6 @@ def distinct(self, key_mapper=None, comparer=None) -> ObservableBase:
                     return
 
             hashset.push(key) and observer.send(x)
-        return source.subscribe_callbacks(send, observer.throw,
+        return source.subscribe_(send, observer.throw,
                                 observer.close, scheduler)
     return AnonymousObservable(subscribe)

@@ -110,21 +110,21 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(11).repeat()
-        xs.subscribe_callbacks(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = Observable.throw('ex').repeat()
-        ys.subscribe_callbacks(lambda ex: _raise('ex'), scheduler=scheduler2)
+        ys.subscribe_(lambda ex: _raise('ex'), scheduler=scheduler2)
 
         with self.assertRaises(Exception):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = Observable.return_value(1).repeat()
-        d = zs.subscribe_callbacks(close=lambda: _raise('ex'), scheduler=scheduler3)
+        d = zs.subscribe_(close=lambda: _raise('ex'), scheduler=scheduler3)
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()
@@ -169,21 +169,21 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
         xs = Observable.return_value(1).repeat(3)
-        xs.subscribe_callbacks(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = Observable.throw('ex1').repeat(3)
-        ys.subscribe_callbacks(throw=lambda ex: _raise('ex2'), scheduler=scheduler2)
+        ys.subscribe_(throw=lambda ex: _raise('ex2'), scheduler=scheduler2)
 
         with self.assertRaises(RxException):
             scheduler2.start()
 
         # scheduler3 = TestScheduler()
         # zs = Observable.return_value(1).repeat(100)
-        # d = zs.subscribe_callbacks(close=lambda: _raise('ex3'), scheduler=scheduler3)
+        # d = zs.subscribe_(close=lambda: _raise('ex3'), scheduler=scheduler3)
 
         # scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())
         # scheduler3.start()

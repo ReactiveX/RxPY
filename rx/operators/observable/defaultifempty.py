@@ -29,5 +29,5 @@ def default_if_empty(source, default_value=None) -> ObservableBase:
                 observer.send(default_value)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

@@ -63,5 +63,5 @@ def transduce(self, transducer):
         def close():
             xform.complete(observer)
 
-        return source.subscribe_callbacks(send, observer.throw, close)
+        return source.subscribe_(send, observer.throw, close)
     return AnonymousObservable(subscribe)

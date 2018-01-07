@@ -62,19 +62,19 @@ def delay_with_selector(self, subscription_delay=None,
                     delays.remove(d)
                     done()
 
-                d.disposable = delay.subscribe_callbacks(send, observer.throw, close, scheduler)
+                d.disposable = delay.subscribe_(send, observer.throw, close, scheduler)
 
             def close():
                 at_end[0] = True
                 subscription.dispose()
                 done()
 
-            subscription.disposable = source.subscribe_callbacks(send, observer.throw, close, scheduler)
+            subscription.disposable = source.subscribe_(send, observer.throw, close, scheduler)
 
         if not sub_delay:
             start()
         else:
-            subscription.disposable(sub_delay.subscribe_callbacks(
+            subscription.disposable(sub_delay.subscribe_(
                 lambda _: start(),
                 observer.throw,
                 start))

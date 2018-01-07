@@ -68,7 +68,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_callbacks(send, observer.throw, lambda: done(i), scheduler)
+            sad.disposable = source.subscribe_(send, observer.throw, lambda: done(i), scheduler)
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)
@@ -98,5 +98,5 @@ def _zip_with_list(source, second, result_mapper):
             else:
                 observer.close()
 
-        return first.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return first.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

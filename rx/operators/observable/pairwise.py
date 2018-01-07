@@ -32,5 +32,5 @@ def pairwise(self) -> ObservableBase:
             if pair:
                 observer.send(pair)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

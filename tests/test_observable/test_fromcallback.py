@@ -34,7 +34,7 @@ class TestFromCallback(unittest.TestCase):
         def close():
             assert(True)
 
-        res.subscribe_callbacks(send, throw, close)
+        res.subscribe_(send, throw, close)
 
     def test_from_callback_single(self):
         res = Observable.from_callback(lambda file, cb: cb(file))('file.txt')
@@ -49,7 +49,7 @@ class TestFromCallback(unittest.TestCase):
         def close():
             assert(True)
 
-        res.subscribe_callbacks(send, throw, close)
+        res.subscribe_(send, throw, close)
 
     def test_from_node_callback_mapper(self):
         res = Observable.from_callback(
@@ -66,5 +66,5 @@ class TestFromCallback(unittest.TestCase):
         def close():
             assert(True)
 
-        res.subscribe_callbacks(send, throw, close)
+        res.subscribe_(send, throw, close)
 

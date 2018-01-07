@@ -36,7 +36,7 @@ def exclusive(self) -> ObservableBase:
                     if is_stopped[0] and len(g) == 1:
                         observer.close()
 
-                inner_subscription.disposable = inner_source.subscribe_callbacks(
+                inner_subscription.disposable = inner_source.subscribe_(
                     observer.send,
                     observer.throw,
                     close_inner,
@@ -48,6 +48,6 @@ def exclusive(self) -> ObservableBase:
             if not has_current[0] and len(g) == 1:
                 observer.close()
 
-        m.disposable = sources.subscribe_callbacks(send, observer.throw, close, scheduler)
+        m.disposable = sources.subscribe_(send, observer.throw, close, scheduler)
         return g
     return AnonymousObservable(subscribe)

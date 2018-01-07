@@ -62,14 +62,14 @@ def observable_window_with_boundaries(self, window_boundaries):
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send_window, throw, close, scheduler))
+        d.add(source.subscribe_(send_window, throw, close, scheduler))
 
         def send_observer(w):
             window[0].close()
             window[0] = Subject()
             observer.send(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe_callbacks(send_observer, throw, close, scheduler))
+        d.add(window_boundaries.subscribe_(send_observer, throw, close, scheduler))
         return r
     return AnonymousObservable(subscribe)
 
@@ -95,7 +95,7 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
             window[0].close()
             observer.close()
 
-        d.add(source.subscribe_callbacks(send, throw, close, scheduler))
+        d.add(source.subscribe_(send, throw, close, scheduler))
 
         def create_window_close():
             try:
@@ -113,7 +113,7 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_callbacks(noop, throw, close, scheduler)
+            m1.disposable = window_close.take(1).subscribe_(noop, throw, close, scheduler)
 
         create_window_close()
         return r

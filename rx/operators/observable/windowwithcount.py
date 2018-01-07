@@ -69,7 +69,7 @@ def window_with_count(self, count, skip=None) -> ObservableBase:
                 q.pop(0).close()
             observer.close()
 
-        m.disposable = source.subscribe_callbacks(send, throw, close, scheduler)
+        m.disposable = source.subscribe_(send, throw, close, scheduler)
         return refCountDisposable
     return AnonymousObservable(subscribe)
 

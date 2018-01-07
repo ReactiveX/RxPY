@@ -46,5 +46,5 @@ def take_last_with_time(source, duration) -> ObservableBase:
 
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

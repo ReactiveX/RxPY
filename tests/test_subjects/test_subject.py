@@ -343,7 +343,7 @@ def test_subject_create():
 
     def send2(x):
         _x[0] = x
-    s.subscribe_callbacks(send2)
+    s.subscribe_(send2)
 
     assert(42 == _x[0])
     s.send(21)

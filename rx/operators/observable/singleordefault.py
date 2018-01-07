@@ -22,7 +22,7 @@ def single_or_default_async(source: ObservableBase, has_default: bool = False, d
                 observer.send(value[0])
                 observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 def single_or_default(source: ObservableBase, predicate: Predicate = None,

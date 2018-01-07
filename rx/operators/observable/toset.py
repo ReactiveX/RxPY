@@ -15,5 +15,5 @@ def to_set(source: ObservableBase) -> ObservableBase:
             observer.send(s)
             observer.close()
 
-        return source.subscribe_callbacks(s.add, observer.throw, close, scheduler)
+        return source.subscribe_(s.add, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

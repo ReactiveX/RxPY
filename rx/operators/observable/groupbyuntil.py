@@ -104,7 +104,7 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
                 def close():
                     expire()
 
-                sad.disposable = duration.take(1).subscribe_callbacks(send, throw, close, scheduler)
+                sad.disposable = duration.take(1).subscribe_(send, throw, close, scheduler)
 
             try:
                 element = element_mapper(x)
@@ -129,6 +129,6 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
 
             observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(send, throw, close, scheduler))
+        group_disposable.add(source.subscribe_(send, throw, close, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

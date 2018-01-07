@@ -25,7 +25,7 @@ def main():
 
         def send(ev):
             label.place(x=ev.x + i*12 + 15, y=ev.y)
-        ys = mousemove.delay(i*100).subscribe_callbacks(send, scheduler=scheduler)
+        ys = mousemove.delay(i*100).subscribe_(send, scheduler=scheduler)
 
     for i, label in enumerate(labels):
         handle_label(i, label)

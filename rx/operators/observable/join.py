@@ -65,7 +65,7 @@ def join(source, right, left_duration_mapper, right_duration_mapper, result_mapp
                 observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire(), scheduler)
+            md.disposable = duration.take(1).subscribe_(noop, observer.throw, lambda: expire(), scheduler)
 
             for val in right_map.values():
                 try:
@@ -82,7 +82,7 @@ def join(source, right, left_duration_mapper, right_duration_mapper, result_mapp
             if right_done[0] or not len(left_map):
                 observer.close()
 
-        group.add(left.subscribe_callbacks(send_left, observer.throw, close_left, scheduler))
+        group.add(left.subscribe_(send_left, observer.throw, close_left, scheduler))
 
         def send_right(value):
             duration = None
@@ -107,7 +107,7 @@ def join(source, right, left_duration_mapper, right_duration_mapper, result_mapp
                 observer.throw(exception)
                 return
 
-            md.disposable = duration.take(1).subscribe_callbacks(noop, observer.throw, lambda: expire(), scheduler)
+            md.disposable = duration.take(1).subscribe_(noop, observer.throw, lambda: expire(), scheduler)
 
             for val in left_map.values():
                 try:
@@ -124,6 +124,6 @@ def join(source, right, left_duration_mapper, right_duration_mapper, result_mapp
             if left_done[0] or not len(right_map):
                 observer.close()
 
-        group.add(right.subscribe_callbacks(send_right, observer.throw, close_right))
+        group.add(right.subscribe_(send_right, observer.throw, close_right))
         return group
     return AnonymousObservable(subscribe)

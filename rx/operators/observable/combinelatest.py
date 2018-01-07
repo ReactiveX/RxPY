@@ -67,7 +67,7 @@ def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = args[i].subscribe_callbacks(send, observer.throw,
+            subscriptions[i].disposable = args[i].subscribe_(send, observer.throw,
                                                                       close, scheduler)
 
         for idx in range(n):

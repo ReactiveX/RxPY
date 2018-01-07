@@ -24,7 +24,7 @@ def find_value(source, predicate, yield_index):
             observer.send(-1 if yield_index else None)
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 def find(source, predicate: Predicate) -> ObservableBase:

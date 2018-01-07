@@ -47,13 +47,13 @@ def switch_latest(sources: typing.Observable[typing.Observable]):
                     if is_stopped[0]:
                         observer.close()
 
-            d.disposable = inner_source.subscribe_callbacks(send, throw, close)
+            d.disposable = inner_source.subscribe_(send, throw, close)
 
         def close():
             is_stopped[0] = True
             if not has_latest[0]:
                 observer.close()
 
-        subscription = sources.subscribe_callbacks(send, observer.throw, close)
+        subscription = sources.subscribe_(send, observer.throw, close)
         return CompositeDisposable(subscription, inner_subscription)
     return AnonymousObservable(subscribe)

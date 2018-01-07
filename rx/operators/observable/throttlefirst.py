@@ -35,5 +35,5 @@ def throttle_first(source, window_duration: Union[timedelta, int]) -> Observable
             if emit:
                 observer.send(x)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler=scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler=scheduler)
     return AnonymousObservable(subscribe)

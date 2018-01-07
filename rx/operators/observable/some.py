@@ -25,6 +25,6 @@ def some(source, predicate=None) -> ObservableBase:
         def throw():
             observer.send(False)
             observer.close()
-        return source.subscribe_callbacks(send, observer.throw, throw, scheduler)
+        return source.subscribe_(send, observer.throw, throw, scheduler)
 
     return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)

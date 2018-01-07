@@ -11,6 +11,6 @@ def ignore_elements(source: ObservableBase) -> ObservableBase:
     """
 
     def subscribe(observer, scheduler=None):
-        return source.subscribe_callbacks(noop, observer.throw, observer.close, scheduler)
+        return source.subscribe_(noop, observer.throw, observer.close, scheduler)
 
     return AnonymousObservable(subscribe)

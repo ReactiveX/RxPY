@@ -114,21 +114,21 @@ class TestCreate(unittest.TestCase):
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe).subscribe_callbacks(lambda x: _raise('ex'))
+            Observable.create(subscribe).subscribe_(lambda x: _raise('ex'))
 
         def subscribe2(o):
             o.throw('exception')
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe2).subscribe_callbacks(throw=lambda ex: _raise('ex'))
+            Observable.create(subscribe2).subscribe_(throw=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.close()
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe3).subscribe_callbacks(close=lambda: _raise('ex'))
+            Observable.create(subscribe3).subscribe_(close=lambda: _raise('ex'))
 
     def test_create_next(self):
         scheduler = TestScheduler()
@@ -222,19 +222,19 @@ class TestCreate(unittest.TestCase):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe1).subscribe_callbacks(send)
+            Observable.create(subscribe1).subscribe_(send)
 
         def subscribe2(o):
             o.throw('exception')
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe2).subscribe_callbacks(throw=lambda ex: _raise('ex'))
+            Observable.create(subscribe2).subscribe_(throw=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.close()
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe3).subscribe_callbacks(close=_raise('ex'))
+            Observable.create(subscribe3).subscribe_(close=_raise('ex'))
 

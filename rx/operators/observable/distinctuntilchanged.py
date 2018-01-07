@@ -49,5 +49,5 @@ def distinct_until_changed(self, key_mapper=None, comparer=None) -> ObservableBa
                 current_key[0] = key
                 observer.send(value)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)

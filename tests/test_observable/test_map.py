@@ -27,17 +27,17 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             Observable.return_value(1) \
                 .map(mapper_indexed=lambda x, y: x) \
-                .subscribe_callbacks(lambda x: _raise("ex"))
+                .subscribe_(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             Observable.throw('ex') \
                 .map(mapper_indexed=lambda x, y: x) \
-                .subscribe_callbacks(throw=lambda ex: _raise(ex))
+                .subscribe_(throw=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             Observable.empty() \
                 .map(mapper_indexed=lambda x, y: x) \
-                .subscribe_callbacks(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+                .subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         def subscribe(observer, scheduler=None):
             _raise('ex')
@@ -167,17 +167,17 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             return Observable.return_value(1) \
                 .map(mapper_indexed=lambda x, index: x) \
-                .subscribe_callbacks(lambda x: _raise('ex'))
+                .subscribe_(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
             return Observable.throw('ex') \
                 .map(mapper_indexed=lambda x, index: x) \
-                .subscribe_callbacks(lambda x: x, lambda ex: _raise(ex))
+                .subscribe_(lambda x: x, lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             return Observable.empty() \
                 .map(lambda x, index: x) \
-                .subscribe_callbacks(lambda x: x, lambda ex: _, lambda : _raise('ex'))
+                .subscribe_(lambda x: x, lambda ex: _, lambda : _raise('ex'))
 
         with self.assertRaises(RxException):
             return Observable.create(lambda o: _raise('ex')) \

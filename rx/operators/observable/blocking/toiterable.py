@@ -23,7 +23,7 @@ def to_iterable(source: BlockingObservable) -> Iterable:
         condition.notify()  # signal that a new item is available
         condition.release()
 
-    source.observable.materialize().subscribe_callbacks(send)
+    source.observable.materialize().subscribe_(send)
 
     def gen():
         """Generator producing values for the iterator"""

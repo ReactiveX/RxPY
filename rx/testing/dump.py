@@ -26,6 +26,6 @@ def dump(self, name = "test"):
             print("{%s} completed" % name)
             observer.close()
 
-        return self.subscribe_callbacks(send, throw, close)
+        return self.subscribe_(send, throw, close)
     return AnonymousObservable(subscribe)
 

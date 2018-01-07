@@ -39,7 +39,7 @@ def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]
                 def send(value):
                     with parent.lock:
                         values[i] = value
-                subscription.disposable = child.subscribe_callbacks(
+                subscription.disposable = child.subscribe_(
                     send, observer.throw, scheduler=scheduler)
                 return subscription
 
@@ -54,7 +54,7 @@ def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]
                             observer.throw(error)
                         else:
                             observer.send(result)
-            parent_subscription.disposable = parent.subscribe_callbacks(
+            parent_subscription.disposable = parent.subscribe_(
                 send, observer.throw, observer.close, scheduler)
 
             children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]

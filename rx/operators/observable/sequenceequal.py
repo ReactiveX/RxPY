@@ -96,7 +96,7 @@ def sequence_equal(source, second: ObservableBase,
                     observer.send(True)
                     observer.close()
 
-        subscription1 = first.subscribe_callbacks(send1, observer.throw, close1, scheduler)
-        subscription2 = second.subscribe_callbacks(send2, observer.throw, close2, scheduler)
+        subscription1 = first.subscribe_(send1, observer.throw, close1, scheduler)
+        subscription2 = second.subscribe_(send2, observer.throw, close2, scheduler)
         return CompositeDisposable(subscription1, subscription2)
     return AnonymousObservable(subscribe)

@@ -15,5 +15,5 @@ def dematerialize(self) -> ObservableBase:
         def send(value):
             return value.accept(observer)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

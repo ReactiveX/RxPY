@@ -35,14 +35,14 @@ class BlockingObservable(abc.Observable):
         """
         return self.observable.subscribe(observer, scheduler)
 
-    def subscribe_callbacks(self, send=None, throw=None, close=None, scheduler=None):
+    def subscribe_(self, send=None, throw=None, close=None, scheduler=None):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
         1 - source.subscribe()
-        2 - source.subscribe_callbacks(send)
-        3 - source.subscribe_callbacks(send, throw)
-        4 - source.subscribe_callbacks(send, throw, close)
+        2 - source.subscribe_(send)
+        3 - source.subscribe_(send, throw)
+        4 - source.subscribe_(send, throw, close)
 
         Keyword arguments:
         send -- [Optional] Action to invoke for each element in the

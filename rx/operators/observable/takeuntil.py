@@ -25,6 +25,6 @@ def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
 
         return CompositeDisposable(
             source.subscribe(observer),
-            other.subscribe_callbacks(close, observer.throw, noop, scheduler)
+            other.subscribe_(close, observer.throw, noop, scheduler)
         )
     return AnonymousObservable(subscribe)

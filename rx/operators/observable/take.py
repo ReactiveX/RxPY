@@ -35,5 +35,5 @@ def take(count: int, source: ObservableBase):
                 if not remaining:
                     observer.close()
 
-        return observable.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return observable.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

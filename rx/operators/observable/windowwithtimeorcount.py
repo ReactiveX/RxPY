@@ -66,7 +66,7 @@ def window_with_time_or_count(source, timespan, count) -> ObservableBase:
             s[0].close()
             observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(send, throw, close, scheduler))
+        group_disposable.add(source.subscribe_(send, throw, close, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)
 

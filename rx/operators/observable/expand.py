@@ -59,7 +59,7 @@ def expand(source: ObservableBase, mapper: Mapper) -> ObservableBase:
                     if active_count[0] == 0:
                         observer.close()
 
-                sad.disposable = work.subscribe_callbacks(send, observer.throw, on_complete, scheduler)
+                sad.disposable = work.subscribe_(send, observer.throw, on_complete, scheduler)
                 m.disposable = scheduler.schedule(action)
 
             if is_owner:

@@ -57,7 +57,7 @@ def debounce(self, duetime) -> ObservableBase:
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe_callbacks(send, throw, close, scheduler)
+        subscription = source.subscribe_(send, throw, close, scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
@@ -114,7 +114,7 @@ def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
                 has_value[0] = False
                 d.dispose()
 
-            d.disposable = throttle.subscribe_callbacks(send, observer.throw,
+            d.disposable = throttle.subscribe_(send, observer.throw,
                                               close, scheduler)
 
         def throw(e):
@@ -132,6 +132,6 @@ def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe_callbacks(send, throw, close)
+        subscription = source.subscribe_(send, throw, close)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)

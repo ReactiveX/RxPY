@@ -48,5 +48,5 @@ def skip_last_with_time(self, duration: Union[timedelta, int]) -> ObservableBase
 
             observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, close, scheduler)
+        return source.subscribe_(send, observer.throw, close, scheduler)
     return AnonymousObservable(subscribe)

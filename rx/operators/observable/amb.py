@@ -48,7 +48,7 @@ def _amb(left_source, right_source):
             if choice[0] == left_choice:
                 observer.close()
 
-        lelf_d = left_source.subscribe_callbacks(send_left, throw_left, close_left, scheduler)
+        lelf_d = left_source.subscribe_(send_left, throw_left, close_left, scheduler)
         left_subscription.disposable = lelf_d
 
         def send_right(value):
@@ -69,7 +69,7 @@ def _amb(left_source, right_source):
             if choice[0] == right_choice:
                 observer.close()
 
-        right_d = right_source.subscribe_callbacks(send_right, throw_right, close_right, scheduler)
+        right_d = right_source.subscribe_(send_right, throw_right, close_right, scheduler)
         right_subscription.disposable = right_d
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)

@@ -43,7 +43,7 @@ class TestThrow(unittest.TestCase):
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()
         xs = Observable.throw('ex')
-        xs.subscribe_callbacks(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler   )
+        xs.subscribe_(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler   )
 
         self.assertRaises(RxException, scheduler.start)
 

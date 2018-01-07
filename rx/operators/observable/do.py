@@ -58,7 +58,7 @@ def do_action(source: ObservableBase, send=None, throw=None, close=None) -> Obse
 
                 observer.close()
 
-        return source.subscribe_callbacks(_send, _throw, _close)
+        return source.subscribe_(_send, _throw, _close)
     return AnonymousObservable(subscribe)
 
 
@@ -96,7 +96,7 @@ def do_after_next(source, after_next):
             except Exception as e:
                 observer.throw(e)
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close)
+        return source.subscribe_(send, observer.throw, observer.close)
     return AnonymousObservable(subscribe)
 
 
@@ -108,7 +108,7 @@ def do_on_subscribe(source, on_subscribe):
     """
     def subscribe(observer, scheduler=None):
         on_subscribe()
-        return source.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(observer.send, observer.throw, observer.close, scheduler)
 
     return AnonymousObservable(subscribe)
 
@@ -128,7 +128,7 @@ def do_on_dispose(source, on_dispose):
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        disposable = source.subscribe_callbacks(observer.send, observer.throw, observer.close, scheduler)
+        disposable = source.subscribe_(observer.send, observer.throw, observer.close, scheduler)
         composite_disposable.add(disposable)
         return composite_disposable
 
@@ -161,7 +161,7 @@ def do_on_terminate(source, on_terminate):
             else:
                 observer.throw(exception)
 
-        return source.subscribe_callbacks(observer.send, throw, close, scheduler)
+        return source.subscribe_(observer.send, throw, close, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -233,7 +233,7 @@ def do_finally(source, finally_action):
 
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose(was_invoked))
-        disposable = source.subscribe_callbacks(observer.send, throw, close, scheduler)
+        disposable = source.subscribe_(observer.send, throw, close, scheduler)
         composite_disposable.add(disposable)
 
         return composite_disposable

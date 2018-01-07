@@ -90,6 +90,6 @@ def window_with_time(self, timespan, timeshift=None) -> ObservableBase:
 
             observer.close()
 
-        group_disposable.add(source.subscribe_callbacks(send, throw, close, scheduler))
+        group_disposable.add(source.subscribe_(send, throw, close, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

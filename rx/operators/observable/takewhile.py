@@ -41,7 +41,7 @@ def take_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
             else:
                 observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -84,5 +84,5 @@ def take_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], A
             else:
                 observer.close()
 
-        return source.subscribe_callbacks(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(send, observer.throw, observer.close, scheduler)
     return AnonymousObservable(subscribe)

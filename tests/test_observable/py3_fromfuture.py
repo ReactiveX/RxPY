@@ -29,7 +29,7 @@ class TestFromFuture(unittest.TestCase):
             def close():
                 success[2] = True
 
-            subscription = source.subscribe_callbacks(send, throw, close)
+            subscription = source.subscribe_(send, throw, close)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -56,7 +56,7 @@ class TestFromFuture(unittest.TestCase):
             def close():
                 success[2] = False
 
-            subscription = source.subscribe_callbacks(send, throw, close)
+            subscription = source.subscribe_(send, throw, close)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -81,7 +81,7 @@ class TestFromFuture(unittest.TestCase):
             def close():
                 success[2] = False
 
-            subscription = source.subscribe_callbacks(send, throw, close)
+            subscription = source.subscribe_(send, throw, close)
             subscription.dispose()
 
         loop.run_until_complete(go())

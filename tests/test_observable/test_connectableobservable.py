@@ -60,7 +60,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         def send(x):
             y[0] = x
-        co2.subscribe_callbacks(send=send)
+        co2.subscribe_(send=send)
         self.assertNotEqual(1, y[0])
 
         co2.connect()
