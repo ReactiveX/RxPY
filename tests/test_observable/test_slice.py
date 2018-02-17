@@ -208,6 +208,29 @@ class TestSlice(unittest.TestCase):
             on_completed(230))
         xs.subscriptions.assert_equal(subscribe(200, 230))
 
+    def test_slice_take_last_skip_all(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(70, -2),
+            on_next(150, -1),
+            on_next(210, 0),
+            on_next(230, 1),
+            on_next(270, 2),
+            on_next(280, 3),
+            on_next(300, 4),
+            on_next(310, 5),
+            on_next(340, 6),
+            on_next(370, 7),
+            on_next(410, 8),
+            on_next(415, 9),
+            on_completed(690))
+
+        def create():
+            return xs[-2:0]
+        results = scheduler.start(create)
+        results.messages.assert_equal(
+            on_completed(200))
+
     def test_slice_step_2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
