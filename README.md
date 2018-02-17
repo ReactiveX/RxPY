@@ -89,7 +89,7 @@ Received Epsilon
 Done!
 ```
 
-However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.from_()`. This factory accepts an iterable, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass it a list of these five Strings to it.
+However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.of()`. This factory accepts an argument list, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass these five Strings as arguments to it.
 
 ```python
 from rx import Observable, Observer
@@ -106,7 +106,7 @@ class PrintObserver(Observer):
     def on_error(self, error):
         print("Error Occurred: {0}".format(error))
 
-source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
+source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe(PrintObserver())
 ```
@@ -116,7 +116,7 @@ Most of the time you will not want to go through the verbosity of implementing y
 ```python
 from rx import Observable
 
-source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
+source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe_(on_next=lambda value: print("Received {0}".format(value)),
                  on_completed=lambda: print("Done!"),
@@ -129,7 +129,7 @@ You do not have to specify all three events types. You can pick and choose which
 ```python
 from rx import Observable
 
-source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
+source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe_(lambda value: print("Received {0}".format(value)))
 ```
@@ -152,7 +152,7 @@ You can also derive new Observables using over 130 operators available in RxPY. 
 ```python
 from rx import Observable
 
-source = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
+source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 lengths = source.map(lambda s: len(s))
 
@@ -175,7 +175,7 @@ Typically, you do not want to save Observables into intermediary variables for e
 ```python
 from rx import Observable
 
-Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
+Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
     .map(lambda s: len(s)) \
     .filter(lambda i: i >= 5) \
     .subscribe_(lambda value: print("Received {0}".format(value)))
@@ -269,7 +269,7 @@ Subscriber 2 Received: 42335
 
 This takes a cold `Observable` (which "replays" operations for each subscriber) and makes it hot by putting all Observers on the same stream of emissions which are broadcasted in live time. Be sure to have all your Observers set up before calling `connect()`, as any tardy Observers that subscribe after `connect()` is called will miss any previous emissions.
 
-Another way to implement mutlicasting is to use the `auto_connect()` operator on a `ConnectableObservable`. This will start firing emissions the moment it gets a subscriber, and will continue to fire even as subscribers come and go. If you provide an integer argument, it will hold off firing until there are that many subscribers subscribed to it. 
+Another way to implement mutlicasting is to use the `auto_connect()` operator on a `ConnectableObservable`. This will start firing emissions the moment it gets a subscriber, and will continue to fire even as subscribers come and go. If you provide an integer argument, it will hold off firing until there are that many subscribers subscribed to it.
 
 ```python
 from rx import Observable
@@ -294,7 +294,7 @@ You can compose different Observables together using factories like `Observable.
 ```python
 from rx import Observable
 
-letters = Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"])
+letters = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 intervals = Observable.interval(1000)
 
@@ -330,7 +330,7 @@ def customer_for_id(customer_id):
 
 
 # Query customers with IDs 1, 3, and 5
-Observable.from_([1, 3, 5]) \
+Observable.of(1, 3, 5) \
     .flat_map(lambda id: customer_for_id(id)) \
     .subscribe_(lambda r: print(r))
 ```
@@ -348,7 +348,7 @@ Observable.from_([1, 3, 5]) \
 
 To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
-> Keep in mind Python's [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to undermine your concurrency performance, as it prevents multiple threads from accessing the same line of code simultaneously. Libraries like [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive computations as they free the GIL. RxPy may also minimize thread overlap to some degree. Just be sure to test your application with concurrency and ensure there is a performance gain. 
+> Keep in mind Python's [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to undermine your concurrency performance, as it prevents multiple threads from accessing the same line of code simultaneously. Libraries like [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive computations as they free the GIL. RxPy may also minimize thread overlap to some degree. Just be sure to test your application with concurrency and ensure there is a performance gain.
 
 The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
 
@@ -375,7 +375,7 @@ optimal_thread_count = multiprocessing.cpu_count()
 pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
 # Create Process 1
-Observable.from_(["Alpha", "Beta", "Gamma", "Delta", "Epsilon"]) \
+Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
     .map(lambda s: intense_calculation(s)) \
     .subscribe_on(pool_scheduler) \
     .subscribe_(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
@@ -429,29 +429,29 @@ Disposables implements a context manager so you may use them in `with` statement
 Observable sequences may be concatenated using `+`, so you can write:
 
 ```python
-xs = Observable.from_([1,2,3])
-ys = Observable.from_([4,5,6])
+xs = Observable.of(1,2,3)
+ys = Observable.of(4,5,6)
 zs = xs + ys  # Concatenate observables
 ```
 
 Observable sequences may be repeated using `*=`, so you can write:
 
 ```python
-xs = Observable.from_([1,2,3])
+xs = Observable.of(1,2,3)
 ys = xs * 4
 ```
 
 Observable sequences may be sliced using `[start:stop:step]`, so you can write:
 
 ```python
-xs = Observable.from_([1,2,3,4,5,6])
+xs = Observable.of(1,2,3,4,5,6)
 ys = xs[1:-1]
 ```
 
 Observable sequences may be turned into an iterator so you can use generator expressions, or iterate over them (uses queueing and blocking).
 
 ```python
-xs = Observable.from_([1,2,3,4,5,6])
+xs = Observable.of(1,2,3,4,5,6)
 ys = xs.to_blocking()
 zs = (x*x for x in ys if x > 3)
 for x in zs:

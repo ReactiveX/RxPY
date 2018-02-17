@@ -1,7 +1,9 @@
+from typing import Any
+
 from rx.core import ObservableBase, Observable
 
 
-def of(*args) -> ObservableBase:
+def of(*args: Any) -> ObservableBase:
     """This method creates a new Observable instance with a variable number
     of arguments, regardless of number or type of the arguments.
 

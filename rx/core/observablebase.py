@@ -813,7 +813,7 @@ class ObservableBase(typing.Observable):
         observable sequence and merges the resulting observable sequences into
         one observable sequence.
 
-        1 - source.flat_map(Observable.from_([1,2,3]))
+        1 - source.flat_map(Observable.of(1, 2, 3))
 
         Keyword arguments:
         mapper -- A transform function to apply to each element or an

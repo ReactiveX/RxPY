@@ -1,6 +1,7 @@
-from typing import Iterable
+from typing import Iterable, Any
 
 from rx.core import ObservableBase, AnonymousObservable
+from rx.core.typing import Scheduler
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import CompositeDisposable, AnonymousDisposable
 
@@ -8,7 +9,7 @@ from rx.disposables import CompositeDisposable, AnonymousDisposable
 def from_iterable(iterable: Iterable) -> ObservableBase:
     """Converts an iterable to an observable sequence.
 
-    1 - res = rx.Observable.from_iterable([1,2,3])
+    1 - res = from_iterable([1,2,3])
 
     Keyword arguments:
     iterable - An python iterable
@@ -22,7 +23,7 @@ def from_iterable(iterable: Iterable) -> ObservableBase:
         iterator = iter(iterable)
         disposed = False
 
-        def action(scheduler, state=None):
+        def action(_: Scheduler, __: Any = None):
             nonlocal disposed
 
             try:

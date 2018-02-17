@@ -89,7 +89,7 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         factory function whenever a new observer subscribes.
 
         Example:
-        1 - res = rx.Observable.defer(lambda: rx.Observable.from_([1,2,3]))
+        1 - res = rx.Observable.defer(lambda: rx.Observable.of([1,2,3]))
 
         Keyword arguments:
         :param types.FunctionType observable_factory: Observable factory

@@ -39,7 +39,7 @@ def exclusive(self) -> ObservableBase:
                 inner_subscription.disposable = inner_source.subscribe_(
                     observer.on_next,
                     observer.on_error,
-                    close_inner,
+                    on_completed_inner,
                     scheduler
                 )
 

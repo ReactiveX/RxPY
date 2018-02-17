@@ -9,7 +9,7 @@ def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> Obse
     function whenever a new observer subscribes.
 
     Example:
-    1 - res = rx.Observable.defer(lambda: rx.Observable.from_([1,2,3]))
+    1 - res = rx.Observable.defer(lambda: rx.Observable.of(1, 2, 3))
 
     Keyword arguments:
     :param types.FunctionType observable_factory: Observable factory function
