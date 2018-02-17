@@ -81,7 +81,7 @@ def test_create_on_next():
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(send)
+    res = AnonymousObserver(on_next)
 
     res.on_next(42)
     assert(next[0])
@@ -97,7 +97,7 @@ def test_create_on_next_has_error():
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(send)
+    res = AnonymousObserver(on_next)
 
     res.on_next(42)
     assert(next[0])

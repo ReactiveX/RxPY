@@ -10,13 +10,13 @@ class AnonymousObserver(ObserverBase):
         self._on_error_core = on_error or default_error
         self._on_completed_core = on_completed or noop
 
-    def _on_next_core(self, value):
+    def _on_next_core(self, value):  # pylint: disable=e0202
         raise NotImplementedError
 
-    def _on_error_core(self, error):
+    def _on_error_core(self, error):  # pylint: disable=e0202
         raise NotImplementedError
 
-    def _on_completed_core(self):
+    def _on_completed_core(self):  # pylint: disable=e0202
         raise NotImplementedError
 
     def throw(self, error):
