@@ -49,6 +49,8 @@ TestResults/Rx.TE.Tests.mdf
 TestResults/Rx.TE.Tests_log.ldf
 *.user
 
+.mypy_cache
+
 # Cloud9
 .c9
 
