@@ -1,8 +1,14 @@
-from rx.core import ObservableBase
+from typing import Union
+from datetime import timedelta
+
+from rx.core import ObservableBase, ConnectableObservable
+from rx.core.typing import Scheduler, Mapper
 from rx.subjects import ReplaySubject
 
 
-def replay(self, mapper=None, buffer_size=None, window=None, scheduler=None) -> ObservableBase:
+def replay(source: ObservableBase, mapper: Mapper = None, buffer_size: int = None,
+           window: timedelta = None, scheduler: Scheduler = None
+          ) -> Union[ObservableBase, ConnectableObservable]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications
@@ -35,6 +41,6 @@ def replay(self, mapper=None, buffer_size=None, window=None, scheduler=None) -> 
     if mapper:
         def subject_factory(scheduler):
             return ReplaySubject(buffer_size, window, scheduler)
-        return self.multicast(subject_factory=subject_factory, mapper=mapper)
+        return source.multicast(subject_factory=subject_factory, mapper=mapper)
 
-    return self.multicast(ReplaySubject(buffer_size, window, scheduler))
+    return source.multicast(ReplaySubject(buffer_size, window, scheduler))

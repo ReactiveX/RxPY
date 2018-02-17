@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union
 from asyncio import Future
 
-from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator
+from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator, Scheduler
 from .disposable import Disposable
 from .anonymousobserver import AnonymousObserver
 from .blockingobservable import BlockingObservable
@@ -1422,8 +1422,8 @@ class ObservableBase(typing.Observable):
         from .observable import Observable
         return Observable.defer(lambda _: concat(CoreIterable.repeat(self, repeat_count)))
 
-    def replay(self, mapper=None, buffer_size=None, window=None,
-               scheduler=None) -> 'ObservableBase':
+    def replay(self, mapper: Mapper = None, buffer_size: int = None, window: timedelta = None,
+               scheduler: Scheduler = None) -> 'Union[ObservableBase, ConnectableObservable]':
         """Returns an observable sequence that is the result of invoking the
         mapper on a connectable observable sequence that shares a single
         subscription to the underlying sequence replaying notifications subject

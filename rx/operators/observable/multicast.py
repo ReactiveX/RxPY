@@ -1,11 +1,13 @@
-from typing import Union
+from typing import Union, Callable
 
 from rx.core import ObservableBase, AnonymousObservable, ConnectableObservable
+from rx.core.typing import Subject, Mapper
 from rx.disposables import CompositeDisposable
 
 
-def multicast(source: ObservableBase, subject=None, subject_factory=None,
-              mapper=None) -> Union[ObservableBase, ConnectableObservable]:
+def multicast(source: ObservableBase, subject: Subject = None,
+              subject_factory: Callable[[], Subject] = None,
+              mapper: Mapper = None) -> Union[ObservableBase, ConnectableObservable]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
@@ -36,7 +38,9 @@ def multicast(source: ObservableBase, subject=None, subject_factory=None,
     if subject_factory:
         def subscribe(observer, scheduler=None):
             connectable = source.multicast(subject=subject_factory(scheduler))
-            return CompositeDisposable(mapper(connectable).subscribe(observer, scheduler), connectable.connect(scheduler))
+            subscription = mapper(connectable).subscribe(observer, scheduler)
+
+            return CompositeDisposable(subscription, connectable.connect(scheduler))
         return AnonymousObservable(subscribe)
 
     return ConnectableObservable(source, subject)

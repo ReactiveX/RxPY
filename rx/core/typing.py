@@ -73,3 +73,23 @@ class Observable(Generic[T_out], abc.Observable):
     @abstractmethod
     def subscribe(self, observer: Observer[T_out] = None, scheduler: Scheduler = None) -> Disposable:
         raise NotImplementedError
+
+
+class Subject(Generic[T_in, T_out], abc.Subject):
+    __slots__ = ()
+
+    @abstractmethod
+    def send(self, value: T_in) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def throw(self, error: Exception) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def close(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def subscribe(self, observer: Observer[T_out] = None, scheduler: Scheduler = None) -> Disposable:
+        raise NotImplementedError
