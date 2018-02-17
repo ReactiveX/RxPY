@@ -12,6 +12,6 @@ class Disposable(ABC):
         """Context management protocol."""
         pass
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, typ, value, traceback):
         """Context management protocol."""
         self.dispose()
