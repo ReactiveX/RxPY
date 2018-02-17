@@ -72,7 +72,7 @@ class TestAverage(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, "b"), on_next(220, "fo"), on_next(230, "qux"), on_completed(240))
 
         def create():
-            return xs.average(lambda x: len(x))
+            return xs.average(len)
 
         res = scheduler.start(create=create)
 
