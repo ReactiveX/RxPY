@@ -1,6 +1,6 @@
 from rx.core import ObservableBase
 
-
+# pylint: disable=w0622
 def slice(source, start: int = None, stop: int = None, step: int = 1) -> ObservableBase:
     """Slices the given observable. It is basically a wrapper around the
     operators skip(), skip_last(), take(), take_last() and filter().
@@ -27,20 +27,23 @@ def slice(source, start: int = None, stop: int = None, step: int = 1) -> Observa
     Returns a sliced observable sequence.
     """
 
-    if start is not None:
-        if start < 0:
-            source = source.take_last(abs(start))
-        else:
-            source = source.skip(start)
+    has_start = start is not None
+    has_stop = stop is not None
+    has_step = step is not None
 
-    if stop is not None:
-        if stop > 0:
-            start = start or 0
-            source = source.take(stop - start)
-        else:
-            source = source.skip_last(abs(stop))
+    if has_stop and stop >= 0:
+        source = source.take(stop)
 
-    if step is not None:
+    if has_start and start > 0:
+        source = source.skip(start)
+
+    if has_start and start < 0:
+        source = source.take_last(abs(start))
+
+    if has_stop and stop < 0:
+        source = source.skip_last(abs(stop))
+
+    if has_step:
         if step > 1:
             source = source.filter(predicate_indexed=lambda x, i: i % step == 0)
         elif step < 0:
