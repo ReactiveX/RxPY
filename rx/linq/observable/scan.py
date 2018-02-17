@@ -19,9 +19,7 @@ def scan(self, accumulator, seed=None):
     Returns an observable sequence containing the accumulated values.
     """
 
-    has_seed = False
-    if not seed is None:
-        has_seed = True
+    has_seed = seed is not None
 
     source = self
 
@@ -33,7 +31,7 @@ def scan(self, accumulator, seed=None):
             if has_accumulation[0]:
                 accumulation[0] = accumulator(accumulation[0], x)
             else:
-                accumulation[0] =  accumulator(seed, x) if has_seed else x
+                accumulation[0] = accumulator(seed, x) if has_seed else x
                 has_accumulation[0] = True
 
             return accumulation[0]

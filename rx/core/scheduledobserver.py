@@ -64,7 +64,7 @@ class ScheduledObserver(ObserverBase):
                 parent.has_faulted = True
             raise
 
-        return self.scheduler.schedule(self.run)
+        self.scheduler.schedule(self.run)
 
     def dispose(self):
         super(ScheduledObserver, self).dispose()
