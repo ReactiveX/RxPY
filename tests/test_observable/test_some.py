@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,40 +15,40 @@ class TestSome(unittest.TestCase):
 
     def test_some_empty(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), close(250)]
+        msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some()
 
         res = scheduler.start(create=create).messages
-        assert res == [send(250, False), close(250)]
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_return(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), send(210, 2), close(250)]
+        msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some()
 
         res = scheduler.start(create=create).messages
-        assert res == [send(210, True), close(210)]
+        assert res == [on_next(210, True), on_completed(210)]
 
-    def test_some_throw(self):
+    def test_some_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        msgs = [send(150, 1), throw(210, ex)]
+        msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some()
         res = scheduler.start(create=create).messages
-        assert res == [throw(210, ex)]
+        assert res == [on_error(210, ex)]
 
     def test_some_never(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1)]
+        msgs = [on_next(150, 1)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -59,73 +59,73 @@ class TestSome(unittest.TestCase):
 
     def test_some_predicate_empty(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), close(250)]
+        msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(250, False), close(250)]
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_return(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), send(210, 2), close(250)]
+        msgs = [on_next(150, 1), on_next(210, 2), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(210, True), close(210)]
+        assert res == [on_next(210, True), on_completed(210)]
 
     def test_some_predicate_return_not_match(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), send(210, -2), close(250)]
+        msgs = [on_next(150, 1), on_next(210, -2), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(250, False), close(250)]
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_some_none_match(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), send(210, -2), send(220, -3), send(230, -4), close(250)]
+        msgs = [on_next(150, 1), on_next(210, -2), on_next(220, -3), on_next(230, -4), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(250, False), close(250)]
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_some_match(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1), send(210, -2), send(220, 3), send(230, -4), close(250)]
+        msgs = [on_next(150, 1), on_next(210, -2), on_next(220, 3), on_next(230, -4), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(220, True), close(220)]
+        assert res == [on_next(220, True), on_completed(220)]
 
-    def test_some_predicate_throw(self):
+    def test_some_predicate_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        msgs = [send(150, 1), throw(210, ex)]
+        msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.some(lambda x: x > 0)
         res = scheduler.start(create=create).messages
-        assert res == [throw(210, ex)]
+        assert res == [on_error(210, ex)]
 
     def test_some_predicate_never(self):
         scheduler = TestScheduler()
-        msgs = [send(150, 1)]
+        msgs = [on_next(150, 1)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():

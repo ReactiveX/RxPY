@@ -8,9 +8,9 @@ from rx.concurrency import new_thread_scheduler
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 
 _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
@@ -22,10 +22,10 @@ def from_marbles(string):
 
     Special characters:
     - = Timespan of 100 ms
-    x = throw()
-    | = close()
+    x = on_error()
+    | = on_completed()
 
-    All other characters are treated as an send() event at the given
+    All other characters are treated as an on_next() event at the given
     moment they are found on the string.
 
     Examples:
@@ -48,26 +48,26 @@ def from_marbles(string):
     def handle_timespan(value):
         timespan[0] += 100
 
-    def handle_send(value):
+    def handle_on_next(value):
         timespan[0] += 10
         if value in ('T', 'F'):
             value = True if value == 'T' else False
-        messages.append(send(timespan[0], value))
+        messages.append(on_next(timespan[0], value))
 
-    def handle_close(value):
+    def handle_on_completed(value):
         timespan[0] += 10
-        messages.append(close(timespan[0]))
+        messages.append(on_completed(timespan[0]))
         completed[0] = True
 
-    def handle_throw(value):
+    def handle_on_error(value):
         timespan[0] += 10
-        messages.append(throw(timespan[0], value))
+        messages.append(on_error(timespan[0], value))
         completed[0] = True
 
     specials = {
         '-': handle_timespan,
-        'x': handle_throw,
-        'X': handle_throw,
+        'x': handle_on_error,
+        'X': handle_on_error,
         '|': handle_close
     }
 
@@ -78,7 +78,7 @@ def from_marbles(string):
                 func(token)
 
     if not completed[0]:
-        messages.append(close(timespan[0]))
+        messages.append(on_completed(timespan[0]))
 
     return ColdObservable(scheduler, messages)
 
@@ -107,23 +107,23 @@ def to_marbles(self, scheduler=None):
             dashes = "-" * int((msecs + 50) / 100)
             result.append(dashes)
 
-        def send(value):
+        def on_next(value):
             add_timespan()
             result.append(stringify(value))
 
-        def throw(exception):
+        def on_error(exception):
             add_timespan()
             result.append(stringify(exception))
-            observer.send("".join(n for n in result))
-            observer.close()
+            observer.on_next("".join(n for n in result))
+            observer.on_completed()
 
-        def close():
+        def on_completed():
             add_timespan()
             result.append("|")
-            observer.send("".join(n for n in result))
-            observer.close()
+            observer.on_next("".join(n for n in result))
+            observer.on_completed()
 
-        return source.subscribe_(send, throw, close)
+        return source.subscribe_(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 
@@ -140,10 +140,10 @@ def to_marbles_blocking(self, scheduler=None):
     latch = threading.Event()
     ret = [None]
 
-    def send(value):
+    def on_next(value):
         ret[0] = value
 
-    self.observable.to_marbles(scheduler=scheduler).subscribe_(send, close=latch.set)
+    self.observable.to_marbles(scheduler=scheduler).subscribe_(on_next, close=latch.set)
 
     # Block until the subscription completes and then return
     latch.wait()

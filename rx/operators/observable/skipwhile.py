@@ -21,20 +21,20 @@ def skip_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
     def subscribe(observer, scheduler=None):
         running = False
 
-        def send(value):
+        def on_next(value):
             nonlocal running
 
             if not running:
                 try:
                     running = not predicate(value)
                 except Exception as exn:
-                    observer.throw(exn)
+                    observer.on_error(exn)
                     return
 
             if running:
-                observer.send(value)
+                observer.on_next(value)
 
-        return source.subscribe_(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -59,20 +59,20 @@ def skip_while_indexed(source: ObservableBase,
     def subscribe(observer, scheduler=None):
         i, running = 0, False
 
-        def send(value):
+        def on_next(value):
             nonlocal i, running
 
             if not running:
                 try:
                     running = not predicate(value, i)
                 except Exception as exn:
-                    observer.throw(exn)
+                    observer.on_error(exn)
                     return
                 else:
                     i += 1
 
             if running:
-                observer.send(value)
+                observer.on_next(value)
 
-        return source.subscribe_(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

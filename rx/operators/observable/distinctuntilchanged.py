@@ -29,25 +29,25 @@ def distinct_until_changed(self, key_mapper=None, comparer=None) -> ObservableBa
         has_current_key = [False]
         current_key = [None]
 
-        def send(value):
+        def on_next(value):
             comparer_equals = False
             try:
                 key = key_mapper(value)
             except Exception as exception:
-                observer.throw(exception)
+                observer.on_error(exception)
                 return
 
             if has_current_key[0]:
                 try:
                     comparer_equals = comparer(current_key[0], key)
                 except Exception as exception:
-                    observer.throw(exception)
+                    observer.on_error(exception)
                     return
 
             if not has_current_key[0] or not comparer_equals:
                 has_current_key[0] = True
                 current_key[0] = key
-                observer.send(value)
+                observer.on_next(value)
 
-        return source.subscribe_(send, observer.throw, observer.close)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed)
     return AnonymousObservable(subscribe)

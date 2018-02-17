@@ -18,36 +18,36 @@ def combine_latest_source(source, subject, result_mapper):
             has_value_all[0] = has_value_all[0] or all(has_value)
             if has_value_all[0]:
                 if err[0]:
-                    observer.throw(err[0])
+                    observer.on_error(err[0])
                     return
 
                 try:
                     res = result_mapper(*values)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
-                observer.send(res)
+                observer.on_next(res)
             if is_done[0] and values[1]:
-                observer.close()
+                observer.on_completed()
 
-        def throw_source(e):
+        def on_error_source(e):
             if values[1]:
-                observer.throw(e)
+                observer.on_error(e)
             else:
                 err[0] = e
 
-        def close_source():
+        def on_completed_source():
             is_done[0] = True
             if values[1]:
-                observer.close()
+                observer.on_completed()
 
-        def close_subject():
+        def on_completed_subject():
             is_done[0] = True
             next(True, 1)
 
         return CompositeDisposable(
-            source.subscribe_(lambda x: next(x, 0), throw_source, close_source, scheduler),
-            subject.subscribe_(lambda x: next(x, 1), observer.throw, close_subject, scheduler)
+            source.subscribe_(lambda x: next(x, 0), on_error_source, on_completed_source, scheduler),
+            subject.subscribe_(lambda x: next(x, 1), observer.on_error, on_completed_subject, scheduler)
         )
     return AnonymousObservable(subscribe)
 
@@ -71,7 +71,7 @@ class PausableBufferedObservable(ObservableBase):
         def result_mapper(data, should_fire=False):
             return {"data": data, "should_fire": should_fire}
 
-        def send(results):
+        def on_next(results):
             should_fire = results.get("should_fire")
             if (not previous_should_fire[0] is None) and should_fire != previous_should_fire[0]:
                 previous_should_fire[0] = should_fire
@@ -79,38 +79,38 @@ class PausableBufferedObservable(ObservableBase):
                 if should_fire:
                     while len(queue):
                         b = queue.pop(0)
-                        observer.send(b)
+                        observer.on_next(b)
             else:
                 previous_should_fire[0] = should_fire
                 # new data
                 if should_fire:
-                    observer.send(results["data"])
+                    observer.on_next(results["data"])
                 else:
                     queue.append(results["data"])
 
-        def throw(err):
+        def on_error(err):
             # Empty buffer before sending error
             while len(queue):
-                observer.send(queue.pop(0))
-            observer.throw(err)
+                observer.on_next(queue.pop(0))
+            observer.on_error(err)
 
-        def close():
+        def on_completed():
             # Empty buffer before sending completion
-            while len(queue):
-                observer.send(queue.pop(0))
-            observer.close()
+            while queue:
+                observer.on_next(queue.pop(0))
+            observer.on_completed()
 
         subscription = combine_latest_source(
             self.source,
             self.pauser.distinct_until_changed().start_with(False),
             result_mapper
-        ).subscribe_(send, throw, close, scheduler)
+        ).subscribe_(on_next, on_error, on_completed, scheduler)
 
         return subscription
 
     def pause(self):
-        self.controller.send(False)
+        self.controller.on_next(False)
 
     def resume(self):
-        self.controller.send(True)
+        self.controller.on_next(True)
 

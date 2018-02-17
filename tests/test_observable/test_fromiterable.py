@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -32,12 +32,12 @@ class TestFromIterable(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-                            send(200, 1),
-                            send(200, 2),
-                            send(200, 3),
-                            send(200, 4),
-                            send(200, 5),
-                            close(200)]
+                            on_next(200, 1),
+                            on_next(200, 2),
+                            on_next(200, 3),
+                            on_next(200, 4),
+                            on_next(200, 5),
+                            on_completed(200)]
 
     def test_subscribe_to_iterable_empty(self):
         iterable_finite = []
@@ -48,7 +48,7 @@ class TestFromIterable(unittest.TestCase):
             return Observable.from_(iterable_finite)
         results = scheduler.start(create)
 
-        assert results.messages == [close(200)]
+        assert results.messages == [on_completed(200)]
 
     def test_double_subscribe_to_iterable(self):
         iterable_finite = [1, 2, 3]
@@ -56,5 +56,5 @@ class TestFromIterable(unittest.TestCase):
         obs = Observable.from_(iterable_finite)
 
         results = scheduler.start(lambda: obs.concat(obs))
-        assert results.messages == [send(200, 1), send(200, 2), send(200, 3), send(200, 1), send(200, 2), send(200, 3), close(200)]
+        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(200, 3), on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200)]
 

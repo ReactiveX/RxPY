@@ -31,20 +31,20 @@ def take_last_with_time(source, duration) -> ObservableBase:
         duration = scheduler.to_timedelta(duration)
         q = []
 
-        def send(x):
+        def on_next(x):
             now = scheduler.now
             q.append({"interval": now, "value": x})
             while q and now - q[0]["interval"] >= duration:
                 q.pop(0)
 
-        def close():
+        def on_completed():
             now = scheduler.now
             while len(q):
                 next = q.pop(0)
                 if now - next["interval"] <= duration:
-                    observer.send(next["value"])
+                    observer.on_next(next["value"])
 
-            observer.close()
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)

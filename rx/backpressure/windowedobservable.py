@@ -14,19 +14,19 @@ class WindowedObserver(ObserverBase):
 
         super(WindowedObserver, self).__init__()
 
-    def _close_core(self):
-        self.observer.close()
+    def _on_completed_core(self):
+        self.observer.on_completed()
         self.dispose()
 
-    def _throw_core(self, error):
-        self.observer.throw(error)
+    def _on_error_core(self, error):
+        self.observer.on_error(error)
         self.dispose()
 
-    def _send_core(self, value):
+    def _on_next_core(self, value):
         def inner_schedule_method(s, state):
             return self.observable.source.request(self.observable.window_size)
 
-        self.observer.send(value)
+        self.observer.on_next(value)
         self.received = (self.received + 1) % self.observable.window_size
         if self.received == 0:
             self.schedule_disposable = self.scheduler.schedule(inner_schedule_method)

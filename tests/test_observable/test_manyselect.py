@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -26,11 +26,11 @@ class TestManySelect(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(220, 2),
-            send(270, 3),
-            send(410, 4),
-            close(500)
+            on_next(100, 1),
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_completed(500)
         )
 
         def create():
@@ -39,10 +39,10 @@ class TestManySelect(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            send(220, 2),
-            send(270, 3),
-            send(410, 4),
-            close(500)]
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_completed(500)]
 
         assert xs.subscriptions == [
             subscribe(200, 500)]
@@ -53,11 +53,11 @@ class TestManySelect(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(220, 2),
-            send(270, 3),
-            send(410, 4),
-            throw(500, ex)
+            on_next(100, 1),
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_error(500, ex)
         )
 
         def create():
@@ -66,10 +66,10 @@ class TestManySelect(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            send(220, 2),
-            send(270, 3),
-            send(410, 4),
-            throw(500, ex)]
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_error(500, ex)]
 
         assert xs.subscriptions == [
             subscribe(200, 500)]

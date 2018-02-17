@@ -3,9 +3,9 @@ import unittest
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -21,26 +21,26 @@ class TestPausable(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(230, 3),
-            send(301, 4),
-            send(350, 5),
-            send(399, 6),
-            close(500)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(230, 3),
+            on_next(301, 4),
+            on_next(350, 5),
+            on_next(399, 6),
+            on_completed(500)
         )
 
         def action(scheduler, state):
             subscription[0] = xs.pausable(controller).subscribe(results)
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(200, action)
 
         def action1(scheduler, state):
-            controller.send(False)
+            controller.on_next(False)
         scheduler.schedule_absolute(205, action1)
 
         def action2(scheduler, state):
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(209, action2)
 
         def action3(scheduler, state):
@@ -50,12 +50,12 @@ class TestPausable(unittest.TestCase):
         scheduler.start()
 
         assert results.messages == [
-            send(210, 2),
-            send(230, 3),
-            send(301, 4),
-            send(350, 5),
-            send(399, 6),
-            close(500)]
+            on_next(210, 2),
+            on_next(230, 3),
+            on_next(301, 4),
+            on_next(350, 5),
+            on_next(399, 6),
+            on_completed(500)]
 
     def test_paused_skips(self):
         subscription = [None]
@@ -67,27 +67,27 @@ class TestPausable(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(230, 3),
-            send(301, 4),
-            send(350, 5),
-            send(399, 6),
-            close(500)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(230, 3),
+            on_next(301, 4),
+            on_next(350, 5),
+            on_next(399, 6),
+            on_completed(500)
           )
 
         def action0(scheduler, state):
             subscription[0] = xs.pausable(controller).subscribe(results)
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(200, action0)
 
 
         def action1(scheduler, state):
-            controller.send(False)
+            controller.on_next(False)
         scheduler.schedule_absolute(300, action1)
 
         def action2(scheduler, state):
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(400, action2)
 
         def action3(scheduler, state):
@@ -97,9 +97,9 @@ class TestPausable(unittest.TestCase):
         scheduler.start()
 
         assert results.messages == [
-            send(210, 2),
-            send(230, 3),
-            close(500)]
+            on_next(210, 2),
+            on_next(230, 3),
+            on_completed(500)]
 
     def test_paused_error(self):
         subscription = [None]
@@ -112,26 +112,26 @@ class TestPausable(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            throw(230, err),
-            send(301, 4),
-            send(350, 5),
-            send(399, 6),
-            close(500)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_error(230, err),
+            on_next(301, 4),
+            on_next(350, 5),
+            on_next(399, 6),
+            on_completed(500)
         )
 
         def action0(scheduler, state):
             subscription[0] = xs.pausable(controller).subscribe(results)
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(200, action0)
 
         def action1(scheduler, state):
-            controller.send(False)
+            controller.on_next(False)
         scheduler.schedule_absolute(300, action1)
 
         def action2(scheduler, state):
-            controller.send(True)
+            controller.on_next(True)
         scheduler.schedule_absolute(400, action2)
 
         def action3(scheduler, state):
@@ -141,8 +141,8 @@ class TestPausable(unittest.TestCase):
         scheduler.start()
 
         assert results.messages == [
-            send(210, 2),
-            throw(230, err)]
+            on_next(210, 2),
+            on_error(230, err)]
 
     def test_paused_with_observable_controller_and_pause_and_unpause(self):
         subscription = [None]
@@ -152,20 +152,20 @@ class TestPausable(unittest.TestCase):
         results = scheduler.create_observer()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(230, 3),
-            send(270, 4),
-            send(301, 5),
-            send(350, 6),
-            send(450, 7),
-            close(500)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(230, 3),
+            on_next(270, 4),
+            on_next(301, 5),
+            on_next(350, 6),
+            on_next(450, 7),
+            on_completed(500)
         )
 
         controller = scheduler.create_hot_observable(
-            send(201, True),
-            send(220, False),
-            send(250, True)
+            on_next(201, True),
+            on_next(220, False),
+            on_next(250, True)
         )
 
         pausable = xs.pausable(controller)
@@ -189,7 +189,7 @@ class TestPausable(unittest.TestCase):
         scheduler.start()
 
         assert results.messages == [
-            send(210, 2),
-            send(270, 4),
-            send(450, 7),
-            close(500)]
+            on_next(210, 2),
+            on_next(270, 4),
+            on_next(450, 7),
+            on_completed(500)]

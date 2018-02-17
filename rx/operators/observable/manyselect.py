@@ -11,7 +11,7 @@ class ChainObservable(ObservableBase):
         g = CompositeDisposable()
 
         def action(scheduler, state):
-            observer.send(self.head)
+            observer.on_next(self.head)
             g.add(self.tail.merge_all().subscribe(observer, scheduler))
 
         g.add(scheduler.schedule(action))
@@ -23,15 +23,15 @@ class ChainObservable(ObservableBase):
         self.head = head
         self.tail = AsyncSubject()
 
-    def close(self):
-        self.send(Observable.empty())
+    def on_completed(self):
+        self.on_next(Observable.empty())
 
-    def throw(self, error):
-        self.send(Observable.throw(error))
+    def on_error(self, error):
+        self.on_next(Observable.throw(error))
 
-    def send(self, value):
-        self.tail.send(value)
-        self.tail.close()
+    def on_next(self, value):
+        self.tail.on_next(value)
+        self.tail.on_completed()
 
 
 def many_select(source: ObservableBase, mapper: Mapper) -> ObservableBase:
@@ -54,22 +54,22 @@ def many_select(source: ObservableBase, mapper: Mapper) -> ObservableBase:
         def _mapper(x):
             curr = ChainObservable(x)
 
-            chain[0] and chain[0].send(x)
+            chain[0] and chain[0].on_next(x)
             chain[0] = curr
 
             return curr
 
-        def throw(error):
+        def on_error(error):
             if chain[0]:
-                chain[0].throw(error)
+                chain[0].on_error(error)
 
-        def close():
+        def on_completed():
             if chain[0]:
-                chain[0].close()
+                chain[0].on_completed()
 
         return (source
                 .map(_mapper)
-                .do_action(noop, throw, close)
+                .do_action(noop, on_error, on_completed)
                 .map(mapper)
                )
 

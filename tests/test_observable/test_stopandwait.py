@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,7 +17,7 @@ class TestStopAndWait(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1)
+            on_next(150, 1)
         )
 
         def create():
@@ -31,8 +31,8 @@ class TestStopAndWait(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            close(250)
+            on_next(150, 1),
+            on_completed(250)
         )
 
         def create():
@@ -40,5 +40,5 @@ class TestStopAndWait(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert results.messages == [close(250)]
+        assert results.messages == [on_completed(250)]
         assert xs.subscriptions == [subscribe(200, 250)]

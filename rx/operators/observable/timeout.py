@@ -60,25 +60,25 @@ def timeout(source: ObservableBase, duetime: Union[int, datetime],
             timer.disposable = scheduler_method(duetime, action)
 
         create_timer()
-        def send(value):
+        def on_next(value):
             send_wins = not switched[0]
             if send_wins:
                 _id[0] += 1
-                observer.send(value)
+                observer.on_next(value)
                 create_timer()
 
-        def throw(error):
-            throw_wins = not switched[0]
-            if throw_wins:
+        def on_error(error):
+            on_error_wins = not switched[0]
+            if on_error_wins:
                 _id[0] += 1
-                observer.throw(error)
+                observer.on_error(error)
 
-        def close():
-            close_wins = not switched[0]
-            if close_wins:
+        def on_completed():
+            on_completed_wins = not switched[0]
+            if on_completed_wins:
                 _id[0] += 1
-                observer.close()
+                observer.on_completed()
 
-        original.disposable = source.subscribe_(send, throw, close, scheduler)
+        original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

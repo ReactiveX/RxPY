@@ -20,11 +20,11 @@ def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
 
     def subscribe(observer, scheduler=None):
 
-        def close(_):
-            observer.close()
+        def on_completed(_):
+            observer.on_completed()
 
         return CompositeDisposable(
             source.subscribe(observer),
-            other.subscribe_(close, observer.throw, noop, scheduler)
+            other.subscribe_(on_completed, observer.on_error, noop, scheduler)
         )
     return AnonymousObservable(subscribe)

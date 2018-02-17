@@ -14,8 +14,8 @@ def for_each(source: BlockingObservable,
     asynchronous.
 
     This is similar to Observable#subscribe(subscriber), but it blocks.
-    Because it blocks it does not need the Subscriber#close() or
-    Subscriber#throw(Throwable) methods. If the underlying Observable
+    Because it blocks it does not need the Subscriber#on_completed() or
+    Subscriber#on_error(Throwable) methods. If the underlying Observable
     terminates with an error, rather than calling `onError`, this method
     will throw an exception.
 
@@ -30,7 +30,7 @@ def for_each(source: BlockingObservable,
     exception = None
     count = 0
 
-    def send(value):
+    def on_next(value):
         nonlocal count, exception
 
         with source.lock:
@@ -43,7 +43,7 @@ def for_each(source: BlockingObservable,
         if action_indexed:
             action_indexed(value, n)
 
-    def throw(error):
+    def on_error(error):
         nonlocal exception
         # If we receive an throw event we set the reference on the
         # outer thread so we can git it and throw after the latch.wait()
@@ -53,10 +53,10 @@ def for_each(source: BlockingObservable,
         exception = error
         latch.set()
 
-    def close():
+    def on_completed():
         latch.set()
 
-    source.observable.subscribe_(send, throw, close)
+    source.observable.subscribe_(on_next, on_error, on_completed)
 
     # Block until the subscription completes and then return
     latch.wait()

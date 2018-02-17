@@ -4,9 +4,9 @@ import pytest
 from rx.core import AnonymousObservable, Observable
 from rx.testing import ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -87,12 +87,12 @@ class TestForEach(unittest.TestCase):
         assert(lst_x == [x for x in range(10, 20)])
         assert(lst_i == [x for x in range(10)])
 
-    def test_for_each_send_throws(self):
+    def test_for_each_on_next_throws(self):
         ex = Exception()
         xs = Observable.range(0, 10)
         self.assertRaises(RxException, lambda: xs.to_blocking().for_each(lambda x: _raise(ex)))
 
-    def test_for_each_index_send_throws(self):
+    def test_for_each_index_on_next_throws(self):
         ex = Exception()
         xs = Observable.range(0, 10)
 

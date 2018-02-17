@@ -32,17 +32,17 @@ class Map(Observable):
             self.mapper = mapper
             self.mapper_indexed = mapper_indexed
 
-        def send(self, value: Any) -> None:
+        def on_next(self, value: Any) -> None:
             try:
                 if self.mapper:
                     result = self.mapper(value)
                 else:
                     result = self.mapper_indexed(value, self.count)
             except Exception as err:  # By design. pylint: disable=W0703
-                self.throw(err)
+                self.on_error(err)
             else:
                 self.count += 1
-                self._observer.send(result)
+                self._observer.on_next(result)
 
 
 def map(mapper: Mapper = None, mapper_indexed: MapperIndexed = None) -> Map: # pylint: disable=W0622

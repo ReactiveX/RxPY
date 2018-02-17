@@ -37,46 +37,46 @@ def delay_with_selector(self, subscription_delay=None,
 
         def done():
             if (at_end[0] and delays.length == 0):
-                observer.close()
+                observer.on_completed()
 
         subscription = SerialDisposable()
 
         def start():
-            def send(x):
+            def on_next(x):
                 try:
                     delay = mapper(x)
                 except Exception as error:
-                    observer.throw(error)
+                    observer.on_error(error)
                     return
 
                 d = SingleAssignmentDisposable()
                 delays.add(d)
 
-                def send(_):
-                    observer.send(x)
+                def on_next(_):
+                    observer.on_next(x)
                     delays.remove(d)
                     done()
 
-                def close():
-                    observer.send(x)
+                def on_completed():
+                    observer.on_next(x)
                     delays.remove(d)
                     done()
 
-                d.disposable = delay.subscribe_(send, observer.throw, close, scheduler)
+                d.disposable = delay.subscribe_(on_next, observer.on_error, on_completed, scheduler)
 
-            def close():
+            def on_completed():
                 at_end[0] = True
                 subscription.dispose()
                 done()
 
-            subscription.disposable = source.subscribe_(send, observer.throw, close, scheduler)
+            subscription.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
 
         if not sub_delay:
             start()
         else:
             subscription.disposable(sub_delay.subscribe_(
                 lambda _: start(),
-                observer.throw,
+                observer.on_error,
                 start))
 
         return CompositeDisposable(subscription, delays)

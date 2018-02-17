@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='3.0.0-alpha',
+    version='2.0.0-alpha',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "

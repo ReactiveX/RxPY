@@ -6,9 +6,9 @@ from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -26,25 +26,25 @@ class TestGroupBy(unittest.TestCase):
         scheduler = TestScheduler()
         key_invoked = [0]
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
 
         def factory():
             def key_mapper(x):
@@ -55,11 +55,11 @@ class TestGroupBy(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz"),
-            send(360, "qux"),
-            close(570)]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz"),
+            on_next(360, "qux"),
+            on_completed(570)]
         assert xs.subscriptions == [subscribe(200, 570)]
         assert(key_invoked[0] == 12)
 
@@ -68,25 +68,25 @@ class TestGroupBy(unittest.TestCase):
         key_invoked = [0]
         ele_invoked = [0]
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
 
         def factory():
             def key_mapper(x):
@@ -101,11 +101,11 @@ class TestGroupBy(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz"),
-            send(360, "qux"),
-            close(570)]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz"),
+            on_next(360, "qux"),
+            on_completed(570)]
         assert xs.subscriptions == [subscribe(200, 570)]
         assert key_invoked[0] == 12
         assert ele_invoked[0] == 12
@@ -116,25 +116,25 @@ class TestGroupBy(unittest.TestCase):
         ele_invoked = [0]
         ex = 'ex'
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            throw(570, ex),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_error(570, ex),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
 
         def factory():
             def key_mapper(x):
@@ -149,11 +149,11 @@ class TestGroupBy(unittest.TestCase):
         results = scheduler.start(factory)
 
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz"),
-            send(360, "qux"),
-            throw(570, ex)]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz"),
+            on_next(360, "qux"),
+            on_error(570, ex)]
         assert xs.subscriptions == [subscribe(200, 570)]
         assert(key_invoked[0] == 12)
         assert(ele_invoked[0] == 12)
@@ -164,25 +164,25 @@ class TestGroupBy(unittest.TestCase):
         key_invoked = [0]
         ele_invoked = [0]
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
 
         def factory():
             def key_mapper(x):
@@ -198,38 +198,38 @@ class TestGroupBy(unittest.TestCase):
         results = scheduler.start(factory, disposed=355)
 
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz")]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz")]
         assert xs.subscriptions == [subscribe(200, 355)]
         assert(key_invoked[0] == 5)
         assert(ele_invoked[0] == 5)
 
-    def test_group_by_outer_key_throw(self):
+    def test_group_by_outer_key_on_error(self):
         scheduler = TestScheduler()
         key_invoked = [0]
         ele_invoked = [0]
         ex = 'ex'
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
         def factory():
             def key_mapper(x):
                 key_invoked[0] += 1
@@ -246,40 +246,40 @@ class TestGroupBy(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz"),
-            send(360, "qux"),
-            throw(480, ex)]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz"),
+            on_next(360, "qux"),
+            on_error(480, ex)]
         assert xs.subscriptions == [subscribe(200, 480)]
         assert key_invoked[0] == 10
         assert ele_invoked[0] == 9
 
-    def test_group_by_outer_ele_throw(self):
+    def test_group_by_outer_ele_on_error(self):
         scheduler = TestScheduler()
         key_invoked = [0]
         ele_invoked = [0]
         ex = 'ex'
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
 
         def factory():
             def key_mapper(x):
@@ -296,11 +296,11 @@ class TestGroupBy(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-            send(220, "foo"),
-            send(270, "bar"),
-            send(350, "baz"),
-            send(360, "qux"),
-            throw(480, ex)]
+            on_next(220, "foo"),
+            on_next(270, "bar"),
+            on_next(350, "baz"),
+            on_next(360, "qux"),
+            on_error(480, ex)]
         assert xs.subscriptions == [subscribe(200, 480)]
         assert key_invoked[0] == 10
         assert ele_invoked[0] == 10
@@ -308,25 +308,25 @@ class TestGroupBy(unittest.TestCase):
     def test_group_by_inner_complete(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
         c = {
             "outer_subscription": None,
             "inner_subscriptions": {},
@@ -364,44 +364,44 @@ class TestGroupBy(unittest.TestCase):
         scheduler.start()
         assert(len(c["inners"]) == 4)
         assert c["results"]['foo'].messages == [
-            send(470, " OOF"),
-            send(530, "    oOf    "),
-            close(570)]
+            on_next(470, " OOF"),
+            on_next(530, "    oOf    "),
+            on_completed(570)]
         assert c["results"]['bar'].messages == [
-            send(390, "rab   "),
-            send(420, "  RAB "),
-            close(570)]
+            on_next(390, "rab   "),
+            on_next(420, "  RAB "),
+            on_completed(570)]
         assert c["results"]['baz'].messages == [
-            send(480, "  zab"),
-            send(510, " ZAb "),
-            close(570)]
+            on_next(480, "  zab"),
+            on_next(510, " ZAb "),
+            on_completed(570)]
         assert c["results"]['qux'].messages == [
-            close(570)]
+            on_completed(570)]
         assert xs.subscriptions == [
             subscribe(200, 570)]
 
     def test_group_by_inner_complete_all(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            close(570),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_completed(570),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
         inners = {}
         inner_subscriptions = {}
         results = {}
@@ -420,12 +420,12 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-            def send(group):
+            def on_next(group):
                 c["result"] = scheduler.create_observer()
                 inners[group.key] = group
                 results[group.key] = c["result"]
                 inner_subscriptions[group.key] = group.subscribe(c["result"], scheduler)
-            c["outer_subscription"] = c["outer"].subscribe_(send, scheduler=scheduler)
+            c["outer_subscription"] = c["outer"].subscribe_(on_next, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -438,25 +438,25 @@ class TestGroupBy(unittest.TestCase):
         scheduler.start()
         assert(len(inners) == 4)
         assert results['foo'].messages == [
-            send(220, "oof  "),
-            send(240, " OoF "),
-            send(310, " Oof"),
-            send(470, " OOF"),
-            send(530, "    oOf    "),
-            close(570)]
+            on_next(220, "oof  "),
+            on_next(240, " OoF "),
+            on_next(310, " Oof"),
+            on_next(470, " OOF"),
+            on_next(530, "    oOf    "),
+            on_completed(570)]
         assert results['bar'].messages == [
-            send(270, "  Rab"),
-            send(390, "rab   "),
-            send(420, "  RAB "),
-            close(570)]
+            on_next(270, "  Rab"),
+            on_next(390, "rab   "),
+            on_next(420, "  RAB "),
+            on_completed(570)]
         assert results['baz'].messages == [
-            send(350, "   zaB "),
-            send(480, "  zab"),
-            send(510, " ZAb "),
-            close(570)]
+            on_next(350, "   zaB "),
+            on_next(480, "  zab"),
+            on_next(510, " ZAb "),
+            on_completed(570)]
         assert results['qux'].messages == [
-            send(360, " xuq  "),
-            close(570)]
+            on_next(360, " xuq  "),
+            on_completed(570)]
         assert xs.subscriptions == [
             subscribe(200, 570)]
 
@@ -464,25 +464,25 @@ class TestGroupBy(unittest.TestCase):
         ex = 'ex1'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(90, "error"),
-            send(110, "error"),
-            send(130, "error"),
-            send(220, "  foo"),
-            send(240, " FoO "),
-            send(270, "baR  "),
-            send(310, "foO "),
-            send(350, " Baz   "),
-            send(360, "  qux "),
-            send(390, "   bar"),
-            send(420, " BAR  "),
-            send(470, "FOO "),
-            send(480, "baz  "),
-            send(510, " bAZ "),
-            send(530, "    fOo    "),
-            throw(570, ex),
-            send(580, "error"),
-            close(600),
-            throw(650, 'ex'))
+            on_next(90, "error"),
+            on_next(110, "error"),
+            on_next(130, "error"),
+            on_next(220, "  foo"),
+            on_next(240, " FoO "),
+            on_next(270, "baR  "),
+            on_next(310, "foO "),
+            on_next(350, " Baz   "),
+            on_next(360, "  qux "),
+            on_next(390, "   bar"),
+            on_next(420, " BAR  "),
+            on_next(470, "FOO "),
+            on_next(480, "baz  "),
+            on_next(510, " bAZ "),
+            on_next(530, "    fOo    "),
+            on_error(570, ex),
+            on_next(580, "error"),
+            on_completed(600),
+            on_error(650, 'ex'))
         inner_subscriptions = {}
         inners = {}
         results = {}
@@ -500,7 +500,7 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-            def send(group):
+            def on_next(group):
                 result = scheduler.create_observer()
                 inners[group.key] = group
                 results[group.key] = result
@@ -509,7 +509,7 @@ class TestGroupBy(unittest.TestCase):
                     inner_subscriptions[group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action3)
-            c["outer_subscription"] = c["outer"].subscribe_(send, lambda e: None, scheduler=scheduler)
+            c["outer_subscription"] = c["outer"].subscribe_(on_next, lambda e: None, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -522,19 +522,19 @@ class TestGroupBy(unittest.TestCase):
         scheduler.start()
         assert len(inners) == 4
         assert results['foo'].messages == [
-            send(470, " OOF"),
-            send(530, "    oOf    "),
-            throw(570, ex)]
+            on_next(470, " OOF"),
+            on_next(530, "    oOf    "),
+            on_error(570, ex)]
         assert results['bar'].messages == [
-            send(390, "rab   "),
-            send(420, "  RAB "),
-            throw(570, ex)]
+            on_next(390, "rab   "),
+            on_next(420, "  RAB "),
+            on_error(570, ex)]
         assert results['baz'].messages == [
-            send(480, "  zab"),
-            send(510, " ZAb "),
-            throw(570, ex)]
+            on_next(480, "  zab"),
+            on_next(510, " ZAb "),
+            on_error(570, ex)]
         assert results['qux'].messages == [
-            throw(570, ex)]
+            on_error(570, ex)]
         assert xs.subscriptions == [
             subscribe(200, 570)]
 
@@ -559,10 +559,10 @@ class TestGroupBy(unittest.TestCase):
         scheduler.start()
 
         assert results[0].messages == [
-            send(200, ["alpha", "apple"]),
-            send(200, ["beta", "bat"]),
-            send(200, ["gamma"]),
-            close(200)]
+            on_next(200, ["alpha", "apple"]),
+            on_next(200, ["beta", "bat"]),
+            on_next(200, ["gamma"]),
+            on_completed(200)]
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,9 +9,9 @@ T_in = TypeVar('T_in', contravariant=True)
 
 Action = Callable[[abc.Scheduler, Any], None]    # pylint: disable=C0103
 
-Send = Callable[[Any], None]                     # pylint: disable=C0103
-Throw = Callable[[Exception], None]              # pylint: disable=C0103
-Close = Callable[[], None]                       # pylint: disable=C0103
+OnNext = Callable[[Any], None]                   # pylint: disable=C0103
+OnError = Callable[[Exception], None]            # pylint: disable=C0103
+OnCompleted = Callable[[], None]                 # pylint: disable=C0103
 
 Mapper = Callable[[Any], Any]                    # pylint: disable=C0103
 MapperIndexed = Callable[[Any, int], Any]        # pylint: disable=C0103
@@ -55,15 +55,15 @@ class Observer(Generic[T_in], abc.Observer):
     __slots__ = ()
 
     @abstractmethod
-    def send(self, value: T_in) -> None:
+    def on_next(self, value: T_in) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def throw(self, error: Exception) -> None:
+    def on_error(self, error: Exception) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def close(self) -> None:
+    def on_completed(self) -> None:
         raise NotImplementedError
 
 
@@ -79,15 +79,15 @@ class Subject(Generic[T_in, T_out], abc.Subject):
     __slots__ = ()
 
     @abstractmethod
-    def send(self, value: T_in) -> None:
+    def on_next(self, value: T_in) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def throw(self, error: Exception) -> None:
+    def on_error(self, error: Exception) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def close(self) -> None:
+    def on_completed(self) -> None:
         raise NotImplementedError
 
     @abstractmethod

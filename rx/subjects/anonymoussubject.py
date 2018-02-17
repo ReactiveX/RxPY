@@ -13,11 +13,11 @@ class AnonymousSubject(ObservableBase, Observer):
     def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> Disposable:
         return self.observable.subscribe(observer, scheduler)
 
-    def send(self, value: Any) -> None:
-        self.observer.send(value)
+    def on_next(self, value: Any) -> None:
+        self.observer.on_next(value)
 
-    def throw(self, error: Exception) -> None:
-        self.observer.throw(error)
+    def on_error(self, error: Exception) -> None:
+        self.observer.on_error(error)
 
-    def close(self) -> None:
-        self.observer.close()
+    def on_completed(self) -> None:
+        self.observer.on_completed()

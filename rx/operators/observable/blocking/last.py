@@ -4,7 +4,7 @@ from typing import Any
 def last(self) -> Any:
     """Blocks until the last element emits from a BlockingObservable.
 
-    If no item is emitted when close() is called, an exception is thrown
+    If no item is emitted when on_completed() is called, an exception is thrown
 
     Note: This will block even if the underlying Observable is
     asynchronous.
@@ -26,7 +26,7 @@ def last(self) -> Any:
 def last_or_default(self, default_value: Any) -> Any:
     """Blocks until the last element emits from a BlockingObservable.
 
-    If no item is emitted when close() is called, the provided
+    If no item is emitted when on_completed() is called, the provided
     default_value will be returned
 
     Note: This will block even if the underlying Observable is

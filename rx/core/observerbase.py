@@ -14,16 +14,16 @@ class ObserverBase(Observer, Disposable):
     def __init__(self):
         self.is_stopped = False
 
-    def send(self, value):
+    def on_next(self, value):
         """Notify the observer of a new element in the sequence."""
         if not self.is_stopped:
-            self._send_core(value)
+            self._on_next_core(value)
 
     @abstractmethod
-    def _send_core(self, value):
+    def _on_next_core(self, value):
         return NotImplemented
 
-    def throw(self, error):
+    def on_error(self, error):
         """Notify the observer that an exception has occurred.
 
         Keyword arguments:
@@ -31,21 +31,21 @@ class ObserverBase(Observer, Disposable):
 
         if not self.is_stopped:
             self.is_stopped = True
-            self._throw_core(error)
+            self._on_error_core(error)
 
     @abstractmethod
-    def _throw_core(self, error):
+    def _on_error_core(self, error):
         return NotImplemented
 
-    def close(self):
+    def on_completed(self):
         """Notifies the observer of the end of the sequence."""
 
         if not self.is_stopped:
             self.is_stopped = True
-            self._close_core()
+            self._on_completed_core()
 
     @abstractmethod
-    def _close_core(self):
+    def _on_completed_core(self):
         return NotImplemented
 
     def dispose(self):
@@ -58,7 +58,7 @@ class ObserverBase(Observer, Disposable):
         if not self.is_stopped:
             print("failing!")
             self.is_stopped = True
-            self._throw_core(exn)
+            self._on_error_core(exn)
             return True
 
         return False

@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -16,7 +16,7 @@ class TestWindow(unittest.TestCase):
 
     def test_window_closings_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
 
         def create():
@@ -31,12 +31,12 @@ class TestWindow(unittest.TestCase):
             return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
         assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_closings_dispose(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
 
         def create():
@@ -52,14 +52,14 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create, disposed=400)
 
-        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6")]
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6")]
         assert xs.subscriptions == [subscribe(200, 400)]
 
 
     def test_window_closings_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), throw(590, ex))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_error(590, ex))
         window = [1]
 
         def create():
@@ -75,13 +75,13 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), throw(590, ex)]
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex)]
         assert xs.subscriptions == [subscribe(200, 590)]
 
-    def test_window_closings_throw(self):
+    def test_window_closings_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
 
         def create():
@@ -95,13 +95,13 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [throw(200, ex)]
+        assert results.messages == [on_error(200, ex)]
         assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_window_close_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = 1
 
         def create():
@@ -114,12 +114,12 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [throw(200, ex)]
+        assert results.messages == [on_error(200, ex)]
         assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_default(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
         window = [1]
 
         def create():
@@ -134,13 +134,13 @@ class TestWindow(unittest.TestCase):
             return xs.window(window_closing_mapper=closings).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        assert results.messages == [send(250, "0 3"), send(260, "0 4"), send(310, "1 5"), send(340, "1 6"), send(410, "1 7"), send(420, "1 8"), send(470, "1 9"), send(550, "2 10"), close(590)]
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
         assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_opening_closings_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
-        ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), close(900))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
         def create():
             def closing(x):
@@ -152,15 +152,15 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), send(420, "1 8"), send(420, "3 8"), send(470, "3 9"), close(900)]
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900)]
         assert xs.subscriptions == [subscribe(200, 900)]
         assert ys.subscriptions == [subscribe(200, 900)]
 
-    def test_window_opening_closings_throw(self):
+    def test_window_opening_closings_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
-        ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), close(900))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
         def create():
             def closing(x):
@@ -173,14 +173,14 @@ class TestWindow(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [throw(255, ex)]
+        assert results.messages == [on_error(255, ex)]
         assert xs.subscriptions == [subscribe(200, 255)]
         assert ys.subscriptions == [subscribe(200, 255)]
 
     def test_window_opening_closings_dispose(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
-        ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), close(900))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
         def create():
             def closing(x):
@@ -191,15 +191,15 @@ class TestWindow(unittest.TestCase):
 
             return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create, disposed=415)
-        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7")]
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7")]
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_data_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), throw(415, ex))
-        ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), close(900))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_error(415, ex))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_completed(900))
 
         def create():
             def closing(x):
@@ -211,15 +211,15 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_window_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(90, 1), send(180, 2), send(250, 3), send(260, 4), send(310, 5), send(340, 6), send(410, 7), send(420, 8), send(470, 9), send(550, 10), close(590))
-        ys = scheduler.create_hot_observable(send(255, 50), send(330, 100), send(350, 50), send(400, 90), throw(415, ex))
+        xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
+        ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_error(415, ex))
         def create():
             def closing(x):
                 return Observable.timer(x)
@@ -230,7 +230,7 @@ class TestWindow(unittest.TestCase):
             return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(260, "0 4"), send(340, "1 6"), send(410, "1 7"), send(410, "3 7"), throw(415, ex)]
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
@@ -238,26 +238,26 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(90, 1),
-            send(180, 2),
-            send(250, 3),
-            send(260, 4),
-            send(310, 5),
-            send(340, 6),
-            send(410, 7),
-            send(420, 8),
-            send(470, 9),
-            send(550, 10),
-            close(590)
+            on_next(90, 1),
+            on_next(180, 2),
+            on_next(250, 3),
+            on_next(260, 4),
+            on_next(310, 5),
+            on_next(340, 6),
+            on_next(410, 7),
+            on_next(420, 8),
+            on_next(470, 9),
+            on_next(550, 10),
+            on_completed(590)
         )
 
         ys = scheduler.create_hot_observable(
-            send(255, True),
-            send(330, True),
-            send(350, True),
-            send(400, True),
-            send(500, True),
-            close(900)
+            on_next(255, True),
+            on_next(330, True),
+            on_next(350, True),
+            on_next(400, True),
+            on_next(500, True),
+            on_completed(900)
         )
 
         def create():
@@ -267,15 +267,15 @@ class TestWindow(unittest.TestCase):
         res = scheduler.start(create=create)
 
         assert res.messages == [
-            send(250, "0 3"),
-            send(260, "1 4"),
-            send(310, "1 5"),
-            send(340, "2 6"),
-            send(410, "4 7"),
-            send(420, "4 8"),
-            send(470, "4 9"),
-            send(550, "5 10"),
-            close(590)]
+            on_next(250, "0 3"),
+            on_next(260, "1 4"),
+            on_next(310, "1 5"),
+            on_next(340, "2 6"),
+            on_next(410, "4 7"),
+            on_next(420, "4 8"),
+            on_next(470, "4 9"),
+            on_next(550, "5 10"),
+            on_completed(590)]
 
         assert xs.subscriptions == [
             subscribe(200, 590)]
@@ -287,24 +287,24 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                send(90, 1),
-                send(180, 2),
-                send(250, 3),
-                send(260, 4),
-                send(310, 5),
-                send(340, 6),
-                send(410, 7),
-                send(420, 8),
-                send(470, 9),
-                send(550, 10),
-                close(590)
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(410, 7),
+                on_next(420, 8),
+                on_next(470, 9),
+                on_next(550, 10),
+                on_completed(590)
         )
 
         ys = scheduler.create_hot_observable(
-                send(255, True),
-                send(330, True),
-                send(350, True),
-                close(400)
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_completed(400)
         )
 
         def create():
@@ -315,11 +315,11 @@ class TestWindow(unittest.TestCase):
         res = scheduler.start(create=create)
 
         assert res.messages == [
-                send(250, "0 3"),
-                send(260, "1 4"),
-                send(310, "1 5"),
-                send(340, "2 6"),
-                close(400)]
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_completed(400)]
 
         assert xs.subscriptions == [
             subscribe(200, 400)]
@@ -332,21 +332,21 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                send(90, 1),
-                send(180, 2),
-                send(250, 3),
-                send(260, 4),
-                send(310, 5),
-                send(340, 6),
-                send(380, 7),
-                throw(400, ex)
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(380, 7),
+                on_error(400, ex)
         )
 
         ys = scheduler.create_hot_observable(
-                send(255, True),
-                send(330, True),
-                send(350, True),
-                close(500)
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_completed(500)
         )
 
         def create():
@@ -356,12 +356,12 @@ class TestWindow(unittest.TestCase):
         res = scheduler.start(create=create)
 
         assert res.messages == [
-                send(250, "0 3"),
-                send(260, "1 4"),
-                send(310, "1 5"),
-                send(340, "2 6"),
-                send(380, "3 7"),
-                throw(400, ex)]
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_next(380, "3 7"),
+                on_error(400, ex)]
 
         assert xs.subscriptions == [
             subscribe(200, 400)]
@@ -374,24 +374,24 @@ class TestWindow(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-                send(90, 1),
-                send(180, 2),
-                send(250, 3),
-                send(260, 4),
-                send(310, 5),
-                send(340, 6),
-                send(410, 7),
-                send(420, 8),
-                send(470, 9),
-                send(550, 10),
-                close(590)
+                on_next(90, 1),
+                on_next(180, 2),
+                on_next(250, 3),
+                on_next(260, 4),
+                on_next(310, 5),
+                on_next(340, 6),
+                on_next(410, 7),
+                on_next(420, 8),
+                on_next(470, 9),
+                on_next(550, 10),
+                on_completed(590)
         )
 
         ys = scheduler.create_hot_observable(
-                send(255, True),
-                send(330, True),
-                send(350, True),
-                throw(400, ex)
+                on_next(255, True),
+                on_next(330, True),
+                on_next(350, True),
+                on_error(400, ex)
         )
         def create():
             def mapper(w, i):
@@ -401,11 +401,11 @@ class TestWindow(unittest.TestCase):
         res = scheduler.start(create=create)
 
         assert res.messages == [
-                send(250, "0 3"),
-                send(260, "1 4"),
-                send(310, "1 5"),
-                send(340, "2 6"),
-                throw(400, ex)]
+                on_next(250, "0 3"),
+                on_next(260, "1 4"),
+                on_next(310, "1 5"),
+                on_next(340, "2 6"),
+                on_error(400, ex)]
 
         assert xs.subscriptions == [
             subscribe(200, 400)]

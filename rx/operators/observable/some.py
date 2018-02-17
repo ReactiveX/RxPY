@@ -19,12 +19,12 @@ def some(source, predicate=None) -> ObservableBase:
     """
 
     def subscribe(observer, scheduler=None):
-        def send(_):
-            observer.send(True)
-            observer.close()
-        def throw():
-            observer.send(False)
-            observer.close()
-        return source.subscribe_(send, observer.throw, throw, scheduler)
+        def on_next(_):
+            observer.on_next(True)
+            observer.on_completed()
+        def on_error():
+            observer.on_next(False)
+            observer.on_completed()
+        return source.subscribe_(on_next, observer.on_error, on_error, scheduler)
 
     return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)

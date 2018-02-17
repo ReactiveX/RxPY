@@ -4,9 +4,9 @@ from datetime import datetime
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -33,7 +33,7 @@ class TestTimeInterval(unittest.TestCase):
 
     def test_timestamp_regular(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(230, 3), send(260, 4), send(300, 5), send(350, 6), close(400))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
 
         def create():
             def mapper(x):
@@ -41,9 +41,9 @@ class TestTimeInterval(unittest.TestCase):
             return xs.timestamp().map(mapper)
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, Timestamp(2, 210)), send(230, Timestamp(3, 230)),
-                                    send(260, Timestamp(4, 260)), send(300, Timestamp(5, 300)),
-                                    send(350, Timestamp(6, 350)), close(400)]
+        assert results.messages == [on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)),
+                                    on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)),
+                                    on_next(350, Timestamp(6, 350)), on_completed(400)]
 
     def test_timestamp_empty(self):
         scheduler = TestScheduler()
@@ -52,7 +52,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.empty().time_interval()
 
         results = scheduler.start(create)
-        assert results.messages == [close(200)]
+        assert results.messages == [on_completed(200)]
 
     def test_timestamp_error(self):
         ex = 'ex'
@@ -62,7 +62,7 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.throw(ex).time_interval()
 
         results = scheduler.start(create)
-        assert results.messages == [throw(200, ex)]
+        assert results.messages == [on_error(200, ex)]
 
     def test_timestamp_never(self):
         scheduler = TestScheduler()

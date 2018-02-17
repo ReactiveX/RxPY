@@ -120,31 +120,31 @@ class ObservableBase(typing.Observable):
         return subscribe(self, observer, scheduler)
 
     def subscribe_(self,
-                   send: typing.Send = None,
-                   throw: typing.Throw = None,
-                   close: typing.Close = None,
+                   on_next: typing.OnNext = None,
+                   on_error: typing.OnError = None,
+                   on_completed: typing.OnCompleted = None,
                    scheduler: typing.Scheduler = None
                   ) -> Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
-        1 - source.subscribe_(send)
-        2 - source.subscribe_(send, throw)
-        3 - source.subscribe_(send, throw, close)
+        1 - source.subscribe_(on_next)
+        2 - source.subscribe_(on_next, on_error)
+        3 - source.subscribe_(on_next, on_error, on_completed)
 
         Keyword arguments:
-        send -- [Optional] Action to invoke for each element in the
+        on_next -- [Optional] Action to invoke for each element in the
             observable sequence.
-        throw -- [Optional] Action to invoke upon exceptional
+        on_error -- [Optional] Action to invoke upon exceptional
             termination of the observable sequence.
-        close -- [Optional] Action to invoke upon graceful
+        on_completed -- [Optional] Action to invoke upon graceful
             termination of the observable sequence.
         scheduler -- [Optional] The scheduler to use.
 
         Return disposable object representing an observer's subscription
         to the observable sequence.
         """
-        observer = AnonymousObserver(send, throw, close)
+        observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
 
     def _subscribe_core(self, observer, scheduler=None):
@@ -573,7 +573,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.do import do
         return do(self, observer)
 
-    def do_action(self, send=None, throw=None, close=None) -> 'ObservableBase':
+    def do_action(self, on_next=None, on_error=None, on_completed=None) -> 'ObservableBase':
         """Invokes an action for each element in the observable sequence
         and invokes an action on graceful or exceptional termination of
         the observable sequence. This method can be used for debugging,
@@ -581,21 +581,21 @@ class ObservableBase(typing.Observable):
         stream to run arbitrary actions for messages on the pipeline.
 
         1 - observable.do_action(send)
-        2 - observable.do_action(send, throw)
-        3 - observable.do_action(send, throw, close)
+        2 - observable.do_action(on_next, on_error)
+        3 - observable.do_action(on_next, on_error, on_completed)
 
-        send -- [Optional] Action to invoke for each element in the
+        on_next -- [Optional] Action to invoke for each element in the
             observable sequence.
-        throw -- [Optional] Action to invoke on exceptional termination
+        on_error -- [Optional] Action to invoke on exceptional termination
             of the observable sequence.
-        close -- [Optional] Action to invoke on graceful termination
+        on_completed -- [Optional] Action to invoke on graceful termination
             of the observable sequence.
 
         Returns the source sequence with the side-effecting behavior
         applied.
         """
         from ..operators.observable.do import do_action
-        return do_action(self, send, throw, close)
+        return do_action(self, on_next, on_error, on_completed)
 
     def do_while(self, condition: Predicate) -> 'ObservableBase':
         """Repeats source as long as condition holds emulating a do while loop.
@@ -2098,7 +2098,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.debounce import throttle_with_mapper
         return throttle_with_mapper(self, throttle_duration_mapper)
 
-    def throw_resume_next(self, second) -> 'ObservableBase':
+    def on_error_resume_next(self, second) -> 'ObservableBase':
         """Continues an observable sequence that is terminated normally
         or by an exception with the next observable sequence.
 
@@ -2114,8 +2114,8 @@ class ObservableBase(typing.Observable):
         if not second:
             raise Exception('Second observable is required')
 
-        from ..operators.observable.onerrorresumenext import throw_resume_next
-        return throw_resume_next([self, second])
+        from ..operators.observable.onerrorresumenext import on_error_resume_next
+        return on_error_resume_next([self, second])
 
     def time_interval(self) -> 'ObservableBase':
         """Records the time interval between consecutive values in an

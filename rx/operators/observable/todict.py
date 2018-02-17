@@ -5,11 +5,11 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
     def subscribe(observer, scheduler=None):
         m = map_type()
 
-        def send(x):
+        def on_next(x):
             try:
                 key = key_mapper(x)
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
                 return
 
             element = x
@@ -17,16 +17,16 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
                 try:
                     element = element_mapper(x)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
 
             m[key] = element
 
-        def close():
-            observer.send(m)
-            observer.close()
+        def on_completed():
+            observer.on_next(m)
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 

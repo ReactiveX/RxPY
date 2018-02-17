@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -28,7 +28,7 @@ class TestAsObservable(unittest.TestCase):
 
     def test_as_observable_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
             return xs.as_observable()
@@ -37,10 +37,10 @@ class TestAsObservable(unittest.TestCase):
         self.assertEqual(1, len(results))
         assert(results[0].value.kind == 'C' and results[0].time == 250)
 
-    def test_as_observable_throw(self):
+    def test_as_observable_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), throw(250, ex))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
         def create():
             return xs.as_observable()
@@ -51,7 +51,7 @@ class TestAsObservable(unittest.TestCase):
 
     def test_as_observable_Return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
             return xs.as_observable()
@@ -67,7 +67,7 @@ class TestAsObservable(unittest.TestCase):
 
         def subscribe(obs):
             subscribed[0] = True
-            disp = scheduler.create_hot_observable(send(150, 1), send(220, 2), close(250)).subscribe(obs)
+            disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe(obs)
 
             def func():
                 return disp.dispose()

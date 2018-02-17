@@ -45,17 +45,17 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
                     queued_values = [x.pop(0) for x in queues]
                     res = result_mapper(*queued_values)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
 
-                observer.send(res)
+                observer.on_next(res)
             elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.close()
+                observer.on_completed()
 
         def done(i):
             is_done[i] = True
             if all(is_done):
-                observer.close()
+                observer.on_completed()
 
         subscriptions = [None]*n
 
@@ -64,11 +64,11 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
             sad = SingleAssignmentDisposable()
             source = Observable.from_future(source)
 
-            def send(x):
+            def on_next(x):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(send, observer.throw, lambda: done(i), scheduler)
+            sad.disposable = source.subscribe_(on_next, observer.on_error, lambda: done(i), scheduler)
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)
@@ -83,7 +83,7 @@ def _zip_with_list(source, second, result_mapper):
         length = len(second)
         index = 0
 
-        def send(left):
+        def on_next(left):
             nonlocal index
 
             if index < length:
@@ -92,11 +92,11 @@ def _zip_with_list(source, second, result_mapper):
                 try:
                     result = result_mapper(left, right)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
-                observer.send(result)
+                observer.on_next(result)
             else:
-                observer.close()
+                observer.on_completed()
 
-        return first.subscribe_(send, observer.throw, observer.close, scheduler)
+        return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

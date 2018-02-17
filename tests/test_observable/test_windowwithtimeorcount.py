@@ -1,9 +1,9 @@
 import unittest
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -13,7 +13,7 @@ created = ReactiveTest.created
 class TestWindowWithTime(unittest.TestCase):
     def test_window_with_time_or_count_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(205, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(370, 7), send(420, 8), send(470, 9), close(600))
+        xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
 
         def create():
             def projection(w, i):
@@ -23,13 +23,13 @@ class TestWindowWithTime(unittest.TestCase):
             return xs.window_with_time_or_count(70, 3).map(mapper_indexed=projection).merge_all()
 
         results = scheduler.start(create)
-        assert results.messages == [send(205, "0 1"), send(210, "0 2"), send(240, "0 3"), send(280, "1 4"), send(320, "2 5"), send(350, "2 6"), send(370, "2 7"), send(420, "3 8"), send(470, "4 9"), close(600)]
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_completed(600)]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_window_with_time_or_count_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(205, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(370, 7), send(420, 8), send(470, 9), throw(600, ex))
+        xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_error(600, ex))
 
         def create():
             def projection(w, i):
@@ -40,12 +40,12 @@ class TestWindowWithTime(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert results.messages == [send(205, "0 1"), send(210, "0 2"), send(240, "0 3"), send(280, "1 4"), send(320, "2 5"), send(350, "2 6"), send(370, "2 7"), send(420, "3 8"), send(470, "4 9"), throw(600, ex)]
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_error(600, ex)]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_window_with_time_or_count_disposed(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(205, 1), send(210, 2), send(240, 3), send(280, 4), send(320, 5), send(350, 6), send(370, 7), send(420, 8), send(470, 9), close(600))
+        xs = scheduler.create_hot_observable(on_next(205, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(370, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
 
         def create():
             def projection(w, i):
@@ -55,7 +55,7 @@ class TestWindowWithTime(unittest.TestCase):
             return xs.window_with_time_or_count(70, 3).map(mapper_indexed=projection).merge_all()
 
         results = scheduler.start(create, disposed=370)
-        assert results.messages == [send(205, "0 1"), send(210, "0 2"), send(240, "0 3"), send(280, "1 4"), send(320, "2 5"), send(350, "2 6"), send(370, "2 7")]
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7")]
         assert xs.subscriptions == [subscribe(200, 370)]
 
 

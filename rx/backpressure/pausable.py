@@ -20,19 +20,19 @@ class PausableObservable(ObservableBase):
         subscription = conn.subscribe(observer)
         connection = [Disposable.empty()]
 
-        def send(value):
+        def on_next(value):
             if value:
                 connection[0] = conn.connect()
             else:
                 connection[0].dispose()
                 connection[0] = Disposable.empty()
 
-        pausable = self.pauser.distinct_until_changed().subscribe_(send, scheduler=scheduler)
+        pausable = self.pauser.distinct_until_changed().subscribe_(on_next, scheduler=scheduler)
         return CompositeDisposable(subscription, connection[0], pausable)
 
     def pause(self):
-        self.controller.send(False)
+        self.controller.on_next(False)
 
     def resume(self):
-        self.controller.send(True)
+        self.controller.on_next(True)
 

@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,31 +15,31 @@ class TestElementAt(unittest.TestCase):
 
     def test_elementat_first(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at(0)
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(280, 42), close(280)]
+        assert results.messages == [on_next(280, 42), on_completed(280)]
         assert xs.subscriptions == [subscribe(200, 280)]
 
     def test_elementat_other(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at(2)
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(470, 44), close(470)]
+        assert results.messages == [on_next(470, 44), on_completed(470)]
         assert xs.subscriptions == [subscribe(200, 470)]
 
     def test_elementat_outofrange(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at(3)
@@ -53,61 +53,61 @@ class TestElementAt(unittest.TestCase):
     def test_elementat_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), throw(420, ex))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_error(420, ex))
 
         def create():
             return xs.element_at(3)
         results = scheduler.start(create=create)
 
-        assert results.messages == [throw(420, ex)]
+        assert results.messages == [on_error(420, ex)]
         assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_element_at_or_default_first(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at_or_default(0)
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(280, 42), close(280)]
+        assert results.messages == [on_next(280, 42), on_completed(280)]
         assert xs.subscriptions == [subscribe(200, 280)]
 
     def test_element_at_or_default_other(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at_or_default(2)
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(470, 44), close(470)]
+        assert results.messages == [on_next(470, 44), on_completed(470)]
         assert xs.subscriptions == [subscribe(200, 470)]
 
     def test_element_at_or_default_outofrange(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), send(470, 44), close(600))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
             return xs.element_at_or_default(3, 0)
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(600, 0), close(600)]
+        assert results.messages == [on_next(600, 0), on_completed(600)]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_element_at_or_default_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(280, 42), send(360, 43), throw(420, ex))
+        xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_error(420, ex))
 
         def create():
             return xs.element_at_or_default(3)
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [throw(420, ex)]
+        assert results.messages == [on_error(420, ex)]
         assert xs.subscriptions == [subscribe(200, 420)]
 
 if __name__ == '__main__':

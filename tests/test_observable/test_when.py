@@ -5,9 +5,9 @@ from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -25,8 +25,8 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(210, 1),
-            close(220)
+            on_next(210, 1),
+            on_completed(220)
         )
 
         def create():
@@ -37,8 +37,8 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, 1),
-            close(220)]
+            on_next(210, 1),
+            on_completed(220)]
 
     def test_then1_error(self):
         ex = Exception()
@@ -46,7 +46,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            throw(210, ex)
+            on_error(210, ex)
         )
 
         def create():
@@ -57,7 +57,7 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            throw(210, ex)]
+            on_error(210, ex)]
 
     def test_then1_throws(self):
         ex = Exception()
@@ -65,8 +65,8 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(210, 1),
-            close(220)
+            on_next(210, 1),
+            on_completed(220)
         )
 
         def create():
@@ -77,7 +77,7 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            throw(210, ex)]
+            on_error(210, ex)]
 
     def test_and2(self):
         scheduler = TestScheduler()
@@ -85,7 +85,7 @@ class TestWhen(unittest.TestCase):
 
         obs = []
         for n in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b):
@@ -94,8 +94,8 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, N),
-            close(220)]
+            on_next(210, N),
+            on_completed(220)]
 
     def test_and2_error(self):
         ex = Exception()
@@ -107,9 +107,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == n:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b):
@@ -119,7 +119,7 @@ class TestWhen(unittest.TestCase):
             results = scheduler.start(create)
 
             assert results.messages == [
-                throw(210, ex)]
+                on_error(210, ex)]
 
     def test_then2_throws(self):
         scheduler = TestScheduler()
@@ -128,7 +128,7 @@ class TestWhen(unittest.TestCase):
         N = 2
 
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b):
@@ -138,7 +138,7 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            throw(210, ex)]
+            on_error(210, ex)]
 
     def test_and3(self):
         scheduler = TestScheduler()
@@ -146,7 +146,7 @@ class TestWhen(unittest.TestCase):
         N = 3
 
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c):
@@ -156,8 +156,8 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, N),
-            close(220)]
+            on_next(210, N),
+            on_completed(220)]
 
     def test_and3_error(self):
         ex = Exception()
@@ -169,9 +169,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c):
@@ -180,7 +180,7 @@ class TestWhen(unittest.TestCase):
             results = scheduler.start(create)
 
             assert results.messages == [
-                throw(210, ex)]
+                on_error(210, ex)]
 
 
     def test_then3_throws(self):
@@ -191,7 +191,7 @@ class TestWhen(unittest.TestCase):
         obs = []
 
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c):
@@ -201,14 +201,14 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            throw(210, ex)]
+            on_error(210, ex)]
 
     def test_and4(self):
         N = 4
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d):
@@ -216,7 +216,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
     def test_and4_error(self):
         ex = 'ex'
@@ -227,9 +227,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d):
@@ -237,7 +237,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_then4_throws(self):
         ex = 'ex'
@@ -245,7 +245,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d):
@@ -253,14 +253,14 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
     def test_and5(self):
         N = 5
         scheduler = TestScheduler()
         obs = []
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e):
@@ -268,7 +268,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
     def test_and5_error(self):
         ex = 'ex'
@@ -278,9 +278,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d, e):
@@ -288,7 +288,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_then5_throws(self):
         ex = 'ex'
@@ -296,7 +296,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e):
@@ -304,14 +304,14 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
     def test_and6(self):
         N = 6
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e, f):
@@ -319,7 +319,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
     def test_and6_error(self):
         ex = 'ex'
@@ -329,9 +329,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d, e, f):
@@ -339,7 +339,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_Then6Throws(self):
         ex = 'ex'
@@ -347,7 +347,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
 
         def create():
@@ -356,14 +356,14 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
     def test_and7(self):
         N = 7
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e, f, g):
@@ -371,7 +371,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
 
     def test_and7_error(self):
@@ -382,9 +382,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d, e, f, g):
@@ -392,7 +392,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_then7_throws(self):
         ex = 'ex'
@@ -400,7 +400,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(*args):
@@ -409,7 +409,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
 
     def test_and8(self):
@@ -417,7 +417,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e, f, g, h):
@@ -425,7 +425,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
     def test_and8_error(self):
         ex = 'ex'
@@ -435,16 +435,16 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d, e, f, g, h):
                     return a + b + c + d + e + f + g + h
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_then8_throws(self):
         ex = 'ex'
@@ -452,7 +452,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for _ in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(*args):
@@ -461,21 +461,21 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
     def test_And9(self):
         N = 9
         scheduler = TestScheduler()
         obs = []
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(a, b, c, d, e, f, g, h, _i):
                 return a + b + c + d + e + f + g + h + _i
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
         results = scheduler.start(create)
-        assert results.messages == [send(210, N), close(220)]
+        assert results.messages == [on_next(210, N), on_completed(220)]
 
     def test_and9_error(self):
         ex = 'ex'
@@ -485,9 +485,9 @@ class TestWhen(unittest.TestCase):
             obs = []
             for j in range(N):
                 if j == i:
-                    obs.append(scheduler.create_hot_observable(throw(210, ex)))
+                    obs.append(scheduler.create_hot_observable(on_error(210, ex)))
                 else:
-                    obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+                    obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
             def create():
                 def mapper(a, b, c, d, e, f, g, h, _i):
@@ -495,7 +495,7 @@ class TestWhen(unittest.TestCase):
                 return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
 
             results = scheduler.start(create)
-            assert results.messages == [throw(210, ex)]
+            assert results.messages == [on_error(210, ex)]
 
     def test_then9_throws(self):
         ex = 'ex'
@@ -503,7 +503,7 @@ class TestWhen(unittest.TestCase):
         scheduler = TestScheduler()
         obs = []
         for i in range(N):
-            obs.append(scheduler.create_hot_observable(send(210, 1), close(220)))
+            obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
         def create():
             def mapper(*args):
@@ -511,23 +511,23 @@ class TestWhen(unittest.TestCase):
             return Observable.when(obs[0].and_(obs[1]).and_(obs[2]).and_(obs[3]).and_(obs[4]).and_(obs[5]).and_(obs[6]).and_(obs[7]).and_(obs[8]).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(210, ex)]
+        assert results.messages == [on_error(210, ex)]
 
     def test_WhenMultipleDataSymmetric(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(210, 1),
-            send(220, 2),
-            send(230, 3),
-            close(240)
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_completed(240)
         )
 
         ys = scheduler.create_hot_observable(
-            send(240, 4),
-            send(250, 5),
-            send(260, 6),
-            close(270)
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270)
         )
 
         def create():
@@ -538,25 +538,25 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(240, 1 + 4),
-            send(250, 2 + 5),
-            send(260, 3 + 6),
-            close(270)]
+            on_next(240, 1 + 4),
+            on_next(250, 2 + 5),
+            on_next(260, 3 + 6),
+            on_completed(270)]
 
     def test_WhenMultipleDataAsymmetric(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(210, 1),
-            send(220, 2),
-            send(230, 3),
-            close(240)
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_completed(240)
         )
 
         ys = scheduler.create_hot_observable(
-            send(240, 4),
-            send(250, 5),
-            close(270)
+            on_next(240, 4),
+            on_next(250, 5),
+            on_completed(270)
         )
 
         def create():
@@ -567,14 +567,14 @@ class TestWhen(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(240, 1 + 4),
-            send(250, 2 + 5),
-            close(270)]
+            on_next(240, 1 + 4),
+            on_next(250, 2 + 5),
+            on_completed(270)]
 
     def test_when_empty_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(close(240))
-        ys = scheduler.create_hot_observable(close(270))
+        xs = scheduler.create_hot_observable(on_completed(240))
+        ys = scheduler.create_hot_observable(on_completed(270))
 
         def create():
             def mapper(x, y):
@@ -582,7 +582,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [close(270)]
+        assert results.messages == [on_completed(270)]
 
     def test_when_never_never(self):
         scheduler = TestScheduler()
@@ -600,8 +600,8 @@ class TestWhen(unittest.TestCase):
     def test_when_throw_non_empty(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(throw(240, ex))
-        ys = scheduler.create_hot_observable(close(270))
+        xs = scheduler.create_hot_observable(on_error(240, ex))
+        ys = scheduler.create_hot_observable(on_completed(270))
 
         def create():
             def mapper(x, y):
@@ -609,13 +609,13 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(mapper))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(240, ex)]
+        assert results.messages == [on_error(240, ex)]
 
     def test_complicated_when(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(210, 1), send(220, 2), send(230, 3), close(240))
-        ys = scheduler.create_hot_observable(send(240, 4), send(250, 5), send(260, 6), close(270))
-        zs = scheduler.create_hot_observable(send(220, 7), send(230, 8), send(240, 9), close(300))
+        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(240))
+        ys = scheduler.create_hot_observable(on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
+        zs = scheduler.create_hot_observable(on_next(220, 7), on_next(230, 8), on_next(240, 9), on_completed(300))
 
         def create():
             def sel1(x, y):
@@ -627,7 +627,7 @@ class TestWhen(unittest.TestCase):
             return Observable.when(xs.and_(ys).then_do(sel1), xs.and_(zs).then_do(sel2), ys.and_(zs).then_do(sel3))
 
         results = scheduler.start(create)
-        assert results.messages == [send(220, 1 * 7), send(230, 2 * 8), send(240, 3 + 4), send(250, 5 - 9), close(300)]
+        assert results.messages == [on_next(220, 1 * 7), on_next(230, 2 * 8), on_next(240, 3 + 4), on_next(250, 5 - 9), on_completed(300)]
 
 if __name__ == '__main__':
     unittest.main()

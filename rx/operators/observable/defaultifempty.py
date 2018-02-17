@@ -20,14 +20,14 @@ def default_if_empty(source, default_value=None) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         found = [False]
 
-        def send(x):
+        def on_next(x):
             found[0] = True
-            observer.send(x)
+            observer.on_next(x)
 
-        def close():
+        def on_completed():
             if not found[0]:
-                observer.send(default_value)
-            observer.close()
+                observer.on_next(default_value)
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)

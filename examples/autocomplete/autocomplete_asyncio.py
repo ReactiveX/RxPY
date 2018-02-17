@@ -69,7 +69,7 @@ class WSHandler(WebSocketHandler):
 
     def on_message(self, message):
         obj = json_decode(message)
-        self.subject.send(obj)
+        self.subject.on_next(obj)
 
     def on_close(self):
         print("WebSocket closed")

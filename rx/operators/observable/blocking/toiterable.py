@@ -15,7 +15,7 @@ def to_iterable(source: BlockingObservable) -> Iterable:
     condition = threading.Condition()
     notifications = []
 
-    def send(value):
+    def on_next(value):
         """Takes send values and appends them to the notification queue"""
 
         condition.acquire()
@@ -23,7 +23,7 @@ def to_iterable(source: BlockingObservable) -> Iterable:
         condition.notify()  # signal that a new item is available
         condition.release()
 
-    source.observable.materialize().subscribe_(send)
+    source.observable.materialize().subscribe_(on_next)
 
     def gen():
         """Generator producing values for the iterator"""

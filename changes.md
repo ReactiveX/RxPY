@@ -1,14 +1,11 @@
 # Changes
 
-## 3.0.0-alpha
+## 2.0.0-alpha
 
-- `on_next`, `on_error` and `on_completed` have been renamed to `send`,
-  `throw` and `close` to align with the enhanced generator interface.
 - Extension methods and extension class methods have been removed. This
   makes it much easier for editors and IDEs to validate the code and
   perform code completion.
 - Python 3.6+ only with type hints
-
 
 ## 1.5.0
 

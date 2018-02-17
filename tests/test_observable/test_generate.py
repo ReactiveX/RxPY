@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -34,11 +34,11 @@ class TestGenerate(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-                            send(200, 0),
-                            send(200, 1),
-                            send(200, 2),
-                            send(200, 3),
-                            close(200)]
+                            on_next(200, 0),
+                            on_next(200, 1),
+                            on_next(200, 2),
+                            on_next(200, 3),
+                            on_completed(200)]
 
     def test_generate_throw_condition(self):
         scheduler = TestScheduler()
@@ -51,7 +51,7 @@ class TestGenerate(unittest.TestCase):
                 lambda x: x)
         results = scheduler.start(create)
 
-        assert results.messages == [throw(200, ex)]
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_throw_result_mapper(self):
         scheduler = TestScheduler()
@@ -64,7 +64,7 @@ class TestGenerate(unittest.TestCase):
                 lambda x: _raise('ex'))
 
         results = scheduler.start(create)
-        assert results.messages == [throw(200, ex)]
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_throw_iterate(self):
         scheduler = TestScheduler()
@@ -78,8 +78,8 @@ class TestGenerate(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-                            send(200, 0),
-                            throw(200, ex)]
+                            on_next(200, 0),
+                            on_error(200, ex)]
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
@@ -107,12 +107,12 @@ class TestGenerate(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-                send(200, 0),
-                send(200, 1),
-                send(200, 2),
-                send(200, 3),
-                send(200, 0),
-                send(200, 1),
-                send(200, 2),
-                send(200, 3),
-                close(200)]
+                on_next(200, 0),
+                on_next(200, 1),
+                on_next(200, 2),
+                on_next(200, 3),
+                on_next(200, 0),
+                on_next(200, 1),
+                on_next(200, 2),
+                on_next(200, 3),
+                on_completed(200)]

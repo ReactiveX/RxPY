@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -17,12 +17,12 @@ class TestToDict(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(110, 1),
-            send(220, 2),
-            send(330, 3),
-            send(440, 4),
-            send(550, 5),
-            close(660)
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5),
+            on_completed(660)
         )
 
         def create():
@@ -31,8 +31,8 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
         print(res.messages)
         assert res.messages == [
-            send(660, {4: 8, 6: 12, 8: 16, 10: 20}),
-            close(660)]
+            on_next(660, {4: 8, 6: 12, 8: 16, 10: 20}),
+            on_completed(660)]
 
         assert xs.subscriptions == [
             subscribe(200, 660)]
@@ -43,12 +43,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            send(110, 1),
-            send(220, 2),
-            send(330, 3),
-            send(440, 4),
-            send(550, 5),
-            throw(660, ex)
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5),
+            on_error(660, ex)
         )
 
         def create():
@@ -57,7 +57,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            throw(660, ex)]
+            on_error(660, ex)]
 
         assert xs.subscriptions == [
            subscribe(200, 660)]
@@ -69,12 +69,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            send(110, 1),
-            send(220, 2),
-            send(330, 3),
-            send(440, 4),
-            send(550, 5),
-            close(600)
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5),
+            on_completed(600)
           )
 
         def create():
@@ -88,7 +88,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            throw(440, ex)]
+            on_error(440, ex)]
 
         assert xs.subscriptions == [
             subscribe(200, 440)]
@@ -99,12 +99,12 @@ class TestToDict(unittest.TestCase):
         ex = Exception()
 
         xs = scheduler.create_hot_observable(
-            send(110, 1),
-            send(220, 2),
-            send(330, 3),
-            send(440, 4),
-            send(550, 5),
-            close(600)
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5),
+            on_completed(600)
         )
 
         def value_mapper(x):
@@ -119,7 +119,7 @@ class TestToDict(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            throw(440, ex)]
+            on_error(440, ex)]
 
         assert xs.subscriptions == [
             subscribe(200, 440)]
@@ -128,11 +128,11 @@ class TestToDict(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(110, 1),
-            send(220, 2),
-            send(330, 3),
-            send(440, 4),
-            send(550, 5)
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5)
         )
 
         def create():

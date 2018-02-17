@@ -29,10 +29,10 @@ class Observing:
         return self.observer
 
     def step(self, obs, input):
-        return obs.send(input)
+        return obs.on_next(input)
 
     def complete(self, obs):
-        return obs.close()
+        return obs.on_completed()
 
     def __call__(self, result, item):
         return self.step(result, item)
@@ -54,14 +54,14 @@ def transduce(self, transducer):
     def subscribe(observer, scheduler=None):
         xform = transducer(Observing(observer))
 
-        def send(v):
+        def on_next(v):
             try:
                 xform.step(observer, v)
             except Exception as e:
-                observer.throw(e)
+                observer.on_error(e)
 
-        def close():
+        def on_completed():
             xform.complete(observer)
 
-        return source.subscribe_(send, observer.throw, close)
+        return source.subscribe_(on_next, observer.on_error, on_completed)
     return AnonymousObservable(subscribe)

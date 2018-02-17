@@ -36,26 +36,26 @@ def with_latest_from(observables: Union[ObservableBase, Iterable[ObservableBase]
             def subscribe_child(i, child):
                 subscription = SingleAssignmentDisposable()
 
-                def send(value):
+                def on_next(value):
                     with parent.lock:
                         values[i] = value
                 subscription.disposable = child.subscribe_(
-                    send, observer.throw, scheduler=scheduler)
+                    on_next, observer.on_error, scheduler=scheduler)
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
 
-            def send(value):
+            def on_next(value):
                 with parent.lock:
                     if NO_VALUE not in values:
                         try:
                             result = result_mapper(value, *values)
                         except Exception as error:
-                            observer.throw(error)
+                            observer.on_error(error)
                         else:
-                            observer.send(result)
+                            observer.on_next(result)
             parent_subscription.disposable = parent.subscribe_(
-                send, observer.throw, observer.close, scheduler)
+                on_next, observer.on_error, observer.on_completed, scheduler)
 
             children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
 

@@ -39,7 +39,7 @@ def generate_with_relative_time(initial_state, condition, iterate,
 
         def action(scheduler, _):
             if has_result[0]:
-                observer.send(result[0])
+                observer.on_next(result[0])
 
             try:
                 if first[0]:
@@ -53,13 +53,13 @@ def generate_with_relative_time(initial_state, condition, iterate,
                     time[0] = time_mapper(state[0])
 
             except Exception as e:
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
             if has_result[0]:
                 mad.disposable = scheduler.schedule_relative(time[0], action)
             else:
-                observer.close()
+                observer.on_completed()
 
         mad.disposable = scheduler.schedule_relative(0, action)
         return mad

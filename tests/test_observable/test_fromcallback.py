@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -25,31 +25,31 @@ class TestFromCallback(unittest.TestCase):
     def test_from_callback(self):
         res = Observable.from_callback(lambda cb: cb(True))()
 
-        def send(r):
+        def on_next(r):
             self.assertEqual(r, True)
 
-        def throw(err):
+        def on_error(err):
             assert(False)
 
-        def close():
+        def on_completed():
             assert(True)
 
-        res.subscribe_(send, throw, close)
+        res.subscribe_(on_next, on_error, on_completed)
 
     def test_from_callback_single(self):
         res = Observable.from_callback(lambda file, cb: cb(file))('file.txt')
 
-        def send(r):
+        def on_next(r):
             self.assertEqual(r, 'file.txt')
 
-        def throw(err):
+        def on_error(err):
             print(err)
             assert(False)
 
-        def close():
+        def on_completed():
             assert(True)
 
-        res.subscribe_(send, throw, close)
+        res.subscribe_(on_next, on_error, on_completed)
 
     def test_from_node_callback_mapper(self):
         res = Observable.from_callback(
@@ -57,14 +57,14 @@ class TestFromCallback(unittest.TestCase):
             lambda r: r[0]
         )(1,2,3)
 
-        def send(r):
+        def on_next(r):
             self.assertEqual(r, 1)
 
-        def throw(err):
+        def on_error(err):
             assert(False)
 
-        def close():
+        def on_completed():
             assert(True)
 
-        res.subscribe_(send, throw, close)
+        res.subscribe_(on_next, on_error, on_completed)
 

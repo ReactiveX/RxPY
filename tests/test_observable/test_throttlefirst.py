@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -26,14 +26,14 @@ class TestThrottleFirst(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(250, 3),
-            send(310, 4),
-            send(350, 5),
-            send(410, 6),
-            send(450, 7),
-            close(500)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(250, 3),
+            on_next(310, 4),
+            on_next(350, 5),
+            on_next(410, 6),
+            on_next(450, 7),
+            on_completed(500)
         )
 
         def create():
@@ -42,9 +42,9 @@ class TestThrottleFirst(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-            send(210, 2),
-            send(410, 6),
-            close(500)]
+            on_next(210, 2),
+            on_next(410, 6),
+            on_completed(500)]
 
         assert xs.subscriptions == [
             subscribe(200, 500)]
@@ -53,7 +53,7 @@ class TestThrottleFirst(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-          send(150, 1)
+          on_next(150, 1)
         )
 
         def create():
@@ -72,8 +72,8 @@ class TestThrottleFirst(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            close(500)
+            on_next(150, 1),
+            on_completed(500)
         )
 
 
@@ -83,7 +83,7 @@ class TestThrottleFirst(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-            close(500)]
+            on_completed(500)]
 
         assert xs.subscriptions == [
             subscribe(200, 500)]
@@ -94,14 +94,14 @@ class TestThrottleFirst(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-          send(150, 1),
-          send(210, 2),
-          send(250, 3),
-          send(310, 4),
-          send(350, 5),
-          throw(410, error),
-          send(450, 7),
-          close(500)
+          on_next(150, 1),
+          on_next(210, 2),
+          on_next(250, 3),
+          on_next(310, 4),
+          on_next(350, 5),
+          on_error(410, error),
+          on_next(450, 7),
+          on_completed(500)
         )
 
         def create():
@@ -110,8 +110,8 @@ class TestThrottleFirst(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-          send(210, 2),
-          throw(410, error)]
+          on_next(210, 2),
+          on_error(410, error)]
 
         assert xs.subscriptions == [
           subscribe(200, 410)]
@@ -121,13 +121,13 @@ class TestThrottleFirst(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(250, 3),
-            send(310, 4),
-            send(350, 5),
-            send(410, 6),
-            send(450, 7)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(250, 3),
+            on_next(310, 4),
+            on_next(350, 5),
+            on_next(410, 6),
+            on_next(450, 7)
         )
 
         def create():
@@ -136,8 +136,8 @@ class TestThrottleFirst(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-            send(210, 2),
-            send(410, 6)]
+            on_next(210, 2),
+            on_next(410, 6)]
 
         assert xs.subscriptions == [
             subscribe(200, 1000)]

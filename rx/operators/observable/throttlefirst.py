@@ -22,18 +22,18 @@ def throttle_first(source, window_duration: Union[timedelta, int]) -> Observable
         duration = scheduler.to_timedelta(+window_duration or 0)
         if duration <= scheduler.to_timedelta(0):
             raise ValueError('window_duration cannot be less or equal zero.')
-        last_send = [0]
+        last_on_next = [0]
 
-        def send(x):
+        def on_next(x):
             emit = False
             now = scheduler.now
 
             with source.lock:
-                if not last_send[0] or now - last_send[0] >= duration:
-                    last_send[0] = now
+                if not last_on_next[0] or now - last_on_next[0] >= duration:
+                    last_on_next[0] = now
                     emit = True
             if emit:
-                observer.send(x)
+                observer.on_next(x)
 
-        return source.subscribe_(send, observer.throw, observer.close, scheduler=scheduler)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=scheduler)
     return AnonymousObservable(subscribe)

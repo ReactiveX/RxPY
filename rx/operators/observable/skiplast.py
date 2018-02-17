@@ -23,7 +23,7 @@ def skip_last(count: int, source: ObservableBase) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         q = []
 
-        def send(value):
+        def on_next(value):
             front = None
             with observable.lock:
                 q.append(value)
@@ -31,7 +31,7 @@ def skip_last(count: int, source: ObservableBase) -> ObservableBase:
                     front = q.pop(0)
 
             if front is not None:
-                observer.send(front)
+                observer.on_next(front)
 
-        return observable.subscribe_(send, observer.throw, observer.close, scheduler)
+        return observable.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

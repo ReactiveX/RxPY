@@ -36,13 +36,13 @@ class Sink(Disposable):
         def __init__(self, forward: Sink) -> None:
             self._forward = forward
 
-        def send(self, value: Any) -> None:
-            self._forward._observer.send(value)
+        def on_next(self, value: Any) -> None:
+            self._forward._observer.on_next(value)
 
-        def throw(self, error: Exception) -> None:
-            self._forward._observer.throw(error)
+        def on_error(self, error: Exception) -> None:
+            self._forward._observer.on_error(error)
             self._forward.dispose()
 
-        def close(self) -> None:
-            self._forward._observer.close()
+        def on_completed(self) -> None:
+            self._forward._observer.on_completed()
             self._forward.dispose()

@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -24,10 +24,10 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(310, 1),
-            send(350, 2),
-            send(420, 3),
-            close(450)
+            on_next(310, 1),
+            on_next(350, 2),
+            on_next(420, 3),
+            on_completed(450)
         )
         ys = scheduler.create_cold_observable()
 
@@ -37,10 +37,10 @@ class TestTimeoutWithSelector(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(310, 1),
-            send(350, 2),
-            send(420, 3),
-            close(450)]
+            on_next(310, 1),
+            on_next(350, 2),
+            on_next(420, 3),
+            on_completed(450)]
         assert xs.subscriptions == [
             subscribe(200, 450)]
         assert ys.subscriptions == [
@@ -52,13 +52,13 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_timeoutfirst(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(310, 1),
-            send(350, 2),
-            send(420, 3),
-            close(450)
+            on_next(310, 1),
+            on_next(350, 2),
+            on_next(420, 3),
+            on_completed(450)
         )
         ys = scheduler.create_cold_observable(
-            send(100, 'boo!')
+            on_next(100, 'boo!')
         )
         zs = scheduler.create_cold_observable()
 
@@ -75,17 +75,17 @@ class TestTimeoutWithSelector(unittest.TestCase):
 
     def test_timeout_duration_simple_timeout_later(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), close(450))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
-        zs = scheduler.create_cold_observable(send(50, 'boo!'))
+        zs = scheduler.create_cold_observable(on_next(50, 'boo!'))
 
         def create():
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
         self.assertEqual(3, len(results.messages))
-        assert(send(310, 1).equals(results.messages[0]))
-        assert(send(350, 2).equals(results.messages[1]))
+        assert(on_next(310, 1).equals(results.messages[0]))
+        assert(on_next(350, 2).equals(results.messages[1]))
         assert(results.messages[2].time == 400 and results.messages[2].value.exception)
         assert xs.subscriptions == [subscribe(200, 400)]
         assert ys.subscriptions == [subscribe(200, 310)]
@@ -93,17 +93,17 @@ class TestTimeoutWithSelector(unittest.TestCase):
 
     def test_timeout_duration_simple_timeout_by_completion(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), close(450))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
-        zs = scheduler.create_cold_observable(close(50))
+        zs = scheduler.create_cold_observable(on_completed(50))
 
         def create():
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
         self.assertEqual(3, len(results.messages))
-        assert(send(310, 1).equals(results.messages[0]))
-        assert(send(350, 2).equals(results.messages[1]))
+        assert(on_next(310, 1).equals(results.messages[0]))
+        assert(on_next(350, 2).equals(results.messages[1]))
         assert(results.messages[2].time == 400 and results.messages[2].value.exception)
         assert xs.subscriptions == [subscribe(200, 400)]
         assert ys.subscriptions == [subscribe(200, 310)]
@@ -112,7 +112,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_timeout_by_completion(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), close(450))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
         zs = scheduler.create_cold_observable()
 
@@ -128,10 +128,10 @@ class TestTimeoutWithSelector(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(310, 1),
-            send(350, 2),
-            send(420, 3),
-            throw(420, ex)]
+            on_next(310, 1),
+            on_next(350, 2),
+            on_next(420, 3),
+            on_error(420, ex)]
         assert xs.subscriptions == [subscribe(200, 420)]
         assert ys.subscriptions == [subscribe(200, 310)]
         assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 420)]
@@ -139,15 +139,15 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_inner_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), close(450))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
         ys = scheduler.create_cold_observable()
-        zs = scheduler.create_cold_observable(throw(50, ex))
+        zs = scheduler.create_cold_observable(on_error(50, ex))
 
         def create():
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(310, 1), send(350, 2), throw(400, ex)]
+        assert results.messages == [on_next(310, 1), on_next(350, 2), on_error(400, ex)]
         assert xs.subscriptions == [subscribe(200, 400)]
         assert ys.subscriptions == [subscribe(200, 310)]
         assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 400)]
@@ -155,15 +155,15 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_first_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), close(450))
-        ys = scheduler.create_cold_observable(throw(50, ex))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))
+        ys = scheduler.create_cold_observable(on_error(50, ex))
         zs = scheduler.create_cold_observable()
 
         def create():
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        assert results.messages == [throw(250, ex)]
+        assert results.messages == [on_error(250, ex)]
         assert xs.subscriptions == [subscribe(200, 250)]
         assert ys.subscriptions == [subscribe(200, 250)]
         assert zs.subscriptions == []
@@ -171,7 +171,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
     def test_timeout_duration_simple_source_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(310, 1), send(350, 2), send(420, 3), throw(450, ex))
+        xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_error(450, ex))
         ys = scheduler.create_cold_observable()
         zs = scheduler.create_cold_observable()
 
@@ -179,7 +179,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
             return xs.timeout_with_selector(ys, lambda _: zs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(310, 1), send(350, 2), send(420, 3), throw(450, ex)]
+        assert results.messages == [on_next(310, 1), on_next(350, 2), on_next(420, 3), on_error(450, ex)]
         assert xs.subscriptions == [subscribe(200, 450)]
         assert ys.subscriptions == [subscribe(200, 310)]
         assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 420), subscribe(420, 450)]

@@ -35,10 +35,10 @@ def skip_until_with_time(source: ObservableBase,
         scheduler = scheduler or timeout_scheduler
         open = [False]
 
-        def send(x):
+        def on_next(x):
             if open[0]:
-                observer.send(x)
-        subscription = source.subscribe_(send, observer.throw, observer.close, scheduler)
+                observer.on_next(x)
+        subscription = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
 
         def action(scheduler, state):
             open[0] = True

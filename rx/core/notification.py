@@ -14,29 +14,29 @@ class Notification:
         self.value = None
         self.kind = ''
 
-    def accept(self, send, throw=None, close=None):
+    def accept(self, on_next, on_error=None, on_completed=None):
         """Invokes the delegate corresponding to the notification or an
         observer and returns the produced result.
 
         1 - notification.accept(observer)
-        2 - notification.accept(send, throw, close)
+        2 - notification.accept(on_next, on_error, on_completed)
 
         Keyword arguments:
-        send -- Delegate to invoke for an OnNext notification.
-        throw -- [Optional] Delegate to invoke for an OnError
+        on_next -- Delegate to invoke for an OnNext notification.
+        on_error -- [Optional] Delegate to invoke for an OnError
             notification.
-        close -- [Optional] Delegate to invoke for an OnCompleted
+        on_completed -- [Optional] Delegate to invoke for an OnCompleted
             notification.
 
         Returns result produced by the observation."""
 
-        if isinstance(send, Observer):
-            return self._accept_observer(send)
+        if isinstance(on_next, Observer):
+            return self._accept_observer(on_next)
         else:
-            return self._accept(send, throw, close)
+            return self._accept(on_next, on_error, on_completed)
 
     @abstractmethod
-    def _accept(self, send, throw, close):
+    def _accept(self, on_next, on_error, on_completed):
         raise NotImplementedError
 
     @abstractmethod
@@ -61,7 +61,7 @@ class Notification:
             def action(scheduler, state):
                 self._accept_observer(observer)
                 if self.kind == 'N':
-                    observer.close()
+                    observer.on_completed()
 
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
@@ -88,11 +88,11 @@ class OnNext(Notification):
         self.has_value = True
         self.kind = 'N'
 
-    def _accept(self, send, throw=None, close=None):
-        return send(self.value)
+    def _accept(self, on_next, on_error=None, on_completed=None):
+        return on_next(self.value)
 
     def _accept_observer(self, observer):
-        return observer.send(self.value)
+        return observer.on_next(self.value)
 
     def __str__(self):
         return "OnNext(%s)" % str(self.value)
@@ -108,11 +108,11 @@ class OnError(Notification):
         self.exception = exception
         self.kind = 'E'
 
-    def _accept(self, send, throw, close):
-        return throw(self.exception)
+    def _accept(self, on_next, on_error, on_completed):
+        return on_error(self.exception)
 
     def _accept_observer(self, observer):
-        return observer.throw(self.exception)
+        return observer.on_error(self.exception)
 
     def __str__(self):
         return "OnError(%s)" % str(self.exception)
@@ -127,11 +127,11 @@ class OnCompleted(Notification):
         super(OnCompleted, self).__init__()
         self.kind = 'C'
 
-    def _accept(self, send, throw, close):
-        return close()
+    def _accept(self, on_next, on_error, on_completed):
+        return on_completed()
 
     def _accept_observer(self, observer):
-        return observer.close()
+        return observer.on_completed()
 
     def __str__(self):
         return "OnCompleted()"
@@ -147,13 +147,13 @@ def from_notifier(handler):
     a notification corresponding to each message it receives.
     """
 
-    def _send(value):
+    def _on_next(value):
         return handler(OnNext(value))
 
-    def _throw(error):
+    def _on_error(error):
         return handler(OnError(error))
 
-    def _close():
+    def _on_completed():
         return handler(OnCompleted())
 
-    return AnonymousObserver(_send, _throw, _close)
+    return AnonymousObserver(_on_next, _on_error, _on_completed)

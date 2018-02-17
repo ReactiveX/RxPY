@@ -8,16 +8,16 @@ class AsyncObserver(AsyncObservable):
     __slots__ = ()
 
     @abstractmethod
-    async def asend(self, value):
+    async def on_next_async(self, value):
         return NotImplemented
 
     @abstractmethod
-    async def athrow(self, error):
+    async def on_error_async(self, error):
         return NotImplemented
 
     @abstractmethod
-    async def aclose(self):
+    async def on_completed_async(self):
         return NotImplemented
 
-    async def asubscribe(self, observer):
+    async def subscribe_async(self, observer):
         return self

@@ -26,14 +26,14 @@ def take(count: int, source: ObservableBase):
     def subscribe(observer, scheduler=None):
         remaining = count
 
-        def send(value):
+        def on_next(value):
             nonlocal remaining
 
             if remaining > 0:
                 remaining -= 1
-                observer.send(value)
+                observer.on_next(value)
                 if not remaining:
-                    observer.close()
+                    observer.on_completed()
 
-        return observable.subscribe_(send, observer.throw, observer.close, scheduler)
+        return observable.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

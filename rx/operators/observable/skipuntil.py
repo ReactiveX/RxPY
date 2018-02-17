@@ -19,28 +19,28 @@ def skip_until(source, other: ObservableBase) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         is_open = [False]
 
-        def send(left):
+        def on_next(left):
             if is_open[0]:
-                observer.send(left)
+                observer.on_next(left)
 
-        def close():
+        def on_completed():
             if is_open[0]:
-                observer.close()
+                observer.on_completed()
 
-        subs = source.subscribe_(send, observer.throw, close, scheduler)
+        subs = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
         disposables = CompositeDisposable(subs)
 
         right_subscription = SingleAssignmentDisposable()
         disposables.add(right_subscription)
 
-        def send2(x):
+        def on_next2(x):
             is_open[0] = True
             right_subscription.dispose()
 
-        def close2():
+        def on_completed2():
             right_subscription.dispose()
 
-        right_subscription.disposable = other.subscribe_(send2, observer.throw, close2, scheduler)
+        right_subscription.disposable = other.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
 
         return disposables
     return AnonymousObservable(subscribe)

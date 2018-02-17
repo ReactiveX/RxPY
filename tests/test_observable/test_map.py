@@ -5,9 +5,9 @@ from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -32,7 +32,7 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             Observable.throw('ex') \
                 .map(mapper_indexed=lambda x, y: x) \
-                .subscribe_(throw=lambda ex: _raise(ex))
+                .subscribe_(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             Observable.empty() \
@@ -49,7 +49,7 @@ class TestSelect(unittest.TestCase):
 
     def test_map_disposeinsidemapper(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(100, 1), send(200, 2), send(500, 3), send(600, 4))
+        xs = scheduler.create_hot_observable(on_next(100, 1), on_next(200, 2), on_next(500, 3), on_next(600, 4))
         results = scheduler.create_observer()
         d = SerialDisposable()
         invoked = [0]
@@ -70,14 +70,14 @@ class TestSelect(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action)
         scheduler.start()
 
-        assert results.messages == [send(100, 1), send(200, 2)]
+        assert results.messages == [on_next(100, 1), on_next(200, 2)]
         assert xs.subscriptions == [ReactiveTest.subscribe(0, 500)]
 
         assert invoked[0] == 3
 
     def test_map_completed(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5), close(400), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
         invoked = [0]
 
         def factory():
@@ -88,7 +88,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400)]
+        assert results.messages == [on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400)]
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
 
@@ -98,7 +98,7 @@ class TestSelect(unittest.TestCase):
             scheduler = TestScheduler()
             invoked = [0]
 
-            xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5), close(400), send(410, -1), close(420), throw(430, 'ex'))
+            xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
             def factory():
                 def projection(x):
                     invoked[0] +=1
@@ -106,14 +106,14 @@ class TestSelect(unittest.TestCase):
                 return xs.map(projection)
 
             results = scheduler.start(factory)
-            assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), close(400)]
+            assert results.messages == [on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_completed(400)]
             assert xs.subscriptions == [subscribe(200, 400)]
             assert invoked[0] == 4
 
     def test_map_not_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5))
+        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5))
 
         def factory():
             def projection(x):
@@ -123,7 +123,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6)]
+        assert results.messages == [on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6)]
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
@@ -131,7 +131,7 @@ class TestSelect(unittest.TestCase):
         scheduler = TestScheduler()
         ex = 'ex'
         invoked = [0]
-        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5), throw(400, ex), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_error(400, ex), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
         def factory():
             def projection(x):
                 invoked[0] += 1
@@ -139,7 +139,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 3), send(240, 4), send(290, 5), send(350, 6), throw(400, ex)]
+        assert results.messages == [on_next(210, 3), on_next(240, 4), on_next(290, 5), on_next(350, 6), on_error(400, ex)]
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
@@ -147,7 +147,7 @@ class TestSelect(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(send(180, 1), send(210, 2), send(240, 3), send(290, 4), send(350, 5), close(400), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(240, 3), on_next(290, 4), on_next(350, 5), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
 
         def factory():
             def projection(x):
@@ -159,7 +159,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 3), send(240, 4), throw(290, ex)]
+        assert results.messages == [on_next(210, 3), on_next(240, 4), on_error(290, ex)]
         assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
@@ -186,7 +186,7 @@ class TestSelect(unittest.TestCase):
 
     def test_map_with_index_dispose_inside_mapper(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(100, 4), send(200, 3), send(500, 2), send(600, 1))
+        xs = scheduler.create_hot_observable(on_next(100, 4), on_next(200, 3), on_next(500, 2), on_next(600, 1))
         invoked = [0]
         results = scheduler.create_observer()
         d = SerialDisposable()
@@ -205,14 +205,14 @@ class TestSelect(unittest.TestCase):
 
         scheduler.schedule_absolute(disposed, action)
         scheduler.start()
-        assert results.messages == [send(100, 4), send(200, 13)]
+        assert results.messages == [on_next(100, 4), on_next(200, 13)]
         assert xs.subscriptions == [subscribe(0, 500)]
         assert invoked[0] == 3
 
     def test_map_with_index_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1), close(400), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
 
         def factory():
             def projection(x, index):
@@ -222,14 +222,14 @@ class TestSelect(unittest.TestCase):
             return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32), close(400)]
+        assert results.messages == [on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_completed(400)]
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
     def test_map_with_index_not_completed(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1))
+        xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1))
         def factory():
             def projection(x, index):
                 invoked[0] += 1
@@ -238,7 +238,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32)]
+        assert results.messages == [on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32)]
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
@@ -246,7 +246,7 @@ class TestSelect(unittest.TestCase):
         scheduler = TestScheduler()
         ex = 'ex'
         invoked = [0]
-        xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1), throw(400, ex), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_error(400, ex), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
 
         def factory():
             def projection(x, index):
@@ -257,7 +257,7 @@ class TestSelect(unittest.TestCase):
 
         results = scheduler.start(factory)
 
-        assert results.messages == [send(210, 5), send(240, 14), send(290, 23), send(350, 32), throw(400, ex)]
+        assert results.messages == [on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32), on_error(400, ex)]
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
 
@@ -265,7 +265,7 @@ class TestSelect(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(send(180, 5), send(210, 4), send(240, 3), send(290, 2), send(350, 1), close(400), send(410, -1), close(420), throw(430, 'ex'))
+        xs = scheduler.create_hot_observable(on_next(180, 5), on_next(210, 4), on_next(240, 3), on_next(290, 2), on_next(350, 1), on_completed(400), on_next(410, -1), on_completed(420), on_error(430, 'ex'))
 
         def factory():
             def projection(x, index):
@@ -277,7 +277,7 @@ class TestSelect(unittest.TestCase):
             return xs.map(mapper_indexed=projection)
 
         results = scheduler.start(factory)
-        assert results.messages == [send(210, 5), send(240, 14), throw(290, ex)]
+        assert results.messages == [on_next(210, 5), on_next(240, 14), on_error(290, ex)]
         assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 

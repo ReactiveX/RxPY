@@ -44,7 +44,7 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
         left_id = [0]
         right_id = [0]
 
-        def send_left(value):
+        def on_next_left(value):
             s = Subject()
 
             with self.lock:
@@ -57,15 +57,15 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
             except Exception as e:
                 log.error("*** Exception: %s" % e)
                 for left_value in left_map.values():
-                    left_value.throw(e)
+                    left_value.on_error(e)
 
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
-            observer.send(result)
+            observer.on_next(result)
 
             for right_value in right_map.values():
-                s.send(right_value)
+                s.on_next(right_value)
 
             md = SingleAssignmentDisposable()
             group.add(md)
@@ -73,7 +73,7 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
             def expire():
                 if _id in left_map:
                     del left_map[_id]
-                    s.close()
+                    s.on_completed()
 
                 group.remove(md)
 
@@ -81,26 +81,26 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
                 duration = left_duration_mapper(value)
             except Exception as e:
                 for left_value in left_map.values():
-                    left_value.throw(e)
+                    left_value.on_error(e)
 
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
-            def throw(error):
+            def on_error(error):
                 for left_value in left_map.values():
-                    left_value.throw(error)
+                    left_value.on_error(error)
 
-                observer.throw(error)
+                observer.on_error(error)
 
-            md.disposable = duration.take(1).subscribe_(nothing, throw, expire, scheduler)
+            md.disposable = duration.take(1).subscribe_(nothing, on_error, expire, scheduler)
 
-        def throw_left(error):
+        def on_error_left(error):
             for left_value in left_map.values():
-                left_value.throw(error)
+                left_value.on_error(error)
 
-            observer.throw(error)
+            observer.on_error(error)
 
-        group.add(left.subscribe_(send_left, throw_left, observer.close, scheduler))
+        group.add(left.subscribe_(on_next_left, on_error_left, observer.on_completed, scheduler))
 
         def send_right(value):
             with self.lock:
@@ -119,30 +119,30 @@ def group_join(self, right, left_duration_mapper, right_duration_mapper, result_
                 duration = right_duration_mapper(value)
             except Exception as e:
                 for left_value in left_map.values():
-                    left_value.throw(e)
+                    left_value.on_error(e)
 
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
-            def throw(error):
+            def on_error(error):
                 with self.lock:
                     for left_value in left_map.values():
-                        left_value.throw(error)
+                        left_value.on_error(error)
 
-                    observer.throw(error)
+                    observer.on_error(error)
 
-            md.disposable = duration.take(1).subscribe_(nothing, throw, expire, scheduler)
+            md.disposable = duration.take(1).subscribe_(nothing, on_error, expire, scheduler)
 
             with self.lock:
                 for left_value in left_map.values():
-                    left_value.send(value)
+                    left_value.on_next(value)
 
-        def throw_right(error):
+        def on_error_right(error):
             for left_value in left_map.values():
-                left_value.throw(error)
+                left_value.on_error(error)
 
-            observer.throw(error)
+            observer.on_error(error)
 
-        group.add(right.subscribe_(send_right, throw_right, scheduler=scheduler))
+        group.add(right.subscribe_(send_right, on_error_right, scheduler=scheduler))
         return r
     return AnonymousObservable(subscribe)

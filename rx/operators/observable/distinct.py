@@ -45,17 +45,17 @@ def distinct(self, key_mapper=None, comparer=None) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         hashset = HashSet(comparer)
 
-        def send(x):
+        def on_next(x):
             key = x
 
             if key_mapper:
                 try:
                     key = key_mapper(x)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
 
-            hashset.push(key) and observer.send(x)
-        return source.subscribe_(send, observer.throw,
-                                observer.close, scheduler)
+            hashset.push(key) and observer.on_next(x)
+        return source.subscribe_(on_next, observer.on_error,
+                                observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

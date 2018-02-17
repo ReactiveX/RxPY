@@ -21,7 +21,7 @@ def exclusive(self) -> ObservableBase:
 
         g.add(m)
 
-        def send(inner_source):
+        def on_next(inner_source):
             if not has_current[0]:
                 has_current[0] = True
 
@@ -30,24 +30,24 @@ def exclusive(self) -> ObservableBase:
                 inner_subscription = SingleAssignmentDisposable()
                 g.add(inner_subscription)
 
-                def close_inner():
+                def on_completed_inner():
                     g.remove(inner_subscription)
                     has_current[0] = False
                     if is_stopped[0] and len(g) == 1:
-                        observer.close()
+                        observer.on_completed()
 
                 inner_subscription.disposable = inner_source.subscribe_(
-                    observer.send,
-                    observer.throw,
+                    observer.on_next,
+                    observer.on_error,
                     close_inner,
                     scheduler
                 )
 
-        def close():
+        def on_completed():
             is_stopped[0] = True
             if not has_current[0] and len(g) == 1:
-                observer.close()
+                observer.on_completed()
 
-        m.disposable = sources.subscribe_(send, observer.throw, close, scheduler)
+        m.disposable = sources.subscribe_(on_next, observer.on_error, on_completed, scheduler)
         return g
     return AnonymousObservable(subscribe)

@@ -11,17 +11,17 @@ def materialize(source: ObservableBase) -> ObservableBase:
     """
 
     def subscribe(observer, scheduler=None):
-        def send(value):
-            observer.send(OnNext(value))
+        def on_next(value):
+            observer.on_next(OnNext(value))
 
-        def throw(exception):
-            observer.send(OnError(exception))
-            observer.close()
+        def on_error(exception):
+            observer.on_next(OnError(exception))
+            observer.on_completed()
 
-        def close():
-            observer.send(OnCompleted())
-            observer.close()
+        def on_completed():
+            observer.on_next(OnCompleted())
+            observer.on_completed()
 
-        return source.subscribe_(send, throw, close, scheduler)
+        return source.subscribe_(on_next, on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 

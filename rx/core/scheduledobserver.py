@@ -20,19 +20,19 @@ class ScheduledObserver(ObserverBase):
         # Note to self: list append is thread safe
         # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
-    def _send_core(self, value):
+    def _on_next_core(self, value):
         def action():
-            self.observer.send(value)
+            self.observer.on_next(value)
         self.queue.append(action)
 
-    def _throw_core(self, error):
+    def _on_error_core(self, error):
         def action():
-            self.observer.throw(error)
+            self.observer.on_error(error)
         self.queue.append(action)
 
-    def _close_core(self):
+    def _on_completed_core(self):
         def action():
-            self.observer.close()
+            self.observer.on_completed()
         self.queue.append(action)
 
     def ensure_active(self):

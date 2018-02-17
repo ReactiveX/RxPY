@@ -35,27 +35,27 @@ class BlockingObservable(abc.Observable):
         """
         return self.observable.subscribe(observer, scheduler)
 
-    def subscribe_(self, send=None, throw=None, close=None, scheduler=None):
+    def subscribe_(self, on_next=None, on_error=None, on_completed=None, scheduler=None):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
         1 - source.subscribe()
-        2 - source.subscribe_(send)
-        3 - source.subscribe_(send, throw)
-        4 - source.subscribe_(send, throw, close)
+        2 - source.subscribe_(on_next)
+        3 - source.subscribe_(on_next, on_error)
+        4 - source.subscribe_(on_next, on_error, on_completed)
 
         Keyword arguments:
-        send -- [Optional] Action to invoke for each element in the
+        on_next -- [Optional] Action to invoke for each element in the
             observable sequence.
-        throw -- [Optional] Action to invoke upon exceptional
+        on_error -- [Optional] Action to invoke upon exceptional
             termination of the observable sequence.
-        close -- [Optional] Action to invoke upon graceful
+        on_completed -- [Optional] Action to invoke upon graceful
             termination of the observable sequence.
 
         Return disposable object representing an observer's subscription
         to the observable sequence.
         """
-        observer = AnonymousObserver(send, throw, close)
+        observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
 
     def __iter__(self):
@@ -69,7 +69,7 @@ class BlockingObservable(abc.Observable):
         """
         Blocks until the first element emits from a BlockingObservable.
 
-        If no item is emitted when close() is called, an exception is
+        If no item is emitted when on_completed() is called, an exception is
         thrown
 
         Note: This will block even if the underlying Observable is
@@ -89,7 +89,7 @@ class BlockingObservable(abc.Observable):
         """
         Blocks until the first element emits from a BlockingObservable.
 
-        If no item is emitted when close() is called, the provided
+        If no item is emitted when on_completed() is called, the provided
         default value is returned instead
 
         Note: This will block even if the underlying Observable is
@@ -116,7 +116,7 @@ class BlockingObservable(abc.Observable):
 
         This is similar to Observable#subscribe(subscriber), but it
         blocks. Because it blocks it does not need the
-        Subscriber#close() or Subscriber#throw(Throwable) methods. If
+        Subscriber#on_completed() or Subscriber#on_error(Throwable) methods. If
         the underlying Observable terminates with an error, rather than
         calling `onError`, this method will throw an exception.
 
@@ -133,8 +133,8 @@ class BlockingObservable(abc.Observable):
         """Blocks until the last element emits from a
         BlockingObservable.
 
-        If no item is emitted when close() is called, an exception is
-        thrown
+        If no item is emitted when on_completed() is called, an
+        exception is thrown
 
         Note: This will block even if the underlying Observable is
         asynchronous.
@@ -149,8 +149,8 @@ class BlockingObservable(abc.Observable):
         """Blocks until the last element emits from a
         BlockingObservable.
 
-        If no item is emitted when close() is called, the provided
-        default_value will be returned
+        If no item is emitted when on_completed() is called, the
+        provided default_value will be returned
 
         Note: This will block even if the underlying Observable is
         asynchronous.

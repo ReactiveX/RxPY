@@ -33,7 +33,7 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
 
     if isinstance(observer, types.GeneratorType):
         if inspect.getgeneratorstate(observer) == inspect.GEN_CREATED:
-            observer.send(None)
+            observer.on_next(None)
 
     auto_detach_observer = AutoDetachObserver(observer)
 

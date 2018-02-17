@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,8 +15,8 @@ class TestMaxBy(unittest.TestCase):
     def test_maxby_empty(self):
         scheduler = TestScheduler()
         msgs = [
-            send(150, { "key": 1, "value": 'z' }),
-            close(250)
+            on_next(150, { "key": 1, "value": 'z' }),
+            on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
 
@@ -33,13 +33,13 @@ class TestMaxBy(unittest.TestCase):
     def test_maxby_return(self):
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
-            }), send(210, {
+            }), on_next(210, {
                 "key": 2,
                 "value": 'a'
-            }), close(250)
+            }), on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
         def create():
@@ -57,19 +57,19 @@ class TestMaxBy(unittest.TestCase):
     def test_maxby_some(self):
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
-            }), send(210, {
+            }), on_next(210, {
                 "key": 3,
                 "value": 'b'
-            }), send(220, {
+            }), on_next(220, {
                 "key": 4,
                 "value": 'c'
-            }), send(230, {
+            }), on_next(230, {
                 "key": 2,
                 "value": 'a'
-            }), close(250)
+            }), on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
 
@@ -89,35 +89,35 @@ class TestMaxBy(unittest.TestCase):
     def test_maxby_multiple(self):
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
             }),
-            send(210, {
+            on_next(210, {
                 "key": 3,
                 "value": 'b'
             }),
-            send(215, {
+            on_next(215, {
                 "key": 2,
                 "value": 'd'
             }),
-            send(220, {
+            on_next(220, {
                 "key": 3,
                 "value": 'c'
             }),
-            send(225, {
+            on_next(225, {
                 "key": 2,
                 "value": 'y'
             }),
-            send(230, {
+            on_next(230, {
                 "key": 4,
                 "value": 'a'
             }),
-            send(235, {
+            on_next(235, {
                 "key": 4,
                 "value": 'r'
             }),
-            close(250)
+            on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
 
@@ -136,15 +136,15 @@ class TestMaxBy(unittest.TestCase):
         assert(res[1].value.kind == 'C' and res[1].time == 250)
 
 
-    def test_maxby_throw(self):
+    def test_maxby_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
             }),
-            throw(210, ex)
+            on_error(210, ex)
         ]
         xs = scheduler.create_hot_observable(msgs)
 
@@ -153,12 +153,12 @@ class TestMaxBy(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
 
-        assert res == [throw(210, ex)]
+        assert res == [on_error(210, ex)]
 
     def test_maxby_never(self):
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
             })
@@ -175,11 +175,11 @@ class TestMaxBy(unittest.TestCase):
 #     var msgs, res, reverseComparer, scheduler, xs
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
 #         }),
-#         close(250)
+#         on_completed(250)
 #     ]
 #     reverseComparer = function (a, b) {
 #         if (a > b) {
@@ -205,13 +205,13 @@ class TestMaxBy(unittest.TestCase):
 #     var msgs, res, reverseComparer, scheduler, xs
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
-#         }), send(210, {
+#         }), on_next(210, {
 #             key: 2,
 #             value: 'a'
-#         }), close(250)
+#         }), on_completed(250)
 #     ]
 #     reverseComparer = function (a, b) {
 #         if (a > b) {
@@ -240,19 +240,19 @@ class TestMaxBy(unittest.TestCase):
 #     var msgs, res, reverseComparer, scheduler, xs
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
-#         }), send(210, {
+#         }), on_next(210, {
 #             key: 3,
 #             value: 'b'
-#         }), send(220, {
+#         }), on_next(220, {
 #             key: 4,
 #             value: 'c'
-#         }), send(230, {
+#         }), on_next(230, {
 #             key: 2,
 #             value: 'a'
-#         }), close(250)
+#         }), on_completed(250)
 #     ]
 #     reverseComparer = function (a, b) {
 #         if (a > b) {
@@ -282,10 +282,10 @@ class TestMaxBy(unittest.TestCase):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
-#         }), throw(210, ex)
+#         }), on_error(210, ex)
 #     ]
 #     reverseComparer = function (a, b) {
 #         if (a > b) {
@@ -302,13 +302,13 @@ class TestMaxBy(unittest.TestCase):
 #             return x.key
 #         }, reverseComparer)
 #     }).messages
-#     assert res == [throw(210, ex)]
+#     assert res == [on_error(210, ex)]
 
 # def test_MaxBy_Comparer_Never():
 #     var msgs, res, reverseComparer, scheduler, xs
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
 #         })
@@ -335,19 +335,19 @@ class TestMaxBy(unittest.TestCase):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
 #     msgs = [
-#         send(150, {
+#         on_next(150, {
 #             key: 1,
 #             value: 'z'
-#         }), send(210, {
+#         }), on_next(210, {
 #             key: 3,
 #             value: 'b'
-#         }), send(220, {
+#         }), on_next(220, {
 #             key: 2,
 #             value: 'c'
-#         }), send(230, {
+#         }), on_next(230, {
 #             key: 4,
 #             value: 'a'
-#         }), close(250)
+#         }), on_completed(250)
 #     ]
 #     reverseComparer = function (a, b) {
 #         if (a > b) {
@@ -364,25 +364,25 @@ class TestMaxBy(unittest.TestCase):
 #             throw ex
 #         }, reverseComparer)
 #     }).messages
-#     assert res == [throw(210, ex)]
+#     assert res == [on_error(210, ex)]
 
     def test_maxby_comparerthrows(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
-            send(150, {
+            on_next(150, {
                 "key": 1,
                 "value": 'z'
-            }), send(210, {
+            }), on_next(210, {
                 "key": 3,
                 "value": 'b'
-            }), send(220, {
+            }), on_next(220, {
                 "key": 2,
                 "value": 'c'
-            }), send(230, {
+            }), on_next(230, {
                 "key": 4,
                 "value": 'a'
-            }), close(250)
+            }), on_completed(250)
         ]
         def reverse_comparer(a, b):
             raise Exception(ex)
@@ -393,5 +393,5 @@ class TestMaxBy(unittest.TestCase):
             return xs.max_by(lambda x: x["key"], reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        assert res == [throw(220, ex)]
+        assert res == [on_error(220, ex)]
 

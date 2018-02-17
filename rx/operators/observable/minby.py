@@ -7,11 +7,11 @@ def extrema_by(source, key_mapper, comparer):
         last_key = [None]
         list = []
 
-        def send(x):
+        def on_next(x):
             try:
                 key = key_mapper(x)
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
                 return
 
             comparison = 0;
@@ -23,7 +23,7 @@ def extrema_by(source, key_mapper, comparer):
                 try:
                     comparison = comparer(key, last_key[0])
                 except Exception as ex1:
-                    observer.throw(ex1)
+                    observer.on_error(ex1)
                     return
 
             if comparison > 0:
@@ -34,11 +34,11 @@ def extrema_by(source, key_mapper, comparer):
             if comparison >= 0:
                 list.append(x)
 
-        def close():
-            observer.send(list)
-            observer.close()
+        def on_completed():
+            observer.on_next(list)
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 

@@ -27,7 +27,7 @@ def debounce(self, duetime) -> ObservableBase:
         value = [None]
         _id = [0]
 
-        def send(x):
+        def on_next(x):
             has_value[0] = True
             value[0] = x
             _id[0] += 1
@@ -37,27 +37,27 @@ def debounce(self, duetime) -> ObservableBase:
 
             def action(scheduler, state=None):
                 if has_value[0] and _id[0] == current_id:
-                    observer.send(value[0])
+                    observer.on_next(value[0])
                 has_value[0] = False
 
             d.disposable = scheduler.schedule_relative(duetime, action)
 
-        def throw(exception):
+        def on_error(exception):
             cancelable.dispose()
-            observer.throw(exception)
+            observer.on_error(exception)
             has_value[0] = False
             _id[0] += 1
 
-        def close():
+        def on_completed():
             cancelable.dispose()
             if has_value[0]:
-                observer.send(value[0])
+                observer.on_next(value[0])
 
-            observer.close()
+            observer.on_completed()
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe_(send, throw, close, scheduler)
+        subscription = source.subscribe_(on_next, on_error, on_completed, scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
@@ -85,12 +85,12 @@ def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
         value = [None]
         _id = [0]
 
-        def send(x):
+        def on_next(x):
             throttle = None
             try:
                 throttle = throttle_duration_mapper(x)
             except Exception as e:
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
             has_value[0] = True
@@ -100,38 +100,38 @@ def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
             d = SingleAssignmentDisposable()
             cancelable.disposable = d
 
-            def send(x):
+            def on_next(x):
                 if has_value[0] and _id[0] == current_id:
-                    observer.send(value[0])
+                    observer.on_next(value[0])
 
                 has_value[0] = False
                 d.dispose()
 
-            def close():
+            def on_completed():
                 if has_value[0] and _id[0] == current_id:
-                    observer.send(value[0])
+                    observer.on_next(value[0])
 
                 has_value[0] = False
                 d.dispose()
 
-            d.disposable = throttle.subscribe_(send, observer.throw,
-                                              close, scheduler)
+            d.disposable = throttle.subscribe_(on_next, observer.on_error,
+                                              on_completed, scheduler)
 
-        def throw(e):
+        def on_error(e):
             cancelable.dispose()
-            observer.throw(e)
+            observer.on_error(e)
             has_value[0] = False
             _id[0] += 1
 
-        def close():
+        def on_completed():
             cancelable.dispose()
             if has_value[0]:
-                observer.send(value[0])
+                observer.on_next(value[0])
 
-            observer.close()
+            observer.on_completed()
             has_value[0] = False
             _id[0] += 1
 
-        subscription = source.subscribe_(send, throw, close)
+        subscription = source.subscribe_(on_next, on_error, on_completed)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)

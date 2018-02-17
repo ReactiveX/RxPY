@@ -30,46 +30,46 @@ def _amb(left_source, right_source):
                 choice[0] = right_choice
                 left_subscription.dispose()
 
-        def send_left(value):
+        def on_next_left(value):
             with left_source.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.send(value)
+                observer.on_next(value)
 
-        def throw_left(err):
+        def on_error_left(err):
             with left_source.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.throw(err)
+                observer.on_error(err)
 
-        def close_left():
+        def on_completed_left():
             with left_source.lock:
                 choice_left()
             if choice[0] == left_choice:
-                observer.close()
+                observer.on_completed()
 
-        lelf_d = left_source.subscribe_(send_left, throw_left, close_left, scheduler)
+        lelf_d = left_source.subscribe_(on_next_left, on_error_left, on_completed_left, scheduler)
         left_subscription.disposable = lelf_d
 
         def send_right(value):
             with left_source.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.send(value)
+                observer.on_next(value)
 
-        def throw_right(err):
+        def on_error_right(err):
             with left_source.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.throw(err)
+                observer.on_error(err)
 
-        def close_right():
+        def on_completed_right():
             with left_source.lock:
                 choice_right()
             if choice[0] == right_choice:
-                observer.close()
+                observer.on_completed()
 
-        right_d = right_source.subscribe_(send_right, throw_right, close_right, scheduler)
+        right_d = right_source.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
         right_subscription.disposable = right_d
         return CompositeDisposable(left_subscription, right_subscription)
     return AnonymousObservable(subscribe)

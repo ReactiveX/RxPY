@@ -15,8 +15,8 @@ class ColdObservable(ObservableBase):
     def subscribe(self, observer=None, scheduler=None):
         return self._subscribe_core(observer, scheduler)
 
-    def subscribe_(self, send=None, throw=None, close=None, scheduler=None):
-        observer = AnonymousObserver(send, throw, close)
+    def subscribe_(self, on_next=None, on_error=None, on_completed=None, scheduler=None):
+        observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
 
     def _subscribe_core(self, observer, scheduler=None):

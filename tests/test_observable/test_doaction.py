@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,7 +15,7 @@ created = ReactiveTest.created
 class TestDo(unittest.TestCase):
     def test_do_should_see_all_values(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
         sum = [2 + 3 + 4 + 5]
 
@@ -33,7 +33,7 @@ class TestDo(unittest.TestCase):
 
     def test_do_plain_action(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
 
         def create():
@@ -47,17 +47,17 @@ class TestDo(unittest.TestCase):
 
     def test_do_next_completed(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
         sum = [2 + 3 + 4 + 5]
         completed = [False]
         def create():
-            def send(x):
+            def on_next(x):
                 i[0] += 1
                 sum[0] -= x
-            def close():
+            def on_completed():
                 completed[0] = True
-            return xs.do_action(send=send, close=close)
+            return xs.do_action(on_next=on_next, on_completed=on_completed)
 
         scheduler.start(create)
 
@@ -68,28 +68,31 @@ class TestDo(unittest.TestCase):
     def test_do_next_completed_never(self):
         scheduler = TestScheduler()
         i = [0]
-        completed = [False]
+        completed = False
 
         def create():
-            def send(x):
+            nonlocal completed
+
+            def on_next(x):
                 i[0] += 1
-            def close():
+            def on_completed():
+                nonlocal completed
                 completed = True
-            return Observable.never().do_action(send=send, close=close)
+            return Observable.never().do_action(on_next=on_next, on_completed=on_completed)
 
         scheduler.start(create)
 
         self.assertEqual(0, i[0])
-        assert(not completed[0])
+        assert(not completed)
 
     def test_do_action_without_next(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2),  close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2),  on_completed(250))
         completed = [False]
         def create():
-            def close():
+            def on_completed():
                 completed[0] = True
-            return xs.do_action(close=close)
+            return xs.do_action(on_completed=on_completed)
 
         scheduler.start(create)
 
@@ -98,7 +101,7 @@ class TestDo(unittest.TestCase):
 # def test_do_next_error(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), throw(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -116,7 +119,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_next_error_not(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -134,7 +137,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_next_error_completed(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -157,7 +160,7 @@ class TestDo(unittest.TestCase):
 # def test_do_next_error_completed_error(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), throw(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -197,7 +200,7 @@ class TestDo(unittest.TestCase):
 # def test_Do_Observer_SomeDataWithError(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), throw(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -219,7 +222,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_observer_some_data_with_error(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), send(240, 5), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -242,128 +245,128 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
 
 
-#     assert results.messages == [throw(210, ex)]
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_completed_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             throw ex
 #         }, _undefined, function () {
 
-#     assert results.messages == [throw(210, ex)]
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_completed_completed_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, _undefined, function () {
 #             throw ex
 
 
-#     assert results.messages == [send(210, 2), throw(250, ex)]
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]
 
 # def test_do1422_next_error_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
 #         }, function () {
 
-#     assert results.messages == [throw(210, ex)]
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_Do1422_NextError_NextThrows(self):
 #     var ex1, ex2, results, scheduler, xs
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex1))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex1))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, function () {
 #             raise Exception(ex)2
 
 
-#     assert results.messages == [throw(210, ex2)]
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_Do1422_NextErrorCompleted_NextThrows(self):
 #     var ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
 #         }, function () { }, function () {
 
-#     assert results.messages == [throw(210, ex)]
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_error_completed_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex1))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex1))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, function () {
 #             raise Exception(ex)2
 #         }, function () {
 
-#     assert results.messages == [throw(210, ex2)]
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_do1422_next_error_completed_completed_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, function () { }, function () {
 #             raise Exception(ex)
 
 
-#     assert results.messages == [send(210, 2), throw(250, ex)]
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]
 
 # def test_do1422_observer_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(Observer.create(function () {
 #             raise Exception(ex)
 #         }, function () { }, function () { }))
 
-#     assert results.messages == [throw(210, ex)]
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_observer_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
 #     ex1 = 'ex1'
 #     ex2 = 'ex2'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex1))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex1))
 #     results = scheduler.start(create)
 #         return xs.do_action(Observer.create(function () { }, function () {
 #             raise Exception(ex)2
 #         }, function () { }))
 
-#     assert results.messages == [throw(210, ex2)]
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_do1422_observer_completed_throws(self):
 #     var ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 #     results = scheduler.start(create)
 #         return xs.do_action(Observer.create(function () { }, function () { }, function () {
 #             raise Exception(ex)
 #         }))
 
-#     assert results.messages == [send(210, 2), throw(250, ex)]
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]

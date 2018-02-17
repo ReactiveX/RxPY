@@ -7,7 +7,7 @@ def first(source: BlockingObservable) -> Any:
     """
     Blocks until the first element emits from a BlockingObservable.
 
-    If no item is emitted when close() is called, an exception is thrown
+    If no item is emitted when on_completed() is called, an exception is thrown
 
     Note: This will block even if the underlying Observable is
     asynchronous.
@@ -24,7 +24,7 @@ def first_or_default(source: BlockingObservable, default_value: Any) -> Any:
     """
     Blocks until the first element emits from a BlockingObservable.
 
-    If no item is emitted when close() is called, the provided default
+    If no item is emitted when on_completed() is called, the provided default
     value is returned instead
 
     Note: This will block even if the underlying Observable is

@@ -28,15 +28,15 @@ def take_last(count: int, source: ObservableBase):
     def subscribe(observer, scheduler=None):
         q = []
 
-        def send(x):
+        def on_next(x):
             q.append(x)
             if len(q) > count:
                 q.pop(0)
 
-        def close():
+        def on_completed():
             while len(q):
-                observer.send(q.pop(0))
-            observer.close()
+                observer.on_next(q.pop(0))
+            observer.on_completed()
 
-        return observable.subscribe_(send, observer.throw, close, scheduler)
+        return observable.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)

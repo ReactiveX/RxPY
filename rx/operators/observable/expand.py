@@ -40,13 +40,13 @@ def expand(source: ObservableBase, mapper: Mapper) -> ObservableBase:
                 sad = SingleAssignmentDisposable()
                 d.add(sad)
 
-                def send(value):
-                    observer.send(value)
+                def on_next(value):
+                    observer.on_next(value)
                     result = None
                     try:
                         result = mapper(value)
                     except Exception as ex:
-                        observer.throw(ex)
+                        observer.on_error(ex)
                         return
 
                     queue.append(result)
@@ -57,9 +57,9 @@ def expand(source: ObservableBase, mapper: Mapper) -> ObservableBase:
                     d.remove(sad)
                     active_count[0] -= 1
                     if active_count[0] == 0:
-                        observer.close()
+                        observer.on_completed()
 
-                sad.disposable = work.subscribe_(send, observer.throw, on_complete, scheduler)
+                sad.disposable = work.subscribe_(on_next, observer.on_error, on_complete, scheduler)
                 m.disposable = scheduler.schedule(action)
 
             if is_owner:

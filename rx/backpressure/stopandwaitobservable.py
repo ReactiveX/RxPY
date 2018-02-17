@@ -15,22 +15,22 @@ class StopAndWaitObserver(Observer):
         self.cancel = cancel
         self.is_disposed = False
 
-    def close(self):
+    def on_completed(self):
         check_disposed(self)
 
-        self.observer.close()
+        self.observer.on_completed()
         self.dispose()
 
-    def throw(self, error):
+    def on_error(self, error):
         check_disposed(self)
 
-        self.observer.throw(error)
+        self.observer.on_error(error)
         self.dispose()
 
-    def send(self, value):
+    def on_next(self, value):
         check_disposed(self)
 
-        self.observer.send(value)
+        self.observer.on_next(value)
 
         def action(scheduler, state):
             self.observable.source.request(1)

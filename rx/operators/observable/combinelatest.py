@@ -39,36 +39,36 @@ def combine_latest(observables: Union[ObservableBase, Iterable[ObservableBase]],
                 try:
                     res = result_mapper(*values)
                 except Exception as ex:
-                    observer.throw(ex)
+                    observer.on_error(ex)
                     return
 
-                observer.send(res)
+                observer.on_next(res)
             elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.close()
+                observer.on_completed()
 
             has_value_all[0] = all(has_value)
 
         def done(i):
             is_done[i] = True
             if all(is_done):
-                observer.close()
+                observer.on_completed()
 
         subscriptions = [None] * n
 
         def func(i):
             subscriptions[i] = SingleAssignmentDisposable()
 
-            def send(x):
+            def on_next(x):
                 with parent.lock:
                     values[i] = x
                     next(i)
 
-            def close():
+            def on_completed():
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = args[i].subscribe_(send, observer.throw,
-                                                                      close, scheduler)
+            subscriptions[i].disposable = args[i].subscribe_(on_next, observer.on_error,
+                                                                      on_completed, scheduler)
 
         for idx in range(n):
             func(idx)

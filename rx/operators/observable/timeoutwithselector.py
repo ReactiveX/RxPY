@@ -50,21 +50,21 @@ def timeout_with_selector(source, first_timeout=None,
             d = SingleAssignmentDisposable()
             timer.disposable = d
 
-            def send(x):
+            def on_next(x):
                 if timer_wins():
                     subscription.disposable = other.subscribe(observer, scheduler)
 
                 d.dispose()
 
-            def throw(e):
+            def on_error(e):
                 if timer_wins():
-                    observer.throw(e)
+                    observer.on_error(e)
 
-            def close():
+            def on_completed():
                 if timer_wins():
                     subscription.disposable = other.subscribe(observer)
 
-            d.disposable = timeout.subscribe_(send, throw, close, scheduler)
+            d.disposable = timeout.subscribe_(on_next, on_error, on_completed, scheduler)
 
         set_timer(first_timeout)
 
@@ -75,26 +75,26 @@ def timeout_with_selector(source, first_timeout=None,
 
             return res
 
-        def send(x):
+        def on_next(x):
             if observer_wins():
-                observer.send(x)
+                observer.on_next(x)
                 timeout = None
                 try:
                     timeout = timeout_duration_mapper(x)
                 except Exception as e:
-                    observer.throw(e)
+                    observer.on_error(e)
                     return
 
                 set_timer(timeout)
 
-        def throw(error):
+        def on_error(error):
             if observer_wins():
-                observer.throw(error)
+                observer.on_error(error)
 
-        def close():
+        def on_completed():
             if observer_wins():
-                observer.close()
+                observer.on_completed()
 
-        original.disposable = source.subscribe_(send, throw, close, scheduler)
+        original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
         return CompositeDisposable(subscription, timer)
     return AnonymousObservable(subscribe)

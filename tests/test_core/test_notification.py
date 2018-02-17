@@ -2,16 +2,16 @@ from rx.core import Observer
 from rx.testing import TestScheduler, ReactiveTest
 from rx.core.notification import OnNext, OnError, OnCompleted
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-def test_send_ctor_and_props():
+def test_on_next_ctor_and_props():
     n = OnNext(42)
     assert('N' == n.kind)
     assert(n.has_value)
@@ -19,7 +19,7 @@ def test_send_ctor_and_props():
     assert(not hasattr(n, "exception"))
 
 
-def test_send_equality():
+def test_on_next_equality():
     n1 = OnNext(42)
     n2 = OnNext(42)
     n3 = OnNext(24)
@@ -34,7 +34,7 @@ def test_send_equality():
     assert(not n4.equals(n1))
 
 
-def test_send_tostring():
+def test_on_next_tostring():
     n1 = OnNext(42)
     assert("OnNext" in str(n1))
     assert("42" in str(n1))
@@ -46,82 +46,82 @@ class CheckOnNextObserver(Observer):
 
         self.value = None
 
-    def send(self, value):
+    def on_next(self, value):
         self.value = value
         return self.value
 
-    def throw(self):
+    def on_error(self, error):
         raise NotImplementedError
 
-    def close(self):
+    def on_completed(self):
         def func():
             raise NotImplementedError
         return func
 
 
-def test_send_accept_observer():
+def test_on_next_accept_observer():
     con = CheckOnNextObserver()
     n1 = OnNext(42)
     n1.accept(con)
-    assert(42 == con.value)
+    assert(con.value == 42)
 
 
 class AcceptObserver(Observer):
-    def __init__(self, send, throw, close):
-        self._send = send
-        self._throw = throw
-        self._close = close
+    def __init__(self, on_next, on_error, on_completed):
+        self._on_next = on_next
+        self._on_error = on_error
+        self._on_completed = on_completed
 
-    def send(self, value):
-        return self._send(value)
+    def on_next(self, value):
+        return self._on_next(value)
 
-    def throw(self, exception):
-        return self._throw(exception)
+    def on_error(self, exception):
+        return self._on_error(exception)
 
-    def close(self):
-        return self._close()
+    def on_completed(self):
+        return self._on_completed()
 
 
-def test_send_accept_observer_with_result():
+def test_on_next_accept_observer_with_result():
     n1 = OnNext(42)
 
-    def send(x):
+    def on_next(x):
         return "OK"
-    def throw(err):
+    def on_error(err):
         assert(False)
-    def close():
+    def on_completed():
         assert(False)
 
-    res = n1.accept(AcceptObserver(send, throw, close))
+    res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
     assert('OK' == res)
 
 
-def test_send_accept_action():
+def test_on_next_accept_action():
     obs = [False]
     n1 = OnNext(42)
-    def send(x):
+    def on_next(x):
         obs[0] = True
         return obs[0]
-    def throw(err):
+    def on_error(err):
         assert(False)
-    def close():
+    def on_completed():
         assert(False)
-    n1.accept(send, throw, close)
+    n1.accept(on_next, on_error, on_completed)
 
     assert(obs[0])
 
 
-def test_send_accept_action_with_result():
+def test_on_next_accept_action_with_result():
     n1 = OnNext(42)
 
-    def send(x):
+    def on_next(x):
         return "OK"
-    def throw(err):
+    def on_error(err):
         assert(False)
-    def close():
+    def on_completed():
         assert(False)
 
-    res = n1.accept(send, throw, close)
+    res = n1.accept(on_next, on_error, on_completed)
     assert('OK' == res)
 
 
@@ -163,13 +163,13 @@ class CheckOnErrorObserver(Observer):
 
         self.error = None
 
-    def send(value):
+    def on_next(value):
         raise NotImplementedError()
 
-    def throw(self, exception):
+    def on_error(self, exception):
         self.error = exception
 
-    def close(self):
+    def on_completed(self):
         raise NotImplementedError()
 
 
@@ -185,17 +185,17 @@ def test_throw_accept_observer_with_result():
     ex = 'ex'
     n1 = OnError(ex)
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(ex):
+    def on_error(ex):
         return "OK"
 
-    def close():
+    def on_completed():
         assert(False)
         return None
 
-    res = n1.accept(AcceptObserver(send, throw, close))
+    res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
     assert('OK' == res)
 
 
@@ -204,17 +204,17 @@ def test_throw_accept_action():
     obs = [False]
     n1 = OnError(ex)
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(ex):
+    def on_error(ex):
         obs[0] = True
         return obs[0]
-    def close():
+    def on_completed():
         assert(False)
         return None
 
-    n1.accept(send, throw, close)
+    n1.accept(on_next, on_error, on_completed)
     assert(obs[0])
 
 
@@ -222,16 +222,16 @@ def test_throw_accept_action_with_result():
     ex = 'ex'
     n1 = OnError(ex)
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(ex):
+    def on_error(ex):
         return "OK"
-    def close():
+    def on_completed():
         assert(False)
         return None
 
-    res = n1.accept(send, throw, close)
+    res = n1.accept(on_next, on_error, on_completed)
     assert('OK' == res)
 
 
@@ -265,13 +265,13 @@ class CheckOnCompletedObserver(Observer):
 
         self.completed = False
 
-    def send(self):
+    def on_next(self):
         raise NotImplementedError()
 
-    def throw(self):
+    def on_error(self):
         raise NotImplementedError()
 
-    def close(self):
+    def on_completed(self):
         self.completed = True
 
 
@@ -285,16 +285,16 @@ def test_close_accept_observer():
 def test_close_accept_observer_with_result():
     n1 = OnCompleted()
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(err):
+    def on_error(err):
         assert(False)
         return None
-    def close():
+    def on_completed():
         return "OK"
 
-    res = n1.accept(AcceptObserver(send, throw, close))
+    res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
     assert('OK' == res)
 
 
@@ -302,33 +302,33 @@ def test_close_accept_action():
     obs = [False]
     n1 = OnCompleted()
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(ex):
+    def on_error(ex):
         assert(False)
         return None
-    def close():
+    def on_completed():
         obs[0] = True
         return obs[0]
 
-    n1.accept(send, throw, close)
+    n1.accept(on_next, on_error, on_completed)
     assert(obs[0])
 
 
 def test_close_accept_action_with_result():
     n1 = OnCompleted()
 
-    def send(x):
+    def on_next(x):
         assert(False)
         return None
-    def throw(ex):
+    def on_error(ex):
         assert(False)
         return None
-    def close():
+    def on_completed():
         return "OK"
 
-    res = n1.accept(send, throw, close)
+    res = n1.accept(on_next, on_error, on_completed)
     assert('OK' == res)
 
 
@@ -339,7 +339,7 @@ def test_to_observable_empty():
         return OnCompleted().to_observable(scheduler)
 
     res = scheduler.start(create)
-    assert res.messages == [ReactiveTest.close(200)]
+    assert res.messages == [ReactiveTest.on_completed(200)]
 
 
 def test_to_observable_return():
@@ -349,10 +349,10 @@ def test_to_observable_return():
         return OnNext(42).to_observable(scheduler)
 
     res = scheduler.start(create)
-    assert res.messages == [ReactiveTest.send(200, 42), ReactiveTest.close(200)]
+    assert res.messages == [ReactiveTest.on_next(200, 42), ReactiveTest.on_completed(200)]
 
 
-def test_to_observable_throw():
+def test_to_observable_on_error():
     ex = 'ex'
     scheduler = TestScheduler()
 
@@ -360,4 +360,4 @@ def test_to_observable_throw():
         return OnError(ex).to_observable(scheduler)
 
     res = scheduler.start(create)
-    assert res.messages == [ReactiveTest.throw(200, ex)]
+    assert res.messages == [ReactiveTest.on_error(200, ex)]

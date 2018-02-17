@@ -7,18 +7,18 @@ def last_or_default_async(source, has_default=False, default_value=None):
         value = [default_value]
         seen_value = [False]
 
-        def send(x):
+        def on_next(x):
             value[0] = x
             seen_value[0] = True
 
-        def close():
+        def on_completed():
             if not seen_value[0] and not has_default:
-                observer.throw(SequenceContainsNoElementsError())
+                observer.on_error(SequenceContainsNoElementsError())
             else:
-                observer.send(value[0])
-                observer.close()
+                observer.on_next(value[0])
+                observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 

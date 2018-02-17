@@ -2,14 +2,14 @@ from rx.core.scheduledobserver import ScheduledObserver
 
 
 class ObserveOnObserver(ScheduledObserver):
-    def _send_core(self, value):
-        super()._send_core(value)
+    def _on_next_core(self, value):
+        super()._on_next_core(value)
         self.ensure_active()
 
-    def _throw_core(self, error):
-        super()._throw_core(error)
+    def _on_error_core(self, error):
+        super()._on_error_core(error)
         self.ensure_active()
 
-    def _close_core(self):
-        super()._close_core()
+    def _on_completed_core(self):
+        super()._on_completed_core()
         self.ensure_active()

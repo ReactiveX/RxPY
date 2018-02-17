@@ -49,27 +49,27 @@ def observable_window_with_boundaries(self, window_boundaries):
         d = CompositeDisposable()
         r = RefCountDisposable(d)
 
-        observer.send(add_ref(window[0], r))
+        observer.on_next(add_ref(window[0], r))
 
-        def send_window(x):
-            window[0].send(x)
+        def on_next_window(x):
+            window[0].on_next(x)
 
-        def throw(err):
-            window[0].throw(err)
-            observer.throw(err)
+        def on_error(err):
+            window[0].on_error(err)
+            observer.on_error(err)
 
-        def close():
-            window[0].close()
-            observer.close()
+        def on_completed():
+            window[0].on_completed()
+            observer.on_completed()
 
-        d.add(source.subscribe_(send_window, throw, close, scheduler))
+        d.add(source.subscribe_(on_next_window, on_error, on_completed, scheduler))
 
-        def send_observer(w):
-            window[0].close()
+        def on_next_observer(w):
+            window[0].on_completed()
             window[0] = Subject()
-            observer.send(add_ref(window[0], r))
+            observer.on_next(add_ref(window[0], r))
 
-        d.add(window_boundaries.subscribe_(send_observer, throw, close, scheduler))
+        d.add(window_boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
         return r
     return AnonymousObservable(subscribe)
 
@@ -82,39 +82,39 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
         r = RefCountDisposable(d)
         window = [Subject()]
 
-        observer.send(add_ref(window[0], r))
+        observer.on_next(add_ref(window[0], r))
 
-        def send(value):
-            window[0].send(value)
+        def on_next(value):
+            window[0].on_next(value)
 
-        def throw(error):
-            window[0].throw(error)
-            observer.throw(error)
+        def on_error(error):
+            window[0].on_error(error)
+            observer.on_error(error)
 
-        def close():
-            window[0].close()
-            observer.close()
+        def on_completed():
+            window[0].on_completed()
+            observer.on_completed()
 
-        d.add(source.subscribe_(send, throw, close, scheduler))
+        d.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
 
-        def create_window_close():
+        def create_window_on_completed():
             try:
                 window_close = window_closing_mapper()
             except Exception as exception:
                 log.error("*** Exception: %s" % exception)
-                observer.throw(exception)
+                observer.on_error(exception)
                 return
 
-            def close():
-                window[0].close()
+            def on_completed():
+                window[0].on_completed()
                 window[0] = Subject()
-                observer.send(add_ref(window[0], r))
-                create_window_close()
+                observer.on_next(add_ref(window[0], r))
+                create_window_on_completed()
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_(noop, throw, close, scheduler)
+            m1.disposable = window_close.take(1).subscribe_(noop, on_error, on_completed, scheduler)
 
-        create_window_close()
+        create_window_on_completed()
         return r
     return AnonymousObservable(subscribe)

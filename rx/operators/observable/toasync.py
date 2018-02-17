@@ -34,11 +34,11 @@ def to_async(func: Callable, scheduler=None) -> Callable:
             try:
                 result = func(*args)
             except Exception as ex:
-                subject.throw(ex)
+                subject.on_error(ex)
                 return
 
-            subject.send(result)
-            subject.close()
+            subject.on_next(result)
+            subject.on_completed()
 
         scheduler.schedule(action)
         return subject.as_observable()

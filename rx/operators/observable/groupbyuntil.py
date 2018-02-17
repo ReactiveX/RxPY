@@ -50,7 +50,7 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
         group_disposable = CompositeDisposable()
         ref_count_disposable = RefCountDisposable(group_disposable)
 
-        def send(x):
+        def on_next(x):
             writer = None
             key = None
 
@@ -58,9 +58,9 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
                 key = key_mapper(x)
             except Exception as e:
                 for wrt in writers.values():
-                    wrt.throw(e)
+                    wrt.on_error(e)
 
-                observer.throw(e)
+                observer.on_error(e)
                 return
 
             fire_new_map_entry = False
@@ -77,58 +77,58 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
                     duration = duration_mapper(duration_group)
                 except Exception as e:
                     for wrt in writers.values():
-                        wrt.throw(e)
+                        wrt.on_error(e)
 
-                    observer.throw(e)
+                    observer.on_error(e)
                     return
 
-                observer.send(group)
+                observer.on_next(group)
                 sad = SingleAssignmentDisposable()
                 group_disposable.add(sad)
 
                 def expire():
                     if writers[key]:
                         del writers[key]
-                        writer.close()
+                        writer.on_completed()
 
                     group_disposable.remove(sad)
 
-                def send(value):
+                def on_next(value):
                     pass
 
-                def throw(exn):
+                def on_error(exn):
                     for wrt in writers.values():
-                        wrt.throw(exn)
-                    observer.throw(exn)
+                        wrt.on_error(exn)
+                    observer.on_error(exn)
 
-                def close():
+                def on_completed():
                     expire()
 
-                sad.disposable = duration.take(1).subscribe_(send, throw, close, scheduler)
+                sad.disposable = duration.take(1).subscribe_(on_next, on_error, on_completed, scheduler)
 
             try:
                 element = element_mapper(x)
             except Exception as error:
                 for wrt in writers.values():
-                    wrt.throw(error)
+                    wrt.on_error(error)
 
-                observer.throw(error)
+                observer.on_error(error)
                 return
 
-            writer.send(element)
+            writer.on_next(element)
 
-        def throw(ex):
+        def on_error(ex):
             for wrt in writers.values():
-                wrt.throw(ex)
+                wrt.on_error(ex)
 
-            observer.throw(ex)
+            observer.on_error(ex)
 
-        def close():
+        def on_completed():
             for wrt in writers.values():
-                wrt.close()
+                wrt.on_completed()
 
-            observer.close()
+            observer.on_completed()
 
-        group_disposable.add(source.subscribe_(send, throw, close, scheduler))
+        group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

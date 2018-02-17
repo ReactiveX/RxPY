@@ -27,17 +27,17 @@ def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], Obs
                     try:
                         results = mapper(args)
                     except Exception as err:
-                        observer.throw(err)
+                        observer.on_error(err)
                         return
 
-                    observer.send(results)
+                    observer.on_next(results)
                 else:
                     if isinstance(results, list) and len(results) <= 1:
-                        observer.send(*results)
+                        observer.on_next(*results)
                     else:
-                        observer.send(results)
+                        observer.on_next(results)
 
-                    observer.close()
+                    observer.on_completed()
 
             arguments.append(handler)
             func(*arguments)

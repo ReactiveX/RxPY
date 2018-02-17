@@ -35,18 +35,18 @@ def skip_last_with_time(self, duration: Union[timedelta, int]) -> ObservableBase
         duration = scheduler.to_timedelta(duration)
         q = []
 
-        def send(x):
+        def on_next(x):
             now = scheduler.now
             q.append({"interval": now, "value": x})
             while len(q) and now - q[0]["interval"] >= duration:
-                observer.send(q.pop(0)["value"])
+                observer.on_next(q.pop(0)["value"])
 
-        def close():
+        def on_completed():
             now = scheduler.now
             while len(q) and now - q[0]["interval"] >= duration:
-                observer.send(q.pop(0)["value"])
+                observer.on_next(q.pop(0)["value"])
 
-            observer.close()
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)

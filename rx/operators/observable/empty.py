@@ -17,7 +17,7 @@ def empty() -> ObservableBase:
         scheduler = scheduler or immediate_scheduler
 
         def action(_: Scheduler, __: Any) -> None:
-            observer.close()
+            observer.on_completed()
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)

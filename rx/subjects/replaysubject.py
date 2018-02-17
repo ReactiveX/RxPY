@@ -65,12 +65,12 @@ class ReplaySubject(ObservableBase, Observer):
             self.observers.append(so)
 
             for item in self.queue:
-                so.send(item['value'])
+                so.on_next(item['value'])
 
             if self.has_error:
-                so.throw(self.error)
+                so.on_error(self.error)
             elif self.is_stopped:
-                so.close()
+                so.on_completed()
 
         so.ensure_active()
         return subscription
@@ -82,7 +82,7 @@ class ReplaySubject(ObservableBase, Observer):
         while self.queue and (now - self.queue[0]['interval']) > self.window:
             self.queue.pop(0)
 
-    def send(self, value: Any) -> None:
+    def on_next(self, value: Any) -> None:
         """Notifies all subscribed observers with the value."""
 
         os = None
@@ -95,12 +95,12 @@ class ReplaySubject(ObservableBase, Observer):
                 self._trim(now)
 
                 for observer in os:
-                    observer.send(value)
+                    observer.on_next(value)
         if os:
             for observer in os:
                 observer.ensure_active()
 
-    def throw(self, error: Exception) -> None:
+    def on_error(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception."""
 
         os = None
@@ -116,12 +116,12 @@ class ReplaySubject(ObservableBase, Observer):
                 self._trim(now)
 
                 for observer in os:
-                    observer.throw(error)
+                    observer.on_error(error)
         if os:
             for observer in os:
                 observer.ensure_active()
 
-    def close(self) -> None:
+    def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -134,7 +134,7 @@ class ReplaySubject(ObservableBase, Observer):
                 now = self.scheduler.now
                 self._trim(now)
                 for observer in os:
-                    observer.close()
+                    observer.on_completed()
         if os:
             for observer in os:
                 observer.ensure_active()

@@ -4,9 +4,9 @@ from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -31,8 +31,8 @@ class TestReturnValue(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-                            send(200, 42),
-                            close(200)]
+                            on_next(200, 42),
+                            on_completed(200)]
 
     def test_return_disposed(self):
         scheduler = TestScheduler()
@@ -50,20 +50,20 @@ class TestReturnValue(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action(scheduler, state):
-            def send(x):
+            def on_next(x):
                 d.dispose()
-                results.send(x)
-            def throw(e):
-                results.throw(e)
-            def close():
-                results.close()
+                results.on_next(x)
+            def on_error(e):
+                results.on_error(e)
+            def on_completed():
+                results.on_completed()
 
-            d.disposable = xs.subscribe_(send, throw, close, scheduler)
+            d.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
             return d.disposable
 
         scheduler.schedule_absolute(100, action)
         scheduler.start()
-        assert results.messages == [send(100, 42)]
+        assert results.messages == [on_next(100, 42)]
 
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()

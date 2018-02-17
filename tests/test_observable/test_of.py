@@ -3,9 +3,9 @@ import unittest
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -36,12 +36,12 @@ class TestOf(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-          send(201, 1),
-          send(202, 2),
-          send(203, 3),
-          send(204, 4),
-          send(205, 5),
-          close(206)]
+          on_next(201, 1),
+          on_next(202, 2),
+          on_next(203, 3),
+          on_next(204, 4),
+          on_next(205, 5),
+          on_completed(206)]
 
     def teest_of_with_scheduler_empty(self):
         scheduler = TestScheduler()
@@ -52,4 +52,4 @@ class TestOf(unittest.TestCase):
         results = scheduler.start(create=create)
 
         assert results.messages == [
-            close(201)]
+            on_completed(201)]

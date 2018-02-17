@@ -7,13 +7,13 @@ class Observer(ABC):
     __slots__ = ()
 
     @abstractmethod
-    def send(self, value):
+    def on_next(self, value):
         raise NotImplementedError
 
     @abstractmethod
-    def throw(self, error):
+    def on_error(self, error):
         raise NotImplementedError
 
     @abstractmethod
-    def close(self):
+    def on_completed(self):
         raise NotImplementedError

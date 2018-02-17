@@ -10,11 +10,11 @@ class MockObserver(Observer):
         self.scheduler = scheduler
         self.messages = []
 
-    def send(self, value):
+    def on_next(self, value):
         self.messages.append(Recorded(self.scheduler.clock, OnNext(value)))
 
-    def throw(self, exception):
+    def on_error(self, exception):
         self.messages.append(Recorded(self.scheduler.clock, OnError(exception)))
 
-    def close(self):
+    def on_completed(self):
         self.messages.append(Recorded(self.scheduler.clock, OnCompleted()))

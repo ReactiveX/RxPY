@@ -3,9 +3,9 @@ from rx.core import Observable, AnonymousObserver
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -28,18 +28,18 @@ def test_infinite():
     scheduler = TestScheduler()
 
     xs = scheduler.create_hot_observable(
-        send(70, 1),
-        send(110, 2),
-        send(220, 3),
-        send(270, 4),
-        send(340, 5),
-        send(410, 6),
-        send(520, 7),
-        send(630, 8),
-        send(710, 9),
-        send(870, 10),
-        send(940, 11),
-        send(1020, 12)
+        on_next(70, 1),
+        on_next(110, 2),
+        on_next(220, 3),
+        on_next(270, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_next(630, 8),
+        on_next(710, 9),
+        on_next(870, 10),
+        on_next(940, 11),
+        on_next(1020, 12)
     )
 
     results1 = scheduler.create_observer()
@@ -89,15 +89,15 @@ def test_infinite():
     scheduler.start()
 
     assert results1.messages == [
-        send(340, 5),
-        send(410, 6),
-        send(520, 7)]
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7)]
     assert results2.messages == [
-        send(410, 6),
-        send(520, 7),
-        send(630, 8)]
+        on_next(410, 6),
+        on_next(520, 7),
+        on_next(630, 8)]
     assert results3.messages == [
-        send(940, 11)]
+        on_next(940, 11)]
 
 
 def test_finite():
@@ -109,17 +109,17 @@ def test_finite():
     s = [None]
 
     xs = scheduler.create_hot_observable(
-        send(70, 1),
-        send(110, 2),
-        send(220, 3),
-        send(270, 4),
-        send(340, 5),
-        send(410, 6),
-        send(520, 7),
-        close(630),
-        send(640, 9),
-        close(650),
-        throw(660, 'error')
+        on_next(70, 1),
+        on_next(110, 2),
+        on_next(220, 3),
+        on_next(270, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_completed(630),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, 'error')
     )
 
     results1 = scheduler.create_observer()
@@ -169,15 +169,15 @@ def test_finite():
     scheduler.start()
 
     assert results1.messages == [
-        send(340, 5),
-        send(410, 6),
-        send(520, 7)]
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7)]
     assert results2.messages == [
-        send(410, 6),
-        send(520, 7),
-        close(630)]
+        on_next(410, 6),
+        on_next(520, 7),
+        on_completed(630)]
     assert results3.messages == [
-        close(900)]
+        on_completed(900)]
 
 
 def test_error():
@@ -191,17 +191,17 @@ def test_error():
     scheduler = TestScheduler()
 
     xs = scheduler.create_hot_observable(
-        send(70, 1),
-        send(110, 2),
-        send(220, 3),
-        send(270, 4),
-        send(340, 5),
-        send(410, 6),
-        send(520, 7),
-        throw(630, ex),
-        send(640, 9),
-        close(650),
-        throw(660, 'foo')
+        on_next(70, 1),
+        on_next(110, 2),
+        on_next(220, 3),
+        on_next(270, 4),
+        on_next(340, 5),
+        on_next(410, 6),
+        on_next(520, 7),
+        on_error(630, ex),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, 'foo')
     )
 
     results1 = scheduler.create_observer()
@@ -250,9 +250,9 @@ def test_error():
 
     scheduler.start()
 
-    assert results1.messages == [send(340, 5), send(410, 6), send(520, 7)]
-    assert results2.messages == [send(410, 6), send(520, 7), throw(630, ex)]
-    assert results3.messages == [throw(900, ex)]
+    assert results1.messages == [on_next(340, 5), on_next(410, 6), on_next(520, 7)]
+    assert results2.messages == [on_next(410, 6), on_next(520, 7), on_error(630, ex)]
+    assert results3.messages == [on_error(900, ex)]
 
 
 def test_canceled():
@@ -264,10 +264,10 @@ def test_canceled():
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        close(630),
-        send(640, 9),
-        close(650),
-        throw(660, 'ex')
+        on_completed(630),
+        on_next(640, 9),
+        on_completed(650),
+        on_error(660, 'ex')
     )
 
     results1 = scheduler.create_observer()
@@ -317,8 +317,8 @@ def test_canceled():
     scheduler.start()
 
     assert results1.messages == []
-    assert results2.messages == [close(630)]
-    assert results3.messages == [close(900)]
+    assert results2.messages == [on_completed(630)]
+    assert results3.messages == [on_completed(900)]
 
 
 def test_subject_create():
@@ -326,32 +326,32 @@ def test_subject_create():
     _ex = [None]
     done = False
 
-    def send(x):
+    def on_next(x):
         _x[0] = x
 
-    def throw(ex):
+    def on_error(ex):
         _ex[0] = ex
 
-    def close():
+    def on_completed():
         done = True
 
-    v = AnonymousObserver(send, throw, close)
+    v = AnonymousObserver(on_next, on_error, on_completed)
 
     o = Observable.return_value(42)
 
     s = Subject.create(v, o)
 
-    def send2(x):
+    def on_next2(x):
         _x[0] = x
-    s.subscribe_(send2)
+    s.subscribe_(on_next2)
 
     assert(42 == _x[0])
-    s.send(21)
+    s.on_next(21)
 
     e = 'ex'
-    s.throw(e)
+    s.on_error(e)
 
     assert(e == _ex[0])
 
-    s.close()
+    s.on_completed()
     assert(not done)

@@ -20,7 +20,7 @@ def switch_latest(sources: typing.Observable[typing.Observable]):
         is_stopped = [False]
         latest = [0]
 
-        def send(inner_source):
+        def on_next(inner_source):
             nonlocal sources
 
             d = SingleAssignmentDisposable()
@@ -33,27 +33,27 @@ def switch_latest(sources: typing.Observable[typing.Observable]):
             # Check if Future or Observable
             inner_source = Observable.from_future(inner_source)
 
-            def send(x):
+            def on_next(x):
                 if latest[0] == _id:
-                    observer.send(x)
+                    observer.on_next(x)
 
-            def throw(e):
+            def on_error(e):
                 if latest[0] == _id:
-                    observer.throw(e)
+                    observer.on_error(e)
 
-            def close():
+            def on_completed():
                 if latest[0] == _id:
                     has_latest[0] = False
                     if is_stopped[0]:
-                        observer.close()
+                        observer.on_completed()
 
-            d.disposable = inner_source.subscribe_(send, throw, close)
+            d.disposable = inner_source.subscribe_(on_next, on_error, on_completed)
 
-        def close():
+        def on_completed():
             is_stopped[0] = True
             if not has_latest[0]:
-                observer.close()
+                observer.on_completed()
 
-        subscription = sources.subscribe_(send, observer.throw, close)
+        subscription = sources.subscribe_(on_next, observer.on_error, on_completed)
         return CompositeDisposable(subscription, inner_subscription)
     return AnonymousObservable(subscribe)

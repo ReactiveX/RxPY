@@ -23,7 +23,7 @@ def take_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
     def subscribe(observer, scheduler=None):
         running = True
 
-        def send(value):
+        def on_next(value):
             nonlocal running
 
             with source.lock:
@@ -33,15 +33,15 @@ def take_while(source: ObservableBase, predicate: Callable[[Any], Any]) -> Obser
                 try:
                     running = predicate(value)
                 except Exception as exn:
-                    observer.throw(exn)
+                    observer.on_error(exn)
                     return
 
             if running:
-                observer.send(value)
+                observer.on_next(value)
             else:
-                observer.close()
+                observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 
@@ -65,7 +65,7 @@ def take_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], A
     def subscribe(observer, scheduler=None):
         running, i = True, 0
 
-        def send(value):
+        def on_next(value):
             nonlocal running, i
             with source.lock:
                 if not running:
@@ -74,15 +74,15 @@ def take_while_indexed(source: ObservableBase, predicate: Callable[[Any, int], A
                 try:
                     running = predicate(value, i)
                 except Exception as exn:
-                    observer.throw(exn)
+                    observer.on_error(exn)
                     return
                 else:
                     i += 1
 
             if running:
-                observer.send(value)
+                observer.on_next(value)
             else:
-                observer.close()
+                observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, observer.close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)

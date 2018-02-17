@@ -12,11 +12,11 @@ def catch_handler(source, handler) -> ObservableBase:
 
         subscription.disposable = d1
 
-        def throw(exception):
+        def on_error(exception):
             try:
                 result = handler(exception)
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
                 return
 
             result = Observable.from_future(result)
@@ -25,9 +25,9 @@ def catch_handler(source, handler) -> ObservableBase:
             d.disposable = result.subscribe(observer, scheduler)
 
         d1.disposable = source.subscribe_(
-            observer.send,
-            throw,
-            observer.close,
+            observer.on_next,
+            on_error,
+            observer.on_completed,
             scheduler
         )
         return subscription
@@ -83,7 +83,7 @@ def catch_exception_(*args) -> ObservableBase:
         e = iter(sources)
 
         def action(action1, state=None):
-            def throw(exn):
+            def on_error(exn):
                 last_exception[0] = exn
                 cancelable.disposable = scheduler.schedule(action)
 
@@ -94,15 +94,15 @@ def catch_exception_(*args) -> ObservableBase:
                 current = next(e)
             except StopIteration:
                 if last_exception[0]:
-                    observer.throw(last_exception[0])
+                    observer.on_error(last_exception[0])
                 else:
-                    observer.close()
+                    observer.on_completed()
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.send, throw, observer.close, scheduler)
+                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 

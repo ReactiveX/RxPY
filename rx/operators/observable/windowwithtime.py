@@ -61,35 +61,35 @@ def window_with_time(self, timespan, timeshift=None) -> ObservableBase:
                 if is_shift:
                     s = Subject()
                     q.append(s)
-                    observer.send(add_ref(s, ref_count_disposable))
+                    observer.on_next(add_ref(s, ref_count_disposable))
 
                 if is_span:
                     s = q.pop(0)
-                    s.close()
+                    s.on_completed()
 
                 create_timer()
             m.disposable = scheduler.schedule_relative(ts, action)
 
         q.append(Subject())
-        observer.send(add_ref(q[0], ref_count_disposable))
+        observer.on_next(add_ref(q[0], ref_count_disposable))
         create_timer()
 
-        def send(x):
+        def on_next(x):
             for s in q:
-                s.send(x)
+                s.on_next(x)
 
-        def throw(e):
+        def on_error(e):
             for s in q:
-                s.throw(e)
+                s.on_error(e)
 
-            observer.throw(e)
+            observer.on_error(e)
 
-        def close():
+        def on_completed():
             for s in q:
-                s.close()
+                s.on_completed()
 
-            observer.close()
+            observer.on_completed()
 
-        group_disposable.add(source.subscribe_(send, throw, close, scheduler))
+        group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
         return ref_count_disposable
     return AnonymousObservable(subscribe)

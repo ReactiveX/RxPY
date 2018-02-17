@@ -39,11 +39,11 @@ def skip_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> O
 
         t = scheduler.schedule_relative(duration, action)
 
-        def send(x):
+        def on_next(x):
             if open[0]:
-                observer.send(x)
+                observer.on_next(x)
 
-        d = source.subscribe_(send, observer.throw, observer.close, scheduler)
+        d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return CompositeDisposable(t, d)
     return AnonymousObservable(subscribe)
 

@@ -22,7 +22,7 @@ def throw(exception: Exception) -> ObservableBase:
         scheduler = scheduler or immediate_scheduler
 
         def action(scheduler, state):
-            observer.throw(exception)
+            observer.on_error(exception)
 
         return scheduler.schedule(action)
     return AnonymousObservable(subscribe)

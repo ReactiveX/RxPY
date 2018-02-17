@@ -35,10 +35,10 @@ def from_range(start: int, stop: int = None, step: int = None) -> ObservableBase
 
         def action(scheduler, iterator):
             try:
-                observer.send(next(iterator))
+                observer.on_next(next(iterator))
                 sd.disposable = scheduler.schedule(action, state=iterator)
             except StopIteration:
-                observer.close()
+                observer.on_completed()
 
         sd.disposable = scheduler.schedule(action, iter(range_t))
         return sd

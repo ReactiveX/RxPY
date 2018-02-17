@@ -55,21 +55,21 @@ class ReactiveTest:
     disposed = 1000
 
     @staticmethod
-    def send(ticks, value):
+    def on_next(ticks, value):
         if isinstance(value, types.FunctionType):
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
     @staticmethod
-    def throw(ticks, exception):
+    def on_error(ticks, exception):
         if isinstance(exception, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
 
     @staticmethod
-    def close(ticks):
+    def on_completed(ticks):
         return Recorded(ticks, OnCompleted())
 
     @staticmethod

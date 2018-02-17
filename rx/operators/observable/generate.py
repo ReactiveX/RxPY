@@ -44,14 +44,14 @@ def generate(initial_state, condition, iterate, result_mapper) -> ObservableBase
                     result = result_mapper(state[0])
 
             except Exception as exception:
-                observer.throw(exception)
+                observer.on_error(exception)
                 return
 
             if has_result:
-                observer.send(result)
+                observer.on_next(result)
                 mad.disposable = scheduler.schedule(action)
             else:
-                observer.close()
+                observer.on_completed()
 
         mad.disposable = scheduler.schedule(action)
         return mad

@@ -36,13 +36,13 @@ class Subject(ObservableBase, Observer):
                 return InnerSubscription(self, observer)
 
             if self.exception:
-                observer.throw(self.exception)
+                observer.on_error(self.exception)
                 return Disposable.empty()
 
-            observer.close()
+            observer.on_completed()
             return Disposable.empty()
 
-    def close(self) -> None:
+    def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the
         sequence."""
 
@@ -56,9 +56,9 @@ class Subject(ObservableBase, Observer):
 
         if observers:
             for observer in observers:
-                observer.close()
+                observer.on_completed()
 
-    def throw(self, error: Exception) -> None:
+    def on_error(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception.
 
         Keyword arguments:
@@ -76,9 +76,9 @@ class Subject(ObservableBase, Observer):
 
         if os:
             for observer in os:
-                observer.throw(error)
+                observer.on_error(error)
 
-    def send(self, value: Any) -> None:
+    def on_next(self, value: Any) -> None:
         """Notifies all subscribed observers with the value.
 
         Keyword arguments:
@@ -93,7 +93,7 @@ class Subject(ObservableBase, Observer):
 
         if os:
             for observer in os:
-                observer.send(value)
+                observer.on_next(value)
 
     def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""

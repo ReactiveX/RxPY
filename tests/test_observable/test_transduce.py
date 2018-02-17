@@ -11,9 +11,9 @@ try:
 except ImportError:
     raise SkipTest("Transducers not available")
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -76,7 +76,7 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1)
+            on_next(150, 1)
         )
 
         def create():
@@ -93,8 +93,8 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            close(250)
+            on_next(150, 1),
+            on_completed(250)
         )
 
         def create():
@@ -103,7 +103,7 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            close(250)]
+            on_completed(250)]
 
         assert xs.subscriptions == [
             subscribe(200, 250)]
@@ -112,12 +112,12 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(220, 3),
-            send(230, 4),
-            send(240, 5),
-            close(250)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250)
         )
 
         i = [0]
@@ -134,9 +134,9 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, 20),
-            send(230, 40),
-            close(250)]
+            on_next(210, 20),
+            on_next(230, 40),
+            on_completed(250)]
 
         assert xs.subscriptions == [
             subscribe(200, 250)]
@@ -147,11 +147,11 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(220, 3),
-            send(230, 4),
-            send(240, 5)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5)
         )
 
         i = [0]
@@ -168,8 +168,8 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, 20),
-            send(230, 40)]
+            on_next(210, 20),
+            on_next(230, 40)]
 
         assert xs.subscriptions == [
             subscribe(200, 1000)]
@@ -182,8 +182,8 @@ class TestTransduce(unittest.TestCase):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            throw(210, error)
+            on_next(150, 1),
+            on_error(210, error)
         )
 
         def create():
@@ -192,23 +192,23 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            throw(210, error)]
+            on_error(210, error)]
 
         assert xs.subscriptions == [
             subscribe(200, 210)]
 
-    def test_transduce_throw(self):
+    def test_transduce_on_error(self):
         error = RxException()
 
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            send(150, 1),
-            send(210, 2),
-            send(220, 3),
-            send(230, 4),
-            send(240, 5),
-            close(250)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250)
         )
 
         i = [0]
@@ -228,9 +228,9 @@ class TestTransduce(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(210, 20),
-            send(230, 40),
-            throw(240, error)]
+            on_next(210, 20),
+            on_next(230, 40),
+            on_error(240, error)]
 
         assert xs.subscriptions == [
             subscribe(200, 240)]

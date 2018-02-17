@@ -22,4 +22,4 @@ def as_observer(observer) -> ObserverBase:
     observer.
     """
 
-    return AnonymousObserver(observer.send, observer.throw, observer.close)
+    return AnonymousObserver(observer.on_next, observer.on_error, observer.on_completed)

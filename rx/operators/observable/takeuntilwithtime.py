@@ -31,7 +31,7 @@ def take_until_with_time(source, end_time) -> ObservableBase:
             scheduler_method = scheduler.schedule_relative
 
         def action(scheduler, state):
-            observer.close()
+            observer.on_completed()
 
         task = scheduler_method(end_time, action)
         return CompositeDisposable(task,  source.subscribe(observer, scheduler))

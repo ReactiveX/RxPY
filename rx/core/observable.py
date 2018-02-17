@@ -209,10 +209,10 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
 
         Special characters:
         - = Timespan of 100 ms
-        x = throw()
-        | = close()
+        x = on_error()
+        | = on_completed()
 
-        All other characters are treated as an send() event at the given
+        All other characters are treated as an on_next() event at the given
         moment they are found on the string.
 
         Examples:
@@ -480,20 +480,20 @@ class Observable(typing.Observable):  # pylint: disable=W0223,R0904
         return throw(exception)
 
     @staticmethod
-    def throw_resume_next(*args) -> ObservableBase:
+    def on_error_resume_next(*args) -> ObservableBase:
         """Continues an observable sequence that is terminated normally or by
         an exception with the next observable sequence.
 
-        1 - res = Observable.throw_resume_next(xs, ys, zs)
-        2 - res = Observable.throw_resume_next([xs, ys, zs])
+        1 - res = Observable.on_error_resume_next(xs, ys, zs)
+        2 - res = Observable.on_error_resume_next([xs, ys, zs])
 
         Returns an observable sequence that concatenates the source sequences,
         even if a sequence terminates exceptionally.
         """
-        from ..operators.observable.onerrorresumenext import throw_resume_next
-        return throw_resume_next(*args)
+        from ..operators.observable.onerrorresumenext import on_error_resume_next
+        return on_error_resume_next(*args)
 
-    on_error_resume_next = throw_resume_next
+    on_error_resume_next = on_error_resume_next
 
     @staticmethod
     def timer(duetime: Union[datetime, int], period=None) -> ObservableBase:

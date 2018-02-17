@@ -6,25 +6,25 @@ def find_value(source, predicate, yield_index):
     def subscribe(observer, scheduler=None):
         i = [0]
 
-        def send(x):
+        def on_next(x):
             should_run = False
             try:
                 should_run = predicate(x, i, source)
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
                 return
 
             if should_run:
-                observer.send(i[0] if yield_index else x)
-                observer.close()
+                observer.on_next(i[0] if yield_index else x)
+                observer.on_completed()
             else:
                 i[0] += 1
 
-        def close():
-            observer.send(-1 if yield_index else None)
-            observer.close()
+        def on_completed():
+            observer.on_next(-1 if yield_index else None)
+            observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 def find(source, predicate: Predicate) -> ObservableBase:

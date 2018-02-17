@@ -10,7 +10,7 @@ def _element_at_or_default(source, index, has_default=False, default_value=None)
     def subscribe(observer, scheduler=None):
         i = [index]
 
-        def send(x):
+        def on_next(x):
             found = False
             with source.lock:
                 if i[0]:
@@ -19,17 +19,17 @@ def _element_at_or_default(source, index, has_default=False, default_value=None)
                     found = True
 
             if found:
-                observer.send(x)
-                observer.close()
+                observer.on_next(x)
+                observer.on_completed()
 
-        def close():
+        def on_completed():
             if not has_default:
-                observer.throw(ArgumentOutOfRangeException())
+                observer.on_error(ArgumentOutOfRangeException())
             else:
-                observer.send(default_value)
-                observer.close()
+                observer.on_next(default_value)
+                observer.on_completed()
 
-        return source.subscribe_(send, observer.throw, close, scheduler)
+        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
 def element_at_or_default(self, index: int, default_value: Any = None) -> ObservableBase:

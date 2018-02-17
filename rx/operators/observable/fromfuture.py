@@ -22,10 +22,10 @@ def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
             try:
                 value = future.result()
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
             else:
-                observer.send(value)
-                observer.close()
+                observer.on_next(value)
+                observer.on_completed()
 
         future.add_done_callback(done)
 

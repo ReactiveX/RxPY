@@ -20,16 +20,16 @@ class TestFromFuture(unittest.TestCase):
 
             source = Observable.from_future(future)
 
-            def send(x):
+            def on_next(x):
                 success[0] = 42 == x
 
-            def throw(err):
+            def on_error(err):
                 success[1] = False
 
-            def close():
+            def on_completed():
                 success[2] = True
 
-            subscription = source.subscribe_(send, throw, close)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -47,16 +47,16 @@ class TestFromFuture(unittest.TestCase):
 
             source = Observable.from_future(future)
 
-            def send(x):
+            def on_next(x):
                 success[0] = False
 
-            def throw(err):
+            def on_error(err):
                 success[1] = str(err) == str(error)
 
-            def close():
+            def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe_(send, throw, close)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -72,16 +72,16 @@ class TestFromFuture(unittest.TestCase):
 
             source = Observable.from_future(future)
 
-            def send(x):
+            def on_next(x):
                 success[0] = False
 
-            def throw(err):
+            def on_error(err):
                 success[1] = False
 
-            def close():
+            def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe_(send, throw, close)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
             subscription.dispose()
 
         loop.run_until_complete(go())

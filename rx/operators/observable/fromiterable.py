@@ -28,11 +28,11 @@ def from_iterable(iterable: Iterable) -> ObservableBase:
             try:
                 while not disposed:
                     value = next(iterator)
-                    observer.send(value)
+                    observer.on_next(value)
             except StopIteration:
-                observer.close()
+                observer.on_completed()
             except Exception as error:  # pylint: disable=W0703
-                observer.throw(error)
+                observer.on_error(error)
 
         def dispose():
             nonlocal disposed

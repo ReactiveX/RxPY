@@ -22,33 +22,33 @@ class ControlledSubject(ObservableBase, Observer):
     def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer, scheduler)
 
-    def close(self):
+    def on_completed(self):
         self.has_completed = True
 
         if not self.enable_queue or len(self.queue) == 0:
-            self.subject.close()
+            self.subject.on_completed()
             self.dispose_current_request()
         else:
             self.queue.append(OnCompleted())
 
-    def throw(self, error):
+    def on_error(self, error):
         self.has_failed = True
         self.error = error
 
         if not self.enable_queue or len(self.queue) == 0:
-            self.subject.throw(error)
+            self.subject.on_error(error)
             self.dispose_current_request()
         else:
             self.queue.append(OnError(error))
 
-    def send(self, value):
+    def on_next(self, value):
         if self.requested_count <= 0:
             self.enable_queue and self.queue.append(OnNext(value))
         else:
             self.requested_count -= 1
             if self.requested_count == 0:
                 self.dispose_current_request()
-            self.subject.send(value)
+            self.subject.on_next(value)
 
     def _process_request(self, number_of_items):
         if self.enable_queue:

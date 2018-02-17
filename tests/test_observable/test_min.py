@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -14,7 +14,7 @@ created = ReactiveTest.created
 class TestMin(unittest.TestCase):
     def test_min_int32_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
             return xs.min()
@@ -25,26 +25,26 @@ class TestMin(unittest.TestCase):
 
     def test_min_int32_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
         res = scheduler.start(create=lambda: xs.min()).messages
-        assert res == [send(250, 2), close(250)]
+        assert res == [on_next(250, 2), on_completed(250)]
 
     def test_min_int32_some(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), send(210, 2), send(220, 3), send(230, 4), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
         res = scheduler.start(create=lambda: xs.min()).messages
-        assert res == [send(250, 2), close(250)]
+        assert res == [on_next(250, 2), on_completed(250)]
 
-    def test_min_int32_throw(self):
+    def test_min_int32_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1), throw(210, ex))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
         res = scheduler.start(create=lambda: xs.min()).messages
-        assert res == [throw(210, ex)]
+        assert res == [on_error(210, ex)]
 
     def test_min_int32_never(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(send(150, 1))
+        xs = scheduler.create_hot_observable(on_next(150, 1))
         res = scheduler.start(create=lambda: xs.min()).messages
         assert res == []
 
@@ -59,7 +59,7 @@ class TestMin(unittest.TestCase):
 
             return 1
 
-        xs = scheduler.create_hot_observable(send(150, 'a'), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 'a'), on_completed(250))
 
         def create():
             return xs.min(comparer)
@@ -80,15 +80,15 @@ class TestMin(unittest.TestCase):
 
             return 1
 
-        xs = scheduler.create_hot_observable(send(150, 'z'), send(210, "b"), send(220, "c"), send(230, "a"), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 'z'), on_next(210, "b"), on_next(220, "c"), on_next(230, "a"), on_completed(250))
 
         def create():
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        assert res == [send(250, "c"), close(250)]
+        assert res == [on_next(250, "c"), on_completed(250)]
 
-    def test_min_of_t_comparer_throw(self):
+    def test_min_of_t_comparer_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         def comparer(a, b):
@@ -100,13 +100,13 @@ class TestMin(unittest.TestCase):
 
             return 1
 
-        xs = scheduler.create_hot_observable(send(150, 'z'), throw(210, ex))
+        xs = scheduler.create_hot_observable(on_next(150, 'z'), on_error(210, ex))
 
         def create():
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        assert res == [throw(210, ex)]
+        assert res == [on_error(210, ex)]
 
     def test_min_of_t_comparer_never(self):
         scheduler = TestScheduler()
@@ -119,7 +119,7 @@ class TestMin(unittest.TestCase):
 
             return 1
 
-        xs = scheduler.create_hot_observable(send(150, 'z'))
+        xs = scheduler.create_hot_observable(on_next(150, 'z'))
 
         def create():
             return xs.min(comparer)
@@ -132,10 +132,10 @@ class TestMin(unittest.TestCase):
         def comparer(a, b):
             raise Exception(ex)
 
-        xs = scheduler.create_hot_observable(send(150, 'z'), send(210, "b"), send(220, "c"), send(230, "a"), close(250))
+        xs = scheduler.create_hot_observable(on_next(150, 'z'), on_next(210, "b"), on_next(220, "c"), on_next(230, "a"), on_completed(250))
 
         def create():
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        assert res == [throw(220, ex)]
+        assert res == [on_error(220, ex)]

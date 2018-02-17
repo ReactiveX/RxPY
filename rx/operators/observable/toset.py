@@ -11,9 +11,9 @@ def to_set(source: ObservableBase) -> ObservableBase:
     def subscribe(observer, scheduler=None):
         s = set()
 
-        def close():
-            observer.send(s)
-            observer.close()
+        def on_completed():
+            observer.on_next(s)
+            observer.on_completed()
 
-        return source.subscribe_(s.add, observer.throw, close, scheduler)
+        return source.subscribe_(s.add, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)

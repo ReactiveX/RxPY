@@ -34,18 +34,18 @@ class Filter(Observable):
             self.predicate = predicate
             self.predicate_indexed = predicate_indexed
 
-        def send(self, value: Any) -> None:
+        def on_next(self, value: Any) -> None:
             try:
                 if self.predicate:
                     should_run = self.predicate(value)
                 else:
                     should_run = self.predicate_indexed(value, self.count)
             except Exception as ex:  # By design. pylint: disable=W0703
-                self.throw(ex)
+                self.on_error(ex)
             else:
                 self.count += 1
                 if should_run:
-                    self._observer.send(value)
+                    self._observer.on_next(value)
 
 # pylint: disable=W0622
 def filter(predicate: Predicate = None,

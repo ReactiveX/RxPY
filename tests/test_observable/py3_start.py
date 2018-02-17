@@ -6,9 +6,9 @@ from asyncio import Future
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -30,9 +30,9 @@ class TestStart(unittest.TestCase):
 
             source = Observable.start_async(func)
 
-            def send(x):
+            def on_next(x):
                 success[0] = (42 == x)
-            source.subscribe_(send)
+            source.subscribe_(on_next)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -50,9 +50,9 @@ class TestStart(unittest.TestCase):
 
             source = Observable.start_async(func)
 
-            def throw(ex):
+            def on_error(ex):
                 success[0] = (str(42) == str(ex))
-            source.subscribe_(throw=throw)
+            source.subscribe_(on_error=on_error)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -70,8 +70,8 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            send(200, None),
-            close(200)]
+            on_next(200, None),
+            on_completed(200)]
 
         assert(done)
 
@@ -86,8 +86,8 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            send(200, 1),
-            close(200)]
+            on_next(200, 1),
+            on_completed(200)]
 
     def test_start_funcerror(self):
         ex = Exception()
@@ -101,4 +101,4 @@ class TestStart(unittest.TestCase):
         res = scheduler.start(create)
 
         assert res.messages == [
-            throw(200, ex)]
+            on_error(200, ex)]

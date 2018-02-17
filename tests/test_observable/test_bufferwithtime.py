@@ -2,9 +2,9 @@ import unittest
 
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,16 +15,16 @@ class TestBufferWithCount(unittest.TestCase):
     def test_buffer_with_time_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(210, 2),
-            send(240, 3),
-            send(281, 4),
-            send(321, 5),
-            send(351, 6),
-            send(381, 7),
-            send(421, 8),
-            send(471, 9),
-            close(600))
+            on_next(100, 1),
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(281, 4),
+            on_next(321, 5),
+            on_next(351, 6),
+            on_next(381, 7),
+            on_next(421, 8),
+            on_next(471, 9),
+            on_completed(600))
 
         def create():
             return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
@@ -32,29 +32,29 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(300, "2,3,4"),
-            send(370, "4,5,6"),
-            send(440, "6,7,8"),
-            send(510, "8,9"),
-            send(580, ""),
-            send(600, ""),
-            close(600)]
+            on_next(300, "2,3,4"),
+            on_next(370, "4,5,6"),
+            on_next(440, "6,7,8"),
+            on_next(510, "8,9"),
+            on_next(580, ""),
+            on_next(600, ""),
+            on_completed(600)]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(210, 2),
-            send(240, 3),
-            send(280, 4),
-            send(320, 5),
-            send(350, 6),
-            send(380, 7),
-            send(420, 8),
-            send(470, 9),
-            throw(600, ex))
+            on_next(100, 1),
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(280, 4),
+            on_next(320, 5),
+            on_next(350, 6),
+            on_next(380, 7),
+            on_next(420, 8),
+            on_next(470, 9),
+            on_error(600, ex))
 
         def create():
             return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
@@ -62,48 +62,48 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(300, "2,3,4"),
-            send(370, "4,5,6"),
-            send(440, "6,7,8"),
-            send(510, "8,9"),
-            send(580, ""),
-            throw(600, ex)]
+            on_next(300, "2,3,4"),
+            on_next(370, "4,5,6"),
+            on_next(440, "6,7,8"),
+            on_next(510, "8,9"),
+            on_next(580, ""),
+            on_error(600, ex)]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_disposed(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(210, 2),
-            send(240, 3),
-            send(281, 4),
-            send(321, 5),
-            send(351, 6),
-            send(381, 7),
-            send(421, 8),
-            send(471, 9),
-            close(600))
+            on_next(100, 1),
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(281, 4),
+            on_next(321, 5),
+            on_next(351, 6),
+            on_next(381, 7),
+            on_next(421, 8),
+            on_next(471, 9),
+            on_completed(600))
 
         def create():
             return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create, disposed=370)
-        assert results.messages == [send(300, "2,3,4")]
+        assert results.messages == [on_next(300, "2,3,4")]
         assert xs.subscriptions == [subscribe(200, 370)]
 
     def test_buffer_with_time_basic_same(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            send(100, 1),
-            send(210, 2),
-            send(240, 3),
-            send(280, 4),
-            send(320, 5),
-            send(350, 6),
-            send(380, 7),
-            send(420, 8),
-            send(470, 9),
-            close(600))
+            on_next(100, 1),
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(280, 4),
+            on_next(320, 5),
+            on_next(350, 6),
+            on_next(380, 7),
+            on_next(420, 8),
+            on_next(470, 9),
+            on_completed(600))
 
         def create():
             return xs.buffer_with_time(100).map(lambda x: ",".join([str(a) for a in x]))
@@ -111,9 +111,9 @@ class TestBufferWithCount(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-            send(300, "2,3,4"),
-            send(400, "5,6,7"),
-            send(500, "8,9"),
-            send(600, ""),
-            close(600)]
+            on_next(300, "2,3,4"),
+            on_next(400, "5,6,7"),
+            on_next(500, "8,9"),
+            on_next(600, ""),
+            on_completed(600)]
         assert xs.subscriptions == [subscribe(200, 600)]

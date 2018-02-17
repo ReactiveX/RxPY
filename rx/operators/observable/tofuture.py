@@ -26,18 +26,18 @@ def to_future(source: ObservableBase, future_ctor: Callable[[], Future] = None) 
     value = [None]
     has_value = [False]
 
-    def send(v):
+    def on_next(v):
         value[0] = v
         has_value[0] = True
 
-    def throw(err):
+    def on_error(err):
         future.set_exception(err)
 
-    def close():
+    def on_completed():
         if has_value[0]:
             future.set_result(value[0])
 
-    source.subscribe_(send, throw, close)
+    source.subscribe_(on_next, on_error, on_completed)
 
     # No cancellation can be done
     return future

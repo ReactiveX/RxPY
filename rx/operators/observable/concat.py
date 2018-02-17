@@ -32,19 +32,19 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
             if is_disposed:
                 return
 
-            def close():
+            def on_completed():
                 cancelable.disposable = scheduler.schedule(action)
 
             try:
                 current = next(sources)
             except StopIteration:
-                observer.close()
+                observer.on_completed()
             except Exception as ex:
-                observer.throw(ex)
+                observer.on_error(ex)
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.send, observer.throw, close, scheduler)
+                d.disposable = current.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
 
         cancelable.disposable = scheduler.schedule(action)
 

@@ -30,7 +30,7 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
         running = [False]
         queue = []
 
-        def send(notification):
+        def on_next(notification):
             should_run = False
 
             with source.lock:
@@ -46,7 +46,7 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
 
             if should_run:
                 if exception[0]:
-                    observer.throw(exception[0])
+                    observer.on_error(exception[0])
                 else:
                     mad = MultipleAssignmentDisposable()
                     cancelable.disposable = mad
@@ -82,12 +82,12 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
                             running[0] = False
 
                         if ex:
-                            observer.throw(ex)
+                            observer.on_error(ex)
                         elif should_continue:
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp().subscribe_(send, scheduler=scheduler)
+        subscription = source.materialize().timestamp().subscribe_(on_next, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 

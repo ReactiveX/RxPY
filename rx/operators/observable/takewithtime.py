@@ -32,7 +32,7 @@ def take_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> O
         scheduler = scheduler or timeout_scheduler
 
         def action(scheduler, state):
-            observer.close()
+            observer.on_completed()
 
         disposable = scheduler.schedule_relative(duration, action)
         return CompositeDisposable(disposable, source.subscribe(observer, scheduler))

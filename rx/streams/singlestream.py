@@ -20,18 +20,18 @@ class SingleStream(Observer, Observable):
 
         super().__init__()
 
-    def send(self, value: Any) -> None:
-        self._observer.send(value)
+    def on_next(self, value: Any) -> None:
+        self._observer.on_next(value)
 
-    def throw(self, error: Exception) -> None:
+    def on_error(self, error: Exception) -> None:
         try:
-            self._observer.throw(error)
+            self._observer.on_error(error)
         finally:
             self.dispose()
 
-    def close(self) -> None:
+    def on_completed(self) -> None:
         try:
-            self._observer.close()
+            self._observer.on_completed()
         finally:
             self.dispose()
 

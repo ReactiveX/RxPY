@@ -3,9 +3,9 @@ import unittest
 from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
-send = ReactiveTest.send
-close = ReactiveTest.close
-throw = ReactiveTest.throw
+on_next = ReactiveTest.on_next
+on_completed = ReactiveTest.on_completed
+on_error = ReactiveTest.on_error
 subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
@@ -15,45 +15,45 @@ created = ReactiveTest.created
 class TestWhile(unittest.TestCase):
     def test_while_always_false(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(send(50, 1), send(100, 2), send(150, 3), send(200, 4), close(250))
+        xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 
         def create():
             return Observable.while_do(lambda _: False, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [close(200)]
+        assert results.messages == [on_completed(200)]
         assert xs.subscriptions == []
 
     def test_while_always_true(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(send(50, 1), send(100, 2), send(150, 3), send(200, 4), close(250))
+        xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
 
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), send(750, 1), send(800, 2), send(850, 3), send(900, 4)]
+        assert results.messages == [on_next(250, 1), on_next(300, 2), on_next(350, 3), on_next(400, 4), on_next(500, 1), on_next(550, 2), on_next(600, 3), on_next(650, 4), on_next(750, 1), on_next(800, 2), on_next(850, 3), on_next(900, 4)]
         assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700), subscribe(700, 950), subscribe(950, 1000)]
 
-    def test_while_always_true_throw(self):
+    def test_while_always_true_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(throw(50, ex))
+        xs = scheduler.create_cold_observable(on_error(50, ex))
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [throw(250, ex)]
+        assert results.messages == [on_error(250, ex)]
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_while_always_true_infinite(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(send(50, 1))
+        xs = scheduler.create_cold_observable(on_next(50, 1))
         def create():
             return Observable.while_do(lambda _: True, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(250, 1)]
+        assert results.messages == [on_next(250, 1)]
         assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_dowhile_always_true_infinite_with_create(self):
@@ -65,17 +65,17 @@ class TestWhile(unittest.TestCase):
                 n[0] += 1
                 return n[0] < 100
             def subscribe(o, scheduler=None):
-                o.send(1)
-                o.close()
+                o.on_next(1)
+                o.on_completed()
                 return lambda: None
             return Observable.while_do(predicate, Observable.create(subscribe))
         results = scheduler.start(create=create)
 
-        assert results.messages == [send(200, 1) for _ in range(99)] + [close(200)]
+        assert results.messages == [on_next(200, 1) for _ in range(99)] + [on_completed(200)]
 
     def test_while_sometimes_true(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(send(50, 1), send(100, 2), send(150, 3), send(200, 4), close(250))
+        xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
         n = [0]
 
         def create():
@@ -85,12 +85,12 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), close(700)]
+        assert results.messages == [on_next(250, 1), on_next(300, 2), on_next(350, 3), on_next(400, 4), on_next(500, 1), on_next(550, 2), on_next(600, 3), on_next(650, 4), on_completed(700)]
         assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700)]
 
     def test_while_sometimes_throws(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_cold_observable(send(50, 1), send(100, 2), send(150, 3), send(200, 4), close(250))
+        xs = scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(150, 3), on_next(200, 4), on_completed(250))
         n = [0]
         ex = 'ex'
 
@@ -105,5 +105,5 @@ class TestWhile(unittest.TestCase):
             return Observable.while_do(predicate, xs)
         results = scheduler.start(create)
 
-        assert results.messages == [send(250, 1), send(300, 2), send(350, 3), send(400, 4), send(500, 1), send(550, 2), send(600, 3), send(650, 4), throw(700, ex)]
+        assert results.messages == [on_next(250, 1), on_next(300, 2), on_next(350, 3), on_next(400, 4), on_next(500, 1), on_next(550, 2), on_next(600, 3), on_next(650, 4), on_error(700, ex)]
         assert xs.subscriptions == [subscribe(200, 450), subscribe(450, 700)]
