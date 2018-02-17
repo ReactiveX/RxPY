@@ -15,7 +15,6 @@ Other implementations of transducers in Python are:
 """
 
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal import extensionmethod
 
 
 class Observing:
@@ -38,8 +37,7 @@ class Observing:
         return self.step(result, item)
 
 
-@extensionmethod(ObservableBase)
-def transduce(self, transducer):
+def transduce(source, transducer):
     """Execute a transducer to transform the observable sequence.
 
     Keyword arguments:
@@ -49,16 +47,15 @@ def transduce(self, transducer):
         transducer.
     :rtype: Observable
     """
-    source = self
 
     def subscribe(observer, scheduler=None):
         xform = transducer(Observing(observer))
 
-        def on_next(v):
+        def on_next(value):
             try:
-                xform.step(observer, v)
-            except Exception as e:
-                observer.on_error(e)
+                xform.step(observer, value)
+            except Exception as exn:
+                observer.on_error(exn)
 
         def on_completed():
             xform.complete(observer)
