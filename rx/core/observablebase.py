@@ -1175,7 +1175,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.minby import min_by
         return min_by(self, key_mapper, comparer)
 
-    def multicast(self, subject=None, subject_mapper=None, mapper=None) -> 'ObservableBase':
+    def multicast(self, subject=None, subject_factory=None, mapper=None) -> 'ObservableBase':
         """Multicasts the source sequence notifications through an instantiated
         subject into all uses of the sequence within a mapper function. Each
         subscription to the resulting sequence causes a separate multicast
@@ -1185,17 +1185,17 @@ class ObservableBase(typing.Observable):
 
         Example:
         1 - res = source.multicast(observable)
-        2 - res = source.multicast(subject_mapper=lambda scheduler: Subject(),
+        2 - res = source.multicast(subject_factory=lambda scheduler: Subject(),
                                 mapper=lambda x: x)
 
         Keyword arguments:
-        subject_mapper -- {Function} Factory function to create an
+        subject_factory -- {Function} Factory function to create an
             intermediate subject through which the source sequence's elements
             will be multicast to the mapper function.
         subject -- Subject {Subject} to push source elements into.
         mapper -- {Function} [Optional] Optional mapper function which can
             use the multicasted source sequence subject to the policies enforced
-            by the created subject. Specified only if subject_mapper" is a
+            by the created subject. Specified only if subject_factory" is a
             factory function.
 
         Returns an observable {Observable} sequence that contains the elements
@@ -1203,7 +1203,7 @@ class ObservableBase(typing.Observable):
         mapper function.
         """
         from ..operators.observable.multicast import multicast
-        return multicast(self, subject, subject_mapper, mapper)
+        return multicast(self, subject, subject_factory, mapper)
 
     def observe_on(self, scheduler: abc.Scheduler) -> 'ObservableBase':
         """Wraps the source sequence in order to run its observer callbacks on

@@ -34,9 +34,9 @@ def publish_value(source, initial_value: Any, mapper: Mapper = None) -> Observab
     """
 
     if mapper:
-        def subject_mapper(scheduler):
+        def subject_factory(scheduler):
             return BehaviorSubject(initial_value)
 
-        return source.multicast(subject_mapper=subject_mapper, mapper=mapper)
+        return source.multicast(subject_factory=subject_factory, mapper=mapper)
     else:
         return source.multicast(BehaviorSubject(initial_value))

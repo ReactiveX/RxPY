@@ -23,7 +23,7 @@ def publish(source, mapper=None) -> ConnectableObservable:
     mapper function."""
 
     if mapper:
-        return source.multicast(subject_mapper=lambda _: Subject(), mapper=mapper)
+        return source.multicast(subject_factory=lambda _: Subject(), mapper=mapper)
     else:
         return source.multicast(subject=Subject())
 
