@@ -1,6 +1,7 @@
 from rx.core import AnonymousObservable, Observable
 from rx.core import typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.internal.utils import is_future
 
 
 def switch_latest(sources: typing.Observable[typing.Observable]):
@@ -31,7 +32,7 @@ def switch_latest(sources: typing.Observable[typing.Observable]):
             inner_subscription.disposable = d
 
             # Check if Future or Observable
-            inner_source = Observable.from_future(inner_source)
+            inner_source = Observable.from_future(inner_source) if is_future(inner_source) else inner_source
 
             def on_next(x):
                 if latest[0] == _id:

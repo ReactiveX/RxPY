@@ -1,11 +1,9 @@
-from typing import Union
 from asyncio.futures import Future
 
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal.utils import is_future
 
 
-def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
+def from_future(future: Future) -> ObservableBase:
     """Converts a Future to an Observable sequence
 
     Keyword Arguments:
@@ -35,4 +33,4 @@ def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
 
         return dispose
 
-    return AnonymousObservable(subscribe) if is_future(future) else future
+    return AnonymousObservable(subscribe)

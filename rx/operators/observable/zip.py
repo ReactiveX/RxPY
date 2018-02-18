@@ -2,6 +2,7 @@ from typing import Union, Iterable, Any
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.core.typing import Mapper
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.utils import is_future
 
 
 def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
@@ -62,7 +63,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
         def func(i):
             source = sources[i]
             sad = SingleAssignmentDisposable()
-            source = Observable.from_future(source)
+            source = Observable.from_future(source) if is_future(source) else source
 
             def on_next(x):
                 queues[i].append(x)

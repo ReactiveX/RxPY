@@ -1,6 +1,7 @@
 from rx.internal import noop
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable
+from rx.internal.utils import is_future
 
 
 def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
@@ -16,7 +17,7 @@ def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
     propagation.
     """
 
-    other = Observable.from_future(other)
+    other = Observable.from_future(other) if is_future(other) else other
 
     def subscribe(observer, scheduler=None):
 

@@ -10,8 +10,7 @@ def to_future(source: ObservableBase, future_ctor: Callable[[], Future] = None) 
     Example:
     future = rx.Observable.return_value(42).to_future(asyncio.Future);
 
-    future_ctor -- {Functi[Optional] The constructor of the future.
-        If not provided, it looks for it in rx.config.Future.
+    future_ctor -- [Optional] The constructor of the future.
 
     Returns a future with the last value from the observable sequence.
     """

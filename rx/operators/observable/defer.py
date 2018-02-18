@@ -2,6 +2,7 @@ from typing import Any, Callable
 
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.core import abc
+from rx.internal.utils import is_future
 
 
 def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> ObservableBase:
@@ -25,6 +26,6 @@ def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> Obse
         except Exception as ex:
             return Observable.throw(ex).subscribe(observer)
 
-        result = Observable.from_future(result)
+        result = Observable.from_future(result) if is_future(result) else result
         return result.subscribe(observer, scheduler)
     return AnonymousObservable(subscribe)

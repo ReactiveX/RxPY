@@ -3,6 +3,7 @@ from rx.disposables import SingleAssignmentDisposable, \
     CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import Iterable
+from rx.internal.utils import is_future
 
 
 def catch_handler(source, handler) -> ObservableBase:
@@ -19,7 +20,7 @@ def catch_handler(source, handler) -> ObservableBase:
                 observer.on_error(ex)
                 return
 
-            result = Observable.from_future(result)
+            result = Observable.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler)

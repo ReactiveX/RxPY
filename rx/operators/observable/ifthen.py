@@ -1,6 +1,8 @@
 from typing import Callable
-from rx.core import ObservableBase, Observable
+
 from rx.core import abc
+from rx.core import ObservableBase, Observable
+from rx.internal.utils import is_future
 
 
 def if_then(condition: Callable[[], bool], then_source: ObservableBase,
@@ -27,8 +29,8 @@ def if_then(condition: Callable[[], bool], then_source: ObservableBase,
 
     else_source = else_source or Observable.empty()
 
-    then_source = Observable.from_future(then_source)
-    else_source = Observable.from_future(else_source)
+    then_source = Observable.from_future(then_source) if is_future(then_source) else then_source
+    else_source = Observable.from_future(else_source) if is_future(else_source) else else_source
 
     def factory(_: abc.Scheduler):
         return then_source if condition() else else_source

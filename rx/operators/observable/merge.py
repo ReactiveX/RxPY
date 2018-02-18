@@ -1,5 +1,6 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.utils import is_future
 
 
 def merge(source, *args, max_concurrent=None):
@@ -100,7 +101,7 @@ def merge_all(source: ObservableBase) -> ObservableBase:
             inner_subscription = SingleAssignmentDisposable()
             group.add(inner_subscription)
 
-            inner_source = Observable.from_future(inner_source)
+            inner_source = Observable.from_future(inner_source) if is_future(inner_source) else inner_source
 
             def on_completed():
                 group.remove(inner_subscription)

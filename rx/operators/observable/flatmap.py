@@ -2,6 +2,8 @@ import collections
 from typing import Any, Callable
 from rx.core import Observable, ObservableBase
 from rx.core.typing import Mapper, MapperIndexed
+from rx.internal.utils import is_future
+from rx.internal.utils import is_future
 
 
 def _flat_map(source, mapper, mapper_indexed=None):
@@ -10,7 +12,7 @@ def _flat_map(source, mapper, mapper_indexed=None):
         if isinstance(mapper_result, collections.Iterable):
             result = Observable.from_(mapper_result)
         else:
-            result = Observable.from_future(mapper_result)
+            result = Observable.from_future(mapper_result) if is_future(mapper_result) else mapper_result
         return result
 
     return source.map(mapper_indexed=projection).merge_all()
@@ -69,7 +71,7 @@ def flat_map(source: ObservableBase,
             if isinstance(mapper_result, collections.Iterable):
                 result = Observable.from_(mapper_result)
             else:
-                result = Observable.from_future(mapper_result)
+                result = Observable.from_future(mapper_result) if is_future(mapper_result) else mapper_result
 
             if result_mapper:
                 return result.map(lambda y: result_mapper(x, y))

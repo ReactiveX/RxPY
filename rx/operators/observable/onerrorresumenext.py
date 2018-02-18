@@ -1,6 +1,7 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, \
     SerialDisposable
+from rx.internal.utils import is_future
 
 
 def on_error_resume_next(*args) -> ObservableBase:
@@ -34,7 +35,7 @@ def on_error_resume_next(*args) -> ObservableBase:
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = Observable.from_future(source)
+            current = Observable.from_future(source) if is_future(source) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d

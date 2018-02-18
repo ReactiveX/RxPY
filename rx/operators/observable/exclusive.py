@@ -1,5 +1,6 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.utils import is_future
 
 
 def exclusive(self) -> ObservableBase:
@@ -25,7 +26,7 @@ def exclusive(self) -> ObservableBase:
             if not has_current[0]:
                 has_current[0] = True
 
-                inner_source = Observable.from_future(inner_source)
+                inner_source = Observable.from_future(inner_source) if is_future(inner_source) else inner_source
 
                 inner_subscription = SingleAssignmentDisposable()
                 g.add(inner_subscription)

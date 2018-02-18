@@ -1,5 +1,6 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.utils import is_future
 
 
 def skip_until(source, other: ObservableBase) -> ObservableBase:
@@ -14,7 +15,7 @@ def skip_until(source, other: ObservableBase) -> ObservableBase:
     propagation.
     """
 
-    other = Observable.from_future(other)
+    other = Observable.from_future(other) if is_future(other) else other
 
     def subscribe(observer, scheduler=None):
         is_open = [False]

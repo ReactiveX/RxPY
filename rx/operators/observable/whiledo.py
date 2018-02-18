@@ -1,7 +1,7 @@
 from rx.core import ObservableBase, Observable
 
 from rx.internal.iterable import Iterable
-
+from rx.internal.utils import is_future
 
 def while_do(condition, source: ObservableBase) -> ObservableBase:
     """Repeats source as long as condition holds emulating a while loop.
@@ -16,6 +16,6 @@ def while_do(condition, source: ObservableBase) -> ObservableBase:
     condition holds.
     """
 
-    source = Observable.from_future(source)
+    source = Observable.from_future(source) if is_future(source) else source
     from .concat import concat
     return concat(Iterable.while_do(condition, source))

@@ -1,5 +1,6 @@
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.utils import is_future
 
 
 def _amb(left_source, right_source):
@@ -11,7 +12,7 @@ def _amb(left_source, right_source):
     sequences, whichever reacted first.
     """
 
-    right_source = Observable.from_future(right_source)
+    right_source = Observable.from_future(right_source) if is_future(right_source) else right_source
 
     def subscribe(observer, scheduler=None):
         choice = [None]

@@ -48,8 +48,7 @@ class Filter(Observable):
                     self._observer.on_next(value)
 
 # pylint: disable=W0622
-def filter(predicate: Predicate = None,
-           predicate_indexed: PredicateIndexed = None):
+def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = None):
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 

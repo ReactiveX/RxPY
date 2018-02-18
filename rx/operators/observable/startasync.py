@@ -1,4 +1,5 @@
 from rx.core import ObservableBase, Observable
+from rx.internal.utils import is_future
 
 
 def start_async(function_async) -> ObservableBase:

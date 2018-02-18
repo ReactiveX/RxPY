@@ -1,4 +1,5 @@
 from rx.core import ObservableBase, Observable
+from rx.internal.utils import is_future
 
 
 def case(mapper, sources, default_source=None) -> ObservableBase:
@@ -28,7 +29,7 @@ def case(mapper, sources, default_source=None) -> ObservableBase:
         except KeyError:
             result = default_source
 
-        result = Observable.from_future(result)
+        result = Observable.from_future(result) if is_future(result) else result
 
         return result
     return Observable.defer(factory)

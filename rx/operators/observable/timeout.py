@@ -4,6 +4,7 @@ from typing import Union
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
+from rx.internal.utils import is_future
 
 
 def timeout(source: ObservableBase, duetime: Union[int, datetime],
@@ -30,7 +31,7 @@ def timeout(source: ObservableBase, duetime: Union[int, datetime],
     """
 
     other = other or Observable.throw(Exception("Timeout"))
-    other = Observable.from_future(other)
+    other = Observable.from_future(other) if is_future(other) else other
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
