@@ -1,4 +1,5 @@
 from typing import Callable
+from rx.core import abc
 from .observablebase import ObservableBase
 
 
@@ -10,12 +11,12 @@ class AnonymousObservable(ObservableBase):
         """Creates an observable sequence object from the specified
         subscription function.
 
-        Keyword arguments:
-        :param types.FunctionType subscribe: Subscribe method implementation.
+        Args:
+            subscribe: Subscribe method implementation.
         """
 
         self._subscribe = subscribe
         super().__init__()
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: abc.Observer, scheduler: abc.Scheduler = None):
         return self._subscribe(observer, scheduler)
