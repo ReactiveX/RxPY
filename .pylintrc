@@ -4,4 +4,4 @@ good-names=n,x,xs,ys,zs,ex,obv,obs,T_in,T_out,do,_
 
 [MESSAGES CONTROL]
 
-disable=C0111
+disable=missing-docstring,unused-argument,invalid-name
