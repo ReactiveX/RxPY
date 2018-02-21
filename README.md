@@ -54,12 +54,12 @@ from rx import Observable, Observer
 
 
 def push_five_strings(observer):
-        observer.on_next("Alpha")
-        observer.on_next("Beta")
-        observer.on_next("Gamma")
-        observer.on_next("Delta")
-        observer.on_next("Epsilon")
-        observer.on_completed()
+    observer.on_next("Alpha")
+    observer.on_next("Beta")
+    observer.on_next("Gamma")
+    observer.on_next("Delta")
+    observer.on_next("Epsilon")
+    observer.on_completed()
 
 
 class PrintObserver(Observer):
@@ -80,14 +80,12 @@ source.subscribe(PrintObserver())
 
 **OUTPUT:**
 
-```
-Received Alpha
-Received Beta
-Received Gamma
-Received Delta
-Received Epsilon
-Done!
-```
+    Received Alpha
+    Received Beta
+    Received Gamma
+    Received Delta
+    Received Epsilon
+    Done!
 
 However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.of()`. This factory accepts an argument list, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass these five Strings as arguments to it.
 
@@ -136,14 +134,11 @@ source.subscribe_(lambda value: print("Received {0}".format(value)))
 
 **OUTPUT:**
 
-```
-Received Alpha
-Received Beta
-Received Gamma
-Received Delta
-Received Epsilon
-```
-
+    Received Alpha
+    Received Beta
+    Received Gamma
+    Received Delta
+    Received Epsilon
 
 ### Operators and Chaining
 
@@ -163,12 +158,10 @@ filtered.subscribe_(lambda value: print("Received {0}".format(value)))
 
 **OUTPUT:**
 
-```
-Received 5
-Received 5
-Received 5
-Received 7
-```
+    Received 5
+    Received 5
+    Received 5
+    Received 7
 
 Typically, you do not want to save Observables into intermediary variables for each operator, unless you want to have multiple subscribers at that point. Instead, you want to strive to inline and create an "Observable chain" of operations. That way your code is readable and tells a story much more easily.
 
@@ -287,9 +280,7 @@ three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format
 
 ### Combining Observables
 
-
 You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
-
 
 ```python
 from rx import Observable
@@ -306,13 +297,11 @@ input("Press any key to quit\n")
 
 **OUTPUT:**
 
-```
-('Alpha', 0)
-('Beta', 1)
-('Gamma', 2)
-('Delta', 3)
-('Epsilon', 4)
-```
+    ('Alpha', 0)
+    ('Beta', 1)
+    ('Gamma', 2)
+    ('Delta', 3)
+    ('Epsilon', 4)
 
 You can create Observables off of virtually anything, and it is often helpful to create API's and helper functions that return tailored Observables. For instance, you can create an `Observable` off a [SQL query using SQLAlchemy](http://docs.sqlalchemy.org/en/latest/core/tutorial.html#using-textual-sql), and return a `CUSTOMER` table record for a given customer ID. You can also use `flat_map()` to map each emission to an `Observable` and merge their emissions together into a single `Observable`. This allows us to query for three different customers as shown below.
 
