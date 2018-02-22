@@ -11,9 +11,9 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
-    an OnCompleted notification. When a new element with the same key value
-    as a reclaimed group occurs, the group will be reborn with a new
-    lifetime request.
+    an OnCompleted notification. When a new element with the same key
+    value as a reclaimed group occurs, the group will be reborn with a
+    new lifetime request.
 
     1 - observable.group_by_until(
             lambda x: x.id,

@@ -24,19 +24,24 @@ class ObservableBase(typing.Observable):
         self.source = source
 
     def __add__(self, other):
-        """Pythonic version of concat
+        """Pythonic version of concat.
 
         Example:
-        zs = xs + ys
-        Returns self.concat(other)"""
+            >>> zs = xs + ys
+
+        Returns:
+            self.concat(other)"""
         from ..operators.observable.concat import concat
         return concat(self, other)
 
     def __await__(self) -> Any:
-        """Awaits the given observable
+        """Awaits the given observable.
 
-        Returns the last item of the observable sequence. Raises
-        TypeError: If key is not of type int or slice
+        Returns:
+            The last item of the observable sequence.
+
+        Raises:
+            TypeError: If key is not of type int or slice
         """
         return iter(self.to_future())
 
@@ -56,15 +61,16 @@ class ObservableBase(typing.Observable):
         0   1   2   3   4   5   6   7   8
        -8  -7  -6  -5  -4  -3  -2  -1   0
 
-        Example:
-        result = source[1:10]
-        result = source[1:-2]
-        result = source[1:-1:2]
+        Examples:
+            >>> result = source[1:10]
+            >>> result = source[1:-2]
+            >>> result = source[1:-1:2]
 
-        Keyword arguments:
-        key -- Slice object
+        Args:
+            key: Slice object
 
-        Returns a sliced observable sequence.
+        Returns:
+            A sliced observable sequence.
         """
 
         if isinstance(key, slice):
@@ -109,16 +115,16 @@ class ObservableBase(typing.Observable):
         """Subscribe an observer to the observable sequence.
 
         Examples:
-        1 - source.subscribe()
-        2 - source.subscribe(observer)
+            >>> source.subscribe()
+            >>> source.subscribe(observer)
 
-        Keyword arguments:
-        observer -- [Optional] The object that is to receive
-            notifications.
-        scheduler -- [Optional] The scheduler to use.
+        Args:
+            observer: The object that is to receive notifications.
+            scheduler: The scheduler to use.
 
-        Return disposable object representing an observer's subscription
-        to the observable sequence.
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
         """
         from .subscribe import subscribe
         return subscribe(self, observer, scheduler)
@@ -132,21 +138,22 @@ class ObservableBase(typing.Observable):
         """Subscribe callbacks to the observable sequence.
 
         Examples:
-        1 - source.subscribe_(on_next)
-        2 - source.subscribe_(on_next, on_error)
-        3 - source.subscribe_(on_next, on_error, on_completed)
+            >>> source.subscribe_(on_next)
+            >>> source.subscribe_(on_next, on_error)
+            >>> source.subscribe_(on_next, on_error, on_completed)
 
-        Keyword arguments:
-        on_next -- [Optional] Action to invoke for each element in the
-            observable sequence.
-        on_error -- [Optional] Action to invoke upon exceptional
-            termination of the observable sequence.
-        on_completed -- [Optional] Action to invoke upon graceful
-            termination of the observable sequence.
-        scheduler -- [Optional] The scheduler to use.
+        Args:
+            on_next: Action to invoke for each element in the observable
+                sequence.
+            on_error: Action to invoke upon exceptional termination of
+                the observable sequence.
+            on_completed: Action to invoke upon graceful termination of
+                the observable sequence.
+            scheduler: The scheduler to use.
 
-        Return disposable object representing an observer's subscription
-        to the observable sequence.
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
         """
         observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
@@ -158,14 +165,16 @@ class ObservableBase(typing.Observable):
         """Determines whether all elements of an observable sequence
         satisfy a condition.
 
-        1 - res = source.all(lambda value: value.length > 3)
+        Examples:
+            >>> res = source.all(lambda value: value.length > 3)
 
-        Keyword arguments:
-        predicate -- A function to test each element for a condition.
+        Args:
+            predicate: A function to test each element for a condition.
 
-        Returns an observable sequence containing a single element
-        determining whether all elements in the source sequence pass the
-        test in the specified predicate.
+        Returns:
+            An observable sequence containing a single element
+            determining whether all elements in the source sequence pass
+            the test in the specified predicate.
         """
         from ..operators.observable.all import all as all_
         return all_(self, predicate)
@@ -187,11 +196,13 @@ class ObservableBase(typing.Observable):
         """Creates a pattern that matches when both observable sequences
         have an available value.
 
-        Keyword arguments:
-        right -- Observable sequence to match with the current sequence.
+        Args:
+            right: Observable sequence to match with the current
+                sequence.
 
-        Returns Pattern object that matches when both observable
-        sequences have an available value.
+        Returns:
+            Pattern object that matches when both observable sequences
+            have an available value.
         """
         from ..operators.observable.and_ import and_
         return and_(self, right)
@@ -199,8 +210,9 @@ class ObservableBase(typing.Observable):
     def as_observable(self) -> 'ObservableBase':
         """Hides the identity of an observable sequence.
 
-        Returns an observable sequence that hides the identity of the
-        source sequence.
+        Returns:
+            An observable sequence that hides the identity of the
+            source sequence.
         """
         from ..operators.observable.asobservable import as_observable
         source = self
@@ -211,15 +223,16 @@ class ObservableBase(typing.Observable):
         are in the sequence or obtained by invoking a transform function
         on each element of the input sequence if present.
 
-        Example
-        res = source.average();
-        res = source.average(lambda x: x.value)
+        Examples:
+            >>> res = source.average()
+            >>> res = source.average(lambda x: x.value)
 
-        Keyword arguments:
-        key_mapper -- A transform function to apply to each element.
+        Args:
+            key_mapper: A transform function to apply to each element.
 
-        Returns an observable sequence containing a single element with
-        the average of the sequence of values.
+        Returns:
+            An observable sequence containing a single element with
+            the average of the sequence of values.
         """
         from ..operators.observable.average import average
         return average(self, key_mapper)
@@ -248,17 +261,18 @@ class ObservableBase(typing.Observable):
         more buffers which are produced based on element count
         information.
 
-        Example:
-        res = xs.buffer_with_count(10)
-        res = xs.buffer_with_count(10, 1)
+        Examples:
+            >>> res = xs.buffer_with_count(10)
+            >>> res = xs.buffer_with_count(10, 1)
 
-        Keyword parameters:
-        count: Length of each buffer.
-        skip -- [Optional] Number of elements to skip between creation
-            of consecutive buffers. If not provided, defaults to the
-            count.
+        Args:
+            count: Length of each buffer.
+            skip: Number of elements to skip between creation of
+                consecutive buffers. If not provided, defaults to the
+                count.
 
-        Returns an observable {Observable} sequence of buffers.
+        Returns:
+            An observable {Observable} sequence of buffers.
         """
         from ..operators.observable.buffer import buffer_with_count
         return buffer_with_count(self, count, skip)
@@ -267,21 +281,23 @@ class ObservableBase(typing.Observable):
         """Projects each element of an observable sequence into zero or
         more buffers which are produced based on timing information.
 
-        # non-overlapping segments of 1 second
-        1 - res = xs.buffer_with_time(1000)
-        # segments of 1 second with time shift 0.5 seconds
-        2 - res = xs.buffer_with_time(1000, 500)
+        Examples:
+            # non-overlapping segments of 1 second
+            >>> res = xs.buffer_with_time(1000)
+            # segments of 1 second with time shift 0.5 seconds
+            >>> res = xs.buffer_with_time(1000, 500)
 
-        Keyword arguments:
-        timespan -- Length of each buffer (specified as an integer denoting
-            milliseconds).
-        timeshift -- [Optional] Interval between creation of consecutive
-            buffers (specified as an integer denoting milliseconds), or an
-            optional scheduler parameter. If not specified, the time shift
-            corresponds to the timespan parameter, resulting in non-overlapping
-            adjacent buffers.
+        Args:
+            timespan: Length of each buffer (specified as an integer
+                denoting milliseconds).
+            timeshift: Interval between creation of consecutive buffers
+                (specified as an integer denoting milliseconds), or an
+                optional scheduler parameter. If not specified, the time
+                shift corresponds to the timespan parameter, resulting
+                in non-overlapping adjacent buffers.
 
-        Returns an observable sequence of buffers.
+        Returns:
+            An observable sequence of buffers.
         """
         from ..operators.observable.bufferwithtime import buffer_with_time
         return buffer_with_time(self, timespan, timeshift)
@@ -331,17 +347,17 @@ class ObservableBase(typing.Observable):
                        mapper: Callable[[Any], Any]) -> 'ObservableBase':
         """Merges the specified observable sequences into one observable
         sequence by using the mapper function whenever any of the
-        observable sequences produces an element. This can be in the form of
-        an argument list of observables or an array.
+        observable sequences produces an element. This can be in the
+        form of an argument list of observables or an array.
 
-        1 - obs = observable.combine_latest(obs1, obs2, obs3,
-                                            lambda o1, o2, o3: o1 + o2 + o3)
-        2 - obs = observable.combine_latest([obs1, obs2, obs3],
-                                            lambda o1, o2, o3: o1 + o2 + o3)
+        Examples:
+            >>> obs = observable.combine_latest(obs1, obs2, obs3, lambda o1, o2, o3: o1 + o2 + o3)
+            >>> obs = observable.combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
 
-        Returns an observable sequence containing the result of combining
-        elements of the sources using the specified result mapper
-        function.
+        Returns:
+            An observable sequence containing the result of combining
+            elements of the sources using the specified result mapper
+            function.
         """
         from ..operators.observable.combinelatest import combine_latest
         if isinstance(observables, typing.Observable):
@@ -351,13 +367,15 @@ class ObservableBase(typing.Observable):
         return combine_latest(args, mapper)
 
     def concat(self, *args: 'ObservableBase') -> 'ObservableBase':
-        """Concatenates all the observable sequences. This takes in either an
-        array or variable arguments to concatenate.
+        """Concatenates all the observable sequences. This takes in
+        either an array or variable arguments to concatenate.
 
-        1 - concatenated = xs.concat(ys, zs)
+        Example:
+            >>> concatenated = xs.concat(ys, zs)
 
-        Returns an observable sequence that contains the elements of each given
-        sequence, in sequential order.
+        Returns:
+            An observable sequence that contains the elements of each
+            given sequence, in sequential order.
         """
         from ..operators.observable.concat import concat
         source = self
@@ -366,8 +384,9 @@ class ObservableBase(typing.Observable):
     def concat_all(self) -> 'ObservableBase':
         """Concatenates an observable sequence of observable sequences.
 
-        Returns an observable sequence that contains the elements of each
-        observed inner sequence, in sequential order.
+        Returns:
+            An observable sequence that contains the elements of each
+            observed inner sequence, in sequential order.
         """
         return self.merge(max_concurrent=1)
 
@@ -399,39 +418,45 @@ class ObservableBase(typing.Observable):
         return contains(self, value, comparer)
 
     def count(self, predicate=None) -> 'ObservableBase':
-        """Returns an observable sequence containing a value that represents
-        how many elements in the specified observable sequence satisfy a
-        condition if provided, else the count of items.
+        """Returns an observable sequence containing a value that
+        represents how many elements in the specified observable
+        sequence satisfy a condition if provided, else the count of
+        items.
 
-        1 - res = source.count()
-        2 - res = source.count(lambda x: x > 3)
+        Examples:
+            >>> res = source.count()
+            >>> res = source.count(lambda x: x > 3)
 
-        Keyword arguments:
-        predicate -- A function to test each element for a condition.
+        Args:
+            predicate: A function to test each element for a condition.
 
-        Returns an observable sequence containing a single element with a
-        number that represents how many elements in the input sequence
-        satisfy the condition in the predicate function if provided, else
-        the count of items in the sequence.
+        Returns:
+            An observable sequence containing a single element with a
+            number that represents how many elements in the input
+            sequence satisfy the condition in the predicate function if
+            provided, else the count of items in the sequence.
         """
         from ..operators.observable.count import count
         return count(self, predicate)
 
     def controlled(self, enable_queue: bool = True, scheduler=None):
-        """Attach a controller to the observable sequence
+        """Attach a controller to the observable sequence.
 
-        Attach a controller to the observable sequence with the ability to
-        queue.
+        Attach a controller to the observable sequence with the ability
+        to queue.
 
         Example:
-        source = rx.Observable.interval(100).controlled()
-        source.request(3) # Reads 3 values
+            >>> source = rx.Observable.interval(100).controlled()
+            >>> source.request(3) # Reads 3 values
 
-        Keyword arguments:
-        enable_queue -- truthy value to determine if values should
-            be queued pending the next request
-        scheduler -- determines how the requests will be scheduled
-        Returns the observable sequence which only propagates values on request.
+        Args:
+            enable_queue: truthy value to determine if values should
+                be queued pending the next request
+            scheduler: determines how the requests will be scheduled
+
+        Returns:
+            The observable sequence which only propagates values on
+            request.
         """
 
         from ..backpressure.observableextensions import controlled
@@ -442,66 +467,77 @@ class ObservableBase(typing.Observable):
         specified value in a singleton sequence if the sequence is
         empty.
 
-        obs = xs.default_if_empty()
-        obs = xs.default_if_empty(False)
+        Examples:
+            >>> obs = xs.default_if_empty()
+            >>> obs = xs.default_if_empty(False)
 
-        Keyword arguments:
-        default_value -- The value to return if the sequence is empty. If not
-            provided, this defaults to None.
+        Args:
+            default_value: The value to return if the sequence is empty.
+                If not provided, this defaults to None.
 
-        Returns an observable sequence that contains the specified
-        default value if the source is empty otherwise, the elements of
-        the source itself.
+        Returns:
+            An observable sequence that contains the specified default
+            value if the source is empty otherwise, the elements of the
+            source itself.
         """
         from ..operators.observable.defaultifempty import default_if_empty
         return default_if_empty(self, default_value)
 
     def delay(self, duetime):
-        """Time shifts the observable sequence by duetime. The relative time
-        intervals between the values are preserved.
+        """Time shifts the observable sequence by duetime. The relative
+        time intervals between the values are preserved.
 
-        1 - res = rx.Observable.delay(datetime())
-        2 - res = rx.Observable.delay(5000)
+        Examples:
+            >>> res = rx.Observable.delay(datetime())
+            >>> res = rx.Observable.delay(5000)
 
-        Keyword arguments:
-        duetime -- Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) by which
-            to shift the observable sequence.
+        Args:
+            duetime: Absolute (specified as a datetime object) or
+                relative time (specified as an integer denoting
+                milliseconds) by which to shift the observable sequence.
 
-        Returns time-shifted sequence.
+        Returns:
+            Time-shifted observable sequence.
         """
         from ..operators.observable.delay import delay
         return delay(self, duetime)
 
     def delay_subscription(self, duetime: Union[datetime, int]) -> 'ObservableBase':
-        """Time shifts the observable sequence by delaying the subscription.
+        """Time shifts the observable sequence by delaying the
+        subscription.
 
-        1 - res = source.delay_subscription(5000) # 5s
+        Example:
+            >>> res = source.delay_subscription(5000) # 5s
 
-        duetime -- Absolute or relative time to perform the subscription at.
+        Args:
+            duetime: Absolute or relative time to perform the
+            subscription at.
 
-        Returns time-shifted sequence.
+        Returns:
+            Time-shifted observable sequence.
         """
         from ..operators.observable.delaysubscription import delay_subscription
         return delay_subscription(self, duetime)
 
     def delay_with_selector(self, subscription_delay=None, delay_duration_mapper=None
                            ) -> 'ObservableBase':
-        """Time shifts the observable sequence based on a subscription delay
-        and a delay mapper function for each element.
+        """Time shifts the observable sequence based on a subscription
+        delay and a delay mapper function for each element.
 
-        # with mapper only
-        1 - res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
-        # with delay and mapper
-        2 - res = source.delay_with_selector(Observable.timer(2000),
-                                            lambda x: Observable.timer(x))
+        Examples:
+            # with mapper only
+            >>> res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
+            # with delay and mapper
+            >>> res = source.delay_with_selector(Observable.timer(2000), lambda x: Observable.timer(x))
 
-        subscription_delay -- [Optional] Sequence indicating the delay for the
-            subscription to the source.
-        delay_duration_mapper [Optional] Selector function to retrieve a
-            sequence indicating the delay for each given element.
+        Args:
+            subscription_delay: Sequence indicating the delay for the
+                subscription to the source.
+            delay_duration_mapper: Selector function to retrieve a
+                sequence indicating the delay for each given element.
 
-        Returns time-shifted sequence.
+        Returns:
+            Time-shifted observable sequence.
         """
         from ..operators.observable.delaywithselector import delay_with_selector
         return delay_with_selector(self, subscription_delay, delay_duration_mapper)
@@ -510,8 +546,9 @@ class ObservableBase(typing.Observable):
         """Dematerializes the explicit notification values of an
         observable sequence as implicit notifications.
 
-        Returns an observable sequence exhibiting the behavior
-        corresponding to the source sequence's notification values.
+        Returns:
+            An observable sequence exhibiting the behavior corresponding
+            to the source sequence's notification values.
         """
         from ..operators.observable.dematerialize import dematerialize
         return dematerialize(self)
@@ -523,19 +560,20 @@ class ObservableBase(typing.Observable):
         maintenance of an internal lookup structure which can grow
         large.
 
-        Example:
-        res = obs = xs.distinct()
-        obs = xs.distinct(lambda x: x.id)
-        obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
+        Examples:
+            >>> res = obs = xs.distinct()
+            >>> obs = xs.distinct(lambda x: x.id)
+            >>> obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
 
-        Keyword arguments:
-        key_mapper -- [Optional]  A function to compute the comparison
-            key for each element.
-        comparer -- [Optional]  Used to compare items in the collection.
+        Args:
+            key_mapper: A function to compute the comparison key for
+                each element.
+            comparer: Used to compare items in the collection.
 
-        Returns an observable sequence only containing the distinct
-        elements, based on a computed key value, from the source
-        sequence.
+        Returns:
+            An observable sequence only containing the distinct
+            elements, based on a computed key value, from the source
+            sequence.
         """
         from ..operators.observable.distinct import distinct
         return distinct(self, key_mapper, comparer)
@@ -930,8 +968,9 @@ class ObservableBase(typing.Observable):
         """Ignores all elements in an observable sequence leaving only
         the termination messages.
 
-        Returns an empty observable {Observable} sequence that signals
-        termination, successful or exceptional, of the source sequence.
+        Returns:
+            An empty observable sequence that signals termination,
+            successful or exceptional, of the source sequence.
         """
         from ..operators.observable.ignoreelements import ignore_elements
         return ignore_elements(self)
@@ -939,8 +978,9 @@ class ObservableBase(typing.Observable):
     def is_empty(self) -> 'ObservableBase':
         """Determines whether an observable sequence is empty.
 
-        Returns an observable sequence containing a single element
-        determining whether the source sequence is empty.
+        Returns:
+            An observable sequence containing a single element
+            determining whether the source sequence is empty.
         """
 
         return self.some().map(lambda b: not b)
@@ -971,19 +1011,21 @@ class ObservableBase(typing.Observable):
         return join(self, right, left_duration_mapper, right_duration_mapper, result_mapper)
 
     def last(self, predicate=None) -> 'ObservableBase':
-        """Returns the last element of an observable sequence that satisfies the
-        condition in the predicate if specified, else the last element.
+        """Returns the last element of an observable sequence that
+        satisfies the condition in the predicate if specified, else the
+        last element.
 
-        Example:
-        res = source.last()
-        res = source.last(lambda x: x > 3)
+        Examples:
+            >>> res = source.last()
+            >>> res = source.last(lambda x: x > 3)
 
-        Keyword arguments:
-        predicate -- [Optional] A predicate function to evaluate for
-            elements in the source sequence.
+        Args:
+            predicate: A predicate function to evaluate for elements in
+            the source sequence.
 
-        Returns sequence containing the last element in the observable
-        sequence that satisfies the condition in the predicate.
+        Returns:
+            Sequence containing the last element in the observable
+            sequence that satisfies the condition in the predicate.
         """
         from ..operators.observable.last import last
         return last(self, predicate)
@@ -991,24 +1033,26 @@ class ObservableBase(typing.Observable):
     def last_or_default(self, predicate=None, default_value=None) -> 'ObservableBase':
         """Return last or default element.
 
-        Returns the last element of an observable sequence that satisfies
-        the condition in the predicate, or a default value if no such
-        element exists.
+        Returns the last element of an observable sequence that
+        satisfies the condition in the predicate, or a default value if
+        no such element exists.
 
         Examples:
-        res = source.last_or_default()
-        res = source.last_or_default(lambda x: x > 3)
-        res = source.last_or_default(lambda x: x > 3, 0)
-        res = source.last_or_default(None, 0)
+            >>> res = source.last_or_default()
+            >>> res = source.last_or_default(lambda x: x > 3)
+            >>> res = source.last_or_default(lambda x: x > 3, 0)
+            >>> res = source.last_or_default(None, 0)
 
-        predicate -- [Optional] A predicate function to evaluate for
-            elements in the source sequence.
-        default_value -- [Optional] The default value if no such element
-            exists. If not specified, defaults to None.
+        Args:
+            predicate: A predicate function to evaluate for elements in
+                the source sequence.
+            default_value: The default value if no such element exists.
+                If not specified, defaults to None.
 
-        Returns Observable sequence containing the last element in the
-        observable sequence that satisfies the condition in the predicate,
-        or a default value if no such element exists.
+        Returns:
+            Observable sequence containing the last element in the
+            observable sequence that satisfies the condition in the
+            predicate, or a default value if no such element exists.
         """
         from ..operators.observable.lastordefault import last_or_default
         return last_or_default(self, predicate, default_value)
@@ -1413,18 +1457,21 @@ class ObservableBase(typing.Observable):
     aggregate = reduce
 
     def repeat(self, repeat_count=None) -> 'ObservableBase':
-        """Repeats the observable sequence a specified number of times. If the
-        repeat count is not specified, the sequence repeats indefinitely.
+        """Repeats the observable sequence a specified number of times.
+        If the repeat count is not specified, the sequence repeats
+        indefinitely.
 
-        1 - repeated = source.repeat()
-        2 - repeated = source.repeat(42)
+        Examples:
+            >>> repeated = source.repeat()
+            >>> repeated = source.repeat(42)
 
-        Keyword arguments:
-        repeat_count -- Number of times to repeat the sequence. If not
+        Args:
+            repeat_count: Number of times to repeat the sequence. If not
             provided, repeats the sequence indefinitely.
 
-        Returns the observable sequence producing the elements of the given
-        sequence repeatedly."""
+        Returns:
+            The observable sequence producing the elements of the given
+            sequence repeatedly."""
 
         from rx.internal.iterable import Iterable as CoreIterable
         from ..operators.observable.concat import concat
@@ -1433,31 +1480,36 @@ class ObservableBase(typing.Observable):
 
     def replay(self, mapper: Mapper = None, buffer_size: int = None, window: timedelta = None,
                scheduler: Scheduler = None) -> 'Union[ObservableBase, rx.core.ConnectableObservable]':
-        """Returns an observable sequence that is the result of invoking the
-        mapper on a connectable observable sequence that shares a single
-        subscription to the underlying sequence replaying notifications subject
-        to a maximum time length for the replay buffer.
+        """Returns an observable sequence that is the result of invoking
+        the mapper on a connectable observable sequence that shares a
+        single subscription to the underlying sequence replaying
+        notifications subject to a maximum time length for the replay
+        buffer.
 
-        This operator is a specialization of Multicast using a ReplaySubject.
+        Note:
+            This operator is a specialization of Multicast using a
+            ReplaySubject.
 
         Example:
-        res = source.replay(buffer_size=3)
-        res = source.replay(buffer_size=3, window=500)
-        res = source.replay(None, 3, 500)
-        res = source.replay(lambda x: x.take(6).repeat(), 3, 500)
+            >>> res = source.replay(buffer_size=3)
+            >>> res = source.replay(buffer_size=3, window=500)
+            >>> res = source.replay(None, 3, 500)
+            >>> res = source.replay(lambda x: x.take(6).repeat(), 3, 500)
 
-        Keyword arguments:
-        mapper -- [Optional] Selector function which can use the multicasted
-            source sequence as many times as needed, without causing multiple
-            subscriptions to the source sequence. Subscribers to the given
-            source will receive all the notifications of the source subject to
-            the specified replay buffer trimming policy.
-        buffer_size -- [Optional] Maximum element count of the replay buffer.
-        window -- [Optional] Maximum time length of the replay buffer.
+        Args:
+            mapper: Selector function which can use the multicasted
+                source sequence as many times as needed, without causing
+                multiple subscriptions to the source sequence.
+                Subscribers to the given source will receive all the
+                notifications of the source subject to the specified
+                replay buffer trimming policy.
+            buffer_size: Maximum element count of the replay buffer.
+            window: Maximum time length of the replay buffer.
 
-        Returns {Observable} An observable sequence that contains the elements
-        of a sequence produced by multicasting the source sequence within a
-        mapper function.
+        Returns:
+            An observable sequence that contains the elements of a
+            sequence produced by multicasting the source sequence within
+            a mapper function.
         """
         from ..operators.observable.replay import replay
         return replay(self, mapper, buffer_size, window, scheduler)
@@ -1467,14 +1519,17 @@ class ObservableBase(typing.Observable):
         of times or until it successfully terminates. If the retry count
         is not specified, it retries indefinitely.
 
-        1 - retried = xs.retry()
-        2 - retried = xs.retry(42)
+        Examples:
+            >>> retried = xs.retry()
+            >>> retried = xs.retry(42)
 
-        retry_count -- [Optional] Number of times to retry the sequence.
-            If not provided, retry the sequence indefinitely.
+        Args:
+            retry_count: Number of times to retry the sequence. If not
+                provided, retry the sequence indefinitely.
 
-        Returns an observable sequence producing the elements of the
-        given sequence repeatedly until it terminates successfully.
+        Returns:
+            An observable sequence producing the elements of the given
+            sequence repeatedly until it terminates successfully.
         """
         from ..operators.observable.retry import retry
         return retry(self, retry_count)
@@ -1482,13 +1537,14 @@ class ObservableBase(typing.Observable):
     def sample(self, interval=None, sampler=None):
         """Samples the observable sequence at each interval.
 
-        1 - res = source.sample(sample_observable) # Sampler tick sequence
-        2 - res = source.sample(5000) # 5 seconds
+        Examples:
+            >>> res = source.sample(sample_observable) # Sampler tick sequence
+            >>> res = source.sample(5000) # 5 seconds
 
-        Keyword arguments:
-        source -- Source sequence to sample.
-        interval -- Interval at which to sample (specified as an integer
-            denoting milliseconds).
+        Args:
+            source: Source sequence to sample.
+            interval: Interval at which to sample (specified as an
+                integer denoting milliseconds).
 
         Returns sampled observable sequence.
         """
@@ -1503,16 +1559,17 @@ class ObservableBase(typing.Observable):
         used as the initial accumulator value. For aggregation behavior
         with no intermediate results, see Observable.aggregate.
 
-        1 - scanned = source.scan(lambda acc, x: acc + x)
-        2 - scanned = source.scan(lambda acc, x: acc + x, 0)
+        Examples:
+            >>> scanned = source.scan(lambda acc, x: acc + x)
+            >>> scanned = source.scan(lambda acc, x: acc + x, 0)
 
-        Keyword arguments:
-        accumulator -- An accumulator function to be invoked on each
-            element.
-        seed -- [Optional] The initial accumulator value.
+        Args:
+            accumulator: An accumulator function to be invoked on each
+                element.
+            seed: The initial accumulator value.
 
-        Returns an observable sequence containing the accumulated
-        values.
+        Returns:
+            An observable sequence containing the accumulated values.
         """
         from ..operators.observable.scan import scan
         return scan(self, accumulator, seed)
@@ -1691,12 +1748,14 @@ class ObservableBase(typing.Observable):
         """Returns the values from the source observable sequence only
         after the other observable sequence produces a value.
 
-        other -- The observable sequence that triggers propagation of
-            elements of the source sequence.
+        Args:
+            other: The observable sequence that triggers propagation of
+                elements of the source sequence.
 
-        Returns an observable sequence containing the elements of the
-        source sequence starting from the point the other sequence
-        triggered propagation.
+        Returns:
+            An observable sequence containing the elements of the
+            source sequence starting from the point the other sequence
+            triggered propagation.
         """
         from ..operators.observable.skipuntil import skip_until
         return skip_until(self, other)
@@ -1710,35 +1769,40 @@ class ObservableBase(typing.Observable):
         time.
 
         Examples:
-        res = source.skip_until_with_time(datetime);
-        res = source.skip_until_with_time(5000);
+            >>> res = source.skip_until_with_time(datetime);
+            >>> res = source.skip_until_with_time(5000);
 
-        Keyword arguments:
-        start_time -- Time to start taking elements from the source
-            sequence. If this value is less than or equal to
-            datetime.utcnow(), no elements will be skipped.
+        Args:
+            start_time: Time to start taking elements from the source
+                sequence. If this value is less than or equal to
+                datetime.utcnow(), no elements will be skipped.
 
-        Returns an observable sequence with the elements skipped
-        until the specified start time.
+        Returns:
+            An observable sequence with the elements skipped until the
+            specified start time.
         """
         from ..operators.observable.skipuntilwithtime import skip_until_with_time
         return skip_until_with_time(self, start_time)
 
     def skip_while(self, predicate: Callable[[Any], Any]) -> 'ObservableBase':
-        """Bypasses elements in an observable sequence as long as a specified
-        condition is true and then returns the remaining elements. The
-        element's index is used in the logic of the predicate function.
+        """Bypasses elements in an observable sequence as long as a
+        specified condition is true and then returns the remaining
+        elements. The element's index is used in the logic of the
+        predicate function.
 
-        1 - source.skip_while(lambda value: value < 10)
-        2 - source.skip_while(lambda value, index: value < 10 or index < 10)
+        Examples:
+            >>> source.skip_while(lambda value: value < 10)
+            >>> source.skip_while(lambda value, index: value < 10 or index < 10)
 
-        predicate -- A function to test each element for a condition; the
-            second parameter of the function represents the index of the
-            source element.
+        Args:
+            predicate: A function to test each element for a condition;
+            the second parameter of the function represents the index of
+            the source element.
 
-        Returns an observable sequence that contains the elements from the
-        input sequence starting at the first element in the linear series that
-        does not pass the test specified by predicate.
+        Returns:
+            An observable sequence that contains the elements from the
+            input sequence starting at the first element in the linear
+            series that does not pass the test specified by predicate.
         """
         from ..operators.observable.skipwhile import skip_while
         return skip_while(self, predicate)
@@ -1766,9 +1830,8 @@ class ObservableBase(typing.Observable):
         the observable source sequence.
 
         Example:
-        1 - res = source.skip_with_time(5000)
+            >>> res = source.skip_with_time(5000)
 
-        Description:
         Specifying a zero value for duration doesn't guarantee no
         elements will be dropped from the start of the source sequence.
         This is a side-effect of the asynchrony introduced by the
@@ -1780,12 +1843,14 @@ class ObservableBase(typing.Observable):
         the result sequence, even if the error occurs before the
         duration.
 
-        Keyword arguments:
-        duration -- Duration for skipping elements from the start of the
-            sequence.
+        Args:
+            duration: Duration for skipping elements from the start of
+                the sequence.
 
-        Returns an observable sequence with the elements skipped during
-        the specified duration from the start of the source sequence.
+        Returns:
+            An observable sequence with the elements skipped during
+            the specified duration from the start of the source
+            sequence.
         """
         from ..operators.observable.skipwithtime import skip_with_time
         return skip_with_time(self, duration)
@@ -1795,17 +1860,18 @@ class ObservableBase(typing.Observable):
         satisfies a condition if present, else if some items are in the
         sequence.
 
-        Example:
-        result = source.some()
-        result = source.some(lambda x: x > 3)
+        Examples:
+            >>> result = source.some()
+            >>> result = source.some(lambda x: x > 3)
 
-        Keyword arguments:
-        predicate -- A function to test each element for a condition.
+        Args:
+            predicate: A function to test each element for a condition.
 
-        Returns an observable sequence containing a single element
-        determining whether some elements in the source sequence pass
-        the test in the specified predicate if given, else if some items
-        are in the sequence.
+        Returns:
+            An observable sequence containing a single element
+            determining whether some elements in the source sequence
+            pass the test in the specified predicate if given, else if
+            some items are in the sequence.
         """
         from ..operators.observable.some import some
         return some(self, predicate)
@@ -1813,9 +1879,11 @@ class ObservableBase(typing.Observable):
     def start_with(self, *args: Any) -> 'ObservableBase':
         """Prepends a sequence of values to an observable.
 
-        1 - source.start_with(1, 2, 3)
+        Example:
+            >>> source.start_with(1, 2, 3)
 
-        Returns the source sequence prepended with the specified values.
+        Returns:
+            The source sequence prepended with the specified values.
         """
         from ..operators.observable.startswith import start_with
         return start_with(self, *args)
@@ -1849,15 +1917,16 @@ class ObservableBase(typing.Observable):
         input sequence, else if not specified computes the sum on each
         item in the sequence.
 
-        Example
-        res = source.sum()
-        res = source.sum(lambda x: x.value)
+        Examples:
+            >>> res = source.sum()
+            >>> res = source.sum(lambda x: x.value)
 
-        key_mapper -- [Optional] A transform function to apply to each
-            element.
+        Args:
+            key_mapper: A transform function to apply to each element.
 
-        Returns an observable sequence containing a single element with
-        the sum of the values in the source sequence.
+        Returns:
+            An observable sequence containing a single element with
+            the sum of the values in the source sequence.
         """
         from ..operators.observable.sum import sum as _sum
         return _sum(self, key_mapper)

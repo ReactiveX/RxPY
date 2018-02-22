@@ -6,6 +6,7 @@
   makes it much easier for editors and IDEs to validate the code and
   perform code completion.
 - Python 3.6+ only with type hints
+- Google docstring style.
 
 ## 1.5.0
 

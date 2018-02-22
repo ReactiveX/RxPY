@@ -100,11 +100,14 @@ def do_after_next(source, after_next):
     return AnonymousObservable(subscribe)
 
 
-def do_on_subscribe(source, on_subscribe):
+def do_on_subscribe(source: ObservableBase, on_subscribe):
     """Invokes an action on subscription.
-    This can be helpful for debugging, logging, and other side effects on the start of an operation.
 
-    on_subscribe -- Action to invoke on subscription
+    This can be helpful for debugging, logging, and other side effects
+    on the start of an operation.
+
+    Args:
+        on_subscribe: Action to invoke on subscription
     """
     def subscribe(observer, scheduler=None):
         on_subscribe()
@@ -113,16 +116,18 @@ def do_on_subscribe(source, on_subscribe):
     return AnonymousObservable(subscribe)
 
 
-def do_on_dispose(source, on_dispose):
+def do_on_dispose(source: ObservableBase, on_dispose):
     """Invokes an action on disposal.
-     This can be helpful for debugging, logging, and other side effects on the disposal of an operation.
 
+     This can be helpful for debugging, logging, and other side effects
+     on the disposal of an operation.
 
-    on_dispose -- Action to invoke on disposal
+    Args:
+        on_dispose: Action to invoke on disposal
     """
 
     class OnDispose(Disposable):
-        def dispose(source):
+        def dispose(self):
             on_dispose()
 
     def subscribe(observer, scheduler=None):
@@ -137,7 +142,8 @@ def do_on_dispose(source, on_dispose):
 
 def do_on_terminate(source, on_terminate):
     """Invokes an action on an on_complete() or on_error() event.
-     This can be helpful for debugging, logging, and other side effects when completion or an error terminates an operation.
+     This can be helpful for debugging, logging, and other side effects
+     when completion or an error terminates an operation.
 
 
     on_terminate -- Action to invoke when on_complete or throw is called
@@ -193,9 +199,14 @@ def do_after_terminate(source, after_terminate):
 
 
 def do_finally(source, finally_action):
-    """Invokes an action after an on_complete(), on_error(), or disposal event occurs
-     This can be helpful for debugging, logging, and other side effects when completion, an error, or disposal terminates an operation.
-    Note this operator will strive to execute the finally_action once, and prevent any redudant calls
+    """Invokes an action after an on_complete(), on_error(), or disposal
+    event occurs.
+
+    This can be helpful for debugging, logging, and other side effects
+    when completion, an error, or disposal terminates an operation.
+
+    Note this operator will strive to execute the finally_action once,
+    and prevent any redudant calls
 
     finally_action -- Action to invoke after on_complete, on_error, or disposal is called
     """
