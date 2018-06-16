@@ -251,8 +251,8 @@ class TestSlice(unittest.TestCase):
         def create():
             return xs[-2:0]
         results = scheduler.start(create)
-        results.messages.assert_equal(
-            on_completed(200))
+        assert results.messages == [
+            on_completed(200)]
 
     def test_slice_step_2(self):
         scheduler = TestScheduler()
