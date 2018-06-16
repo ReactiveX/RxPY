@@ -40,5 +40,6 @@ setup(
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
               'rx.operators.observable.blocking', 'rx.disposables', 'rx.subjects',
               'rx.backpressure', 'rx.testing'],
-    package_dir={'rx': 'rx'}
+    package_dir={'rx': 'rx'},
+    include_package_data=True,
 )
