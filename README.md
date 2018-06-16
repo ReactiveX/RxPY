@@ -498,7 +498,7 @@ You can contribute by reviewing and sending feedback on code checkins, suggestin
 
 The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/). Please register any issues to [ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
 
-Note that the master branch is for releases only, so please submit any pull requests against the [develop](https://github.com/ReactiveX/RxPY/tree/develop) branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY/tree/develop).
+Please submit any pull requests against the [master](https://github.com/ReactiveX/RxPY/tree/master) branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY/tree/master).
 
 # License
 
