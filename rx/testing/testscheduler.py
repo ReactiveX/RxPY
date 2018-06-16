@@ -1,6 +1,6 @@
-import logging
+from typing import Callable, Any
 
-from rx.core import Observable, Disposable
+from rx.core import Observable, ObservableBase, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -8,39 +8,29 @@ from .hotobservable import HotObservable
 from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
 
-log = logging.getLogger("Rx")
-
 
 class TestScheduler(VirtualTimeScheduler):
     """Test time scheduler used for testing applications and libraries
     built using Reactive Extensions. All time, both absolute and relative is
     specified as integer ticks"""
 
-    def __init__(self):
-        """Initializes a new instance of the TestScheduler class."""
+    __test__ = False
 
-        def comparer(a, b):
-            return a - b
-        super(TestScheduler, self).__init__(0)
-
-    def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed at the specified virtual time.
+    def schedule_absolute(self, duetime: int, action: Callable, state: Any = None) -> Disposable:
+        """Schedules an action to be executed at the specified virtual
+        time.
 
         Keyword arguments:
-        :param int duetime: Absolute virtual time at which to execute the
+        duetime -- Absolute virtual time at which to execute the
             action.
-        :param types.FunctionType action: Action to be executed.
-        :param T state: State passed to the action to be executed.
+        action -- Action to be executed.
+        state -- State passed to the action to be executed.
 
-        :returns: Disposable object used to cancel the scheduled action
+        Returns disposable object used to cancel the scheduled action
             (best effort).
-        :rtype: Disposable
         """
 
         duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
-        if duetime <= self.clock:
-            duetime = self.clock + 1
-
         return super(TestScheduler, self).schedule_absolute(duetime, action, state)
 
     @staticmethod
@@ -49,7 +39,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         return absolute + relative
 
-    def start(self, create=None, created=None, subscribed=None, disposed=None):
+    def start(self, create=None, created=None, subscribed=None, disposed=None) -> MockObserver:
         """Starts the test scheduler and uses the specified virtual times to
         invoke the factory function, subscribe to the resulting sequence, and
         dispose the subscription.
@@ -87,7 +77,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            subscription[0] = source[0].subscribe(observer)
+            subscription[0] = source[0].subscribe(observer, scheduler)
             return Disposable.empty()
         self.schedule_absolute(subscribed, action_subscribe)
 
@@ -97,10 +87,10 @@ class TestScheduler(VirtualTimeScheduler):
             return Disposable.empty()
         self.schedule_absolute(disposed, action_dispose)
 
-        super(TestScheduler, self).start()
+        super().start()
         return observer
 
-    def create_hot_observable(self, *args):
+    def create_hot_observable(self, *args) -> ObservableBase:
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
 
@@ -112,13 +102,13 @@ class TestScheduler(VirtualTimeScheduler):
         of subscriptions and notifications.
         """
 
-        if len(args) and isinstance(args[0], list):
+        if args and isinstance(args[0], list):
             messages = args[0]
         else:
             messages = list(args)
         return HotObservable(self, messages)
 
-    def create_cold_observable(self, *args):
+    def create_cold_observable(self, *args) -> ObservableBase:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 
@@ -132,13 +122,13 @@ class TestScheduler(VirtualTimeScheduler):
         :rtype: Observable
         """
 
-        if len(args) and isinstance(args[0], list):
+        if args and isinstance(args[0], list):
             messages = args[0]
         else:
             messages = list(args)
         return ColdObservable(self, messages)
 
-    def create_observer(self):
+    def create_observer(self) -> MockObserver:
         """Creates an observer that records received notification messages and
         timestamps those. Return an Observer that can be used to assert the
         timing of received notifications.

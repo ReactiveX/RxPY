@@ -50,15 +50,13 @@ class TestWindowedObservable(unittest.TestCase):
         scheduler.schedule_absolute(355, action4)
 
         scheduler.start()
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(230, 3),
             on_next(301, 4),
             on_next(350, 5),
             on_next(399, 6),
-            on_completed(500)
-        )
+            on_completed(500)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             on_next(399, 6),
-            on_completed(500)
-        )
+            on_completed(500)]

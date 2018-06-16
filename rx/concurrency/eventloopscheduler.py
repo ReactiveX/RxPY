@@ -1,9 +1,7 @@
 import logging
 import threading
-from threading import Timer
 
-from rx import config
-from rx.core import Scheduler, Disposable
+from rx.core import Disposable
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
@@ -26,11 +24,11 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             t.setDaemon(True)
             return t
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
         self.thread_factory = thread_factory or default_factory
         self.thread = None
         self.timer = None
-        self.condition = config["concurrency"].Condition(self.lock)
+        self.condition = threading.Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list = []
         self.next_item = None
@@ -124,11 +122,11 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                 if self.is_disposed:
                     return
 
-                while len(self.queue) and self.queue.peek().duetime <= self.now:
+                while self.queue and self.queue.peek().duetime <= self.now:
                     item = self.queue.dequeue()
                     self.ready_list.append(item)
 
-                if len(self.queue):
+                if self.queue:
                     _next = self.queue.peek()
                     if self.next_item is None or _next != self.next_item:
                         self.next_item = _next
@@ -136,7 +134,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                         seconds = due.total_seconds()
                         log.debug("timeout: %s", seconds)
 
-                        self.timer = Timer(seconds, self.tick, args=(_next,))
+                        self.timer = threading.Timer(seconds, self.tick, args=(_next,))
                         self.timer.setDaemon(True)
                         self.timer.start()
 
@@ -177,4 +175,4 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
             self.condition.notify()  # signal that a new item is available
 
-Scheduler.event_loop = event_loop_scheduler = EventLoopScheduler()
+event_loop_scheduler = EventLoopScheduler()

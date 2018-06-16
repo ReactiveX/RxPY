@@ -1,10 +1,9 @@
 import re
+import threading
 
 from rx.core import AnonymousObservable, Observable
 from rx.core.blockingobservable import BlockingObservable
 from rx.concurrency import new_thread_scheduler
-from rx.internal import extensionmethod, extensionclassmethod
-from rx import config
 
 from .coldobservable import ColdObservable
 from .reactivetest import ReactiveTest
@@ -17,8 +16,7 @@ _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
 
-@extensionclassmethod(Observable, alias="from_string")
-def from_marbles(cls, string, scheduler=None):
+def from_marbles(string):
     """Convert a marble diagram string to an observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -43,8 +41,6 @@ def from_marbles(cls, string, scheduler=None):
     given marble diagram string.
     """
 
-    scheduler = scheduler or new_thread_scheduler
-
     completed = [False]
     messages = []
     timespan = [0]
@@ -57,7 +53,6 @@ def from_marbles(cls, string, scheduler=None):
         if value in ('T', 'F'):
             value = True if value == 'T' else False
         messages.append(on_next(timespan[0], value))
-
 
     def handle_on_completed(value):
         timespan[0] += 10
@@ -73,13 +68,13 @@ def from_marbles(cls, string, scheduler=None):
         '-': handle_timespan,
         'x': handle_on_error,
         'X': handle_on_error,
-        '|': handle_on_completed
+        '|': handle_close
     }
 
     for groups in _tokens.findall(string):
         for token in groups:
             if token:
-                func = specials.get(token, handle_on_next)
+                func = specials.get(token, handle_send)
                 func(token)
 
     if not completed[0]:
@@ -88,7 +83,6 @@ def from_marbles(cls, string, scheduler=None):
     return ColdObservable(scheduler, messages)
 
 
-@extensionmethod(Observable, alias="to_string")
 def to_marbles(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
@@ -98,10 +92,10 @@ def to_marbles(self, scheduler=None):
 
     Returns Observable
     """
-    scheduler = scheduler or new_thread_scheduler
     source = self
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
+        scheduler = scheduler or new_thread_scheduler
         result = []
         previously = [scheduler.now]
 
@@ -129,12 +123,11 @@ def to_marbles(self, scheduler=None):
             observer.on_next("".join(n for n in result))
             observer.on_completed()
 
-        return source.subscribe(on_next, on_error, on_completed)
+        return source.subscribe_(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
 
 
-@extensionmethod(BlockingObservable, alias="to_string")  # noqa
-def to_marbles(self, scheduler=None):
+def to_marbles_blocking(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
     Keyword arguments:
@@ -144,13 +137,13 @@ def to_marbles(self, scheduler=None):
     Returns marble string.
     """
 
-    latch = config["concurrency"].Event()
+    latch = threading.Event()
     ret = [None]
 
     def on_next(value):
         ret[0] = value
 
-    self.observable.to_marbles(scheduler=scheduler).subscribe(on_next, on_completed=latch.set)
+    self.observable.to_marbles(scheduler=scheduler).subscribe_(on_next, close=latch.set)
 
     # Block until the subscription completes and then return
     latch.wait()

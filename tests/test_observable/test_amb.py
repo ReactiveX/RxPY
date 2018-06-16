@@ -23,7 +23,7 @@ class TestAmb(unittest.TestCase):
             return l.amb(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_amb_never3(self):
         scheduler = TestScheduler()
@@ -35,7 +35,7 @@ class TestAmb(unittest.TestCase):
             return Observable.amb(n1, n2, n3)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_amb_never_empty(self):
         scheduler = TestScheduler()
@@ -47,7 +47,7 @@ class TestAmb(unittest.TestCase):
             return n.amb(e)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(225))
+        assert results.messages == [on_completed(225)]
 
     def test_amb_empty_never(self):
         scheduler = TestScheduler()
@@ -59,7 +59,7 @@ class TestAmb(unittest.TestCase):
             return e.amb(n)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(225))
+        assert results.messages == [on_completed(225)]
 
     def test_amb_regular_should_dispose_loser(self):
         scheduler = TestScheduler()
@@ -77,7 +77,7 @@ class TestAmb(unittest.TestCase):
             return o1.amb(o2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(210, 2), on_completed(240))
+        assert results.messages == [on_next(210, 2), on_completed(240)]
         assert(not source_not_disposed[0])
 
     def test_amb_winner_throws(self):
@@ -97,7 +97,7 @@ class TestAmb(unittest.TestCase):
             return o1.amb(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
+        assert results.messages == [on_next(210, 2), on_error(220, ex)]
         assert(not source_not_disposed[0])
 
     def test_amb_loser_throws(self):
@@ -117,7 +117,7 @@ class TestAmb(unittest.TestCase):
             return o1.amb(o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 3), on_completed(250))
+        assert results.messages == [on_next(210, 3), on_completed(250)]
         assert(not source_not_disposed[0])
 
     def test_amb_throws_before_election(self):
@@ -138,5 +138,5 @@ class TestAmb(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(210, ex))
+        assert results.messages == [on_error(210, ex)]
         assert(not source_not_disposed[0])

@@ -39,7 +39,7 @@ class JoinObserver(ObserverBase):
 
     def remove_active_plan(self, active_plan):
         self.active_plans.remove(active_plan)
-        if not len(self.active_plans):
+        if not self.active_plans:
             self.dispose()
 
     def dispose(self):

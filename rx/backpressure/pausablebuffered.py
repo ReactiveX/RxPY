@@ -1,11 +1,10 @@
-from rx.core import ObservableBase, Observable, AnonymousObservable
-from rx.internal import extensionmethod
+from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable
 
 
-def combine_latest_source(source, subject, result_selector):
-    def subscribe(observer):
+def combine_latest_source(source, subject, result_mapper):
+    def subscribe(observer, scheduler=None):
         has_value = [False, False]
         has_value_all = [False]
         values = [None, None]
@@ -23,7 +22,7 @@ def combine_latest_source(source, subject, result_selector):
                     return
 
                 try:
-                    res = result_selector(*values)
+                    res = result_mapper(*values)
                 except Exception as ex:
                     observer.on_error(ex)
                     return
@@ -47,8 +46,8 @@ def combine_latest_source(source, subject, result_selector):
             next(True, 1)
 
         return CompositeDisposable(
-            source.subscribe(lambda x: next(x, 0), on_error_source, on_completed_source),
-            subject.subscribe(lambda x: next(x, 1), observer.on_error, on_completed_subject)
+            source.subscribe_(lambda x: next(x, 0), on_error_source, on_completed_source, scheduler),
+            subject.subscribe_(lambda x: next(x, 1), observer.on_error, on_completed_subject, scheduler)
         )
     return AnonymousObservable(subscribe)
 
@@ -56,7 +55,6 @@ def combine_latest_source(source, subject, result_selector):
 class PausableBufferedObservable(ObservableBase):
 
     def __init__(self, source, pauser=None):
-        self.source = source
         self.controller = Subject()
 
         if pauser and hasattr(pauser, "subscribe"):
@@ -64,13 +62,13 @@ class PausableBufferedObservable(ObservableBase):
         else:
             self.pauser = self.controller
 
-        super(PausableBufferedObservable, self).__init__()
+        super().__init__(source)
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         previous_should_fire = [None]
         queue = []
 
-        def result_selector(data, should_fire=False):
+        def result_mapper(data, should_fire=False):
             return {"data": data, "should_fire": should_fire}
 
         def on_next(results):
@@ -98,15 +96,15 @@ class PausableBufferedObservable(ObservableBase):
 
         def on_completed():
             # Empty buffer before sending completion
-            while len(queue):
+            while queue:
                 observer.on_next(queue.pop(0))
             observer.on_completed()
 
         subscription = combine_latest_source(
             self.source,
             self.pauser.distinct_until_changed().start_with(False),
-            result_selector
-        ).subscribe(on_next, on_error, on_completed)
+            result_mapper
+        ).subscribe_(on_next, on_error, on_completed, scheduler)
 
         return subscription
 
@@ -116,22 +114,3 @@ class PausableBufferedObservable(ObservableBase):
     def resume(self):
         self.controller.on_next(True)
 
-
-@extensionmethod(Observable)
-def pausable_buffered(self, subject):
-    """Pauses the underlying observable sequence based upon the observable
-    sequence which yields True/False, and yields the values that were
-    buffered while paused.
-
-    Example:
-    pauser = rx.Subject()
-    source = rx.Observable.interval(100).pausable_buffered(pauser)
-
-    Keyword arguments:
-    pauser -- {Observable} The observable sequence used to pause the
-        underlying sequence.
-
-    Returns the observable {Observable} sequence which is paused based upon
-    the pauser."""
-
-    return PausableBufferedObservable(self, subject)

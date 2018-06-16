@@ -2,10 +2,10 @@ from .activeplan import ActivePlan
 from .joinobserver import JoinObserver
 
 
-class Plan(object):
-    def __init__(self, expression, selector):
+class Plan:
+    def __init__(self, expression, mapper):
         self.expression = expression
-        self.selector = selector
+        self.mapper = mapper
 
     def activate(self, external_subscriptions, observer, deactivate):
         join_observers = []
@@ -14,7 +14,7 @@ class Plan(object):
 
         def on_next(*args):
             try:
-                result = self.selector(*args)
+                result = self.mapper(*args)
             except Exception as e:
                 observer.on_error(e)
                 return

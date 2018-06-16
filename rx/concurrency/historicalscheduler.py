@@ -18,7 +18,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
         def compare_datetimes(a, b):
             return (a > b) - (a < b)
 
-        clock = initial_clock or datetime.fromtimestamp(0)
+        clock = initial_clock or datetime.utcfromtimestamp(0)
         comparer = comparer or compare_datetimes
 
         super(HistoricalScheduler, self).__init__(clock)

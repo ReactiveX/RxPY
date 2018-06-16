@@ -22,7 +22,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, True), on_completed(250))
+        assert res == [on_next(250, True), on_completed(250)]
 
     def test_all_return(self):
         scheduler = TestScheduler()
@@ -33,7 +33,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, True), on_completed(250))
+        assert res == [on_next(250, True), on_completed(250)]
 
     def test_all_return_not_match(self):
         scheduler = TestScheduler()
@@ -44,7 +44,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, False), on_completed(210))
+        assert res == [on_next(210, False), on_completed(210)]
 
     def test_all_some_none_match(self):
         scheduler = TestScheduler()
@@ -55,7 +55,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, False), on_completed(210))
+        assert res == [on_next(210, False), on_completed(210)]
 
     def test_all_some_match(self):
         scheduler = TestScheduler()
@@ -66,7 +66,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, False), on_completed(210))
+        assert res == [on_next(210, False), on_completed(210)]
 
     def test_all_some_all_match(self):
         scheduler = TestScheduler()
@@ -77,9 +77,9 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, True), on_completed(250))
+        assert res == [on_next(250, True), on_completed(250)]
 
-    def test_all_throw(self):
+    def test_all_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
@@ -88,7 +88,7 @@ class TestAll(unittest.TestCase):
         def create():
             return xs.all(lambda x: x > 0)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_all_never(self):
         scheduler = TestScheduler()
@@ -99,7 +99,7 @@ class TestAll(unittest.TestCase):
             return xs.all(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
 if __name__ == '__main__':
     unittest.main()

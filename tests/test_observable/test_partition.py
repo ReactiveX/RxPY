@@ -46,17 +46,14 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
-        results1.messages.assert_equal(
-            on_completed(210)
-        )
+        assert results1.messages == [
+            on_completed(210)]
 
-        results2.messages.assert_equal(
-            on_completed(210)
-        )
+        assert results2.messages == [
+            on_completed(210)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 210)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 210)]
 
     def test_partition_single(self):
         scheduler = TestScheduler()
@@ -90,18 +87,15 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(210, 4),
-            on_completed(220)
-        )
+            on_completed(220)]
 
-        results2.messages.assert_equal(
-            on_completed(220)
-        )
+        assert results2.messages == [
+            on_completed(220)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 220)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 220)]
 
     def test_partition_each(self):
         scheduler = TestScheduler()
@@ -138,19 +132,16 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(210, 4),
-            on_completed(230)
-        )
+            on_completed(230)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             on_next(220, 3),
-            on_completed(230)
-        )
+            on_completed(230)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 230)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 230)]
 
     def test_partition_completed(self):
         scheduler = TestScheduler()
@@ -187,21 +178,18 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(210, 4),
             on_next(290, 2),
-            on_completed(360)
-        )
+            on_completed(360)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             on_next(240, 3),
             on_next(350, 1),
-            on_completed(360)
-        )
+            on_completed(360)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 360)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 360)]
 
     def test_partition_not_completed(self):
         scheduler = TestScheduler()
@@ -238,19 +226,16 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(210, 4),
-            on_next(290, 2)
-        )
+            on_next(290, 2)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             on_next(240, 3),
-            on_next(350, 1)
-        )
+            on_next(350, 1)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 
     def test_partition_error(self):
         error = Exception()
@@ -288,19 +273,16 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
+        assert results1.messages == [
             on_next(210, 4),
-            on_error(290, error)
-        )
+            on_error(290, error)]
 
-        results2.messages.assert_equal(
+        assert results2.messages == [
             on_next(240, 3),
-            on_error(290, error)
-        )
+            on_error(290, error)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 290)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 290)]
 
     def test_partition_disposed(self):
         scheduler = TestScheduler()
@@ -338,14 +320,11 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        results1.messages.assert_equal(
-            on_next(210, 4)
-        )
+        assert results1.messages == [
+            on_next(210, 4)]
 
-        results2.messages.assert_equal(
-            on_next(240, 3)
-        )
+        assert results2.messages == [
+            on_next(240, 3)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 280)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 280)]

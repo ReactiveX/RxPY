@@ -31,8 +31,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(280, 4), on_next(300, 2), on_next(350, 1), on_next(380, 3), on_next(400, 5), on_completed(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(350, 1), on_next(380, 3), on_next(400, 5), on_completed(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_distinct_default_comparer_some_duplicates(self):
         scheduler = TestScheduler()
@@ -43,52 +43,52 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(280, 4), on_next(300, 2), on_next(380, 3), on_completed(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 3), on_completed(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
-    def test_distinct_key_selector_all_distinct(self):
+    def test_distinct_key_mapper_all_distinct(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420))
 
         def create():
-            def key_selector(x):
+            def key_mapper(x):
                 return x / 2
-            return xs.distinct(key_selector)
+            return xs.distinct(key_mapper)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
-    def test_distinct_key_selector_some_duplicates(self):
+    def test_distinct_key_mapper_some_duplicates(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 4), on_next(300, 2), on_next(350, 3), on_next(380, 7), on_next(400, 5), on_completed(420))
 
         def create():
-            def key_selector(x):
+            def key_mapper(x):
                 return math.floor(x / 2.0)
 
-            return xs.distinct(key_selector)
+            return xs.distinct(key_mapper)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(280, 4), on_next(300, 2), on_next(380, 7), on_completed(420))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 7), on_completed(420)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
-    def test_distinct_key_selector_throws(self):
+    def test_distinct_key_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 3), on_next(300, 2), on_next(350, 1), on_next(380, 0), on_next(400, 4), on_completed(420))
 
         def create():
-            def key_selector(x):
+            def key_mapper(x):
                 if not x:
                     raise Exception(ex)
                 else:
                     return math.floor(x / 2.0)
 
-            return xs.distinct(key_selector)
+            return xs.distinct(key_mapper)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(280, 3), on_next(350, 1), on_error(380, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 380))
+        assert results.messages == [on_next(280, 3), on_next(350, 1), on_error(380, ex)]
+        assert xs.subscriptions == [subscribe(200, 380)]

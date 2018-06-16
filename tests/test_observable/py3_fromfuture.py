@@ -2,10 +2,8 @@ import unittest
 
 from nose import SkipTest
 import rx
-asyncio = rx.config['asyncio']
-if asyncio is None:
-    raise SkipTest("asyncio not available")
-Future = rx.config['Future']
+import asyncio
+from asyncio import Future
 
 from rx import Observable
 
@@ -31,7 +29,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = True
 
-            subscription = source.subscribe(on_next, on_error, on_completed)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -58,7 +56,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe(on_next, on_error, on_completed)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -83,7 +81,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe(on_next, on_error, on_completed)
+            subscription = source.subscribe_(on_next, on_error, on_completed)
             subscription.dispose()
 
         loop.run_until_complete(go())

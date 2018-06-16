@@ -27,26 +27,26 @@ class TestMin(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
         res = scheduler.start(create=lambda: xs.min()).messages
-        res.assert_equal(on_next(250, 2), on_completed(250))
+        assert res == [on_next(250, 2), on_completed(250)]
 
     def test_min_int32_some(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_completed(250))
         res = scheduler.start(create=lambda: xs.min()).messages
-        res.assert_equal(on_next(250, 2), on_completed(250))
+        assert res == [on_next(250, 2), on_completed(250)]
 
-    def test_min_int32_throw(self):
+    def test_min_int32_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
         res = scheduler.start(create=lambda: xs.min()).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_min_int32_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1))
         res = scheduler.start(create=lambda: xs.min()).messages
-        res.assert_equal()
+        assert res == []
 
     def test_min_of_t_comparer_empty(self):
         scheduler = TestScheduler()
@@ -86,9 +86,9 @@ class TestMin(unittest.TestCase):
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, "c"), on_completed(250))
+        assert res == [on_next(250, "c"), on_completed(250)]
 
-    def test_min_of_t_comparer_throw(self):
+    def test_min_of_t_comparer_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         def comparer(a, b):
@@ -106,7 +106,7 @@ class TestMin(unittest.TestCase):
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_min_of_t_comparer_never(self):
         scheduler = TestScheduler()
@@ -124,7 +124,7 @@ class TestMin(unittest.TestCase):
         def create():
             return xs.min(comparer)
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_min_of_t_comparer_throws(self):
         ex = 'ex'
@@ -138,4 +138,4 @@ class TestMin(unittest.TestCase):
             return xs.min(comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(220, ex))
+        assert res == [on_error(220, ex)]

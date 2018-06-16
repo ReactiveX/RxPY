@@ -26,48 +26,48 @@ class TestTimer(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(duetime=300, scheduler=scheduler)
+            return Observable.timer(duetime=300)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(500, 0), on_completed(500))
+        assert results.messages == [on_next(500, 0), on_completed(500)]
 
     def test_oneshot_timer_timespan_zero(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(0, scheduler=scheduler)
+            return Observable.timer(0)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(201, 0), on_completed(201))
+        assert results.messages == [on_next(200, 0), on_completed(200)]
 
     def test_oneshot_timer_timespan_negative(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(-1, scheduler=scheduler)
+            return Observable.timer(-1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(201, 0), on_completed(201))
+        assert results.messages == [on_next(200, 0), on_completed(200)]
 
     def test_oneshot_timer_timespan_disposed(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(1000, scheduler=scheduler)
+            return Observable.timer(1000)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_oneshot_timer_timespan_observer_throws(self):
         scheduler1 = TestScheduler()
-        xs = Observable.timer(1, scheduler=scheduler1)
-        xs.subscribe(lambda x: _raise("ex"))
+        xs = Observable.timer(11)
+        xs.subscribe_(lambda x: _raise("ex"), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
-        ys = Observable.timer(1, period=None, scheduler=scheduler2)
-        ys.subscribe(on_completed=lambda: _raise("ex"))
+        ys = Observable.timer(1, period=None)
+        ys.subscribe_(on_completed=lambda: _raise("ex"), scheduler=scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)
 
@@ -75,16 +75,16 @@ class TestTimer(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(duetime=300, period=400, scheduler=scheduler)
+            return Observable.timer(duetime=300, period=400)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(500, 0), on_next(900, 1))
+        assert results.messages == [on_next(500, 0), on_next(900, 1)]
 
     def test_periodic_timer_equal_time_and_period(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.timer(duetime=300, period=300, scheduler=scheduler)
+            return Observable.timer(duetime=300, period=300)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(500, 0), on_next(800, 1))
+        assert results.messages == [on_next(500, 0), on_next(800, 1)]

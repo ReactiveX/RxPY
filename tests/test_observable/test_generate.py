@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -29,18 +29,16 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: x <= 3,
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-                            on_next(201, 0),
-                            on_next(202, 1),
-                            on_next(203, 2),
-                            on_next(204, 3),
-                            on_completed(205)
-                        )
+        assert results.messages == [
+                            on_next(200, 0),
+                            on_next(200, 1),
+                            on_next(200, 2),
+                            on_next(200, 3),
+                            on_completed(200)]
 
     def test_generate_throw_condition(self):
         scheduler = TestScheduler()
@@ -50,13 +48,12 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: _raise('ex'),
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
-    def test_generate_throw_result_selector(self):
+    def test_generate_throw_result_mapper(self):
         scheduler = TestScheduler()
         ex = 'ex'
 
@@ -64,11 +61,10 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: _raise('ex'),
-                scheduler)
+                lambda x: _raise('ex'))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_throw_iterate(self):
         scheduler = TestScheduler()
@@ -78,14 +74,12 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: _raise(ex),
-                lambda x: x,
-                scheduler)
+                lambda x: x)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-                            on_next(201, 0),
-                            on_error(202, ex)
-                        )
+        assert results.messages == [
+                            on_next(200, 0),
+                            on_error(200, ex)]
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
@@ -95,13 +89,10 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
-                scheduler)
+                lambda x: x)
 
-        results = scheduler.start(create, disposed=203)
-        results.messages.assert_equal(
-                            on_next(201, 0),
-                            on_next(202, 1))
+        results = scheduler.start(create, disposed=200)
+        assert results.messages == []
 
     def test_generate_repeat(self):
         scheduler = TestScheduler()
@@ -110,20 +101,18 @@ class TestGenerate(unittest.TestCase):
             return Observable.generate(0,
                     lambda x: x <= 3,
                     lambda x: x + 1,
-                    lambda x: x,
-                    scheduler) \
+                    lambda x: x) \
                 .repeat(2)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-                on_next(201, 0),
-                on_next(202, 1),
-                on_next(203, 2),
-                on_next(204, 3),
-                on_next(206, 0),
-                on_next(207, 1),
-                on_next(208, 2),
-                on_next(209, 3),
-                on_completed(210)
-        )
+        assert results.messages == [
+                on_next(200, 0),
+                on_next(200, 1),
+                on_next(200, 2),
+                on_next(200, 3),
+                on_next(200, 0),
+                on_next(200, 1),
+                on_next(200, 2),
+                on_next(200, 3),
+                on_completed(200)]

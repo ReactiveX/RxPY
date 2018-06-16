@@ -8,33 +8,33 @@ class AutoDetachObserver(ObserverBase):
     def __init__(self, observer):
         super(AutoDetachObserver, self).__init__()
 
-        self.observer = observer
-        self.m = SingleAssignmentDisposable()
+        self._observer = observer
+        self._subscription = SingleAssignmentDisposable()
 
     def _on_next_core(self, value):
         try:
-            self.observer.on_next(value)
+            self._observer.on_next(value)
         except Exception:
             self.dispose()
             raise
 
-    def _on_error_core(self, exn):
+    def _on_error_core(self, error):
         try:
-            self.observer.on_error(exn)
+            self._observer.on_error(error)
         finally:
             self.dispose()
 
     def _on_completed_core(self):
         try:
-            self.observer.on_completed()
+            self._observer.on_completed()
         finally:
             self.dispose()
 
     def set_disposable(self, value):
-        self.m.disposable = value
+        self._subscription.disposable = value
 
-    disposable = property(fset=set_disposable)
+    subscription = property(fset=set_disposable)
 
     def dispose(self):
-        super(AutoDetachObserver, self).dispose()
-        self.m.dispose()
+        super().dispose()
+        self._subscription.dispose()

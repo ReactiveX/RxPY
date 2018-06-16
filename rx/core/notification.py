@@ -1,16 +1,18 @@
-from . import Observer, AnonymousObserver
+from abc import abstractmethod
 from rx.concurrency import immediate_scheduler
-from rx.internal import extensionclassmethod
 
+from . import Observer, AnonymousObserver
 from .anonymousobservable import AnonymousObservable
 
 
-class Notification(object):
+class Notification:
     """Represents a notification to an observer."""
 
     def __init__(self):
         """Default constructor used by derived types."""
         self.has_value = False
+        self.value = None
+        self.kind = ''
 
     def accept(self, on_next, on_error=None, on_completed=None):
         """Invokes the delegate corresponding to the notification or an
@@ -21,41 +23,52 @@ class Notification(object):
 
         Keyword arguments:
         on_next -- Delegate to invoke for an OnNext notification.
-        on_error -- [Optional] Delegate to invoke for an OnError notification.
-        on_completed -- [Optional] Delegate to invoke for an OnCompleted notification.
+        on_error -- [Optional] Delegate to invoke for an OnError
+            notification.
+        on_completed -- [Optional] Delegate to invoke for an OnCompleted
+            notification.
 
         Returns result produced by the observation."""
 
         if isinstance(on_next, Observer):
-            return self._accept_observable(on_next)
+            return self._accept_observer(on_next)
         else:
             return self._accept(on_next, on_error, on_completed)
 
+    @abstractmethod
+    def _accept(self, on_next, on_error, on_completed):
+        raise NotImplementedError
+
+    @abstractmethod
+    def _accept_observer(self, observer):
+        raise NotImplementedError
+
     def to_observable(self, scheduler=None):
-        """Returns an observable sequence with a single notification, using the
-        specified scheduler, else the immediate scheduler.
+        """Returns an observable sequence with a single notification,
+        using the specified scheduler, else the immediate scheduler.
 
         Keyword arguments:
-        scheduler -- [Optional] Scheduler to send out the notification calls on.
+        scheduler -- [Optional] Scheduler to send out the notification
+            calls on.
 
         Returns an observable sequence that surfaces the behavior of the
         notification upon subscription.
         """
 
-        notification = self
         scheduler = scheduler or immediate_scheduler
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             def action(scheduler, state):
-                notification._accept_observable(observer)
-                if notification.kind == 'N':
+                self._accept_observer(observer)
+                if self.kind == 'N':
                     observer.on_completed()
 
             return scheduler.schedule(action)
         return AnonymousObservable(subscribe)
 
     def equals(self, other):
-        """Indicates whether this instance and a specified object are equal."""
+        """Indicates whether this instance and a specified object are
+        equal."""
 
         other_string = '' if not other else str(other)
         return str(self) == other_string
@@ -78,7 +91,7 @@ class OnNext(Notification):
     def _accept(self, on_next, on_error=None, on_completed=None):
         return on_next(self.value)
 
-    def _accept_observable(self, observer):
+    def _accept_observer(self, observer):
         return observer.on_next(self.value)
 
     def __str__(self):
@@ -98,7 +111,7 @@ class OnError(Notification):
     def _accept(self, on_next, on_error, on_completed):
         return on_error(self.exception)
 
-    def _accept_observable(self, observer):
+    def _accept_observer(self, observer):
         return observer.on_error(self.exception)
 
     def __str__(self):
@@ -117,52 +130,28 @@ class OnCompleted(Notification):
     def _accept(self, on_next, on_error, on_completed):
         return on_completed()
 
-    def _accept_observable(self, observer):
+    def _accept_observer(self, observer):
         return observer.on_completed()
 
     def __str__(self):
         return "OnCompleted()"
 
-    @classmethod
-    def observer_from_notifier(cls, handler):
-        """Creates an observer from a notification callback.
 
-        Keyword arguments:
-        handler -- Action that handles a notification.
-
-        Returns the observer object that invokes the specified handler using a
-        notification corresponding to each message it receives.
-        """
-
-        def _on_next(value):
-            return handler(OnNext(value))
-
-        def _on_error(ex):
-            return handler(OnError(ex))
-
-        def _on_completed():
-            return handler(OnCompleted())
-
-        return AnonymousObserver(_on_next, _on_error, _on_completed)
-
-
-@extensionclassmethod(Observer)
-def from_notifier(cls, handler):
+def from_notifier(handler):
     """Creates an observer from a notification callback.
 
     Keyword arguments:
-    :param handler: Action that handles a notification.
+    handler -- Action that handles a notification.
 
-    :returns: The observer object that invokes the specified handler using a
-    notification corresponding to each message it receives.
-    :rtype: Observer
+    Returns the observer object that invokes the specified handler using
+    a notification corresponding to each message it receives.
     """
 
     def _on_next(value):
         return handler(OnNext(value))
 
-    def _on_error(ex):
-        return handler(OnError(ex))
+    def _on_error(error):
+        return handler(OnError(error))
 
     def _on_completed():
         return handler(OnCompleted())

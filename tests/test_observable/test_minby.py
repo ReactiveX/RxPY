@@ -121,7 +121,7 @@ class TestMinBy(unittest.TestCase):
         self.assertEqual('y', res[0].value.value[1]["value"])
         assert(res[1].value.kind == 'C' and res[1].time == 250)
 
-    def test_min_by_throw(self):
+    def test_min_by_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
@@ -134,7 +134,7 @@ class TestMinBy(unittest.TestCase):
         def create():
             return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_min_by_never(self):
         scheduler = TestScheduler()
@@ -149,7 +149,7 @@ class TestMinBy(unittest.TestCase):
             return xs.min_by(lambda x: x["key"])
         res = scheduler.start(create=create).messages
 
-        res.assert_equal()
+        assert res == []
 
     def test_min_by_comparer_empty(self):
         scheduler = TestScheduler()
@@ -247,7 +247,7 @@ class TestMinBy(unittest.TestCase):
         self.assertEqual('c', res[0].value.value[0]["value"])
         assert(res[1].value.kind == 'C' and res[1].time == 250)
 
-    def test_min_by_comparer_throw(self):
+    def test_min_by_comparer_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
@@ -269,7 +269,7 @@ class TestMinBy(unittest.TestCase):
 
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_min_by_comparer_never(self):
         scheduler = TestScheduler()
@@ -294,9 +294,9 @@ class TestMinBy(unittest.TestCase):
             return xs.min_by(lambda x: x["key"], reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
-    def test_min_by_selector_throws(self):
+    def test_min_by_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [
@@ -329,7 +329,7 @@ class TestMinBy(unittest.TestCase):
            return xs.min_by(lambda x: _raise(ex), reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_min_by_comparer_throws(self):
         ex = 'ex'
@@ -358,4 +358,4 @@ class TestMinBy(unittest.TestCase):
            return xs.min_by(lambda x: x["key"], reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(220, ex))
+        assert res == [on_error(220, ex)]

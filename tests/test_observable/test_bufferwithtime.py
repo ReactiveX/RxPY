@@ -18,28 +18,28 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(100, 1),
             on_next(210, 2),
             on_next(240, 3),
-            on_next(280, 4),
-            on_next(320, 5),
-            on_next(350, 6),
-            on_next(380, 7),
-            on_next(420, 8),
-            on_next(470, 9),
+            on_next(281, 4),
+            on_next(321, 5),
+            on_next(351, 6),
+            on_next(381, 7),
+            on_next(421, 8),
+            on_next(471, 9),
             on_completed(600))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(300, "2,3,4"),
             on_next(370, "4,5,6"),
             on_next(440, "6,7,8"),
             on_next(510, "8,9"),
             on_next(580, ""),
             on_next(600, ""),
-            on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            on_completed(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_error(self):
         ex = 'ex'
@@ -57,18 +57,18 @@ class TestBufferWithCount(unittest.TestCase):
             on_error(600, ex))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(300, "2,3,4"),
             on_next(370, "4,5,6"),
             on_next(440, "6,7,8"),
             on_next(510, "8,9"),
             on_next(580, ""),
-            on_error(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            on_error(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_disposed(self):
         scheduler = TestScheduler()
@@ -76,20 +76,20 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(100, 1),
             on_next(210, 2),
             on_next(240, 3),
-            on_next(280, 4),
-            on_next(320, 5),
-            on_next(350, 6),
-            on_next(380, 7),
-            on_next(420, 8),
-            on_next(470, 9),
+            on_next(281, 4),
+            on_next(321, 5),
+            on_next(351, 6),
+            on_next(381, 7),
+            on_next(421, 8),
+            on_next(471, 9),
             on_completed(600))
 
         def create():
-            return xs.buffer_with_time(100, 70, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100, 70).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create, disposed=370)
-        results.messages.assert_equal(on_next(300, "2,3,4"))
-        xs.subscriptions.assert_equal(subscribe(200, 370))
+        assert results.messages == [on_next(300, "2,3,4")]
+        assert xs.subscriptions == [subscribe(200, 370)]
 
     def test_buffer_with_time_basic_same(self):
         scheduler = TestScheduler()
@@ -106,14 +106,14 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.buffer_with_time(100, scheduler=scheduler).map(lambda x: ",".join([str(a) for a in x]))
+            return xs.buffer_with_time(100).map(lambda x: ",".join([str(a) for a in x]))
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(300, "2,3,4"),
             on_next(400, "5,6,7"),
             on_next(500, "8,9"),
             on_next(600, ""),
-            on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            on_completed(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]

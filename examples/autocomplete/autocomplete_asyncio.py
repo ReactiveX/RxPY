@@ -47,19 +47,16 @@ class WSHandler(WebSocketHandler):
         print("WebSocket opened")
 
         # A Subject is both an observable and observer, so we can both subscribe
-        # to it and also feed (on_next) it with new values
+        # to it and also feed (send) it with new values
         self.subject = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = self.subject.map(
-            lambda x: x["term"]
-        ).filter(
-            lambda text: len(text) > 2  # Only if the text is longer than 2 characters
-        ).debounce(
-            750,  # Pause for 750ms
-            scheduler=scheduler
-        ).distinct_until_changed()  # Only if the value has changed
-
+        query = (self.subject
+                 .map(lambda x: x["term"])
+                 .filter(lambda text: len(text) > 2)  # Only if the text is longer than 2 characters
+                 .debounce(750)                       # Pause for 750ms
+                 .distinct_until_changed()            # Only if the value has changed
+                )
         searcher = query.flat_map_latest(search_wikipedia)
 
         def send_response(x):
@@ -68,7 +65,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe(send_response, on_error)
+        searcher.subscribe_(send_response, on_error, scheduler=scheduler)
 
     def on_message(self, message):
         obj = json_decode(message)

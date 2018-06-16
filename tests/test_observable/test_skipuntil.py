@@ -1,7 +1,6 @@
 import unittest
 
-from rx import Observable
-from rx import AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,7 +25,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(230, 4), on_next(240, 5), on_completed(250))
+        assert results.messages == [on_next(230, 4), on_next(240, 5), on_completed(250)]
 
     def test_skip_until_somedata_error(self):
         scheduler = TestScheduler()
@@ -40,7 +39,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(225, ex))
+        assert results.messages == [on_error(225, ex)]
 
     def test_skip_until_somedata_empty(self):
         scheduler = TestScheduler()
@@ -53,7 +52,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_next(self):
         scheduler = TestScheduler()
@@ -65,7 +64,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_error(self):
         ex = 'ex'
@@ -78,7 +77,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(225, ex))
+        assert results.messages == [on_error(225, ex)]
 
     def test_skip_until_somedata_never(self):
         scheduler = TestScheduler()
@@ -90,7 +89,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_empty(self):
         scheduler = TestScheduler()
@@ -102,7 +101,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_never_never(self):
         scheduler = TestScheduler()
@@ -113,7 +112,7 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_skip_until_has_completed_causes_disposal(self):
         scheduler = TestScheduler()
@@ -121,7 +120,7 @@ class TestSkipUntil(unittest.TestCase):
         disposed = [False]
         l = scheduler.create_hot_observable(l_msgs)
 
-        def subscribe(observer):
+        def subscribe(observer, scheduler=None):
             disposed[0] = True
 
         r = AnonymousObservable(subscribe)
@@ -130,5 +129,5 @@ class TestSkipUntil(unittest.TestCase):
             return l.skip_until(r)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
         assert(disposed[0])

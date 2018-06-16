@@ -27,18 +27,17 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-                            on_next(201, 1),
-                            on_next(202, 2),
-                            on_next(203, 3),
-                            on_next(204, 4),
-                            on_next(205, 5),
-                            on_completed(206)
-                        )
+        assert results.messages == [
+                            on_next(200, 1),
+                            on_next(200, 2),
+                            on_next(200, 3),
+                            on_next(200, 4),
+                            on_next(200, 5),
+                            on_completed(200)]
 
     def test_subscribe_to_iterable_empty(self):
         iterable_finite = []
@@ -46,18 +45,16 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite, scheduler=scheduler)
+            return Observable.from_(iterable_finite)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_completed(201))
+        assert results.messages == [on_completed(200)]
 
     def test_double_subscribe_to_iterable(self):
         iterable_finite = [1, 2, 3]
         scheduler = TestScheduler()
         obs = Observable.from_(iterable_finite)
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200))
+        results = scheduler.start(lambda: obs.concat(obs))
+        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(200, 3), on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200)]
 
-        results = scheduler.start(lambda: obs)
-        results.messages.assert_equal(on_next(1001, 1), on_next(1001, 2), on_next(1001, 3), on_completed(1001))

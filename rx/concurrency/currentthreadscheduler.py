@@ -4,8 +4,6 @@ import logging
 import threading
 from datetime import timedelta
 
-from rx import config
-from rx.core import Scheduler
 from rx.internal import PriorityQueue
 
 from .schedulerbase import SchedulerBase
@@ -17,7 +15,7 @@ log = logging.getLogger('Rx')
 class Trampoline(object):
     @classmethod
     def run(cls, queue):
-        while len(queue):
+        while queue:
             item = queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - item.scheduler.now
@@ -41,12 +39,12 @@ class CurrentThreadScheduler(SchedulerBase):
         current thread."""
 
         self.queues = dict()
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
+        #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
         return self.schedule_relative(timedelta(0), action, state)
 
     def schedule_relative(self, duetime, action, state=None):
@@ -109,4 +107,4 @@ class CurrentThreadScheduler(SchedulerBase):
         else:
             return action(self, None)
 
-Scheduler.current_thread = current_thread_scheduler = CurrentThreadScheduler()
+current_thread_scheduler = CurrentThreadScheduler()

@@ -1,7 +1,8 @@
-from rx.core import Observable, ObservableBase
-from rx.internal import extensionmethod
+from rx.core import ObservableBase
 
 from .controlledsubject import ControlledSubject
+from .stopandwaitobservable import StopAndWaitObservable
+from .windowedobservable import WindowedObservable
 
 
 class ControlledObservable(ObservableBase):
@@ -12,32 +13,31 @@ class ControlledObservable(ObservableBase):
         self.subject = ControlledSubject(enable_queue, scheduler)
         self.source = source.multicast(self.subject).ref_count()
 
-    def _subscribe_core(self, observer):
-        return self.source.subscribe(observer)
+    def _subscribe_core(self, observer, scheduler=None):
+        return self.source.subscribe(observer, scheduler)
 
     def request(self, number_of_items):
         if number_of_items is None:
             number_of_items = -1
         return self.subject.request(number_of_items)
 
+    def stop_and_wait(self):
+        """Attaches a stop and wait observable to the current observable.
 
-@extensionmethod(Observable)
-def controlled(self, enable_queue=True, scheduler=None):
-    """Attach a controller to the observable sequence
+        :returns: A stop and wait observable.
+        :rtype: Observable
+        """
 
-    Attach a controller to the observable sequence with the ability to
-    queue.
+        return StopAndWaitObservable(self)
 
-    Example:
-    source = rx.Observable.interval(100).controlled()
-    source.request(3) # Reads 3 values
+    def windowed(self, window_size):
+        """Creates a sliding windowed observable based upon the window size.
 
-    Keyword arguments:
-    :param bool enable_queue: truthy value to determine if values should
-        be queued pending the next request
-    :param Scheduler scheduler: determines how the requests will be scheduled
-    :returns: The observable sequence which only propagates values on request.
-    :rtype: Observable
-    """
+        Keyword arguments:
+        :param int window_size: The number of items in the window
 
-    return ControlledObservable(self, enable_queue, scheduler)
+        :returns: A windowed observable based upon the window size.
+        :rtype: Observable
+        """
+
+        return WindowedObservable(self, window_size)

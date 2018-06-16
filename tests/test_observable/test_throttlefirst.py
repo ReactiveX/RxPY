@@ -37,19 +37,17 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(410, 6),
-            on_completed(500)
-        )
+            on_completed(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_throttle_first_never(self):
         scheduler = TestScheduler()
@@ -59,16 +57,15 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 
 
     def test_throttle_first_empty(self):
@@ -81,17 +78,15 @@ class TestThrottleFirst(unittest.TestCase):
 
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
-            on_completed(500)
-        )
+        assert results.messages == [
+            on_completed(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_throttle_first_error(self):
         error = RxException()
@@ -110,18 +105,16 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
           on_next(210, 2),
-          on_error(410, error)
-        )
+          on_error(410, error)]
 
-        xs.subscriptions.assert_equal(
-          subscribe(200, 410)
-        )
+        assert xs.subscriptions == [
+          subscribe(200, 410)]
 
 
     def test_throttle_first_no_end(self):
@@ -138,16 +131,14 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200, scheduler)
+            return xs.throttle_first(200)
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
-            on_next(410, 6)
-        )
+            on_next(410, 6)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 

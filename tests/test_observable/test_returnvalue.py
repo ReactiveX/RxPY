@@ -27,26 +27,26 @@ class TestReturnValue(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42, scheduler)
+            return Observable.return_value(42)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
-                            on_next(201, 42),
-                            on_completed(201))
+        assert results.messages == [
+                            on_next(200, 42),
+                            on_completed(200)]
 
     def test_return_disposed(self):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42, scheduler)
+            return Observable.return_value(42)
 
         results = scheduler.start(factory, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_return_disposed_after_next(self):
         scheduler = TestScheduler()
         d = SerialDisposable()
-        xs = Observable.return_value(42, scheduler)
+        xs = Observable.return_value(42)
         results = scheduler.create_observer()
 
         def action(scheduler, state):
@@ -58,22 +58,22 @@ class TestReturnValue(unittest.TestCase):
             def on_completed():
                 results.on_completed()
 
-            d.disposable = xs.subscribe(on_next, on_error, on_completed)
+            d.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
             return d.disposable
 
         scheduler.schedule_absolute(100, action)
         scheduler.start()
-        results.messages.assert_equal(on_next(101, 42))
+        assert results.messages == [on_next(100, 42)]
 
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
-        xs = Observable.return_value(1, scheduler1)
-        xs.subscribe(lambda x: _raise('ex'))
+        xs = Observable.return_value(1)
+        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
-        ys = Observable.return_value(1, scheduler2)
-        ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+        ys = Observable.return_value(1)
+        ys.subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)

@@ -20,7 +20,7 @@ class TestManySelect(unittest.TestCase):
         left = xs.many_select(lambda x: x.first())
         right = xs
 
-        left.sequence_equal(right).first().subscribe(self.assertTrue)
+        left.sequence_equal(right).first().subscribe_(self.assertTrue)
 
     def test_many_select_basic(self):
         scheduler = TestScheduler()
@@ -34,20 +34,18 @@ class TestManySelect(unittest.TestCase):
         )
 
         def create():
-            return xs.many_select(lambda ys: ys.first(), scheduler).merge_all()
+            return xs.many_select(lambda ys: ys.first()).merge_all()
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_next(221, 2),
-            on_next(271, 3),
-            on_next(411, 4),
-            on_completed(501)
-        )
+        assert res.messages == [
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_completed(500)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]
 
     def test_many_select_error(self):
         scheduler = TestScheduler()
@@ -63,17 +61,15 @@ class TestManySelect(unittest.TestCase):
         )
 
         def create():
-            return xs.many_select(lambda ys: ys.first(), scheduler).merge_all()
+            return xs.many_select(lambda ys: ys.first()).merge_all()
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_next(221, 2),
-            on_next(271, 3),
-            on_next(411, 4),
-            on_error(501, ex)
-        )
+        assert res.messages == [
+            on_next(220, 2),
+            on_next(270, 3),
+            on_next(410, 4),
+            on_error(500, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 500)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 500)]

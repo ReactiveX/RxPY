@@ -1,15 +1,14 @@
-from rx.core import Observer, AnonymousObserver, ObservableBase, Disposable
+from rx.core import AnonymousObserver, ObservableBase, Disposable
 from .subscription import Subscription
-from .reactive_assert import AssertList
 
 
 class HotObservable(ObservableBase):
     def __init__(self, scheduler, messages):
-        super(HotObservable, self).__init__()
+        super().__init__()
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = AssertList()
+        self.subscriptions = []
         self.observers = []
 
         observable = self
@@ -28,25 +27,22 @@ class HotObservable(ObservableBase):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
-        # Be forgiving and accept an un-named observer as first parameter
-        if isinstance(on_next, Observer):
-            observer = on_next
-        elif not observer:
-            observer = AnonymousObserver(on_next, on_error, on_completed)
+    def subscribe(self, observer=None, scheduler=None):
+        return self._subscribe_core(observer, scheduler)
 
-        return self._subscribe_core(observer)
+    def subscribe_(self, on_next=None, on_error=None, on_completed=None, scheduler=None):
+        observer = AnonymousObserver(on_next, on_error, on_completed)
+        return self.subscribe(observer, scheduler)
 
-    def _subscribe_core(self, observer):
-        observable = self
+    def _subscribe_core(self, observer, scheduler=None):
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
-            observable.observers.remove(observer)
-            start = observable.subscriptions[index].subscribe
-            end = observable.scheduler.clock
-            observable.subscriptions[index] = Subscription(start, end)
+            self.observers.remove(observer)
+            start = self.subscriptions[index].subscribe
+            end = self.scheduler.clock
+            self.subscriptions[index] = Subscription(start, end)
 
         return Disposable.create(dispose_action)

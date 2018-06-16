@@ -53,14 +53,13 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(301, 4),
             on_next(350, 5),
             on_next(399, 6),
-            on_completed(500)
-          )
+            on_completed(500)]
 
     def test_paused_skips(self):
         subscription = [None]
@@ -99,14 +98,13 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(400, 4),
             on_next(400, 5),
             on_next(400, 6),
-            on_completed(500)
-        )
+            on_completed(500)]
 
     def test_paused_error(self):
         subscription = [None]
@@ -148,10 +146,9 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
         on_next(210, 2),
-            on_error(230, err)
-        )
+            on_error(230, err)]
 
     def test_paused_skip_initial_elements(self):
         subscription = [None]
@@ -181,11 +178,10 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.schedule_absolute(1000, action3)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(280, 2),
             on_next(280, 3),
-            on_completed(400)
-        )
+            on_completed(400)]
 
     def test_paused_with_observable_controller_and_pause_and_unpause(self):
         subscription = [None]
@@ -232,7 +228,7 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(400, 4),
@@ -240,8 +236,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(400, 6),
             on_next(450, 7),
             on_next(480, 8),
-            on_completed(500)
-        )
+            on_completed(500)]
 
     def test_paused_with_immediate_unpause(self):
         subscription = [None]
@@ -266,10 +261,9 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
-            on_completed(500)
-        )
+            on_completed(500)]
 
     def test_paused_when_finishing(self):
         subscription = [None]
@@ -312,14 +306,13 @@ class TestPausable_buffered(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(400, 4),
             on_next(400, 5),
             on_next(400, 6),
-            on_next(450, 7)
-        )
+            on_next(450, 7)]
 
     def test_paused_with_observable_controller_and_pause_and_unpause_after_end(self):
         scheduler = TestScheduler()
@@ -348,7 +341,7 @@ class TestPausable_buffered(unittest.TestCase):
             return xs.pausable_buffered(controller)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(600, 4),
@@ -356,8 +349,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(600, 6),
             on_next(600, 7),
             on_next(600, 8),
-            on_completed(600)
-        )
+            on_completed(600)]
 
     def test_paused_with_observable_controller_and_pause_and_unpause_after_error(self):
         error = Exception()
@@ -389,7 +381,7 @@ class TestPausable_buffered(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(600, 4),
@@ -397,8 +389,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(600, 6),
             on_next(600, 7),
             on_next(600, 8),
-            on_error(600, error)
-        )
+            on_error(600, error)]
 
     def test_paused_with_state_change_in_subscriber(self):
         scheduler = TestScheduler()
@@ -427,17 +418,16 @@ class TestPausable_buffered(unittest.TestCase):
                     controller.on_next(True)
                 scheduler.schedule_relative(100, action2)
 
-            subscription = pausable_buffered.subscribe(on_next, results.on_error, results.on_completed)
+            subscription = pausable_buffered.subscribe_(on_next, results.on_error, results.on_completed)
             controller.on_next(True)
 
         scheduler.schedule_absolute(200, action1)
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(310, 3),
             on_next(310, 4),
             on_next(410, 5),
-            on_completed(500)
-        )
+            on_completed(500)]

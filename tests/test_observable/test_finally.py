@@ -60,7 +60,7 @@ class TestFinally(unittest.TestCase):
         assert(results[1].value.kind == 'C' and results[1].time == 250)
         assert(invasserted[0])
 
-    def test_finally_throw(self):
+    def test_finally_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))

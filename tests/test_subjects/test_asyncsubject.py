@@ -89,9 +89,9 @@ def test_infinite():
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()
-    results1.messages.assert_equal()
-    results2.messages.assert_equal()
-    results3.messages.assert_equal()
+    assert results1.messages == []
+    assert results2.messages == []
+    assert results3.messages == []
 
 
 def test_finite():
@@ -160,9 +160,9 @@ def test_finite():
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()
-    results1.messages.assert_equal()
-    results2.messages.assert_equal(on_next(630, 7), on_completed(630))
-    results3.messages.assert_equal(on_next(900, 7), on_completed(900))
+    assert results1.messages == []
+    assert results2.messages == [on_next(630, 7), on_completed(630)]
+    assert results3.messages == [on_next(900, 7), on_completed(900)]
 
 def test_error():
     subject = [None]
@@ -231,9 +231,9 @@ def test_error():
     scheduler.schedule_absolute(950, action9)
 
     scheduler.start()
-    results1.messages.assert_equal()
-    results2.messages.assert_equal(on_error(630, ex))
-    results3.messages.assert_equal(on_error(900, ex))
+    assert results1.messages == []
+    assert results2.messages == [on_error(630, ex)]
+    assert results3.messages == [on_error(900, ex)]
 
 
 def test_canceled():
@@ -296,9 +296,9 @@ def test_canceled():
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()
-    results1.messages.assert_equal()
-    results2.messages.assert_equal(on_completed(630))
-    results3.messages.assert_equal(on_completed(900))
+    assert results1.messages == []
+    assert results2.messages == [on_completed(630)]
+    assert results3.messages == [on_completed(900)]
 
 def test_subject_disposed():
     subject = [None]
@@ -384,9 +384,9 @@ def test_subject_disposed():
     scheduler.schedule_absolute(950, action17)
 
     scheduler.start()
-    results1.messages.assert_equal()
-    results2.messages.assert_equal()
-    results3.messages.assert_equal()
+    assert results1.messages == []
+    assert results2.messages == []
+    assert results3.messages == []
 
 if __name__ == '__main__':
     unittest.main()

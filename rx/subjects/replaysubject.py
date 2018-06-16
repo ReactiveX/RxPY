@@ -1,14 +1,15 @@
 import sys
+from typing import Any
 from datetime import timedelta
 
-from rx import config
+import threading
 from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
 from rx.core.scheduledobserver import ScheduledObserver
 
 
-class RemovableDisposable(object):
+class RemovableDisposable:
     def __init__(self, subject, observer):
         self.subject = subject
         self.observer = observer
@@ -20,17 +21,18 @@ class RemovableDisposable(object):
 
 
 class ReplaySubject(ObservableBase, Observer):
-    """Represents an object that is both an observable sequence as well as an
-    observer. Each notification is broadcasted to all subscribed and future
-    observers, subject to buffer trimming policies.
+    """Represents an object that is both an observable sequence as well
+    as an observer. Each notification is broadcasted to all subscribed
+    and future observers, subject to buffer trimming policies.
     """
 
     def __init__(self, buffer_size=None, window=None, scheduler=None):
-        """Initializes a new instance of the ReplaySubject class with the
-        specified buffer size, window and scheduler.
+        """Initializes a new instance of the ReplaySubject class with
+        the specified buffer size, window and scheduler.
 
         Keyword arguments:
-        buffer_size -- [Optional] Maximum element count of the replay buffer.
+        buffer_size -- [Optional] Maximum element count of the replay
+            buffer.
         window [Optional] -- Maximum time length of the replay buffer.
         scheduler -- [Optional] Scheduler the observers are invoked on.
         """
@@ -45,7 +47,7 @@ class ReplaySubject(ObservableBase, Observer):
         self.has_error = False
         self.error = None
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
         super(ReplaySubject, self).__init__()
 
@@ -53,7 +55,7 @@ class ReplaySubject(ObservableBase, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
 
@@ -77,10 +79,10 @@ class ReplaySubject(ObservableBase, Observer):
         while len(self.queue) > self.buffer_size:
             self.queue.pop(0)
 
-        while len(self.queue) > 0 and (now - self.queue[0]['interval']) > self.window:
+        while self.queue and (now - self.queue[0]['interval']) > self.window:
             self.queue.pop(0)
 
-    def on_next(self, value):
+    def on_next(self, value: Any) -> None:
         """Notifies all subscribed observers with the value."""
 
         os = None
@@ -98,7 +100,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def on_error(self, error):
+    def on_error(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception."""
 
         os = None
@@ -119,7 +121,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -137,7 +139,7 @@ class ReplaySubject(ObservableBase, Observer):
             for observer in os:
                 observer.ensure_active()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Releases all resources used by the current instance of the
         ReplaySubject class and unsubscribe all observers."""
 

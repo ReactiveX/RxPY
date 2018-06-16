@@ -49,14 +49,13 @@ class TestPausable(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
             on_next(301, 4),
             on_next(350, 5),
             on_next(399, 6),
-            on_completed(500)
-        )
+            on_completed(500)]
 
     def test_paused_skips(self):
         subscription = [None]
@@ -97,11 +96,10 @@ class TestPausable(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(230, 3),
-            on_completed(500)
-         )
+            on_completed(500)]
 
     def test_paused_error(self):
         subscription = [None]
@@ -142,10 +140,9 @@ class TestPausable(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
-            on_error(230, err)
-        )
+            on_error(230, err)]
 
     def test_paused_with_observable_controller_and_pause_and_unpause(self):
         subscription = [None]
@@ -191,9 +188,8 @@ class TestPausable(unittest.TestCase):
 
         scheduler.start()
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 2),
             on_next(270, 4),
             on_next(450, 7),
-            on_completed(500)
-        )
+            on_completed(500)]

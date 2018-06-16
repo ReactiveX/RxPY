@@ -30,14 +30,12 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
         print(res.messages)
-        res.messages.assert_equal(
+        assert res.messages == [
             on_next(660, {4: 8, 6: 12, 8: 16, 10: 20}),
-            on_completed(660)
-        )
+            on_completed(660)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 660)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 660)]
 
     def test_to_dict_error(self):
         scheduler = TestScheduler()
@@ -58,16 +56,14 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_error(660, ex)
-        )
+        assert res.messages == [
+            on_error(660, ex)]
 
-        xs.subscriptions.assert_equal(
-           subscribe(200, 660)
-        )
+        assert xs.subscriptions == [
+           subscribe(200, 660)]
 
 
-    def test_to_dict_keyselectorthrows(self):
+    def test_to_dict_keymapperthrows(self):
         scheduler = TestScheduler()
 
         ex = Exception()
@@ -82,24 +78,22 @@ class TestToDict(unittest.TestCase):
           )
 
         def create():
-            def key_selector(x):
+            def key_mapper(x):
                 if x < 4:
                     return x * 2
                 else:
                     raise ex
-            return xs.to_dict(key_selector, lambda x: x * 4)
+            return xs.to_dict(key_mapper, lambda x: x * 4)
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_error(440, ex)
-        )
+        assert res.messages == [
+            on_error(440, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 440)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 440)]
 
-    def test_to_dict_elementselectorthrows(self):
+    def test_to_dict_elementmapperthrows(self):
         scheduler = TestScheduler()
 
         ex = Exception()
@@ -113,24 +107,22 @@ class TestToDict(unittest.TestCase):
             on_completed(600)
         )
 
-        def value_selector(x):
+        def value_mapper(x):
             if x < 4:
                 return x * 4
             else:
                 raise ex
 
         def create():
-            return xs.to_dict(lambda x: x * 2 , value_selector)
+            return xs.to_dict(lambda x: x * 2 , value_mapper)
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_error(440, ex)
-        )
+        assert res.messages == [
+            on_error(440, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 440)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 440)]
 
     def test_to_dict_disposed(self):
         scheduler = TestScheduler()
@@ -148,8 +140,7 @@ class TestToDict(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
+        assert res.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]

@@ -68,19 +68,22 @@ class TestDo(unittest.TestCase):
     def test_do_next_completed_never(self):
         scheduler = TestScheduler()
         i = [0]
-        completed = [False]
+        completed = False
 
         def create():
+            nonlocal completed
+
             def on_next(x):
                 i[0] += 1
             def on_completed():
+                nonlocal completed
                 completed = True
             return Observable.never().do_action(on_next=on_next, on_completed=on_completed)
 
         scheduler.start(create)
 
         self.assertEqual(0, i[0])
-        assert(not completed[0])
+        assert(not completed)
 
     def test_do_action_without_next(self):
         scheduler = TestScheduler()
@@ -248,7 +251,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 
 
-#     results.messages.assert_equal(on_error(210, ex))
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_completed_next_throws(self):
 #     ex = 'ex'
@@ -259,7 +262,7 @@ class TestDo(unittest.TestCase):
 #             throw ex
 #         }, _undefined, function () {
 
-#     results.messages.assert_equal(on_error(210, ex))
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_completed_completed_throws(self):
 #     ex = 'ex'
@@ -270,7 +273,7 @@ class TestDo(unittest.TestCase):
 #             throw ex
 
 
-#     results.messages.assert_equal(on_next(210, 2), on_error(250, ex))
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]
 
 # def test_do1422_next_error_next_throws(self):
 #     ex = 'ex'
@@ -281,7 +284,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () {
 
-#     results.messages.assert_equal(on_error(210, ex))
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_Do1422_NextError_NextThrows(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -294,7 +297,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 
 
-#     results.messages.assert_equal(on_error(210, ex2))
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_Do1422_NextErrorCompleted_NextThrows(self):
 #     var ex, results, scheduler, xs
@@ -306,7 +309,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () { }, function () {
 
-#     results.messages.assert_equal(on_error(210, ex))
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_next_error_completed_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -319,7 +322,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 #         }, function () {
 
-#     results.messages.assert_equal(on_error(210, ex2))
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_do1422_next_error_completed_completed_throws(self):
 #     ex = 'ex'
@@ -330,7 +333,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 
 
-#     results.messages.assert_equal(on_next(210, 2), on_error(250, ex))
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]
 
 # def test_do1422_observer_next_throws(self):
 #     ex = 'ex'
@@ -341,7 +344,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }, function () { }, function () { }))
 
-#     results.messages.assert_equal(on_error(210, ex))
+#     assert results.messages == [on_error(210, ex)]
 
 # def test_do1422_observer_error_throws(self):
 #     var ex1, ex2, results, scheduler, xs
@@ -354,7 +357,7 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)2
 #         }, function () { }))
 
-#     results.messages.assert_equal(on_error(210, ex2))
+#     assert results.messages == [on_error(210, ex2)]
 
 # def test_do1422_observer_completed_throws(self):
 #     var ex, results, scheduler, xs
@@ -366,4 +369,4 @@ class TestDo(unittest.TestCase):
 #             raise Exception(ex)
 #         }))
 
-#     results.messages.assert_equal(on_next(210, 2), on_error(250, ex))
+#     assert results.messages == [on_next(210, 2), on_error(250, ex)]

@@ -1,15 +1,7 @@
 from nose import SkipTest
 
 import rx
-asyncio = rx.config['asyncio']
-if asyncio is None:
-    raise SkipTest("asyncio not available")
-
-try:
-    from trollius import From
-except ImportError:
-    raise SkipTest("trollius.From not available")
-
+import asyncio
 import unittest
 
 from datetime import datetime, timedelta

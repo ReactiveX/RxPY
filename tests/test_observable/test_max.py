@@ -33,7 +33,7 @@ class TestMax(unittest.TestCase):
             return xs.max()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 2), on_completed(250))
+        assert res == [on_next(250, 2), on_completed(250)]
 
     def test_max_int32_some(self):
         scheduler = TestScheduler()
@@ -44,9 +44,9 @@ class TestMax(unittest.TestCase):
             return xs.max()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 4), on_completed(250))
+        assert res == [on_next(250, 4), on_completed(250)]
 
-    def test_max_int32_throw(self):
+    def test_max_int32_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
@@ -54,7 +54,7 @@ class TestMax(unittest.TestCase):
         def create():
             return xs.max()
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_max_int32_never(self):
         scheduler = TestScheduler()
@@ -64,7 +64,7 @@ class TestMax(unittest.TestCase):
             return xs.max()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_max_of_t_comparer_empty(self):
         scheduler = TestScheduler()
@@ -105,7 +105,7 @@ class TestMax(unittest.TestCase):
             return xs.max(reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 'a'), on_completed(250))
+        assert res == [on_next(250, 'a'), on_completed(250)]
 
     def test_max_of_t_comparer_some(self):
         scheduler = TestScheduler()
@@ -125,9 +125,9 @@ class TestMax(unittest.TestCase):
             return xs.max(reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 'a'), on_completed(250))
+        assert res == [on_next(250, 'a'), on_completed(250)]
 
-    def test_max_of_t_comparer_throw(self):
+    def test_max_of_t_comparer_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 'z'), on_error(210, ex)]
@@ -146,7 +146,7 @@ class TestMax(unittest.TestCase):
             return xs.max(reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_max_of_t_comparer_never(self):
         scheduler = TestScheduler()
@@ -166,7 +166,7 @@ class TestMax(unittest.TestCase):
             return xs.max(reverse_comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_max_of_t_comparer_throws(self):
         ex = 'ex'
@@ -180,4 +180,4 @@ class TestMax(unittest.TestCase):
             return xs.max(reverse_comparer)
         res = scheduler.start(create=create).messages
 
-        res.assert_equal(on_error(220, ex))
+        assert res == [on_error(220, ex)]

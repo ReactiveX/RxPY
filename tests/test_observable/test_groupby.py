@@ -47,20 +47,20 @@ class TestGroupBy(unittest.TestCase):
             on_error(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            return xs.group_by(key_selector, lambda x: x).map(lambda g: g.key)
+            return xs.group_by(key_mapper, lambda x: x).map(lambda g: g.key)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
             on_next(350, "baz"),
             on_next(360, "qux"),
-            on_completed(570))
-        xs.subscriptions.assert_equal(subscribe(200, 570))
+            on_completed(570)]
+        assert xs.subscriptions == [subscribe(200, 570)]
         assert(key_invoked[0] == 12)
 
     def test_groupby_outer_complete(self):
@@ -89,26 +89,26 @@ class TestGroupBy(unittest.TestCase):
             on_error(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1] # Yes, this is reverse string in Python
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
             on_next(350, "baz"),
             on_next(360, "qux"),
-            on_completed(570))
-        xs.subscriptions.assert_equal(subscribe(200, 570))
-        assert(key_invoked[0] == 12)
-        assert(ele_invoked[0] == 12)
+            on_completed(570)]
+        assert xs.subscriptions == [subscribe(200, 570)]
+        assert key_invoked[0] == 12
+        assert ele_invoked[0] == 12
 
     def test_group_by_outer_error(self):
         scheduler = TestScheduler()
@@ -137,24 +137,24 @@ class TestGroupBy(unittest.TestCase):
             on_error(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
             on_next(350, "baz"),
             on_next(360, "qux"),
-            on_error(570, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 570))
+            on_error(570, ex)]
+        assert xs.subscriptions == [subscribe(200, 570)]
         assert(key_invoked[0] == 12)
         assert(ele_invoked[0] == 12)
 
@@ -185,27 +185,27 @@ class TestGroupBy(unittest.TestCase):
             on_error(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory, disposed=355)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
-            on_next(350, "baz"))
-        xs.subscriptions.assert_equal(subscribe(200, 355))
+            on_next(350, "baz")]
+        assert xs.subscriptions == [subscribe(200, 355)]
         assert(key_invoked[0] == 5)
         assert(ele_invoked[0] == 5)
 
-    def test_group_by_outer_key_throw(self):
+    def test_group_by_outer_key_on_error(self):
         scheduler = TestScheduler()
         key_invoked = [0]
         ele_invoked = [0]
@@ -231,31 +231,31 @@ class TestGroupBy(unittest.TestCase):
             on_completed(600),
             on_error(650, 'ex'))
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 if key_invoked[0] == 10:
                     raise Exception(ex)
 
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
             on_next(350, "baz"),
             on_next(360, "qux"),
-            on_error(480, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 480))
-        assert(key_invoked[0] == 10)
-        assert(ele_invoked[0] == 9)
+            on_error(480, ex)]
+        assert xs.subscriptions == [subscribe(200, 480)]
+        assert key_invoked[0] == 10
+        assert ele_invoked[0] == 9
 
-    def test_group_by_outer_ele_throw(self):
+    def test_group_by_outer_ele_on_error(self):
         scheduler = TestScheduler()
         key_invoked = [0]
         ele_invoked = [0]
@@ -282,28 +282,28 @@ class TestGroupBy(unittest.TestCase):
             on_error(650, 'ex'))
 
         def factory():
-            def key_selector(x):
+            def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            def element_selector(x):
+            def element_mapper(x):
                 ele_invoked[0] += 1
                 if ele_invoked[0] == 10:
                     raise Exception(ex)
                 return x[::-1]
 
-            return xs.group_by(key_selector, element_selector).map(lambda g: g.key)
+            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
         results = scheduler.start(factory)
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, "foo"),
             on_next(270, "bar"),
             on_next(350, "baz"),
             on_next(360, "qux"),
-            on_error(480, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 480))
-        assert(key_invoked[0] == 10)
-        assert(ele_invoked[0] == 10)
+            on_error(480, ex)]
+        assert xs.subscriptions == [subscribe(200, 480)]
+        assert key_invoked[0] == 10
+        assert ele_invoked[0] == 10
 
     def test_group_by_inner_complete(self):
         scheduler = TestScheduler()
@@ -349,10 +349,10 @@ class TestGroupBy(unittest.TestCase):
                 c["results"][group.key] = result
 
                 def action21(scheduler, state):
-                    c["inner_subscriptions"][group.key] = group.subscribe(result)
+                    c["inner_subscriptions"][group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action21)
-            c["outer_subscription"] = c["outer"].subscribe(next)
+            c["outer_subscription"] = c["outer"].subscribe_(next, scheduler=scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
@@ -363,22 +363,22 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action3)
         scheduler.start()
         assert(len(c["inners"]) == 4)
-        c["results"]['foo'].messages.assert_equal(
+        assert c["results"]['foo'].messages == [
             on_next(470, " OOF"),
             on_next(530, "    oOf    "),
-            on_completed(570))
-        c["results"]['bar'].messages.assert_equal(
+            on_completed(570)]
+        assert c["results"]['bar'].messages == [
             on_next(390, "rab   "),
             on_next(420, "  RAB "),
-            on_completed(570))
-        c["results"]['baz'].messages.assert_equal(
+            on_completed(570)]
+        assert c["results"]['baz'].messages == [
             on_next(480, "  zab"),
             on_next(510, " ZAb "),
-            on_completed(570))
-        c["results"]['qux'].messages.assert_equal(
-            on_completed(570))
-        xs.subscriptions.assert_equal(
-            subscribe(200, 570))
+            on_completed(570)]
+        assert c["results"]['qux'].messages == [
+            on_completed(570)]
+        assert xs.subscriptions == [
+            subscribe(200, 570)]
 
     def test_group_by_inner_complete_all(self):
         scheduler = TestScheduler()
@@ -424,8 +424,8 @@ class TestGroupBy(unittest.TestCase):
                 c["result"] = scheduler.create_observer()
                 inners[group.key] = group
                 results[group.key] = c["result"]
-                inner_subscriptions[group.key] = group.subscribe(c["result"])
-            c["outer_subscription"] = c["outer"].subscribe(on_next)
+                inner_subscriptions[group.key] = group.subscribe(c["result"], scheduler)
+            c["outer_subscription"] = c["outer"].subscribe_(on_next, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -437,28 +437,28 @@ class TestGroupBy(unittest.TestCase):
 
         scheduler.start()
         assert(len(inners) == 4)
-        results['foo'].messages.assert_equal(
+        assert results['foo'].messages == [
             on_next(220, "oof  "),
             on_next(240, " OoF "),
             on_next(310, " Oof"),
             on_next(470, " OOF"),
             on_next(530, "    oOf    "),
-            on_completed(570))
-        results['bar'].messages.assert_equal(
+            on_completed(570)]
+        assert results['bar'].messages == [
             on_next(270, "  Rab"),
             on_next(390, "rab   "),
             on_next(420, "  RAB "),
-            on_completed(570))
-        results['baz'].messages.assert_equal(
+            on_completed(570)]
+        assert results['baz'].messages == [
             on_next(350, "   zaB "),
             on_next(480, "  zab"),
             on_next(510, " ZAb "),
-            on_completed(570))
-        results['qux'].messages.assert_equal(
+            on_completed(570)]
+        assert results['qux'].messages == [
             on_next(360, " xuq  "),
-            on_completed(570))
-        xs.subscriptions.assert_equal(
-            subscribe(200, 570))
+            on_completed(570)]
+        assert xs.subscriptions == [
+            subscribe(200, 570)]
 
     def test_group_by_inner_error(self):
         ex = 'ex1'
@@ -506,10 +506,10 @@ class TestGroupBy(unittest.TestCase):
                 results[group.key] = result
 
                 def action3(scheduler, state):
-                    inner_subscriptions[group.key] = group.subscribe(result)
+                    inner_subscriptions[group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action3)
-            c["outer_subscription"] = c["outer"].subscribe(on_next, lambda e: None)
+            c["outer_subscription"] = c["outer"].subscribe_(on_next, lambda e: None, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -520,23 +520,23 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(disposed, action4)
 
         scheduler.start()
-        assert(len(inners) == 4)
-        results['foo'].messages.assert_equal(
+        assert len(inners) == 4
+        assert results['foo'].messages == [
             on_next(470, " OOF"),
             on_next(530, "    oOf    "),
-            on_error(570, ex))
-        results['bar'].messages.assert_equal(
+            on_error(570, ex)]
+        assert results['bar'].messages == [
             on_next(390, "rab   "),
             on_next(420, "  RAB "),
-            on_error(570, ex))
-        results['baz'].messages.assert_equal(
+            on_error(570, ex)]
+        assert results['baz'].messages == [
             on_next(480, "  zab"),
             on_next(510, " ZAb "),
-            on_error(570, ex))
-        results['qux'].messages.assert_equal(
-            on_error(570, ex))
-        xs.subscriptions.assert_equal(
-            subscribe(200, 570))
+            on_error(570, ex)]
+        assert results['qux'].messages == [
+            on_error(570, ex)]
+        assert xs.subscriptions == [
+            subscribe(200, 570)]
 
     def test_group_by_with_merge(self):
         scheduler = TestScheduler()
@@ -545,24 +545,24 @@ class TestGroupBy(unittest.TestCase):
         results = [None]
 
         def action1(scheduler, state):
-            xs[0] = Observable.from_(["alpha", "apple", "beta", "bat", "gamma"]) \
+            xs[0] = Observable.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
                               .group_by(lambda s: s[0]) \
-                              .map(lambda group: group.to_list()) \
+                              .map(lambda xs: xs.to_iterable()) \
                               .merge_all()
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
             results[0] = scheduler.create_observer()
-            xs[0].subscribe(results[0])
+            xs[0].subscribe(results[0], scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         scheduler.start()
 
-        results[0].messages.assert_equal(
+        assert results[0].messages == [
             on_next(200, ["alpha", "apple"]),
             on_next(200, ["beta", "bat"]),
             on_next(200, ["gamma"]),
-            on_completed(200))
+            on_completed(200)]
 
 if __name__ == '__main__':
     unittest.main()

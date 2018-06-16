@@ -20,11 +20,11 @@ class TestWindowWithTime(unittest.TestCase):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
                 return w.map(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
+            return xs.window_with_time_or_count(70, 3).map(mapper_indexed=projection).merge_all()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_completed(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_window_with_time_or_count_error(self):
         ex = 'ex'
@@ -36,12 +36,12 @@ class TestWindowWithTime(unittest.TestCase):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
                 return w.map(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
+            return xs.window_with_time_or_count(70, 3).map(mapper_indexed=projection).merge_all()
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_error(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"), on_next(420, "3 8"), on_next(470, "4 9"), on_error(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_window_with_time_or_count_disposed(self):
         scheduler = TestScheduler()
@@ -52,11 +52,11 @@ class TestWindowWithTime(unittest.TestCase):
                 def inner_proj(x):
                     return "%s %s" % (i, x)
                 return w.map(inner_proj)
-            return xs.window_with_time_or_count(70, 3, scheduler).map(projection).merge_observable()
+            return xs.window_with_time_or_count(70, 3).map(mapper_indexed=projection).merge_all()
 
         results = scheduler.start(create, disposed=370)
-        results.messages.assert_equal(on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7"))
-        xs.subscriptions.assert_equal(subscribe(200, 370))
+        assert results.messages == [on_next(205, "0 1"), on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "1 4"), on_next(320, "2 5"), on_next(350, "2 6"), on_next(370, "2 7")]
+        assert xs.subscriptions == [subscribe(200, 370)]
 
 
 

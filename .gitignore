@@ -9,6 +9,7 @@
 dist
 build
 eggs
+.eggs
 parts
 bin
 var
@@ -26,6 +27,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+coverage.xml
 
 # Translations
 *.mo
@@ -59,3 +61,7 @@ TestResults/Rx.TE.Tests_log.ldf
 .zedstate
 
 .ipynb_checkpoints
+.cache/
+.mypy_cache/
+.vscode/
+.noseids

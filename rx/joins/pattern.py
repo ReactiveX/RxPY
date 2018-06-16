@@ -1,6 +1,6 @@
 from .plan import Plan
 
-class Pattern(object):
+class Pattern:
     def __init__(self, patterns):
         """Represents a join pattern over observable sequences."""
 
@@ -34,13 +34,13 @@ class Pattern(object):
 
         return self.and_(other)
 
-    def then_do(self, selector):
+    def then_do(self, mapper):
         """Matches when all observable sequences in the pattern (specified using
         a chain of and operators) have an available value and projects the
         values.
 
         Keyword arguments:
-        :param types.FunctionType selector: Selector that will be invoked with
+        :param types.FunctionType mapper: Selector that will be invoked with
             available values from the source sequences, in the same order of the
             sequences in the pattern.
         :returns: Plan that produces the projected values, to be fed (with other
@@ -48,4 +48,4 @@ class Pattern(object):
         :rtype: Plan
         """
 
-        return Plan(self, selector)
+        return Plan(self, mapper)

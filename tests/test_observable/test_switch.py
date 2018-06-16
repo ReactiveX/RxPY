@@ -21,7 +21,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(650))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(650)]
 
     def test_switch_inner_throws(self):
         ex = 'ex'
@@ -32,7 +32,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex)]
 
     def test_switch_outer_throws(self):
         ex = 'ex'
@@ -42,7 +42,7 @@ class TestSwitch(unittest.TestCase):
         def create():
             return xs.switch_latest()
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex)]
 
     def test_switch_no_inner(self):
         scheduler = TestScheduler()
@@ -52,7 +52,7 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(500))
+        assert results.messages == [on_completed(500)]
 
     def test_switch_inner_completes(self):
         scheduler = TestScheduler()
@@ -62,5 +62,5 @@ class TestSwitch(unittest.TestCase):
             return xs.switch_latest()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(420, 104), on_next(510, 105), on_next(520, 106), on_completed(540))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(420, 104), on_next(510, 105), on_next(520, 106), on_completed(540)]
 

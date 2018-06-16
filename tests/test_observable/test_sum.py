@@ -20,7 +20,7 @@ class TestSum(unittest.TestCase):
             return xs.sum()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 0), on_completed(250))
+        assert res == [on_next(250, 0), on_completed(250)]
 
     def test_sum_int32_return(self):
         scheduler = TestScheduler()
@@ -29,7 +29,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 2), on_completed(250))
+        assert res == [on_next(250, 2), on_completed(250)]
 
     def test_sum_int32_some(self):
         scheduler = TestScheduler()
@@ -37,9 +37,9 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, 2 + 3 + 4), on_completed(250))
+        assert res == [on_next(250, 2 + 3 + 4), on_completed(250)]
 
-    def test_sum_int32_throw(self):
+    def test_sum_int32_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
@@ -47,7 +47,7 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_sum_int32_never(self):
         scheduler = TestScheduler()
@@ -55,9 +55,9 @@ class TestSum(unittest.TestCase):
         def create():
             return xs.sum()
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
-    def test_sum_selector_regular_int32(self):
+    def test_sum_mapper_regular_int32(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, "fo"), on_next(220, "b"), on_next(230, "qux"), on_completed(240))
 
@@ -66,5 +66,5 @@ class TestSum(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_next(240, 6), on_completed(240))
-        xs.subscriptions.assert_equal(subscribe(200, 240))
+        assert res.messages == [on_next(240, 6), on_completed(240)]
+        assert xs.subscriptions == [subscribe(200, 240)]

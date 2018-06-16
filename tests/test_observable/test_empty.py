@@ -26,24 +26,24 @@ class TestEmpty(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.empty(scheduler)
+            return Observable.empty()
         results = scheduler.start(factory)
 
-        results.messages.assert_equal(on_completed(201))
+        assert results.messages == [on_completed(200)]
 
     def test_empty_disposed(self):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.empty(scheduler)
+            return Observable.empty()
 
         results = scheduler.start(factory, disposed=200)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_empty_observer_throw_exception(self):
         scheduler = TestScheduler()
-        xs = Observable.empty(scheduler)
-        xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'))
+        xs = Observable.empty()
+        xs.subscribe_(lambda x: None, lambda ex: None, lambda: _raise('ex'), scheduler)
 
         with self.assertRaises(RxException):
             scheduler.start()

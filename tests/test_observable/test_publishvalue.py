@@ -74,19 +74,17 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(800, action8)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(200, 1979),
             on_next(340, 8),
             on_next(360, 5),
             on_next(370, 6),
             on_next(390, 7),
-            on_next(520, 11)
-        )
-        xs.subscriptions.assert_equal(
+            on_next(520, 11)]
+        assert xs.subscriptions == [
             subscribe(300, 400),
             subscribe(500, 550),
-            subscribe(650, 800)
-        )
+            subscribe(650, 800)]
 
     def test_publish_with_initial_value_error(self):
         connection = [None]
@@ -141,7 +139,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(800, action6)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(200, 1979),
             on_next(340, 8),
             on_next(360, 5),
@@ -149,8 +147,8 @@ class TestPublishValue(unittest.TestCase):
             on_next(390, 7),
             on_next(520, 11),
             on_next(560, 20),
-            on_error(600, ex))
-        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
+            on_error(600, ex)]
+        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 600)]
 
     def test_publish_with_initial_value_complete(self):
         connection = [None]
@@ -203,7 +201,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(800, action6)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(200, 1979),
             on_next(340, 8),
             on_next(360, 5),
@@ -211,8 +209,8 @@ class TestPublishValue(unittest.TestCase):
             on_next(390, 7),
             on_next(520, 11),
             on_next(560, 20),
-            on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(300, 400), subscribe(500, 600))
+            on_completed(600)]
+        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 600)]
 
     def test_publish_with_initial_value_dispose(self):
         connection = [None]
@@ -275,13 +273,13 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(800, action8)
 
         scheduler.start()
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(200, 1979),
-            on_next(340, 8))
-        xs.subscriptions.assert_equal(
+            on_next(340, 8)]
+        assert xs.subscriptions == [
             subscribe(300, 400),
             subscribe(500, 550),
-            subscribe(650, 800))
+            subscribe(650, 800)]
 
     def test_publish_with_initial_value_multiple_connections(self):
         xs = Observable.never()
@@ -313,12 +311,12 @@ class TestPublishValue(unittest.TestCase):
             on_completed(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, 1982),
             on_next(280, 7),
             on_next(290, 5),
@@ -331,8 +329,8 @@ class TestPublishValue(unittest.TestCase):
             on_next(450, 11),
             on_next(520, 20),
             on_next(560, 31),
-            on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            on_completed(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_publish_with_initial_value_lambda_zip_error(self):
         ex = 'ex'
@@ -354,13 +352,13 @@ class TestPublishValue(unittest.TestCase):
             on_error(600, ex))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, 1982),
             on_next(280, 7),
             on_next(290, 5),
@@ -373,8 +371,8 @@ class TestPublishValue(unittest.TestCase):
             on_next(450, 11),
             on_next(520, 20),
             on_next(560, 31),
-            on_error(600, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+            on_error(600, ex)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_publish_with_initial_value_lambda_zip_dispose(self):
         scheduler = TestScheduler()
@@ -395,12 +393,12 @@ class TestPublishValue(unittest.TestCase):
             on_completed(600))
 
         def create():
-            def selector(_xs):
-                return _xs.zip(_xs.skip(1), lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, selector)
+            def mapper(_xs):
+                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+            return xs.publish_value(1979, mapper)
 
         results = scheduler.start(create, disposed=470)
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(220, 1982),
             on_next(280, 7),
             on_next(290, 5),
@@ -410,5 +408,5 @@ class TestPublishValue(unittest.TestCase):
             on_next(390, 13),
             on_next(410, 20),
             on_next(430, 15),
-            on_next(450, 11))
-        xs.subscriptions.assert_equal(subscribe(200, 470))
+            on_next(450, 11)]
+        assert xs.subscriptions == [subscribe(200, 470)]

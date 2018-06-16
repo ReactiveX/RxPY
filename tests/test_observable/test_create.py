@@ -27,20 +27,20 @@ class TestCreate(unittest.TestCase):
     def test_create_next(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_next(1)
                 o.on_next(2)
                 return lambda: None
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
+        assert results.messages == [on_next(200, 1), on_next(200, 2)]
 
     def test_create_completed(self):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_completed()
                 o.on_next(100)
                 o.on_error('ex')
@@ -49,14 +49,14 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(200))
+        assert results.messages == [on_completed(200)]
 
     def test_create_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_error(ex)
                 o.on_next(100)
                 o.on_error('foo')
@@ -65,7 +65,7 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(200, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_create_exception(self):
         with self.assertRaises(RxException):
@@ -75,7 +75,7 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 is_stopped = [False]
                 o.on_next(1)
                 o.on_next(2)
@@ -106,81 +106,81 @@ class TestCreate(unittest.TestCase):
             return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4))
+        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4)]
 
     def test_create_observer_throws(self):
-        def subscribe(o):
+        def subscribe(o, observer=None):
             o.on_next(1)
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe).subscribe(lambda x: _raise('ex'))
+            Observable.create(subscribe).subscribe_(lambda x: _raise('ex'))
 
         def subscribe2(o):
             o.on_error('exception')
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+            Observable.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.on_completed()
             return lambda: None
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe3).subscribe(on_completed=lambda: _raise('ex'))
+            Observable.create(subscribe3).subscribe_(on_completed=lambda: _raise('ex'))
 
-    def test_create_with_disposable_next(self):
+    def test_create_next(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_next(1)
                 o.on_next(2)
                 return Disposable.empty()
-            return Observable.create_with_disposable(subscribe)
+            return Observable.create(subscribe)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2))
+        assert results.messages == [on_next(200, 1), on_next(200, 2)]
 
-    def test_create_with_disposable_completed(self):
+    def test_create_completed(self):
         scheduler = TestScheduler()
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_completed()
                 o.on_next(100)
                 o.on_error('ex')
                 o.on_completed()
                 return Disposable.empty()
-            return Observable.create_with_disposable(subscribe)
+            return Observable.create(subscribe)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(200))
+        assert results.messages == [on_completed(200)]
 
-    def test_create_with_disposable_error(self):
+    def test_create_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 o.on_error(ex)
                 o.on_next(100)
                 o.on_error('foo')
                 o.on_completed()
                 return Disposable.empty()
 
-            return Observable.create_with_disposable(subscribe)
+            return Observable.create(subscribe)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(200, ex))
+        assert results.messages == [on_error(200, ex)]
 
-    def test_create_with_disposable_exception(self):
+    def test_create_exception(self):
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(lambda: o, _raise('ex')).subscribe()
+            Observable.create(lambda: o, _raise('ex')).subscribe()
 
-    def test_create_with_disposable_dispose(self):
+    def test_create_dispose(self):
         scheduler = TestScheduler()
 
         def create():
-            def subscribe(o):
+            def subscribe(o, observer=None):
                 d = BooleanDisposable()
                 o.on_next(1)
                 o.on_next(2)
@@ -206,14 +206,14 @@ class TestCreate(unittest.TestCase):
                 scheduler.schedule_relative(1100, action4)
 
                 return d
-            return Observable.create_with_disposable(subscribe)
+            return Observable.create(subscribe)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4))
+        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4)]
 
 
-    def test_create_with_disposable_observer_throws(self):
+    def test_create_observer_throws(self):
         def subscribe1(o):
             o.on_next(1)
             return Disposable.empty()
@@ -222,19 +222,19 @@ class TestCreate(unittest.TestCase):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe1).subscribe(on_next)
+            Observable.create(subscribe1).subscribe_(on_next)
 
         def subscribe2(o):
             o.on_error('exception')
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+            Observable.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.on_completed()
             return Disposable.empty()
 
         with self.assertRaises(RxException):
-            Observable.create_with_disposable(subscribe3).subscribe(on_completed=_raise('ex'))
+            Observable.create(subscribe3).subscribe_(on_completed=_raise('ex'))
 

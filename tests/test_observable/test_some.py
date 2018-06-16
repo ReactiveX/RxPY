@@ -22,7 +22,7 @@ class TestSome(unittest.TestCase):
             return xs.some()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_return(self):
         scheduler = TestScheduler()
@@ -33,9 +33,9 @@ class TestSome(unittest.TestCase):
             return xs.some()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, True), on_completed(210))
+        assert res == [on_next(210, True), on_completed(210)]
 
-    def test_some_throw(self):
+    def test_some_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
@@ -44,7 +44,7 @@ class TestSome(unittest.TestCase):
         def create():
             return xs.some()
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_some_never(self):
         scheduler = TestScheduler()
@@ -55,7 +55,7 @@ class TestSome(unittest.TestCase):
             return xs.some()
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_some_predicate_empty(self):
         scheduler = TestScheduler()
@@ -66,7 +66,7 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_return(self):
         scheduler = TestScheduler()
@@ -77,7 +77,7 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, True), on_completed(210))
+        assert res == [on_next(210, True), on_completed(210)]
 
     def test_some_predicate_return_not_match(self):
         scheduler = TestScheduler()
@@ -88,7 +88,7 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_some_none_match(self):
         scheduler = TestScheduler()
@@ -99,7 +99,7 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_some_predicate_some_match(self):
         scheduler = TestScheduler()
@@ -110,9 +110,9 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(220, True), on_completed(220))
+        assert res == [on_next(220, True), on_completed(220)]
 
-    def test_some_predicate_throw(self):
+    def test_some_predicate_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
@@ -121,7 +121,7 @@ class TestSome(unittest.TestCase):
         def create():
             return xs.some(lambda x: x > 0)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_some_predicate_never(self):
         scheduler = TestScheduler()
@@ -132,4 +132,4 @@ class TestSome(unittest.TestCase):
             return xs.some(lambda x: x > 0)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []

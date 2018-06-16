@@ -92,24 +92,21 @@ def test_infinite():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         on_next(300, 4),
         on_next(340, 5),
         on_next(410, 6),
-        on_next(520, 7)
-    )
+        on_next(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         on_next(400, 5),
         on_next(410, 6),
         on_next(520, 7),
-        on_next(630, 8)
-    )
+        on_next(630, 8)]
 
-    results3.messages.assert_equal(
+    assert results3.messages == [
         on_next(900, 10),
-        on_next(940, 11)
-    )
+        on_next(940, 11)]
 
 
 def test_finite():
@@ -181,23 +178,20 @@ def test_finite():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         on_next(300, 4),
         on_next(340, 5),
         on_next(410, 6),
-        on_next(520, 7)
-    )
+        on_next(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         on_next(400, 5),
         on_next(410, 6),
         on_next(520, 7),
-        on_completed(630)
-    )
+        on_completed(630)]
 
-    results3.messages.assert_equal(
-        on_completed(900)
-    )
+    assert results3.messages == [
+        on_completed(900)]
 
 
 def test_error():
@@ -271,23 +265,20 @@ def test_error():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         on_next(300, 4),
         on_next(340, 5),
         on_next(410, 6),
-        on_next(520, 7)
-    )
+        on_next(520, 7)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         on_next(400, 5),
         on_next(410, 6),
         on_next(520, 7),
-        on_error(630, ex)
-    )
+        on_error(630, ex)]
 
-    results3.messages.assert_equal(
-        on_error(900, ex)
-    )
+    assert results3.messages == [
+        on_error(900, ex)]
 
 def test_canceled():
     scheduler = TestScheduler()
@@ -351,18 +342,15 @@ def test_canceled():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
-        on_next(300, 100)
-    )
+    assert results1.messages == [
+        on_next(300, 100)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         on_next(400, 100),
-        on_completed(630)
-    )
+        on_completed(630)]
 
-    results3.messages.assert_equal(
-        on_completed(900)
-    )
+    assert results3.messages == [
+        on_completed(900)]
 
 def test_subject_disposed():
     scheduler = TestScheduler()
@@ -452,22 +440,19 @@ def test_subject_disposed():
 
     scheduler.start()
 
-    results1.messages.assert_equal(
+    assert results1.messages == [
         on_next(200, 1),
         on_next(250, 2),
         on_next(350, 3),
-        on_next(450, 4)
-    )
+        on_next(450, 4)]
 
-    results2.messages.assert_equal(
+    assert results2.messages == [
         on_next(300, 2),
         on_next(350, 3),
         on_next(450, 4),
-        on_next(550, 5)
-    )
+        on_next(550, 5)]
 
-    results3.messages.assert_equal(
+    assert results3.messages == [
         on_next(400, 3),
         on_next(450, 4),
-        on_next(550, 5)
-    )
+        on_next(550, 5)]

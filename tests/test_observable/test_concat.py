@@ -2,6 +2,7 @@ import unittest
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
+from rx.operators.observable.concat import concat
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,6 +15,7 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
+
 
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
@@ -32,7 +34,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(250))
+        assert results.messages == [on_completed(250)]
 
     def test_concat_empty_never(self):
         scheduler = TestScheduler()
@@ -43,7 +45,7 @@ class TestConcat(unittest.TestCase):
         def create():
             return e1.concat(e2)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_never_empty(self):
         scheduler = TestScheduler()
@@ -55,7 +57,7 @@ class TestConcat(unittest.TestCase):
             return e2.concat(e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_never_never(self):
         scheduler = TestScheduler()
@@ -65,9 +67,9 @@ class TestConcat(unittest.TestCase):
         def create():
             return e1.concat(e2)
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
-    def test_concat_empty_throw(self):
+    def test_concat_empty_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
@@ -79,7 +81,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(250, ex))
+        assert results.messages == [on_error(250, ex)]
 
     def test_concat_throw_empty(self):
         ex = 'ex'
@@ -93,9 +95,9 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(230, ex))
+        assert results.messages == [on_error(230, ex)]
 
-    def test_concat_throw_throw(self):
+    def test_concat_throw_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_error(230, ex)]
@@ -105,8 +107,9 @@ class TestConcat(unittest.TestCase):
 
         def create():
             return e1.concat(e2)
+
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(230, ex))
+        assert results.messages == [on_error(230, ex)]
 
     def test_concat_return_empty(self):
         scheduler = TestScheduler()
@@ -119,7 +122,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_completed(250))
+        assert results.messages == [on_next(210, 2), on_completed(250)]
 
     def test_concat_empty_return(self):
         scheduler = TestScheduler()
@@ -132,7 +135,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(240, 2), on_completed(250))
+        assert results.messages == [on_next(240, 2), on_completed(250)]
 
     def test_concat_return_never(self):
         scheduler = TestScheduler()
@@ -144,7 +147,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2))
+        assert results.messages == [on_next(210, 2)]
 
     def test_concat_never_return(self):
         scheduler = TestScheduler()
@@ -156,7 +159,7 @@ class TestConcat(unittest.TestCase):
             return e2.concat(e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_concat_return_return(self):
         scheduler = TestScheduler()
@@ -169,7 +172,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(220, 2), on_next(240, 3), on_completed(250))
+        assert results.messages == [on_next(220, 2), on_next(240, 3), on_completed(250)]
 
     def test_concat_throw_return(self):
         ex = 'ex'
@@ -183,9 +186,9 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(230, ex))
+        assert results.messages == [on_error(230, ex)]
 
-    def test_concat_return_throw(self):
+    def test_concat_return_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(220, 2), on_completed(230)]
@@ -197,7 +200,7 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(220, 2), on_error(250, ex))
+        assert results.messages == [on_next(220, 2), on_error(250, ex)]
 
     def test_concat_some_data_some_data(self):
         scheduler = TestScheduler()
@@ -210,4 +213,4 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        assert results.messages == [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]

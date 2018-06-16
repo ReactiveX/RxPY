@@ -8,7 +8,7 @@ asyncio = rx.config['asyncio']
 future_ctor = rx.config.get("Future") or asyncio.Future
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 async def __aiter__(self):
     source = self
 
@@ -17,7 +17,7 @@ async def __aiter__(self):
             self.notifications = []
             self.future = future_ctor()
 
-            source.materialize().subscribe(self.on_next)
+            source.materialize().subscribe_(self.on_next)
 
         def feeder(self):
             if not self.notifications or self.future.done():

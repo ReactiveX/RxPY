@@ -28,7 +28,7 @@ class TestDefer(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
                                     on_next(100, scheduler.clock),
@@ -37,12 +37,9 @@ class TestDefer(unittest.TestCase):
                 return xs[0]
             return Observable.defer(defer)
         results = scheduler.start(create)
-        results.messages.assert_equal(
-                            on_next(300, 200),
-                            on_completed(400)
-                        )
+        assert results.messages == [on_next(300, 200), on_completed(400)]
         assert(1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 400))
+        assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_error(self):
         scheduler = TestScheduler()
@@ -51,7 +48,7 @@ class TestDefer(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
                 return xs[0]
@@ -59,9 +56,9 @@ class TestDefer(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(300, 200), on_error(400, ex))
+        assert results.messages == [on_next(300, 200), on_error(400, ex)]
         assert (1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 400))
+        assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_dispose(self):
         scheduler = TestScheduler()
@@ -69,29 +66,29 @@ class TestDefer(unittest.TestCase):
         xs = [None]
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
                 return xs[0]
             return Observable.defer(defer)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(300, 200), on_next(400, 1))
+        assert results.messages == [on_next(300, 200), on_next(400, 1)]
         assert(1 == invoked[0])
-        return xs[0].subscriptions.assert_equal(subscribe(200, 1000))
+        assert xs[0].subscriptions == [subscribe(200, 1000)]
 
-    def test_defer_throw(self):
+    def test_defer_on_error(self):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
 
         def create():
-            def defer():
+            def defer(scheduler):
                 invoked[0] += 1
                 raise Exception(ex)
 
             return Observable.defer(defer)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(200, ex))
+        assert results.messages == [on_error(200, ex)]
         assert(1 == invoked[0])

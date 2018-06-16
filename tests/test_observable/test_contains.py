@@ -21,7 +21,7 @@ class TestContains(unittest.TestCase):
         def create():
             return xs.contains(42)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_contains_return_positive(self):
         scheduler = TestScheduler()
@@ -32,7 +32,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(2)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(210, True), on_completed(210))
+        assert res == [on_next(210, True), on_completed(210)]
 
     def test_contains_return_negative(self):
         scheduler = TestScheduler()
@@ -43,7 +43,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(-2)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
     def test_contains_some_positive(self):
         scheduler = TestScheduler()
@@ -54,7 +54,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(3)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(220, True), on_completed(220))
+        assert res == [on_next(220, True), on_completed(220)]
 
     def test_contains_some_negative(self):
         scheduler = TestScheduler()
@@ -64,9 +64,9 @@ class TestContains(unittest.TestCase):
         def create():
             return xs.contains(-3)
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]
 
-    def test_contains_throw(self):
+    def test_contains_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
@@ -75,7 +75,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(42)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_contains_never(self):
         scheduler = TestScheduler()
@@ -86,7 +86,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(42)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal()
+        assert res == []
 
     def test_contains_comparer_throws(self):
         ex = 'ex'
@@ -100,7 +100,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(42, comparer)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_error(210, ex))
+        assert res == [on_error(210, ex)]
 
     def test_contains_comparer_contains_value(self):
         scheduler = TestScheduler()
@@ -110,7 +110,7 @@ class TestContains(unittest.TestCase):
             return xs.contains(42, lambda a, b: a % 2 == b % 2)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(220, True), on_completed(220))
+        assert res == [on_next(220, True), on_completed(220)]
 
     def test_contains_comparer_does_not_contain_value(self):
         scheduler = TestScheduler()
@@ -120,4 +120,4 @@ class TestContains(unittest.TestCase):
             return xs.contains(21, lambda a, b: a % 2 == b % 2)
 
         res = scheduler.start(create=create).messages
-        res.assert_equal(on_next(250, False), on_completed(250))
+        assert res == [on_next(250, False), on_completed(250)]

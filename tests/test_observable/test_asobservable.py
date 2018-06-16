@@ -24,7 +24,7 @@ class TestAsObservable(unittest.TestCase):
             return Observable.never().as_observable()
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_as_observable_empty(self):
         scheduler = TestScheduler()
@@ -37,7 +37,7 @@ class TestAsObservable(unittest.TestCase):
         self.assertEqual(1, len(results))
         assert(results[0].value.kind == 'C' and results[0].time == 250)
 
-    def test_as_observable_throw(self):
+    def test_as_observable_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))

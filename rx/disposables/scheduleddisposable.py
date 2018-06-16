@@ -1,19 +1,19 @@
-from rx import config
+from threading import RLock
 from rx.core import Disposable
 
 
 class ScheduledDisposable(Disposable):
-    """Represents a disposable resource whose disposal invocation will be
-    scheduled on the specified Scheduler"""
+    """Represents a disposable resource whose disposal invocation will
+    be scheduled on the specified Scheduler"""
 
     def __init__(self, scheduler, disposable):
-        """Initializes a new instance of the ScheduledDisposable class that
-        uses a Scheduler on which to dispose the disposable."""
+        """Initializes a new instance of the ScheduledDisposable class
+        that uses a Scheduler on which to dispose the disposable."""
 
         self.scheduler = scheduler
         self.disposable = disposable
         self.is_disposed = False
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
         super(ScheduledDisposable, self).__init__()
 

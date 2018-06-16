@@ -50,7 +50,7 @@ class TestHistoricalScheduler(unittest.TestCase):
 
     def test_ctor(self):
         s = HistoricalScheduler()
-        self.assertEqual(datetime.fromtimestamp(0), s.clock)
+        self.assertEqual(datetime.utcfromtimestamp(0), s.clock)
         self.assertEqual(False, s.is_enabled)
 
     def test_start_stop(self):

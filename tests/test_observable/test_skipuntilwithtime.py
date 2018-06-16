@@ -19,23 +19,23 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(0), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(0))
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_next(210, 1), on_next(220, 2), on_completed(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [on_next(210, 1), on_next(220, 2), on_completed(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skipuntil_late(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_completed(230))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [on_completed(230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skipuntil_error(self):
         ex = 'ex'
@@ -43,24 +43,24 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_error(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [on_error(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_skipuntil_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_until_with_time(datetime.fromtimestamp(250), scheduler)
+            return xs.skip_until_with_time(datetime.utcfromtimestamp(250))
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal()
-        xs.subscriptions.assert_equal(subscribe(200, 1000))
+        assert res.messages == []
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_skipuntil_twice1(self):
         scheduler = TestScheduler()
@@ -75,19 +75,19 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.fromtimestamp(0.215), scheduler
+                datetime.utcfromtimestamp(0.215)
             ).skip_until_with_time(
-                datetime.fromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230)
             )
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             on_next(240, 4),
             on_next(250, 5),
             on_next(260, 6),
-            on_completed(270))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+            on_completed(270)]
+        assert xs.subscriptions == [subscribe(200, 270)]
 
     def test_skipuntil_twice2(self):
         scheduler = TestScheduler()
@@ -95,13 +95,12 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.skip_until_with_time(
-                datetime.fromtimestamp(0.230), scheduler
+                datetime.utcfromtimestamp(0.230)
             ).skip_until_with_time(
-                datetime.fromtimestamp(0.215), scheduler
-            )
+                datetime.utcfromtimestamp(0.215))
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
-        xs.subscriptions.assert_equal(subscribe(200, 270))
+        assert res.messages == [on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270)]
+        assert xs.subscriptions == [subscribe(200, 270)]
 

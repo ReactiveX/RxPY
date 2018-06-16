@@ -1,18 +1,24 @@
 from nose.tools import assert_raises
 
-from rx.core import Observer, AnonymousObserver
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core import ObserverBase, AnonymousObserver
+from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
 from rx.internal.exceptions import CompletedException
 
 
-class MyObserver(Observer):
-    def on_next(self, value):
+class MyObserver(ObserverBase):
+    def __init__(self):
+        super().__init__()
+        self.has_on_next = None
+        self.has_on_completed = None
+        self.has_on_error = None
+
+    def _on_next_core(self, value):
         self.has_on_next = value
 
-    def on_error(self, err):
-        self.has_on_error = err
+    def _on_error_core(self, error):
+        self.has_on_error = error
 
-    def on_completed(self):
+    def _on_completed_core(self):
         self.has_on_completed = True
 
 
@@ -26,7 +32,7 @@ def test_to_observer_notification_on_next():
         assert(not hasattr(n, "exception"))
         assert(n.has_value)
 
-    Observer.from_notifier(next).on_next(42)
+    from_notifier(next).on_next(42)
 
 
 def test_to_observer_notification_on_error():
@@ -39,10 +45,10 @@ def test_to_observer_notification_on_error():
         assert(n.exception == ex)
         assert(not n.has_value)
 
-    Observer.from_notifier(next).on_error(ex)
+    from_notifier(next).on_error(ex)
 
 
-def test_to_observer_notification_on_completed():
+def test_to_observer_notification_completed():
     i = 0
 
     def next(n):
@@ -50,7 +56,7 @@ def test_to_observer_notification_on_completed():
         assert(n.kind == 'C')
         assert(not n.has_value)
 
-    Observer.from_notifier(next).on_completed()
+    from_notifier(next).on_completed()
 
 
 def test_to_notifier_forwards():
@@ -130,7 +136,7 @@ def test_create_on_next_on_completed():
     assert(completed[0])
 
 
-def test_create_on_next_on_completed_has_error():
+def test_create_on_next_close_has_error():
     e_ = None
     ex = 'ex'
     next = [False]
@@ -182,7 +188,7 @@ def test_create_on_next_on_error():
     assert(error[0])
 
 
-def test_create_on_next_on_error_hit_completed():
+def test_create_on_next_throw_hit_completed():
     ex = 'ex'
     next = [True]
     error = [False]
@@ -206,7 +212,7 @@ def test_create_on_next_on_error_hit_completed():
     assert(not error[0])
 
 
-def test_create_on_next_on_error_on_completed1():
+def test_create_on_next_throw_close1():
     ex = 'ex'
     next = [True]
     error = [False]
@@ -237,7 +243,7 @@ def test_create_on_next_on_error_on_completed1():
     assert(not error[0])
 
 
-def test_create_on_next_on_error_on_completed2():
+def test_create_on_next_throw_close2():
     ex = 'ex'
     next = [True]
     error = [False]

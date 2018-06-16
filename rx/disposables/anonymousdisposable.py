@@ -1,28 +1,30 @@
-from rx import config
+from threading import RLock
+
 from rx.internal import noop
-from rx.core import Disposable
+from rx.core.typing import Disposable, Dispose
 
 
 class AnonymousDisposable(Disposable):
     """Main disposable class"""
 
-    def __init__(self, action=None):
-        """Creates a disposable object that invokes the specified action when
-        disposed.
+    def __init__(self, action: Dispose = None) -> None:
+        """Creates a disposable object that invokes the specified action
+        when disposed.
 
         Keyword arguments:
-        dispose -- Action to run during the first call to Disposable.dispose.
-            The action is guaranteed to be run at most once.
+        action -- Action to run during the first call to dispose. The
+            action is guaranteed to be run at most once.
 
-        Returns the disposable object that runs the given action upon disposal.
+        Returns the disposable object that runs the given action upon
+        disposal.
         """
 
         self.is_disposed = False
         self.action = action or noop
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Performs the task of cleaning up resources."""
 
         dispose = False
@@ -33,11 +35,3 @@ class AnonymousDisposable(Disposable):
 
         if dispose:
             self.action()
-
-    @classmethod
-    def empty(cls):
-        return cls(noop)
-
-    @classmethod
-    def create(cls, action):
-        return cls(action)

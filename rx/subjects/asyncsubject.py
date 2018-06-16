@@ -1,4 +1,4 @@
-from rx import config
+import threading
 from rx.core import Observer, ObservableBase, Disposable
 from rx.internal import DisposedException
 
@@ -7,7 +7,7 @@ from .innersubscription import InnerSubscription
 
 class AsyncSubject(ObservableBase, Observer):
     """Represents the result of an asynchronous operation. The last value
-    before the on_completed notification, or the error received through
+    before the close notification, or the error received through
     on_error, is sent to all subscribed observers."""
 
     def __init__(self):
@@ -23,13 +23,13 @@ class AsyncSubject(ObservableBase, Observer):
         self.observers = []
         self.exception = None
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
 
     def check_disposed(self):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:

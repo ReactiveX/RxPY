@@ -29,7 +29,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return Observable.never().distinct_until_changed()
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_distinct_until_changed_empty(self):
         scheduler = TestScheduler()
@@ -53,7 +53,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert(results[0].value.kind == 'N' and results[0].time == 220 and results[0].value.value == 2)
         assert(results[1].value.kind == 'C' and results[1].time == 250)
 
-    def test_distinct_until_changed_throw(self):
+    def test_distinct_until_changed_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
@@ -141,7 +141,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert(results[3].value.kind == 'N' and results[3].time == 240 and results[3].value.value == 2)
         assert(results[4].value.kind == 'C' and results[4].time == 250)
 
-    def test_distinct_until_changed_key_selector_div2(self):
+    def test_distinct_until_changed_key_mapper_div2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
 
@@ -154,7 +154,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert(results[1].value.kind == 'N' and results[1].time == 230 and results[1].value.value == 3)
         assert(results[2].value.kind == 'C' and results[2].time == 250)
 
-    def test_distinct_until_changed_key_selector_throws(self):
+    def test_distinct_until_changed_key_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
@@ -162,7 +162,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         def create():
             return xs.distinct_until_changed(lambda x: _raise(ex))
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(210, ex))
+        assert results.messages == [on_error(210, ex)]
 
     def test_distinct_until_changed_comparer_throws(self):
         ex = 'ex'
@@ -173,4 +173,4 @@ class TestDistinctUntilChanged(unittest.TestCase):
             return xs.distinct_until_changed(comparer=lambda x,y: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_error(220, ex))
+        assert results.messages == [on_next(210, 2), on_error(220, ex)]

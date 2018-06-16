@@ -20,40 +20,40 @@ class TestStartWith(unittest.TestCase):
         def create():
             return xs.start_with(1)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(200, 1), on_next(220, 2), on_completed(250))
+        assert results.messages == [on_next(200, 1), on_next(220, 2), on_completed(250)]
 
-    def test_start_with_scheduler(self):
-        scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
+    # def test_start_with_scheduler(self):
+    #     scheduler = TestScheduler()
+    #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
-        def create():
-            return xs.start_with(scheduler)
-        results = scheduler.start(create)
-        results.messages.assert_equal(on_next(220, 2), on_completed(250))
+    #     def create():
+    #         return xs.start_with(scheduler)
+    #     results = scheduler.start(create)
+    #     assert results.messages == [on_next(220, 2), on_completed(250)]
 
     def test_start_with_scheduler_and_arg(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
-            return xs.start_with(scheduler, 42)
+            return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(201, 42), on_next(220, 2), on_completed(250))
+        assert results.messages == [on_next(200, 42), on_next(220, 2), on_completed(250)]
 
     def test_start_with_immediate_scheduler_and_arg(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
-            return xs.start_with(Scheduler.immediate, 42)
+            return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(200, 42), on_next(220, 2), on_completed(250))
+        assert results.messages == [on_next(200, 42), on_next(220, 2), on_completed(250)]
 
     def test_start_with_scheduler_keyword_and_arg(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
-            return xs.start_with(42, scheduler=scheduler)
+            return xs.start_with(42)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(201, 42), on_next(220, 2), on_completed(250))
+        assert results.messages == [on_next(200, 42), on_next(220, 2), on_completed(250)]

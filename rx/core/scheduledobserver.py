@@ -1,4 +1,4 @@
-from rx import config
+import threading
 from rx.disposables import SerialDisposable
 
 from .observerbase import ObserverBase
@@ -6,12 +6,12 @@ from .observerbase import ObserverBase
 
 class ScheduledObserver(ObserverBase):
     def __init__(self, scheduler, observer):
-        super(ScheduledObserver, self).__init__()
+        super().__init__()
 
         self.scheduler = scheduler
         self.observer = observer
 
-        self.lock = config["concurrency"].RLock()
+        self.lock = threading.RLock()
         self.is_acquired = False
         self.has_faulted = False
         self.queue = []
@@ -25,9 +25,9 @@ class ScheduledObserver(ObserverBase):
             self.observer.on_next(value)
         self.queue.append(action)
 
-    def _on_error_core(self, exception):
+    def _on_error_core(self, error):
         def action():
-            self.observer.on_error(exception)
+            self.observer.on_error(error)
         self.queue.append(action)
 
     def _on_completed_core(self):
@@ -39,18 +39,18 @@ class ScheduledObserver(ObserverBase):
         is_owner = False
 
         with self.lock:
-            if not self.has_faulted and len(self.queue):
+            if not self.has_faulted and self.queue:
                 is_owner = not self.is_acquired
                 self.is_acquired = True
 
         if is_owner:
             self.disposable.disposable = self.scheduler.schedule(self.run)
 
-    def run(self, recurse, state):
+    def run(self, scheduler, state):
         parent = self
 
         with self.lock:
-            if len(parent.queue):
+            if parent.queue:
                 work = parent.queue.pop(0)
             else:
                 parent.is_acquired = False
@@ -67,5 +67,5 @@ class ScheduledObserver(ObserverBase):
         self.scheduler.schedule(self.run)
 
     def dispose(self):
-        super(ScheduledObserver, self).dispose()
+        super().dispose()
         self.disposable.dispose()

@@ -31,7 +31,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_with_latest_from_never_empty(self):
         scheduler = TestScheduler()
@@ -43,7 +43,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_with_latest_from_empty_never(self):
         scheduler = TestScheduler()
@@ -55,7 +55,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(210))
+        assert results.messages == [on_completed(210)]
 
     def test_with_latest_from_empty_empty(self):
         scheduler = TestScheduler()
@@ -68,7 +68,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(210))
+        assert results.messages == [on_completed(210)]
 
     def test_with_latest_from_empty_return(self):
         scheduler = TestScheduler()
@@ -81,7 +81,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(210))
+        assert results.messages == [on_completed(210)]
 
     def test_with_latest_from_return_empty(self):
         scheduler = TestScheduler()
@@ -94,7 +94,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(220))
+        assert results.messages == [on_completed(220)]
 
     def test_with_latest_from_never_return(self):
         scheduler = TestScheduler()
@@ -106,7 +106,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(220))
+        assert results.messages == [on_completed(220)]
 
     def test_with_latest_from_return_never(self):
         scheduler = TestScheduler()
@@ -118,7 +118,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_with_latest_from_return_return(self):
         scheduler = TestScheduler()
@@ -131,7 +131,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(230))
+        assert results.messages == [on_completed(230)]
 
     def test_with_latest_from_empty_error(self):
         ex = 'ex'
@@ -145,7 +145,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
     def test_with_latest_from_error_empty(self):
         ex = 'ex'
@@ -159,9 +159,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
-    def test_with_latest_from_return_throw(self):
+    def test_with_latest_from_return_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
@@ -173,7 +173,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
     def test_with_latest_from_throw_return(self):
         ex = 'ex'
@@ -187,9 +187,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
-    def test_with_latest_from_throw_throw(self):
+    def test_with_latest_from_throw_on_error(self):
         ex1 = 'ex1'
         ex2 = 'ex2'
         scheduler = TestScheduler()
@@ -202,9 +202,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex1))
+        assert results.messages == [on_error(220, ex1)]
 
-    def test_with_latest_from_error_throw(self):
+    def test_with_latest_from_error_on_error(self):
         ex1 = 'ex1'
         ex2 = 'ex2'
         scheduler = TestScheduler()
@@ -217,7 +217,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex1))
+        assert results.messages == [on_error(220, ex1)]
 
     def test_with_latest_from_throw_error(self):
         ex1 = 'ex1'
@@ -232,9 +232,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex1))
+        assert results.messages == [on_error(220, ex1)]
 
-    def test_with_latest_from_never_throw(self):
+    def test_with_latest_from_never_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(220, ex)]
@@ -245,7 +245,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
     def test_with_latest_from_throw_never(self):
         ex = 'ex'
@@ -258,9 +258,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
-    def test_with_latest_from_some_throw(self):
+    def test_with_latest_from_some_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
@@ -272,7 +272,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
     def test_with_latest_from_throw_some(self):
         ex = 'ex'
@@ -286,7 +286,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(220, ex))
+        assert results.messages == [on_error(220, ex)]
 
     def test_with_latest_from_no_throw_after_complete_left(self):
         ex = 'ex'
@@ -300,7 +300,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(220))
+        assert results.messages == [on_completed(220)]
 
     def test_with_latest_from_throw_after_complete_right(self):
         ex = 'ex'
@@ -314,7 +314,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(230, ex))
+        assert results.messages == [on_error(230, ex)]
 
     def test_with_latest_from_interleaved_with_tail(self):
         scheduler = TestScheduler()
@@ -327,7 +327,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(225, 3 + 4), on_completed(230))
+        assert results.messages == [on_next(225, 3 + 4), on_completed(230)]
 
     def test_with_latest_from_consecutive(self):
         scheduler = TestScheduler()
@@ -340,7 +340,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(230))
+        assert results.messages == [on_completed(230)]
 
     def test_with_latest_from_consecutive_end_with_error_left(self):
         ex = 'ex'
@@ -354,7 +354,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(230, ex))
+        assert results.messages == [on_error(230, ex)]
 
     def test_with_latest_from_consecutive_end_with_error_right(self):
         ex = 'ex'
@@ -368,9 +368,9 @@ class TestWithLatestFrom(unittest.TestCase):
             return e2.with_latest_from(e1, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(235, 4 + 6), on_next(240, 4 + 7), on_error(245, ex))
+        assert results.messages == [on_next(235, 4 + 6), on_next(240, 4 + 7), on_error(245, ex)]
 
-    def test_with_latest_from_selector_throws(self):
+    def test_with_latest_from_mapper_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(225, 2), on_completed(230)]
@@ -382,7 +382,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(225, ex))
+        assert results.messages == [on_error(225, ex)]
 
     def test_with_latest_from_repeat_last_left_value(self):
         scheduler = TestScheduler()
@@ -395,7 +395,7 @@ class TestWithLatestFrom(unittest.TestCase):
             return e1.with_latest_from(e2, lambda x, y: x + y)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(225, 3 + 4), on_next(230, 3 + 5), on_completed(235))
+        assert results.messages == [on_next(225, 3 + 4), on_next(230, 3 + 5), on_completed(235)]
 
 if __name__ == '__main__':
     unittest.main()

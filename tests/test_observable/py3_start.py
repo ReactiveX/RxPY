@@ -1,7 +1,7 @@
 import unittest
 import rx
-asyncio = rx.config['asyncio']
-Future = rx.config['Future']
+import asyncio
+from asyncio import Future
 
 from rx import Observable
 from rx.testing import TestScheduler, ReactiveTest
@@ -32,7 +32,7 @@ class TestStart(unittest.TestCase):
 
             def on_next(x):
                 success[0] = (42 == x)
-            source.subscribe(on_next)
+            source.subscribe_(on_next)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -52,7 +52,7 @@ class TestStart(unittest.TestCase):
 
             def on_error(ex):
                 success[0] = (str(42) == str(ex))
-            source.subscribe(on_error=on_error)
+            source.subscribe_(on_error=on_error)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -69,10 +69,9 @@ class TestStart(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             on_next(200, None),
-            on_completed(200)
-        )
+            on_completed(200)]
 
         assert(done)
 
@@ -86,10 +85,9 @@ class TestStart(unittest.TestCase):
             return Observable.start(func, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             on_next(200, 1),
-            on_completed(200)
-        )
+            on_completed(200)]
 
     def test_start_funcerror(self):
         ex = Exception()
@@ -102,6 +100,5 @@ class TestStart(unittest.TestCase):
             return Observable.start(func, scheduler)
         res = scheduler.start(create)
 
-        res.messages.assert_equal(
-            on_error(200, ex)
-        )
+        assert res.messages == [
+            on_error(200, ex)]

@@ -1,8 +1,7 @@
-from rx.core import ObservableBase, Observer, AnonymousObserver, Disposable
+from rx.core import ObservableBase, AnonymousObserver, Disposable
 from rx.disposables import CompositeDisposable
 
 from .subscription import Subscription
-from .reactive_assert import AssertList
 
 
 class ColdObservable(ObservableBase):
@@ -11,18 +10,16 @@ class ColdObservable(ObservableBase):
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = AssertList()
+        self.subscriptions =[]
 
-    def subscribe(self, on_next=None, on_error=None, on_completed=None, observer=None):
-        # Be forgiving and accept an un-named observer as first parameter
-        if isinstance(on_next, Observer):
-            observer = on_next
-        elif not observer:
-            observer = AnonymousObserver(on_next, on_error, on_completed)
+    def subscribe(self, observer=None, scheduler=None):
+        return self._subscribe_core(observer, scheduler)
 
-        return self._subscribe_core(observer)
+    def subscribe_(self, on_next=None, on_error=None, on_completed=None, scheduler=None):
+        observer = AnonymousObserver(on_next, on_error, on_completed)
+        return self.subscribe(observer, scheduler)
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         clock = self.scheduler.to_relative(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1

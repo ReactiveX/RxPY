@@ -50,12 +50,12 @@ def handle_websocket():
     searcher = query.flat_map_latest(lambda term: WikiFinder(term))
 
     def send_response(x):
-        wsock.send(x)
+        wsock.on_next(x)
 
     def on_error(ex):
         print(ex)
 
-    searcher.subscribe(send_response, on_error)
+    searcher.subscribe_(send_response, on_error)
 
     while True:
         try:

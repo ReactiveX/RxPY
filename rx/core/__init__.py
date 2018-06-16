@@ -1,22 +1,14 @@
 # flake8: noqa
-import sys
+from .typing import Observer, Scheduler
 
-if sys.version_info >= (3, 0):
-    from .py3.observer import Observer
-    from .py3.observable import Observable
-    from .py3.disposable import Disposable
-    from .py3.scheduler import Scheduler
-else:
-    from .py2.observer import Observer
-    from .py2.observable import Observable
-    from .py2.disposable import Disposable
-    from .py2.scheduler import Scheduler
-
-from .observerbase import ObserverBase
+from .observable import Observable
+from .disposable import Disposable
 from .observablebase import ObservableBase
+from .observerbase import ObserverBase
 from .anonymousobserver import AnonymousObserver
 from .anonymousobservable import AnonymousObservable
+from .connectableobservable import ConnectableObservable
+from .groupedobservable import GroupedObservable
 
 from . import checkedobserver
 from . import observerextensions
-from . import disposableextensions

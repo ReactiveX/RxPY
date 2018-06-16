@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='1.6.1',
+    version='2.0.0-alpha',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
@@ -26,21 +26,19 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Programming Language :: Python :: Implementation :: IronPython',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    test_suite='nose.collector',
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest', "pytest-asyncio"],
 
-    packages=['rx', 'rx.core', 'rx.core.py2', 'rx.core.py3', 'rx.internal',
-              'rx.linq', 'rx.linq.observable', 'rx.linq.enumerable',
+    packages=['rx', 'rx.core', 'rx.core.abc', 'rx.internal',
+              'rx.operators', 'rx.operators.observable', 'rx.operators.iterable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
-              'rx.linq.observable.blocking', 'rx.disposables', 'rx.subjects',
+              'rx.operators.observable.blocking', 'rx.disposables', 'rx.subjects',
               'rx.backpressure', 'rx.testing'],
     package_dir={'rx': 'rx'}
 )

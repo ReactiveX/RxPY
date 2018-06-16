@@ -21,7 +21,7 @@ class TestMaterialize(unittest.TestCase):
             return Observable.never().materialize()
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_materialize_empty(self):
         scheduler = TestScheduler()
@@ -48,7 +48,7 @@ class TestMaterialize(unittest.TestCase):
         assert(results[1].value.kind == 'N' and results[1].value.value.kind == 'C' and results[1].time == 250)
         assert(results[2].value.kind == 'C' and results[1].time == 250)
 
-    def test_materialize_throw(self):
+    def test_materialize_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
@@ -68,7 +68,7 @@ class TestMaterialize(unittest.TestCase):
             return Observable.never().materialize().dematerialize()
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_materialize_dematerialize_empty(self):
         scheduler = TestScheduler()
@@ -93,7 +93,7 @@ class TestMaterialize(unittest.TestCase):
         assert(results[0].value.kind == 'N' and results[0].value.value == 2 and results[0].time == 210)
         assert(results[1].value.kind == 'C')
 
-    def test_materialize_dematerialize_throw(self):
+    def test_materialize_dematerialize_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))

@@ -1,10 +1,10 @@
 from __future__ import print_function
 
-from rx import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import extensionmethod
 
 
-@extensionmethod(Observable)
+@extensionmethod(ObservableBase)
 def dump(self, name = "test"):
     """Debug method for inspecting an observable sequence
 
@@ -15,7 +15,7 @@ def dump(self, name = "test"):
     Return an unmodified observable sequence
     """
 
-    def subscribe(observer):
+    def subscribe(observer, scheduler=None):
         def on_next(value):
             print("{%s}-->{%s}" % (name, value))
             observer.on_next(value)
@@ -26,6 +26,6 @@ def dump(self, name = "test"):
             print("{%s} completed" % name)
             observer.on_completed()
 
-        return self.subscribe(on_next, on_error, on_completed)
+        return self.subscribe_(on_next, on_error, on_completed)
     return AnonymousObservable(subscribe)
 

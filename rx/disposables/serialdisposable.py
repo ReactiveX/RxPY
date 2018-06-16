@@ -1,16 +1,17 @@
-from rx import config
+from threading import RLock
 from rx.core import Disposable
 
 
 class SerialDisposable(Disposable):
-    """Represents a disposable resource whose underlying disposable resource can
-    be replaced by another disposable resource, causing automatic disposal of
-    the previous underlying disposable resource."""
+    """Represents a disposable resource whose underlying disposable
+    resource can be replaced by another disposable resource, causing
+    automatic disposal of the previous underlying disposable resource.
+    """
 
     def __init__(self):
         self.current = None
         self.is_disposed = False
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
         super(SerialDisposable, self).__init__()
 
@@ -18,9 +19,10 @@ class SerialDisposable(Disposable):
         return self.current
 
     def set_disposable(self, value):
-        """If the SerialDisposable has already been disposed, assignment to this
-        property causes immediate disposal of the given disposable object.
-        Assigning this property disposes the previous disposable object."""
+        """If the SerialDisposable has already been disposed, assignment
+        to this property causes immediate disposal of the given
+        disposable object. Assigning this property disposes the previous
+        disposable object."""
 
         should_dispose = self.is_disposed
         old = None

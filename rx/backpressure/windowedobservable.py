@@ -1,9 +1,6 @@
-import logging
-
-from rx.core import ObserverBase, ObservableBase
-from rx.concurrency import current_thread_scheduler, timeout_scheduler
+from rx.core import ObservableBase, ObserverBase
+from rx.concurrency import current_thread_scheduler
 from rx.disposables import CompositeDisposable
-log = logging.getLogger('Rx')
 
 
 class WindowedObserver(ObserverBase):
@@ -56,9 +53,9 @@ class WindowedObservable(ObservableBase):
         self.scheduler = scheduler or current_thread_scheduler
         self.subscription = None
 
-    def _subscribe_core(self, observer):
+    def _subscribe_core(self, observer, scheduler=None):
         observer = WindowedObserver(observer, self, self.subscription, self.scheduler)
-        self.subscription = self.source.subscribe(observer)
+        self.subscription = self.source.subscribe(observer, scheduler)
 
         def action(scheduler, state):
             self.source.request(self.window_size)

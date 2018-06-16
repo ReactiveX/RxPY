@@ -1,12 +1,14 @@
-from rx import config
-from rx.core import Disposable
+from threading import RLock
+from rx.core.disposable import Disposable
 
 
 class SingleAssignmentDisposable(Disposable):
-    """Represents a disposable resource which only allows a single assignment
-    of its underlying disposable resource. If an underlying disposable resource
-    has already been set, future attempts to set the underlying disposable
-    resource will throw an Error."""
+    """Single assignment disposable.
+
+    Represents a disposable resource which only allows a single
+    assignment of its underlying disposable resource. If an underlying
+    disposable resource has already been set, future attempts to set the
+    underlying disposable resource will throw an Error."""
 
     def __init__(self):
         """Initializes a new instance of the SingleAssignmentDisposable
@@ -14,9 +16,9 @@ class SingleAssignmentDisposable(Disposable):
         """
         self.is_disposed = False
         self.current = None
-        self.lock = config["concurrency"].RLock()
+        self.lock = RLock()
 
-        super(Disposable, self).__init__()
+        super().__init__()
 
     def get_disposable(self):
         return self.current

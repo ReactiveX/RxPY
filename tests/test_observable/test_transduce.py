@@ -49,10 +49,10 @@ class TestTransduce(unittest.TestCase):
 
     def test_transduce_raises(self):
         def create():
-            Observable.throw_exception(RxException()).transduce(
+            Observable.throw(RxException()).transduce(
                 compose(
                     filtering(even), mapping(mul10))
-                ).subscribe(noop, throw_error)
+                ).subscribe_(noop, throw_error)
 
         self.assertRaises(RxException, create)
 
@@ -60,7 +60,7 @@ class TestTransduce(unittest.TestCase):
             Observable.empty().transduce(
                 compose(
                     filtering(even), mapping(mul10))
-                ).subscribe(noop, noop, throw_error)
+                ).subscribe_(noop, noop, throw_error)
 
         self.assertRaises(RxException, create2)
 
@@ -84,11 +84,10 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal()
+        assert results.messages == []
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 
     def test_transduce_empty(self):
         scheduler = TestScheduler()
@@ -103,13 +102,11 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            on_completed(250)
-        )
+        assert results.messages == [
+            on_completed(250)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 250)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 250)]
 
     def test_transduce_some(self):
         scheduler = TestScheduler()
@@ -136,15 +133,13 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 20),
             on_next(230, 40),
-            on_completed(250)
-        )
+            on_completed(250)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 250)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 250)]
 
         self.assertEqual(4, i[0])
 
@@ -172,14 +167,12 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 20),
-            on_next(230, 40)
-        )
+            on_next(230, 40)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 1000)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 1000)]
 
         self.assertEqual(4, i[0])
 
@@ -198,15 +191,13 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
-            on_error(210, error)
-        )
+        assert results.messages == [
+            on_error(210, error)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 210)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 210)]
 
-    def test_transduce_throw(self):
+    def test_transduce_on_error(self):
         error = RxException()
 
         scheduler = TestScheduler()
@@ -236,12 +227,10 @@ class TestTransduce(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(210, 20),
             on_next(230, 40),
-            on_error(240, error)
-        )
+            on_error(240, error)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 240)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 240)]

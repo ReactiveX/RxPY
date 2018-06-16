@@ -31,11 +31,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: x <= 3,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: x + 1,
-                scheduler=scheduler)
+                lambda x: x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
+        assert results.messages == [on_next(201, 0), on_next(203, 1), on_next(206, 2), on_next(210, 3), on_completed(210)]
 
     def test_generate_timespan_throw_condition(self):
         ex = 'ex'
@@ -46,13 +45,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: _raise(ex),
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: x + 1,
-                scheduler=scheduler)
+                lambda x: x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
-    def test_generate_timespan_throw_result_selector(self):
+    def test_generate_timespan_throw_result_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -61,11 +59,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: _raise(ex),
-                lambda x: x + 1,
-                scheduler=scheduler)
+                lambda x: x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_timespan_throw_iterate(self):
         ex = 'ex'
@@ -76,13 +73,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: _raise(ex),
                 lambda x: x,
-                lambda x: x + 1,
-                scheduler=scheduler)
+                lambda x: x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
+        assert results.messages == [on_next(201, 0), on_error(201, ex)]
 
-    def test_generate_timespan_throw_timeselector(self):
+    def test_generate_timespan_throw_timemapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -91,11 +87,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: _raise(ex),
-                scheduler=scheduler)
+                lambda x: _raise(ex))
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_timespan_dispose(self):
         scheduler = TestScheduler()
@@ -105,11 +100,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: x + 1,
-                scheduler=scheduler)
+                lambda x: x + 1)
 
         results = scheduler.start(create, disposed=210)
-        results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
+        assert results.messages == [on_next(201, 0), on_next(203, 1), on_next(206, 2)]
 
     def test_generate_datetime_offset_finite(self):
         scheduler = TestScheduler()
@@ -118,11 +112,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: scheduler.now() + x + 1,
-                scheduler=scheduler)
+                lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2), on_next(211, 3), on_completed(211))
+        assert results.messages == [on_next(201, 0), on_next(203, 1), on_next(206, 2), on_next(210, 3), on_completed(210)]
 
     def test_generate_datetime_offset_throw_condition(self):
         ex = 'ex'
@@ -131,13 +124,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: _raise(ex),
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: scheduler.now() + x + 1,
-                scheduler=scheduler)
+                lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
-    def test_generate_datetime_offset_throw_result_selector(self):
+    def test_generate_datetime_offset_throw_result_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -145,11 +137,10 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: _raise(ex),
-                lambda x: scheduler.now() + x + 1,
-                scheduler=scheduler)
+                lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_datetime_offset_throw_iterate(self):
         ex = 'ex'
@@ -159,13 +150,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: _raise(ex),
                 lambda x: x,
-                lambda x: scheduler.now() + x + 1,
-                scheduler=scheduler)
+                lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(202, 0), on_error(202, ex))
+        assert results.messages == [on_next(202, 0), on_error(202, ex)]
 
-    def test_generate_datetime_offset_throw_time_selector(self):
+    def test_generate_datetime_offset_throw_time_mapper(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -173,10 +163,9 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: _raise(ex),
-                scheduler=scheduler)
+                lambda x: _raise(ex))
 
-        results.messages.assert_equal(on_error(201, ex))
+        assert results.messages == [on_error(200, ex)]
 
     def test_generate_datetime_offset_dispose(self):
         scheduler = TestScheduler()
@@ -185,9 +174,8 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 lambda x: True,
                 lambda x: x + 1,
                 lambda x: x,
-                lambda x: scheduler.now() + x + 1,
-                scheduler=scheduler)
+                lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create, disposed=210)
-        results.messages.assert_equal(on_next(202, 0), on_next(204, 1), on_next(207, 2))
+        assert results.messages == [on_next(202, 0), on_next(204, 1), on_next(207, 2)]
 

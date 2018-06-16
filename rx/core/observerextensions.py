@@ -1,28 +1,25 @@
-from rx.internal import extensionmethod
+from typing import Callable
 
-from . import Observer
+from .observerbase import ObserverBase
 from .anonymousobserver import AnonymousObserver
 
 
-@extensionmethod(Observer)
-def to_notifier(self):
+def to_notifier(observer) -> Callable:
     """Creates a notification callback from an observer.
 
     Returns the action that forwards its input notification to the
     underlying observer."""
-
-    observer = self
 
     def func(notifier):
         return notifier.accept(observer)
     return func
 
 
-@extensionmethod(Observer)
-def as_observer(self):
+def as_observer(observer) -> ObserverBase:
     """Hides the identity of an observer.
 
-    Returns an observer that hides the identity of the specified observer.
+    Returns an observer that hides the identity of the specified
+    observer.
     """
 
-    return AnonymousObserver(self.on_next, self.on_error, self.on_completed)
+    return AnonymousObserver(observer.on_next, observer.on_error, observer.on_completed)

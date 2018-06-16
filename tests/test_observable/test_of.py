@@ -16,14 +16,14 @@ class TestOf(unittest.TestCase):
     def test_of(self):
         results = []
 
-        Observable.of(1,2,3,4,5).subscribe(results.append)
+        Observable.of(1,2,3,4,5).subscribe_(results.append)
 
         assert(str([1,2,3,4,5]) == str(results))
 
     def test_of_empty(self):
         results = []
 
-        Observable.of().subscribe(results.append)
+        Observable.of().subscribe_(results.append)
 
         assert(len(results) == 0)
 
@@ -31,18 +31,17 @@ class TestOf(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.of(1,2,3,4,5, scheduler=scheduler)
+            return Observable.of(1,2,3,4,5)
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
           on_next(201, 1),
           on_next(202, 2),
           on_next(203, 3),
           on_next(204, 4),
           on_next(205, 5),
-          on_completed(206)
-        )
+          on_completed(206)]
 
     def teest_of_with_scheduler_empty(self):
         scheduler = TestScheduler()
@@ -52,6 +51,5 @@ class TestOf(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(
-            on_completed(201)
-        )
+        assert results.messages == [
+            on_completed(201)]

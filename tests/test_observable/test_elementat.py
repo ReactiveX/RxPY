@@ -22,8 +22,8 @@ class TestElementAt(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(280, 42), on_completed(280))
-        xs.subscriptions.assert_equal(subscribe(200, 280))
+        assert results.messages == [on_next(280, 42), on_completed(280)]
+        assert xs.subscriptions == [subscribe(200, 280)]
 
     def test_elementat_other(self):
         scheduler = TestScheduler()
@@ -34,8 +34,8 @@ class TestElementAt(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(470, 44), on_completed(470))
-        xs.subscriptions.assert_equal(subscribe(200, 470))
+        assert results.messages == [on_next(470, 44), on_completed(470)]
+        assert xs.subscriptions == [subscribe(200, 470)]
 
     def test_elementat_outofrange(self):
         scheduler = TestScheduler()
@@ -59,8 +59,8 @@ class TestElementAt(unittest.TestCase):
             return xs.element_at(3)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_error(420, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_error(420, ex)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
     def test_element_at_or_default_first(self):
         scheduler = TestScheduler()
@@ -70,8 +70,8 @@ class TestElementAt(unittest.TestCase):
             return xs.element_at_or_default(0)
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(280, 42), on_completed(280))
-        xs.subscriptions.assert_equal(subscribe(200, 280))
+        assert results.messages == [on_next(280, 42), on_completed(280)]
+        assert xs.subscriptions == [subscribe(200, 280)]
 
     def test_element_at_or_default_other(self):
         scheduler = TestScheduler()
@@ -82,8 +82,8 @@ class TestElementAt(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(470, 44), on_completed(470))
-        xs.subscriptions.assert_equal(subscribe(200, 470))
+        assert results.messages == [on_next(470, 44), on_completed(470)]
+        assert xs.subscriptions == [subscribe(200, 470)]
 
     def test_element_at_or_default_outofrange(self):
         scheduler = TestScheduler()
@@ -94,8 +94,8 @@ class TestElementAt(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(600, 0), on_completed(600))
-        xs.subscriptions.assert_equal(subscribe(200, 600))
+        assert results.messages == [on_next(600, 0), on_completed(600)]
+        assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_element_at_or_default_error(self):
         ex = 'ex'
@@ -107,8 +107,8 @@ class TestElementAt(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_error(420, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 420))
+        assert results.messages == [on_error(420, ex)]
+        assert xs.subscriptions == [subscribe(200, 420)]
 
 if __name__ == '__main__':
     unittest.main()

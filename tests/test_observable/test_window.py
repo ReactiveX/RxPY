@@ -23,16 +23,16 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(selector).merge_observable()
+            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_closings_dispose(self):
         scheduler = TestScheduler()
@@ -43,17 +43,17 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(selector).merge_observable()
+            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create, disposed=400)
 
-        results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6")]
+        assert xs.subscriptions == [subscribe(200, 400)]
 
 
     def test_window_closings_error(self):
@@ -66,19 +66,19 @@ class TestWindow(unittest.TestCase):
             def closing():
                 curr = window[0]
                 window[0] += 1
-                return Observable.timer(curr * 100, scheduler=scheduler)
+                return Observable.timer(curr * 100)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(selector).merge_observable()
+            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
-    def test_window_closings_throw(self):
+    def test_window_closings_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
@@ -88,15 +88,15 @@ class TestWindow(unittest.TestCase):
             def closing():
                 raise Exception(ex)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(selector).merge_observable()
+            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_error(200, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 200))
+        assert results.messages == [on_error(200, ex)]
+        assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_window_close_error(self):
         ex = 'ex'
@@ -106,16 +106,16 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing():
-                return Observable.throw_exception(ex, scheduler=scheduler)
-            def selector(w, i):
+                return Observable.throw(ex)
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(selector).merge_observable()
+            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_error(201, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 201))
+        assert results.messages == [on_error(200, ex)]
+        assert xs.subscriptions == [subscribe(200, 200)]
 
     def test_window_closings_default(self):
         scheduler = TestScheduler()
@@ -126,16 +126,16 @@ class TestWindow(unittest.TestCase):
             def closings():
                 w = window[0]
                 window[0] += 1
-                return Observable.timer(w * 100, scheduler=scheduler)
+                return Observable.timer(w * 100)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(window_closing_selector=closings).map(selector).merge_observable()
+            return xs.window(window_closing_mapper=closings).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590))
-        xs.subscriptions.assert_equal(subscribe(200, 590))
+        assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
+        assert xs.subscriptions == [subscribe(200, 590)]
 
     def test_window_opening_closings_basic(self):
         scheduler = TestScheduler()
@@ -144,19 +144,19 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(selector).merge_observable()
+            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
-        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900))
-        xs.subscriptions.assert_equal(subscribe(200, 900))
-        ys.subscriptions.assert_equal(subscribe(200, 900))
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900)]
+        assert xs.subscriptions == [subscribe(200, 900)]
+        assert ys.subscriptions == [subscribe(200, 900)]
 
-    def test_window_opening_closings_throw(self):
+    def test_window_opening_closings_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(90, 1), on_next(180, 2), on_next(250, 3), on_next(260, 4), on_next(310, 5), on_next(340, 6), on_next(410, 7), on_next(420, 8), on_next(470, 9), on_next(550, 10), on_completed(590))
@@ -166,16 +166,16 @@ class TestWindow(unittest.TestCase):
             def closing(x):
                 raise Exception(ex)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(selector).merge_observable()
+            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
 
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_error(255, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 255))
-        ys.subscriptions.assert_equal(subscribe(200, 255))
+        assert results.messages == [on_error(255, ex)]
+        assert xs.subscriptions == [subscribe(200, 255)]
+        assert ys.subscriptions == [subscribe(200, 255)]
 
     def test_window_opening_closings_dispose(self):
         scheduler = TestScheduler()
@@ -184,16 +184,16 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(selector).merge_observable()
+            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create, disposed=415)
-        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7")]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_data_error(self):
         ex = 'ex'
@@ -203,17 +203,17 @@ class TestWindow(unittest.TestCase):
 
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(selector).merge_observable()
+            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_opening_closings_window_error(self):
         ex = 'ex'
@@ -222,17 +222,17 @@ class TestWindow(unittest.TestCase):
         ys = scheduler.create_hot_observable(on_next(255, 50), on_next(330, 100), on_next(350, 50), on_next(400, 90), on_error(415, ex))
         def create():
             def closing(x):
-                return Observable.timer(x, scheduler=scheduler)
+                return Observable.timer(x)
 
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(selector).merge_observable()
+            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
         results = scheduler.start(create=create)
 
-        results.messages.assert_equal(on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 415))
-        ys.subscriptions.assert_equal(subscribe(200, 415))
+        assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
+        assert xs.subscriptions == [subscribe(200, 415)]
+        assert ys.subscriptions == [subscribe(200, 415)]
 
     def test_window_boundaries_simple(self):
         scheduler = TestScheduler()
@@ -261,12 +261,12 @@ class TestWindow(unittest.TestCase):
         )
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(selector).merge_observable()
+            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
             on_next(250, "0 3"),
             on_next(260, "1 4"),
             on_next(310, "1 5"),
@@ -275,18 +275,15 @@ class TestWindow(unittest.TestCase):
             on_next(420, "4 8"),
             on_next(470, "4 9"),
             on_next(550, "5 10"),
-            on_completed(590)
-        )
+            on_completed(590)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 590)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 590)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 590)]
 
-    def test_window_boundaries_on_completed_boundaries(self):
+    def test_window_boundaries_close_boundaries(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
@@ -311,29 +308,26 @@ class TestWindow(unittest.TestCase):
         )
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(selector).merge_observable()
+            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 on_next(250, "0 3"),
                 on_next(260, "1 4"),
                 on_next(310, "1 5"),
                 on_next(340, "2 6"),
-                on_completed(400)
-        )
+                on_completed(400)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
-    def test_window_boundaries_on_errorSource(self):
+    def test_window_boundaries_throwSource(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -356,29 +350,26 @@ class TestWindow(unittest.TestCase):
         )
 
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(selector).merge_observable()
+            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 on_next(250, "0 3"),
                 on_next(260, "1 4"),
                 on_next(310, "1 5"),
                 on_next(340, "2 6"),
                 on_next(380, "3 7"),
-                on_error(400, ex)
-        )
+                on_error(400, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
-    def test_window_boundaries_on_error_boundaries(self):
+    def test_window_boundaries_throw_boundaries(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -403,27 +394,24 @@ class TestWindow(unittest.TestCase):
                 on_error(400, ex)
         )
         def create():
-            def selector(w, i):
+            def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(selector).merge_observable()
+            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(
+        assert res.messages == [
                 on_next(250, "0 3"),
                 on_next(260, "1 4"),
                 on_next(310, "1 5"),
                 on_next(340, "2 6"),
-                on_error(400, ex)
-        )
+                on_error(400, ex)]
 
-        xs.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert xs.subscriptions == [
+            subscribe(200, 400)]
 
-        ys.subscriptions.assert_equal(
-            subscribe(200, 400)
-        )
+        assert ys.subscriptions == [
+            subscribe(200, 400)]
 
 if __name__ == '__main__':
     unittest.main()

@@ -33,8 +33,8 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return e is not None
 
-        res.messages.assert_equal(on_error(250, predicate))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert [on_error(250, predicate)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_one(self):
         scheduler = TestScheduler()
@@ -45,8 +45,8 @@ class TestSingle(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_next(250, 2), on_completed(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [on_next(250, 2), on_completed(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
 
     def test_single_async_many(self):
@@ -61,8 +61,8 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        res.messages.assert_equal(on_error(220, predicate))
-        xs.subscriptions.assert_equal(subscribe(200, 220))
+        assert [on_error(220, predicate)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_single_async_error(self):
         ex = 'ex'
@@ -74,8 +74,8 @@ class TestSingle(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_error(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [on_error(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_single_async_predicate(self):
         scheduler = TestScheduler()
@@ -92,8 +92,8 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        res.messages.assert_equal(on_error(240, predicate))
-        xs.subscriptions.assert_equal(subscribe(200, 240))
+        assert [on_error(240, predicate)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 240)]
 
     def test_single_async_predicate_empty(self):
         scheduler = TestScheduler()
@@ -109,8 +109,8 @@ class TestSingle(unittest.TestCase):
         def predicate(e):
             return not e is None
 
-        res.messages.assert_equal(on_error(250, predicate))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert [on_error(250, predicate)] == res.messages
+        assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_predicate_one(self):
         scheduler = TestScheduler()
@@ -123,10 +123,10 @@ class TestSingle(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_next(250, 4), on_completed(250))
-        xs.subscriptions.assert_equal(subscribe(200, 250))
+        assert res.messages == [on_next(250, 4), on_completed(250)]
+        assert xs.subscriptions == [subscribe(200, 250)]
 
-    def test_single_async_predicate_throw(self):
+    def test_single_async_predicate_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
@@ -138,8 +138,8 @@ class TestSingle(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_error(210, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 210))
+        assert res.messages == [on_error(210, ex)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_single_async_predicate_throws(self):
         ex = 'ex'
@@ -156,6 +156,6 @@ class TestSingle(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        res.messages.assert_equal(on_error(230, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 230))
+        assert res.messages == [on_error(230, ex)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 

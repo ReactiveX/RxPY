@@ -19,10 +19,10 @@ class TestMerge(unittest.TestCase):
         n2 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, n1, n2)
+            return Observable.merge(n1, n2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_merge_never3(self):
         scheduler = TestScheduler()
@@ -31,10 +31,10 @@ class TestMerge(unittest.TestCase):
         n3 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, n1, n2, n3)
+            return Observable.merge(n1, n2, n3)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_merge_empty2(self):
         scheduler = TestScheduler()
@@ -42,10 +42,10 @@ class TestMerge(unittest.TestCase):
         e2 = Observable.empty()
 
         def create():
-            return Observable.merge(scheduler, e1, e2)
+            return Observable.merge(e1, e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(203))
+        assert results.messages == [on_completed(200)]
 
     def test_merge_empty3(self):
         scheduler = TestScheduler()
@@ -54,10 +54,10 @@ class TestMerge(unittest.TestCase):
         e3 = Observable.empty()
 
         def create():
-            return Observable.merge(scheduler, e1, e2, e3)
+            return Observable.merge(e1, e2, e3)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(204))
+        assert results.messages == [on_completed(200)]
 
     def test_merge_empty_delayed2_right_last(self):
         scheduler = TestScheduler()
@@ -67,10 +67,10 @@ class TestMerge(unittest.TestCase):
         e2 = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return Observable.merge(scheduler, e1, e2)
+            return Observable.merge(e1, e2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(250))
+        assert results.messages == [on_completed(250)]
 
     def test_merge_empty_delayed2_left_last(self):
         scheduler = TestScheduler()
@@ -80,9 +80,9 @@ class TestMerge(unittest.TestCase):
         e2 = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return Observable.merge(scheduler, e1, e2)
+            return Observable.merge(e1, e2)
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(250))
+        assert results.messages == [on_completed(250)]
 
     def test_merge_empty_delayed3_middle_last(self):
         scheduler = TestScheduler()
@@ -94,10 +94,10 @@ class TestMerge(unittest.TestCase):
         e3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-           return Observable.merge(scheduler, e1, e2, e3)
+           return Observable.merge(e1, e2, e3)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_completed(250))
+        assert results.messages == [on_completed(250)]
 
     def test_merge_empty_never(self):
         scheduler = TestScheduler()
@@ -106,10 +106,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-           return Observable.merge(scheduler, e1, n1)
+           return Observable.merge(e1, n1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_merge_never_empty(self):
         scheduler = TestScheduler()
@@ -118,10 +118,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, n1, e1)
+            return Observable.merge(n1, e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal()
+        assert results.messages == []
 
     def test_merge_return_never(self):
         scheduler = TestScheduler()
@@ -130,10 +130,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, r1, n1)
+            return Observable.merge(r1, n1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2))
+        assert results.messages == [on_next(210, 2)]
 
     def test_merge_never_return(self):
         scheduler = TestScheduler()
@@ -142,10 +142,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, n1, r1)
+            return Observable.merge(n1, r1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2))
+        assert results.messages == [on_next(210, 2)]
 
     def test_merge_error_never(self):
         ex = 'ex'
@@ -155,10 +155,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, e1, n1)
+            return Observable.merge(e1, n1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
+        assert results.messages == [on_next(210, 2), on_error(245, ex)]
 
     def test_merge_never_error(self):
         ex = 'ex'
@@ -168,10 +168,10 @@ class TestMerge(unittest.TestCase):
         n1 = Observable.never()
 
         def create():
-            return Observable.merge(scheduler, n1, e1)
+            return Observable.merge(n1, e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_error(245, ex))
+        assert results.messages == [on_next(210, 2), on_error(245, ex)]
 
     def test_merge_empty_return(self):
         scheduler = TestScheduler()
@@ -181,10 +181,10 @@ class TestMerge(unittest.TestCase):
         r1 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return Observable.merge(scheduler, e1, r1)
+            return Observable.merge(e1, r1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_completed(250))
+        assert results.messages == [on_next(210, 2), on_completed(250)]
 
     def test_merge_return_empty(self):
         scheduler = TestScheduler()
@@ -194,10 +194,10 @@ class TestMerge(unittest.TestCase):
         r1 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return Observable.merge(scheduler, r1, e1)
+            return Observable.merge(r1, e1)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_completed(250))
+        assert results.messages == [on_next(210, 2), on_completed(250)]
 
     def test_merge_lots2(self):
         scheduler = TestScheduler()
@@ -207,7 +207,7 @@ class TestMerge(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return Observable.merge(scheduler, o1, o2)
+            return Observable.merge(o1, o2)
 
         results = scheduler.start(create).messages
         assert(len(results) == 9)
@@ -228,7 +228,7 @@ class TestMerge(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            return Observable.merge(scheduler, o1, o2, o3)
+            return Observable.merge(o1, o2, o3)
 
         results = scheduler.start(create).messages
         assert(len(results) == 9)
@@ -246,10 +246,10 @@ class TestMerge(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return Observable.merge(scheduler, o1, o2)
+            return Observable.merge(o1, o2)
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(210, 2), on_next(215, 3), on_error(245, ex))
+        assert results.messages == [on_next(210, 2), on_next(215, 3), on_error(245, ex)]
 
     def test_merge_error_causes_disposal(self):
         ex = 'ex'
@@ -265,111 +265,111 @@ class TestMerge(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
 
         def create():
-            return Observable.merge(scheduler, o1, o2)
+            return Observable.merge(o1, o2)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_error(210, ex))
+        assert results.messages == [on_error(210, ex)]
         assert(not source_not_disposed[0])
 
     def test_merge_observable_of_observable_data(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_next(120, 305), on_completed(150))), on_completed(600))
+        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_next(110, 103), on_next(120, 104), on_next(210, 105), on_next(220, 106), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 200), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_next(120, 305), on_completed(150))), on_completed(600))
 
         def create():
-            return xs.merge_observable()
+            return xs.merge_all()
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(410, 201), on_next(420, 104), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 105), on_next(510, 301), on_next(520, 106), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_next(620, 305), on_completed(650))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 103), on_next(410, 201), on_next(420, 104), on_next(420, 202), on_next(430, 203), on_next(440, 200), on_next(510, 105), on_next(510, 301), on_next(520, 106), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_next(620, 305), on_completed(650)]
 
     def test_merge_observable_of_observable_data_non_overlapped(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
+        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 200), on_completed(50))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
 
         def create():
-            return xs.merge_observable()
+            return xs.merge_all()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(600))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 200), on_next(510, 301), on_next(520, 302), on_next(530, 303), on_next(540, 304), on_completed(600)]
 
     def test_merge_observable_of_observable_inner_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_error(50, ex))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
+        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 200), on_error(50, ex))), on_next(500, scheduler.create_cold_observable(on_next(10, 301), on_next(20, 302), on_next(30, 303), on_next(40, 304), on_completed(50))), on_completed(600))
 
         def create():
-            return xs.merge_observable()
+            return xs.merge_all()
 
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(450, ex))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 200), on_error(450, ex)]
 
     def test_merge_observable_of_observable_outer_throws(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 204), on_completed(50))), on_error(500, ex))
+        xs = scheduler.create_hot_observable(on_next(300, scheduler.create_cold_observable(on_next(10, 101), on_next(20, 102), on_completed(230))), on_next(400, scheduler.create_cold_observable(on_next(10, 201), on_next(20, 202), on_next(30, 203), on_next(40, 200), on_completed(50))), on_error(500, ex))
 
         def create():
-            return xs.merge_observable()
+            return xs.merge_all()
         results = scheduler.start(create)
-        results.messages.assert_equal(on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 204), on_error(500, ex))
+        assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 200), on_error(500, ex)]
 
     def test_mergeconcat_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
 
         def create():
-            return xs.merge(2)
+            return xs.merge(max_concurrent=2)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(670, 9), on_next(700, 10), on_completed(760))
-        xs.subscriptions.assert_equal(subscribe(200, 760))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(670, 9), on_next(700, 10), on_completed(760)]
+        assert xs.subscriptions == [subscribe(200, 760)]
 
     def test_mergeconcat_basic_long(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
 
         def create():
-            return xs.merge(2)
+            return xs.merge(max_concurrent=2)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(690, 9), on_next(720, 10), on_completed(780))
-        xs.subscriptions.assert_equal(subscribe(200, 780))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(690, 9), on_next(720, 10), on_completed(780)]
+        assert xs.subscriptions == [subscribe(200, 780)]
 
     def test_mergeconcat_basic_wide(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(450))
 
         def create():
-            return xs.merge(3)
+            return xs.merge(max_concurrent=3)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(280, 6), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 7), on_next(380, 8), on_next(630, 9), on_next(660, 10), on_completed(720))
-        xs.subscriptions.assert_equal(subscribe(200, 720))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(280, 6), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 7), on_next(380, 8), on_next(630, 9), on_next(660, 10), on_completed(720)]
+        assert xs.subscriptions == [subscribe(200, 720)]
 
     def test_mergeconcat_basic_late(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(420, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(750))
 
         def create():
-            return xs.merge(3)
+            return xs.merge(max_concurrent=3)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(280, 6), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 7), on_next(380, 8), on_next(630, 9), on_next(660, 10), on_completed(750))
-        xs.subscriptions.assert_equal(subscribe(200, 750))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(280, 6), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 7), on_next(380, 8), on_next(630, 9), on_next(660, 10), on_completed(750)]
+        assert xs.subscriptions == [subscribe(200, 750)]
 
     def test_mergeconcat_disposed(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
 
         def create():
-            return xs.merge(2)
+            return xs.merge(max_concurrent=2)
 
         results = scheduler.start(create, disposed=450)
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7))
-        xs.subscriptions.assert_equal(subscribe(200, 450))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7)]
+        assert xs.subscriptions == [subscribe(200, 450)]
 
     def test_mergeconcat_outererror(self):
         ex = 'ex'
@@ -377,11 +377,11 @@ class TestMerge(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_error(400, ex))
 
         def create():
-            return xs.merge(2)
+            return xs.merge(max_concurrent=2)
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_error(400, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 400))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_error(400, ex)]
+        assert xs.subscriptions == [subscribe(200, 400)]
 
     def test_mergeconcat_innererror(self):
         ex = 'ex'
@@ -389,12 +389,12 @@ class TestMerge(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_error(140, ex))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
 
         def create():
-            return xs.merge(2)
+            return xs.merge(max_concurrent=2)
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_error(490, ex))
-        xs.subscriptions.assert_equal(subscribe(200, 490))
+        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_error(490, ex)]
+        assert xs.subscriptions == [subscribe(200, 490)]
 
     def test_merge_112233(self):
         scheduler = TestScheduler()
@@ -408,12 +408,12 @@ class TestMerge(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        results.messages.assert_equal(
+        assert results.messages == [
             on_next(250, 1),
             on_next(250, 1),
             on_next(300, 2),
             on_next(300, 2),
             on_next(320, 3),
             on_next(350, 3),
-            on_completed(360))
-        xs.subscriptions.assert_equal(subscribe(200, 360))
+            on_completed(360)]
+        assert xs.subscriptions == [subscribe(200, 360)]

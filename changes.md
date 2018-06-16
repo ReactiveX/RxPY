@@ -1,5 +1,13 @@
 # Changes
 
+## 2.0.0-alpha
+
+- Extension methods and extension class methods have been removed. This
+  makes it much easier for editors and IDEs to validate the code and
+  perform code completion.
+- Python 3.6+ only with type hints
+- Google docstring style.
+
 ## 1.5.0
 
 - Refactored virtual time scheduling. Fixes #95. Thanks to @djarb
@@ -18,11 +26,13 @@
 - Fixed issue #83 with `int + datetime.datetime` in timer.py. Thanks to @AlexMost
 
 ## 1.2.6
+
 - Fixes for TwistedScheduler raising AlreadyCalled error #78. Thanks to
   @mchen402 and @jcwilson.
 - Use CurrentThreadScheduler as default for just/return_value. Fixes #76
 
 ## 1.2.5
+
 - Added wxscheduler.py for use with wxPython applications thanks to
   @bosonogi
 - Added eventletscheduler.py for use with Eventlet thanks to @jalandip
@@ -112,7 +122,7 @@
 - Aligned backpressure with RxJS
 - Renamed all `select()` to `map()` and `where()` to `map()`
 - `from_` is now an alias for `from_iterable`. Removed `from_array`
-- Fixes for `select_many`/`flat_map`. Selector may return iterable
+- Fixes for `flat_map`/`flat_map`. Selector may return iterable
 
 ## 0.14
 

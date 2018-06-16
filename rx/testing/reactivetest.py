@@ -49,29 +49,29 @@ class OnErrorPredicate(object):
         return self.predicate(other.exception)
 
 
-class ReactiveTest(object):
+class ReactiveTest:
     created = 100
     subscribed = 200
     disposed = 1000
 
-    @classmethod
-    def on_next(cls, ticks, value):
+    @staticmethod
+    def on_next(ticks, value):
         if isinstance(value, types.FunctionType):
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
-    @classmethod
-    def on_error(cls, ticks, exception):
+    @staticmethod
+    def on_error(ticks, exception):
         if isinstance(exception, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
 
-    @classmethod
-    def on_completed(cls, ticks):
+    @staticmethod
+    def on_completed(ticks):
         return Recorded(ticks, OnCompleted())
 
-    @classmethod
-    def subscribe(cls, start, end):
+    @staticmethod
+    def subscribe(start, end):
         return Subscription(start, end)
