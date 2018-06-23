@@ -1,5 +1,6 @@
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
 
@@ -35,6 +36,7 @@ def merge(source, *args, max_concurrent=None):
             subscription = SingleAssignmentDisposable()
             group.add(subscription)
 
+            @synchronized(source.lock)
             def on_completed():
                 group.remove(subscription)
                 if queue:
@@ -45,7 +47,9 @@ def merge(source, *args, max_concurrent=None):
                     if is_stopped[0] and active_count[0] == 0:
                         observer.on_completed()
 
-            subscription.disposable = xs.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
+            on_next = synchronized(source.lock)(observer.on_next)
+            on_error = synchronized(source.lock)(observer.on_error)
+            subscription.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
 
         def on_next(inner_source):
             if active_count[0] < max_concurrent:
@@ -103,12 +107,15 @@ def merge_all(source: ObservableBase) -> ObservableBase:
 
             inner_source = Observable.from_future(inner_source) if is_future(inner_source) else inner_source
 
+            @synchronized(source.lock)
             def on_completed():
                 group.remove(inner_subscription)
                 if is_stopped[0] and len(group) == 1:
                     observer.on_completed()
 
-            disposable = inner_source.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
+            on_next = synchronized(source.lock)(observer.on_next)
+            on_error = synchronized(source.lock)(observer.on_error)
+            disposable = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
             inner_subscription.disposable = disposable
 
         def on_completed():
