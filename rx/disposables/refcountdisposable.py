@@ -30,7 +30,7 @@ class RefCountDisposable(Disposable):
         self.lock = RLock()
         self.count = 0
 
-        super(RefCountDisposable, self).__init__()
+        super().__init__()
 
     def dispose(self):
         """Disposes the underlying disposable only when all dependent
@@ -47,7 +47,7 @@ class RefCountDisposable(Disposable):
                     self.is_disposed = True
                     disposable = self.underlying_disposable
 
-        if disposable:
+        if disposable is not None:
             disposable.dispose()
 
     def release(self):

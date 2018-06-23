@@ -53,5 +53,5 @@ class SingleAssignmentDisposable(Disposable):
                 old = self.current
                 self.current = None
 
-        if old:
+        if old is not None:
             old.dispose()

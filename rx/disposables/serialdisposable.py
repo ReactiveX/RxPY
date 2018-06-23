@@ -32,10 +32,10 @@ class SerialDisposable(Disposable):
                 old = self.current
                 self.current = value
 
-        if old:
+        if old is not None:
             old.dispose()
 
-        if should_dispose and value:
+        if should_dispose and value is not None:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)
@@ -52,5 +52,5 @@ class SerialDisposable(Disposable):
                 old = self.current
                 self.current = None
 
-        if old:
+        if old is not None:
             old.dispose()

@@ -11,7 +11,7 @@ class MultipleAssignmentDisposable(Disposable):
         self.is_disposed = False
         self.lock = RLock()
 
-        super(MultipleAssignmentDisposable, self).__init__()
+        super().__init__()
 
     def get_disposable(self):
         return self.current
@@ -27,7 +27,7 @@ class MultipleAssignmentDisposable(Disposable):
             if not should_dispose:
                 self.current = value
 
-        if should_dispose and value:
+        if should_dispose and value is not None:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)
@@ -44,5 +44,5 @@ class MultipleAssignmentDisposable(Disposable):
                 old = self.current
                 self.current = None
 
-        if old:
+        if old is not None:
             old.dispose()
