@@ -4,6 +4,11 @@
 
 *A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
 
+# RxPY v2.0 Alpha
+
+This branch is work-in-progress.
+
+## FOR V 1.X PLEASE GO TO [STABLE BRANCH](https://github.com/ReactiveX/RxPY/tree/release/v1.6.x)
 
 # About ReactiveX
 
@@ -13,8 +18,7 @@ Using Rx, you can represent multiple asynchronous data streams (that come from d
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
-Community
--------
+# Community
 
 Join the conversation on Slack!
 
@@ -26,16 +30,11 @@ To join, navigate the page above to receive an email invite. After signing up, j
 
 Please follow the community guidelines and terms of service.
 
-Install
--------
+# Install
 
-RxPY runs on [Python](http://www.python.org/) 2.7, 3.4,[PyPy](http://pypy.org/) and [IronPython](https://ironpython.codeplex.com)
+RxPY runs on [Python](http://www.python.org/) 3.4. To install RxPY:
 
-To install RxPY:
-
-`pip install rx`
-
-Note that `pip` may be called `pip3` if you are using Python3.
+`pip3 install rx`
 
 # Tutorials
 
@@ -58,7 +57,6 @@ For instance, you can implement an `Observer` with these three methods and simpl
 ```python
 from rx import Observable, Observer
 
-
 def push_five_strings(observer):
     observer.on_next("Alpha")
     observer.on_next("Beta")
@@ -66,7 +64,6 @@ def push_five_strings(observer):
     observer.on_next("Delta")
     observer.on_next("Epsilon")
     observer.on_completed()
-
 
 class PrintObserver(Observer):
 
@@ -310,11 +307,9 @@ from rx import Observable
 engine = create_engine('sqlite:///rexon_metals.db')
 conn = engine.connect()
 
-
 def customer_for_id(customer_id):
     stmt = text("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = :id")
     return Observable.from_(conn.execute(stmt, id=customer_id))
-
 
 # Query customers with IDs 1, 3, and 5
 Observable.of(1, 3, 5) \
@@ -331,7 +326,6 @@ Observable.of(1, 3, 5) \
 ```
 
 ## Concurrency
-
 
 To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
@@ -355,7 +349,6 @@ def intense_calculation(value):
     # sleep for a random short duration between 0.5 to 2.0 seconds to simulate a long-running calculation
     time.sleep(random.randint(5, 20) * .1)
     return value
-
 
 # calculate number of CPU's, then create a ThreadPoolScheduler with that number of threads
 optimal_thread_count = multiprocessing.cpu_count()
@@ -496,13 +489,11 @@ RxPY also comes with batteries included, and has a number of Python specific mai
 
 You can contribute by reviewing and sending feedback on code checkins, suggesting and trying out new features as they are implemented, register issues and help us verify fixes as they are checked in, as well as submit code fixes or code contributions of your own.
 
-The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently outdated mirrors at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/) and [CodePlex](http://rxpy.codeplex.com/). Please register any issues to [ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
+The main repository is at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY). There are currently an outdated mirror at [Reactive-Extensions/RxPy](https://github.com/Reactive-Extensions/RxPy/). Please register any issues to [ReactiveX/RxPY/issues](https://github.com/ReactiveX/RxPY/issues).
 
 Please submit any pull requests against the [master](https://github.com/ReactiveX/RxPY/tree/master) branch at [ReactiveX/RxPY](https://github.com/ReactiveX/RxPY/tree/master).
 
 # License
-
-Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. Microsoft Open Technologies would like to thank its contributors, a list of whom are at http://rx.codeplex.com/wikipage?title=Contributors.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
