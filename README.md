@@ -27,6 +27,12 @@ Because Observable sequences are data streams, you can query them using standard
   - [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
   - [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
+# Install
+
+RxPY runs on [Python](http://www.python.org/) 3.4. To install RxPY:
+
+`pip3 install rx`
+
 # Community
 
 Join the conversation on Slack!
@@ -38,12 +44,6 @@ https://pyslackers.com/
 To join, navigate the page above to receive an email invite. After signing up, join us in the #rxpy channel.
 
 Please follow the community guidelines and terms of service.
-
-# Install
-
-RxPY runs on [Python](http://www.python.org/) 3.4. To install RxPY:
-
-`pip3 install rx`
 
 # The Basics
 
@@ -276,7 +276,7 @@ three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(
 
 ## Combining Observables
 
-You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribeon()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
+You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
 ```python
 from rx import Observable
@@ -328,13 +328,13 @@ Observable.of(1, 3, 5) \
 
 ## Concurrency
 
-To achieve concurrency, you use two operators: `subscribeon()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
+To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
 > Keep in mind Python's [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to undermine your concurrency performance, as it prevents multiple threads from accessing the same line of code simultaneously. Libraries like [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive computations as they free the GIL. RxPy may also minimize thread overlap to some degree. Just be sure to test your application with concurrency and ensure there is a performance gain.
 
-The `subscribeon()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribeon()` you specify (although you can pass a `Scheduler` usually as an argument).
+The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
 
-Below, we run three different processes concurrently rather than sequentially using `subscribeon()` as well as an `observe_on()`.
+Below, we run three different processes concurrently rather than sequentially using `subscribe_on()` as well as an `observe_on()`.
 
 ```python
 import multiprocessing
@@ -358,7 +358,7 @@ pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 # Create Process 1
 Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
     .map(lambda s: intense_calculation(s)) \
-    .subscribeon(pool_scheduler) \
+    .subscribe_on(pool_scheduler) \
     .subscribe(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
                on_error=lambda e: print(e),
                on_completed=lambda: print("PROCESS 1 done!"))
@@ -366,7 +366,7 @@ Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
 # Create Process 2
 Observable.range(1, 10) \
     .map(lambda s: intense_calculation(s)) \
-    .subscribeon(pool_scheduler) \
+    .subscribe_on(pool_scheduler) \
     .subscribe(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
                on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
 
