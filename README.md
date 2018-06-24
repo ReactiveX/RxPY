@@ -2,7 +2,8 @@
 
 # The Reactive Extensions for Python (RxPY)
 
-*A library for composing asynchronous and event-based programs using observable collections and LINQ-style query operators in Python*
+*A library for composing asynchronous and event-based programs using observable collections and
+LINQ-style query operators in Python*
 
 # RxPY v2.0 Alpha
 
@@ -17,6 +18,14 @@ Reactive Extensions for Python (RxPY) is a set of libraries for composing asynch
 Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well.
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
+
+# Tutorials
+
+- [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
+- General Rx/ReactiveX tutorials
+  - [reactivex.io: Introduction](http://reactivex.io/intro.html)
+  - [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
+  - [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
 # Community
 
@@ -35,14 +44,6 @@ Please follow the community guidelines and terms of service.
 RxPY runs on [Python](http://www.python.org/) 3.4. To install RxPY:
 
 `pip3 install rx`
-
-# Tutorials
-
-- [Getting started with RxPY](https://github.com/ReactiveX/RxPY/blob/develop/notebooks/Getting%20Started.ipynb)
-- General Rx/ReactiveX tutorials
-  - [reactivex.io: Introduction](http://reactivex.io/intro.html)
-  - [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
-  - [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
 # The Basics
 
