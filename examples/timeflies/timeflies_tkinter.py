@@ -25,7 +25,7 @@ def main():
 
         def on_next(ev):
             label.place(x=ev.x + i*12 + 15, y=ev.y)
-        mousemove.delay(i*100).subscribe_(on_next, scheduler=scheduler)
+        mousemove.delay(i*100).subscribe(on_next, scheduler=scheduler)
 
     for i, label in enumerate(labels):
         handle_label(i, label)

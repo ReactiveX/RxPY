@@ -58,7 +58,7 @@ def main():
             print("Got error: %s" % err)
             sys.exit()
 
-        mousemove.delay(i * i * 50, scheduler=scheduler).subscribe_(on_next, on_error=on_error)
+        mousemove.delay(i * i * 50, scheduler=scheduler).subscribe(on_next, on_error=on_error)
 
     for i, image in enumerate(images):
         handle_image(i, image)

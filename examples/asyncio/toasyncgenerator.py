@@ -35,7 +35,7 @@ def to_async_generator(self, future_ctor=None, sentinel=None):
         notifications.append(value)
         loop.call_soon(feeder)
 
-    self.materialize().subscribe_(on_next)
+    self.materialize().subscribe(on_next)
 
     @asyncio.coroutine
     def gen():

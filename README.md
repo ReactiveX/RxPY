@@ -119,7 +119,7 @@ from rx import Observable
 
 source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-source.subscribe_(on_next=lambda value: print("Received {0}".format(value)),
+source.subscribe(on_next=lambda value: print("Received {0}".format(value)),
                  on_completed=lambda: print("Done!"),
                  on_error=lambda error: print("Error Occurred: {0}".format(error))
                  )
@@ -132,7 +132,7 @@ from rx import Observable
 
 source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-source.subscribe_(lambda value: print("Received {0}".format(value)))
+source.subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -156,7 +156,7 @@ lengths = source.map(lambda s: len(s))
 
 filtered = lengths.filter(lambda i: i >= 5)
 
-filtered.subscribe_(lambda value: print("Received {0}".format(value)))
+filtered.subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -174,7 +174,7 @@ from rx import Observable
 Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
     .map(lambda s: len(s)) \
     .filter(lambda i: i >= 5) \
-    .subscribe_(lambda value: print("Received {0}".format(value)))
+    .subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 ## Emitting Events
@@ -186,7 +186,7 @@ from rx import Observable
 
 Observable.interval(1000) \
     .map(lambda i: "{0} Mississippi".format(i)) \
-    .subscribe_(lambda s: print(s))
+    .subscribe(lambda s: print(s))
 
 input("Press any key to quit\n")
 ```
@@ -217,8 +217,8 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000))
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 ```
 
 **OUTPUT:**
@@ -241,8 +241,8 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish()
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 
 three_random_ints.connect()
 ```
@@ -269,14 +269,14 @@ three_emissions = Observable.range(1, 3)
 
 three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
 
 ```
 
 ## Combining Observables
 
-You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
+You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribeon()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
 ```python
 from rx import Observable
@@ -286,7 +286,7 @@ letters = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 intervals = Observable.interval(1000)
 
 Observable.zip(letters, intervals, lambda s, i: (s, i)) \
-    .subscribe_(lambda t: print(t))
+    .subscribe(lambda t: print(t))
 
 input("Press any key to quit\n")
 ```
@@ -315,7 +315,7 @@ def customer_for_id(customer_id):
 # Query customers with IDs 1, 3, and 5
 Observable.of(1, 3, 5) \
     .flat_map(lambda id: customer_for_id(id)) \
-    .subscribe_(lambda r: print(r))
+    .subscribe(lambda r: print(r))
 ```
 
 **OUTPUT:**
@@ -328,13 +328,13 @@ Observable.of(1, 3, 5) \
 
 ## Concurrency
 
-To achieve concurrency, you use two operators: `subscribe_on()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
+To achieve concurrency, you use two operators: `subscribeon()` and `observe_on()`. Both need a `Scheduler` which provides a thread for each subscription to do work (see section on Schedulers below). The `ThreadPoolScheduler` is a good choice to create a pool of reusable worker threads.
 
 > Keep in mind Python's [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to undermine your concurrency performance, as it prevents multiple threads from accessing the same line of code simultaneously. Libraries like [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive computations as they free the GIL. RxPy may also minimize thread overlap to some degree. Just be sure to test your application with concurrency and ensure there is a performance gain.
 
-The `subscribe_on()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribe_on()` you specify (although you can pass a `Scheduler` usually as an argument).
+The `subscribeon()` instructs the source `Observable` at the start of the chain which scheduler to use (and it does not matter where you put this operator). The `observe_on()`, however, will switch to a different `Scheduler` *at that point* in the `Observable` chain, effectively moving an emission from one thread to another. Some `Observable` factories and operators, like `Observable.interval()` and `delay()`, already have a default `Scheduler` and thus will ignore any `subscribeon()` you specify (although you can pass a `Scheduler` usually as an argument).
 
-Below, we run three different processes concurrently rather than sequentially using `subscribe_on()` as well as an `observe_on()`.
+Below, we run three different processes concurrently rather than sequentially using `subscribeon()` as well as an `observe_on()`.
 
 ```python
 import multiprocessing
@@ -358,16 +358,16 @@ pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 # Create Process 1
 Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
     .map(lambda s: intense_calculation(s)) \
-    .subscribe_on(pool_scheduler) \
-    .subscribe_(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
+    .subscribeon(pool_scheduler) \
+    .subscribe(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
                on_error=lambda e: print(e),
                on_completed=lambda: print("PROCESS 1 done!"))
 
 # Create Process 2
 Observable.range(1, 10) \
     .map(lambda s: intense_calculation(s)) \
-    .subscribe_on(pool_scheduler) \
-    .subscribe_(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
+    .subscribeon(pool_scheduler) \
+    .subscribe(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
                on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
 
 # Create Process 3, which is infinite
@@ -375,7 +375,7 @@ Observable.interval(1000) \
     .map(lambda i: i * 100) \
     .observe_on(pool_scheduler) \
     .map(lambda s: intense_calculation(s)) \
-    .subscribe_(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
+    .subscribe(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
                on_error=lambda e: print(e))
 
 input("Press any key to exit\n")

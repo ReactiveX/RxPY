@@ -1,7 +1,7 @@
 # By design, pylint: disable=C0302
 import threading
 from datetime import datetime, timedelta
-from typing import Callable, Any, Iterable, List, Union
+from typing import Callable, Any, Iterable, List, Union, cast, overload
 from asyncio import Future
 
 import rx.core
@@ -110,22 +110,79 @@ class ObservableBase(typing.Observable):
         """Forward pipe operator."""
         return other(self)
 
-    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None
+    @overload
+    def subscribe(self, observer: typing.Observer = None,
+                  scheduler: typing.Scheduler = None
                  ) -> Disposable:
-        """Subscribe an observer to the observable sequence.
+        raise NotImplementedError
+
+    @overload
+    def subscribe(self, # pylint: disable=E0102,W0221
+                  on_next: typing.OnNext = None,
+                  on_error: typing.OnError = None,
+                  on_completed: typing.OnCompleted = None,
+                  scheduler: typing.Scheduler = None
+                 ) -> Disposable:
+        raise NotImplementedError
+
+    def subscribe(self, *args, **kw) -> Disposable:  # pylint: disable=E0102,W0221
+        """Subscribes an observer to the observable sequence.
+
+        The observer may be specified as an observer or as individual
+        callbacks for on_next, on_error and on_completed as specified
+        in the examples below.
 
         Examples:
             >>> source.subscribe()
             >>> source.subscribe(observer)
+            >>> source.subscribe(observer, scheduler)
+            >>> source.subscribe(on_next)
+            >>> source.subscribe(on_next, on_error)
+            >>> source.subscribe(on_next, on_error, on_completed)
+            >>> source.subscribe(on_next, on_error, on_completed, scheduler)
 
         Args:
-            observer: The object that is to receive notifications.
-            scheduler: The scheduler to use.
+            observer -- The object that is to receive notifications. You
+                may subscribe using an observer or callbacks, not both.
+            on_next -- Action to invoke for each element in the
+                observable sequence.
+            on_error -- Action to invoke upon exceptional termination of
+                the observable sequence.
+            on_completed -- Action to invoke upon graceful termination
+                of the observable sequence.
+            scheduler: The scheduler to use for this subscription.
 
         Returns:
             Disposable object representing an observer's subscription
             to the observable sequence.
         """
+
+        observer = on_next = on_error = on_completed = scheduler = None
+
+        if args:
+            arg0 = args[0]
+            if isinstance(arg0, abc.Observer) or (
+                    not callable(arg0) and not isinstance(arg0, Scheduler)):
+                observer = arg0
+            else:
+                on_next = arg0
+                if len(args) > 1:
+                    on_error = args[1]
+                if len(args) > 2:
+                    on_error = args[2]
+
+            if isinstance(args[-1], Scheduler):
+                scheduler = args[-1]
+
+        scheduler = cast(Scheduler, kw.get('scheduler')) or scheduler
+        observer = kw.get('observer') or observer
+
+        if not observer:
+            on_next = kw.get('on_next') or on_next
+            on_error = kw.get('on_error') or on_error
+            on_completed = kw.get('on_completed') or on_completed
+            observer = AnonymousObserver(on_next, on_error, on_completed)
+
         from .subscribe import subscribe
         return subscribe(self, observer, scheduler)
 
@@ -149,14 +206,16 @@ class ObservableBase(typing.Observable):
                 the observable sequence.
             on_completed: Action to invoke upon graceful termination of
                 the observable sequence.
-            scheduler: The scheduler to use.
+            scheduler: The scheduler to use for this subscription.
 
         Returns:
             Disposable object representing an observer's subscription
             to the observable sequence.
         """
         observer = AnonymousObserver(on_next, on_error, on_completed)
-        return self.subscribe(observer, scheduler)
+
+        from .subscribe import subscribe
+        return subscribe(self, observer, scheduler)
 
     def _subscribe_core(self, observer, scheduler=None):
         return self.source.subscribe(observer, scheduler)
