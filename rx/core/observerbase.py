@@ -56,7 +56,6 @@ class ObserverBase(Observer, Disposable):
 
     def fail(self, exn: Exception) -> bool:
         if not self.is_stopped:
-            print("failing!")
             self.is_stopped = True
             self._on_error_core(exn)
             return True
