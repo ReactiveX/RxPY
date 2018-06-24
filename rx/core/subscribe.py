@@ -45,7 +45,7 @@ def subscribe(source: ObservableBase, observer: abc.Observer = None,
 
         return subscriber
 
-    def set_disposable(_: abc.Scheduler=None, __: Any=None):
+    def set_disposable(_: abc.Scheduler = None, __: Any = None):
         try:
             subscriber = source._subscribe_core(auto_detach_observer, scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
