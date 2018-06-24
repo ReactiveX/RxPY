@@ -15,7 +15,7 @@ class ScheduledDisposable(Disposable):
         self.is_disposed = False
         self.lock = RLock()
 
-        super(ScheduledDisposable, self).__init__()
+        super().__init__()
 
     def dispose(self):
         """Disposes the wrapped disposable on the provided scheduler."""

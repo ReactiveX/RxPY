@@ -24,6 +24,8 @@ class AnonymousDisposable(Disposable):
 
         self.lock = RLock()
 
+        super().__init__()
+
     def dispose(self) -> None:
         """Performs the task of cleaning up resources."""
 

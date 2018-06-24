@@ -72,6 +72,6 @@ class RefCountDisposable(Disposable):
         with self.lock:
             if self.is_disposed:
                 return Disposable.empty()
-            else:
-                self.count += 1
-                return self.InnerDisposable(self)
+
+            self.count += 1
+            return self.InnerDisposable(self)

@@ -13,7 +13,7 @@ class SerialDisposable(Disposable):
         self.is_disposed = False
         self.lock = RLock()
 
-        super(SerialDisposable, self).__init__()
+        super().__init__()
 
     def get_disposable(self):
         return self.current
@@ -24,10 +24,10 @@ class SerialDisposable(Disposable):
         disposable object. Assigning this property disposes the previous
         disposable object."""
 
-        should_dispose = self.is_disposed
         old = None
 
         with self.lock:
+            should_dispose = self.is_disposed
             if not should_dispose:
                 old = self.current
                 self.current = value

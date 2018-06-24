@@ -27,10 +27,10 @@ class SingleAssignmentDisposable(Disposable):
         if self.current:
             raise Exception('Disposable has already been assigned')
 
-        should_dispose = self.is_disposed
         old = None
 
         with self.lock:
+            should_dispose = self.is_disposed
             if not should_dispose:
                 old = self.current
                 self.current = value

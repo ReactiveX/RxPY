@@ -21,9 +21,8 @@ class MultipleAssignmentDisposable(Disposable):
         disposed, assignment to this property causes immediate disposal
         of the given disposable object."""
 
-        should_dispose = self.is_disposed
-
         with self.lock:
+            should_dispose = self.is_disposed
             if not should_dispose:
                 self.current = value
 

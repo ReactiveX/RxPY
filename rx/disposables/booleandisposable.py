@@ -11,7 +11,7 @@ class BooleanDisposable(Disposable):
         self.is_disposed = False
         self.lock = RLock()
 
-        super(BooleanDisposable, self).__init__()
+        super().__init__()
 
     def dispose(self):
         """Sets the status to disposed"""
