@@ -2,19 +2,20 @@ from rx.core import AnonymousObservable, ObservableBase
 
 
 def default_if_empty(source, default_value=None) -> ObservableBase:
-    """Returns the elements of the specified sequence or the specified value
-    in a singleton sequence if the sequence is empty.
+    """Returns the elements of the specified sequence or the specified
+    value in a singleton sequence if the sequence is empty.
 
-    res = obs = xs.defaultIfEmpty()
-    obs = xs.defaultIfEmpty(False
+    Examples:
+        >>> res = obs = xs.default_if_empty()
+        >>> obs = xs.default_if_empty(False)
 
-    Keyword arguments:
-    default_value -- The value to return if the sequence is empty. If not
-        provided, this defaults to None.
+    Args:
+        default_value: The value to return if the sequence is empty. If
+        not provided, this defaults to None.
 
-    Returns an observable {Observable} sequence that contains the specified
-    default value if the source is empty otherwise, the elements of the
-    source itsource.
+    Returns:
+        An observable sequence that contains the specified default value
+        if the source is empty otherwise, the elements of the source.
     """
 
     def subscribe(observer, scheduler=None):

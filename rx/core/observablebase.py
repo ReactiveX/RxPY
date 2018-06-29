@@ -331,7 +331,7 @@ class ObservableBase(typing.Observable):
                 count.
 
         Returns:
-            An observable {Observable} sequence of buffers.
+            An observable sequence of buffers.
         """
         from ..operators.observable.buffer import buffer_with_count
         return buffer_with_count(self, count, skip)
@@ -366,38 +366,42 @@ class ObservableBase(typing.Observable):
         is completed when either it's full or a given amount of time has
         elapsed.
 
-        # 5s or 50 items in an array
-        1 - res = source.buffer_with_time_or_count(5000, 50)
-        # 5s or 50 items in an array
-        2 - res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
+        >>> # 5s or 50 items in an array
+        >>> res = source.buffer_with_time_or_count(5000, 50)
+        >>> # 5s or 50 items in an array
+        >>> res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
 
-        Keyword arguments:
-        timespan -- Maximum time length of a buffer.
-        count -- Maximum element count of a buffer.
-        scheduler -- [Optional] Scheduler to run bufferin timers on. If not
-            specified, the timeout scheduler is used.
+        Args:
+            timespan -- Maximum time length of a buffer.
+            count -- Maximum element count of a buffer.
+            scheduler -- [Optional] Scheduler to run bufferin timers on.
+                If not specified, the timeout scheduler is used.
 
-        Returns an observable sequence of buffers.
+        Returns:
+            An observable sequence of buffers.
         """
         from ..operators.observable.bufferwithtimeorcount import buffer_with_time_or_count
         return buffer_with_time_or_count(self, timespan, count)
 
     def catch_exception(self, second=None, handler=None):
-        """Continues an observable sequence that is terminated by an exception
-        with the next observable sequence.
+        """Continues an observable sequence that is terminated by an
+        exception with the next observable sequence.
 
-        1 - xs.catch_exception(ys)
-        2 - xs.catch_exception(lambda ex: ys(ex))
+        Examples:
+            >>> xs.catch_exception(ys)
+            >>> xs.catch_exception(lambda ex: ys(ex))
 
-        Keyword arguments:
-        handler -- Exception handler function that returns an observable
-            sequence  given the error that occurred in the first sequence.
-        second -- Second observable sequence used to produce results when an
-            error occurred in the first sequence.
+        Args:
+            handler -- Exception handler function that returns an
+                observable sequence  given the error that occurred in
+                the first sequence.
+            second -- Second observable sequence used to produce results
+                when an error occurred in the first sequence.
 
-        Returns an observable sequence containing the first sequence's
-        elements, followed by the elements of the handler sequence in case an
-        exception occurred.
+        Returns
+            An observable sequence containing the first sequence's
+            elements, followed by the elements of the handler sequence
+            in case an exception occurred.
         """
         from ..operators.observable.catch import catch_exception
         return catch_exception(self, second, handler)
@@ -461,17 +465,18 @@ class ObservableBase(typing.Observable):
         """Determines whether an observable sequence contains a
         specified element with an optional equality comparer.
 
-        Example
-        1 - res = source.contains(42)
-        2 - res = source.contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
+        Examples:
+            >>> res = source.contains(42)
+            >>> res = source.contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
 
-        Keyword parameters:
-        value -- The value to locate in the source sequence.
-        comparer -- [Optional] An equality comparer to compare elements.
+        Args:
+            value: The value to locate in the source sequence.
+            comparer: An equality comparer to compare elements.
 
-        Returns an observable  sequence containing a single element
-        determining whether the source sequence contains an element that
-        has the specified value.
+        Returns:
+            An observable  sequence containing a single element
+            determining whether the source sequence contains an element
+            that has the specified value.
         """
         from ..operators.observable.contains import contains
         return contains(self, value, comparer)
@@ -1122,17 +1127,19 @@ class ObservableBase(typing.Observable):
         subscriptions. This operator allows for a fluent style of
         writing queries that use the same sequence multiple times.
 
-        mapper -- Selector function which can use the source
-            sequence as many times as needed, without sharing
-            subscriptions to the source sequence.
-
-        Returns an observable sequence that contains the elements of a
-        sequence produced by multicasting the source sequence within a
-        mapper function.
-
         Any kwargs given will be passed through to the mapper. This
         allows for a clean syntax when composing with parameterized
         mappers.
+
+        Args:
+            mapper: Selector function which can use the source
+                sequence as many times as needed, without sharing
+                subscriptions to the source sequence.
+
+        Returns:
+            An observable sequence that contains the elements of a
+            sequence produced by multicasting the source sequence within
+            a mapper function.
         """
         from ..operators.observable.let import let
         return let(self, func, *args, **kwargs)
@@ -1160,18 +1167,21 @@ class ObservableBase(typing.Observable):
         """Project each element of an observable sequence into a new form
         by incorporating the element's index.
 
-        1 - source.map(lambda value, index: value * value + index)
+        Example:
+            >>> source.map(lambda value, index: value * value + index)
 
-        Keyword arguments:
-        mapper -- A transform function to apply to each source element; the
-            second parameter of the function represents the index of the
-            source element
-        mapper_indexed -- A transform function to apply to each source
-            element; the second parameter of the function represents the
-            index of the source element.
+        Args:
+            mapper: A transform function to apply to each source element;
+                the second parameter of the function represents the index
+                of the source element
+            mapper_indexed: A transform function to apply to each source
+                element; the second parameter of the function represents
+                the index of the source element.
 
-        Returns an observable sequence whose elements are the result of
-        invoking the transform function on each element of the source.
+        Returns:
+            An observable sequence whose elements are the result of
+            invoking the transform function on each element of the
+            source.
         """
 
         from ..operators.observable.map import map as _map
@@ -1181,8 +1191,9 @@ class ObservableBase(typing.Observable):
         """Materializes the implicit notifications of an observable sequence as
         explicit notification values.
 
-        Returns an observable sequence containing the materialized notification
-        values from the source sequence.
+        Returns:
+            An observable sequence containing the materialized
+            notification values from the source sequence.
         """
         from ..operators.observable.materialize import materialize
         return materialize(self)
@@ -1441,20 +1452,22 @@ class ObservableBase(typing.Observable):
         subscription to the underlying sequence. This operator is a
         specialization of Multicast using a regular Subject.
 
-        Example:
-        res = source.publish()
-        res = source.publish(lambda x: x)
+        Examples:
+            >>> res = source.publish()
+            >>> res = source.publish(lambda x: x)
 
-        mapper -- [Optional] Selector function which can use the
-            multicasted source sequence as many times as needed, without
-            causing multiple subscriptions to the source sequence.
-            Subscribers to the given source will receive all
-            notifications of the source from the time of the
-            subscription on.
+        Args:
+            mapper: Selector function which can use the
+                multicasted source sequence as many times as needed,
+                without causing multiple subscriptions to the source
+                sequence. Subscribers to the given source will receive
+                all notifications of the source from the time of the
+                subscription on.
 
-        Returns an observable sequence that contains the elements of
-        a sequence produced by multicasting the source sequence
-        within a mapper function."""
+        Returns:
+            An observable sequence that contains the elements of a
+            sequence produced by multicasting the source sequence
+            within a mapper function."""
 
         from ..operators.observable.publish import publish
         return publish(self, mapper)
@@ -2419,16 +2432,17 @@ class ObservableBase(typing.Observable):
         """Projects each element of an observable sequence into zero or
         more windows.
 
-        Keyword arguments:
-        window_openings -- Observable sequence whose elements denote the
-            creation of windows.
-        window_closing_mapper -- [Optional] A function invoked to
-            define the closing of each produced window. It defines the
-            boundaries of the produced windows (a window is started when
-            the previous one is closed, resulting in non-overlapping
-            windows).
+        Args:
+            window_openings -- Observable sequence whose elements denote
+                the creation of windows.
+            window_closing_mapper -- [Optional] A function invoked to
+                define the closing of each produced window. It defines the
+                boundaries of the produced windows (a window is started
+                when the previous one is closed, resulting in
+                non-overlapping windows).
 
-        Returns an observable sequence of windows.
+        Returns:
+            An observable sequence of windows.
         """
         from ..operators.observable.window import window
         return window(self, window_openings, window_closing_mapper)
@@ -2438,15 +2452,18 @@ class ObservableBase(typing.Observable):
         more windows which are produced based on element count
         information.
 
-        1 - xs.window_with_count(10)
-        2 - xs.window_with_count(10, 1)
+        Examples:
+            >>> xs.window_with_count(10)
+            >>> xs.window_with_count(10, 1)
 
-        count -- Length of each window.
-        skip -- [Optional] Number of elements to skip between creation
-            of consecutive windows. If not specified, defaults to the
-            count.
+        Args:
+            count -- Length of each window.
+            skip -- [Optional] Number of elements to skip between creation
+                of consecutive windows. If not specified, defaults to the
+                count.
 
-        Returns an observable sequence of windows.
+        Returns:
+            An observable sequence of windows.
         """
         from ..operators.observable.windowwithcount import window_with_count
         return window_with_count(self, count, skip)
@@ -2494,18 +2511,20 @@ class ObservableBase(typing.Observable):
         for each series of elements at corresponding indexes in the
         sources.
 
-        1 - res = obs1.zip(obs2, result_mapper=fn)
-        2 - res = x1.zip([1,2,3], result_mapper=fn)
+        Examples:
+            >>> res = obs1.zip(obs2, result_mapper=fn)
+            >>> res = x1.zip([1,2,3], result_mapper=fn)
 
-        Keyword arguments:
-        args -- Observable sources to zip together with self.
-        result_mapper -- Selector function that produces an element
-            whenever all of the observable sequences have produced an
-            element at a corresponding index
+        Args:
+            args -- Observable sources to zip together with self.
+            result_mapper -- Selector function that produces an element
+                whenever all of the observable sequences have produced
+                an element at a corresponding index
 
-        Returns an observable sequence containing the result of
-        combining elements of the sources using the specified result
-        mapper function.
+        Returns:
+            An observable sequence containing the result of
+            combining elements of the sources using the specified result
+            mapper function.
         """
         from ..operators.observable.zip import zip as _zip
         return _zip(self, *args, result_mapper=result_mapper)

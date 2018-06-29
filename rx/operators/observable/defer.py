@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 
 from rx.core import Observable, ObservableBase, AnonymousObservable
 from rx.core import abc
@@ -10,14 +10,15 @@ def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> Obse
     function whenever a new observer subscribes.
 
     Example:
-    1 - res = rx.Observable.defer(lambda: rx.Observable.of(1, 2, 3))
+        >>> res = rx.Observable.defer(lambda: rx.Observable.of(1, 2, 3))
 
-    Keyword arguments:
-    :param types.FunctionType observable_factory: Observable factory function
-        to invoke for each observer that subscribes to the resulting sequence.
+    Args:
+        observable_factory: Observable factory function to invoke for
+        each observer that subscribes to the resulting sequence.
 
-    Returns an observable sequence whose observers trigger an invocation
-    of the given observable factory function.
+    Returns:
+        An observable sequence whose observers trigger an invocation
+        of the given observable factory function.
     """
 
     def subscribe(observer, scheduler=None):

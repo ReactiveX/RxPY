@@ -9,13 +9,14 @@ def debounce(self, duetime) -> ObservableBase:
     another value before duetime.
 
     Example:
-    1 - res = source.debounce(5000) # 5 seconds
+        >>> res = source.debounce(5000) # 5 seconds
 
-    Keyword arguments:
-    duetime -- {Number} Duration of the throttle period for each value
+    Args:
+        duetime: Duration of the throttle period for each value
         (specified as an integer denoting milliseconds).
 
-    Returns the debounced sequence.
+    Returns:
+        The debounced sequence.
     """
 
     source = self
@@ -68,13 +69,16 @@ def throttle_with_mapper(self, throttle_duration_mapper) -> ObservableBase:
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
-    1 - res = source.throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
+    Example:
+        >>> res = source.throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
 
-    Keyword arguments:
-    throttle_duration_mapper -- Selector function to retrieve a sequence
-        indicating the throttle duration for each given element.
+    Args:
+        throttle_duration_mapper: Selector function to retrieve a
+        sequence indicating the throttle duration for each given
+        element.
 
-    Returns the throttled sequence.
+    Returns:
+        The throttled sequence.
     """
 
     source = self
