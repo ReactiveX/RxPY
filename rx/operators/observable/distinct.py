@@ -1,5 +1,5 @@
 from rx.core import ObservableBase, AnonymousObservable
-from rx.internal.basic import identity, default_comparer
+from rx.internal.basic import default_comparer
 
 # Swap out for Array.findIndex
 def array_index_of_comparer(array, item, comparer):
@@ -8,7 +8,7 @@ def array_index_of_comparer(array, item, comparer):
             return i
     return -1
 
-class HashSet(object):
+class HashSet:
     def __init__(self, comparer):
         self.comparer = comparer
         self.set = []
@@ -57,5 +57,5 @@ def distinct(self, key_mapper=None, comparer=None) -> ObservableBase:
 
             hashset.push(key) and observer.on_next(x)
         return source.subscribe_(on_next, observer.on_error,
-                                observer.on_completed, scheduler)
+                                 observer.on_completed, scheduler)
     return AnonymousObservable(subscribe)
