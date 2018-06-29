@@ -21,7 +21,7 @@ class AsyncIOScheduler(SchedulerBase):
 
         def interval():
             disposable.disposable = self.invoke_action(action, state)
-        handle = self.loop.call_soon(interval)
+        handle = self.loop.call_soon_threadsafe(interval)
 
         def dispose():
             handle.cancel()
@@ -49,7 +49,7 @@ class AsyncIOScheduler(SchedulerBase):
         def interval():
             disposable.disposable = self.invoke_action(action, state)
 
-        handle = self.loop.call_later(seconds, interval)
+        handle = self.loop.call_later_threadsafe(seconds, interval)
 
         def dispose():
             handle.cancel()
