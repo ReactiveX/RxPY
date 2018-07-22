@@ -39,7 +39,7 @@ setup(
               'rx.operators', 'rx.operators.observable', 'rx.operators.iterable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler', 'rx.joins',
               'rx.operators.observable.blocking', 'rx.disposables', 'rx.subjects',
-              'rx.backpressure', 'rx.testing'],
+              'rx.streams', 'rx.backpressure', 'rx.testing'],
     package_dir={'rx': 'rx'},
     include_package_data=True,
 )
