@@ -29,9 +29,14 @@ Because Observable sequences are data streams, you can query them using standard
 
 # Install
 
-RxPY runs on [Python](http://www.python.org/) 3.4. To install RxPY:
+RxPY v2.x runs on [Python](http://www.python.org/) 3. To install RxPY:
 
 `pip3 install rx`
+
+For Python 2.x you need to use version 1.6
+
+`pip3 install rx==1.6.1`
+
 
 # Community
 
@@ -440,7 +445,7 @@ for x in zs:
 
 # Differences from .NET and RxJS
 
-RxPY is a fairly complete implementation of[Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx) v2.2 with more than [134 query operators](http://reactivex.io/documentation/operators.html), and over [1100 passing unit-tests](https://coveralls.io/github/dbrattli/RxPY). RxPY is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in terms of threading and blocking operators.
+RxPY is a fairly complete implementation of [Rx](http://msdn.microsoft.com/en-us/data/gg577609.aspx) v2.2 with more than [134 query operators](http://reactivex.io/documentation/operators.html), and over [1100 passing unit-tests](https://coveralls.io/github/dbrattli/RxPY). RxPY is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in terms of threading and blocking operators.
 
 RxPY follows [PEP 8](http://legacy.python.org/dev/peps/pep-0008/), so all function and method names are lowercase with words separated by underscores as necessary to improve readability.
 
