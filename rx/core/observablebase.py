@@ -169,7 +169,7 @@ class ObservableBase(typing.Observable):
                 if len(args) > 1:
                     on_error = args[1]
                 if len(args) > 2:
-                    on_error = args[2]
+                    on_completed = args[2]
 
             if isinstance(args[-1], Scheduler):
                 scheduler = args[-1]
