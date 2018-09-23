@@ -26,7 +26,7 @@ def reset_start_time(show_doc_for=None, title=True, sleep=None):
     if title:
         if d:
             if title == True:
-                title = d.func_name
+                title = d.__name__
         header(title)
     if not d:
         return
