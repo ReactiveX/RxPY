@@ -28,7 +28,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
@@ -48,7 +48,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create, disposed=400)
 
@@ -71,7 +71,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -91,7 +91,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -110,7 +110,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -131,7 +131,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(window_closing_mapper=closings).map(mapper_indexed=mapper).merge_all()
+            return xs.window(window_closing_mapper=closings).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [on_next(250, "0 3"), on_next(260, "0 4"), on_next(310, "1 5"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(420, "1 8"), on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
@@ -149,7 +149,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys, closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
         assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(900)]
@@ -169,7 +169,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys, closing).mapi(mapper).merge_all()
 
         results = scheduler.start(create=create)
 
@@ -189,7 +189,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys, closing).mapi(mapper).merge_all()
         results = scheduler.start(create=create, disposed=415)
         assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7")]
         assert xs.subscriptions == [subscribe(200, 415)]
@@ -208,7 +208,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys, closing).mapi(mapper).merge_all()
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
@@ -227,7 +227,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
 
-            return xs.window(ys, closing).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys, closing).mapi(mapper).merge_all()
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"), on_next(410, "3 7"), on_error(415, ex)]
@@ -263,7 +263,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys).mapi(mapper).merge_all()
         res = scheduler.start(create=create)
 
         assert res.messages == [
@@ -310,7 +310,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys).mapi(mapper).merge_all()
 
         res = scheduler.start(create=create)
 
@@ -352,7 +352,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys).mapi(mapper).merge_all()
         res = scheduler.start(create=create)
 
         assert res.messages == [
@@ -396,7 +396,7 @@ class TestWindow(unittest.TestCase):
         def create():
             def mapper(w, i):
                 return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window(ys).map(mapper_indexed=mapper).merge_all()
+            return xs.window(ys).mapi(mapper).merge_all()
 
         res = scheduler.start(create=create)
 

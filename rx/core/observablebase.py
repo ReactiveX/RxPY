@@ -100,7 +100,7 @@ class ObservableBase(typing.Observable):
         """Pythonic version of repeat.
 
         Example:
-        yx = xs * 5
+            yx = xs * 5
 
         Returns self.repeat(num)"""
 
@@ -1160,12 +1160,8 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.manyselect import many_select
         return many_select(self, mapper)
 
-    def map(self,
-            mapper: Mapper = None,
-            mapper_indexed: MapperIndexed = None
-           ) -> 'ObservableBase':
-        """Project each element of an observable sequence into a new form
-        by incorporating the element's index.
+    def map(self, mapper: Mapper) -> 'ObservableBase':
+        """Project each element of an observable sequence into a new form.
 
         Example:
             >>> source.map(lambda value, index: value * value + index)
@@ -1174,7 +1170,25 @@ class ObservableBase(typing.Observable):
             mapper: A transform function to apply to each source element;
                 the second parameter of the function represents the index
                 of the source element
-            mapper_indexed: A transform function to apply to each source
+
+        Returns:
+            An observable sequence whose elements are the result of
+            invoking the transform function on each element of the
+            source.
+        """
+
+        from ..operators.observable.map import map as _map
+        return ObservableBase(_map(mapper)(self))
+
+    def mapi(self, mapper: MapperIndexed) -> 'ObservableBase':
+        """Project each element of an observable sequence into a new form
+        by incorporating the element's index.
+
+        Example:
+            >>> source.map(lambda value, index: value * value + index)
+
+        Args:
+            mapper: A transform function to apply to each source
                 element; the second parameter of the function represents
                 the index of the source element.
 
@@ -1184,8 +1198,8 @@ class ObservableBase(typing.Observable):
             source.
         """
 
-        from ..operators.observable.map import map as _map
-        return ObservableBase(_map(mapper, mapper_indexed)(self))
+        from ..operators.observable.map import mapi
+        return ObservableBase(mapi(mapper)(self))
 
     def materialize(self) -> 'ObservableBase':
         """Materializes the implicit notifications of an observable sequence as

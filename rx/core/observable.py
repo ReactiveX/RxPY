@@ -10,7 +10,7 @@ from . import abc, typing
 class Observable(typing.Observable):  # pylint: disable=W0223,R0904
     """Observable creation methods.
 
-    This class is a container of static Observable creation methods,.
+    This class is a container of static Observable creation methods.
     """
 
     @staticmethod

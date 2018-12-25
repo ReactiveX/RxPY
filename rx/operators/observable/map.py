@@ -1,65 +1,68 @@
-from typing import Any
-from rx.core import Disposable
-from rx.core.typing import Mapper, MapperIndexed, Scheduler, Observable, Observer
-from rx.streams import SingleStream
+from typing import Callable
+from rx.core import AnonymousObservable, ObservableBase
+from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
 
-class Map(Observable):
-    """Map operator implementation."""
+def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:  # By design. pylint: disable=W0622
+    """Project each element of an observable sequence into a new form
+    by incorporating the element's index.
 
-    def __init__(self, mapper: Mapper = None, mapper_indexed: MapperIndexed = None) -> None:
-        self.source = None  # type: Observable
-        self.mapper = mapper
-        self.mapper_indexed = mapper_indexed
+    1 - source.map(lambda value: value * 10)
 
-        assert not (self.mapper and self.mapper_indexed)
+    Keyword arguments:
+    mapper -- A transform function to apply to each source element; the
+        second parameter of the function represents the index of the
+        source element
 
-    def subscribe(self, observer: Observer = None, scheduler: Scheduler = None) -> Disposable:
-        stream = Map._(self.mapper, self.mapper_indexed).chain(observer, scheduler)
-        stream.subscription = self.source.subscribe(stream, scheduler)
+    Returns an observable sequence whose elements are the result of
+    invoking the transform function on each element of the source.
+    """
 
-        return Disposable.create(stream.dispose)
-
-    def __call__(self, source: Observable) -> Observable:
-        self.source = source
-        return self
-
-    class _(SingleStream):
-        def __init__(self, mapper: Mapper, mapper_indexed: MapperIndexed) -> None:
-            super().__init__()
-
-            self.count = 0
-            self.mapper = mapper
-            self.mapper_indexed = mapper_indexed
-
-        def on_next(self, value: Any) -> None:
-            try:
-                if self.mapper:
-                    result = self.mapper(value)
+    def operator(source: ObservableBase):
+        def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
+            def on_next(value):
+                try:
+                    result = mapper(value)
+                except Exception as err:  # By design. pylint: disable=W0703
+                    obv.on_error(err)
                 else:
-                    result = self.mapper_indexed(value, self.count)
-            except Exception as err:  # By design. pylint: disable=W0703
-                self.on_error(err)
-            else:
-                self.count += 1
-                self._observer.on_next(result)
+                    obv.on_next(result)
+
+            return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return operator
 
 
-def map(mapper: Mapper = None, mapper_indexed: MapperIndexed = None) -> Map: # pylint: disable=W0622
+def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
     1 - source.map(lambda value, index: value * value + index)
 
     Keyword arguments:
-    mapper -- A transform function to apply to each source element; the
-        second parameter of the function represents the index of the
-        source element
-    mapper_indexed -- A transform function to apply to each source
+    mapper -- A transform function to apply to each source
         element; the second parameter of the function represents the
         index of the source element.
 
     Returns an observable sequence whose elements are the result of
     invoking the transform function on each element of the source.
     """
-    return Map(mapper, mapper_indexed)
+
+    def operator(source: ObservableBase):
+        def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
+            count = 0
+
+            def on_next(value):
+                nonlocal count
+
+                try:
+                    result = mapper(value, count)
+                except Exception as err:  # By design. pylint: disable=W0703
+                    obv.on_error(err)
+                else:
+                    count += 1
+                    obv.on_next(result)
+
+            return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return operator
