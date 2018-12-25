@@ -29,7 +29,7 @@ def sequence_equal(source, second: ObservableBase,
     first = source
     comparer = comparer or default_comparer
 
-    if isinstance(second, collections.Iterable):
+    if isinstance(second, collections.abc.Iterable):
         second = Observable.from_iterable(second)
 
     def subscribe(observer, scheduler=None):

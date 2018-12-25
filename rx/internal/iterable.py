@@ -21,11 +21,9 @@ class Iterable(abc.Iterable):
 
             for value in self:
                 if n <= 0:
-                    raise StopIteration
+                    return
                 n -= 1
                 yield value
-
-            raise StopIteration
 
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(_next())
@@ -39,8 +37,6 @@ class Iterable(abc.Iterable):
                 yield value
                 value += 1
                 n -= 1
-
-            raise StopIteration
 
         from .anonymousiterable import AnonymousIterable
         return AnonymousIterable(_next())

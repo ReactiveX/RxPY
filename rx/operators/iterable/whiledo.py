@@ -7,5 +7,4 @@ def while_do(condition: Callable[[Any], bool], source: Iterable) -> Iterable:
         while condition(source):
             yield source
 
-        raise StopIteration()
     return AnonymousIterable(_next())

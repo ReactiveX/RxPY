@@ -9,7 +9,7 @@ from rx.internal.utils import is_future
 def _flat_map(source, mapper, mapper_indexed=None):
     def projection(x, i):
         mapper_result = mapper(x) if mapper else mapper_indexed(x, i)
-        if isinstance(mapper_result, collections.Iterable):
+        if isinstance(mapper_result, collections.abc.Iterable):
             result = Observable.from_(mapper_result)
         else:
             result = Observable.from_future(mapper_result) if is_future(mapper_result) else mapper_result
@@ -68,7 +68,7 @@ def flat_map(source: ObservableBase,
     if result_mapper or result_mapper_indexed:
         def projection(x: Any, idx: int) -> Any:
             mapper_result = mapper(x) if mapper else mapper_indexed(x, idx)
-            if isinstance(mapper_result, collections.Iterable):
+            if isinstance(mapper_result, collections.abc.Iterable):
                 result = Observable.from_(mapper_result)
             else:
                 result = Observable.from_future(mapper_result) if is_future(mapper_result) else mapper_result
