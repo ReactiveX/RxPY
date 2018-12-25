@@ -17,7 +17,7 @@ class TestToArray(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.to_iterable()
+            return xs.to_iterable().map(list)
         results = scheduler.start(create=create).messages
 
         assert len(results) == 2

@@ -547,7 +547,7 @@ class TestGroupBy(unittest.TestCase):
         def action1(scheduler, state):
             xs[0] = Observable.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
                               .group_by(lambda s: s[0]) \
-                              .map(lambda xs: xs.to_iterable()) \
+                              .map(lambda xs: xs.to_iterable().map(list)) \
                               .merge_all()
         scheduler.schedule_absolute(created, action1)
 

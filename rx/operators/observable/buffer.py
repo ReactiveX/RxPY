@@ -16,7 +16,7 @@ def buffer(source, buffer_openings=None, buffer_closing_mapper=None) -> Observab
     Returns an observable sequence of windows.
     """
 
-    return source.window(buffer_openings, buffer_closing_mapper).flat_map(lambda item: item.to_iterable())
+    return source.window(buffer_openings, buffer_closing_mapper).flat_map(lambda item: item.to_iterable().map(list))
 
 
 def buffer_with_count(source, count, skip=None) -> ObservableBase:
@@ -40,7 +40,7 @@ def buffer_with_count(source, count, skip=None) -> ObservableBase:
         skip = count
 
     def mapper(value):
-        return value.to_iterable()
+        return value.to_iterable().map(list)
 
     def predicate(value):
         return len(value) > 0

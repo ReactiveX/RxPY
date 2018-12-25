@@ -4,7 +4,7 @@ from rx.core import ObservableBase, AnonymousObservable
 def to_iterable(source: ObservableBase) -> ObservableBase:
     """Creates an iterable from an observable sequence.
 
-    Returns an observable sequence containing a single element with a list
+    Returns an observable sequence containing a single element with an iterable
     containing all the elements of the source sequence.
     """
 
@@ -17,7 +17,7 @@ def to_iterable(source: ObservableBase) -> ObservableBase:
             queue.append(item)
 
         def on_completed():
-            observer.on_next(queue)
+            observer.on_next(iter(queue))
             observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
