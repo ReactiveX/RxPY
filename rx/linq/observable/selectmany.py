@@ -1,13 +1,14 @@
+import collections
+
 from rx import Observable
 from rx.internal.utils import adapt_call
 from rx.internal import extensionmethod
-import collections
 
 
 def _flat_map(source, selector):
     def projection(x, i):
         selector_result = selector(x, i)
-        if isinstance(selector_result, collections.Iterable):
+        if isinstance(selector_result, collections.abc.Iterable):
             result = Observable.from_(selector_result)
         else:
             result = Observable.from_future(selector_result)
@@ -56,7 +57,7 @@ def select_many(self, selector, result_selector=None):
     if result_selector:
         def projection(x, i):
             selector_result = selector(x, i)
-            if isinstance(selector_result, collections.Iterable):
+            if isinstance(selector_result, collections.abc.Iterable):
                 result = Observable.from_(selector_result)
             else:
                 result = Observable.from_future(selector_result)

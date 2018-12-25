@@ -34,7 +34,6 @@ def from_iterable(cls, iterable, scheduler=None):
             try:
                 with lock:
                     item = next(iterator)
-
             except StopIteration:
                 observer.on_completed()
             else:

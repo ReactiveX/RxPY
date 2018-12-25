@@ -3,7 +3,7 @@ import itertools
 from .basic import identity
 
 
-class Enumerable(object):
+class Enumerable:
 
     def __init__(self, iterator):
         self._iterator = iterator
@@ -24,11 +24,11 @@ class Enumerable(object):
 
             for value in self:
                 if n <= 0:
-                    raise StopIteration
+                    return
                 n -= 1
                 yield value
 
-            raise StopIteration
+            return
         return Enumerable(next())
 
     @classmethod
@@ -41,7 +41,6 @@ class Enumerable(object):
                 value += 1
                 n -= 1
 
-            raise StopIteration
         return Enumerable(next())
 
     @classmethod
