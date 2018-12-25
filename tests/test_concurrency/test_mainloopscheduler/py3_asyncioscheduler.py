@@ -2,6 +2,7 @@ from nose import SkipTest
 
 import rx
 import asyncio
+import threading
 import unittest
 
 from datetime import datetime, timedelta
@@ -34,6 +35,28 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         loop.run_until_complete(go())
 
+    def test_asyncio_schedule_action_threadsafe(self):
+        loop = asyncio.get_event_loop()
+
+        @asyncio.coroutine
+        def go():
+            scheduler = AsyncIOScheduler(loop, threadsafe=True)
+            ran = False
+
+            def action(scheduler, state):
+                nonlocal ran
+                ran = True
+
+            def schedule():
+                scheduler.schedule(action)
+
+            threading.Thread(target=schedule).start()
+
+            yield from asyncio.sleep(0.1, loop=loop)
+            assert(ran is True)
+
+        loop.run_until_complete(go())
+
     def test_asyncio_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
@@ -55,6 +78,30 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         loop.run_until_complete(go())
 
+    def test_asyncio_schedule_action_due_threadsafe(self):
+        loop = asyncio.get_event_loop()
+
+        @asyncio.coroutine
+        def go():
+            scheduler = AsyncIOScheduler(loop, threadsafe=True)
+            starttime = loop.time()
+            endtime = None
+
+            def action(scheduler, state):
+                nonlocal endtime
+                endtime = loop.time()
+
+            def schedule():
+                scheduler.schedule_relative(200, action)
+
+            threading.Thread(target=schedule).start()
+
+            yield from asyncio.sleep(0.3, loop=loop)
+            diff = endtime-starttime
+            assert(diff > 0.18)
+
+        loop.run_until_complete(go())
+
     def test_asyncio_schedule_action_cancel(self):
         loop = asyncio.get_event_loop()
 
@@ -68,6 +115,29 @@ class TestAsyncIOScheduler(unittest.TestCase):
                 ran = True
             d = scheduler.schedule_relative(10, action)
             d.dispose()
+
+            yield from asyncio.sleep(0.1, loop=loop)
+            assert(not ran)
+
+        loop.run_until_complete(go())
+
+    def test_asyncio_schedule_action_cancel_threadsafe(self):
+        loop = asyncio.get_event_loop()
+
+        @asyncio.coroutine
+        def go():
+            ran = False
+            scheduler = AsyncIOScheduler(loop, threadsafe=True)
+
+            def action(scheduler, state):
+                nonlocal ran
+                ran = True
+
+            def schedule():
+                d = scheduler.schedule_relative(10, action)
+                d.dispose()
+
+            threading.Thread(target=schedule).start()            
 
             yield from asyncio.sleep(0.1, loop=loop)
             assert(not ran)
