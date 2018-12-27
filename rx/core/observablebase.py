@@ -913,8 +913,6 @@ class ObservableBase(typing.Observable):
     def flat_map(self,
                  mapper: Mapper = None,
                  result_mapper: Callable[[Any, Any], Any] = None,
-                 mapper_indexed: MapperIndexed = None,
-                 result_mapper_indexed: Callable[[Any, Any, int], Any] = None
                  ) -> 'ObservableBase':
         """One of the Following:
         Projects each element of an observable sequence to an observable
@@ -951,7 +949,48 @@ class ObservableBase(typing.Observable):
         elements and their corresponding source element to a result element.
         """
         from ..operators.observable.flatmap import flat_map
-        return flat_map(self, mapper, result_mapper, mapper_indexed, result_mapper_indexed)
+        return flat_map(self, mapper, result_mapper)
+
+    def flat_mapi(self,
+                  mapper_indexed: MapperIndexed = None,
+                  result_mapper_indexed: Callable[[Any, Any, int], Any] = None
+                  ) -> 'ObservableBase':
+        """One of the Following:
+        Projects each element of an observable sequence to an observable
+        sequence and merges the resulting observable sequences into one
+        observable sequence.
+
+        1 - source.flat_mapi(lambda x, i: Observable.range(0, x))
+
+        Or:
+        Projects each element of an observable sequence to an observable
+        sequence, invokes the result mapper for the source element and each
+        of the corresponding inner sequence's elements, and merges the results
+        into one observable sequence.
+
+        1 - source.flat_mapi(lambda x, i: Observable.range(0, x), lambda x, y, i: x + y)
+
+        Or:
+        Projects each element of the source observable sequence to the other
+        observable sequence and merges the resulting observable sequences into
+        one observable sequence.
+
+        1 - source.flat_mapi(Observable.of(1, 2, 3))
+
+        Keyword arguments:
+        mapper -- A transform function to apply to each element or an
+            observable sequence to project each element from the source
+            sequence onto.
+        result_mapper -- [Optional] A transform function to apply to each
+            element of the intermediate sequence.
+
+        Returns an observable sequence whose elements are the result of
+        invoking the one-to-many transform function collectionSelector on each
+        element of the input sequence and then mapping each of those sequence
+        elements and their corresponding source element to a result element.
+        """
+        from ..operators.observable.flatmap import flat_mapi
+        return flat_mapi(self, mapper_indexed, result_mapper_indexed)
 
     def group_by(self, key_mapper, element_mapper=None) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
