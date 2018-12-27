@@ -18,10 +18,9 @@ def _flat_map(source, mapper=None, mapper_indexed=None):
     return source.mapi(projection).merge_all()
 
 
-def flat_map(source: ObservableBase,
-             mapper: Mapper = None,
+def flat_map(mapper: Mapper = None,
              result_mapper: Callable[[Any, Any], Any] = None,
-             ) -> ObservableBase:
+             ) -> Callable[[ObservableBase], ObservableBase]:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
@@ -59,31 +58,32 @@ def flat_map(source: ObservableBase,
     elements and their corresponding source element to a result element.
     """
 
-    if result_mapper:
-        def projection(x: Any, idx: int) -> Any:
-            mapper_result = mapper(x)
-            if isinstance(mapper_result, collections.abc.Iterable):
-                result = Observable.from_(mapper_result)
-            else:
-                result = Observable.from_future(mapper_result) if is_future(
-                    mapper_result) else mapper_result
+    def partial(source: ObservableBase) -> ObservableBase:
+        if result_mapper:
+            def projection(x: Any, idx: int) -> Any:
+                mapper_result = mapper(x)
+                if isinstance(mapper_result, collections.abc.Iterable):
+                    result = Observable.from_(mapper_result)
+                else:
+                    result = Observable.from_future(mapper_result) if is_future(
+                        mapper_result) else mapper_result
 
-            return result.map(lambda y: result_mapper(x, y))
+                return result.map(lambda y: result_mapper(x, y))
 
-        return source.flat_mapi(mapper_indexed=projection)
+            return source.flat_mapi(mapper_indexed=projection)
 
-    if callable(mapper):
-        ret = _flat_map(source, mapper=mapper)
-    else:
-        ret = _flat_map(source, mapper=lambda _: mapper)
+        if callable(mapper):
+            ret = _flat_map(source, mapper=mapper)
+        else:
+            ret = _flat_map(source, mapper=lambda _: mapper)
 
-    return ret
+        return ret
+    return partial
 
 
-def flat_mapi(source: ObservableBase,
-              mapper_indexed: MapperIndexed = None,
+def flat_mapi(mapper_indexed: MapperIndexed = None,
               result_mapper_indexed: Callable[[Any, Any, int], Any] = None
-              ) -> ObservableBase:
+              ) -> Callable[[ObservableBase], ObservableBase]:
     """One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
@@ -120,21 +120,23 @@ def flat_mapi(source: ObservableBase,
     elements and their corresponding source element to a result element.
     """
 
-    if result_mapper_indexed:
-        def projection(x: Any, idx: int) -> Any:
-            mapper_result = mapper_indexed(x, idx)
-            if isinstance(mapper_result, collections.abc.Iterable):
-                result = Observable.from_(mapper_result)
-            else:
-                result = Observable.from_future(mapper_result) if is_future(
-                    mapper_result) else mapper_result
+    def partial(source: ObservableBase):
+        if result_mapper_indexed:
+            def projection(x: Any, idx: int) -> Any:
+                mapper_result = mapper_indexed(x, idx)
+                if isinstance(mapper_result, collections.abc.Iterable):
+                    result = Observable.from_(mapper_result)
+                else:
+                    result = Observable.from_future(mapper_result) if is_future(
+                        mapper_result) else mapper_result
 
-            return result.mapi(lambda y, i: result_mapper_indexed(x, y, i))
+                return result.mapi(lambda y, i: result_mapper_indexed(x, y, i))
 
-        return source.flat_mapi(mapper_indexed=projection)
+            return source.flat_mapi(mapper_indexed=projection)
 
-    if callable(mapper_indexed):
-        ret = _flat_map(source, mapper_indexed=mapper_indexed)
-    else:
-        ret = _flat_map(source, mapper=lambda _: mapper_indexed)
-    return ret
+        if callable(mapper_indexed):
+            ret = _flat_map(source, mapper_indexed=mapper_indexed)
+        else:
+            ret = _flat_map(source, mapper=lambda _: mapper_indexed)
+        return ret
+    return partial

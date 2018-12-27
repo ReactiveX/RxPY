@@ -1,10 +1,9 @@
-from typing import List
+from typing import List, Callable
 from rx.core import ObservableBase
 from rx.core.typing import Predicate, PredicateIndexed
 
 
-def partition(source: ObservableBase, predicate: Predicate = None,
-              predicate_indexed: PredicateIndexed = None) -> List[ObservableBase]:
+def partition(predicate: Predicate = None) -> Callable[[ObservableBase], List[ObservableBase]]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will
@@ -21,14 +20,16 @@ def partition(source: ObservableBase, predicate: Predicate = None,
     returns True, and the second triggers when the predicate returns False.
     """
 
-    published = source.publish().ref_count()
-    return [
-        published.filter(predicate),
-        published.filter(lambda x: not predicate(x))
-    ]
+    def partial(source: ObservableBase) -> List[ObservableBase]:
+        published = source.publish().ref_count()
+        return [
+            published.filter(predicate),
+            published.filter(lambda x: not predicate(x))
+        ]
+    return partial
 
 
-def partitioni(source: ObservableBase, predicate: PredicateIndexed = None) -> List[ObservableBase]:
+def partitioni(predicate_indexed: PredicateIndexed = None) -> Callable[[ObservableBase], List[ObservableBase]]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will
@@ -45,8 +46,11 @@ def partitioni(source: ObservableBase, predicate: PredicateIndexed = None) -> Li
     returns True, and the second triggers when the predicate returns False.
     """
 
-    published = source.publish().ref_count()
-    return [
-        published.filteri(predicate),
-        published.filteri(predicate=lambda x, i: not predicate(x, i))
-    ]
+    def partial(source: ObservableBase) -> List[ObservableBase]:
+        published = source.publish().ref_count()
+        return [
+            published.filteri(predicate_indexed),
+            published.filteri(predicate_indexed=lambda x,
+                              i: not predicate_indexed(x, i))
+        ]
+    return partial

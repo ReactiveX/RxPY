@@ -19,7 +19,7 @@ def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:
     invoking the transform function on each element of the source.
     """
 
-    def partial(source: ObservableBase):
+    def partial(source: ObservableBase) -> ObservableBase:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             def on_next(value):
                 try:
@@ -34,7 +34,7 @@ def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:
     return partial
 
 
-def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
+def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
@@ -49,7 +49,7 @@ def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableB
     invoking the transform function on each element of the source.
     """
 
-    def partial(source: ObservableBase):
+    def partial(source: ObservableBase) -> ObservableBase:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             count = 0
 
@@ -57,7 +57,7 @@ def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableB
                 nonlocal count
 
                 try:
-                    result = mapper(value, count)
+                    result = mapper_indexed(value, count)
                 except Exception as err:  # By design. pylint: disable=W0703
                     obv.on_error(err)
                 else:

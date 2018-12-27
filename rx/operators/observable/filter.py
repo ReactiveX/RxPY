@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Any, Callable
 
 from rx.core import AnonymousObservable, ObservableBase
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observable, Observer, Disposable
 
 
 # pylint: disable=W0622
-def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = None):
+def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
@@ -20,7 +20,7 @@ def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = No
     sequence that satisfy the condition.
     """
 
-    def partial(source: ObservableBase):
+    def partial(source: ObservableBase) -> ObservableBase:
         def subscribe(observer, scheduler: Scheduler) -> Disposable:
             def on_next(value):
                 try:
@@ -37,7 +37,7 @@ def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = No
     return partial
 
 
-def filteri(predicate: PredicateIndexed = None):
+def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
     """Filters the elements of an observable sequence based on a predicate
     by incorporating the element's index.
 
@@ -53,14 +53,14 @@ def filteri(predicate: PredicateIndexed = None):
     sequence that satisfy the condition.
     """
 
-    def partial(source: ObservableBase):
+    def partial(source: ObservableBase) -> ObservableBase:
         def subscribe(observer, scheduler: Scheduler):
             count = 0
 
             def on_next(value):
                 nonlocal count
                 try:
-                    should_run = predicate(value, count)
+                    should_run = predicate_indexed(value, count)
                 except Exception as ex:  # By design. pylint: disable=W0703
                     observer.on_error(ex)
                     return

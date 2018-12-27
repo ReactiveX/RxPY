@@ -949,7 +949,7 @@ class ObservableBase(typing.Observable):
         elements and their corresponding source element to a result element.
         """
         from ..operators.observable.flatmap import flat_map
-        return flat_map(self, mapper, result_mapper)
+        return flat_map(mapper, result_mapper)(self)
 
     def flat_mapi(self,
                   mapper_indexed: MapperIndexed = None,
@@ -990,7 +990,7 @@ class ObservableBase(typing.Observable):
         elements and their corresponding source element to a result element.
         """
         from ..operators.observable.flatmap import flat_mapi
-        return flat_mapi(self, mapper_indexed, result_mapper_indexed)
+        return flat_mapi(mapper_indexed, result_mapper_indexed)(self)
 
     def group_by(self, key_mapper, element_mapper=None) -> 'ObservableBase':
         """Groups the elements of an observable sequence according to a
@@ -1440,7 +1440,7 @@ class ObservableBase(typing.Observable):
         returns True, and the second triggers when the predicate returns False.
         """
         from ..operators.observable.partition import partition
-        return partition(self, predicate)
+        return partition(predicate)(self)
 
     def partitioni(self, predicate: PredicateIndexed = None) -> List['ObservableBase']:
         """Returns two observables which partition the observations of the
@@ -1459,7 +1459,7 @@ class ObservableBase(typing.Observable):
         returns True, and the second triggers when the predicate returns False.
         """
         from ..operators.observable.partition import partition
-        return partitioni(self, predicate)
+        return partitioni(predicate)(self)
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable
