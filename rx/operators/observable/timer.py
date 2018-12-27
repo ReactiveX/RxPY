@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from rx.core import ObservableBase, AnonymousObservable
 from rx.disposables import MultipleAssignmentDisposable
