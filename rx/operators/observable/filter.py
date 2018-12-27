@@ -1,51 +1,8 @@
 from typing import Any
 
-from rx.core import Disposable
-from rx.core.typing import  Predicate, PredicateIndexed, Scheduler, Observable, Observer
-from rx.streams import SingleStream
+from rx.core import AnonymousObservable, ObservableBase
+from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observable, Observer, Disposable
 
-
-class Filter(Observable):
-    """Filter operator implementation."""
-
-    def __init__(self, predicate: Predicate = None,
-                 predicate_indexed: PredicateIndexed = None) -> None:
-        self.source = None  # type: Observable
-        self.predicate = predicate
-        self.predicate_indexed = predicate_indexed
-
-        assert not (self.predicate and self.predicate_indexed)
-
-    def subscribe(self, observer: Observer = None, scheduler: Scheduler = None) -> Disposable:
-        stream = Filter._(self.predicate, self.predicate_indexed).chain(observer, scheduler)
-        stream.subscription = self.source.subscribe(stream, scheduler)
-
-        return Disposable.create(stream.dispose)
-
-    def __call__(self, source: Observable) -> Observable:
-        self.source = source
-        return self
-
-    class _(SingleStream):
-        def __init__(self, predicate: Predicate, predicate_indexed: PredicateIndexed) -> None:
-            super().__init__()
-
-            self.count = 0
-            self.predicate = predicate
-            self.predicate_indexed = predicate_indexed
-
-        def on_next(self, value: Any) -> None:
-            try:
-                if self.predicate:
-                    should_run = self.predicate(value)
-                else:
-                    should_run = self.predicate_indexed(value, self.count)
-            except Exception as ex:  # By design. pylint: disable=W0703
-                self.on_error(ex)
-            else:
-                self.count += 1
-                if should_run:
-                    self._observer.on_next(value)
 
 # pylint: disable=W0622
 def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = None):
@@ -58,7 +15,37 @@ def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = No
     source -- Observable sequence to filter.
     predicate --  A function to test each source element for a
         condition.
-    predicate_indexed -- A function to test each source element for a
+
+    Returns an observable sequence that contains elements from the input
+    sequence that satisfy the condition.
+    """
+
+    def partial(source: ObservableBase):
+        def subscribe(observer, scheduler: Scheduler) -> Disposable:
+            def on_next(value):
+                try:
+                    should_run = predicate(value)
+                except Exception as ex:  # By design. pylint: disable=W0703
+                    observer.on_error(ex)
+                    return
+
+                if should_run:
+                    observer.on_next(value)
+
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return partial
+
+
+def filteri(predicate: PredicateIndexed = None):
+    """Filters the elements of an observable sequence based on a predicate
+    by incorporating the element's index.
+
+    1 - source.filter(lambda value, index: (value + index) < 10)
+
+    Keyword arguments:
+    source -- Observable sequence to filter.
+    predicate -- A function to test each source element for a
         condition; the second parameter of the function represents the
         index of the source element.
 
@@ -66,4 +53,23 @@ def filter(predicate: Predicate = None, predicate_indexed: PredicateIndexed = No
     sequence that satisfy the condition.
     """
 
-    return Filter(predicate, predicate_indexed)
+    def partial(source: ObservableBase):
+        def subscribe(observer, scheduler: Scheduler):
+            count = 0
+
+            def on_next(value):
+                nonlocal count
+                try:
+                    should_run = predicate(value, count)
+                except Exception as ex:  # By design. pylint: disable=W0703
+                    observer.on_error(ex)
+                    return
+                else:
+                    count += 1
+
+                if should_run:
+                    observer.on_next(value)
+
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return partial

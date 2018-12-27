@@ -113,16 +113,16 @@ class ObservableBase(typing.Observable):
     @overload
     def subscribe(self, observer: typing.Observer = None,
                   scheduler: typing.Scheduler = None
-                 ) -> Disposable:
+                  ) -> Disposable:
         raise NotImplementedError
 
     @overload
-    def subscribe(self, # pylint: disable=E0102,W0221
+    def subscribe(self,  # pylint: disable=E0102,W0221
                   on_next: typing.OnNext = None,
                   on_error: typing.OnError = None,
                   on_completed: typing.OnCompleted = None,
                   scheduler: typing.Scheduler = None
-                 ) -> Disposable:
+                  ) -> Disposable:
         raise NotImplementedError
 
     def subscribe(self, *args, **kw) -> Disposable:  # pylint: disable=E0102,W0221
@@ -191,7 +191,7 @@ class ObservableBase(typing.Observable):
                    on_error: typing.OnError = None,
                    on_completed: typing.OnCompleted = None,
                    scheduler: typing.Scheduler = None
-                  ) -> Disposable:
+                   ) -> Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -584,7 +584,7 @@ class ObservableBase(typing.Observable):
         return delay_subscription(self, duetime)
 
     def delay_with_selector(self, subscription_delay=None, delay_duration_mapper=None
-                           ) -> 'ObservableBase':
+                            ) -> 'ObservableBase':
         """Time shifts the observable sequence based on a subscription
         delay and a delay mapper function for each element.
 
@@ -781,9 +781,7 @@ class ObservableBase(typing.Observable):
         source = self
         return expand(source, mapper)
 
-    def filter(self,
-               predicate: Predicate = None,
-               predicate_indexed: PredicateIndexed = None):
+    def filter(self, predicate: Predicate = None):
         """Filters the elements of an observable sequence based on a predicate
         by incorporating the element's index.
 
@@ -793,15 +791,30 @@ class ObservableBase(typing.Observable):
         source -- Observable sequence to filter.
         predicate --  A function to test each source element for a
             condition.
-        predicate_indexed -- A function to test each source element for a
+
+        Returns an observable sequence that contains elements from the input
+        sequence that satisfy the condition.
+        """
+        from ..operators.observable.filter import filter as _filter
+        return ObservableBase(_filter(predicate)(self))
+
+    def filteri(self, predicate: PredicateIndexed = None):
+        """Filters the elements of an observable sequence based on a predicate
+        by incorporating the element's index.
+
+        1 - source.filter(lambda value, index: index < 10)
+
+        Keyword arguments:
+        source -- Observable sequence to filter.
+        predicate -- A function to test each source element for a
             condition; the second parameter of the function represents the
             index of the source element.
 
         Returns an observable sequence that contains elements from the input
         sequence that satisfy the condition.
         """
-        from ..operators.observable.filter import filter as _filter
-        return ObservableBase(_filter(predicate, predicate_indexed)(self))
+        from ..operators.observable.filter import filteri
+        return ObservableBase(filteri(predicate)(self))
 
     def finally_action(self, action) -> 'ObservableBase':
         """Invokes a specified action after the source observable sequence
@@ -902,7 +915,7 @@ class ObservableBase(typing.Observable):
                  result_mapper: Callable[[Any, Any], Any] = None,
                  mapper_indexed: MapperIndexed = None,
                  result_mapper_indexed: Callable[[Any, Any, int], Any] = None
-                ) -> 'ObservableBase':
+                 ) -> 'ObservableBase':
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
@@ -1371,8 +1384,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.pairwise import pairwise
         return pairwise(self)
 
-    def partition(self, predicate: Predicate = None,
-                  predicate_indexed: PredicateIndexed = None) -> List['ObservableBase']:
+    def partition(self, predicate: Predicate = None) -> List['ObservableBase']:
         """Returns two observables which partition the observations of the
         source by the given function. The first will trigger observations for
         those values for which the predicate returns true. The second will
@@ -1389,7 +1401,26 @@ class ObservableBase(typing.Observable):
         returns True, and the second triggers when the predicate returns False.
         """
         from ..operators.observable.partition import partition
-        return partition(self, predicate, predicate_indexed)
+        return partition(self, predicate)
+
+    def partitioni(self, predicate: PredicateIndexed = None) -> List['ObservableBase']:
+        """Returns two observables which partition the observations of the
+        source by the given function. The first will trigger observations for
+        those values for which the predicate returns true. The second will
+        trigger observations for those values where the predicate returns false.
+        The predicate is executed once for each subscribed observer. Both also
+        propagate all error observations arising from the source and each
+        completes when the source completes.
+
+        Keyword arguments:
+        predicate -- The function to determine which output Observable will
+            trigger a particular observation.
+
+        Returns a list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate returns False.
+        """
+        from ..operators.observable.partition import partition
+        return partitioni(self, predicate)
 
     def pausable(self, pauser):
         """Pauses the underlying observable sequence based upon the observable

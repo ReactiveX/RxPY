@@ -1,6 +1,8 @@
 from rx.core import ObservableBase
 
 # pylint: disable=w0622
+
+
 def slice(source, start: int = None, stop: int = None, step: int = 1) -> ObservableBase:
     """Slices the given observable. It is basically a wrapper around the
     operators skip(), skip_last(), take(), take_last() and filter().
@@ -45,7 +47,7 @@ def slice(source, start: int = None, stop: int = None, step: int = 1) -> Observa
 
     if has_step:
         if step > 1:
-            source = source.filter(predicate_indexed=lambda x, i: i % step == 0)
+            source = source.filteri(lambda x, i: i % step == 0)
         elif step < 0:
             # Reversing events is not supported
             raise TypeError("Negative step not supported.")

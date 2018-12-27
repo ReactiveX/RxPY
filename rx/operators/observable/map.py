@@ -3,7 +3,8 @@ from rx.core import AnonymousObservable, ObservableBase
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
 
-def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:  # By design. pylint: disable=W0622
+# By design. pylint: disable=W0622
+def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
@@ -18,7 +19,7 @@ def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:  #
     invoking the transform function on each element of the source.
     """
 
-    def operator(source: ObservableBase):
+    def partial(source: ObservableBase):
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             def on_next(value):
                 try:
@@ -30,7 +31,7 @@ def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:  #
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return operator
+    return partial
 
 
 def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
@@ -48,7 +49,7 @@ def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableB
     invoking the transform function on each element of the source.
     """
 
-    def operator(source: ObservableBase):
+    def partial(source: ObservableBase):
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             count = 0
 
@@ -65,4 +66,4 @@ def mapi(mapper: MapperIndexed = None) -> Callable[[ObservableBase], ObservableB
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return operator
+    return partial
