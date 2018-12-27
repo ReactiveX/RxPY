@@ -12,7 +12,7 @@ def from_iterable(iterable: Iterable) -> ObservableBase:
     1 - res = from_iterable([1,2,3])
 
     Keyword arguments:
-    iterable - An python iterable
+    iterable - A Python iterable
 
     Returns the observable sequence whose elements are pulled from the
     given iterable sequence.
