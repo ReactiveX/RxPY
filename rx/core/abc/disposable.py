@@ -10,7 +10,6 @@ class Disposable(ABC):
 
     def __enter__(self):
         """Context management protocol."""
-        pass
 
     def __exit__(self, typ, value, traceback):
         """Context management protocol."""
