@@ -1,25 +1,28 @@
 from typing import Callable
-from rx.core import AnonymousObservable, ObservableBase
+from rx.core import AnonymousObservable, ObservableBase as Observable
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
 
 # By design. pylint: disable=W0622
-def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:
+def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
-    1 - source.map(lambda value: value * 10)
+    Example:
+        >>> map(lambda value: value * 10)(source)
 
     Keyword arguments:
     mapper -- A transform function to apply to each source element; the
         second parameter of the function represents the index of the
         source element
 
-    Returns an observable sequence whose elements are the result of
-    invoking the transform function on each element of the source.
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence whose elements are the result of invoking
+        the transform function on each element of the source.
     """
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             def on_next(value):
                 try:
@@ -34,22 +37,25 @@ def map(mapper: Mapper = None) -> Callable[[ObservableBase], ObservableBase]:
     return partial
 
 
-def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[ObservableBase], ObservableBase]:
+def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
-    1 - source.map(lambda value, index: value * value + index)
+    Example:
+        >>> ret = map(lambda value, index: value * value + index)(source)
 
-    Keyword arguments:
-    mapper -- A transform function to apply to each source
-        element; the second parameter of the function represents the
-        index of the source element.
+    Args:
+        mapper -- A transform function to apply to each source
+            element; the second parameter of the function represents the
+            index of the source element.
 
-    Returns an observable sequence whose elements are the result of
-    invoking the transform function on each element of the source.
+    Return:
+        A function that takes an observable source and returns an
+        observable sequence whose elements are the result of invoking
+        the transform function on each element of the source.
     """
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             count = 0
 

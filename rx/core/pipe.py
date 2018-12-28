@@ -1,9 +1,9 @@
 from typing import Callable
 from functools import reduce
-from .observablebase import ObservableBase
+from .observablebase import ObservableBase as Observable
 
 
-def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> Callable[[ObservableBase], ObservableBase]:
+def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable], Observable]:
     """Compose multiple operators left to right.
 
     Composes zero or more operators into a functional composition. The
@@ -21,9 +21,11 @@ def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> Callable[[Ob
         The composed observable.
     """
 
-    def compose(source: ObservableBase) -> ObservableBase:
-        ret = reduce(lambda ops, op: lambda fn: fn(ops(op)),
-                     operators,
-                     lambda fn: fn(source))
+    def compose(source: Observable) -> Observable:
+        ret = reduce(
+            lambda ops, op: lambda fn: fn(ops(op)),
+            operators,
+            lambda fn: fn(source)
+        )
         return ret(lambda x: x)
     return compose
