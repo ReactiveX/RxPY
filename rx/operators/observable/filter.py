@@ -6,18 +6,20 @@ from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Dis
 
 # pylint: disable=W0622
 def filter(predicate: Predicate) -> Callable[[ObservableBase], ObservableBase]:
-    """Filters the elements of an observable sequence based on a predicate
-    by incorporating the element's index.
+    """Filters the elements of an observable sequence based on a
+    predicate by incorporating the element's index.
 
-    1 - source.filter(lambda value: value < 10)
+    Example:
+        >>> filter(lambda value: value < 10)(source)
 
-    Keyword arguments:
-    source -- Observable sequence to filter.
-    predicate --  A function to test each source element for a
-        condition.
+    Args:
+        predicate --  A function to test each source element for a
+            condition.
 
-    Returns an observable sequence that contains elements from the input
-    sequence that satisfy the condition.
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence that contains elements from the input
+        sequence that satisfy the condition.
     """
 
     def partial(source: ObservableBase) -> ObservableBase:
@@ -39,19 +41,21 @@ def filter(predicate: Predicate) -> Callable[[ObservableBase], ObservableBase]:
 
 def filteri(predicate_indexed: PredicateIndexed = None
             ) -> Callable[[ObservableBase], ObservableBase]:
-    """Filters the elements of an observable sequence based on a predicate
-    by incorporating the element's index.
+    """Filters the elements of an observable sequence based on a
+    predicate by incorporating the element's index.
 
-    1 - source.filter(lambda value, index: (value + index) < 10)
+    Example:
+        >>> filter(lambda value, index: (value + index) < 10)(source)
 
-    Keyword arguments:
-    source -- Observable sequence to filter.
-    predicate -- A function to test each source element for a
-        condition; the second parameter of the function represents the
-        index of the source element.
+    Args:
+        predicate -- A function to test each source element for a
+            condition; the second parameter of the function represents the
+            index of the source element.
 
-    Returns an observable sequence that contains elements from the input
-    sequence that satisfy the condition.
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence that contains elements from the input
+        sequence that satisfy the condition.
     """
 
     def partial(source: ObservableBase) -> ObservableBase:
