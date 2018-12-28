@@ -29,7 +29,8 @@ def partition(predicate: Predicate = None) -> Callable[[ObservableBase], List[Ob
     return partial
 
 
-def partitioni(predicate_indexed: PredicateIndexed = None) -> Callable[[ObservableBase], List[ObservableBase]]:
+def partitioni(predicate_indexed: PredicateIndexed = None
+               ) -> Callable[[ObservableBase], List[ObservableBase]]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations for
     those values for which the predicate returns true. The second will

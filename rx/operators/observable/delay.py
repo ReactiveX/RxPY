@@ -1,5 +1,4 @@
-import logging
-from typing import Union
+from typing import Union, Callable
 from datetime import datetime, timedelta
 
 from rx.core import ObservableBase, AnonymousObservable
@@ -40,7 +39,8 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
                     exception[0] = notification.value.exception
                     should_run = not running[0]
                 else:
-                    queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
+                    queue.append(Timestamp(value=notification.value,
+                                           timestamp=notification.timestamp + duetime))
                     should_run = not active[0]
                     active[0] = True
 
@@ -84,15 +84,18 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
                         if ex:
                             observer.on_error(ex)
                         elif should_continue:
-                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
+                            mad.disposable = scheduler.schedule_relative(
+                                recurse_duetime, action)
 
-                    mad.disposable = scheduler.schedule_relative(duetime, action)
-        subscription = source.materialize().timestamp().subscribe_(on_next, scheduler=scheduler)
+                    mad.disposable = scheduler.schedule_relative(
+                        duetime, action)
+        subscription = source.materialize().timestamp(
+        ).subscribe_(on_next, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
 
-def delay(source: ObservableBase, duetime: Union[datetime, int]) -> ObservableBase:
+def delay(duetime: Union[datetime, int]) -> Callable[[ObservableBase], ObservableBase]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
@@ -107,4 +110,6 @@ def delay(source: ObservableBase, duetime: Union[datetime, int]) -> ObservableBa
     Returns time-shifted sequence.
     """
 
-    return observable_delay_timespan(source, duetime)
+    def partial(source: ObservableBase) -> ObservableBase:
+        return observable_delay_timespan(source, duetime)
+    return partial

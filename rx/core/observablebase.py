@@ -220,6 +220,24 @@ class ObservableBase(typing.Observable):
     def _subscribe_core(self, observer, scheduler=None):
         return self.source.subscribe(observer, scheduler)
 
+    def pipe(self, *operators: 'Callable[[ObservableBase], ObservableBase]') -> 'ObservableBase':
+        """Compose multiple operators left to right.
+
+        Composes zero or more operators into a functional composition.
+        The operators are composed to right. A composition of zero
+        operators gives back the original source.
+
+        source.pipe() == source
+        source.pipe(f) == f(source)
+        source.pipe(g, f) == f(g(source))
+        source.pipe(h, g, f) == f(g(h(source)))
+        ...
+
+        Returns the composed observable.
+        """
+        from .pipe import pipe
+        return pipe(*operators)(self)
+
     def all(self, predicate):
         """Determines whether all elements of an observable sequence
         satisfy a condition.
@@ -236,7 +254,7 @@ class ObservableBase(typing.Observable):
             the test in the specified predicate.
         """
         from ..operators.observable.all import all as all_
-        return all_(self, predicate)
+        return all_(predicate)(self)
 
     def amb(self, other: abc.Observable) -> "ObservableBase":
         """Propagates the observable sequence that reacts first.
@@ -564,7 +582,7 @@ class ObservableBase(typing.Observable):
             Time-shifted observable sequence.
         """
         from ..operators.observable.delay import delay
-        return delay(self, duetime)
+        return delay(duetime)(self)
 
     def delay_subscription(self, duetime: Union[datetime, int]) -> 'ObservableBase':
         """Time shifts the observable sequence by delaying the
@@ -640,7 +658,7 @@ class ObservableBase(typing.Observable):
             sequence.
         """
         from ..operators.observable.distinct import distinct
-        return distinct(self, key_mapper, comparer)
+        return distinct(key_mapper, comparer)(self)
 
     def distinct_until_changed(self, key_mapper=None, comparer=None) -> 'ObservableBase':
         """Returns an observable sequence that contains only distinct
@@ -649,8 +667,7 @@ class ObservableBase(typing.Observable):
 
         1 - obs = observable.distinct_until_changed()
         2 - obs = observable.distinct_until_changed(lambda x: x.id)
-        3 - obs = observable.distinct_until_changed(lambda x: x.id,
-                                                    lambda x, y: x == y)
+        3 - obs = observable.distinct_until_changed(lambda x: x.id, lambda x, y: x == y)
 
         key_mapper -- [Optional] A function to compute the comparison
             key for each element. If not provided, it projects the
@@ -2030,7 +2047,7 @@ class ObservableBase(typing.Observable):
             some items are in the sequence.
         """
         from ..operators.observable.some import some
-        return some(self, predicate)
+        return some(predicate)(self)
 
     def start_with(self, *args: Any) -> 'ObservableBase':
         """Prepends a sequence of values to an observable.
