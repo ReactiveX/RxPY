@@ -3,7 +3,7 @@ from functools import reduce
 from .observablebase import ObservableBase
 
 
-def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> ObservableBase:
+def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> Callable[[ObservableBase], ObservableBase]:
     """Compose multiple operators left to right.
 
     Composes zero or more operators into a functional composition. The
@@ -11,16 +11,17 @@ def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> ObservableBa
     operators gives back the source.
 
     Examples:
-        pipe()(source) == source
-        pipe(f)(source) == f(source)
-        pipe(f, g)(source) == g(f(source))
-        pipe(f, g, h)(source) == h(g(f(source)))
+        >>> pipe()(source) == source
+        >>> pipe(f)(source) == f(source)
+        >>> pipe(f, g)(source) == g(f(source))
+        >>> pipe(f, g, h)(source) == h(g(f(source)))
     ...
 
-    Returns the composed observable.
+    Returns:
+        The composed observable.
     """
 
-    def compose(source: ObservableBase) -> Callable[[ObservableBase], ObservableBase]:
+    def compose(source: ObservableBase) -> ObservableBase:
         ret = reduce(lambda ops, op: lambda fn: fn(ops(op)),
                      operators,
                      lambda fn: fn(source))
