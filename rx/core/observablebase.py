@@ -312,7 +312,7 @@ class ObservableBase(typing.Observable):
             the average of the sequence of values.
         """
         from ..operators.observable.average import average
-        return average(self, key_mapper)
+        return average(key_mapper)(self)
 
     def buffer(self, buffer_openings=None, buffer_closing_mapper=None) -> 'ObservableBase':
         """
