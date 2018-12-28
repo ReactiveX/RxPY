@@ -414,13 +414,13 @@ class ObservableBase(typing.Observable):
             second -- Second observable sequence used to produce results
                 when an error occurred in the first sequence.
 
-        Returns
+        Returns:
             An observable sequence containing the first sequence's
             elements, followed by the elements of the handler sequence
             in case an exception occurred.
         """
         from ..operators.observable.catch import catch_exception
-        return catch_exception(self, second, handler)
+        return catch_exception(second, handler)(self)
 
     def combine_latest(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                        mapper: Callable[[Any], Any]) -> 'ObservableBase':
@@ -495,7 +495,7 @@ class ObservableBase(typing.Observable):
             that has the specified value.
         """
         from ..operators.observable.contains import contains
-        return contains(self, value, comparer)
+        return contains(value, comparer)(self)
 
     def count(self, predicate=None) -> 'ObservableBase':
         """Returns an observable sequence containing a value that
@@ -561,7 +561,7 @@ class ObservableBase(typing.Observable):
             source itself.
         """
         from ..operators.observable.defaultifempty import default_if_empty
-        return default_if_empty(self, default_value)
+        return default_if_empty(default_value)(self)
 
     def delay(self, duetime):
         """Time shifts the observable sequence by duetime. The relative
@@ -900,31 +900,32 @@ class ObservableBase(typing.Observable):
         predicate if provided, else the first item in the sequence.
         """
         from ..operators.observable.first import first
-        return first(self, predicate)
+        return first(predicate)(self)
 
     def first_or_default(self, predicate=None, default_value=None) -> 'ObservableBase':
         """Returns the first element of an observable sequence that
         satisfies the condition in the predicate, or a default value if
         no such element exists.
 
-        Example:
-        res = source.first_or_default()
-        res = source.first_or_default(lambda x: x > 3)
-        res = source.first_or_default(lambda x: x > 3, 0)
-        res = source.first_or_default(null, 0)
+        Examples:
+            >>> res = source.first_or_default()
+            >>> res = source.first_or_default(lambda x: x > 3)
+            >>> res = source.first_or_default(lambda x: x > 3, 0)
+            >>> res = source.first_or_default(null, 0)
 
-        Keyword arguments:
-        predicate -- [optional] A predicate function to evaluate for
-            elements in the source sequence.
-        default_value -- [Optional] The default value if no such element
-            exists.  If not specified, defaults to None.
+        Args:
+            predicate -- [optional] A predicate function to evaluate for
+                elements in the source sequence.
+            default_value -- [Optional] The default value if no such
+                element exists.  If not specified, defaults to None.
 
-        Returns {Observable} Sequence containing the first element in
-        the observable sequence that satisfies the condition in the
-        predicate, or a default value if no such element exists.
+        Returns:
+            An observable sequence containing the first element in
+            the observable sequence that satisfies the condition in the
+            predicate, or a default value if no such element exists.
         """
         from ..operators.observable.firstordefault import first_or_default
-        return first_or_default(self, predicate, default_value)
+        return first_or_default(predicate, default_value)(self)
 
     def flat_map(self,
                  mapper: Mapper = None,
@@ -935,7 +936,7 @@ class ObservableBase(typing.Observable):
         sequence and merges the resulting observable sequences into one
         observable sequence.
 
-        1 - source.flat_map(lambda x: Observable.range(0, x))
+            >>> source.flat_map(lambda x: Observable.range(0, x))
 
         Or:
         Projects each element of an observable sequence to an observable
@@ -943,21 +944,21 @@ class ObservableBase(typing.Observable):
         of the corresponding inner sequence's elements, and merges the results
         into one observable sequence.
 
-        1 - source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
+            >>> source.flat_map(lambda x: Observable.range(0, x), lambda x, y: x + y)
 
         Or:
         Projects each element of the source observable sequence to the other
         observable sequence and merges the resulting observable sequences into
         one observable sequence.
 
-        1 - source.flat_map(Observable.of(1, 2, 3))
+            >>> source.flat_map(Observable.of(1, 2, 3))
 
-        Keyword arguments:
-        mapper -- A transform function to apply to each element or an
-            observable sequence to project each element from the source
-            sequence onto.
-        result_mapper -- [Optional] A transform function to apply to each
-            element of the intermediate sequence.
+        Args:
+            mapper -- A transform function to apply to each element or an
+                observable sequence to project each element from the source
+                sequence onto.
+            result_mapper -- [Optional] A transform function to apply to each
+                element of the intermediate sequence.
 
         Returns an observable sequence whose elements are the result of
         invoking the one-to-many transform function collectionSelector on each
@@ -2341,7 +2342,7 @@ class ObservableBase(typing.Observable):
         Returns the throttled sequence.
         """
         from ..operators.observable.debounce import throttle_with_timeout
-        return throttle_with_timeout(self, duetime)
+        return throttle_with_timeout(duetime)(self)
 
     debounce = throttle_with_timeout
 
@@ -2359,7 +2360,7 @@ class ObservableBase(typing.Observable):
         Returns the throttled sequence.
         """
         from ..operators.observable.debounce import throttle_with_mapper
-        return throttle_with_mapper(self, throttle_duration_mapper)
+        return throttle_with_mapper(throttle_duration_mapper)(self)
 
     def on_error_resume_next(self, second) -> 'ObservableBase':
         """Continues an observable sequence that is terminated normally

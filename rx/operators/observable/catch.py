@@ -1,12 +1,13 @@
-from rx.core import Observable, ObservableBase, AnonymousObservable, Disposable, typing
-from rx.disposables import SingleAssignmentDisposable, \
-    CompositeDisposable, SerialDisposable
+from typing import Callable
+from rx.core import Observable, AnonymousObservable, Disposable, ObservableBase as Observable
+from rx.core import typing
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 from rx.internal import Iterable
 from rx.internal.utils import is_future
 
 
-def catch_handler(source, handler) -> ObservableBase:
+def catch_handler(source, handler) -> Observable:
     def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -16,7 +17,7 @@ def catch_handler(source, handler) -> ObservableBase:
         def on_error(exception):
             try:
                 result = handler(exception)
-            except Exception as ex:
+            except Exception as ex:  # By design. pylint: disable=W0703
                 observer.on_error(ex)
                 return
 
@@ -25,6 +26,7 @@ def catch_handler(source, handler) -> ObservableBase:
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler)
 
+        print(source)
         d1.disposable = source.subscribe_(
             observer.on_next,
             on_error,
@@ -35,30 +37,37 @@ def catch_handler(source, handler) -> ObservableBase:
     return AnonymousObservable(subscribe)
 
 
-def catch_exception(source, second=None, handler=None) -> ObservableBase:
-    """Continues an observable sequence that is terminated by an exception
-    with the next observable sequence.
+def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+    """Continues an observable sequence that is terminated by an
+    exception with the next observable sequence.
 
-    1 - xs.catch_exception(ys)
-    2 - xs.catch_exception(lambda ex: ys(ex))
+    Examples:
+        >>> catch_exception(ys)(xs)
+        >>> catch_exception(lambda ex: ys(ex))(xs)
 
-    Keyword arguments:
-    handler -- Exception handler function that returns an observable
-        sequence  given the error that occurred in the first sequence.
-    second -- Second observable sequence used to produce results when an
-        error occurred in the first sequence.
+    Args:
+        handler -- Exception handler function that returns an observable
+            sequence  given the error that occurred in the first
+            sequence.
+        second -- Second observable sequence used to produce results
+            when an error occurred in the first sequence.
 
-    Returns an observable sequence containing the first sequence's
-    elements, followed by the elements of the handler sequence in case an
-    exception occurred.
+    Returns:
+        A function taking an observable source and returns an observable
+        sequence containing the first sequence's elements, followed by
+        the elements of the handler sequence in case an exception
+        occurred.
     """
 
-    if handler or not isinstance(second, typing.Observable):
-        return catch_handler(source, handler or second)
+    def partial(source: Observable) -> Observable:
+        if handler or not isinstance(second, typing.Observable):
+            return catch_handler(source, handler or second)
 
-    return Observable.catch_exception([source, second])
+        return catch_exception_([source, second])
+    return partial
 
-def catch_exception_(*args) -> ObservableBase:
+
+def catch_exception_(*args) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
@@ -69,7 +78,8 @@ def catch_exception_(*args) -> ObservableBase:
     source sequences until a source sequence terminates successfully.
     """
 
-    if isinstance(args[0], list) or isinstance(args[0], Iterable):
+    print(args[0])
+    if isinstance(args[0], (list, Iterable)):
         sources = args[0]
     else:
         sources = list(args)
