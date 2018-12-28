@@ -7,7 +7,7 @@ def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> ObservableBa
     """Compose multiple operators left to right.
 
     Composes zero or more operators into a functional composition. The
-    operators are composed to right. A composition of zero
+    operators are composed to left to right. A composition of zero
     operators gives back the source.
 
     Examples:
@@ -21,8 +21,8 @@ def pipe(*operators: Callable[[ObservableBase], ObservableBase]) -> ObservableBa
     """
 
     def compose(source: ObservableBase) -> Callable[[ObservableBase], ObservableBase]:
-        ret = reduce(lambda ops, op: lambda f: f(ops(op)),
+        ret = reduce(lambda ops, op: lambda fn: fn(ops(op)),
                      operators,
-                     lambda op: op(source))
+                     lambda fn: fn(source))
         return ret(lambda x: x)
     return compose
