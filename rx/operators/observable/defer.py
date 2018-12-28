@@ -24,7 +24,7 @@ def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> Obse
     def subscribe(observer, scheduler=None):
         try:
             result = observable_factory(scheduler)
-        except Exception as ex:
+        except Exception as ex:  # By design. pylint: disable=W0703
             return Observable.throw(ex).subscribe(observer)
 
         result = Observable.from_future(result) if is_future(result) else result

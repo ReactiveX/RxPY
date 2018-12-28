@@ -1,17 +1,19 @@
-from rx.core import ObservableBase
+from typing import Callable
+from rx.core import ObservableBase as Observable
 
 
-def count(source: ObservableBase, predicate=None) -> ObservableBase:
+def count(predicate=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that represents
     how many elements in the specified observable sequence satisfy a
     condition if provided, else the count of items.
 
-    1 - res = source.count()
-    2 - res = source.count(lambda x: x > 3)
+    Examples:
+        >>> res = count()(source)
+        >>> res = count(lambda x: x > 3)(source)
 
-    Keyword arguments:
-    source -- Observable sequence.
-    predicate -- A function to test each element for a condition.
+    Args:
+        source -- Observable sequence.
+        predicate -- A function to test each element for a condition.
 
     Returns an observable sequence containing a single element with a
     number that represents how many elements in the input sequence
@@ -19,7 +21,9 @@ def count(source: ObservableBase, predicate=None) -> ObservableBase:
     the count of items in the sequence.
     """
 
-    if predicate:
-        return source.filter(predicate).count()
-    else:
+    def partial(source: Observable) -> Observable:
+        if predicate:
+            return source.filter(predicate).count()
+
         return source.reduce(lambda count, _: count + 1, seed=0)
+    return partial

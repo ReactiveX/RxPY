@@ -517,7 +517,7 @@ class ObservableBase(typing.Observable):
             provided, else the count of items in the sequence.
         """
         from ..operators.observable.count import count
-        return count(self, predicate)
+        return count(predicate)(self)
 
     def controlled(self, enable_queue: bool = True, scheduler=None):
         """Attach a controller to the observable sequence.
@@ -852,16 +852,17 @@ class ObservableBase(typing.Observable):
         specified predicate, and returns the first occurrence within the entire
         Observable sequence.
 
-        Keyword arguments:
-        predicate -- {Function} The predicate that defines the conditions of the
-            element to search for.
+        Args:
+            predicate -- The predicate that defines the conditions of
+                the element to search for.
 
-        Returns an Observable {Observable} sequence with the first element that
-        matches the conditions defined by the specified predicate, if found
-        otherwise, None.
+        Returns:
+            An Observable sequence with the first element that matches
+            the conditions defined by the specified predicate, if found
+            otherwise, None.
         """
         from ..operators.observable.find import find
-        return find(self, predicate)
+        return find(predicate)(self)
 
     def find_index(self, predicate: Predicate) -> 'ObservableBase':
         """Searches for an element that matches the conditions defined by
@@ -1159,7 +1160,7 @@ class ObservableBase(typing.Observable):
             sequence that satisfies the condition in the predicate.
         """
         from ..operators.observable.last import last
-        return last(self, predicate)
+        return last(predicate)(self)
 
     def last_or_default(self, predicate=None, default_value=None) -> 'ObservableBase':
         """Return last or default element.
@@ -1209,7 +1210,7 @@ class ObservableBase(typing.Observable):
             a mapper function.
         """
         from ..operators.observable.let import let
-        return let(self, func, *args, **kwargs)
+        return let(func, *args, **kwargs)(self)
 
     def many_select(self, mapper) -> 'ObservableBase':
         """Comonadic bind operator. Internally projects a new observable for each
@@ -1473,7 +1474,7 @@ class ObservableBase(typing.Observable):
         Returns a list of observables. The first triggers when the predicate
         returns True, and the second triggers when the predicate returns False.
         """
-        from ..operators.observable.partition import partition
+        from ..operators.observable.partition import partitioni
         return partitioni(predicate)(self)
 
     def pausable(self, pauser):
@@ -1545,7 +1546,7 @@ class ObservableBase(typing.Observable):
         from ..operators.observable.pluck import pluck_attr
         return pluck_attr(self, attr)
 
-    def publish(self, mapper: Mapper = None) -> "rx.core.ConnectableObservable":
+    def publish(self, mapper: Mapper = None) -> "ConnectableObservable":
         """Returns an observable sequence that is the result of invoking the
         mapper on a connectable observable sequence that shares a single
         subscription to the underlying sequence. This operator is a

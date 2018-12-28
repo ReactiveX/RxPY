@@ -1,8 +1,9 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+from rx.core import AnonymousObservable, ObservableBase as Observable
 from rx.core.typing import Predicate
 
 
-def find_value(source, predicate, yield_index):
+def find_value(source: Observable, predicate: Predicate, yield_index):
     def subscribe(observer, scheduler=None):
         i = [0]
 
@@ -27,18 +28,22 @@ def find_value(source, predicate, yield_index):
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
-def find(source, predicate: Predicate) -> ObservableBase:
-    """Searches for an element that matches the conditions defined by the
-    specified predicate, and returns the first occurrence within the entire
-    Observable sequence.
+def find(predicate: Predicate) -> Callable[[Observable], Observable]:
+    """Searches for an element that matches the conditions defined by
+    the specified predicate, and returns the first occurrence within the
+    entire Observable sequence.
 
     Keyword arguments:
-    predicate -- {Function} The predicate that defines the conditions of the
-        element to search for.
+        predicate -- The predicate that defines the conditions of the
+            element to search for.
 
-    Returns an Observable {Observable} sequence with the first element that
-    matches the conditions defined by the specified predicate, if found
-    otherwise, None.
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence with the first element that matches the
+        conditions defined by the specified predicate, if found
+        otherwise, None.
     """
 
-    return find_value(source, predicate, False)
+    def partial(source: Observable) -> Observable:
+        return find_value(source, predicate, False)
+    return partial
