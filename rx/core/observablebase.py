@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 from typing import Callable, Any, Iterable, List, Union, cast, overload
 from asyncio import Future
 
-import rx.core
-
 from .typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Accumulator, Scheduler
 from .disposable import Disposable
 from .anonymousobserver import AnonymousObserver
@@ -331,7 +329,7 @@ class ObservableBase(typing.Observable):
             An observable sequence of windows.
         """
         from ..operators.observable.buffer import buffer
-        return buffer(self, buffer_openings, buffer_closing_mapper)
+        return buffer(buffer_openings, buffer_closing_mapper)(self)
 
     def buffer_with_count(self, count: int, skip: int = None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
@@ -352,7 +350,7 @@ class ObservableBase(typing.Observable):
             An observable sequence of buffers.
         """
         from ..operators.observable.buffer import buffer_with_count
-        return buffer_with_count(self, count, skip)
+        return buffer_with_count(count, skip)(self)
 
     def buffer_with_time(self, timespan, timeshift=None) -> 'ObservableBase':
         """Projects each element of an observable sequence into zero or
