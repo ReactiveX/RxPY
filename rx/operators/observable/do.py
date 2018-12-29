@@ -1,68 +1,74 @@
-from rx.core import Observer, ObservableBase, AnonymousObservable, Disposable
+from typing import Callable
+from rx.core import Observer, AnonymousObservable, Disposable, ObservableBase as Observable
 from rx.disposables import CompositeDisposable
 
 
-def do_action(source: ObservableBase, on_next=None, on_error=None, on_completed=None) -> ObservableBase:
+def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
     etc. of query behavior by intercepting the message stream to run
     arbitrary actions for messages on the pipeline.
 
-    1 - observable.do_action(send)
-    2 - observable.do_action(on_next, on_error)
-    3 - observable.do_action(on_next, on_error, on_completed)
+    Examples:
+        >>> do_action(send)(observable)
+        >>> do_action(on_next, on_error)(observable)
+        >>> do_action(on_next, on_error, on_completed)(observable)
 
-    on_next -- [Optional] Action to invoke for each element in the
-        observable sequence.
-    on_error -- [Optional] Action to invoke on exceptional termination
-        of the observable sequence.
-    on_completed -- [Optional] Action to invoke on graceful termination
-        of the observable sequence.
+    Args:
+        on_next -- [Optional] Action to invoke for each element in the
+            observable sequence.
+        on_error -- [Optional] Action to invoke on exceptional
+            termination of the observable sequence.
+        on_completed -- [Optional] Action to invoke on graceful
+            termination of the observable sequence.
 
-    Returns the source sequence with the side-effecting behavior
-    applied.
+    Returns:
+        A function that takes the source and returns the source sequence
+        with the side-effecting behavior applied.
     """
 
-    def subscribe(observer, scheduler=None):
-        def _on_next(x):
-            if not on_next:
-                observer.on_next(x)
-            else:
-                try:
-                    on_next(x)
-                except Exception as e:
-                    observer.on_error(e)
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            def _on_next(x):
+                if not on_next:
+                    observer.on_next(x)
+                else:
+                    try:
+                        on_next(x)
+                    except Exception as e:
+                        observer.on_error(e)
 
-                observer.on_next(x)
+                    observer.on_next(x)
 
-        def _on_error(exception):
-            if not on_error:
-                observer.on_error(exception)
-            else:
-                try:
-                    on_error(exception)
-                except Exception as e:
-                    observer.on_error(e)
+            def _on_error(exception):
+                if not on_error:
+                    observer.on_error(exception)
+                else:
+                    try:
+                        on_error(exception)
+                    except Exception as e:
+                        observer.on_error(e)
 
-                observer.on_error(exception)
+                    observer.on_error(exception)
 
-        def _on_completed():
-            if not on_completed:
-                observer.on_completed()
-            else:
-                try:
-                    on_completed()
-                except Exception as e:
-                    observer.on_error(e)
+            def _on_completed():
+                if not on_completed:
+                    observer.on_completed()
+                else:
+                    try:
+                        on_completed()
+                    except Exception as e:
+                        observer.on_error(e)
 
-                observer.on_completed()
+                    observer.on_completed()
 
-        return source.subscribe_(_on_next, _on_error, _on_completed )
-    return AnonymousObservable(subscribe)
+            return source.subscribe_(_on_next, _on_error, _on_completed)
+        return AnonymousObservable(subscribe)
+    return partial
 
 
-def do(source: ObservableBase, observer: Observer) -> ObservableBase:
+def do(observer: Observer) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -77,7 +83,9 @@ def do(source: ObservableBase, observer: Observer) -> ObservableBase:
     applied.
     """
 
-    return source.do_action(observer.on_next, observer.on_error, observer.on_completed)
+    def partial(source: Observable) -> Observable:
+        return source.do_action(observer.on_next, observer.on_error, observer.on_completed)
+    return partial
 
 
 def do_after_next(source, after_next):
@@ -100,7 +108,7 @@ def do_after_next(source, after_next):
     return AnonymousObservable(subscribe)
 
 
-def do_on_subscribe(source: ObservableBase, on_subscribe):
+def do_on_subscribe(source: Observable, on_subscribe):
     """Invokes an action on subscription.
 
     This can be helpful for debugging, logging, and other side effects
@@ -116,7 +124,7 @@ def do_on_subscribe(source: ObservableBase, on_subscribe):
     return AnonymousObservable(subscribe)
 
 
-def do_on_dispose(source: ObservableBase, on_dispose):
+def do_on_dispose(source: Observable, on_dispose):
     """Invokes an action on disposal.
 
      This can be helpful for debugging, logging, and other side effects
@@ -173,7 +181,8 @@ def do_on_terminate(source, on_terminate):
 
 def do_after_terminate(source, after_terminate):
     """Invokes an action after an on_complete() or on_error() event.
-     This can be helpful for debugging, logging, and other side effects when completion or an error terminates an operation
+     This can be helpful for debugging, logging, and other side effects
+     when completion or an error terminates an operation
 
 
     on_terminate -- Action to invoke after on_complete or throw is called
@@ -198,7 +207,7 @@ def do_after_terminate(source, after_terminate):
     return AnonymousObservable(subscribe)
 
 
-def do_finally(source, finally_action):
+def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
     """Invokes an action after an on_complete(), on_error(), or disposal
     event occurs.
 
@@ -208,7 +217,9 @@ def do_finally(source, finally_action):
     Note this operator will strive to execute the finally_action once,
     and prevent any redudant calls
 
-    finally_action -- Action to invoke after on_complete, on_error, or disposal is called
+    Args:
+        finally_action -- Action to invoke after on_complete, on_error,
+        or disposal is called
     """
 
     class OnDispose(Disposable):
@@ -220,34 +231,35 @@ def do_finally(source, finally_action):
                 finally_action()
                 self.was_invoked[0] = True
 
-    def subscribe(observer, scheduler=None):
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
 
-        was_invoked = [False]
+            was_invoked = [False]
 
-        def on_completed():
-            observer.on_completed()
-            try:
-                if not was_invoked[0]:
-                    finally_action()
-                    was_invoked[0] = True
-            except Exception as err:
-                observer.on_error(err)
+            def on_completed():
+                observer.on_completed()
+                try:
+                    if not was_invoked[0]:
+                        finally_action()
+                        was_invoked[0] = True
+                except Exception as err:
+                    observer.on_error(err)
 
-        def on_error(exception):
-            observer.on_error(exception)
-            try:
-                if not was_invoked[0]:
-                    finally_action()
-                    was_invoked[0] = True
-            except Exception as err:
-                observer.on_error(err)
+            def on_error(exception):
+                observer.on_error(exception)
+                try:
+                    if not was_invoked[0]:
+                        finally_action()
+                        was_invoked[0] = True
+                except Exception as err:
+                    observer.on_error(err)
 
-        composite_disposable = CompositeDisposable()
-        composite_disposable.add(OnDispose(was_invoked))
-        disposable = source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
-        composite_disposable.add(disposable)
+            composite_disposable = CompositeDisposable()
+            composite_disposable.add(OnDispose(was_invoked))
+            disposable = source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
+            composite_disposable.add(disposable)
 
-        return composite_disposable
+            return composite_disposable
 
-    return AnonymousObservable(subscribe)
-
+        return AnonymousObservable(subscribe)
+    return partial

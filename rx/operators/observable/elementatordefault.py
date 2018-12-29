@@ -1,5 +1,5 @@
-from typing import Any
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Any, Callable
+from rx.core import AnonymousObservable, ObservableBase as Observable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 
 
@@ -32,22 +32,27 @@ def _element_at_or_default(source, index, has_default=False, default_value=None)
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
     return AnonymousObservable(subscribe)
 
-def element_at_or_default(self, index: int, default_value: Any = None) -> ObservableBase:
+
+def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Observable], Observable]:
     """Returns the element at a specified index in a sequence or a
     default value if the index is out of range.
 
     Example:
-    res = source.element_at_or_default(5)
-    res = source.element_at_or_default(5, 0)
+        >>> res = source.element_at_or_default(5)
+        >>> res = source.element_at_or_default(5, 0)
 
-    Keyword arguments:
-    index -- The zero-based index of the element to retrieve.
-    default_value -- [Optional] The default value if the index is
-        outside the bounds of the source sequence.
+    Args:
+        index -- The zero-based index of the element to retrieve.
+        default_value -- [Optional] The default value if the index is
+            outside the bounds of the source sequence.
 
-    Returns an observable sequence that produces the element at the
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence that produces the element at the
         specified position in the source sequence, or a default value if
         the index is outside the bounds of the source sequence.
     """
 
-    return _element_at_or_default(self, index, True, default_value)
+    def partial(source: Observable) -> Observable:
+        return _element_at_or_default(source, index, True, default_value)
+    return partial

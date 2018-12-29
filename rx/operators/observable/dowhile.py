@@ -2,7 +2,7 @@ from typing import Callable, Any
 from rx.core import ObservableBase, Observable
 
 
-def do_while(condition: Callable[[Any], bool], source: ObservableBase) -> ObservableBase:
+def do_while(condition: Callable[[Any], bool]) -> Callable[[ObservableBase], ObservableBase]:
     """Repeats source as long as condition holds emulating a do while loop.
 
     Keyword arguments:
@@ -13,4 +13,6 @@ def do_while(condition: Callable[[Any], bool], source: ObservableBase) -> Observ
     as the condition holds.
     """
 
-    return source.concat(Observable.while_do(condition, source))
+    def partial(source: ObservableBase) -> ObservableBase:
+        return source.concat(Observable.while_do(condition, source))
+    return partial

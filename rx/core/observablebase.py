@@ -264,8 +264,8 @@ class ObservableBase(typing.Observable):
             An observable sequence that surfaces either of the given
             sequences, whichever reacted first.
         """
-        from ..operators.observable.amb import _amb
-        return _amb(self, other)
+        from ..operators.observable.amb import amb
+        return amb(self, other)
 
     def and_(self, right):
         """Creates a pattern that matches when both observable sequences
@@ -720,7 +720,24 @@ class ObservableBase(typing.Observable):
         applied.
         """
         from ..operators.observable.do import do_action
-        return do_action(self, on_next, on_error, on_completed)
+        return do_action(on_next, on_error, on_completed)(self)
+
+    def do_finally(self, finally_action: Callable) -> 'ObservableBase':
+        """Invokes an action after an on_complete(), on_error(), or disposal
+        event occurs.
+
+        This can be helpful for debugging, logging, and other side effects
+        when completion, an error, or disposal terminates an operation.
+
+        Note this operator will strive to execute the finally_action once,
+        and prevent any redudant calls
+
+        Args:
+            finally_action -- Action to invoke after on_complete, on_error,
+            or disposal is called
+        """
+        from ..operators.observable.do import do_finally
+        return do_finally(finally_action)(self)
 
     def do_while(self, condition: Predicate) -> 'ObservableBase':
         """Repeats source as long as condition holds emulating a do while loop.
@@ -733,7 +750,7 @@ class ObservableBase(typing.Observable):
         condition holds.
         """
         from ..operators.observable.dowhile import do_while
-        return do_while(condition, self)
+        return do_while(condition)(self)
 
     def element_at(self, index: int) -> 'ObservableBase':
         """Returns the element at a specified index in a sequence.
@@ -748,7 +765,7 @@ class ObservableBase(typing.Observable):
         specified position in the source sequence.
         """
         from ..operators.observable.elementat import element_at
-        return element_at(self, index)
+        return element_at(index)(self)
 
     def element_at_or_default(self, index: int, default_value: Any = None) -> 'ObservableBase':
         """Returns the element at a specified index in a sequence or a
@@ -768,7 +785,7 @@ class ObservableBase(typing.Observable):
             the index is outside the bounds of the source sequence.
         """
         from ..operators.observable.elementatordefault import element_at_or_default
-        return element_at_or_default(self, index, default_value)
+        return element_at_or_default(index, default_value)(self)
 
     def exclusive(self) -> 'ObservableBase':
         """Performs a exclusive waiting for the first to finish before
@@ -793,8 +810,7 @@ class ObservableBase(typing.Observable):
         produced by the recursive expansion.
         """
         from ..operators.observable.expand import expand
-        source = self
-        return expand(source, mapper)
+        return expand(self, mapper)
 
     def filter(self, predicate: Predicate = None):
         """Filters the elements of an observable sequence based on a predicate
@@ -2575,7 +2591,7 @@ class ObservableBase(typing.Observable):
 
     def window_with_time_or_count(self, timespan, count) -> 'ObservableBase':
         from ..operators.observable.windowwithtimeorcount import window_with_time_or_count
-        return window_with_time_or_count(self, timespan, count)
+        return window_with_time_or_count(timespan, count)(self)
 
     def with_latest_from(self, observables: Union['ObservableBase', Iterable['ObservableBase']],
                          mapper: Callable[[Any], Any]) -> 'ObservableBase':

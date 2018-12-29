@@ -4,20 +4,12 @@ from rx.internal.utils import is_future
 
 
 def _amb(left_source, right_source):
-    """Propagates the observable sequence that reacts first.
-
-    right_source Second observable sequence.
-
-    returns an observable sequence that surfaces either of the given
-    sequences, whichever reacted first.
-    """
-
     right_source = Observable.from_future(right_source) if is_future(right_source) else right_source
 
     def subscribe(observer, scheduler=None):
         choice = [None]
         left_choice = 'L'
-        right_choice = 'R',
+        right_choice = 'R'
         left_subscription = SingleAssignmentDisposable()
         right_subscription = SingleAssignmentDisposable()
 
@@ -76,7 +68,7 @@ def _amb(left_source, right_source):
     return AnonymousObservable(subscribe)
 
 
-def amb(*args):
+def amb(*args: Observable):
     """Propagates the observable sequence that reacts first.
 
     E.g. winner = Observable.amb(xs, ys, zs)

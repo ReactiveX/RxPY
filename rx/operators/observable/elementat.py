@@ -1,9 +1,10 @@
-from rx.core import ObservableBase
+from typing import Callable
+from rx.core import ObservableBase as Observable
 
 from .elementatordefault import _element_at_or_default
 
 
-def element_at(source: ObservableBase, index: int) -> ObservableBase:
+def element_at(index: int) -> Callable[[Observable], Observable]:
     """Returns the element at a specified index in a sequence.
 
     Example:
@@ -16,4 +17,6 @@ def element_at(source: ObservableBase, index: int) -> ObservableBase:
     specified position in the source sequence.
     """
 
-    return _element_at_or_default(source, index, False)
+    def partial(source: Observable) -> Observable:
+        return _element_at_or_default(source, index, False)
+    return partial
