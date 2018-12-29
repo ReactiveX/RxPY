@@ -26,7 +26,6 @@ def catch_handler(source, handler) -> Observable:
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler)
 
-        print(source)
         d1.disposable = source.subscribe_(
             observer.on_next,
             on_error,
@@ -78,7 +77,6 @@ def catch_exception_(*args) -> Observable:
     source sequences until a source sequence terminates successfully.
     """
 
-    print(args[0])
     if isinstance(args[0], (list, Iterable)):
         sources = args[0]
     else:
