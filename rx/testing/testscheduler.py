@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from rx.core import Observable, ObservableBase, Disposable
+from rx.core import StaticObservable, Observable, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -60,7 +60,7 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         # Defaults
-        create = create or Observable.empty
+        create = create or StaticObservable.empty
         created = created or ReactiveTest.created
         subscribed = subscribed or ReactiveTest.subscribed
         disposed = disposed or ReactiveTest.disposed
@@ -90,7 +90,7 @@ class TestScheduler(VirtualTimeScheduler):
         super().start()
         return observer
 
-    def create_hot_observable(self, *args) -> ObservableBase:
+    def create_hot_observable(self, *args) -> Observable:
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
 
@@ -108,7 +108,7 @@ class TestScheduler(VirtualTimeScheduler):
             messages = list(args)
         return HotObservable(self, messages)
 
-    def create_cold_observable(self, *args) -> ObservableBase:
+    def create_cold_observable(self, *args) -> Observable:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 

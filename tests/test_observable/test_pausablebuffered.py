@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 
@@ -48,7 +48,7 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.schedule_absolute(209, action2)
 
         def action3(scheduler, state):
-          subscription[0].dispose()
+            subscription[0].dispose()
         scheduler.schedule_absolute(1000, action3)
 
         scheduler.start()
@@ -124,7 +124,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(350, 5),
             on_next(399, 6),
             on_completed(500)
-         )
+        )
 
         def action0(scheduler, state):
             subscription[0] = xs.pausable_buffered(controller).subscribe(results)
@@ -139,7 +139,6 @@ class TestPausable_buffered(unittest.TestCase):
             controller.on_next(True)
         scheduler.schedule_absolute(400, action2)
 
-
         def action3(scheduler, state):
             subscription[0].dispose()
         scheduler.schedule_absolute(1000, action3)
@@ -147,7 +146,7 @@ class TestPausable_buffered(unittest.TestCase):
         scheduler.start()
 
         assert results.messages == [
-        on_next(210, 2),
+            on_next(210, 2),
             on_error(230, err)]
 
     def test_paused_skip_initial_elements(self):
@@ -200,7 +199,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(450, 7),
             on_next(470, 8),
             on_completed(500)
-         )
+        )
 
         controller = scheduler.create_hot_observable(
             on_next(201, True),
@@ -329,7 +328,7 @@ class TestPausable_buffered(unittest.TestCase):
             on_next(450, 7),
             on_next(470, 8),
             on_completed(500)
-          )
+        )
 
         controller = scheduler.create_hot_observable(
             on_next(201, True),

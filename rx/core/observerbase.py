@@ -49,9 +49,8 @@ class ObserverBase(Observer, Disposable):
         return NotImplemented
 
     def dispose(self):
-        """Disposes the observer, causing it to transition to the stopped
-        state."""
-
+        """Disposes the observer, causing it to transition to the
+        stopped state."""
         self.is_stopped = True
 
     def fail(self, exn: Exception) -> bool:

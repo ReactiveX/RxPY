@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -67,7 +67,8 @@ class TestScan(unittest.TestCase):
     def test_scan_seed_somedata(self):
         scheduler = TestScheduler()
         seed = 1
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
         def create():
             return xs.scan(lambda acc, x: acc + x, seed=seed)
@@ -77,7 +78,8 @@ class TestScan(unittest.TestCase):
         assert(results[0].value.kind == 'N' and results[0].value.value == seed + 2 and results[0].time == 210)
         assert(results[1].value.kind == 'N' and results[1].value.value == seed + 2 + 3 and results[1].time == 220)
         assert(results[2].value.kind == 'N' and results[2].value.value == seed + 2 + 3 + 4 and results[2].time == 230)
-        assert(results[3].value.kind == 'N' and results[3].value.value == seed + 2 + 3 + 4 + 5 and results[3].time == 240)
+        assert(results[3].value.kind == 'N' and results[3].value.value ==
+               seed + 2 + 3 + 4 + 5 and results[3].time == 240)
         assert(results[4].value.kind == 'C' and results[4].time == 250)
 
     def test_scan_noseed_never(self):
@@ -134,7 +136,8 @@ class TestScan(unittest.TestCase):
 
     def test_scan_noseed_somedata(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
         def create():
             def func(acc, x):
@@ -150,4 +153,3 @@ class TestScan(unittest.TestCase):
         assert(results[2].value.kind == 'N' and results[2].time == 230 and results[2].value.value == 2 + 3 + 4)
         assert(results[3].value.kind == 'N' and results[3].time == 240 and results[3].value.value == 2 + 3 + 4 + 5)
         assert(results[4].value.kind == 'C' and results[4].time == 250)
-

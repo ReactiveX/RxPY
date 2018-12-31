@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 
 on_next = ReactiveTest.on_next
@@ -10,6 +10,7 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
 
 class TestTakeWithTime(unittest.TestCase):
 
@@ -75,7 +76,8 @@ class TestTakeWithTime(unittest.TestCase):
 
     def test_take_twice1(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
+        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(
+            230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
 
         def create():
             return xs.take_with_time(55).take_with_time(35)
@@ -87,7 +89,8 @@ class TestTakeWithTime(unittest.TestCase):
 
     def test_take_twice2(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
+        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(
+            230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
 
         def create():
             return xs.take_with_time(35).take_with_time(55)

@@ -1,6 +1,6 @@
 from typing import Callable
 from functools import reduce
-from .observablebase import ObservableBase as Observable
+from .observable import Observable
 
 
 def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable], Observable]:
@@ -22,10 +22,5 @@ def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable
     """
 
     def compose(source: Observable) -> Observable:
-        ret = reduce(
-            lambda ops, op: lambda fn: fn(ops(op)),
-            operators,
-            lambda fn: fn(source)
-        )
-        return ret(lambda x: x)
+        return reduce(lambda obs, op: op(obs), operators, source)
     return compose

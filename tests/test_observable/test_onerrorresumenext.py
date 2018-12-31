@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -79,6 +79,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
         o3 = scheduler.create_hot_observable(msgs3)
+
         def create():
             return Observable.on_error_resume_next(o1, o2, o3)
         results = scheduler.start(create)
@@ -119,6 +120,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         msgs2 = [on_error(230, ex)]
         o1 = scheduler.create_hot_observable(msgs1)
         o2 = scheduler.create_hot_observable(msgs2)
+
         def create():
             return o1.on_error_resume_next(o2)
         results = scheduler.start(create)
@@ -130,6 +132,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_error(230, ex)]
         o1 = scheduler.create_hot_observable(msgs1)
+
         def create():
             return Observable.on_error_resume_next(o1)
         results = scheduler.start(create)
@@ -186,5 +189,3 @@ class TestOnErrorResumeNext(unittest.TestCase):
             on_next(220, 3),
             on_next(240, 4),
             on_completed(250)]
-
-

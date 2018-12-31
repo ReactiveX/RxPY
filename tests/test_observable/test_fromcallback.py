@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -53,9 +53,9 @@ class TestFromCallback(unittest.TestCase):
 
     def test_from_node_callback_mapper(self):
         res = Observable.from_callback(
-            lambda f,s,t,cb: cb(f,s,t),
+            lambda f, s, t, cb: cb(f, s, t),
             lambda r: r[0]
-        )(1,2,3)
+        )(1, 2, 3)
 
         def on_next(r):
             self.assertEqual(r, 1)
@@ -67,4 +67,3 @@ class TestFromCallback(unittest.TestCase):
             assert(True)
 
         res.subscribe_(on_next, on_error, on_completed)
-

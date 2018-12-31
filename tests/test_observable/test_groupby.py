@@ -1,10 +1,7 @@
-import math
 import unittest
-from datetime import datetime
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,12 +11,16 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
 
 # Helper function for raising exceptions within lambdas
+
+
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestGroupBy(unittest.TestCase):
     def test_group_by_with_key_comparer(self):
@@ -95,7 +96,7 @@ class TestGroupBy(unittest.TestCase):
 
             def element_mapper(x):
                 ele_invoked[0] += 1
-                return x[::-1] # Yes, this is reverse string in Python
+                return x[::-1]  # Yes, this is reverse string in Python
 
             return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
 
@@ -140,6 +141,7 @@ class TestGroupBy(unittest.TestCase):
             def key_mapper(x):
                 key_invoked[0] += 1
                 return x.lower().strip()
+
             def element_mapper(x):
                 ele_invoked[0] += 1
                 return x[::-1]
@@ -157,7 +159,6 @@ class TestGroupBy(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 570)]
         assert(key_invoked[0] == 12)
         assert(ele_invoked[0] == 12)
-
 
     def test_group_by_outer_dispose(self):
         scheduler = TestScheduler()
@@ -230,6 +231,7 @@ class TestGroupBy(unittest.TestCase):
             on_next(580, "error"),
             on_completed(600),
             on_error(650, 'ex'))
+
         def factory():
             def key_mapper(x):
                 key_invoked[0] += 1
@@ -514,7 +516,7 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(subscribed, action2)
 
         def action4(scheduler, state):
-            c["outer_subscription"].dispose();
+            c["outer_subscription"].dispose()
             for sub in inner_subscriptions.values():
                 sub.dispose()
         scheduler.schedule_absolute(disposed, action4)
@@ -563,6 +565,7 @@ class TestGroupBy(unittest.TestCase):
             on_next(200, ["beta", "bat"]),
             on_next(200, ["gamma"]),
             on_completed(200)]
+
 
 if __name__ == '__main__':
     unittest.main()

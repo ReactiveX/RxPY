@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
@@ -31,8 +31,8 @@ class TestReturnValue(unittest.TestCase):
 
         results = scheduler.start(factory)
         assert results.messages == [
-                            on_next(200, 42),
-                            on_completed(200)]
+            on_next(200, 42),
+            on_completed(200)]
 
     def test_return_disposed(self):
         scheduler = TestScheduler()
@@ -53,8 +53,10 @@ class TestReturnValue(unittest.TestCase):
             def on_next(x):
                 d.dispose()
                 results.on_next(x)
+
             def on_error(e):
                 results.on_error(e)
+
             def on_completed():
                 results.on_completed()
 

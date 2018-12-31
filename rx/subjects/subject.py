@@ -1,3 +1,4 @@
+from __future__ import annotations
 import threading
 from typing import Any, List
 
@@ -15,12 +16,12 @@ class Subject(ObservableBase, Observer):
     """
 
     def __init__(self) -> None:
-        super(Subject, self).__init__()
+        super().__init__()
 
         self.is_disposed = False
         self.is_stopped = False
-        self.observers = []   # type: List[Observer]
-        self.exception = None # type: Exception
+        self.observers: List[Observer] = []
+        self.exception: Exception = None
 
         self.lock = threading.RLock()
 

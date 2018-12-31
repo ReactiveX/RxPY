@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -25,18 +25,21 @@ class TestSample(unittest.TestCase):
 
     def test_sample_regular(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_next(380, 7), on_completed(390))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(
+            260, 4), on_next(300, 5), on_next(350, 6), on_next(380, 7), on_completed(390))
 
         def create():
             return xs.sample(50)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(250, 3), on_next(300, 5), on_next(350, 6), on_next(400, 7), on_completed(400)]
+        assert results.messages == [on_next(250, 3), on_next(
+            300, 5), on_next(350, 6), on_next(400, 7), on_completed(400)]
 
     def test_sample_error_in_flight(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(310, 6), on_error(330, ex))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            230, 3), on_next(260, 4), on_next(300, 5), on_next(310, 6), on_error(330, ex))
 
         def create():
             return xs.sample(50)

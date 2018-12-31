@@ -1,6 +1,7 @@
 import unittest
 
-from rx.core import Observer, ObservableBase, Observable
+from rx.chained import Observable
+from rx.core import Observer, ObservableBase
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 from rx.core import ConnectableObservable
@@ -31,6 +32,7 @@ class MySubject(ObservableBase, Observer):
         class Duck:
             def __init__(self, this):
                 self.this = this
+
             def dispose(self):
                 self.this.disposed = True
         return Duck(self)
@@ -175,6 +177,7 @@ class TestConnectableObservable(unittest.TestCase):
         conn = xs.multicast(subject)
 
         c1 = [None]
+
         def action10(scheduler, state):
             c1[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(225, action10)
@@ -184,18 +187,19 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler.schedule_absolute(241, action11)
 
         def action12(scheduler, state):
-            c1[0].dispose() # idempotency test
+            c1[0].dispose()  # idempotency test
         scheduler.schedule_absolute(245, action12)
 
         def action13(scheduler, state):
-            c1[0].dispose() # idempotency test
+            c1[0].dispose()  # idempotency test
         scheduler.schedule_absolute(251, action13)
 
         def action14(scheduler, state):
-            c1[0].dispose() # idempotency test
+            c1[0].dispose()  # idempotency test
         scheduler.schedule_absolute(260, action14)
 
         c2 = [None]
+
         def action20(scheduler, state):
             c2[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(249, action20)
@@ -205,14 +209,15 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler.schedule_absolute(255, action21)
 
         def action22(scheduler, state):
-            c2[0].dispose() # idempotency test
+            c2[0].dispose()  # idempotency test
         scheduler.schedule_absolute(265, action22)
 
         def action23(scheduler, state):
-            c2[0].dispose() # idempotency test
+            c2[0].dispose()  # idempotency test
         scheduler.schedule_absolute(280, action23)
 
         c3 = [None]
+
         def action30(scheduler, state):
             c3[0] = conn.connect(scheduler)
         scheduler.schedule_absolute(275, action30)

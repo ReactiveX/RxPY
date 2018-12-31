@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -25,7 +25,8 @@ class TestTakeUntil(unittest.TestCase):
 
     def test_take_until_preempt_somedata_next(self):
         scheduler = TestScheduler()
-        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
+                  on_next(230, 4), on_next(240, 5), on_completed(250)]
         r_msgs = [on_next(150, 1), on_next(225, 99), on_completed(230)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
@@ -39,7 +40,8 @@ class TestTakeUntil(unittest.TestCase):
     def test_take_until_preempt_somedata_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
+                  on_next(230, 4), on_next(240, 5), on_completed(250)]
         r_msgs = [on_next(150, 1), on_error(225, ex)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
@@ -51,7 +53,8 @@ class TestTakeUntil(unittest.TestCase):
 
     def test_take_until_nopreempt_somedata_empty(self):
         scheduler = TestScheduler()
-        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
+                  on_next(230, 4), on_next(240, 5), on_completed(250)]
         r_msgs = [on_next(150, 1), on_completed(225)]
         l = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
@@ -60,11 +63,13 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        assert results.messages == [on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
 
     def test_take_until_nopreempt_somedata_never(self):
         scheduler = TestScheduler()
-        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
+                  on_next(230, 4), on_next(240, 5), on_completed(250)]
         l = scheduler.create_hot_observable(l_msgs)
         r = Observable.never()
 
@@ -72,7 +77,8 @@ class TestTakeUntil(unittest.TestCase):
             return l.take_until(r)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        assert results.messages == [on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
 
     def test_take_until_preempt_never_next(self):
         scheduler = TestScheduler()
@@ -172,4 +178,3 @@ class TestTakeUntil(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 2), on_completed(240)]
         assert(not signal_not_disposed[0])
-

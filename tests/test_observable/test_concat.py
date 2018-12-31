@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.operators.observable.concat import concat
 
@@ -213,4 +213,5 @@ class TestConcat(unittest.TestCase):
             return e1.concat(e2)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]
+        assert results.messages == [on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250)]

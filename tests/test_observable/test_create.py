@@ -1,5 +1,6 @@
 import unittest
 
+from rx.chained import Observable
 from rx.core import Observable, Disposable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import BooleanDisposable
@@ -26,6 +27,7 @@ class TestCreate(unittest.TestCase):
 
     def test_create_next(self):
         scheduler = TestScheduler()
+
         def create():
             def subscribe(o, observer=None):
                 o.on_next(1)
@@ -132,6 +134,7 @@ class TestCreate(unittest.TestCase):
 
     def test_create_next(self):
         scheduler = TestScheduler()
+
         def create():
             def subscribe(o, observer=None):
                 o.on_next(1)
@@ -144,6 +147,7 @@ class TestCreate(unittest.TestCase):
 
     def test_create_completed(self):
         scheduler = TestScheduler()
+
         def create():
             def subscribe(o, observer=None):
                 o.on_completed()
@@ -159,6 +163,7 @@ class TestCreate(unittest.TestCase):
     def test_create_error(self):
         scheduler = TestScheduler()
         ex = 'ex'
+
         def create():
             def subscribe(o, observer=None):
                 o.on_error(ex)
@@ -212,7 +217,6 @@ class TestCreate(unittest.TestCase):
 
         assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(800, 3), on_next(900, 4)]
 
-
     def test_create_observer_throws(self):
         def subscribe1(o):
             o.on_next(1)
@@ -237,4 +241,3 @@ class TestCreate(unittest.TestCase):
 
         with self.assertRaises(RxException):
             Observable.create(subscribe3).subscribe_(on_completed=_raise('ex'))
-

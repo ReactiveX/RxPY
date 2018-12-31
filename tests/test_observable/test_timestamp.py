@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -33,7 +33,8 @@ class TestTimeInterval(unittest.TestCase):
 
     def test_timestamp_regular(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
 
         def create():
             def mapper(x):
@@ -72,4 +73,3 @@ class TestTimeInterval(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == []
-
