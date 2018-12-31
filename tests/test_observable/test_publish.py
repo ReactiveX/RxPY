@@ -1,6 +1,7 @@
 import unittest
 
-from rx.core import Observer, ObservableBase, Observable
+from rx.chained import Observable
+from rx.core import Observer, ObservableBase
 from rx.core import ConnectableObservable
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -38,6 +39,7 @@ class MySubject(ObservableBase, Observer):
         class Duck:
             def __init__(self, this):
                 self.this = this
+
             def dispose(self):
                 self.this.disposed = True
         return Duck(self)
@@ -83,10 +85,10 @@ class TestPublish(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 6),
-            on_next(240, 8),
-            on_next(270, 10),
-            on_next(330, 12),
-            on_next(340, 14), on_completed(390)]
+                                    on_next(240, 8),
+                                    on_next(270, 10),
+                                    on_next(330, 12),
+                                    on_next(340, 14), on_completed(390)]
         assert xs.subscriptions == [subscribe(200, 390)]
 
     def test_ref_count_connects_on_first(self):

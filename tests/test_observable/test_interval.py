@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -29,7 +29,8 @@ class TestTimeInterval(unittest.TestCase):
             return Observable.interval(100)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(300, 0), on_next(400, 1), on_next(500, 2), on_next(600, 3), on_next(700, 4), on_next(800, 5), on_next(900, 6)]
+        assert results.messages == [on_next(300, 0), on_next(400, 1), on_next(
+            500, 2), on_next(600, 3), on_next(700, 4), on_next(800, 5), on_next(900, 6)]
 
     # def test_interval_timespan_zero(self):
     #     scheduler = TestScheduler()

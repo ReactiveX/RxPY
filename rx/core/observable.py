@@ -1,619 +1,194 @@
-from datetime import datetime, timedelta
-from typing import Any, Callable, Union, Iterable
-from asyncio.futures import Future
+# By design, pylint: disable=C0302
+import types
+import inspect
+import threading
+from typing import cast, overload, Any
 
-from .typing import Mapper
-from .observablebase import ObservableBase
-from . import abc, typing
+from rx.concurrency import current_thread_scheduler
+
+from .typing import Scheduler
+from .disposable import Disposable
+from .autodetachobserver import AutoDetachObserver
+from .anonymousobserver import AnonymousObserver
+from . import typing, abc
 
 
-class Observable(typing.Observable):  # pylint: disable=W0223,R0904
-    """Observable creation methods.
+class Observable(typing.Observable):
+    """Observables base class.
 
-    This class is a container of static Observable creation methods.
-    """
+    Represents a push-style collection and contains all operators as
+    methods to allow classic Rx chaining of operators."""
 
-    @staticmethod
-    def amb(*args) -> ObservableBase:
-        """Propagates the observable sequence that reacts first.
+    def __init__(self, source: typing.Observable = None) -> None:
+        self.lock = threading.RLock()
+        self.source = source
 
-        E.g. winner = Observable.amb(xs, ys, zs)
-
-        Returns an observable sequence that surfaces any of the given
-        sequences, whichever reacted first.
-        """
-        from ..operators.observable.amb import amb
-        return amb(*args)
-
-    @staticmethod
-    def case(mapper, sources, default_source=None) -> ObservableBase:
-        """Uses mapper to determine which source in sources to use.
+    def __add__(self, other):
+        """Pythonic version of concat.
 
         Example:
-        1 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 })
-        2 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 }, obs0)
+            >>> zs = xs + ys
 
-        Keyword arguments:
-        mapper -- The function which extracts the value for to test in
-            a case statement.
-        sources -- An object which has keys which correspond to the case
-            statement labels.
-        default_source -- The observable sequence or Future that will be
-            run if the sources are not matched. If this is not provided,
-            it defaults to rx.Observabe.empty.
+        Returns:
+            self.concat(other)"""
+        from ..operators.concat import concat
+        return concat(self, other)
 
-        Returns an observable sequence which is determined by a case
-        statement.
-        """
-        from ..operators.observable.case import case
-        return case(mapper, sources, default_source)
+    def __getitem__(self, key):
+        """Slices the given observable using Python slice notation. The
+        arguments to slice is start, stop and step given within brackets
+        [] and separated with the ':' character. It is basically a
+        wrapper around the operators skip(), skip_last(), take(),
+        take_last() and filter().
 
-    switch_case = case
+        This marble diagram helps you remember how slices works with
+        streams. Positive numbers is relative to the start of the
+        events, while negative numbers are relative to the end (close)
+        of the stream.
 
-    @staticmethod
-    def catch_exception(*args):
-        """Continues an observable sequence that is terminated by an
-        exception with the next observable sequence.
-
-        1 - res = Observable.catch_exception(xs, ys, zs)
-        2 - res = Observable.catch_exception([xs, ys, zs])
-
-        Returns an observable sequence containing elements from
-        consecutive source sequences until a source sequence terminates
-        successfully.
-        """
-        from ..operators.observable.catch import catch_exception_
-        return catch_exception_(*args)
-
-    @staticmethod
-    def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> ObservableBase:
-        """Concatenates all the observable sequences.
-
-        1 - res = Observable.concat(xs, ys, zs)
-        2 - res = Observable.concat([xs, ys, zs])
-
-        Returns an observable sequence that contains the elements of
-        each given sequence, in sequential order.
-        """
-        from ..operators.observable.concat import concat
-        return concat(*args)
-
-    @staticmethod
-    def create(subscribe) -> ObservableBase:
-        from ..operators.observable.create import create
-        return create(subscribe)
-
-    @staticmethod
-    def defer(observable_factory: Callable[[Any], ObservableBase]) -> ObservableBase:
-        """Returns an observable sequence that invokes the specified
-        factory function whenever a new observer subscribes.
-
-        Example:
-        1 - res = rx.Observable.defer(lambda: rx.Observable.of([1,2,3]))
-
-        Keyword arguments:
-        :param types.FunctionType observable_factory: Observable factory
-        function to invoke for each observer that subscribes to the
-        resulting sequence.
-
-        :returns: An observable sequence whose observers trigger an
-        invocation of the given observable factory function.
-        :rtype: Observable
-        """
-        from ..operators.observable.defer import defer
-        return defer(observable_factory)
-
-    @staticmethod
-    def empty() -> ObservableBase:
-        """Returns an empty observable sequence.
-
-        1 - res = rx.Observable.empty()
-
-        scheduler -- Scheduler to send the termination call on.
-
-        Returns an observable sequence with no elements.
-        """
-        from ..operators.observable.empty import empty
-        return empty()
-
-    @staticmethod
-    def for_in(values: Iterable,
-               result_mapper: Callable[[Any], ObservableBase]) -> ObservableBase:
-        """Concatenates the observable sequences obtained by running the
-        specified result mapper for each element in source.
-
-        Keyword arguments:
-        values -- A list of values to turn into an observable
-            sequence.
-        result_mapper -- A function to apply to each item in the
-            values list to turn it into an observable sequence.
-        Returns an observable sequence from the concatenated
-        observable sequences.
-        """
-
-        from ..operators.observable.forin import for_in
-        return for_in(values, result_mapper)
-
-    @staticmethod
-    def from_callable(supplier: Callable) -> ObservableBase:
-        """Returns an observable sequence that contains a single element
-        generate from a supplier.
-
-        example
-        res = rx.Observable.from_callable(lambda: calculate_value())
-        res = rx.Observable.from_callable(lambda: 1 / 0) # emits an error
-
-        Keyword arguments:
-        supplier -- Single element in the resulting observable sequence.
-
-        Returns an observable sequence containing the single specified
-        element derived from the supplier
-        """
-        from ..operators.observable.returnvalue import from_callable
-        return from_callable(supplier)
-
-    @staticmethod
-    def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], ObservableBase]":
-        """Converts a callback function to an observable sequence.
-
-        Keyword arguments:
-        func -- Function with a callback as the last parameter to
-            convert to an Observable sequence.
-        mapper -- [Optional] A mapper which takes the arguments
-            from the callback to produce a single item to yield on next.
-
-        Returns a function, when executed with the required parameters
-        minus the callback, produces an Observable sequence with a
-        single value of the arguments to the callback as a list.
-        """
-        from ..operators.observable.fromcallback import from_callback
-        return from_callback(func, mapper)
-
-    @staticmethod
-    def from_future(future: Union[ObservableBase, Future]) -> ObservableBase:
-        """Converts a Future to an Observable sequence
-
-        Keyword Arguments:
-        future -- A Python 3 compatible future.
-            https://docs.python.org/3/library/asyncio-task.html#future
-            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
-
-        Returns an Observable sequence which wraps the existing future
-        success and failure.
-        """
-        from ..operators.observable.fromfuture import from_future
-        return from_future(future)
-
-    @staticmethod
-    def from_iterable(iterable: Iterable) -> ObservableBase:
-        """Converts an array to an observable sequence.
-
-        1 - res = rx.Observable.from_iterable([1,2,3])
-
-        Keyword arguments:
-        iterable - An python iterable
-
-        Returns the observable sequence whose elements are pulled from
-        the given iterable sequence.
-        """
-        from ..operators.observable.fromiterable import from_iterable
-        return from_iterable(iterable)
-
-    from_ = from_iterable
-    from_list = from_iterable
-
-    @staticmethod
-    def from_marbles(string: str) -> ObservableBase:
-        """Convert a marble diagram string to an observable sequence,
-        using an optional scheduler to enumerate the events.
-
-        Special characters:
-        - = Timespan of 100 ms
-        x = on_error()
-        | = on_completed()
-
-        All other characters are treated as an on_next() event at the given
-        moment they are found on the string.
+        r---e---a---c---t---i---v---e---|
+        0   1   2   3   4   5   6   7   8
+       -8  -7  -6  -5  -4  -3  -2  -1   0
 
         Examples:
-        1 - res = rx.Observable.from_string("1-2-3-|")
-        2 - res = rx.Observable.from_string("1-(42)-3-|")
-        3 - res = rx.Observable.from_string("1-2-3-x", rx.Scheduler.timeout)
+            >>> result = source[1:10]
+            >>> result = source[1:-2]
+            >>> result = source[1:-1:2]
 
-        Keyword arguments:
-        string -- String with marble diagram
-        scheduler -- [Optional] Scheduler to run the the input sequence on.
+        Args:
+            key: Slice object
 
-        Returns the observable sequence whose elements are pulled from the
-        given marble diagram string.
+        Returns:
+            A sliced observable sequence.
         """
-        from ..testing.marbles import from_marbles
-        return from_marbles(string)
 
-    @staticmethod
-    def generate(initial_state, condition, iterate, result_mapper) -> ObservableBase:
-        """Generates an observable sequence by running a state-driven
-        loop producing the sequence's elements, using the specified
-        scheduler to send out observer messages.
+        if isinstance(key, slice):
+            start, stop, step = key.start, key.stop, key.step
+        elif isinstance(key, int):
+            start, stop, step = key, key + 1, 1
+        else:
+            raise TypeError("Invalid argument type.")
 
-        1 - res = rx.Observable.generate(0,
-            lambda x: x < 10,
-            lambda x: x + 1,
-            lambda x: x)
+        source = self
+        from ..operators.slice import slice as slice_
+        return slice_(source, start, stop, step)
 
-        Keyword arguments:
-        initial_state -- Initial state.
-        condition -- Condition to terminate generation (upon returning
-            False).
-        iterate -- Iteration step function.
-        result_mapper -- Selector function for results produced in the
-            sequence.
-
-        Returns the generated sequence.
-        """
-        from ..operators.observable.generate import generate
-        return generate(initial_state, condition, iterate, result_mapper)
-
-    @staticmethod
-    def generate_with_relative_time(initial_state, condition, iterate,
-                                    result_mapper, time_mapper) -> ObservableBase:
-        """Generates an observable sequence by iterating a state from an
-        initial state until the condition fails.
-
-        res = source.generate_with_relative_time(0,
-            lambda x: True,
-            lambda x: x + 1,
-            lambda x: x,
-            lambda x: 500)
-
-        Keyword arguments:
-        initial_state -- Initial state.
-        condition -- Condition to terminate generation (upon returning
-            false).
-        iterate -- Iteration step function.
-        result_mapper -- Selector function for results produced in the
-            sequence.
-        time_mapper -- Time mapper function to control the speed of
-            values being produced each iteration, returning integer
-            values denoting milliseconds.
-
-        Returns the generated sequence.
-        """
-        from ..operators.observable.generatewithrelativetime import generate_with_relative_time
-        return generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper)
-
-    @staticmethod
-    def if_then(condition: Callable[[], bool], then_source: ObservableBase,
-                else_source: ObservableBase = None) -> ObservableBase:
-        """Determines whether an observable collection contains values.
+    def __iadd__(self, other):
+        """Pythonic use of concat.
 
         Example:
-        1 - res = rx.Observable.if(condition, obs1)
-        2 - res = rx.Observable.if(condition, obs1, obs2)
+            xs += ys
 
-        Keyword parameters:
-        condition -- The condition which determines if the then_source
-            or else_source will be run.
-        then_source -- The observable sequence or Promise that
-            will be run if the condition function returns true.
-        else_source -- [Optional] The observable sequence or
-            Promise that will be run if the condition function returns
-            False. If this is not provided, it defaults to
-            rx.Observable.empty
-
-        Returns an observable sequence which is either the
-        then_source or else_source.
+        Returns:
+            self.concat(self, other)
         """
-        from ..operators.observable.ifthen import if_then
-        return if_then(condition, then_source, else_source)
+        from ..operators.concat import concat
+        return concat(self, other)
 
-    @staticmethod
-    def interval(period: Union[timedelta, int]) -> ObservableBase:
-        """Returns an observable sequence that produces a value after
-        each period.
+    def _subscribe_core(self, observer, scheduler=None):
+        return self.source.subscribe(observer, scheduler)
 
-        Example:
-        1 - res = rx.Observable.interval(1000)
+    def subscribe_(self,
+                   on_next: typing.OnNext = None,
+                   on_error: typing.OnError = None,
+                   on_completed: typing.OnCompleted = None,
+                   scheduler: typing.Scheduler = None
+                   ) -> Disposable:
+        """Subscribe callbacks to the observable sequence.
+
+        Examples:
+            >>> source.subscribe_(on_next)
+            >>> source.subscribe_(on_next, on_error)
+            >>> source.subscribe_(on_next, on_error, on_completed)
+
+        Args:
+            on_next: Action to invoke for each element in the observable
+                sequence.
+            on_error: Action to invoke upon exceptional termination of
+                the observable sequence.
+            on_completed: Action to invoke upon graceful termination of
+                the observable sequence.
+            scheduler: The scheduler to use for this subscription.
+
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
+        """
+        observer = AnonymousObserver(on_next, on_error, on_completed)
+        return self.subscribe(observer, scheduler)
+
+    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None):
+        """Subscribe an observer to the observable sequence.
+
+        Examples:
+        1 - source.subscribe()
+        2 - source.subscribe(observer)
 
         Keyword arguments:
-        period -- Period for producing the values in the resulting
-            sequence (specified as an integer denoting milliseconds).
+        observer -- [Optional] The object that is to receive
+            notifications. You may subscribe using an observer or
+            callbacks, not both.
 
-        Returns an observable sequence that produces a value after each
-        period.
+        Return disposable object representing an observer's subscription
+            to the observable sequence.
         """
-        from ..operators.observable.interval import interval
-        return interval(period)
 
-    @staticmethod
-    def merge(*args):
-        """Merges all the observable sequences into a single observable
-        sequence.
+        observer = observer or AnonymousObserver()
+        assert isinstance(observer, (abc.Observer, types.GeneratorType))
 
-        1 - merged = rx.Observable.merge(xs, ys, zs)
-        2 - merged = rx.Observable.merge([xs, ys, zs])
+        if isinstance(observer, types.GeneratorType):
+            if inspect.getgeneratorstate(observer) == inspect.GEN_CREATED:
+                observer.on_next(None)
 
-        Returns the observable sequence that merges the elements of the
-        observable sequences.
+        auto_detach_observer = AutoDetachObserver(observer)
+
+        def fix_subscriber(subscriber):
+            """Fixes subscriber to make sure it returns a Disposable instead
+            of None or a dispose function"""
+            if not hasattr(subscriber, "dispose"):
+                subscriber = Disposable.create(subscriber)
+
+            return subscriber
+
+        def set_disposable(_: abc.Scheduler = None, __: Any = None):
+            try:
+                subscriber = self._subscribe_core(auto_detach_observer, scheduler)
+            except Exception as ex:  # By design. pylint: disable=W0703
+                if not auto_detach_observer.fail(ex):
+                    raise
+            else:
+                auto_detach_observer.subscription = fix_subscriber(subscriber)
+
+        # Subscribe needs to set up the trampoline before for subscribing.
+        # Actually, the first call to Subscribe creates the trampoline so
+        # that it may assign its disposable before any observer executes
+        # OnNext over the CurrentThreadScheduler. This enables single-
+        # threaded cancellation
+        # https://social.msdn.microsoft.com/Forums/en-US/eb82f593-9684-4e27-
+        # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
+        # dulerschedulerequired-behaves?forum=rx
+        if current_thread_scheduler.schedule_required():
+            current_thread_scheduler.schedule(set_disposable)
+        else:
+            set_disposable()
+
+        # Hide the identity of the auto detach observer
+        return Disposable.create(auto_detach_observer.dispose)
+
+    def pipe(self, *operators: 'Callable[[Observable], Observable]') -> 'Observable':
+        """Compose multiple operators left to right.
+
+        Composes zero or more operators into a functional composition.
+        The operators are composed to right. A composition of zero
+        operators gives back the original source.
+
+        source.pipe() == source
+        source.pipe(f) == f(source)
+        source.pipe(g, f) == f(g(source))
+        source.pipe(h, g, f) == f(g(h(source)))
+        ...
+
+        Returns the composed observable.
         """
-        from ..operators.observable.merge import merge_
-        return merge_(*args)
-
-    @staticmethod
-    def never() -> ObservableBase:
-        """Returns a non-terminating observable sequence.
-
-        Such a sequence can be used to denote an infinite duration (e.g.
-        when using reactive joins).
-
-        Returns an observable sequence whose observers will never get
-        called.
-        """
-        from ..operators.observable.never import never
-        return never()
-
-    @staticmethod
-    def of(*args) -> ObservableBase:
-        """This method creates a new Observable instance with a variable
-        number of arguments, regardless of number or type of the arguments.
-
-        Example:
-        res = rx.Observable.of(1,2,3)
-
-        Returns the observable sequence whose elements are pulled from
-        the given arguments
-        """
-        from ..operators.observable.of import of
-        return of(*args)
-
-    @staticmethod
-    def range(start: int, stop: int = None, step: int = None) -> ObservableBase:
-        """Generates an observable sequence of integral numbers within a
-        specified range.
-
-        1 - res = rx.Observable.range(10)
-        2 - res = rx.Observable.range(0, 10)
-        3 - res = rx.Observable.range(0, 10, 1)
-
-        Keyword arguments:
-        start -- The value of the first integer in the sequence.
-        count -- The number of sequential integers to generate.
-
-        Returns an observable sequence that contains a range of
-        sequential integral numbers.
-        """
-        from ..operators.observable.range import from_range
-        return from_range(start, stop, step)
-
-    @staticmethod
-    def return_value(value) -> ObservableBase:
-        """Returns an observable sequence that contains a single
-        element. There is an alias called 'just'.
-
-        example
-        res = rx.Observable.return_value(42)
-
-        Keyword arguments:
-        value -- Single element in the resulting observable sequence.
-
-        Returns an observable sequence containing the single specified
-        element.
-        """
-        from ..operators.observable.returnvalue import return_value
-        return return_value(value)
-
-    just = return_value
-
-    @staticmethod
-    def repeat_value(value: Any = None, repeat_count: int = None) -> ObservableBase:
-        """Generates an observable sequence that repeats the given element
-        the specified number of times.
-
-        1 - res = Observable.repeat(42)
-        2 - res = Observable.repeat(42, 4)
-
-        Keyword arguments:
-        value -- Element to repeat.
-        repeat_count -- [Optional] Number of times to repeat the
-            element. If not specified, repeats indefinitely.
-
-        Returns an observable sequence that repeats the given element
-        the specified number of times."""
-        from ..operators.observable.repeat import repeat_value
-        return repeat_value(value, repeat_count)
-
-    @staticmethod
-    def start(func: Callable, scheduler: abc.Scheduler = None) -> ObservableBase:
-        """Invokes the specified function asynchronously on the specified
-        scheduler, surfacing the result through an observable sequence.
-
-        Example:
-        res = rx.Observable.start(lambda: pprint('hello'))
-        res = rx.Observable.start(lambda: pprint('hello'), rx.Scheduler.timeout)
-
-        Keyword arguments:
-        func -- Function to run asynchronously.
-        scheduler -- [Optional] Scheduler to run the function on. If not
-            specified, defaults to Scheduler.timeout.
-
-        Returns an observable sequence exposing the function's result
-        value, or an exception.
-
-        Remarks:
-        The function is called immediately, not during the subscription
-        of the resulting sequence. Multiple subscriptions to the
-        resulting sequence can observe the function's result.
-        """
-        from ..operators.observable.start import start
-        return start(func, scheduler)
-
-    @staticmethod
-    def start_async(function_async: Callable) -> ObservableBase:
-        """Invokes the asynchronous function, surfacing the result
-        through an observable sequence.
-
-        Keyword arguments:
-        function_async -- Asynchronous function which returns a Future
-            to run.
-
-        Returns an observable sequence exposing the function's result
-        value, or an exception.
-        """
-        from ..operators.observable.startasync import start_async
-        return start_async(function_async)
-
-    @staticmethod
-    def throw(exception: Exception) -> ObservableBase:
-        """Returns an observable sequence that terminates with an
-        exception, using the specified scheduler to send out the single
-        OnError message.
-
-        1 - res = rx.Observable.throw(Exception('Error'))
-
-        Keyword arguments:
-        exception -- An object used for the sequence's termination.
-
-        Returns the observable sequence that terminates exceptionally
-        with the specified exception object.
-        """
-        from ..operators.observable.throw import throw
-        return throw(exception)
-
-    @staticmethod
-    def on_error_resume_next(*args) -> ObservableBase:
-        """Continues an observable sequence that is terminated normally or by
-        an exception with the next observable sequence.
-
-        1 - res = Observable.on_error_resume_next(xs, ys, zs)
-        2 - res = Observable.on_error_resume_next([xs, ys, zs])
-
-        Returns an observable sequence that concatenates the source sequences,
-        even if a sequence terminates exceptionally.
-        """
-        from ..operators.observable.onerrorresumenext import on_error_resume_next
-        return on_error_resume_next(*args)
-
-    on_error_resume_next = on_error_resume_next
-
-    @staticmethod
-    def timer(duetime: Union[datetime, int], period=None) -> ObservableBase:
-        """Returns an observable sequence that produces a value after
-        duetime has elapsed and then after each period.
-
-        1 - res = Observable.timer(datetime(...))
-        2 - res = Observable.timer(datetime(...), 1000)
-
-        5 - res = Observable.timer(5000)
-        6 - res = Observable.timer(5000, 1000)
-
-        Keyword arguments:
-        duetime -- Absolute (specified as a Date object) or relative
-            time (specified as an integer denoting milliseconds) at
-            which to produce the first value.
-        period -- [Optional] Period to produce subsequent values
-            (specified as an integer denoting milliseconds). If not
-            specified, the resulting timer is not recurring.
-
-        Returns an observable sequence that produces a value after due
-        time has elapsed and then each period.
-        """
-        from ..operators.observable.timer import timer
-        return timer(duetime, period)
-
-    @staticmethod
-    def to_async(func: Callable, scheduler=None) -> Callable:
-        """Converts the function into an asynchronous function. Each
-        invocation of the resulting asynchronous function causes an
-        invocation of the original synchronous function on the specified
-        scheduler.
-
-        Example:
-        res = Observable.to_async(lambda x, y: x + y)(4, 3)
-        res = Observable.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
-        res = Observable.to_async(lambda x: log.debug(x),
-                                Scheduler.timeout)('hello')
-
-        func -- Function to convert to an asynchronous function.
-        scheduler -- [Optional] Scheduler to run the function on. If not
-            specified, defaults to Scheduler.timeout.
-
-        Returns asynchronous function.
-        """
-        from ..operators.observable.toasync import to_async
-        return to_async(func, scheduler)
-
-    @staticmethod
-    def using(resource_factory, observable_factory) -> ObservableBase:
-        """Constructs an observable sequence that depends on a resource
-        object, whose lifetime is tied to the resulting observable
-        sequence's lifetime.
-
-        1 - res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
-
-        Keyword arguments:
-        resource_factory -- Factory function to obtain a resource
-            object.
-        observable_factory -- Factory function to obtain an observable
-            sequence that depends on the obtained resource.
-
-        Returns an observable sequence whose lifetime controls the
-        lifetime of the dependent resource object.
-        """
-        from ..operators.observable.using import using
-        return using(resource_factory, observable_factory)
-
-    @staticmethod
-    def when(*args) -> ObservableBase:
-        """Joins together the results from several patterns.
-
-        args -- A series of plans (specified as a list of as a series of
-            arguments) created by use of the Then operator on patterns.
-
-        Returns Observable sequence with the results form matching
-        several patterns.
-        """
-        from ..operators.observable.when import when
-        return when(*args)
-
-    @staticmethod
-    def while_do(condition: Callable[[Any], bool], source: ObservableBase) -> ObservableBase:
-        """Repeats source as long as condition holds emulating a while
-        loop.
-
-        Keyword arguments:
-        condition -- The condition which determines if the source will
-            be repeated.
-
-        Returns an observable sequence which is repeated as long as the
-            condition holds.
-        """
-        from ..operators.observable.whiledo import while_do
-        return while_do(condition, source)
-
-    @staticmethod
-    def zip(*args: Union[Iterable[ObservableBase], ObservableBase],
-            result_mapper: Mapper = None) -> ObservableBase:
-        """Merges the specified observable sequences into one observable
-        sequence by using the mapper function whenever all of the
-        observable sequences or an array have produced an element at a
-        corresponding index.
-
-        The last element in the arguments must be a function to invoke
-        for each series of elements at corresponding indexes in the
-        sources.
-
-        1 - res = Observable.zip(obs2, result_mapper=fn)
-        2 - res = Observable.zip([1,2,3], result_mapper=fn)
-
-        Keyword arguments:
-        args -- Observable sources to zip.
-        result_mapper -- Selector function that produces an element
-            whenever all of the observable sequences have produced an
-            element at a corresponding index
-
-        Returns an observable sequence containing the result of
-        combining elements of the sources using the specified result
-        mapper function.
-        """
-        from ..operators.observable.zip import zip as _zip
-        return _zip(*args, result_mapper=result_mapper)
+        from .pipe import pipe
+        return pipe(*operators)(self)

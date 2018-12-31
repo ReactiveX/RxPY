@@ -51,6 +51,7 @@ class Scheduler(abc.Scheduler):
     def schedule_absolute(self, duetime, action: Action, state=None):
         return NotImplemented
 
+
 class Observer(Generic[T_in], abc.Observer):
     __slots__ = ()
 

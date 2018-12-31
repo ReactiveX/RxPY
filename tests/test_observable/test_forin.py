@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -23,7 +23,8 @@ class TestForIn(unittest.TestCase):
             return Observable.for_in([1, 2, 3], mapper)
 
         results = scheduler.start(create=create)
-        assert results.messages == [on_next(310, 11), on_next(320, 12), on_next(330, 13), on_next(550, 21), on_next(560, 22), on_next(570, 23), on_next(890, 31), on_next(900, 32), on_next(910, 33), on_completed(920)]
+        assert results.messages == [on_next(310, 11), on_next(320, 12), on_next(330, 13), on_next(550, 21), on_next(
+            560, 22), on_next(570, 23), on_next(890, 31), on_next(900, 32), on_next(910, 33), on_completed(920)]
 
     def test_for_throws(self):
         ex = 'ex'

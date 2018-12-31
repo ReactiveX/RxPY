@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,6 +17,7 @@ class TestToAsync(unittest.TestCase):
         class Context:
             def __init__(self):
                 self.value = 42
+
             def func(self, x):
                 return self.value + x
 
@@ -87,7 +88,6 @@ class TestToAsync(unittest.TestCase):
             return Observable.to_async(func, scheduler)(1, 2, 3)
 
         res = scheduler.start(create)
-
 
         assert res.messages == [
             on_next(200, 6),

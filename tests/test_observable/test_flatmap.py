@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 
 on_next = ReactiveTest.on_next

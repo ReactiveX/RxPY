@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
@@ -13,12 +13,16 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
 
 # Helper function for raising exceptions within lambdas
+
+
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestWhen(unittest.TestCase):
     def test_then1(self):
@@ -181,7 +185,6 @@ class TestWhen(unittest.TestCase):
 
             assert results.messages == [
                 on_error(210, ex)]
-
 
     def test_then3_throws(self):
         ex = Exception()
@@ -349,7 +352,6 @@ class TestWhen(unittest.TestCase):
         for i in range(N):
             obs.append(scheduler.create_hot_observable(on_next(210, 1), on_completed(220)))
 
-
         def create():
             def mapper(*args):
                 raise Exception(ex)
@@ -372,7 +374,6 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, N), on_completed(220)]
-
 
     def test_and7_error(self):
         ex = 'ex'
@@ -410,7 +411,6 @@ class TestWhen(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_error(210, ex)]
-
 
     def test_and8(self):
         N = 8
@@ -620,14 +620,18 @@ class TestWhen(unittest.TestCase):
         def create():
             def sel1(x, y):
                 return x + y
+
             def sel2(x, z):
                 return x * z
+
             def sel3(y, z):
                 return y - z
             return Observable.when(xs.and_(ys).then_do(sel1), xs.and_(zs).then_do(sel2), ys.and_(zs).then_do(sel3))
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(220, 1 * 7), on_next(230, 2 * 8), on_next(240, 3 + 4), on_next(250, 5 - 9), on_completed(300)]
+        assert results.messages == [on_next(220, 1 * 7), on_next(230, 2 * 8),
+                                    on_next(240, 3 + 4), on_next(250, 5 - 9), on_completed(300)]
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 import unittest
 from datetime import timedelta
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -81,4 +81,3 @@ class TestTimeInterval(unittest.TestCase):
         time.sleep(0.1)
         self.assertEqual(len(l), 2)
         [self.assertIsInstance(el, datetime.timedelta) for el in l]
-

@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.core import Disposable
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
 from rx.disposables import SerialDisposable
@@ -13,12 +13,16 @@ subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
+
 class RxException(Exception):
     pass
 
 # Helper function for raising exceptions within lambdas
+
+
 def _raise(ex):
     raise RxException(ex)
+
 
 class TestWithLatestFrom(unittest.TestCase):
 
@@ -396,6 +400,7 @@ class TestWithLatestFrom(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(225, 3 + 4), on_next(230, 3 + 5), on_completed(235)]
+
 
 if __name__ == '__main__':
     unittest.main()

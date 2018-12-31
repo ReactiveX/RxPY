@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -47,7 +47,8 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, 10)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_completed(200)]
+        assert results.messages == [on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(
+            200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_completed(200)]
 
     def test_repeat_value_count_dispose(self):
         scheduler = TestScheduler()
@@ -65,7 +66,8 @@ class TestRepeat(unittest.TestCase):
             return Observable.repeat_value(42, -1)
 
         results = scheduler.start(create, disposed=201)
-        assert results.messages[:6] == [on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42)]
+        assert results.messages[:6] == [on_next(200, 42), on_next(200, 42), on_next(
+            200, 42), on_next(200, 42), on_next(200, 42), on_next(200, 42)]
 
     def test_repeat_observable_basic(self):
         scheduler = TestScheduler()
@@ -139,7 +141,8 @@ class TestRepeat(unittest.TestCase):
         xs = scheduler.create_cold_observable(on_next(5, 1), on_next(10, 2), on_next(15, 3), on_completed(20))
         results = scheduler.start(lambda: xs.repeat(3))
 
-        assert results.messages == [on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_completed(260)]
+        assert results.messages == [on_next(205, 1), on_next(210, 2), on_next(215, 3), on_next(225, 1), on_next(
+            230, 2), on_next(235, 3), on_next(245, 1), on_next(250, 2), on_next(255, 3), on_completed(260)]
         assert xs.subscriptions == [subscribe(200, 220), subscribe(220, 240), subscribe(240, 260)]
 
     def test_repeat_observable_repeat_count_dispose(self):
@@ -191,4 +194,3 @@ class TestRepeat(unittest.TestCase):
     #     xss = Observable.create(lambda o: _raise('ex4')).repeat(3)
     #     with self.assertRaises(RxException):
     #         xss.subscribe()
-

@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -88,7 +88,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_all_same(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -100,7 +101,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_some_changes(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(215, 3), on_next(220, 3), on_next(225, 2), on_next(230, 2), on_next(230, 1), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(215, 3), on_next(
+            220, 3), on_next(225, 2), on_next(230, 2), on_next(230, 1), on_next(240, 2), on_completed(250))
 
         def create():
             return xs.distinct_until_changed()
@@ -116,7 +118,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_comparer_all_equal(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
         def create():
             return xs.distinct_until_changed(comparer=lambda x, y: True)
@@ -128,7 +131,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_comparer_all_different(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
 
         def create():
             return xs.distinct_until_changed(comparer=lambda x, y: False)
@@ -143,7 +147,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
     def test_distinct_until_changed_key_mapper_div2(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
 
         def create():
             return xs.distinct_until_changed(lambda x: x % 2)
@@ -170,7 +175,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
 
         def create():
-            return xs.distinct_until_changed(comparer=lambda x,y: _raise(ex))
+            return xs.distinct_until_changed(comparer=lambda x, y: _raise(ex))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_error(220, ex)]

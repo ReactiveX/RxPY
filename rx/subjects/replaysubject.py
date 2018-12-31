@@ -1,8 +1,8 @@
 import sys
+import threading
 from typing import Any
 from datetime import timedelta
 
-import threading
 from rx.core import Observer, ObservableBase
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
@@ -26,7 +26,7 @@ class ReplaySubject(ObservableBase, Observer):
     and future observers, subject to buffer trimming policies.
     """
 
-    def __init__(self, buffer_size=None, window=None, scheduler=None):
+    def __init__(self, buffer_size: int = None, window=None, scheduler=None):
         """Initializes a new instance of the ReplaySubject class with
         the specified buffer size, window and scheduler.
 

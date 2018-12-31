@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,18 +27,18 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                lambda x: x <= 3,
-                lambda x: x + 1,
-                lambda x: x)
+                                       lambda x: x <= 3,
+                                       lambda x: x + 1,
+                                       lambda x: x)
 
         results = scheduler.start(create)
 
         assert results.messages == [
-                            on_next(200, 0),
-                            on_next(200, 1),
-                            on_next(200, 2),
-                            on_next(200, 3),
-                            on_completed(200)]
+            on_next(200, 0),
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_completed(200)]
 
     def test_generate_throw_condition(self):
         scheduler = TestScheduler()
@@ -46,9 +46,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                lambda x: _raise('ex'),
-                lambda x: x + 1,
-                lambda x: x)
+                                       lambda x: _raise('ex'),
+                                       lambda x: x + 1,
+                                       lambda x: x)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
@@ -59,9 +59,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                lambda x: True,
-                lambda x: x + 1,
-                lambda x: _raise('ex'))
+                                       lambda x: True,
+                                       lambda x: x + 1,
+                                       lambda x: _raise('ex'))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -72,14 +72,14 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                lambda x: True,
-                lambda x: _raise(ex),
-                lambda x: x)
+                                       lambda x: True,
+                                       lambda x: _raise(ex),
+                                       lambda x: x)
         results = scheduler.start(create)
 
         assert results.messages == [
-                            on_next(200, 0),
-                            on_error(200, ex)]
+            on_next(200, 0),
+            on_error(200, ex)]
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
@@ -87,9 +87,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                lambda x: True,
-                lambda x: x + 1,
-                lambda x: x)
+                                       lambda x: True,
+                                       lambda x: x + 1,
+                                       lambda x: x)
 
         results = scheduler.start(create, disposed=200)
         assert results.messages == []
@@ -99,20 +99,20 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return Observable.generate(0,
-                    lambda x: x <= 3,
-                    lambda x: x + 1,
-                    lambda x: x) \
+                                       lambda x: x <= 3,
+                                       lambda x: x + 1,
+                                       lambda x: x) \
                 .repeat(2)
 
         results = scheduler.start(create)
 
         assert results.messages == [
-                on_next(200, 0),
-                on_next(200, 1),
-                on_next(200, 2),
-                on_next(200, 3),
-                on_next(200, 0),
-                on_next(200, 1),
-                on_next(200, 2),
-                on_next(200, 3),
-                on_completed(200)]
+            on_next(200, 0),
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_next(200, 0),
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_completed(200)]

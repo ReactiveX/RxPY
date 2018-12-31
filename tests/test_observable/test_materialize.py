@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -44,7 +44,8 @@ class TestMaterialize(unittest.TestCase):
 
         results = scheduler.start(create).messages
         assert(len(results) == 3)
-        assert(results[0].value.kind == 'N' and results[0].value.value.kind == 'N' and results[0].value.value.value == 2 and results[0].time == 210)
+        assert(results[0].value.kind == 'N' and results[0].value.value.kind ==
+               'N' and results[0].value.value.value == 2 and results[0].time == 210)
         assert(results[1].value.kind == 'N' and results[1].value.value.kind == 'C' and results[1].time == 250)
         assert(results[2].value.kind == 'C' and results[1].time == 250)
 
@@ -58,7 +59,8 @@ class TestMaterialize(unittest.TestCase):
 
         results = scheduler.start(create).messages
         assert(len(results) == 2)
-        assert(results[0].value.kind == 'N' and results[0].value.value.kind == 'E' and results[0].value.value.exception == ex)
+        assert(results[0].value.kind == 'N' and results[0].value.value.kind ==
+               'E' and results[0].value.value.exception == ex)
         assert(results[1].value.kind == 'C')
 
     def test_materialize_dematerialize_never(self):
@@ -104,6 +106,7 @@ class TestMaterialize(unittest.TestCase):
         results = scheduler.start(create).messages
         assert(len(results) == 1)
         assert(results[0].value.kind == 'E' and results[0].value.exception == ex and results[0].time == 250)
+
 
 if __name__ == '__main__':
     unittest.main()

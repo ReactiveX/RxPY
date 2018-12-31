@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -32,12 +32,12 @@ class TestFromIterable(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [
-                            on_next(200, 1),
-                            on_next(200, 2),
-                            on_next(200, 3),
-                            on_next(200, 4),
-                            on_next(200, 5),
-                            on_completed(200)]
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_next(200, 4),
+            on_next(200, 5),
+            on_completed(200)]
 
     def test_subscribe_to_iterable_empty(self):
         iterable_finite = []
@@ -56,5 +56,5 @@ class TestFromIterable(unittest.TestCase):
         obs = Observable.from_(iterable_finite)
 
         results = scheduler.start(lambda: obs.concat(obs))
-        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(200, 3), on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200)]
-
+        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(
+            200, 3), on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200)]

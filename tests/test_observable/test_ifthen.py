@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -30,6 +30,7 @@ class TestIf_then(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2), on_completed(300))
         ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
+
         def create():
             return Observable.if_then(lambda: False, xs, ys)
         results = scheduler.start(create=create)
@@ -103,7 +104,6 @@ class TestIf_then(unittest.TestCase):
 
         assert results.messages == [on_next(220, 2), on_next(330, 3), on_error(440, ex)]
         assert xs.subscriptions == [subscribe(200, 440)]
-
 
     def test_if_default_never(self):
         b = [False]

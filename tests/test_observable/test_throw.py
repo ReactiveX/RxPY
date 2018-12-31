@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -34,6 +34,7 @@ class TestThrow(unittest.TestCase):
 
     def test_throw_disposed(self):
         scheduler = TestScheduler()
+
         def factory():
             return Observable.throw('ex')
 
@@ -43,7 +44,6 @@ class TestThrow(unittest.TestCase):
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()
         xs = Observable.throw('ex')
-        xs.subscribe_(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler   )
+        xs.subscribe_(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler)
 
         self.assertRaises(RxException, scheduler.start)
-

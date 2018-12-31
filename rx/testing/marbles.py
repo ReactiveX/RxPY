@@ -1,8 +1,7 @@
 import re
 import threading
 
-from rx.core import AnonymousObservable, Observable
-from rx.core.blockingobservable import BlockingObservable
+from rx.core import AnonymousObservable
 from rx.concurrency import new_thread_scheduler
 
 from .coldobservable import ColdObservable
@@ -68,13 +67,13 @@ def from_marbles(string):
         '-': handle_timespan,
         'x': handle_on_error,
         'X': handle_on_error,
-        '|': handle_close
+        '|': handle_on_completed
     }
 
     for groups in _tokens.findall(string):
         for token in groups:
             if token:
-                func = specials.get(token, handle_send)
+                func = specials.get(token, handle_on_next)
                 func(token)
 
     if not completed[0]:

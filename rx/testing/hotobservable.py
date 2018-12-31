@@ -1,8 +1,8 @@
-from rx.core import AnonymousObserver, ObservableBase, Disposable
+from rx.core import AnonymousObserver, Disposable, Observable
 from .subscription import Subscription
 
 
-class HotObservable(ObservableBase):
+class HotObservable(Observable):
     def __init__(self, scheduler, messages):
         super().__init__()
 
@@ -27,22 +27,17 @@ class HotObservable(ObservableBase):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def subscribe(self, observer=None, scheduler=None):
-        return self._subscribe_core(observer, scheduler)
-
-    def subscribe_(self, on_next=None, on_error=None, on_completed=None, scheduler=None):
-        observer = AnonymousObserver(on_next, on_error, on_completed)
-        return self.subscribe(observer, scheduler)
-
     def _subscribe_core(self, observer, scheduler=None):
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
+            print("DISPOSE!!!!!!!!!!!!!!!!!!")
             self.observers.remove(observer)
             start = self.subscriptions[index].subscribe
             end = self.scheduler.clock
+            print(end)
             self.subscriptions[index] = Subscription(start, end)
 
         return Disposable.create(dispose_action)

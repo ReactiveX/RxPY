@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -15,7 +15,8 @@ created = ReactiveTest.created
 class TestDo(unittest.TestCase):
     def test_do_should_see_all_values(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
         sum = [2 + 3 + 4 + 5]
 
@@ -33,7 +34,8 @@ class TestDo(unittest.TestCase):
 
     def test_do_plain_action(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
 
         def create():
@@ -47,14 +49,17 @@ class TestDo(unittest.TestCase):
 
     def test_do_next_completed(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(
+            220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
         i = [0]
         sum = [2 + 3 + 4 + 5]
         completed = [False]
+
         def create():
             def on_next(x):
                 i[0] += 1
                 sum[0] -= x
+
             def on_completed():
                 completed[0] = True
             return xs.do_action(on_next=on_next, on_completed=on_completed)
@@ -75,6 +80,7 @@ class TestDo(unittest.TestCase):
 
             def on_next(x):
                 i[0] += 1
+
             def on_completed():
                 nonlocal completed
                 completed = True
@@ -89,6 +95,7 @@ class TestDo(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2),  on_completed(250))
         completed = [False]
+
         def create():
             def on_completed():
                 completed[0] = True

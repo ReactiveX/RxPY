@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -31,9 +31,9 @@ class TestDefer(unittest.TestCase):
             def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                                    on_next(100, scheduler.clock),
-                                    on_completed(200)
-                                )
+                    on_next(100, scheduler.clock),
+                    on_completed(200)
+                )
                 return xs[0]
             return Observable.defer(defer)
         results = scheduler.start(create)
@@ -68,7 +68,8 @@ class TestDefer(unittest.TestCase):
         def create():
             def defer(scheduler):
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
+                xs[0] = scheduler.create_cold_observable(
+                    on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
                 return xs[0]
             return Observable.defer(defer)
 

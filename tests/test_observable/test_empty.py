@@ -1,6 +1,6 @@
 import unittest
 
-from rx.core import Observable
+from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -47,4 +47,3 @@ class TestEmpty(unittest.TestCase):
 
         with self.assertRaises(RxException):
             scheduler.start()
-

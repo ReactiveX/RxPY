@@ -1,1 +1,1 @@
-from .core import Observer, Observable, AnonymousObserver as _
+from .core import Observer, StaticObservable as Observable, AnonymousObserver as _
