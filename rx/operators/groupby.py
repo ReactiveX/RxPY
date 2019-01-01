@@ -1,7 +1,8 @@
-from rx.core import Observable, StaticObservable
+from typing import Callable
+from rx.core import Observable, StaticObservable, GroupedObservable
 
 
-def group_by(source: Observable, key_mapper, element_mapper=None) -> Observable:
+def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], GroupedObservable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the resulting
     elements by using a specified function.
@@ -26,4 +27,6 @@ def group_by(source: Observable, key_mapper, element_mapper=None) -> Observable:
     def duration_mapper(_):
         return StaticObservable.never()
 
-    return source.group_by_until(key_mapper, element_mapper, duration_mapper)
+    def partial(source: Observable) -> GroupedObservable:
+        return source.group_by_until(key_mapper, element_mapper, duration_mapper)
+    return partial

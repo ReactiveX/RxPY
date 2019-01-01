@@ -1,9 +1,9 @@
-from rx.core import Observable, ObservableBase
+from rx.core import Observable, StaticObservable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
 
 
-def timestamp(source: ObservableBase) -> ObservableBase:
+def timestamp(source: Observable) -> Observable:
     """Records the timestamp for each value in an observable sequence.
 
     1 - res = source.timestamp() # produces objects with attributes "value" and
@@ -19,4 +19,4 @@ def timestamp(source: ObservableBase) -> ObservableBase:
             return Timestamp(value=value, timestamp=scheduler.now)
 
         return source.map(mapper)
-    return Observable.defer(factory)
+    return StaticObservable.defer(factory)

@@ -1,5 +1,5 @@
-from rx.core import Observable
 from typing import Callable
+from rx.core import Observable
 from rx.core.typing import Mapper
 
 

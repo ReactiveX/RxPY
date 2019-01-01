@@ -1,9 +1,9 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def generate(initial_state, condition, iterate, result_mapper) -> ObservableBase:
+def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.

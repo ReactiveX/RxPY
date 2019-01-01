@@ -1,11 +1,18 @@
-from rx.core import ObservableBase
+from rx.core import Observable
+
+from .some import some
+from .map import map
 
 
-def is_empty(self) -> ObservableBase:
+def is_empty(source: Observable) -> Observable:
     """Determines whether an observable sequence is empty.
 
-    Returns an observable {Observable} sequence containing a single element
-    determining whether the source sequence is empty.
+    Returns:
+        An observable sequence containing a single element
+        determining whether the source sequence is empty.
     """
 
-    return self.some().map(lambda b: not b)
+    return source.pipe(
+        some(),
+        map(lambda b: not b)
+    )

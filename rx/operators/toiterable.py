@@ -1,7 +1,7 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 
-def to_iterable(source: ObservableBase) -> ObservableBase:
+def to_iterable(source: Observable) -> Observable:
     """Creates an iterable from an observable sequence.
 
     Returns an observable sequence containing a single element with an iterable

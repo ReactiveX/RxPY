@@ -1,9 +1,9 @@
 from typing import Callable, Any
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.core.typing import Mapper
 
 
-def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], ObservableBase]":
+def from_callback(func: Callable, mapper: Mapper = None) -> "Callable[[...], Observable]":
     """Converts a callback function to an observable sequence.
 
     Keyword arguments:

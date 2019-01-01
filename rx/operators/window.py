@@ -1,16 +1,16 @@
 import logging
+from typing import Callable
 
-from rx.core import AnonymousObservable, Observable, ObservableBase, typing
+from rx.core import AnonymousObservable, Observable, StaticObservable, typing
 from rx.internal.utils import add_ref
 from rx.internal import noop
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, \
-    CompositeDisposable, RefCountDisposable
+from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
 
 log = logging.getLogger("Rx")
 
 
-def window(self, window_openings=None, window_closing_mapper=None) -> ObservableBase:
+def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows.
 
@@ -30,16 +30,20 @@ def window(self, window_openings=None, window_closing_mapper=None) -> Observable
         window_closing_mapper = window_openings
         window_openings = None
 
-    if window_openings and not window_closing_mapper:
-        return observable_window_with_boundaries(self, window_openings)
+    def partial(source: Observable) -> Observable:
+        if window_openings and not window_closing_mapper:
+            return observable_window_with_boundaries(source, window_openings)
 
-    if not window_openings and window_closing_mapper:
-        return observable_window_with_closing_mapper(self, window_closing_mapper)
+        if not window_openings and window_closing_mapper:
+            return observable_window_with_closing_mapper(source, window_closing_mapper)
 
-    return observable_window_with_openings(self, window_openings, window_closing_mapper)
+        return observable_window_with_openings(source, window_openings, window_closing_mapper)
+    return partial
+
 
 def observable_window_with_openings(self, window_openings, window_closing_mapper):
-    return window_openings.group_join(self, window_closing_mapper, lambda _: Observable.empty(), lambda _, window: window)
+    return window_openings.group_join(self, window_closing_mapper, lambda _: StaticObservable.empty(), lambda _, window: window)
+
 
 def observable_window_with_boundaries(self, window_boundaries):
     source = self
@@ -72,6 +76,7 @@ def observable_window_with_boundaries(self, window_boundaries):
         d.add(window_boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
         return r
     return AnonymousObservable(subscribe)
+
 
 def observable_window_with_closing_mapper(self, window_closing_mapper):
     source = self

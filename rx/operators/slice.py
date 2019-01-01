@@ -1,9 +1,10 @@
+from typing import Callable
 from rx.core import Observable
 
 # pylint: disable=w0622
 
 
-def slice(source, start: int = None, stop: int = None, step: int = 1) -> Observable:
+def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
     """Slices the given observable. It is basically a wrapper around the
     operators skip(), skip_last(), take(), take_last() and filter().
 
@@ -33,23 +34,25 @@ def slice(source, start: int = None, stop: int = None, step: int = 1) -> Observa
     has_stop = stop is not None
     has_step = step is not None
 
-    if has_stop and stop >= 0:
-        source = source.take(stop)
+    def partial(source: Observable) -> Observable:
+        if has_stop and stop >= 0:
+            source = source.take(stop)
 
-    if has_start and start > 0:
-        source = source.skip(start)
+        if has_start and start > 0:
+            source = source.skip(start)
 
-    if has_start and start < 0:
-        source = source.take_last(abs(start))
+        if has_start and start < 0:
+            source = source.take_last(abs(start))
 
-    if has_stop and stop < 0:
-        source = source.skip_last(abs(stop))
+        if has_stop and stop < 0:
+            source = source.skip_last(abs(stop))
 
-    if has_step:
-        if step > 1:
-            source = source.filteri(lambda x, i: i % step == 0)
-        elif step < 0:
-            # Reversing events is not supported
-            raise TypeError("Negative step not supported.")
+        if has_step:
+            if step > 1:
+                source = source.filteri(lambda x, i: i % step == 0)
+            elif step < 0:
+                # Reversing events is not supported
+                raise TypeError("Negative step not supported.")
 
-    return source
+        return source
+    return partial

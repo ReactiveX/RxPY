@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from rx.core import AnonymousObservable, ObservableBase as Observable
+from rx.core import AnonymousObservable, Observable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 
 

@@ -1,8 +1,9 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+from rx.core import Observable, AnonymousObservable
 from rx.internal.basic import identity, default_comparer
 
 
-def distinct_until_changed(self, key_mapper=None, comparer=None) -> ObservableBase:
+def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
 
@@ -21,33 +22,34 @@ def distinct_until_changed(self, key_mapper=None, comparer=None) -> ObservableBa
     sequence.
     """
 
-    source = self
     key_mapper = key_mapper or identity
     comparer = comparer or default_comparer
 
-    def subscribe(observer, scheduler=None):
-        has_current_key = [False]
-        current_key = [None]
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            has_current_key = [False]
+            current_key = [None]
 
-        def on_next(value):
-            comparer_equals = False
-            try:
-                key = key_mapper(value)
-            except Exception as exception:
-                observer.on_error(exception)
-                return
-
-            if has_current_key[0]:
+            def on_next(value):
+                comparer_equals = False
                 try:
-                    comparer_equals = comparer(current_key[0], key)
+                    key = key_mapper(value)
                 except Exception as exception:
                     observer.on_error(exception)
                     return
 
-            if not has_current_key[0] or not comparer_equals:
-                has_current_key[0] = True
-                current_key[0] = key
-                observer.on_next(value)
+                if has_current_key[0]:
+                    try:
+                        comparer_equals = comparer(current_key[0], key)
+                    except Exception as exception:
+                        observer.on_error(exception)
+                        return
 
-        return source.subscribe_(on_next, observer.on_error, observer.on_completed)
-    return AnonymousObservable(subscribe)
+                if not has_current_key[0] or not comparer_equals:
+                    has_current_key[0] = True
+                    current_key[0] = key
+                    observer.on_next(value)
+
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+        return AnonymousObservable(subscribe)
+    return partial

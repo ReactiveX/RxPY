@@ -1,6 +1,7 @@
+from typing import Callable
 import logging
 
-from rx.core import AnonymousObservable, ObservableBase
+from rx.core import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable
 from rx.internal.exceptions import ArgumentOutOfRangeException
@@ -9,7 +10,7 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def window_with_count(self, count, skip=None) -> ObservableBase:
+def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
@@ -23,7 +24,6 @@ def window_with_count(self, count, skip=None) -> ObservableBase:
     Returns an observable sequence of windows.
     """
 
-    source = self
     if count <= 0:
         raise ArgumentOutOfRangeException()
 
@@ -33,43 +33,44 @@ def window_with_count(self, count, skip=None) -> ObservableBase:
     if skip <= 0:
         raise ArgumentOutOfRangeException()
 
-    def subscribe(observer, scheduler=None):
-        m = SingleAssignmentDisposable()
-        refCountDisposable = RefCountDisposable(m)
-        n = [0]
-        q = []
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            m = SingleAssignmentDisposable()
+            refCountDisposable = RefCountDisposable(m)
+            n = [0]
+            q = []
 
-        def create_window():
-            s = Subject()
-            q.append(s)
-            observer.on_next(add_ref(s, refCountDisposable))
+            def create_window():
+                s = Subject()
+                q.append(s)
+                observer.on_next(add_ref(s, refCountDisposable))
 
-        create_window()
+            create_window()
 
-        def on_next(x):
-            for item in q:
-                item.on_next(x)
+            def on_next(x):
+                for item in q:
+                    item.on_next(x)
 
-            c = n[0] - count + 1
-            if c >= 0 and c % skip == 0:
-                s = q.pop(0);
-                s.on_completed()
+                c = n[0] - count + 1
+                if c >= 0 and c % skip == 0:
+                    s = q.pop(0)
+                    s.on_completed()
 
-            n[0] += 1
-            if (n[0] % skip) == 0:
-                create_window()
+                n[0] += 1
+                if (n[0] % skip) == 0:
+                    create_window()
 
-        def on_error(exception):
-            while len(q):
-                q.pop(0).on_error(exception)
-            observer.on_error(exception)
+            def on_error(exception):
+                while len(q):
+                    q.pop(0).on_error(exception)
+                observer.on_error(exception)
 
-        def on_completed():
-            while len(q):
-                q.pop(0).on_completed()
-            observer.on_completed()
+            def on_completed():
+                while len(q):
+                    q.pop(0).on_completed()
+                observer.on_completed()
 
-        m.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
-        return refCountDisposable
-    return AnonymousObservable(subscribe)
-
+            m.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
+            return refCountDisposable
+        return AnonymousObservable(subscribe)
+    return partial

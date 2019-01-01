@@ -1,12 +1,12 @@
-from typing import Union
+from typing import Union, Callable
 from datetime import timedelta
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def take_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> ObservableBase:
+def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 
@@ -28,12 +28,14 @@ def take_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> O
     during the specified duration from the start of the source sequence.
     """
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or timeout_scheduler
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            scheduler = scheduler or timeout_scheduler
 
-        def action(scheduler, state):
-            observer.on_completed()
+            def action(scheduler, state):
+                observer.on_completed()
 
-        disposable = scheduler.schedule_relative(duration, action)
-        return CompositeDisposable(disposable, source.subscribe(observer, scheduler))
-    return AnonymousObservable(subscribe)
+            disposable = scheduler.schedule_relative(duration, action)
+            return CompositeDisposable(disposable, source.subscribe(observer, scheduler))
+        return AnonymousObservable(subscribe)
+    return partial

@@ -1,4 +1,5 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+from rx.core import Observable, AnonymousObservable
 
 
 def _to_dict(source, map_type, key_mapper, element_mapper):
@@ -30,7 +31,7 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
     return AnonymousObservable(subscribe)
 
 
-def to_dict(self, key_mapper, element_mapper=None) -> ObservableBase:
+def to_dict(key_mapper, element_mapper=None) -> Callable[[Observable], Observable]:
     """Converts the observable sequence to a Map if it exists.
 
     Keyword arguments:
@@ -44,5 +45,6 @@ def to_dict(self, key_mapper, element_mapper=None) -> ObservableBase:
     containing the values from the observable sequence.
     """
 
-    return _to_dict(self, dict, key_mapper, element_mapper)
-
+    def partial(source: Observable) -> Observable:
+        return _to_dict(source, dict, key_mapper, element_mapper)
+    return partial

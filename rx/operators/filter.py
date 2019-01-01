@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, ObservableBase as Observable
+from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Disposable
 
 

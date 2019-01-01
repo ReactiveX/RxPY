@@ -1,10 +1,12 @@
+from typing import Callable
 from datetime import datetime
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
-def take_until_with_time(source, end_time) -> ObservableBase:
+
+def take_until_with_time(end_time) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration until the specified end
     time, using the specified scheduler to run timers.
 
@@ -22,17 +24,19 @@ def take_until_with_time(source, end_time) -> ObservableBase:
     until the specified end time.
     """
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or timeout_scheduler
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            scheduler = scheduler or timeout_scheduler
 
-        if isinstance(end_time, datetime):
-            scheduler_method = scheduler.schedule_absolute
-        else:
-            scheduler_method = scheduler.schedule_relative
+            if isinstance(end_time, datetime):
+                scheduler_method = scheduler.schedule_absolute
+            else:
+                scheduler_method = scheduler.schedule_relative
 
-        def action(scheduler, state):
-            observer.on_completed()
+            def action(scheduler, state):
+                observer.on_completed()
 
-        task = scheduler_method(end_time, action)
-        return CompositeDisposable(task,  source.subscribe(observer, scheduler))
-    return AnonymousObservable(subscribe)
+            task = scheduler_method(end_time, action)
+            return CompositeDisposable(task,  source.subscribe(observer, scheduler))
+        return AnonymousObservable(subscribe)
+    return partial

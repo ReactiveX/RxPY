@@ -1,13 +1,13 @@
+from typing import Callable
 from collections import OrderedDict
 
 from rx.core import Observable, AnonymousObservable, GroupedObservable
 from rx.subjects import Subject
-from rx.disposables import CompositeDisposable, RefCountDisposable, \
-    SingleAssignmentDisposable
+from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import identity
 
 
-def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observable:
+def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], GroupedObservable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -42,39 +42,20 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
     encountered.
     """
 
-    source = self
     element_mapper = element_mapper or identity
 
-    def subscribe(observer, scheduler=None):
-        writers = OrderedDict()
-        group_disposable = CompositeDisposable()
-        ref_count_disposable = RefCountDisposable(group_disposable)
+    def partial(source: Observable) -> GroupedObservable:
+        def subscribe(observer, scheduler=None):
+            writers = OrderedDict()
+            group_disposable = CompositeDisposable()
+            ref_count_disposable = RefCountDisposable(group_disposable)
 
-        def on_next(x):
-            writer = None
-            key = None
+            def on_next(x):
+                writer = None
+                key = None
 
-            try:
-                key = key_mapper(x)
-            except Exception as e:
-                for wrt in writers.values():
-                    wrt.on_error(e)
-
-                observer.on_error(e)
-                return
-
-            fire_new_map_entry = False
-            writer = writers.get(key)
-            if not writer:
-                writer = Subject()
-                writers[key] = writer
-                fire_new_map_entry = True
-
-            if fire_new_map_entry:
-                group = GroupedObservable(key, writer, ref_count_disposable)
-                duration_group = GroupedObservable(key, writer)
                 try:
-                    duration = duration_mapper(duration_group)
+                    key = key_mapper(x)
                 except Exception as e:
                     for wrt in writers.values():
                         wrt.on_error(e)
@@ -82,53 +63,73 @@ def group_by_until(self, key_mapper, element_mapper, duration_mapper) -> Observa
                     observer.on_error(e)
                     return
 
-                observer.on_next(group)
-                sad = SingleAssignmentDisposable()
-                group_disposable.add(sad)
+                fire_new_map_entry = False
+                writer = writers.get(key)
+                if not writer:
+                    writer = Subject()
+                    writers[key] = writer
+                    fire_new_map_entry = True
 
-                def expire():
-                    if writers[key]:
-                        del writers[key]
-                        writer.on_completed()
+                if fire_new_map_entry:
+                    group = GroupedObservable(key, writer, ref_count_disposable)
+                    duration_group = GroupedObservable(key, writer)
+                    try:
+                        duration = duration_mapper(duration_group)
+                    except Exception as e:
+                        for wrt in writers.values():
+                            wrt.on_error(e)
 
-                    group_disposable.remove(sad)
+                        observer.on_error(e)
+                        return
 
-                def on_next(value):
-                    pass
+                    observer.on_next(group)
+                    sad = SingleAssignmentDisposable()
+                    group_disposable.add(sad)
 
-                def on_error(exn):
+                    def expire():
+                        if writers[key]:
+                            del writers[key]
+                            writer.on_completed()
+
+                        group_disposable.remove(sad)
+
+                    def on_next(value):
+                        pass
+
+                    def on_error(exn):
+                        for wrt in writers.values():
+                            wrt.on_error(exn)
+                        observer.on_error(exn)
+
+                    def on_completed():
+                        expire()
+
+                    sad.disposable = duration.take(1).subscribe_(on_next, on_error, on_completed, scheduler)
+
+                try:
+                    element = element_mapper(x)
+                except Exception as error:
                     for wrt in writers.values():
-                        wrt.on_error(exn)
-                    observer.on_error(exn)
+                        wrt.on_error(error)
 
-                def on_completed():
-                    expire()
+                    observer.on_error(error)
+                    return
 
-                sad.disposable = duration.take(1).subscribe_(on_next, on_error, on_completed, scheduler)
+                writer.on_next(element)
 
-            try:
-                element = element_mapper(x)
-            except Exception as error:
+            def on_error(ex):
                 for wrt in writers.values():
-                    wrt.on_error(error)
+                    wrt.on_error(ex)
 
-                observer.on_error(error)
-                return
+                observer.on_error(ex)
 
-            writer.on_next(element)
+            def on_completed():
+                for wrt in writers.values():
+                    wrt.on_completed()
 
-        def on_error(ex):
-            for wrt in writers.values():
-                wrt.on_error(ex)
+                observer.on_completed()
 
-            observer.on_error(ex)
-
-        def on_completed():
-            for wrt in writers.values():
-                wrt.on_completed()
-
-            observer.on_completed()
-
-        group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
-        return ref_count_disposable
-    return AnonymousObservable(subscribe)
+            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            return ref_count_disposable
+        return AnonymousObservable(subscribe)
+    return partial

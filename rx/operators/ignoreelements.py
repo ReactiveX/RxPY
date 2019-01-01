@@ -1,8 +1,8 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal import noop
 
 
-def ignore_elements(source: ObservableBase) -> ObservableBase:
+def ignore_elements(source: Observable) -> Observable:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
