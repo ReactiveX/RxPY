@@ -1,9 +1,9 @@
 import unittest
-from datetime import datetime
 
-from rx.chained import Observable
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
+
+from rx.operators.filter import filter, filteri
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -24,12 +24,12 @@ def _raise(ex):
 
 
 def test_is_prime():
-    assert is_prime(1) == False
-    assert is_prime(2) == True
-    assert is_prime(3) == True
-    assert is_prime(4) == False
-    assert is_prime(5) == True
-    assert is_prime(6) == False
+    assert not is_prime(1)
+    assert is_prime(2)
+    assert is_prime(3)
+    assert not is_prime(4)
+    assert is_prime(5)
+    assert not is_prime(6)
 
 
 class TestFilter(unittest.TestCase):
@@ -52,7 +52,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x)
 
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create)
 
@@ -72,7 +72,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x):
                 invoked[0] += 1
                 return True
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(
@@ -91,7 +91,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return False
 
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create)
 
@@ -109,7 +109,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x):
                 invoked[0] += 1
                 return is_prime(x)
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create, disposed=400)
         assert results.messages == [
@@ -121,14 +121,28 @@ class TestFilter(unittest.TestCase):
         scheduler = TestScheduler()
         invoked = [0]
         ex = 'ex'
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(
-            390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_error(600, ex), on_next(610, 12), on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1),
+            on_next(180, 2),
+            on_next(230, 3),
+            on_next(270, 4),
+            on_next(340, 5),
+            on_next(380, 6),
+            on_next(390, 7),
+            on_next(450, 8),
+            on_next(470, 9),
+            on_next(560, 10),
+            on_next(580, 11),
+            on_error(600, ex),
+            on_next(610, 12),
+            on_error(620, 'ex'),
+            on_completed(630))
 
         def create():
             def predicate(x):
                 invoked[0] += 1
                 return is_prime(x)
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create)
 
@@ -151,7 +165,7 @@ class TestFilter(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x)
-            return xs.filter(predicate)
+            return xs.pipe(filter(predicate))
 
         results = scheduler.start(create)
 
@@ -177,7 +191,7 @@ class TestFilter(unittest.TestCase):
                     d.dispose()
 
                 return is_prime(x)
-            ys[0] = xs.filter(predicate)
+            ys[0] = xs.pipe(filter(predicate))
             return ys[0]
 
         scheduler.schedule_absolute(created, action)
@@ -209,7 +223,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -228,7 +242,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return True
 
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(
@@ -246,7 +260,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return False
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create)
 
@@ -265,7 +279,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create, disposed=400)
         assert results.messages == [on_next(230, 3), on_next(390, 7)]
@@ -283,7 +297,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create)
 
@@ -306,7 +320,7 @@ class TestFilter(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x + index * 10)
-            return xs.filteri(predicate)
+            return xs.pipe(filteri(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 3), on_error(380, ex)]
@@ -329,7 +343,7 @@ class TestFilter(unittest.TestCase):
                     d.dispose()
 
                 return is_prime(x + index * 10)
-            ys[0] = xs.filteri(predicate)
+            ys[0] = xs.pipe(filteri(predicate))
 
         scheduler.schedule_absolute(created, action1)
 
