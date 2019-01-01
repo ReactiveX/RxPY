@@ -1,7 +1,8 @@
+from typing import Callable
 from rx.core import Observable, AnonymousObservable
 
 
-def take_last_buffer(self, count) -> ObservableBase:
+def take_last_buffer(self, count) -> Callable[[Observable], Observable]:
     """Returns an array with the specified number of contiguous elements
     from the end of an observable sequence.
 
@@ -22,19 +23,20 @@ def take_last_buffer(self, count) -> ObservableBase:
     number of elements from the end of the source sequence.
     """
 
-    source = self
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            q = []
 
-    def subscribe(observer, scheduler=None):
-        q = []
-        def on_next(x):
-            with self.lock:
-                q.append(x)
-                if len(q) > count:
-                    q.pop(0)
+            def on_next(x):
+                with self.lock:
+                    q.append(x)
+                    if len(q) > count:
+                        q.pop(0)
 
-        def on_completed():
-            observer.on_next(q)
-            observer.on_completed()
+            def on_completed():
+                observer.on_next(q)
+                observer.on_completed()
 
-        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return partial

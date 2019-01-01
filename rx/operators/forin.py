@@ -1,8 +1,8 @@
-from rx.core import ObservableBase, Observable
+from rx.core import Observable, StaticObservable
 from rx.internal import Iterable
 
 
-def for_in(values, result_mapper) -> ObservableBase:
+def for_in(values, result_mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
@@ -15,4 +15,4 @@ def for_in(values, result_mapper) -> ObservableBase:
     observable sequences.
     """
 
-    return Observable.concat(Iterable.for_each(values, result_mapper))
+    return StaticObservable.concat(Iterable.for_each(values, result_mapper))

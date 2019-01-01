@@ -14,9 +14,10 @@ Other implementations of transducers in Python are:
  - https://github.com/cognitect-labs/transducers-python
 """
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 a = 10
+
 
 class Observing:
 
@@ -38,7 +39,7 @@ class Observing:
         return self.step(result, item)
 
 
-def transduce(source, transducer) -> ObservableBase:
+def transduce(source, transducer) -> Observable:
     """Execute a transducer to transform the observable sequence.
 
     Keyword arguments:

@@ -1,8 +1,10 @@
-from rx.core import AnonymousObservable, ObservableBase
+from typing import Callable
+from rx.core import AnonymousObservable, Observable
+from rx.core.typing import Scheduler
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
 
-def subscribe_on(self, scheduler) -> ObservableBase:
+def subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
     """Subscribe on the specified scheduler.
 
     Wrap the source sequence in order to run its subscription and
@@ -21,17 +23,18 @@ def subscribe_on(self, scheduler) -> ObservableBase:
     on the specified scheduler. In order to invoke observer callbacks on a
     scheduler, use observe_on.
     """
-    source = self
 
-    def subscribe(observer, _=None):
-        m = SingleAssignmentDisposable()
-        d = SerialDisposable()
-        d.disposable = m
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, _=None):
+            m = SingleAssignmentDisposable()
+            d = SerialDisposable()
+            d.disposable = m
 
-        def action(scheduler, state):
-            d.disposable = ScheduledDisposable(scheduler, source.subscribe(observer))
+            def action(scheduler, state):
+                d.disposable = ScheduledDisposable(scheduler, source.subscribe(observer))
 
-        m.disposable = scheduler.schedule(action)
-        return d
+            m.disposable = scheduler.schedule(action)
+            return d
 
-    return AnonymousObservable(subscribe)
+        return AnonymousObservable(subscribe)
+    return partial

@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import ObservableBase
+from rx.core import Observable
 from rx.concurrency import timeout_scheduler
 from rx.subjects import AsyncSubject
 
@@ -25,9 +25,9 @@ def to_async(func: Callable, scheduler=None) -> Callable:
     Returns asynchronous function.
     """
 
-    scheduler =  scheduler or timeout_scheduler
+    scheduler = scheduler or timeout_scheduler
 
-    def wrapper(*args) -> ObservableBase:
+    def wrapper(*args) -> Observable:
         subject = AsyncSubject()
 
         def action(scheduler, state):

@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import ObservableBase as Observable
+from rx.core import Observable
 
 from .firstordefault import first_or_default_async
 

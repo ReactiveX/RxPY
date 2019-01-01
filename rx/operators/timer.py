@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import MultipleAssignmentDisposable
 
 log = logging.getLogger("Rx")
@@ -17,7 +17,7 @@ def observable_timer_date(duetime):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_duetime_and_period(duetime, period) -> ObservableBase:
+def observable_timer_duetime_and_period(duetime, period) -> Observable:
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
@@ -44,7 +44,7 @@ def observable_timer_duetime_and_period(duetime, period) -> ObservableBase:
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan(duetime) -> ObservableBase:
+def observable_timer_timespan(duetime) -> Observable:
 
     def subscribe(observer, scheduler=None):
         d = scheduler.normalize(duetime)
@@ -57,7 +57,7 @@ def observable_timer_timespan(duetime) -> ObservableBase:
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime, period) -> ObservableBase:
+def observable_timer_timespan_and_period(duetime, period) -> Observable:
     if duetime == period:
         def subscribe(observer, scheduler=None):
             def action(count):
@@ -69,7 +69,7 @@ def observable_timer_timespan_and_period(duetime, period) -> ObservableBase:
     return observable_timer_duetime_and_period(duetime, period)
 
 
-def timer(duetime, period=None) -> ObservableBase:
+def timer(duetime, period=None) -> Observable:
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 

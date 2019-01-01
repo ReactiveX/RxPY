@@ -1,7 +1,7 @@
-from rx.core import Observable, ObservableBase
+from rx.core import Observable, StaticObservable
 
 
-def start(func, scheduler=None) -> ObservableBase:
+def start(func, scheduler=None) -> Observable:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 
@@ -23,4 +23,4 @@ def start(func, scheduler=None) -> ObservableBase:
     sequence can observe the function's result.
     """
 
-    return Observable.to_async(func, scheduler)()
+    return StaticObservable.to_async(func, scheduler)()

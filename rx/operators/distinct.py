@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.internal.basic import default_comparer
 
 # Swap out for Array.findIndex
@@ -24,7 +24,7 @@ class HashSet:
         return ret_value
 
 
-def distinct(key_mapper=None, comparer=None) -> Callable[[ObservableBase], ObservableBase]:
+def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of
     this operator should be considered carefully due to the maintenance
@@ -46,7 +46,7 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[ObservableBase], Obser
 
     comparer = comparer or default_comparer
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             hashset = HashSet(comparer)
 

@@ -1,10 +1,11 @@
+from typing import Callable
 from rx.internal import noop
-from rx.core import Observable, ObservableBase, AnonymousObservable
+from rx.core import Observable, StaticObservable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.internal.utils import is_future
 
 
-def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
+def take_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
@@ -17,15 +18,17 @@ def take_until(source: ObservableBase, other: ObservableBase) -> ObservableBase:
     propagation.
     """
 
-    other = Observable.from_future(other) if is_future(other) else other
+    other = StaticObservable.from_future(other) if is_future(other) else other
 
-    def subscribe(observer, scheduler=None):
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
 
-        def on_completed(_):
-            observer.on_completed()
+            def on_completed(_):
+                observer.on_completed()
 
-        return CompositeDisposable(
-            source.subscribe(observer),
-            other.subscribe_(on_completed, observer.on_error, noop, scheduler)
-        )
-    return AnonymousObservable(subscribe)
+            return CompositeDisposable(
+                source.subscribe(observer),
+                other.subscribe_(on_completed, observer.on_error, noop, scheduler)
+            )
+        return AnonymousObservable(subscribe)
+    return partial

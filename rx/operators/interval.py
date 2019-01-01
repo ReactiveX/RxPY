@@ -1,7 +1,7 @@
-from rx.core import Observable, ObservableBase
+from rx.core import Observable, StaticObservable
 
 
-def interval(period) -> ObservableBase:
+def interval(period) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
@@ -15,4 +15,4 @@ def interval(period) -> ObservableBase:
     Returns an observable sequence that produces a value after each period.
     """
 
-    return Observable.timer(period, period)
+    return StaticObservable.timer(period, period)

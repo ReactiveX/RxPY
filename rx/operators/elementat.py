@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import ObservableBase as Observable
+from rx.core import Observable
 
 from .elementatordefault import _element_at_or_default
 

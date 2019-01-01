@@ -1,10 +1,9 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def generate_with_relative_time(initial_state, condition, iterate,
-                                result_mapper, time_mapper) -> ObservableBase:
+def generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 

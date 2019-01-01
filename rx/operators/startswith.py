@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Callable
 from rx.core import Observable, StaticObservable
 from .concat import concat
 
 
-def start_with(source: Observable, *args: Any) -> Observable:
+def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
 
     1 - source.start_with(1, 2, 3)
@@ -11,6 +11,8 @@ def start_with(source: Observable, *args: Any) -> Observable:
     Returns the source sequence prepended with the specified values.
     """
 
-    start = StaticObservable.from_iterable(args)
-    sequence = [start, source]
-    return concat(*sequence)
+    def partial(source: Observable) -> Observable:
+        start = StaticObservable.from_iterable(args)
+        sequence = [start, source]
+        return concat(*sequence)
+    return partial

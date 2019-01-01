@@ -1,10 +1,9 @@
 from typing import Callable, Union
 from datetime import timedelta
-from rx.core import AnonymousObservable, ObservableBase as Observable
+from rx.core import AnonymousObservable, Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, \
-    RefCountDisposable, SerialDisposable
+from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
 
 

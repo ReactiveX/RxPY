@@ -1,7 +1,7 @@
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 
 
-def to_set(source: ObservableBase) -> ObservableBase:
+def to_set(source: Observable) -> Observable:
     """Converts the observable sequence to a set.
 
     Returns an observable sequence with a single value of a set

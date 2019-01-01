@@ -1,12 +1,12 @@
 from typing import Union, Iterable, Any
-from rx.core import Observable, ObservableBase, AnonymousObservable
+from rx.core import Observable, StaticObservable, AnonymousObservable
 from rx.core.typing import Mapper
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
-def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
-        result_mapper: Mapper = None) -> ObservableBase:
+def zip(*args: Union[Iterable[Any], Observable],  # pylint: disable=W0622
+        result_mapper: Mapper = None) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by using the mapper function whenever all of the
     observable sequences have produced an element at a corresponding
@@ -63,7 +63,7 @@ def zip(*args: Union[Iterable[Any], ObservableBase],  # pylint: disable=W0622
         def func(i):
             source = sources[i]
             sad = SingleAssignmentDisposable()
-            source = Observable.from_future(source) if is_future(source) else source
+            source = StaticObservable.from_future(source) if is_future(source) else source
 
             def on_next(x):
                 queues[i].append(x)

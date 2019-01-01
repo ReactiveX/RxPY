@@ -34,7 +34,7 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
                     q.pop(0)
 
             def on_completed():
-                while len(q):
+                while q:
                     observer.on_next(q.pop(0))
                 observer.on_completed()
 

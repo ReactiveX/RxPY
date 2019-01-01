@@ -1,14 +1,13 @@
 from datetime import datetime
-from typing import Union
+from typing import Union, Callable
 
-from rx.core import Observable, ObservableBase, AnonymousObservable
+from rx.core import Observable, StaticObservable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
 
 
-def timeout(source: ObservableBase, duetime: Union[int, datetime],
-            other: ObservableBase = None) -> ObservableBase:
+def timeout(duetime: Union[int, datetime], other: Observable = None) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
@@ -30,56 +29,59 @@ def timeout(source: ObservableBase, duetime: Union[int, datetime],
         of a timeout.
     """
 
-    other = other or Observable.throw(Exception("Timeout"))
-    other = Observable.from_future(other) if is_future(other) else other
+    other = other or StaticObservable.throw(Exception("Timeout"))
+    other = StaticObservable.from_future(other) if is_future(other) else other
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or timeout_scheduler
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            scheduler = scheduler or timeout_scheduler
 
-        if isinstance(duetime, datetime):
-            scheduler_method = scheduler.schedule_absolute
-        else:
-            scheduler_method = scheduler.schedule_relative
+            if isinstance(duetime, datetime):
+                scheduler_method = scheduler.schedule_absolute
+            else:
+                scheduler_method = scheduler.schedule_relative
 
-        switched = [False]
-        _id = [0]
+            switched = [False]
+            _id = [0]
 
-        original = SingleAssignmentDisposable()
-        subscription = SerialDisposable()
-        timer = SerialDisposable()
-        subscription.disposable = original
+            original = SingleAssignmentDisposable()
+            subscription = SerialDisposable()
+            timer = SerialDisposable()
+            subscription.disposable = original
 
-        def create_timer():
-            my_id = _id[0]
+            def create_timer():
+                my_id = _id[0]
 
-            def action(scheduler, state=None):
-                switched[0] = (_id[0] == my_id)
-                timer_wins = switched[0]
-                if timer_wins:
-                    subscription.disposable = other.subscribe(observer, scheduler)
+                def action(scheduler, state=None):
+                    switched[0] = (_id[0] == my_id)
+                    timer_wins = switched[0]
+                    if timer_wins:
+                        subscription.disposable = other.subscribe(observer, scheduler)
 
-            timer.disposable = scheduler_method(duetime, action)
+                timer.disposable = scheduler_method(duetime, action)
 
-        create_timer()
-        def on_next(value):
-            send_wins = not switched[0]
-            if send_wins:
-                _id[0] += 1
-                observer.on_next(value)
-                create_timer()
+            create_timer()
 
-        def on_error(error):
-            on_error_wins = not switched[0]
-            if on_error_wins:
-                _id[0] += 1
-                observer.on_error(error)
+            def on_next(value):
+                send_wins = not switched[0]
+                if send_wins:
+                    _id[0] += 1
+                    observer.on_next(value)
+                    create_timer()
 
-        def on_completed():
-            on_completed_wins = not switched[0]
-            if on_completed_wins:
-                _id[0] += 1
-                observer.on_completed()
+            def on_error(error):
+                on_error_wins = not switched[0]
+                if on_error_wins:
+                    _id[0] += 1
+                    observer.on_error(error)
 
-        original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
-        return CompositeDisposable(subscription, timer)
-    return AnonymousObservable(subscribe)
+            def on_completed():
+                on_completed_wins = not switched[0]
+                if on_completed_wins:
+                    _id[0] += 1
+                    observer.on_completed()
+
+            original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
+            return CompositeDisposable(subscription, timer)
+        return AnonymousObservable(subscribe)
+    return partial

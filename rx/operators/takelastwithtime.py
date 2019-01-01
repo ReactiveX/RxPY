@@ -1,8 +1,9 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 
 
-def take_last_with_time(source, duration) -> ObservableBase:
+def take_last_with_time(duration) -> Callable[[Observable], Observable]:
     """Returns elements within the specified duration from the end of the
     observable source sequence.
 
@@ -24,27 +25,29 @@ def take_last_with_time(source, duration) -> ObservableBase:
     during the specified duration from the end of the source sequence.
     """
 
-    def subscribe(observer, scheduler=None):
-        nonlocal duration
+    def partial(source: Observable) -> Observable:
+        def subscribe(observer, scheduler=None):
+            nonlocal duration
 
-        scheduler = scheduler or timeout_scheduler
-        duration = scheduler.to_timedelta(duration)
-        q = []
+            scheduler = scheduler or timeout_scheduler
+            duration = scheduler.to_timedelta(duration)
+            q = []
 
-        def on_next(x):
-            now = scheduler.now
-            q.append({"interval": now, "value": x})
-            while q and now - q[0]["interval"] >= duration:
-                q.pop(0)
+            def on_next(x):
+                now = scheduler.now
+                q.append({"interval": now, "value": x})
+                while q and now - q[0]["interval"] >= duration:
+                    q.pop(0)
 
-        def on_completed():
-            now = scheduler.now
-            while len(q):
-                next = q.pop(0)
-                if now - next["interval"] <= duration:
-                    observer.on_next(next["value"])
+            def on_completed():
+                now = scheduler.now
+                while q:
+                    next = q.pop(0)
+                    if now - next["interval"] <= duration:
+                        observer.on_next(next["value"])
 
-            observer.on_completed()
+                observer.on_completed()
 
-        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return partial

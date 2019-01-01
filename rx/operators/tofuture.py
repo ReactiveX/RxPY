@@ -1,10 +1,10 @@
 from typing import Callable
 from asyncio import Future
 
-from rx.core import ObservableBase
+from rx.core import Observable
 
 
-def to_future(source: ObservableBase, future_ctor: Callable[[], Future] = None) -> Future:
+def to_future(source: Observable, future_ctor: Callable[[], Future] = None) -> Future:
     """Converts an existing observable sequence to a Future.
 
     Example:
