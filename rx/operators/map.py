@@ -24,16 +24,12 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
     def partial(source: Observable) -> Observable:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
-            print("map subscribe")
-
             def on_next(value):
                 try:
                     result = mapper(value)
                 except Exception as err:  # By design. pylint: disable=W0703
                     obv.on_error(err)
                 else:
-                    print("Map.on_next(%s)" % result)
-
                     obv.on_next(result)
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)

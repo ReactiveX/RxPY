@@ -1,11 +1,11 @@
 from typing import Callable
 
-from rx.core import Observable, ObservableBase, AnonymousObservable
+from rx.core import Observable, StaticObservable, AnonymousObservable
 from rx.core import abc
 from rx.internal.utils import is_future
 
 
-def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> ObservableBase:
+def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 
@@ -25,8 +25,8 @@ def defer(observable_factory: Callable[[abc.Scheduler], ObservableBase]) -> Obse
         try:
             result = observable_factory(scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
-            return Observable.throw(ex).subscribe(observer)
+            return StaticObservable.throw(ex).subscribe(observer)
 
-        result = Observable.from_future(result) if is_future(result) else result
+        result = StaticObservable.from_future(result) if is_future(result) else result
         return result.subscribe(observer, scheduler)
     return AnonymousObservable(subscribe)
