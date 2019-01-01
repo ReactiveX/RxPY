@@ -2,14 +2,14 @@ from __future__ import annotations
 import threading
 from typing import Any, List
 
-from rx.core import Observer, ObservableBase, Disposable, Scheduler
+from rx.core import Observer, Observable, Disposable, Scheduler
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(ObservableBase, Observer):
+class Subject(Observable, Observer):
     """Represents an object that is both an observable sequence as well
     as an observer. Each notification is broadcasted to all subscribed
     observers.

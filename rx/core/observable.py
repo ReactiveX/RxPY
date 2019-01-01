@@ -2,11 +2,10 @@
 import types
 import inspect
 import threading
-from typing import cast, overload, Any
+from typing import Any
 
 from rx.concurrency import current_thread_scheduler
 
-from .typing import Scheduler
 from .disposable import Disposable
 from .autodetachobserver import AutoDetachObserver
 from .anonymousobserver import AnonymousObserver
@@ -69,9 +68,8 @@ class Observable(typing.Observable):
         else:
             raise TypeError("Invalid argument type.")
 
-        source = self
         from ..operators.slice import slice as slice_
-        return slice_(source, start, stop, step)
+        return slice_(start, stop, step)(self)
 
     def __iadd__(self, other):
         """Pythonic use of concat.
@@ -117,7 +115,7 @@ class Observable(typing.Observable):
         observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
 
-    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None):
+    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None) -> Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:

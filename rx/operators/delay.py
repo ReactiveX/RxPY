@@ -1,9 +1,12 @@
 from typing import Union, Callable
 from datetime import datetime, timedelta
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
+
+from .materialize import materialize
+from .timestamp import timestamp
 
 
 class Timestamp(object):
@@ -12,7 +15,7 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, int]) -> ObservableBase:
+def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]) -> Observable:
     def subscribe(observer, scheduler=None):
         nonlocal duetime
 
@@ -89,13 +92,15 @@ def observable_delay_timespan(source: ObservableBase, duetime: Union[timedelta, 
 
                     mad.disposable = scheduler.schedule_relative(
                         duetime, action)
-        subscription = source.materialize().timestamp(
+        subscription = source.pipe(
+            materialize(),
+            timestamp()
         ).subscribe_(on_next, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
 
-def delay(duetime: Union[datetime, int]) -> Callable[[ObservableBase], ObservableBase]:
+def delay(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
@@ -110,6 +115,6 @@ def delay(duetime: Union[datetime, int]) -> Callable[[ObservableBase], Observabl
     Returns time-shifted sequence.
     """
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         return observable_delay_timespan(source, duetime)
     return partial

@@ -1,10 +1,10 @@
 from typing import Any
 
-from rx.core import ObservableBase, Observer, Disposable, Scheduler
+from rx.core import Observable, Observer, Disposable, Scheduler
 
 
-class AnonymousSubject(ObservableBase, Observer):
-    def __init__(self, observer: Observer, observable: ObservableBase) -> None:
+class AnonymousSubject(Observable, Observer):
+    def __init__(self, observer: Observer, observable: Observable) -> None:
         super().__init__()
 
         self.observer = observer
