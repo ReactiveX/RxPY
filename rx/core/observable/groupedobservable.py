@@ -1,6 +1,7 @@
-from rx.core import AnonymousObservable, Observable
 from rx.disposables import CompositeDisposable
 
+from .observable import Observable
+from .anonymousobservable import AnonymousObservable
 
 class GroupedObservable(Observable):
     def __init__(self, key, underlying_observable, merged_disposable=None):

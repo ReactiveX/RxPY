@@ -4,7 +4,7 @@ from threading import RLock
 from rx.core import abc
 from rx.internal import Iterable
 
-from .anonymousobserver import AnonymousObserver
+from ..anonymousobserver import AnonymousObserver
 
 
 class BlockingObservable(abc.Observable):
@@ -18,8 +18,7 @@ class BlockingObservable(abc.Observable):
         self.observable = observable
         self.lock = RLock()
 
-    def subscribe(self, observer: abc.Observer = None,
-                  scheduler: abc.Scheduler = None) -> abc.Disposable:
+    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None) -> abc.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -81,7 +80,7 @@ class BlockingObservable(abc.Observable):
         Returns the first item to be emitted from the blocking
         observable.
         """
-        from ..operators.observable.blocking.first import first
+        from ..operators.blocking.first import first
         source = self
         return first(source)
 
@@ -102,7 +101,7 @@ class BlockingObservable(abc.Observable):
         Returns the first item to be emitted from the blocking
         observable.
         """
-        from ..operators.observable.blocking.first import first_or_default
+        from ..operators.blocking.first import first_or_default
         source = self
         return first_or_default(source, default_value)
 
@@ -126,7 +125,7 @@ class BlockingObservable(abc.Observable):
 
         Returns None, or raises an exception if an error occured.
         """
-        from ..operators.observable.blocking.foreach import for_each
+        from ..operators.blocking.foreach import for_each
         return for_each(self, action, action_indexed)
 
     def last(self) -> Any:
@@ -141,7 +140,7 @@ class BlockingObservable(abc.Observable):
 
         Returns the last item to be emitted from a BlockingObservable
         """
-        from ..operators.observable.blocking.last import last
+        from ..operators.blocking.last import last
         source = self
         return last(source)
 
@@ -160,7 +159,7 @@ class BlockingObservable(abc.Observable):
 
         Returns the last item to be emitted from a BlockingObservable
         """
-        from ..operators.observable.blocking.last import last_or_default
+        from ..operators.blocking.last import last_or_default
         source = self
         return last_or_default(source, default_value)
 
@@ -183,5 +182,5 @@ class BlockingObservable(abc.Observable):
         Returns an iterable that can iterate over the items emitted by
         this `BlockingObservable`.
         """
-        from ..operators.observable.blocking.toiterable import to_iterable
+        from ..operators.blocking.toiterable import to_iterable
         return to_iterable(self)

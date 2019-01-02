@@ -100,19 +100,22 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
     return AnonymousObservable(subscribe)
 
 
-def delay(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
+def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
-    1 - res = rx.Observable.delay(datetime())
-    2 - res = rx.Observable.delay(5000)
+    Examples:
+        >>> res = delay(timedelta(seconds=10))
+        >>> res = delay(5000)
 
-    Keyword arguments:
-    duetime -- Absolute (specified as a datetime object) or relative
-        time (specified as an integer denoting milliseconds) by which
-        to shift the observable sequence.
+    Args:
+        duetime -- Relative time specified as an integer denoting
+        milliseconds or datetime.timedelta by which to shift the
+        observable sequence.
 
-    Returns time-shifted sequence.
+    Returns:
+        An operator function that takes a source observable and returns
+        a time-shifted sequence.
     """
 
     def partial(source: Observable) -> Observable:

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from rx.concurrency import immediate_scheduler
 
 from . import Observer, AnonymousObserver
-from .anonymousobservable import AnonymousObservable
+from .observable import AnonymousObservable
 
 
 class Notification:

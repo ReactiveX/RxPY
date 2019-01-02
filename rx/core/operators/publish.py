@@ -1,4 +1,4 @@
-from rx.core import ObservableBase, ConnectableObservable
+from rx.core import Observable, ConnectableObservable
 from rx.subjects import Subject
 
 
@@ -22,7 +22,7 @@ def publish(mapper=None) -> ConnectableObservable:
     of a sequence produced by multicasting the source sequence within a
     mapper function."""
 
-    def partial(source: ObservableBase):
+    def partial(source: Observable):
         if mapper:
             return source.multicast(subject_factory=lambda _: Subject(), mapper=mapper)
         else:
@@ -30,7 +30,7 @@ def publish(mapper=None) -> ConnectableObservable:
     return partial
 
 
-def share(source: ObservableBase) -> ObservableBase:
+def share(source: Observable) -> Observable:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original

@@ -1,5 +1,8 @@
-from rx.core import Observable, Disposable, AnonymousObservable
+from rx.core import Disposable
 from rx.disposables import CompositeDisposable
+
+from .observable import Observable
+from .anonymousobservable import AnonymousObservable
 
 
 class ConnectableObservable(Observable):

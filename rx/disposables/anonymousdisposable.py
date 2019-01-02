@@ -11,12 +11,13 @@ class AnonymousDisposable(Disposable):
         """Creates a disposable object that invokes the specified action
         when disposed.
 
-        Keyword arguments:
-        action -- Action to run during the first call to dispose. The
-            action is guaranteed to be run at most once.
+        Args:
+            action -- Action to run during the first call to dispose.
+                The action is guaranteed to be run at most once.
 
-        Returns the disposable object that runs the given action upon
-        disposal.
+        Returns:
+            The disposable object that runs the given action upon
+            disposal.
         """
 
         self.is_disposed = False

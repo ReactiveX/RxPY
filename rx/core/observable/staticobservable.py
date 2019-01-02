@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 from typing import Any, Callable, Union, Iterable
 from asyncio.futures import Future
 
-from .typing import Mapper
+from ..typing import Mapper
+from .. import abc, typing
+
 from .observable import Observable
-from . import abc, typing
 
 
 class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
@@ -104,19 +105,6 @@ class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
         return defer(observable_factory)
 
     @staticmethod
-    def empty() -> Observable:
-        """Returns an empty observable sequence.
-
-        1 - res = rx.Observable.empty()
-
-        scheduler -- Scheduler to send the termination call on.
-
-        Returns an observable sequence with no elements.
-        """
-        from ..operators.empty import empty
-        return empty()
-
-    @staticmethod
     def for_in(values: Iterable,
                result_mapper: Callable[[Any], Observable]) -> Observable:
         """Concatenates the observable sequences obtained by running the
@@ -183,24 +171,6 @@ class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
         """
         from ..operators.fromfuture import from_future
         return from_future(future)
-
-    @staticmethod
-    def from_iterable(iterable: Iterable) -> Observable:
-        """Converts an array to an observable sequence.
-
-        1 - res = rx.Observable.from_iterable([1,2,3])
-
-        Keyword arguments:
-        iterable - An python iterable
-
-        Returns the observable sequence whose elements are pulled from
-        the given iterable sequence.
-        """
-        from ..operators.fromiterable import from_iterable
-        return from_iterable(iterable)
-
-    from_ = from_iterable
-    from_list = from_iterable
 
     @staticmethod
     def from_marbles(string: str) -> Observable:
