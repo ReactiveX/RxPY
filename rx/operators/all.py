@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import ObservableBase
+from rx.core import Observable
 from rx.core.typing import Predicate
 
 from .map import map
@@ -7,7 +7,7 @@ from .filter import filter
 from .some import some
 
 
-def all(predicate: Predicate) -> Callable[[ObservableBase], ObservableBase]:  # pylint: disable=W0622
+def all(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=W0622
     """Determines whether all elements of an observable sequence satisfy a
     condition.
 
@@ -21,7 +21,7 @@ def all(predicate: Predicate) -> Callable[[ObservableBase], ObservableBase]:  # 
     specified predicate.
     """
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         return source.pipe(
             filter(lambda v: not predicate(v)),
             some(),

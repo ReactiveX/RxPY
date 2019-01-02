@@ -1,11 +1,11 @@
-from rx.chained import Observable
+from rx.core import Observable, StaticObservable
 from rx.core import AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
 def amb(right_source):
-    right_source = Observable.from_future(right_source) if is_future(right_source) else right_source
+    right_source = StaticObservable.from_future(right_source) if is_future(right_source) else right_source
 
     def partial(left_source):
         def subscribe(observer, scheduler=None):
@@ -80,7 +80,7 @@ def amb_(*args: Observable):
     sequences, whichever reacted first.
     """
 
-    acc = Observable.never()
+    acc = StaticObservable.never()
     if isinstance(args[0], list):
         items = args[0]
     else:
