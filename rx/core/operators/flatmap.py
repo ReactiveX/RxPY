@@ -1,6 +1,8 @@
 import collections
 from typing import Any, Callable
-from rx.core import Observable, StaticObservable
+
+from rx import from_, from_future
+from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.utils import is_future
 
@@ -12,9 +14,9 @@ def _flat_map(source, mapper=None, mapper_indexed=None):
     def projection(x, i):
         mapper_result = mapper(x) if mapper else mapper_indexed(x, i)
         if isinstance(mapper_result, collections.abc.Iterable):
-            result = StaticObservable.from_(mapper_result)
+            result = from_(mapper_result)
         else:
-            result = StaticObservable.from_future(mapper_result) if is_future(
+            result = from_future(mapper_result) if is_future(
                 mapper_result) else mapper_result
         return result
 

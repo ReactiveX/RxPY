@@ -1,14 +1,14 @@
 from typing import Any, Callable
 from threading import RLock
 
-from rx.core import abc
+from rx.core import abc, Observable
 from rx.internal import Iterable
 
 from ..anonymousobserver import AnonymousObserver
 
 
 class BlockingObservable(abc.Observable):
-    def __init__(self, observable=None):
+    def __init__(self, observable: Observable = None):
         """Turns an observable into a blocking observable.
 
         Keyword arguments:

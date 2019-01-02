@@ -6,13 +6,14 @@ from rx.core import Observable, AnonymousObservable
 def from_future(future: Future) -> Observable:
     """Converts a Future to an Observable sequence
 
-    Keyword Arguments:
-    future -- A Python 3 compatible future.
-        https://docs.python.org/3/library/asyncio-task.html#future
-        http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
+    Args:
+        future -- A Python 3 compatible future.
+            https://docs.python.org/3/library/asyncio-task.html#future
+            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
-    Returns an Observable sequence which wraps the existing future
-    success and failure.
+    Returns:
+        An Observable sequence which wraps the existing future success
+        and failure.
     """
 
     def subscribe(observer, scheduler=None):

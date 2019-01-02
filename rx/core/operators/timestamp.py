@@ -1,9 +1,10 @@
 from typing import Callable
-from rx.core import Observable, StaticObservable
+
+from rx import defer
+from rx.core import Observable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
-
-from .map import map
+from rx import operators
 
 
 def timestamp() -> Callable[[Observable], Observable]:
@@ -18,8 +19,8 @@ def timestamp() -> Callable[[Observable], Observable]:
     def partial(source: Observable) -> Observable:
         def factory(scheduler=None):
             scheduler = scheduler or timeout_scheduler
-            mapper = map(lambda value: Timestamp(value=value, timestamp=scheduler.now))
+            mapper = operators.map(lambda value: Timestamp(value=value, timestamp=scheduler.now))
 
             return source.pipe(mapper)
-        return StaticObservable.defer(factory)
+        return defer(factory)
     return partial

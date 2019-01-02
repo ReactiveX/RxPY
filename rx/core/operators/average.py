@@ -1,9 +1,7 @@
 from typing import Callable
-from rx.core import ObservableBase
 
-from .scan import scan
-from .map import map
-from .last import last
+from rx import operators
+from rx.core import Observable
 
 
 class AverageValue(object):
@@ -12,7 +10,7 @@ class AverageValue(object):
         self.count = count
 
 
-def average(key_mapper=None) -> Callable[[ObservableBase], ObservableBase]:
+def average(key_mapper=None) -> Callable[[Observable], Observable]:
     """Computes the average of an observable sequence of values that are in
     the sequence or obtained by invoking a transform function on each
     element of the input sequence if present.
@@ -25,13 +23,17 @@ def average(key_mapper=None) -> Callable[[ObservableBase], ObservableBase]:
         key_mapper -- A transform function to apply to each element.
 
     Returns:
-        An observable sequence containing a single element with the
+        An operator function that takes an observable source and returns
+        an observable sequence containing a single element with the
         average of the sequence of values.
     """
 
-    def partial(source: ObservableBase) -> ObservableBase:
+    def partial(source: Observable) -> Observable:
         if key_mapper:
-            return source.map(key_mapper).average()
+            return source.pipe(
+                operators.map(key_mapper),
+                operators.average()
+            )
 
         def accumulator(prev, cur):
             return AverageValue(sum=prev.sum+cur, count=prev.count+1)
@@ -44,8 +46,8 @@ def average(key_mapper=None) -> Callable[[ObservableBase], ObservableBase]:
 
         seed = AverageValue(sum=0, count=0)
         return source.pipe(
-            scan(accumulator, seed),
-            last(),
-            map(mapper)
+            operators.scan(accumulator, seed),
+            operators.last(),
+            operators.map(mapper)
         )
     return partial

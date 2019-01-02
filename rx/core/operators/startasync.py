@@ -1,4 +1,5 @@
-from rx.core import Observable, StaticObservable
+from rx import throw, from_future
+from rx.core import Observable
 
 
 def start_async(function_async) -> Observable:
@@ -16,6 +17,6 @@ def start_async(function_async) -> Observable:
     try:
         future = function_async()
     except Exception as ex:
-        return StaticObservable.throw(ex)
+        return throw(ex)
 
-    return StaticObservable.from_future(future)
+    return from_future(future)

@@ -1,9 +1,9 @@
 from typing import Callable
-from rx.core import ObservableBase as Observable
+from rx import operators
+from rx.core import Observable
 from rx.core.typing import Predicate
 
 from .lastordefault import last_or_default_async
-from .filter import filter
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
@@ -15,7 +15,6 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
         >>> res = last(lambda x: x > 3)(source)
 
     Args:
-        source - Observable sequence.
         predicate -- [Optional] A predicate function to evaluate for
             elements in the source sequence.
 
@@ -28,8 +27,8 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     def partial(source: Observable) -> Observable:
         if predicate:
             return source.pipe(
-                filter(predicate),
-                last()
+                operators.filter(predicate),
+                operators.last()
             )
 
         return last_or_default_async(source, False)
