@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 
-from rx.core import abc
+from rx.core import abc, typing
 
 from .observable import Observable
 
@@ -9,7 +9,7 @@ class AnonymousObservable(Observable):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
 
-    def __init__(self, subscribe: Callable) -> None:
+    def __init__(self, subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]) -> None:
         """Creates an observable sequence object from the specified
         subscription function.
 

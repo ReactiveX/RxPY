@@ -10,16 +10,18 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     condition if provided, else the count of items.
 
     Examples:
-        >>> res = count()(source)
-        >>> res = count(lambda x: x > 3)(source)
+        >>> res = count()
+        >>> res = count(lambda x: x > 3)
 
     Args:
         predicate -- A function to test each element for a condition.
 
-    Returns an observable sequence containing a single element with a
-    number that represents how many elements in the input sequence
-    satisfy the condition in the predicate function if provided, else
-    the count of items in the sequence.
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence containing a single element with a number
+        that represents how many elements in the input sequence satisfy
+        the condition in the predicate function if provided, else
+        the count of items in the sequence.
     """
 
     filtering = operators.count(predicate)

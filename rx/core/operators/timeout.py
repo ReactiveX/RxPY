@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Union, Callable
 
-from rx.core import Observable, StaticObservable, AnonymousObservable
+from rx import from_future, throw
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
@@ -29,8 +30,8 @@ def timeout(duetime: Union[int, datetime], other: Observable = None) -> Callable
         of a timeout.
     """
 
-    other = other or StaticObservable.throw(Exception("Timeout"))
-    other = StaticObservable.from_future(other) if is_future(other) else other
+    other = other or throw(Exception("Timeout"))
+    other = from_future(other) if is_future(other) else other
 
     def partial(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):

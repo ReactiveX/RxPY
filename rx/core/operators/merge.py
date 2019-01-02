@@ -1,10 +1,10 @@
 from typing import Callable
-from rx.core import Observable, StaticObservable, AnonymousObservable
-from rx.core.observable.fromiterable import from_iterable
+
+from rx import from_future, from_iterable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
-
 
 
 def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
@@ -29,7 +29,7 @@ def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observabl
     def partial(source: Observable) -> Observable:
         if max_concurrent is None:
             args = tuple([source]) + args
-            return StaticObservable.merge(*args)
+            return merge_(*args)
 
         def subscribe(observer, scheduler=None):
             active_count = [0]
@@ -112,7 +112,7 @@ def merge_all() -> Callable[[Observable], Observable]:
                 inner_subscription = SingleAssignmentDisposable()
                 group.add(inner_subscription)
 
-                inner_source = StaticObservable.from_future(inner_source) if is_future(inner_source) else inner_source
+                inner_source = from_future(inner_source) if is_future(inner_source) else inner_source
 
                 @synchronized(source.lock)
                 def on_completed():

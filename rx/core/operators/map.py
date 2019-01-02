@@ -9,7 +9,7 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     by incorporating the element's index.
 
     Example:
-        >>> map(lambda value: value * 10)(source)
+        >>> map(lambda value: value * 10)
 
     Keyword arguments:
     mapper -- A transform function to apply to each source element; the
@@ -17,8 +17,8 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
         source element
 
     Returns:
-        A function that takes an observable source and returns an
-        observable sequence whose elements are the result of invoking
+        An operator function that takes an observable source and returns
+        an observable sequence whose elements are the result of invoking
         the transform function on each element of the source.
     """
 
@@ -45,13 +45,13 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
         >>> ret = map(lambda value, index: value * value + index)(source)
 
     Args:
-        mapper -- A transform function to apply to each source
+        mapper_indexed -- A transform function to apply to each source
             element; the second parameter of the function represents the
             index of the source element.
 
     Return:
-        A function that takes an observable source and returns an
-        observable sequence whose elements are the result of invoking
+        A operator function that takes an observable source and returns
+        an observable sequence whose elements are the result of invoking
         the transform function on each element of the source.
     """
 

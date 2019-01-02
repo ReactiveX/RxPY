@@ -8,13 +8,14 @@ def from_range(start: int, stop: int = None, step: int = None) -> Observable:
     specified range, using the specified scheduler to send out observer
     messages.
 
-    1 - res = Rx.Observable.range(10)
-    2 - res = Rx.Observable.range(0, 10)
-    3 - res = Rx.Observable.range(0, 10, 1)
+    Examples:
+        >>> res = range(10)
+        >>> res = range(0, 10)
+        >>> res = range(0, 10, 1)
 
-    Keyword arguments:
-    start -- The value of the first integer in the sequence.
-    count -- The number of sequential integers to generate.
+    Args:
+        start -- The value of the first integer in the sequence.
+        count -- The number of sequential integers to generate.
 
     Returns an observable sequence that contains a range of sequential
     integral numbers.

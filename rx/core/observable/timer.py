@@ -4,8 +4,6 @@ from datetime import datetime
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import MultipleAssignmentDisposable
 
-log = logging.getLogger("Rx")
-
 
 def observable_timer_date(duetime):
     def subscribe(observer, scheduler=None):
@@ -73,25 +71,25 @@ def timer(duetime, period=None) -> Observable:
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 
-    1 - res = Observable.timer(datetime(...))
-    2 - res = Observable.timer(datetime(...), 1000)
+    Examples:
+        >>> res = Observable.timer(datetime(...))
+        >>> res = Observable.timer(datetime(...), 1000)
+        >>> res = Observable.timer(5000)
+        >>> res = Observable.timer(5000, 1000)
 
-    5 - res = Observable.timer(5000)
-    6 - res = Observable.timer(5000, 1000)
+    Args:
+        duetime -- Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) at
+            which to produce the first value.
+        period -- [Optional] Period to produce subsequent values
+            (specified as an integer denoting milliseconds), or the
+            scheduler to run the timer on. If not specified, the
+            resulting timer is not recurring.
 
-    Keyword arguments:
-    duetime -- Absolute (specified as a datetime object) or relative time
-        (specified as an integer denoting milliseconds) at which to produce
-        the first value.</param>
-    period -- [Optional] Period to produce subsequent values (specified as
-        an integer denoting milliseconds), or the scheduler to run the
-        timer on. If not specified, the resulting timer is not recurring.
-
-    Returns an observable sequence that produces a value after due time has
-    elapsed and then each period.
+    Returns:
+        An observable sequence that produces a value after due time has
+        elapsed and then each period.
     """
-
-    log.debug("Observable.timer(duetime=%s, period=%s)", duetime, period)
 
     if isinstance(duetime, datetime):
         if period is None:

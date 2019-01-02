@@ -17,8 +17,8 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
             condition.
 
     Returns:
-        A function that takes an observable source and returns an
-        observable sequence that contains elements from the input
+        An operator function that takes an observable source and returns
+        an observable sequence that contains elements from the input
         sequence that satisfy the condition.
     """
 
@@ -52,8 +52,8 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
             index of the source element.
 
     Returns:
-        A function that takes an observable source and returns an
-        observable sequence that contains elements from the input
+        An operator function that takes an observable source and returns
+        an observable sequence that contains elements from the input
         sequence that satisfy the condition.
     """
 
