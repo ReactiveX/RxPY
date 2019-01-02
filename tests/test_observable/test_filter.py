@@ -3,7 +3,7 @@ import unittest
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
-from rx.operators.filter import filter, filteri
+from rx.operators import filter, filteri
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -36,16 +36,22 @@ class TestFilter(unittest.TestCase):
     def test_filter_complete(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1),
-                                             on_next(180, 2), on_next(230, 3),
-                                             on_next(270, 4), on_next(340, 5),
-                                             on_next(380, 6), on_next(390, 7),
-                                             on_next(450, 8), on_next(470, 9),
-                                             on_next(560, 10), on_next(
-                                                 580, 11),
-                                             on_completed(
-                                                 600), on_next(610, 12),
-                                             on_error(620, 'ex'), on_completed(630))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1),
+            on_next(180, 2),
+            on_next(230, 3),
+            on_next(270, 4),
+            on_next(340, 5),
+            on_next(380, 6),
+            on_next(390, 7),
+            on_next(450, 8),
+            on_next(470, 9),
+            on_next(560, 10),
+            on_next(580, 11),
+            on_completed(600),
+            on_next(610, 12),
+            on_error(620, 'ex'),
+            on_completed(630))
 
         def create():
             def predicate(x):
@@ -65,8 +71,19 @@ class TestFilter(unittest.TestCase):
     def test_filter_true(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(180, 2), on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(
-            380, 6), on_next(390, 7), on_next(450, 8), on_next(470, 9), on_next(560, 10), on_next(580, 11), on_completed(600))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1),
+            on_next(180, 2),
+            on_next(230, 3),
+            on_next(270, 4),
+            on_next(340, 5),
+            on_next(380, 6),
+            on_next(390, 7),
+            on_next(450, 8),
+            on_next(470, 9),
+            on_next(560, 10),
+            on_next(580, 11),
+            on_completed(600))
 
         def create():
             def predicate(x):

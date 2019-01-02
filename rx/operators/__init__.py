@@ -70,6 +70,27 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return count_(predicate)
 
 
+def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    """Time shifts the observable sequence by duetime. The relative time
+    intervals between the values are preserved.
+
+    Examples:
+        >>> op = delay(timedelta(seconds=10))
+        >>> op = delay(5000)
+
+    Args:
+        duetime -- Relative time specified as an integer denoting
+        milliseconds or datetime.timedelta by which to shift the
+        observable sequence.
+
+    Returns:
+        An operator function that takes a source observable and returns
+        a time-shifted sequence.
+    """
+    from rx.core.operators.delay import delay as delay_
+    return delay_(duetime)
+
+
 def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
@@ -109,6 +130,67 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
     """
     from rx.core.operators.filter import filteri as filteri_
     return filteri_(predicate_indexed)
+
+
+def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """One of the Following:
+    Projects each element of an observable sequence to an observable
+    sequence and merges the resulting observable sequences into one
+    observable sequence.
+
+    Example:
+        >>> source.flat_map(lambda x: Observable.range(0, x))
+
+    Or:
+    Projects each element of the source observable sequence to the other
+    observable sequence and merges the resulting observable sequences into
+    one observable sequence.
+
+    Example:
+        >>> source.flat_map(Observable.of(1, 2, 3))
+
+    Keyword arguments:
+    mapper -- A transform function to apply to each element or an
+        observable sequence to project each element from the source
+        sequence onto.
+
+    Returns:
+        An operator function that takes a source observable and returns
+        an observable sequence whose elements are the result of invoking
+        the one-to-many transform function on each element of the
+        input sequence .
+    """
+    from rx.core.operators.flatmap import flat_map as flat_map_
+    return flat_map_(mapper)
+
+
+def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+    """One of the Following:
+    Projects each element of an observable sequence to an observable
+    sequence and merges the resulting observable sequences into one
+    observable sequence.
+
+    1 - source.flat_mapi(lambda x, i: Observable.range(0, x))
+
+    Or:
+    Projects each element of the source observable sequence to the other
+    observable sequence and merges the resulting observable sequences into
+    one observable sequence.
+
+    1 - source.flat_mapi(Observable.of(1, 2, 3))
+
+    Keyword arguments:
+    mapper_indexed -- [Optional] A transform function to apply to each
+        element or an
+        observable sequence to project each element from the source
+        sequence onto.
+
+    Returns an observable sequence whose elements are the result of
+    invoking the one-to-many transform function on each element of the
+    input sequence.
+    """
+    from rx.core.operators.flatmap import flat_mapi as flat_mapi_
+    return flat_mapi_(mapper_indexed)
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
@@ -173,88 +255,6 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
     """
     from rx.core.operators.map import mapi as mapi_
     return mapi_(mapper_indexed)
-
-
-def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
-    """Time shifts the observable sequence by duetime. The relative time
-    intervals between the values are preserved.
-
-    Examples:
-        >>> op = delay(timedelta(seconds=10))
-        >>> op = delay(5000)
-
-    Args:
-        duetime -- Relative time specified as an integer denoting
-        milliseconds or datetime.timedelta by which to shift the
-        observable sequence.
-
-    Returns:
-        An operator function that takes a source observable and returns
-        a time-shifted sequence.
-    """
-    from rx.core.operators.delay import delay as delay_
-    return delay_(duetime)
-
-
-def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
-    """One of the Following:
-    Projects each element of an observable sequence to an observable
-    sequence and merges the resulting observable sequences into one
-    observable sequence.
-
-    Example:
-        >>> source.flat_map(lambda x: Observable.range(0, x))
-
-    Or:
-    Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences into
-    one observable sequence.
-
-    Example:
-        >>> source.flat_map(Observable.of(1, 2, 3))
-
-    Keyword arguments:
-    mapper -- A transform function to apply to each element or an
-        observable sequence to project each element from the source
-        sequence onto.
-
-    Returns:
-        An operator function that takes a source observable and returns
-        an observable sequence whose elements are the result of invoking
-        the one-to-many transform function on each element of the
-        input sequence .
-    """
-    from rx.core.operators.flatmap import flat_map as flat_map_
-    return flat_map_(mapper)
-
-
-def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    """One of the Following:
-    Projects each element of an observable sequence to an observable
-    sequence and merges the resulting observable sequences into one
-    observable sequence.
-
-    1 - source.flat_mapi(lambda x, i: Observable.range(0, x))
-
-    Or:
-    Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences into
-    one observable sequence.
-
-    1 - source.flat_mapi(Observable.of(1, 2, 3))
-
-    Keyword arguments:
-    mapper_indexed -- [Optional] A transform function to apply to each
-        element or an
-        observable sequence to project each element from the source
-        sequence onto.
-
-    Returns an observable sequence whose elements are the result of
-    invoking the one-to-many transform function on each element of the
-    input sequence.
-    """
-    from rx.core.operators.flatmap import flat_mapi as flat_mapi_
-    return flat_mapi_(mapper_indexed)
 
 
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Observable:

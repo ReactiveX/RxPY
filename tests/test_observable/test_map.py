@@ -1,10 +1,10 @@
 import unittest
 
-from rx import Observable
+from rx import Observable, return_value, throw, empty, create
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
-from rx.operators.map import map, mapi
+from rx.operators import map, mapi
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -30,17 +30,17 @@ class TestSelect(unittest.TestCase):
     def test_map_throws(self):
         mapper = mapi(lambda x, y: x)
         with self.assertRaises(RxException):
-            Observable.return_value(1).pipe(
+            return_value(1).pipe(
                 mapper
             ).subscribe_(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
-            Observable.throw('ex').pipe(
+            throw('ex').pipe(
                 mapper
             ).subscribe_(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
-            Observable.empty().pipe(
+            empty().pipe(
                 mapper
             ).subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
@@ -48,7 +48,7 @@ class TestSelect(unittest.TestCase):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            Observable.create(subscribe).pipe(
+            create(subscribe).pipe(
                 map(lambda x: x)
             ).subscribe()
 
@@ -63,7 +63,6 @@ class TestSelect(unittest.TestCase):
             invoked[0] += 1
 
             if scheduler.clock > 400:
-                print("Disposing!")
                 d.dispose()
             return x
 
@@ -199,22 +198,22 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             mapper = mapi(lambda x, index: x)
 
-            return Observable.return_value(1).pipe(
+            return return_value(1).pipe(
                 mapper
             ).subscribe_(lambda x: _raise('ex'))
 
         with self.assertRaises(RxException):
-            return Observable.throw('ex').pipe(
+            return throw('ex').pipe(
                 mapper
             ).subscribe_(lambda x: x, lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
-            return Observable.empty().pipe(
+            return empty().pipe(
                 mapper
             ).subscribe_(lambda x: x, lambda ex: None, lambda: _raise('ex'))
 
         with self.assertRaises(RxException):
-            return Observable.create(lambda o: _raise('ex')).pipe(
+            return create(lambda o, s: _raise('ex')).pipe(
                 mapper
             ).subscribe()
 
