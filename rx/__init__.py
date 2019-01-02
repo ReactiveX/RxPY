@@ -1,7 +1,13 @@
 from asyncio.futures import Future
-from typing import Iterable, Callable, Any
+from typing import Iterable, Callable, Any, Optional
 
-from .core import Observer, Observable, abc
+from .core import AnonymousObservable, Observer, Observable, abc, typing
+
+
+def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
+    """Create observable from subscribe function."""
+
+    return AnonymousObservable(subscribe)
 
 
 def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
@@ -119,6 +125,25 @@ def of(*args: Any) -> Observable:
     arguments
     """
     return from_iterable(args)
+
+
+def return_value(value: Any) -> Observable:
+    """Returns an observable sequence that contains a single element,
+    using the specified scheduler to send out observer messages.
+    There is an alias called 'just'.
+
+    example
+    res = rx.Observable.return(42)
+    res = rx.Observable.return(42, rx.Scheduler.timeout)
+
+    Keyword arguments:
+    value -- Single element in the resulting observable sequence.
+
+    Returns an observable sequence containing the single specified
+    element.
+    """
+    from .core.observable.returnvalue import return_value as return_value_
+    return return_value_(value)
 
 
 def throw(exception: Exception) -> Observable:

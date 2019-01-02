@@ -1,6 +1,7 @@
 from typing import Callable, Any
 
-from rx.core import StaticObservable, Observable, Disposable
+from rx import empty
+from rx.core import Observable, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -60,7 +61,7 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         # Defaults
-        create = create or StaticObservable.empty
+        create = create or empty
         created = created or ReactiveTest.created
         subscribed = subscribed or ReactiveTest.subscribed
         disposed = disposed or ReactiveTest.disposed
