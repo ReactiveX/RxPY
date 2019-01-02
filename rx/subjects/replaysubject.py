@@ -1,6 +1,6 @@
 import sys
 import threading
-from typing import Any
+from typing import Any, Optional, List
 from datetime import timedelta
 
 from rx.core import Observer, Observable
@@ -40,12 +40,12 @@ class ReplaySubject(Observable, Observer):
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
         self.scheduler = scheduler or current_thread_scheduler
         self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
-        self.queue = []
-        self.observers = []
+        self.queue: List[Any] = []
+        self.observers: List[ScheduledObserver] = []
         self.is_stopped = False
         self.is_disposed = False
         self.has_error = False
-        self.error = None
+        self.error: Optional[Exception] = None
 
         self.lock = threading.RLock()
 
@@ -145,5 +145,5 @@ class ReplaySubject(Observable, Observer):
 
         with self.lock:
             self.is_disposed = True
-            self.observers = None
+            self.observers = []
             self.queue = []

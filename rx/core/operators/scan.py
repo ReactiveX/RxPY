@@ -1,8 +1,9 @@
 from typing import Any, Callable
-from rx.core import Observable, ObservableBase
+from rx import defer
+from rx.core import Observable
 
 
-def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[ObservableBase], ObservableBase]:
+def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     """Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used as
     the initial accumulator value. For aggregation behavior with no
@@ -21,8 +22,8 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
 
     has_seed = seed is not None
 
-    def partial(source: ObservableBase) -> ObservableBase:
-        def defer(scheduler):
+    def partial(source: Observable) -> Observable:
+        def factory(scheduler):
             nonlocal source
 
             has_accumulation = [False]
@@ -37,5 +38,5 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
 
                 return accumulation[0]
             return source.map(projection)
-        return Observable.defer(defer)
+        return defer(factory)
     return partial

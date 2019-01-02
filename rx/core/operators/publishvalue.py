@@ -1,11 +1,11 @@
 from typing import Any
 
-from rx.core import ObservableBase
+from rx.core import Observable
 from rx.subjects import BehaviorSubject
 from rx.core.typing import Mapper
 
 
-def publish_value(source, initial_value: Any, mapper: Mapper = None) -> ObservableBase:
+def publish_value(source, initial_value: Any, mapper: Mapper = None) -> Observable:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence and starts with

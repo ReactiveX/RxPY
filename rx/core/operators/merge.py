@@ -1,25 +1,26 @@
 from typing import Callable
 from rx.core import Observable, StaticObservable, AnonymousObservable
+from rx.core.observable.fromiterable import from_iterable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
-from .fromiterable import from_iterable
 
 
-def merge(*args, max_concurrent=None) -> Callable[[Observable], Observable]:
+def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
     """Merges an observable sequence of observable sequences into an
     observable sequence, limiting the number of concurrent subscriptions
     to inner sequences. Or merges two observable sequences into a single
     observable sequence.
 
-    1 - merged = sources.merge(max_concurrent=1)
-    2 - merged = source.merge(other_source)
+    Examples:
+        >>> merged = sources.merge(max_concurrent=1)
+        >>> merged = source.merge(other_source)
 
-    Keyword arguments:
-    max_concurrent -- [Optional] Maximum number of inner observable
-        sequences being subscribed to concurrently or the second
-        observable sequence.
+    Args:
+        max_concurrent -- [Optional] Maximum number of inner observable
+            sequences being subscribed to concurrently or the second
+            observable sequence.
 
     Returns the observable sequence that merges the elements of the
     inner sequences.

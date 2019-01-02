@@ -2,14 +2,14 @@
 import types
 import inspect
 import threading
-from typing import Any
+from typing import Any, Callable, Optional
 
 from rx.concurrency import current_thread_scheduler
 
-from .disposable import Disposable
-from .autodetachobserver import AutoDetachObserver
-from .anonymousobserver import AnonymousObserver
-from . import typing, abc
+from ..disposable import Disposable
+from ..autodetachobserver import AutoDetachObserver
+from ..anonymousobserver import AnonymousObserver
+from .. import typing, abc
 
 
 class Observable(typing.Observable):
@@ -20,7 +20,7 @@ class Observable(typing.Observable):
 
     def __init__(self, source: typing.Observable = None) -> None:
         self.lock = threading.RLock()
-        self.source = source
+        self.source: Optional['Observable'] = source
 
     def __add__(self, other):
         """Pythonic version of concat.
@@ -83,15 +83,15 @@ class Observable(typing.Observable):
         from ..operators.concat import concat
         return concat(self, other)
 
-    def _subscribe_core(self, observer, scheduler=None):
-        return self.source.subscribe(observer, scheduler)
+    def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
+        return self.source.subscribe(observer, scheduler) if self.source else Disposable.empty()
 
     def subscribe_(self,
                    on_next: typing.OnNext = None,
                    on_error: typing.OnError = None,
                    on_completed: typing.OnCompleted = None,
                    scheduler: typing.Scheduler = None
-                   ) -> Disposable:
+                   ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -115,7 +115,7 @@ class Observable(typing.Observable):
         observer = AnonymousObserver(on_next, on_error, on_completed)
         return self.subscribe(observer, scheduler)
 
-    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None) -> Disposable:
+    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:
@@ -173,7 +173,7 @@ class Observable(typing.Observable):
         # Hide the identity of the auto detach observer
         return Disposable.create(auto_detach_observer.dispose)
 
-    def pipe(self, *operators: 'Callable[[Observable], Observable]') -> 'Observable':
+    def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
         """Compose multiple operators left to right.
 
         Composes zero or more operators into a functional composition.
@@ -188,5 +188,5 @@ class Observable(typing.Observable):
 
         Returns the composed observable.
         """
-        from .pipe import pipe
+        from ..pipe import pipe
         return pipe(*operators)(self)

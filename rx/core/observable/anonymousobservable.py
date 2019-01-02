@@ -1,5 +1,7 @@
 from typing import Callable
+
 from rx.core import abc
+
 from .observable import Observable
 
 

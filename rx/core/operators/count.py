@@ -1,5 +1,7 @@
 from typing import Callable
-from rx.core import ObservableBase as Observable
+from rx.core import Observable
+
+from rx import operators
 
 
 def count(predicate=None) -> Callable[[Observable], Observable]:
@@ -12,7 +14,6 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
         >>> res = count(lambda x: x > 3)(source)
 
     Args:
-        source -- Observable sequence.
         predicate -- A function to test each element for a condition.
 
     Returns an observable sequence containing a single element with a
@@ -21,9 +22,12 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     the count of items in the sequence.
     """
 
+    filtering = operators.count(predicate)
+    counter = operators.reduce(lambda count, _: count + 1, seed=0)
+
     def partial(source: Observable) -> Observable:
         if predicate:
-            return source.filter(predicate).count()
+            return source.pipe(filtering, count())
 
-        return source.reduce(lambda count, _: count + 1, seed=0)
+        return source.pipe(counter)
     return partial

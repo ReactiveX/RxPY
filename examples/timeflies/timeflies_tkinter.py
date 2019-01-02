@@ -1,12 +1,9 @@
 from tkinter import Tk, Label, Frame
 
-from rx import Observable
+from rx import from_
+from rx import operators
 from rx.subjects import Subject
 from rx.concurrency import TkinterScheduler
-
-from rx.operators.delay import delay
-from rx.operators.map import map
-from rx.operators.flatmap import flat_mapi
 
 
 def main():
@@ -21,7 +18,6 @@ def main():
     frame.bind("<Motion>", mousemove.on_next)
 
     text = 'TIME FLIES LIKE AN ARROW'
-    labels = [Label(frame, text=c) for c in text]
 
     def on_next(info):
         label, ev, i = info
@@ -30,19 +26,21 @@ def main():
     def handle_label(label, i):
         label.config(dict(borderwidth=0, padx=0, pady=0))
 
-        mapper = map(lambda ev: (label, ev, i))
-        delayer = delay(i*100)
+        mapper = operators.map(lambda ev: (label, ev, i))
+        delayer = operators.delay(i*100)
 
         return mousemove.pipe(
             delayer,
             mapper
         )
 
-    labler = flat_mapi(handle_label)
+    labler = operators.flat_mapi(handle_label)
+    mapper = operators.map(lambda c: Label(frame, text=c))
 
-    Observable.from_(labels).pipe(
+    from_(text).pipe(
+        mapper,
         labler
-    ).subscribe_(on_next, scheduler=scheduler)
+    ).subscribe_(on_next, on_error=lambda ex: print(ex), scheduler=scheduler)
 
     frame.pack()
     root.mainloop()

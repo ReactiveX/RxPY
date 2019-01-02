@@ -1,4 +1,4 @@
-from rx.core import AnonymousObserver, Disposable, Observable
+from rx.core import Disposable, Observable
 from .subscription import Subscription
 
 
@@ -33,11 +33,9 @@ class HotObservable(Observable):
         index = len(self.subscriptions) - 1
 
         def dispose_action():
-            print("DISPOSE!!!!!!!!!!!!!!!!!!")
             self.observers.remove(observer)
             start = self.subscriptions[index].subscribe
             end = self.scheduler.clock
-            print(end)
             self.subscriptions[index] = Subscription(start, end)
 
         return Disposable.create(dispose_action)

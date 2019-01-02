@@ -1,7 +1,8 @@
 from __future__ import annotations
 import threading
-from typing import Any, List
+from typing import Any, List, Optional
 
+from rx.core import typing
 from rx.core import Observer, Observable, Disposable, Scheduler
 from rx.internal import DisposedException
 
@@ -21,7 +22,7 @@ class Subject(Observable, Observer):
         self.is_disposed = False
         self.is_stopped = False
         self.observers: List[Observer] = []
-        self.exception: Exception = None
+        self.exception: Optional[Exception] = None
 
         self.lock = threading.RLock()
 
@@ -29,7 +30,7 @@ class Subject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> Disposable:
+    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> typing.Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -101,7 +102,7 @@ class Subject(Observable, Observer):
 
         with self.lock:
             self.is_disposed = True
-            self.observers = None
+            self.observers = []
 
     @classmethod
     def create(cls, observer, observable):
