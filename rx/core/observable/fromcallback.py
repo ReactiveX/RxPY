@@ -29,7 +29,7 @@ def from_callback(func: Callable, mapper: Mapper = None) -> Callable[[...], Obse
                 if mapper:
                     try:
                         results = mapper(args)
-                    except Exception as err:
+                    except Exception as err: # pylint: disable=broad-except
                         observer.on_error(err)
                         return
 

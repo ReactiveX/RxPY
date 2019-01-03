@@ -24,13 +24,13 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     """
 
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
-        scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or current_thread_scheduler
 
         def action(scheduler: typing.Scheduler, state: Any = None):
             observer.on_next(value)
             observer.on_completed()
 
-        return scheduler.schedule(action)
+        return _scheduler.schedule(action)
     return AnonymousObservable(subscribe)
 
 

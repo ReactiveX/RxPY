@@ -34,16 +34,16 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
     def subscribe(observer, scheduler_: typing.Scheduler = None):
         nonlocal range_t
 
-        scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or current_thread_scheduler
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, iterator):
             try:
                 observer.on_next(next(iterator))
-                sd.disposable = scheduler.schedule(action, state=iterator)
+                sd.disposable = _scheduler.schedule(action, state=iterator)
             except StopIteration:
                 observer.on_completed()
 
-        sd.disposable = scheduler.schedule(action, iter(range_t))
+        sd.disposable = _scheduler.schedule(action, iter(range_t))
         return sd
     return AnonymousObservable(subscribe)
