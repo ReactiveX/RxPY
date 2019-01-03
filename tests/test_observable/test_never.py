@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+from rx import never
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -15,7 +15,7 @@ created = ReactiveTest.created
 class TestNever(unittest.TestCase):
     def test_never_basic(self):
         scheduler = TestScheduler()
-        xs = Observable.never()
+        xs = never()
         results = scheduler.create_observer()
         xs.subscribe(results)
         scheduler.start()
