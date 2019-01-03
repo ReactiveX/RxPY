@@ -1,3 +1,17 @@
+import os
+import asyncio
+
+from tornado.platform.asyncio import AsyncIOMainLoop
+from tornado.escape import json_decode
+from tornado.httputil import url_concat
+from tornado.httpclient import AsyncHTTPClient
+from tornado.web import RequestHandler, StaticFileHandler, Application, url
+from tornado.websocket import WebSocketHandler
+
+from rx import operators as _
+from rx.concurrency import AsyncIOScheduler
+from rx.subjects import Subject
+
 """
 RxPY example running a Tornado server doing search queries against
 Wikipedia to populate the autocomplete dropdown in the web UI. Start
@@ -7,19 +21,6 @@ http://localhost:8080
 Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 """
 
-import os
-import rx
-asyncio = rx.config['asyncio']
-
-from tornado.websocket import WebSocketHandler
-from tornado.web import RequestHandler, StaticFileHandler, Application, url
-from tornado.httpclient import AsyncHTTPClient
-from tornado.httputil import url_concat
-from tornado.escape import json_decode
-from tornado.platform.asyncio import AsyncIOMainLoop
-
-from rx.subjects import Subject
-from rx.concurrency import AsyncIOScheduler
 
 scheduler = AsyncIOScheduler()
 
@@ -51,13 +52,13 @@ class WSHandler(WebSocketHandler):
         self.subject = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = (self.subject
-                 .map(lambda x: x["term"])
-                 .filter(lambda text: len(text) > 2)  # Only if the text is longer than 2 characters
-                 .debounce(750)                       # Pause for 750ms
-                 .distinct_until_changed()            # Only if the value has changed
-                )
-        searcher = query.flat_map_latest(search_wikipedia)
+        searcher = self.subject.pipe(
+            _.map(lambda x: x["term"]),
+            _.filter(lambda text: len(text) > 2),  # Only if the text is longer than 2 characters
+            _.debounce(0.750),                     # Pause for 750ms
+            _.distinct_until_changed(),            # Only if the value has changed
+            _.flat_map_latest(search_wikipedia)
+        )
 
         def send_response(x):
             self.write_message(x.body)
@@ -65,7 +66,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe(send_response, on_error, scheduler=scheduler)
+        searcher.subscribe_(send_response, on_error, scheduler=scheduler)
 
     def on_message(self, message):
         obj = json_decode(message)
@@ -81,7 +82,7 @@ class MainHandler(RequestHandler):
 
 
 def main():
-    AsyncIOMainLoop().install()
+    AsyncIOMainLoop().make_current()
 
     port = os.environ.get("PORT", 8080)
     app = Application([
@@ -89,9 +90,11 @@ def main():
         (r'/ws', WSHandler),
         (r'/static/(.*)', StaticFileHandler, {'path': "."})
     ])
+
     print("Starting server at port: %s" % port)
     app.listen(port)
     asyncio.get_event_loop().run_forever()
+
 
 if __name__ == '__main__':
     main()

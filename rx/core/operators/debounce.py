@@ -61,7 +61,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler)
+            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
     return partial
@@ -120,8 +120,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                     has_value[0] = False
                     d.dispose()
 
-                d.disposable = throttle.subscribe_(on_next, observer.on_error,
-                                                   on_completed, scheduler)
+                d.disposable = throttle.subscribe_(on_next, observer.on_error, on_completed, scheduler=scheduler)
 
             def on_error(e) -> None:
                 cancelable.dispose()
@@ -138,7 +137,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(on_next, on_error, on_completed)
+            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
     return partial

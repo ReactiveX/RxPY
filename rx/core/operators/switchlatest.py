@@ -52,14 +52,14 @@ def switch_latest() -> Callable[[Observable], Observable]:
                         if is_stopped[0]:
                             observer.on_completed()
 
-                d.disposable = inner_source.subscribe_(on_next, on_error, on_completed)
+                d.disposable = inner_source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
 
             def on_completed():
                 is_stopped[0] = True
                 if not has_latest[0]:
                     observer.on_completed()
 
-            subscription = source.subscribe_(on_next, observer.on_error, on_completed)
+            subscription = source.subscribe_(on_next, observer.on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, inner_subscription)
         return AnonymousObservable(subscribe)
     return partial
