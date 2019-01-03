@@ -1,5 +1,5 @@
 from typing import Callable, Any
-from rx.core import Observable, StaticObservable
+from rx.core import Observable
 
 
 def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:

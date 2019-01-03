@@ -34,7 +34,7 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
                     observer.on_next(value)
             except StopIteration:
                 observer.on_completed()
-            except Exception as error:  # pylint: disable=W0703
+            except Exception as error:  # pylint: disable=broad-except
                 observer.on_error(error)
 
         def dispose() -> None:

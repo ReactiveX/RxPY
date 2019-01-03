@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 
 from rx.core import Observable, AnonymousObservable
