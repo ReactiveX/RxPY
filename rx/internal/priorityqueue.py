@@ -1,4 +1,5 @@
 import heapq
+from typing import List, Any
 from threading import RLock
 
 from rx.internal.exceptions import InvalidOperationException
@@ -7,8 +8,8 @@ from rx.internal.exceptions import InvalidOperationException
 class PriorityQueue:
     """Priority queue for scheduling"""
 
-    def __init__(self, capacity=None):
-        self.items = []
+    def __init__(self, capacity=None) -> None:
+        self.items: List[Any] = []
         self.count = 0  # Monotonic increasing for sort stability
 
         self.lock = RLock()
@@ -18,14 +19,14 @@ class PriorityQueue:
 
         return len(self.items)
 
-    def peek(self):
+    def peek(self) -> Any:
         """Returns first item in queue without removing it"""
         try:
             return self.items[0][0]
         except IndexError:
             raise InvalidOperationException("Queue is empty")
 
-    def remove_at(self, index):
+    def remove_at(self, index: int) -> Any:
         """Removes item at given index"""
 
         with self.lock:
@@ -33,21 +34,21 @@ class PriorityQueue:
             heapq.heapify(self.items)
         return item
 
-    def dequeue(self):
+    def dequeue(self) -> Any:
         """Returns and removes item with lowest priority from queue"""
 
         with self.lock:
             item = heapq.heappop(self.items)[0]
         return item
 
-    def enqueue(self, item):
+    def enqueue(self, item: Any) -> None:
         """Adds item to queue"""
 
         with self.lock:
             heapq.heappush(self.items, (item, self.count))
             self.count += 1
 
-    def remove(self, item):
+    def remove(self, item: Any) -> bool:
         """Remove given item from queue"""
 
         with self.lock:

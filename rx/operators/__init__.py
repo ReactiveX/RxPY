@@ -70,6 +70,28 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return count_(predicate)
 
 
+def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
+    """Ignores values from an observable sequence which are followed by
+    another value before duetime.
+
+    Example:
+        >>> res = debounce(5000)(source) # 5 seconds
+
+    Args:
+        duetime: Duration of the throttle period for each value
+        (specified as an integer denoting milliseconds).
+
+    Returns:
+        An operator function that takes the source observable and
+        returns the debounced observable sequence.
+    """
+    from rx.core.operators.debounce import debounce as debounce_
+    return debounce_(duetime)
+
+
+throttle_with_timeout = debounce
+
+
 def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
@@ -89,6 +111,31 @@ def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.delay import delay as delay_
     return delay_(duetime)
+
+
+def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+    """Returns an observable sequence that contains only distinct
+    contiguous elements according to the key_mapper and the comparer.
+
+    Examples:
+        >>> op = distinct_until_changed();
+        >>> op = distinct_until_changed(lambda x: x.id)
+        >>> op = distinct_until_changed(lambda x: x.id, lambda x, y: x == y)
+
+    Args:
+        key_mapper: [Optional] A function to compute the comparison key
+            for each element. If not provided, it projects the value.
+        comparer: [Optional] Equality comparer for computed key values.
+            If not provided, defaults to an equality comparer function.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence only containing the distinct contiguous
+        elements, based on a computed key value, from the source
+        sequence.
+    """
+    from rx.core.operators.distinctuntilchanged import distinct_until_changed as distinct_until_changed_
+    return distinct_until_changed_(key_mapper, comparer)
 
 
 def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
@@ -244,6 +291,30 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
     """
     from rx.core.operators.flatmap import flat_mapi as flat_mapi_
     return flat_mapi_(mapper_indexed)
+
+
+def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into a new
+    sequence of observable sequences by incorporating the element's
+    index and then transforms an observable sequence of observable
+    sequences into an observable sequence producing values only from
+    the most recent observable sequence.
+
+    Args:
+        mapper: A transform function to apply to each source element.
+            The second parameter of the function represents the index of
+            the source element.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence whose elements are the result of invoking
+        the transform function on each element of source producing an
+        observable of Observable sequences and that at any point in time
+        produces the elements of the most recent inner observable
+        sequence that has been received.
+    """
+    from rx.core.operators.flatmap import flat_map_latest as flat_map_latest_
+    return flat_map_latest_(mapper)
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
@@ -405,6 +476,41 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.startswith import start_with as start_with_
     return start_with_(*args)
+
+
+def switch_latest() -> Callable[[Observable], Observable]:
+    """Transforms an observable sequence of observable sequences into an
+    observable sequence producing values only from the most recent
+    observable sequence.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        the observable sequence that at any point in time produces the
+        elements of the most recent inner observable sequence that has
+        been received.
+    """
+    from rx.core.operators.switchlatest import switch_latest as switch_latest_
+    return switch_latest_()
+
+
+def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
+    """Ignores values from an observable sequence which are followed by
+    another value within a computed throttle duration.
+
+    Example:
+        >>> op = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
+
+    Args:
+        throttle_duration_mapper: Mapper function to retrieve an
+        observable sequence indicating the throttle duration for each given
+        element.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        the throttled observable sequence.
+    """
+    from rx.core.operators.debounce import throttle_with_mapper as throttle_duration_mapper_
+    return throttle_duration_mapper_(throttle_duration_mapper)
 
 
 def timestamp() -> Callable[[Observable], Observable]:

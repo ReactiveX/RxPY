@@ -7,19 +7,22 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
 
-    1 - obs = observable.distinct_until_changed();
-    2 - obs = observable.distinct_until_changed(lambda x: x.id)
-    3 - obs = observable.distinct_until_changed(lambda x: x.id,
-                                                lambda x, y: x == y)
+    Examples:
+        >>> op = distinct_until_changed();
+        >>> op = distinct_until_changed(lambda x: x.id)
+        >>> op = distinct_until_changed(lambda x: x.id, lambda x, y: x == y)
 
-    key_mapper -- [Optional] A function to compute the comparison key
-        for each element. If not provided, it projects the value.
-    comparer -- [Optional] Equality comparer for computed key values. If
-        not provided, defaults to an equality comparer function.
+    Args:
+        key_mapper: [Optional] A function to compute the comparison key
+            for each element. If not provided, it projects the value.
+        comparer: [Optional] Equality comparer for computed key values.
+            If not provided, defaults to an equality comparer function.
 
-    Return an observable sequence only containing the distinct
-    contiguous elements, based on a computed key value, from the source
-    sequence.
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence only containing the distinct contiguous
+        elements, based on a computed key value, from the source
+        sequence.
     """
 
     key_mapper = key_mapper or identity

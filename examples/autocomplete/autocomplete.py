@@ -15,6 +15,7 @@ from tornado.httputil import url_concat
 from tornado.escape import json_decode
 from tornado import ioloop
 
+from rx import operators as _
 from rx.subjects import Subject
 from rx.concurrency import IOLoopScheduler
 
@@ -48,13 +49,13 @@ class WSHandler(WebSocketHandler):
         self.stream = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        query = (self.stream
-                 .map(lambda x: x["term"])
-                 .filter(lambda text: len(text) > 2)  # Only if the text is longer than 2 characters
-                 .debounce(0.750)                     # Pause for 750ms
-                 .distinct_until_changed()            # Only if the value has changed
-                )
-        searcher = query.flat_map_latest(search_wikipedia)
+        searcher = self.stream.pipe(
+            _.map(lambda x: x["term"]),
+            _.filter(lambda text: len(text) > 2),  # Only if the text is longer than 2 characters
+            _.debounce(0.750),                     # Pause for 750ms
+            _.distinct_until_changed(),            # Only if the value has changed
+            _.flat_map_latest(search_wikipedia)
+        )
 
         def send_response(x):
             self.write_message(x.body)
@@ -62,7 +63,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe(send_response, on_error, scheduler=scheduler)
+        searcher.subscribe_(send_response, on_error, scheduler=scheduler)
 
     def on_message(self, message):
         obj = json_decode(message)
@@ -87,6 +88,7 @@ def main():
     print("Starting server at port: %s" % port)
     app.listen(port)
     ioloop.IOLoop.current().start()
+
 
 if __name__ == '__main__':
     main()
