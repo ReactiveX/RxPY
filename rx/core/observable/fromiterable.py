@@ -21,7 +21,7 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
     """
 
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
-        scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or current_thread_scheduler
         iterator = iter(iterable)
         disposed = False
 
@@ -42,5 +42,5 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
             disposed = True
 
         disposable = AnonymousDisposable(dispose)
-        return CompositeDisposable(scheduler.schedule(action), disposable)
+        return CompositeDisposable(_scheduler.schedule(action), disposable)
     return AnonymousObservable(subscribe)

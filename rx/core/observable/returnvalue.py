@@ -53,7 +53,7 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
     """
 
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
-        scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or current_thread_scheduler
 
         def action(_: Scheduler, __: Any = None):
             nonlocal observer
@@ -63,6 +63,6 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
                 observer.on_completed()
             except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
-        return scheduler.schedule(action)
+        return _scheduler.schedule(action)
 
     return AnonymousObservable(subscribe)
