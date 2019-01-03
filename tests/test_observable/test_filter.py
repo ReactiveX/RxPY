@@ -63,8 +63,10 @@ class TestFilter(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [on_next(230, 3),
-                                    on_next(340, 5), on_next(390, 7),
-                                    on_next(580, 11), on_completed(600)]
+                                    on_next(340, 5),
+                                    on_next(390, 7),
+                                    on_next(580, 11),
+                                    on_completed(600)]
         assert xs.subscriptions == [subscribe(200, 600)]
         assert invoked[0] == 9
 
@@ -132,7 +134,7 @@ class TestFilter(unittest.TestCase):
         assert results.messages == [
             on_next(230, 3), on_next(340, 5), on_next(390, 7)]
         assert xs.subscriptions == [subscribe(200, 400)]
-        assert(invoked[0] == 5)
+        assert invoked[0] == 5
 
     def test_filter_error(self):
         scheduler = TestScheduler()
@@ -377,4 +379,4 @@ class TestFilter(unittest.TestCase):
         scheduler.start()
         assert results.messages == [on_next(230, 3), on_next(390, 7)]
         assert xs.subscriptions == [subscribe(200, 450)]
-        assert(invoked[0] == 6)
+        assert invoked[0] == 6

@@ -1,12 +1,10 @@
 from typing import Union, Callable
 from datetime import datetime, timedelta
 
+from rx import operators as _
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
-
-from .materialize import materialize
-from .timestamp import timestamp
 
 
 class Timestamp(object):
@@ -93,8 +91,8 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
                     mad.disposable = scheduler.schedule_relative(
                         duetime, action)
         subscription = source.pipe(
-            materialize(),
-            timestamp()
+            _.materialize(),
+            _.timestamp()
         ).subscribe_(on_next, scheduler=scheduler)
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
@@ -109,9 +107,9 @@ def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
         >>> res = delay(5000)
 
     Args:
-        duetime -- Relative time specified as an integer denoting
-        milliseconds or datetime.timedelta by which to shift the
-        observable sequence.
+        duetime: Relative time specified as an integer denoting
+            milliseconds or datetime.timedelta by which to shift the
+            observable sequence.
 
     Returns:
         An operator function that takes a source observable and returns
@@ -119,5 +117,6 @@ def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """
 
     def partial(source: Observable) -> Observable:
+        """Test"""
         return observable_delay_timespan(source, duetime)
     return partial

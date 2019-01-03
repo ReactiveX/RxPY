@@ -10,10 +10,15 @@ from rx import operators
 def timestamp() -> Callable[[Observable], Observable]:
     """Records the timestamp for each value in an observable sequence.
 
-    1 - res = source.timestamp() # produces objects with attributes "value" and
-        "timestamp", where value is the original value.
+    Examples:
+        >>> timestamp()
 
-    Returns an observable sequence with timestamp information on values.
+    Produces objects with attributes `value` and `timestamp`, where
+    value is the original value.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence with timestamp information on values.
     """
 
     def partial(source: Observable) -> Observable:

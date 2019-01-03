@@ -11,7 +11,7 @@ def find_value(source: Observable, predicate: Predicate, yield_index):
             should_run = False
             try:
                 should_run = predicate(x, i, source)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
                 return
 

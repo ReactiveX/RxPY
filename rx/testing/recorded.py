@@ -1,7 +1,7 @@
 from rx.internal.basic import default_comparer
 
 
-class Recorded(object):
+class Recorded:
     def __init__(self, time, value, comparer=None):
         self.time = time
         self.value = value

@@ -1,17 +1,17 @@
-from rx.core import AnonymousObserver, Disposable, Observable
+from rx.core import Disposable, Observable, typing
 from rx.disposables import CompositeDisposable
 from .subscription import Subscription
 
 
 class ColdObservable(Observable):
-    def __init__(self, scheduler, messages):
+    def __init__(self, scheduler, messages) -> None:
         super().__init__()
 
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions = []
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         clock = self.scheduler.to_relative(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
@@ -30,7 +30,7 @@ class ColdObservable(Observable):
             action = get_action(notification)
             disposable.add(self.scheduler.schedule_relative(message.time, action))
 
-        def dispose():
+        def dispose() -> None:
             start = self.subscriptions[index].subscribe
             end = self.scheduler.to_relative(self.scheduler.now)
             self.subscriptions[index] = Subscription(start, end)

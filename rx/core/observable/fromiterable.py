@@ -1,7 +1,6 @@
 from typing import Iterable, Any
 
-from rx.core import Observable, AnonymousObservable
-from rx.core.typing import Scheduler
+from rx.core import Observable, AnonymousObservable, typing
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import CompositeDisposable, AnonymousDisposable
 
@@ -18,12 +17,12 @@ def from_iterable(iterable: Iterable) -> Observable:
     given iterable sequence.
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         scheduler = scheduler or current_thread_scheduler
         iterator = iter(iterable)
         disposed = False
 
-        def action(_: Scheduler, __: Any = None):
+        def action(_: typing.Scheduler, __: Any = None) -> None:
             nonlocal disposed
 
             try:
@@ -35,7 +34,7 @@ def from_iterable(iterable: Iterable) -> Observable:
             except Exception as error:  # pylint: disable=W0703
                 observer.on_error(error)
 
-        def dispose():
+        def dispose() -> None:
             nonlocal disposed
             disposed = True
 

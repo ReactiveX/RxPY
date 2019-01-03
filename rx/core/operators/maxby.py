@@ -1,9 +1,11 @@
-from rx.core import ObservableBase
+from typing import Callable, Any
+from rx.core import Observable
 from rx.internal.basic import default_sub_comparer
 
 from .minby import extrema_by
 
-def max_by(soure, key_mapper, comparer=None) -> ObservableBase:
+
+def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     """Returns the elements in an observable sequence with the maximum
     key value according to the specified comparer.
 
@@ -19,5 +21,7 @@ def max_by(soure, key_mapper, comparer=None) -> ObservableBase:
     or more elements that have a maximum key value.
     """
 
-    comparer = comparer or default_sub_comparer
-    return extrema_by(soure, key_mapper, comparer)
+    def partial(source: Observable) -> Observable:
+        comparer = comparer or default_sub_comparer
+        return extrema_by(source, key_mapper, comparer)
+    return partial

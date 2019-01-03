@@ -43,10 +43,10 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     Example:
         >>> flat_map(Observable.of(1, 2, 3))
 
-    Keyword arguments:
-    mapper -- A transform function to apply to each element or an
-        observable sequence to project each element from the source
-        sequence onto.
+    Args:
+        mapper: A transform function to apply to each element or an
+            observable sequence to project each element from the source
+            sequence onto.
 
     Returns:
         An operator function that takes a source observable and returns
@@ -81,7 +81,7 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
         >>> flat_mapi(Observable.of(1, 2, 3))
 
     Args:
-        mapper_indexed -- [Optional] A transform function to apply to
+        mapper_indexed: [Optional] A transform function to apply to
             each element or an observable sequence to project each
             element from the source sequence onto.
 

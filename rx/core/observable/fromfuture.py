@@ -1,6 +1,7 @@
 from asyncio.futures import Future
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import typing
+from rx.core import Observable, AnonymousObservable, Disposable
 
 
 def from_future(future: Future) -> Observable:
@@ -16,7 +17,7 @@ def from_future(future: Future) -> Observable:
         and failure.
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         def done(future):
             try:
                 value = future.result()
@@ -28,10 +29,10 @@ def from_future(future: Future) -> Observable:
 
         future.add_done_callback(done)
 
-        def dispose():
+        def dispose() -> None:
             if future and future.cancel:
                 future.cancel()
 
-        return dispose
+        return Disposable.create(dispose)
 
     return AnonymousObservable(subscribe)

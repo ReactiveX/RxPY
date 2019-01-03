@@ -4,11 +4,13 @@ from rx.core.notification import OnNext, OnError, OnCompleted
 
 
 def materialize() -> Callable[[Observable], Observable]:
-    """Materializes the implicit notifications of an observable sequence as
-    explicit notification values.
+    """Materializes the implicit notifications of an observable sequence
+    as explicit notification values.
 
-    Returns an observable sequence containing the materialized notification
-    values from the source sequence.
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence containing the materialized notification
+        values from the source sequence.
     """
 
     def partial(source: Observable) -> Observable:

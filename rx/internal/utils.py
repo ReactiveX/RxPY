@@ -1,3 +1,5 @@
+from typing import Any
+
 from rx.disposables import CompositeDisposable
 from .exceptions import DisposedException
 
@@ -16,7 +18,7 @@ def check_disposed(this):
         raise DisposedException()
 
 
-def is_future(fut):
+def is_future(fut: Any) -> bool:
     return callable(getattr(fut, "add_done_callback", None))
 
 

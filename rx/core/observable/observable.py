@@ -136,7 +136,7 @@ class Observable(typing.Observable):
 
         if isinstance(observer, types.GeneratorType):
             if inspect.getgeneratorstate(observer) == inspect.GEN_CREATED:
-                observer.on_next(None)
+                observer.send(None)
 
         auto_detach_observer = AutoDetachObserver(observer)
 
