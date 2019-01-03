@@ -92,18 +92,20 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
 throttle_with_timeout = debounce
 
 
-def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
     Examples:
-        >>> op = delay(timedelta(seconds=10))
-        >>> op = delay(5000)
+        >>> res = delay(timedelta(seconds=10))
+        >>> res = delay(5000)
 
     Args:
-        duetime -- Relative time specified as an integer denoting
-        milliseconds or datetime.timedelta by which to shift the
-        observable sequence.
+        duetime: Relative time specified as an integer denoting
+            milliseconds or datetime.timedelta by which to shift the
+            observable sequence.
+        scheduler: [Optional] Scheduler to run the delay timers on.
+            If not specified, the timeout scheduler is used.
 
     Returns:
         An operator function that takes a source observable and returns

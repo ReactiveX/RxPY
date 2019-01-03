@@ -2,7 +2,7 @@ from typing import Union, Callable
 from datetime import datetime, timedelta
 
 from rx import operators as _
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
 
@@ -13,16 +13,18 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]) -> Observable:
-    def subscribe(observer, scheduler=None):
+def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int],
+    scheduler: typing.Scheduler = None) -> Observable:
+
+    def subscribe(observer, scheduler_=None):
         nonlocal duetime
 
-        scheduler = scheduler or timeout_scheduler
+        _scheduler = scheduler or scheduler_ or timeout_scheduler
 
         if isinstance(duetime, datetime):
-            duetime = scheduler.to_datetime(duetime) - scheduler.now
+            duetime = _scheduler.to_datetime(duetime) - _scheduler.now
         else:
-            duetime = scheduler.to_timedelta(duetime)
+            duetime = _scheduler.to_timedelta(duetime)
 
         cancelable = SerialDisposable()
         exception = [None]
@@ -40,8 +42,7 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
                     exception[0] = notification.value.exception
                     should_run = not running[0]
                 else:
-                    queue.append(Timestamp(value=notification.value,
-                                           timestamp=notification.timestamp + duetime))
+                    queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
                     should_run = not active[0]
                     active[0] = True
 
@@ -85,20 +86,19 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
                         if ex:
                             observer.on_error(ex)
                         elif should_continue:
-                            mad.disposable = scheduler.schedule_relative(
-                                recurse_duetime, action)
+                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
-                    mad.disposable = scheduler.schedule_relative(
-                        duetime, action)
+                    mad.disposable = _scheduler.schedule_relative(duetime, action)
         subscription = source.pipe(
             _.materialize(),
             _.timestamp()
-        ).subscribe_(on_next, scheduler=scheduler)
+        ).subscribe_(on_next, scheduler=_scheduler)
+
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
 
 
-def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
@@ -110,13 +110,26 @@ def delay(duetime: Union[timedelta, int]) -> Callable[[Observable], Observable]:
         duetime: Relative time specified as an integer denoting
             milliseconds or datetime.timedelta by which to shift the
             observable sequence.
+        scheduler: [Optional] Scheduler to run the delay timers on.
+            If not specified, the timeout scheduler is used.
 
     Returns:
         An operator function that takes a source observable and returns
         a time-shifted sequence.
     """
 
-    def partial(source: Observable) -> Observable:
-        """Test"""
-        return observable_delay_timespan(source, duetime)
-    return partial
+    def _delay(source: Observable) -> Observable:
+        """Time shifts the observable sequence. The relative time
+        intervals between the values are preserved.
+
+        Examples:
+            >>> res = delay(source)
+
+        Args:
+            source: The observable sequence to delay.
+
+        Returns:
+            Returns a time-shifted sequence.
+        """
+        return observable_delay_timespan(source, duetime, scheduler)
+    return _delay
