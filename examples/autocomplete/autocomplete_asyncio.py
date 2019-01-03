@@ -1,3 +1,12 @@
+"""
+RxPY example running a Tornado server doing search queries against
+Wikipedia to populate the autocomplete dropdown in the web UI. Start
+using `python autocomplete.py` and navigate your web browser to
+http://localhost:8080
+
+Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
+"""
+
 import os
 import asyncio
 
@@ -11,18 +20,6 @@ from tornado.websocket import WebSocketHandler
 from rx import operators as _
 from rx.concurrency import AsyncIOScheduler
 from rx.subjects import Subject
-
-"""
-RxPY example running a Tornado server doing search queries against
-Wikipedia to populate the autocomplete dropdown in the web UI. Start
-using `python autocomplete.py` and navigate your web browser to
-http://localhost:8080
-
-Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
-"""
-
-
-scheduler = AsyncIOScheduler()
 
 
 def search_wikipedia(term):
@@ -45,6 +42,8 @@ def search_wikipedia(term):
 
 class WSHandler(WebSocketHandler):
     def open(self):
+        scheduler = AsyncIOScheduler()
+
         print("WebSocket opened")
 
         # A Subject is both an observable and observer, so we can both subscribe

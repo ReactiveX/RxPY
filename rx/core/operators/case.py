@@ -1,35 +1,37 @@
-from rx.core import ObservableBase, Observable
+from rx import empty, defer, from_future
+from rx.core import Observable
 from rx.internal.utils import is_future
 
 
-def case(mapper, sources, default_source=None) -> ObservableBase:
+def case(mapper, sources, default_source=None) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
-    Example:
-    1 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 })
-    2 - res = rx.Observable.case(mapper, { '1': obs1, '2': obs2 }, obs0)
+    Examples:
+        >>> res = case(mapper, { '1': obs1, '2': obs2 })
+        >>> res = case(mapper, { '1': obs1, '2': obs2 }, obs0)
 
-    Keyword arguments:
-    mapper -- The function which extracts the value for to test in a
-        case statement.
-    sources -- An object which has keys which correspond to the case
-        statement labels.
-    default_source -- The observable sequence or Future that will be run
-        if the sources are not matched. If this is not provided, it
-        defaults to rx.Observabe.empty.
+    Args:
+        mapper -- The function which extracts the value for to test in a
+            case statement.
+        sources -- An object which has keys which correspond to the case
+            statement labels.
+        default_source -- The observable sequence or Future that will be run
+            if the sources are not matched. If this is not provided, it
+            defaults to rx.Observabe.empty.
 
-    Returns an observable sequence which is determined by a case statement.
+    Returns:
+        An observable sequence which is determined by a case statement.
     """
 
-    default_source = default_source or Observable.empty()
+    default_source = default_source or empty()
 
-    def factory(_) -> ObservableBase:
+    def factory(_) -> Observable:
         try:
             result = sources[mapper()]
         except KeyError:
             result = default_source
 
-        result = Observable.from_future(result) if is_future(result) else result
+        result = from_future(result) if is_future(result) else result
 
         return result
-    return Observable.defer(factory)
+    return defer(factory)

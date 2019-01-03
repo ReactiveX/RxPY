@@ -5,16 +5,21 @@ from rx.core import Observable, AnonymousObservable
 from rx.concurrency import immediate_scheduler
 
 
-def empty() -> Observable:
+def empty(scheduler: typing.Scheduler = None) -> Observable:
     """Returns an empty observable sequence.
 
-    1 - res = rx.Observable.empty()
+    Example:
+        >>> obs = empty()
 
-    Returns an observable sequence with no elements.
+    Args:
+        scheduler: Scheduler to send the termination call on.
+
+    Returns:
+        An observable sequence with no elements.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        scheduler = scheduler or immediate_scheduler
+    def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
+        scheduler = scheduler or scheduler_ or immediate_scheduler
 
         def action(_: typing.Scheduler, __: Any) -> None:
             observer.on_completed()

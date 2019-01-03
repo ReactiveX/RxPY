@@ -31,7 +31,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
             value = [None]
             _id = [0]
 
-            def on_next(x) -> None:
+            def on_next(x: Any) -> None:
                 has_value[0] = True
                 value[0] = x
                 _id[0] += 1
@@ -46,7 +46,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
 
                 d.disposable = scheduler.schedule_relative(duetime, action)
 
-            def on_error(exception) -> None:
+            def on_error(exception: Exception) -> None:
                 cancelable.dispose()
                 observer.on_error(exception)
                 has_value[0] = False
@@ -95,7 +95,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                 throttle = None
                 try:
                     throttle = throttle_duration_mapper(x)
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-except
                     observer.on_error(e)
                     return
 
@@ -106,7 +106,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def on_next(x) -> None:
+                def on_next(x: Any) -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
 

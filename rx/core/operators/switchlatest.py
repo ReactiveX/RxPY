@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 
 from rx import from_future
 from rx.core import AnonymousObservable, Observable
@@ -20,12 +20,12 @@ def switch_latest() -> Callable[[Observable], Observable]:
 
     def partial(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
-            has_latest = [False]
             inner_subscription = SerialDisposable()
+            has_latest = [False]
             is_stopped = [False]
             latest = [0]
 
-            def on_next(inner_source):
+            def on_next(inner_source: Observable):
                 nonlocal source
 
                 d = SingleAssignmentDisposable()
@@ -38,15 +38,15 @@ def switch_latest() -> Callable[[Observable], Observable]:
                 # Check if Future or Observable
                 inner_source = from_future(inner_source) if is_future(inner_source) else inner_source
 
-                def on_next(x):
+                def on_next(x: Any) -> None:
                     if latest[0] == _id:
                         observer.on_next(x)
 
-                def on_error(e):
+                def on_error(e: Exception) -> None:
                     if latest[0] == _id:
                         observer.on_error(e)
 
-                def on_completed():
+                def on_completed() -> None:
                     if latest[0] == _id:
                         has_latest[0] = False
                         if is_stopped[0]:
@@ -54,7 +54,7 @@ def switch_latest() -> Callable[[Observable], Observable]:
 
                 d.disposable = inner_source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
 
-            def on_completed():
+            def on_completed() -> None:
                 is_stopped[0] = True
                 if not has_latest[0]:
                     observer.on_completed()
