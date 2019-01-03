@@ -1,7 +1,7 @@
 import collections
 from typing import Any, Callable
 
-from rx import from_, from_future
+from rx import from_, from_future, operators as _
 from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.utils import is_future
@@ -98,4 +98,32 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
         else:
             ret = _flat_map(source, mapper=lambda _: mapper_indexed)
         return ret
+    return partial
+
+
+def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into a new
+    sequence of observable sequences by incorporating the element's
+    index and then transforms an observable sequence of observable
+    sequences into an observable sequence producing values only from
+    the most recent observable sequence.
+
+    Args:
+        mapper: A transform function to apply to each source element.
+            The second parameter of the function represents the index of
+            the source element.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence whose elements are the result of invoking
+        the transform function on each element of source producing an
+        observable of Observable sequences and that at any point in time
+        produces the elements of the most recent inner observable
+        sequence that has been received.
+    """
+    def partial(source: Observable) -> Observable:
+        return source.pipe(
+            _.map(mapper),
+            _.switch_latest()
+        )
     return partial

@@ -1,9 +1,9 @@
 from typing import Callable, Union, Any
 from datetime import timedelta
+
 from rx.core.typing import Disposable
-from rx.core import AnonymousObservable, ObservableBase as Observable
-from rx.disposables import CompositeDisposable, \
-    SingleAssignmentDisposable, SerialDisposable
+from rx.core import AnonymousObservable, Observable
+from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 
 
@@ -19,7 +19,8 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
         (specified as an integer denoting milliseconds).
 
     Returns:
-        The debounced sequence.
+        An operator function that takes the source observable and
+        returns the debounced observable sequence.
     """
 
     def partial(source: Observable) -> Observable:
@@ -30,7 +31,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
             value = [None]
             _id = [0]
 
-            def on_next(x):
+            def on_next(x) -> None:
                 has_value[0] = True
                 value[0] = x
                 _id[0] += 1
@@ -38,20 +39,20 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def action(scheduler, state=None):
+                def action(scheduler, state=None) -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
                     has_value[0] = False
 
                 d.disposable = scheduler.schedule_relative(duetime, action)
 
-            def on_error(exception):
+            def on_error(exception) -> None:
                 cancelable.dispose()
                 observer.on_error(exception)
                 has_value[0] = False
                 _id[0] += 1
 
-            def on_completed():
+            def on_completed() -> None:
                 cancelable.dispose()
                 if has_value[0]:
                     observer.on_next(value[0])
@@ -66,23 +67,21 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
     return partial
 
 
-throttle_with_timeout = debounce
-
-
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
     Example:
-        >>> res = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))(source)
+        >>> op = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
 
     Args:
-        throttle_duration_mapper -- Selector function to retrieve a
-        sequence indicating the throttle duration for each given
+        throttle_duration_mapper: Mapper function to retrieve an
+        observable sequence indicating the throttle duration for each given
         element.
 
     Returns:
-        The throttled sequence.
+        An operator function that takes an observable source and returns
+        the throttled observable sequence.
     """
 
     def partial(source: Observable) -> Observable:
@@ -107,14 +106,14 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def on_next(x):
+                def on_next(x) -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
 
                     has_value[0] = False
                     d.dispose()
 
-                def on_completed():
+                def on_completed() -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
 
@@ -124,13 +123,13 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
                 d.disposable = throttle.subscribe_(on_next, observer.on_error,
                                                    on_completed, scheduler)
 
-            def on_error(e):
+            def on_error(e) -> None:
                 cancelable.dispose()
                 observer.on_error(e)
                 has_value[0] = False
                 _id[0] += 1
 
-            def on_completed():
+            def on_completed() -> None:
                 cancelable.dispose()
                 if has_value[0]:
                     observer.on_next(value[0])
