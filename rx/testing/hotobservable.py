@@ -1,9 +1,9 @@
-from rx.core import Disposable, Observable
+from rx.core import Disposable, Observable, typing
 from .subscription import Subscription
 
 
 class HotObservable(Observable):
-    def __init__(self, scheduler, messages):
+    def __init__(self, scheduler: typing.Scheduler, messages) -> None:
         super().__init__()
 
         self.scheduler = scheduler
@@ -27,7 +27,7 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1

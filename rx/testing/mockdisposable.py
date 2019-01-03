@@ -1,4 +1,4 @@
-class MockDisposable():
+class MockDisposable:
     def __init__(self, scheduler):
         self.scheduler = scheduler
         self.disposes = []

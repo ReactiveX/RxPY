@@ -7,17 +7,20 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
     """Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used as
     the initial accumulator value. For aggregation behavior with no
-    intermediate results, see Observable.aggregate or Observable.reduce.
+    intermediate results, see `aggregate()` or `Observable()`.
 
-    1 - scanned = source.scan(lambda acc, x: acc + x)
-    2 - scanned = source.scan(lambda acc, x: acc + x, 0)
+    Examples:
+        >>> scanned = source.scan(lambda acc, x: acc + x)
+        >>> scanned = source.scan(lambda acc, x: acc + x, 0)
 
-    Keyword arguments:
-    accumulator -- An accumulator function to be invoked on each
-        element.
-    seed -- [Optional] The initial accumulator value.
+    Args:
+        accumulator: An accumulator function to be invoked on each
+            element.
+        seed: [Optional] The initial accumulator value.
 
-    Returns an observable sequence containing the accumulated values.
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence containing the accumulated values.
     """
 
     has_seed = seed is not None

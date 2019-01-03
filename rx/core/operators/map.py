@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
@@ -11,10 +11,10 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     Example:
         >>> map(lambda value: value * 10)
 
-    Keyword arguments:
-    mapper -- A transform function to apply to each source element; the
-        second parameter of the function represents the index of the
-        source element
+    Args:
+        mapper: A transform function to apply to each source element; the
+            second parameter of the function represents the index of the
+            source element
 
     Returns:
         An operator function that takes an observable source and returns
@@ -24,10 +24,10 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
     def partial(source: Observable) -> Observable:
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
-            def on_next(value):
+            def on_next(value: Any) -> None:
                 try:
                     result = mapper(value)
-                except Exception as err:  # By design. pylint: disable=W0703
+                except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
                     obv.on_next(result)
@@ -45,11 +45,11 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
         >>> ret = map(lambda value, index: value * value + index)(source)
 
     Args:
-        mapper_indexed -- A transform function to apply to each source
+        mapper_indexed: A transform function to apply to each source
             element; the second parameter of the function represents the
             index of the source element.
 
-    Return:
+    Returns:
         A operator function that takes an observable source and returns
         an observable sequence whose elements are the result of invoking
         the transform function on each element of the source.
@@ -59,12 +59,12 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             count = 0
 
-            def on_next(value):
+            def on_next(value: Any) -> None:
                 nonlocal count
 
                 try:
                     result = mapper_indexed(value, count)
-                except Exception as err:  # By design. pylint: disable=W0703
+                except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
                     count += 1

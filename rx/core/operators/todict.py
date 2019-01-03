@@ -1,15 +1,17 @@
-from typing import Callable
+from typing import Callable, Any
+
+from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 
 
 def _to_dict(source, map_type, key_mapper, element_mapper):
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         m = map_type()
 
-        def on_next(x):
+        def on_next(x: Any) -> None:
             try:
                 key = key_mapper(x)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
                 return
 
@@ -17,13 +19,13 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
             if element_mapper:
                 try:
                     element = element_mapper(x)
-                except Exception as ex:
+                except Exception as ex:  # pylint: disable=broad-except
                     observer.on_error(ex)
                     return
 
             m[key] = element
 
-        def on_completed():
+        def on_completed() -> None:
             observer.on_next(m)
             observer.on_completed()
 
@@ -31,7 +33,8 @@ def _to_dict(source, map_type, key_mapper, element_mapper):
     return AnonymousObservable(subscribe)
 
 
-def to_dict(key_mapper, element_mapper=None) -> Callable[[Observable], Observable]:
+def to_dict(key_mapper: Callable[[Any], Any],
+            element_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
     """Converts the observable sequence to a Map if it exists.
 
     Keyword arguments:

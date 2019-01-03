@@ -1,3 +1,6 @@
+from typing import Any
+
+from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 
 from rx.concurrency import immediate_scheduler
@@ -21,10 +24,10 @@ def throw(exception: Exception) -> Observable:
 
     exception = exception if isinstance(exception, Exception) else Exception(exception)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         scheduler = scheduler or immediate_scheduler
 
-        def action(scheduler, state):
+        def action(scheduler: typing.Scheduler, state: Any):
             observer.on_error(exception)
 
         return scheduler.schedule(action)

@@ -27,7 +27,7 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
             def on_next(value):
                 try:
                     should_run = predicate(value)
-                except Exception as ex:  # By design. pylint: disable=W0703
+                except Exception as ex:  # pylint: disable=broad-except
                     observer.on_error(ex)
                     return
 
@@ -65,7 +65,7 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
                 nonlocal count
                 try:
                     should_run = predicate_indexed(value, count)
-                except Exception as ex:  # By design. pylint: disable=W0703
+                except Exception as ex:  # pylint: disable=broad-except
                     observer.on_error(ex)
                     return
                 else:

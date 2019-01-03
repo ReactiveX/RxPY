@@ -1,9 +1,13 @@
 from typing import Callable
-from rx.core import Observer, AnonymousObservable, Disposable, ObservableBase as Observable
+
+from rx.core import Observer, AnonymousObservable, Disposable, Observable, typing
 from rx.disposables import CompositeDisposable
 
 
-def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Observable], Observable]:
+def do_action(on_next: typing.OnNext = None,
+              on_error: typing.OnError = None,
+              on_completed: typing.OnCompleted = None
+              ) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -16,16 +20,17 @@ def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Obser
         >>> do_action(on_next, on_error, on_completed)(observable)
 
     Args:
-        on_next -- [Optional] Action to invoke for each element in the
+        on_next: [Optional] Action to invoke for each element in the
             observable sequence.
-        on_error -- [Optional] Action to invoke on exceptional
+        on_error: [Optional] Action to invoke on exceptional
             termination of the observable sequence.
-        on_completed -- [Optional] Action to invoke on graceful
+        on_completed: [Optional] Action to invoke on graceful
             termination of the observable sequence.
 
     Returns:
-        A function that takes the source and returns the source sequence
-        with the side-effecting behavior applied.
+        An operator function that takes the source observable and
+        returns the source sequence with the side-effecting behavior
+        applied.
     """
 
     def partial(source: Observable) -> Observable:
@@ -36,7 +41,7 @@ def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Obser
                 else:
                     try:
                         on_next(x)
-                    except Exception as e:
+                    except Exception as e:  # pylint: disable=broad-except
                         observer.on_error(e)
 
                     observer.on_next(x)
@@ -47,7 +52,7 @@ def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Obser
                 else:
                     try:
                         on_error(exception)
-                    except Exception as e:
+                    except Exception as e:  # pylint: disable=broad-except
                         observer.on_error(e)
 
                     observer.on_error(exception)
@@ -58,7 +63,7 @@ def do_action(on_next=None, on_error=None, on_completed=None) -> Callable[[Obser
                 else:
                     try:
                         on_completed()
-                    except Exception as e:
+                    except Exception as e:   # pylint: disable=broad-except
                         observer.on_error(e)
 
                     observer.on_completed()
@@ -75,12 +80,15 @@ def do(observer: Observer) -> Callable[[Observable], Observable]:
     etc. of query behavior by intercepting the message stream to run
     arbitrary actions for messages on the pipeline.
 
-    1 - observable.do(observer)
+    >>> do(observer)
 
-    observer -- Observer
+    Args:
+        observer: Observer
 
-    Returns the source sequence with the side-effecting behavior
-    applied.
+    Returns:
+        An operator function that takes the source observable and
+        returns the source sequence with the side-effecting behavior
+        applied.
     """
 
     def partial(source: Observable) -> Observable:
@@ -101,7 +109,7 @@ def do_after_next(source, after_next):
             try:
                 observer.on_next(value)
                 after_next(value)
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
 
         return source.subscribe_(on_next, observer.on_error, observer.on_completed)
@@ -162,7 +170,7 @@ def do_on_terminate(source, on_terminate):
         def on_completed():
             try:
                 on_terminate()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
             else:
                 observer.on_completed()
@@ -170,7 +178,7 @@ def do_on_terminate(source, on_terminate):
         def on_error(exception):
             try:
                 on_terminate()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
             else:
                 observer.on_error(exception)
@@ -193,14 +201,14 @@ def do_after_terminate(source, after_terminate):
             observer.on_completed()
             try:
                 after_terminate()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
 
         def on_error(exception):
             observer.on_error(exception)
             try:
                 after_terminate()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
 
         return source.subscribe(observer.on_next, on_error, on_completed, scheduler)
@@ -242,7 +250,7 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
                     if not was_invoked[0]:
                         finally_action()
                         was_invoked[0] = True
-                except Exception as err:
+                except Exception as err:  # pylint: disable=broad-except
                     observer.on_error(err)
 
             def on_error(exception):
@@ -251,7 +259,7 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
                     if not was_invoked[0]:
                         finally_action()
                         was_invoked[0] = True
-                except Exception as err:
+                except Exception as err:  # pylint: disable=broad-except
                     observer.on_error(err)
 
             composite_disposable = CompositeDisposable()

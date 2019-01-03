@@ -1,8 +1,8 @@
 from typing import Any
 
-from rx.core import Observable, Observer, AnonymousObservable, Disposable
+from rx.core import typing
+from rx.core import Observable, AnonymousObservable
 from rx.concurrency import immediate_scheduler
-from rx.core.abc.scheduler import Scheduler
 
 
 def empty() -> Observable:
@@ -13,10 +13,10 @@ def empty() -> Observable:
     Returns an observable sequence with no elements.
     """
 
-    def subscribe(observer: Observer, scheduler: Scheduler = None) -> Disposable:
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         scheduler = scheduler or immediate_scheduler
 
-        def action(_: Scheduler, __: Any) -> None:
+        def action(_: typing.Scheduler, __: Any) -> None:
             observer.on_completed()
 
         return scheduler.schedule(action)

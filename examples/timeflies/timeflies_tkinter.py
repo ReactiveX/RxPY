@@ -1,7 +1,7 @@
 from tkinter import Tk, Label, Frame
 
 from rx import from_
-from rx import operators
+from rx import operators as _
 from rx.subjects import Subject
 from rx.concurrency import TkinterScheduler
 
@@ -26,21 +26,21 @@ def main():
     def handle_label(label, i):
         label.config(dict(borderwidth=0, padx=0, pady=0))
 
-        mapper = operators.map(lambda ev: (label, ev, i))
-        delayer = operators.delay(i*100)
+        mapper = _.map(lambda ev: (label, ev, i))
+        delayer = _.delay(i*100)
 
         return mousemove.pipe(
             delayer,
             mapper
         )
 
-    labler = operators.flat_mapi(handle_label)
-    mapper = operators.map(lambda c: Label(frame, text=c))
+    labeler = _.flat_mapi(handle_label)
+    mapper = _.map(lambda c: Label(frame, text=c))
 
     from_(text).pipe(
         mapper,
-        labler
-    ).subscribe_(on_next, on_error=lambda ex: print(ex), scheduler=scheduler)
+        labeler
+    ).subscribe_(on_next, on_error=print, scheduler=scheduler)
 
     frame.pack()
     root.mainloop()
