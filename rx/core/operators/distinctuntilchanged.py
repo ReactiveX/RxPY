@@ -37,14 +37,14 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
                 comparer_equals = False
                 try:
                     key = key_mapper(value)
-                except Exception as exception:
+                except Exception as exception:  # pylint: disable=broad-except
                     observer.on_error(exception)
                     return
 
                 if has_current_key[0]:
                     try:
                         comparer_equals = comparer(current_key[0], key)
-                    except Exception as exception:
+                    except Exception as exception:  # pylint: disable=broad-except
                         observer.on_error(exception)
                         return
 
@@ -53,6 +53,6 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
                     current_key[0] = key
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=scheduler)
         return AnonymousObservable(subscribe)
     return partial
