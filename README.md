@@ -5,7 +5,7 @@
 *A library for composing asynchronous and event-based programs using observable collections and
 LINQ-style query operators in Python*
 
-# RxPY v2.0 Alpha
+# RxPY v3.0 Alpha
 
 This branch is work-in-progress.
 
@@ -29,14 +29,13 @@ Because Observable sequences are data streams, you can query them using standard
 
 # Install
 
-RxPY v2.x runs on [Python](http://www.python.org/) 3. To install RxPY:
+RxPY v3.x runs on [Python](http://www.python.org/) 3. To install RxPY:
 
 `pip3 install rx`
 
 For Python 2.x you need to use version 1.6
 
 `pip3 install rx==1.6.1`
-
 
 # Community
 
@@ -56,12 +55,12 @@ An `Observable` is the core type in ReactiveX. It serially pushes items, known a
 
 Push-based (rather than pull-based) iteration opens up powerful new possibilities to express code and concurrency much more quickly. Because an `Observable` treats events as data and data as events, composing the two together becomes trivial.
 
-There are many ways to create an `Observable` that hands items to an `Observer`. You can use an `Observable.create()` factory and pass it a function that hands items to the `Observer`. The `Observer` implements `on_next()`, `on_completed()`, and `on_error()` functions. The `on_next()` is used to pass items. The `on_completed()` will signal no more items are coming, and the `on_error()` signals an error.
+There are many ways to create an `Observable` that hands items to an `Observer`. You can use a `create()` factory and pass it a function that hands items to the `Observer`. The `Observer` implements `on_next()`, `on_completed()`, and `on_error()` functions. The `on_next()` is used to pass items. The `on_completed()` will signal no more items are coming, and the `on_error()` signals an error.
 
-For instance, you can implement an `Observer` with these three methods and simply print these events. Then the `Observable.create()` can leverage a function that passes five strings to the `Observer` by calling those events.
+For instance, you can implement an `Observer` with these three methods and simply print these events. Then the `create()` can leverage a function that passes five strings to the `Observer` by calling those events.
 
 ```python
-from rx import Observable, Observer
+from rx import Observer, create
 
 def push_five_strings(observer):
     observer.on_next("Alpha")
@@ -82,7 +81,7 @@ class PrintObserver(Observer):
     def on_error(self, error):
         print("Error Occurred: {0}".format(error))
 
-source = Observable.create(push_five_strings)
+source = create(push_five_strings)
 
 source.subscribe(PrintObserver())
 ```
@@ -96,10 +95,10 @@ source.subscribe(PrintObserver())
     Received Epsilon
     Done!
 
-However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `Observable.create()` and its backing function, and use `Observable.of()`. This factory accepts an argument list, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass these five Strings as arguments to it.
+However, there are many `Observable` factories for common sources of emissions. To simply push five items, we can rid the `create()` and its backing function, and use `of()`. This factory accepts an argument list, iterates each emission as an `on_next()`, and then calls `on_completed()` when iteration is complete. Therefore, we can simply pass these five Strings as arguments to it.
 
 ```python
-from rx import Observable, Observer
+from rx import Observer
 
 class PrintObserver(Observer):
 
@@ -112,7 +111,7 @@ class PrintObserver(Observer):
     def on_error(self, error):
         print("Error Occurred: {0}".format(error))
 
-source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe(PrintObserver())
 ```
@@ -120,9 +119,9 @@ source.subscribe(PrintObserver())
 Most of the time you will not want to go through the verbosity of implementing your own `Observer`. You can instead pass 1 to 3 lambda arguments to `subscribe()` specifying the `on_next`, `on_complete`, and `on_error` actions.
 
 ```python
-from rx import Observable
+from rx import of
 
-source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe(on_next=lambda value: print("Received {0}".format(value)),
                  on_completed=lambda: print("Done!"),
@@ -133,9 +132,9 @@ source.subscribe(on_next=lambda value: print("Received {0}".format(value)),
 You do not have to specify all three events types. You can pick and choose which events you want to observe using the named arguments, or simply provide a single lambda for the `on_next`. Typically in production, you will want to provide an `on_error` so errors are explicitly handled by the subscriber.
 
 ```python
-from rx import Observable
+from rx import of
 
-source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
 source.subscribe(lambda value: print("Received {0}".format(value)))
 ```
@@ -153,15 +152,15 @@ source.subscribe(lambda value: print("Received {0}".format(value)))
 You can also derive new Observables using over 130 operators available in RxPY. Each operator will yield a new `Observable` that transforms emissions from the source in some way. For example, we can `map()` each `String` to its length, then `filter()` for lengths being at least 5. These will yield two separate Observables built off each other.
 
 ```python
-from rx import Observable
+from rx import of, operators as op
 
-source = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-lengths = source.map(lambda s: len(s))
-
-filtered = lengths.filter(lambda i: i >= 5)
-
-filtered.subscribe(lambda value: print("Received {0}".format(value)))
+composed = source.pipe(
+    op.map(lambda s: len(s)),
+    op.filter(lambda i: i >= 5)
+)
+composed.subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -171,15 +170,15 @@ filtered.subscribe(lambda value: print("Received {0}".format(value)))
     Received 5
     Received 7
 
-Typically, you do not want to save Observables into intermediary variables for each operator, unless you want to have multiple subscribers at that point. Instead, you want to strive to inline and create an "Observable chain" of operations. That way your code is readable and tells a story much more easily.
+Typically, you do not want to save Observables into intermediary variables for each operator, unless you want to have multiple subscribers at that point. Instead, you want to strive to inline and create an "Observable pipeline" of operations. That way your code is readable and tells a story much more easily.
 
 ```python
-from rx import Observable
+from rx import of, operators as op
 
-Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
-    .map(lambda s: len(s)) \
-    .filter(lambda i: i >= 5) \
-    .subscribe(lambda value: print("Received {0}".format(value)))
+of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    op.map(lambda s: len(s)),
+    op.filter(lambda i: i >= 5)
+  ).subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 ## Emitting Events
@@ -187,11 +186,11 @@ Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
 On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1000 milliseconds. This `Observable` will run infinitely and never call `on_complete`.
 
 ```python
-from rx import Observable
+from rx import interval, operators as op
 
-Observable.interval(1000) \
-    .map(lambda i: "{0} Mississippi".format(i)) \
-    .subscribe(lambda s: print(s))
+interval(1000).pipe(
+    op.map(lambda i: "{0} Mississippi".format(i))
+).subscribe(lambda s: print(s))
 
 input("Press any key to quit\n")
 ```
@@ -207,20 +206,21 @@ input("Press any key to quit\n")
     6 Mississippi
     ...
 
-Because `Observable.interval()` operates on a separate thread (via the `TimeoutScheduler`), we need to prevent the application from exiting prematurely before it has a chance to fire. We can use an `input()` to stop the main thread until a key is pressed. Observables can be created for button events, requests, timers, and even [live Twitter feeds](https://github.com/thomasnield/oreilly_reactive_python_for_data/blob/master/code_examples/8.2_twitter_feed_for_topics.py).
+Because `interval()` operates on a separate thread (via the `TimeoutScheduler`), we need to prevent the application from exiting prematurely before it has a chance to fire. We can use an `input()` to stop the main thread until a key is pressed. Observables can be created for button events, requests, timers, and even [live Twitter feeds](https://github.com/thomasnield/oreilly_reactive_python_for_data/blob/master/code_examples/8.2_twitter_feed_for_topics.py).
 
 ## Multicasting
 
 Each Subscriber to an `Observable` often will receive a separate stream of emissions. For instance, having two subscribers to this `Observable` emitting three random integers will result in both subscribers getting different numbers.
 
 ```python
-from rx import Observable
+from rx import from_range, operators as op
 from random import randint
 
 
-three_emissions = Observable.range(1, 3)
+three_emissions = from_range(1, 3)
 
-three_random_ints = three_emissions.map(lambda i: randint(1, 100000))
+mapper = op.map(lambda i: randint(1, 100000))
+three_random_ints = three_emissions.pipe(mapper)
 
 three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
 three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
@@ -238,13 +238,15 @@ three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(
 To force a specifc point in an `Observable` chain to push the same emissions to all subscribers (rather than generating a separate stream of emissions for each subscriber), you can call `publish()` to return a `ConnectableObservable`. Then you can set up your subscribers and call `connect()` when they are ready to receive the same stream of emissions.
 
 ```python
-from rx import Observable
+from rx import from_range, operators as op
 from random import randint
 
 
-three_emissions = Observable.range(1, 3)
+three_emissions = from_range(1, 3)
 
-three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish()
+three_random_ints = three_emissions.pipe(
+    op.map(lambda i: randint(1, 100000)).publish()
+)
 
 three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
 three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
@@ -266,13 +268,15 @@ This takes a cold `Observable` (which "replays" operations for each subscriber) 
 Another way to implement mutlicasting is to use the `auto_connect()` operator on a `ConnectableObservable`. This will start firing emissions the moment it gets a subscriber, and will continue to fire even as subscribers come and go. If you provide an integer argument, it will hold off firing until there are that many subscribers subscribed to it.
 
 ```python
-from rx import Observable
 from random import randint
+from rx import from_range, operators as op
 
 
-three_emissions = Observable.range(1, 3)
+three_emissions = from_range(1, 3)
 
-three_random_ints = three_emissions.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
+three_random_ints = three_emissions.pipe(
+    op.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
+)
 
 three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
 three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
@@ -284,13 +288,13 @@ three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(
 You can compose different Observables together using factories like `Observable.merge()`, `Observable.concat()`, `Observable.zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `Observable.zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
 ```python
-from rx import Observable
+from rx import of, interval, zip
 
-letters = Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+letters = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-intervals = Observable.interval(1000)
+intervals = interval(1000)
 
-Observable.zip(letters, intervals, lambda s, i: (s, i)) \
+zip(letters, intervals, lambda s, i: (s, i)) \
     .subscribe(lambda t: print(t))
 
 input("Press any key to quit\n")
@@ -325,7 +329,7 @@ Observable.of(1, 3, 5) \
 
 **OUTPUT:**
 
-```
+```python
 (1, 'LITE Industrial', 'Southwest', '729 Ravine Way', 'Irving', 'TX', 75014)
 (3, 'Re-Barre Construction', 'Southwest', '9043 Windy Dr', 'Irving', 'TX', 75032)
 (5, 'Marsh Lane Metal Works', 'Southeast', '9143 Marsh Ln', 'Avondale', 'LA', 79782)
@@ -414,29 +418,36 @@ Disposables implements a context manager so you may use them in `with` statement
 Observable sequences may be concatenated using `+`, so you can write:
 
 ```python
-xs = Observable.of(1,2,3)
-ys = Observable.of(4,5,6)
+from rx import of
+
+xs = of(1,2,3)
+ys = of(4,5,6)
 zs = xs + ys  # Concatenate observables
 ```
 
 Observable sequences may be repeated using `*=`, so you can write:
 
 ```python
-xs = Observable.of(1,2,3)
+from rx import of
+
+xs = of(1,2,3)
 ys = xs * 4
 ```
 
 Observable sequences may be sliced using `[start:stop:step]`, so you can write:
 
 ```python
-xs = Observable.of(1,2,3,4,5,6)
+from rx import of
+
+xs = of(1,2,3,4,5,6)
 ys = xs[1:-1]
 ```
 
 Observable sequences may be turned into an iterator so you can use generator expressions, or iterate over them (uses queueing and blocking).
 
 ```python
-xs = Observable.of(1,2,3,4,5,6)
+from rx import of
+xs = of(1,2,3,4,5,6)
 ys = xs.to_blocking()
 zs = (x*x for x in ys if x > 3)
 for x in zs:
@@ -460,15 +471,17 @@ group = source.group_by(lambda i: i % 3)
 With RxPY you should use [named keyword arguments](https://docs.python.org/2/glossary.html) instead of positional arguments when an operator has multiple optional arguments. RxPY will not try to detect which arguments you are giving to the operator (or not).
 
 ```python
-res = Observable.timer(5000) # Yes
-res = Observable.timer(5000, 1000) # Yes
-res = Observable.timer(5000, 1000, Scheduler.timeout) # Yes
-res = Observable.timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
+from rx import timer
 
-res = Observable.timer(5000, Scheduler.timeout) # No, this is an error
+res = timer(5000) # Yes
+res = timer(5000, 1000) # Yes
+res = timer(5000, 1000, Scheduler.timeout) # Yes
+res = timer(5000, scheduler=Scheduler.timeout) # Yes, but must name
+
+res = timer(5000, Scheduler.timeout) # No, this is an error
 ```
 
-Thus when an operator like `Observable.timer` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
+Thus when an operator like `timer()` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
 
 # Schedulers
 
