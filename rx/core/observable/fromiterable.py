@@ -5,20 +5,23 @@ from rx.concurrency import current_thread_scheduler
 from rx.disposables import CompositeDisposable, AnonymousDisposable
 
 
-def from_iterable(iterable: Iterable) -> Observable:
+def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
     """Converts an iterable to an observable sequence.
 
-    1 - res = from_iterable([1,2,3])
+    Example:
+        >>> from_iterable([1,2,3])
 
-    Keyword arguments:
-    iterable - A Python iterable
+    Args:
+        iterable: A Python iterable
+        scheduler: An optional scheduler to schedule the values on.
 
-    Returns the observable sequence whose elements are pulled from the
-    given iterable sequence.
+    Returns:
+        The observable sequence whose elements are pulled from the
+        given iterable sequence.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        scheduler = scheduler or current_thread_scheduler
+    def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
+        scheduler = scheduler or scheduler_ or current_thread_scheduler
         iterator = iter(iterable)
         disposed = False
 

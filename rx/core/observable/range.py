@@ -1,9 +1,10 @@
+from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def from_range(start: int, stop: int = None, step: int = None) -> Observable:
+def from_range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -14,11 +15,13 @@ def from_range(start: int, stop: int = None, step: int = None) -> Observable:
         >>> res = range(0, 10, 1)
 
     Args:
-        start -- The value of the first integer in the sequence.
-        count -- The number of sequential integers to generate.
+        start: The value of the first integer in the sequence.
+        count: The number of sequential integers to generate.
+        scheduler: The scheduler to schedule the values on.
 
-    Returns an observable sequence that contains a range of sequential
-    integral numbers.
+    Returns:
+        An observable sequence that contains a range of sequential
+        integral numbers.
     """
 
     if step is None and stop is None:
@@ -28,10 +31,10 @@ def from_range(start: int, stop: int = None, step: int = None) -> Observable:
     else:
         range_t = range(start, stop, step)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer, scheduler_: typing.Scheduler = None):
         nonlocal range_t
 
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or scheduler_ or current_thread_scheduler
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, iterator):

@@ -18,7 +18,7 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
         >>> res = defer(lambda: of(1, 2, 3))
 
     Args:
-        observable_factory -- Observable factory function to invoke for
+        observable_factory: Observable factory function to invoke for
         each observer that subscribes to the resulting sequence.
 
     Returns:
@@ -29,32 +29,53 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
     return defer_(observable_factory)
 
 
-def empty() -> Observable:
+def empty(scheduler: typing.Scheduler = None) -> Observable:
     """Returns an empty observable sequence.
 
     Example:
         >>> obs = empty()
 
     Args:
-        scheduler -- Scheduler to send the termination call on.
+        scheduler: Scheduler to send the termination call on.
 
     Returns:
         An observable sequence with no elements.
     """
     from .core.observable.empty import empty as empty_
-    return empty_()
+    return empty_(scheduler)
+
+
+def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
+    """Returns an observable sequence that contains a single element
+    generate from a supplier, using the specified scheduler to send out
+    observer messages.
+
+    Examples:
+        >>> res = from_callable(lambda: calculate_value())
+        >>> res = from_callable(lambda: 1 / 0) # emits an error
+
+    Args:
+        value: Single element in the resulting observable sequence.
+        scheduler: Scheduler to schedule the values on.
+
+    Returns:
+        An observable sequence containing the single specified
+        element derived from the supplier
+    """
+    from .core.observable.returnvalue import from_callable as from_callable_
+    return from_callable_(supplier, scheduler)
 
 
 def from_future(future: Future) -> Observable:
     """Converts a Future to an Observable sequence
 
     Args:
-        future -- A Python 3 compatible future.
+        future: A Python 3 compatible future.
             https://docs.python.org/3/library/asyncio-task.html#future
             http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
     Returns:
-        An Observable sequence which wraps the existing future success
+        An observable sequence which wraps the existing future success
         and failure.
     """
     from .core.observable.fromfuture import from_future as from_future_
@@ -69,6 +90,7 @@ def from_iterable(iterable: Iterable) -> Observable:
 
     Args:
         iterable - A Python iterable
+        scheduler: An optional scheduler to schedule the values on.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -82,7 +104,7 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def from_range(start: int, stop: int = None, step: int = None) -> Observable:
+def from_range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -93,11 +115,13 @@ def from_range(start: int, stop: int = None, step: int = None) -> Observable:
         >>> res = range(0, 10, 1)
 
     Args:
-        start -- The value of the first integer in the sequence.
-        count -- The number of sequential integers to generate.
+        start: The value of the first integer in the sequence.
+        count: The number of sequential integers to generate.
+        scheduler: The scheduler to schedule the values on.
 
-    Returns an observable sequence that contains a range of sequential
-    integral numbers.
+    Returns:
+        An observable sequence that contains a range of sequential
+        integral numbers.
     """
     from .core.observable.range import from_range as from_range_
     return from_range_(start, stop, step)
@@ -115,35 +139,40 @@ def never() -> Observable:
 
 
 def of(*args: Any) -> Observable:
-    """This method creates a new Observable instance with a variable number
-    of arguments, regardless of number or type of the arguments.
+    """This method creates a new Observable instance with a variable
+    number of arguments, regardless of number or type of the arguments.
 
     Example:
     res = of(1,2,3)
 
-    Returns the observable sequence whose elements are pulled from the given
-    arguments
+    Returns:
+        The observable sequence whose elements are pulled from the given
+        arguments
     """
     return from_iterable(args)
 
 
-def return_value(value: Any) -> Observable:
+def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
 
-    example
-    res = rx.Observable.return(42)
-    res = rx.Observable.return(42, rx.Scheduler.timeout)
+    Examples:
+        >>> res = return(42)
+        >>> res = return(42, rx.Scheduler.timeout)
 
-    Keyword arguments:
-    value -- Single element in the resulting observable sequence.
+    Args:
+        value: Single element in the resulting observable sequence.
 
-    Returns an observable sequence containing the single specified
-    element.
+    Returns:
+        An observable sequence containing the single specified
+        element.
     """
     from .core.observable.returnvalue import return_value as return_value_
-    return return_value_(value)
+    return return_value_(value, scheduler)
+
+
+just = return_value
 
 
 def throw(exception: Exception) -> Observable:
@@ -155,7 +184,7 @@ def throw(exception: Exception) -> Observable:
         >>> res = throw(Exception('Error'))
 
     Args:
-        exception -- An object used for the sequence's termination.
+        exception: An object used for the sequence's termination.
 
     Returns:
         The observable sequence that terminates exceptionally with the
@@ -176,10 +205,10 @@ def timer(duetime, period=None) -> Observable:
         >>> res = Observable.timer(5000, 1000)
 
     Args:
-        duetime -- Absolute (specified as a datetime object) or relative
+        duetime: Absolute (specified as a datetime object) or relative
             time (specified as an integer denoting milliseconds) at
             which to produce the first value.
-        period -- [Optional] Period to produce subsequent values
+        period: [Optional] Period to produce subsequent values
             (specified as an integer denoting milliseconds), or the
             scheduler to run the timer on. If not specified, the
             resulting timer is not recurring.

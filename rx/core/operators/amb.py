@@ -74,10 +74,12 @@ def amb(right_source):
 def amb_(*args: Observable):
     """Propagates the observable sequence that reacts first.
 
-    E.g. winner = Observable.amb(xs, ys, zs)
+    Example:
+        >>> winner = amb(xs, ys, zs)
 
-    Returns an observable sequence that surfaces any of the given
-    sequences, whichever reacted first.
+    Returns:
+        An observable sequence that surfaces any of the given sequences,
+        whichever reacted first.
     """
 
     acc = never()
