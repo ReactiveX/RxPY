@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+from rx import throw
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +27,7 @@ class TestThrow(unittest.TestCase):
         ex = 'ex'
 
         def factory():
-            return Observable.throw(ex)
+            return throw(ex)
 
         results = scheduler.start(factory)
         assert results.messages == [on_error(200, ex)]
@@ -36,14 +36,14 @@ class TestThrow(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.throw('ex')
+            return throw('ex')
 
         results = scheduler.start(factory, disposed=200)
         assert results.messages == []
 
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()
-        xs = Observable.throw('ex')
+        xs = throw('ex')
         xs.subscribe_(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler)
 
         self.assertRaises(RxException, scheduler.start)

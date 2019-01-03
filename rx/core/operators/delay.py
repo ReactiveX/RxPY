@@ -14,7 +14,7 @@ class Timestamp(object):
 
 
 def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int],
-    scheduler: typing.Scheduler = None) -> Observable:
+                              scheduler: typing.Scheduler = None) -> Observable:
 
     def subscribe(observer, scheduler_=None):
         nonlocal duetime
