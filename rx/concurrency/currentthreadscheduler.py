@@ -95,7 +95,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
         Gets a value indicating whether the caller must call a
         schedule method. If the trampoline is active, then it returns
-        False; otherwise, if  the trampoline is not active, then it
+        False; otherwise, if the trampoline is not active, then it
         returns True.
         """
         return self.queue is None
