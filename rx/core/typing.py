@@ -7,13 +7,14 @@ from . import abc
 T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 
-Action = Callable[[abc.Scheduler, Any], None]    # pylint: disable=C0103
+Action = Callable[[], None]
+ScheduledAction = Callable[[abc.Scheduler, Any], None]
 
 OnNext = Callable[[Any], None]                   # pylint: disable=C0103
 OnError = Callable[[Exception], None]            # pylint: disable=C0103
 OnCompleted = Callable[[], None]                 # pylint: disable=C0103
 
-Mapper = Callable[[Any], Any]                    # pylint: disable=C0103
+Mapper = Callable[[Any], Any]
 MapperIndexed = Callable[[Any, int], Any]        # pylint: disable=C0103
 Predicate = Callable[[Any], bool]                # pylint: disable=C0103
 PredicateIndexed = Callable[[Any, int], bool]    # pylint: disable=C0103
@@ -40,15 +41,15 @@ class Scheduler(abc.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule(self, action: Action, state: Any = None) -> Disposable:
+    def schedule(self, action: ScheduledAction, state: Any = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self, duetime: timedelta, action: Action, state=None):
+    def schedule_relative(self, duetime: timedelta, action: ScheduledAction, state=None):
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self, duetime, action: Action, state=None):
+    def schedule_absolute(self, duetime, action: ScheduledAction, state=None):
         return NotImplemented
 
 

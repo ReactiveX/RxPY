@@ -1,11 +1,15 @@
 import threading
+from typing import List, Any
+
+from rx.core import abc
+from rx.core.typing import Action
 from rx.disposables import SerialDisposable
 
 from .observerbase import ObserverBase
 
 
 class ScheduledObserver(ObserverBase):
-    def __init__(self, scheduler, observer):
+    def __init__(self, scheduler: abc.Scheduler, observer: abc.Observer) -> None:
         super().__init__()
 
         self.scheduler = scheduler
@@ -14,28 +18,28 @@ class ScheduledObserver(ObserverBase):
         self.lock = threading.RLock()
         self.is_acquired = False
         self.has_faulted = False
-        self.queue = []
+        self.queue: List[Action] = []
         self.disposable = SerialDisposable()
 
         # Note to self: list append is thread safe
         # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
-    def _on_next_core(self, value):
+    def _on_next_core(self, value: Any) -> None:
         def action():
             self.observer.on_next(value)
         self.queue.append(action)
 
-    def _on_error_core(self, error):
+    def _on_error_core(self, error: Exception) -> None:
         def action():
             self.observer.on_error(error)
         self.queue.append(action)
 
-    def _on_completed_core(self):
+    def _on_completed_core(self) -> None:
         def action():
             self.observer.on_completed()
         self.queue.append(action)
 
-    def ensure_active(self):
+    def ensure_active(self) -> None:
         is_owner = False
 
         with self.lock:
@@ -46,7 +50,7 @@ class ScheduledObserver(ObserverBase):
         if is_owner:
             self.disposable.disposable = self.scheduler.schedule(self.run)
 
-    def run(self, scheduler, state):
+    def run(self, scheduler: abc.Scheduler, state: Any) -> None:
         parent = self
 
         with self.lock:
@@ -66,6 +70,6 @@ class ScheduledObserver(ObserverBase):
 
         self.scheduler.schedule(self.run)
 
-    def dispose(self):
+    def dispose(self) -> None:
         super().dispose()
         self.disposable.dispose()

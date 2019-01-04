@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 from abc import abstractmethod
 
 from .disposable import Disposable
@@ -14,16 +14,16 @@ class ObserverBase(Observer, Disposable):
     def __init__(self):
         self.is_stopped = False
 
-    def on_next(self, value):
+    def on_next(self, value: Any) -> None:
         """Notify the observer of a new element in the sequence."""
         if not self.is_stopped:
             self._on_next_core(value)
 
     @abstractmethod
-    def _on_next_core(self, value):
+    def _on_next_core(self, value: Any) -> None:
         return NotImplemented
 
-    def on_error(self, error):
+    def on_error(self, error: Exception) -> None:
         """Notify the observer that an exception has occurred.
 
         Keyword arguments:
@@ -34,10 +34,10 @@ class ObserverBase(Observer, Disposable):
             self._on_error_core(error)
 
     @abstractmethod
-    def _on_error_core(self, error):
+    def _on_error_core(self, error: Exception) -> None:
         return NotImplemented
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         """Notifies the observer of the end of the sequence."""
 
         if not self.is_stopped:
@@ -45,10 +45,10 @@ class ObserverBase(Observer, Disposable):
             self._on_completed_core()
 
     @abstractmethod
-    def _on_completed_core(self):
+    def _on_completed_core(self) -> None:
         return NotImplemented
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Disposes the observer, causing it to transition to the
         stopped state."""
         self.is_stopped = True
