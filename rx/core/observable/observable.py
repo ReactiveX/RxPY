@@ -18,9 +18,9 @@ class Observable(typing.Observable):
     Represents a push-style collection and contains all operators as
     methods to allow classic Rx chaining of operators."""
 
-    def __init__(self, source: typing.Observable = None) -> None:
+    def __init__(self, source: abc.Observable = None) -> None:
         self.lock = threading.RLock()
-        self.source: Optional['Observable'] = source
+        self.source: Optional[abc.Observable] = source
 
     def __add__(self, other):
         """Pythonic version of concat.
