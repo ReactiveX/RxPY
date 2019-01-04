@@ -1,3 +1,4 @@
+from typing import List
 from rx.core import Disposable, Observable, typing
 from rx.disposables import CompositeDisposable
 from .subscription import Subscription
@@ -9,7 +10,7 @@ class ColdObservable(Observable):
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = []
+        self.subscriptions: List[Subscription] = []
 
     def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         clock = self.scheduler.to_relative(self.scheduler.now)

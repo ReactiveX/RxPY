@@ -1,15 +1,18 @@
-from rx.core import Disposable, Observable, typing
+from typing import List
+
+from rx.core import Disposable, Observable, typing, abc
+from rx.concurrency import VirtualTimeScheduler
 from .subscription import Subscription
 
 
 class HotObservable(Observable):
-    def __init__(self, scheduler: typing.Scheduler, messages) -> None:
+    def __init__(self, scheduler: VirtualTimeScheduler, messages) -> None:
         super().__init__()
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions = []
-        self.observers = []
+        self.subscriptions: List[Subscription] = []
+        self.observers: List[abc.Observer] = []
 
         observable = self
 
@@ -27,7 +30,7 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
+    def _subscribe_core(self, observer: abc.Observer, scheduler: abc.Scheduler = None) -> typing.Disposable:
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1

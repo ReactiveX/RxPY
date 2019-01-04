@@ -8,7 +8,7 @@ from .observable import AnonymousObservable
 class Notification:
     """Represents a notification to an observer."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Default constructor used by derived types."""
         self.has_value = False
         self.value = None

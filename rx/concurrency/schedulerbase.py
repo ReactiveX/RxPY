@@ -1,6 +1,7 @@
+from typing import Union
 from datetime import datetime, timedelta
 
-from rx.core import Scheduler, Disposable
+from rx.core import Scheduler, Disposable, typing, abc
 from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
@@ -10,14 +11,14 @@ class SchedulerBase(Scheduler): #  pylint: disable=W0223
     schedulers.
     """
 
-    def invoke_action(self, action, state=None):
+    def invoke_action(self, action, state=None) -> typing.Disposable:
         ret = action(self, state)
-        if isinstance(ret, Disposable):
+        if isinstance(ret, abc.Disposable):
             return ret
 
         return Disposable.empty()
 
-    def schedule_periodic(self, period, action, state=None):
+    def schedule_periodic(self, period, action, state=None) -> typing.Disposable:
         """Schedules a periodic piece of work to be executed in the tkinter
         mainloop.
 
@@ -55,7 +56,7 @@ class SchedulerBase(Scheduler): #  pylint: disable=W0223
         return default_now()
 
     @classmethod
-    def to_relative(cls, timespan):
+    def to_relative(cls, timespan: Union[int, timedelta, datetime]) -> int:
         """Converts time value to milliseconds"""
 
         if isinstance(timespan, datetime):
@@ -67,7 +68,7 @@ class SchedulerBase(Scheduler): #  pylint: disable=W0223
         return int(timespan)
 
     @classmethod
-    def to_datetime(cls, duetime):
+    def to_datetime(cls, duetime: Union[int, timedelta, datetime]) -> datetime:
         """Converts time value to datetime"""
 
         if isinstance(duetime, timedelta):
@@ -78,7 +79,7 @@ class SchedulerBase(Scheduler): #  pylint: disable=W0223
         return duetime
 
     @classmethod
-    def to_timedelta(cls, timespan):
+    def to_timedelta(cls, timespan: Union[int, timedelta, datetime]) -> timedelta:
         """Converts time value to timedelta"""
 
         if isinstance(timespan, datetime):
