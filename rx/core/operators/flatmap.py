@@ -1,5 +1,5 @@
 import collections
-from typing import Any, Callable
+from typing import Callable
 
 from rx import from_, from_future, operators as _
 from rx.core import Observable

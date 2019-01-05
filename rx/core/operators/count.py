@@ -1,10 +1,11 @@
 from typing import Callable
 from rx.core import Observable
+from rx.core.typing import Predicate
 
-from rx import operators
+from rx import operators as _
 
 
-def count(predicate=None) -> Callable[[Observable], Observable]:
+def _count(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that represents
     how many elements in the specified observable sequence satisfy a
     condition if provided, else the count of items.
@@ -24,12 +25,12 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
         the count of items in the sequence.
     """
 
-    filtering = operators.count(predicate)
-    counter = operators.reduce(lambda count, _: count + 1, seed=0)
+    counter = _.reduce(lambda n, _: n + 1, seed=0)
 
-    def partial(source: Observable) -> Observable:
+    def count(source: Observable) -> Observable:
         if predicate:
-            return source.pipe(filtering, count())
+            filtering = _.filter(predicate)
+            return source.pipe(filtering, _.count())
 
         return source.pipe(counter)
-    return partial
+    return count
