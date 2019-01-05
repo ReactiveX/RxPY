@@ -6,7 +6,7 @@ except ImportError:
     from setuptools import setup
 
 setup(
-    name='Rx',
+    name='rx',
     version='3.0.0-alpha',
     description='Reactive Extensions (Rx) for Python',
     long_description=("is a library for composing asynchronous and "
@@ -37,7 +37,7 @@ setup(
     packages=['rx', 'rx.core', 'rx.core.abc', 'rx.internal',
               'rx.core.operators', 'rx.operators',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler',
-              'rx.operators.blocking', 'rx.disposables', 'rx.subjects',
+              'rx.core.operators.blocking', 'rx.disposables', 'rx.subjects',
               'rx.testing'],
     package_dir={'rx': 'rx'},
     include_package_data=True,
