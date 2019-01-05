@@ -381,14 +381,12 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:  # pylint:
 
     Args:
         mapper: A transform function to apply to each source element.
-            The second parameter of the function represents the index
-            of the source element
 
     Returns:
         A partially applied operator function that takes an observable
         source and returns an observable sequence whose elements are
-        the result of invoking the transform function on each element of
-        the source.
+        the result of invoking the transform function on each element
+        of the source.
     """
     from rx.core.operators.map import _map
     return _map(mapper)
@@ -403,27 +401,27 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
 
     Args:
         mapper_indexed: A transform function to apply to each source
-            element. The second parameter of the function represents the
-            index of the source element.
+            element. The second parameter of the function represents
+            the index of the source element.
 
     Returns:
         A partially applied operator function that takes an observable
-        source and returns an observable sequence whose elements are the
-        result of invoking the transform function on each element of the
-        source.
+        source and returns an observable sequence whose elements are
+        the result of invoking the transform function on each element
+        of the source.
     """
     from rx.core.operators.map import _mapi
     return _mapi(mapper_indexed)
 
 
 def materialize() -> Callable[[Observable], Observable]:
-    """Materializes the implicit notifications of an observable sequence
-    as explicit notification values.
+    """Materializes the implicit notifications of an observable
+    sequence as explicit notification values.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing the materialized notification
-        values from the source sequence.
+        An operator function that takes an observable source and
+        returns an observable sequence containing the materialized
+        notification values from the source sequence.
     """
     from rx.core.operators.materialize import materialize as materialize_
     return materialize_()
@@ -441,9 +439,9 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
         comparer: [Optional] Comparer used to compare elements.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
-        maximum element in the source sequence.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence containing a single
+        element with the maximum element in the source sequence.
     """
     from rx.core.operators.max import _max
     return _max(comparer)
@@ -559,10 +557,10 @@ def switch_latest() -> Callable[[Observable], Observable]:
     observable sequence.
 
     Returns:
-        An operator function that takes an observable source and returns
-        the observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has
-        been received.
+        A partially applied operator function that takes an observable
+        source and returns the observable sequence that at any point in
+        time produces the elements of the most recent inner observable
+        sequence that has been received.
     """
     from rx.core.operators.switchlatest import switch_latest as switch_latest_
     return switch_latest_()
@@ -577,12 +575,12 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
 
     Args:
         throttle_duration_mapper: Mapper function to retrieve an
-        observable sequence indicating the throttle duration for each given
-        element.
+        observable sequence indicating the throttle duration for each
+        given element.
 
     Returns:
-        An operator function that takes an observable source and returns
-        the throttled observable sequence.
+        A partially applied operator function that takes an observable
+        source and returns the throttled observable sequence.
     """
     from rx.core.operators.debounce import throttle_with_mapper as throttle_duration_mapper_
     return throttle_duration_mapper_(throttle_duration_mapper)
@@ -598,8 +596,9 @@ def timestamp() -> Callable[[Observable], Observable]:
     value is the original value.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence with timestamp information on values.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence with timestamp
+        information on values.
     """
     from rx.core.operators.timestamp import timestamp as timestamp_
     return timestamp_()
