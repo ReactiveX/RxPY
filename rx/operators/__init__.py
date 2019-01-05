@@ -85,8 +85,8 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
         An operator function that takes the source observable and
         returns the debounced observable sequence.
     """
-    from rx.core.operators.debounce import debounce as debounce_
-    return debounce_(duetime)
+    from rx.core.operators.debounce import _debounce
+    return _debounce(duetime)
 
 
 throttle_with_timeout = debounce
@@ -470,6 +470,19 @@ def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     from rx.core.operators.maxby import _max_by
     return _max_by(comparer)
 
+def merge_all() -> Callable[[Observable], Observable]:
+    """The merge_all operator.
+
+    Merges an observable sequence of observable sequences into an
+    observable sequence.
+
+    Returns:
+        A partially applied operator function that takes an observable
+        source and returns the observable sequence that merges the
+        elements of the inner sequences.
+    """
+    from rx.core.operators.merge import _merge_all
+    return _merge_all()
 
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     """The reduce operator.

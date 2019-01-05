@@ -6,9 +6,6 @@ from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.utils import is_future
 
-from .map import mapi
-from .merge import merge_all
-
 
 def _flat_map(source, mapper=None, mapper_indexed=None):
     def projection(x, i):
@@ -21,8 +18,8 @@ def _flat_map(source, mapper=None, mapper_indexed=None):
         return result
 
     return source.pipe(
-        mapi(projection),
-        merge_all()
+        _.mapi(projection),
+        _.merge_all()
     )
 
 

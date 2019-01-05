@@ -7,7 +7,7 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, Seri
 from rx.concurrency import timeout_scheduler
 
 
-def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
+def _debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -23,7 +23,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
         returns the debounced observable sequence.
     """
 
-    def partial(source: Observable) -> Observable:
+    def debounce(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None) -> Disposable:
             scheduler = scheduler or timeout_scheduler
             cancelable = SerialDisposable()
@@ -64,7 +64,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
-    return partial
+    return debounce
 
 
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
