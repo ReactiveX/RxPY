@@ -14,7 +14,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../rx'))
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -24,9 +24,9 @@ copyright = '2018, Dag Brattli'
 author = 'Dag Brattli'
 
 # The short X.Y version
-version = '2.0'
+version = '3.0'
 # The full version, including alpha/beta/rc tags
-release = '2.0.0-alpha1'
+release = '3.0.0-alpha1'
 
 
 # -- General configuration ---------------------------------------------------
