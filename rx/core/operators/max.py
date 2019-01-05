@@ -7,7 +7,7 @@ from rx.internal.basic import identity
 from .min import first_only
 
 
-def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:  # pylint: disable=W0622
+def _max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:  # pylint: disable=W0622
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
@@ -24,9 +24,9 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
         maximum element in the source sequence.
     """
 
-    def partial(source: Observable) -> Observable:
+    def max(source: Observable) -> Observable:  # pylint: disable=redefined-builtin
         return source.pipe(
             _.max_by(identity, comparer),
             _.map(lambda x: first_only(x))
         )
-    return partial
+    return max

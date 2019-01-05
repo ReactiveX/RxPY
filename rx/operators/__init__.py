@@ -93,7 +93,9 @@ throttle_with_timeout = debounce
 
 
 def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
-    """Time shifts the observable sequence by duetime. The relative time
+    """The delay operator.
+
+    Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
     Examples:
@@ -108,11 +110,11 @@ def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) ->
             If not specified, the timeout scheduler is used.
 
     Returns:
-        An operator function that takes a source observable and returns
-        a time-shifted sequence.
+        A partially applied operator function that takes the source
+        observable and returns a time-shifted sequence.
     """
-    from rx.core.operators.delay import delay as delay_
-    return delay_(duetime)
+    from rx.core.operators.delay import _delay
+    return _delay(duetime)
 
 
 def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
@@ -340,26 +342,56 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.last import last as last_
     return last_(predicate)
 
+def last_or_default(predicate=None, default_value=None) -> Observable:
+    """Return last or default element.
+
+    Returns the last element of an observable sequence that satisfies
+    the condition in the predicate, or a default value if no such
+    element exists.
+
+    Examples:
+        >>> res = last_or_default()
+        >>> res = last_or_default(lambda x: x > 3)
+        >>> res = last_or_default(lambda x: x > 3, 0)
+        >>> res = last_or_default(None, 0)
+
+    Args:
+        predicate: [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value: [Optional] The default value if no such element
+            exists. If not specified, defaults to None.
+
+    Returns:
+        An operator function that takes an observable source and returns
+        an observable sequence containing the last element in the
+        observable sequence that satisfies the condition in the predicate,
+        or a default value if no such element exists.
+    """
+    from rx.core.operators.lastordefault import _last_or_default
+    return  _last_or_default(predicate, default_value)
+
 
 def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
-    """Project each element of an observable sequence into a new form
-    by incorporating the element's index.
+    """The map operator.
+
+    Project each element of an observable sequence into a new form.
 
     Example:
         >>> map(lambda value: value * 10)
 
     Args:
         mapper: A transform function to apply to each source element.
-            The second parameter of the function represents the index of
-            the source element
+            The second parameter of the function represents the index
+            of the source element
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence whose elements are the result of invoking
-        the transform function on each element of the source.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence whose elements are
+        the result of invoking the transform function on each element of
+        the source.
     """
-    from rx.core.operators.map import map as map_
-    return map_(mapper)
+    from rx.core.operators.map import _map
+    return _map(mapper)
 
 
 def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
@@ -367,7 +399,7 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
     by incorporating the element's index.
 
     Example:
-        >>> ret = map(lambda value, index: value * value + index)(source)
+        >>> ret = mapi(lambda value, index: value * value + index)
 
     Args:
         mapper_indexed: A transform function to apply to each source
@@ -375,12 +407,13 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
             index of the source element.
 
     Returns:
-        A operator function that takes an observable source and returns
-        an observable sequence whose elements are the result of invoking
-        the transform function on each element of the source.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence whose elements are the
+        result of invoking the transform function on each element of the
+        source.
     """
-    from rx.core.operators.map import mapi as mapi_
-    return mapi_(mapper_indexed)
+    from rx.core.operators.map import _mapi
+    return _mapi(mapper_indexed)
 
 
 def materialize() -> Callable[[Observable], Observable]:
@@ -412,41 +445,67 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
         an observable sequence containing a single element with the
         maximum element in the source sequence.
     """
-    from rx.core.operators.max import max as max_
-    return max_(comparer)
+    from rx.core.operators.max import _max
+    return _max(comparer)
+
+def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+    """The max_by operator.
+
+    Returns the elements in an observable sequence with the maximum
+    key value according to the specified comparer.
+
+    Examples:
+        >>> res = max_by(lambda x: x.value)
+        >>> res = max_by(lambda x: x.value, lambda x, y: x - y)
+
+    Args:
+        key_mapper: Key mapper function.
+        comparer: [Optional] Comparer used to compare key values.
+
+    Returns:
+        A partially applied operator function that takes an observable
+        source and return an observable sequence containing a list of
+        zero or more elements that have a maximum key value.
+    """
+    from rx.core.operators.maxby import _max_by
+    return _max_by(comparer)
 
 
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
-    """Applies an accumulator function over an observable sequence,
+    """The reduce operator.
+
+    Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
     accumulator value.
 
-    For aggregation behavior with incremental intermediate results, see
-    Observable.scan.
+    For aggregation behavior with incremental intermediate results,
+    see `scan`.
 
     Examples:
         >>> res = reduce(lambda acc, x: acc + x)
         >>> res = reduce(lambda acc, x: acc + x, 0)
 
-    Keyword arguments:
-        accumulator -- An accumulator function to be
-            invoked on each element.
+    Args:
+        accumulator -- An accumulator function to be invoked on each
+            element.
         seed -- Optional initial accumulator value.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
-        final accumulator value.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence containing a single
+        element with the final accumulator value.
     """
-    from rx.core.operators.reduce import reduce as reduce_
-    return reduce_(accumulator, seed)
+    from rx.core.operators.reduce import _reduce
+    return _reduce(accumulator, seed)
 
 
 def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
-    """Applies an accumulator function over an observable sequence and
-    returns each intermediate result. The optional seed value is used as
-    the initial accumulator value. For aggregation behavior with no
+    """The scan operator.
+
+    Applies an accumulator function over an observable sequence and
+    returns each intermediate result. The optional seed value is used
+    as the initial accumulator value. For aggregation behavior with no
     intermediate results, see `aggregate()` or `Observable()`.
 
     Examples:
@@ -459,11 +518,12 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
         seed: [Optional] The initial accumulator value.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing the accumulated values.
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence containing the
+        accumulated values.
     """
-    from rx.core.operators.scan import scan as scan_
-    return scan_(accumulator, seed)
+    from rx.core.operators.scan import _scan
+    return _scan(accumulator, seed)
 
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:

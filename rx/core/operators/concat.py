@@ -1,11 +1,11 @@
 from typing import Iterable, Union, cast
 
-from rx.core import ObservableBase, AnonymousObservable, Disposable
+from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 
 
-def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> ObservableBase:
+def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Concatenates all the observable sequences.
 
     1 - res = concat(xs, ys, zs)
@@ -39,7 +39,7 @@ def concat(*args: Union[ObservableBase, Iterable[ObservableBase]]) -> Observable
                 current = next(sources)
             except StopIteration:
                 observer.on_completed()
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
             else:
                 d = SingleAssignmentDisposable()

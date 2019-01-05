@@ -1,27 +1,27 @@
-from typing import Callable, Any
+from typing import Callable
 from rx.core import Observable
 from rx.internal.basic import default_sub_comparer
 
 from .minby import extrema_by
 
 
-def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
-    """Returns the elements in an observable sequence with the maximum
-    key value according to the specified comparer.
+def _max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+    def max_by(source: Observable) -> Observable:
+        """Partially applied max_by operator.
 
-    Example
-    res = source.max_by(lambda x: x.value)
-    res = source.max_by(lambda x: x.value, lambda x, y: x - y)
+        Returns the elements in an observable sequence with the maximum
+        key value.
 
-    Keyword arguments:
-    key_mapper -- {Function} Key mapper function.
-    comparer -- {Function} [Optional] Comparer used to compare key values.
+        Examples:
+            >>> res = max_by(source)
 
-    Returns an observable {Observable} sequence containing a list of zero
-    or more elements that have a maximum key value.
-    """
+        Args:
+            Source: The source observable sequence to.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            An observable sequence containing a list of zero or more
+            elements that have a maximum key value.
+        """
         comparer = comparer or default_sub_comparer
         return extrema_by(source, key_mapper, comparer)
-    return partial
+    return max_by
