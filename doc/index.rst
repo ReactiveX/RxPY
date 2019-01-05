@@ -3,17 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to RxPY's documentation!
-================================
+The Reactive Extensions for Python (RxPY)
+==========================================
+
+RxPY is a library for composing asynchronous and event-based programs using
+observable collections and pipable query operators in Python.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
 
-.. automodule:: rx.core
-
-.. autoclass:: ObservableBase
-    :members:
+    installation
+    get_started
+    reference
 
 Indices and tables
 ==================
