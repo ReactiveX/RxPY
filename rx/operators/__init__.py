@@ -45,6 +45,29 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
     from rx.core.operators.average import average as average_
     return average_(key_mapper)
 
+def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+    """Continues an observable sequence that is terminated by an
+    exception with the next observable sequence.
+
+    Examples:
+        >>> catch_exception(ys)(xs)
+        >>> catch_exception(lambda ex: ys(ex))(xs)
+
+    Args:
+        handler -- Exception handler function that returns an observable
+            sequence  given the error that occurred in the first
+            sequence.
+        second -- Second observable sequence used to produce results
+            when an error occurred in the first sequence.
+
+    Returns:
+        A function taking an observable source and returns an observable
+        sequence containing the first sequence's elements, followed by
+        the elements of the handler sequence in case an exception
+        occurred.
+    """
+    from rx.core.operators.catch import _catch_exception
+    return _catch_exception(second, handler)
 
 def count(predicate=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that represents
