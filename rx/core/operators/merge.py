@@ -90,18 +90,23 @@ def merge_(*args):
     if isinstance(sources[0], list):
         sources = sources[0]
 
-    return from_iterable(sources).pipe(merge_all)
+    return from_iterable(sources).pipe(_merge_all)
 
 
-def merge_all() -> Callable[[Observable], Observable]:
-    """Merges an observable sequence of observable sequences into an
-    observable sequence.
+def _merge_all() -> Callable[[Observable], Observable]:
+    def merge_all(source: Observable) -> Observable:
+        """Partially applied merge_all operator.
 
-    Returns the observable sequence that merges the elements of the inner
-    sequences.
-    """
+        Merges an observable sequence of observable sequences into an
+        observable sequence.
 
-    def partial(source: Observable) -> Observable:
+        Args:
+            source: Source observable to merge.
+
+        Returns:
+            The observable sequence that merges the elements of the inner
+            sequences.
+        """
         def subscribe(observer, scheduler=None):
             group = CompositeDisposable()
             is_stopped = [False]
@@ -134,4 +139,4 @@ def merge_all() -> Callable[[Observable], Observable]:
             return group
 
         return AnonymousObservable(subscribe)
-    return partial
+    return merge_all
