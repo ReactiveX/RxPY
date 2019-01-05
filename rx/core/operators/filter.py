@@ -4,7 +4,7 @@ from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Disposable
 
 
-# pylint: disable=W0622
+# pylint: disable=redefined-builtin
 def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.

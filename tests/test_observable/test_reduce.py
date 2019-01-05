@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as _
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -19,7 +20,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(lambda acc, x: acc + x, 42)
+            return xs.pipe(_.reduce(lambda acc, x: acc + x, 42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, 42), on_completed(250)]
@@ -30,7 +31,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, 42 + 24), on_completed(250)]
@@ -42,7 +43,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -53,18 +54,25 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == []
 
     def test_reduce_with_seed_range(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+        msgs = [
+            on_next(150, 1),
+            on_next(210, 0),
+            on_next(220, 1),
+            on_next(230, 2),
+            on_next(240, 3),
+            on_next(250, 4),
+            on_completed(260)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x, seed=42)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(260, 10 + 42), on_completed(260)]
@@ -75,19 +83,19 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
-        assert(len(res) == 1)
-        assert(res[0].value.kind == 'E' and res[0].value.exception != None)
-        assert(res[0].time == 250)
+        assert len(res) == 1
+        assert res[0].value.kind == 'E' and res[0].value.exception is not None
+        assert res[0].time == 250
 
     def test_reduce_without_seed_return(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
 
         def create():
-            return xs.reduce(accumulator=lambda acc, x: acc + x)
+            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x))
 
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
@@ -100,7 +108,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(lambda acc, x: acc + x)
+            return xs.pipe(_.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -111,22 +119,28 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(lambda acc, x: acc + x)
+            return xs.pipe(_.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == []
 
     def test_reduce_without_seed_range(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 1), on_next(210, 0), on_next(220, 1), on_next(230, 2), on_next(240, 3), on_next(250, 4), on_completed(260)]
+        msgs = [
+            on_next(150, 1),
+            on_next(210, 0),
+            on_next(220, 1),
+            on_next(230, 2),
+            on_next(240, 3),
+            on_next(250, 4),
+            on_completed(260)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.reduce(lambda acc, x: acc + x)
+            return xs.pipe(_.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(260, 10), on_completed(260)]
 
 if __name__ == '__main__':
     unittest.main()
-

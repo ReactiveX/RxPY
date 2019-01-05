@@ -98,29 +98,12 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
     return AnonymousObservable(subscribe)
 
 
-def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
-    """Time shifts the observable sequence by duetime. The relative time
-    intervals between the values are preserved.
+def _delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None
+           ) -> Callable[[Observable], Observable]:
+    def delay(source: Observable) -> Observable:
+        """Time shifts the observable sequence.
 
-    Examples:
-        >>> res = delay(timedelta(seconds=10))
-        >>> res = delay(5000)
-
-    Args:
-        duetime: Relative time specified as an integer denoting
-            milliseconds or datetime.timedelta by which to shift the
-            observable sequence.
-        scheduler: [Optional] Scheduler to run the delay timers on.
-            If not specified, the timeout scheduler is used.
-
-    Returns:
-        An operator function that takes a source observable and returns
-        a time-shifted sequence.
-    """
-
-    def _delay(source: Observable) -> Observable:
-        """Time shifts the observable sequence. The relative time
-        intervals between the values are preserved.
+        A partially applied delay operator function.
 
         Examples:
             >>> res = delay(source)
@@ -129,7 +112,7 @@ def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) ->
             source: The observable sequence to delay.
 
         Returns:
-            Returns a time-shifted sequence.
+            A time-shifted observable sequence.
         """
         return observable_delay_timespan(source, duetime, scheduler)
-    return _delay
+    return delay

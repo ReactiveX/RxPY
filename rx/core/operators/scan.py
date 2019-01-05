@@ -3,29 +3,25 @@ from rx import defer
 from rx.core import Observable
 
 
-def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
-    """Applies an accumulator function over an observable sequence and
-    returns each intermediate result. The optional seed value is used as
-    the initial accumulator value. For aggregation behavior with no
-    intermediate results, see `aggregate()` or `Observable()`.
-
-    Examples:
-        >>> scanned = source.scan(lambda acc, x: acc + x)
-        >>> scanned = source.scan(lambda acc, x: acc + x, 0)
-
-    Args:
-        accumulator: An accumulator function to be invoked on each
-            element.
-        seed: [Optional] The initial accumulator value.
-
-    Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing the accumulated values.
-    """
-
+def _scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     has_seed = seed is not None
 
-    def partial(source: Observable) -> Observable:
+    def scan(source: Observable) -> Observable:
+        """Partially applied scan operator.
+
+        Applies an accumulator function over an observable sequence and
+        returns each intermediate result.
+
+        Examples:
+            >>> scanned = scan(source)
+
+        Args:
+            source: The observable source to scan.
+
+        Returns:
+            An observable sequence containing the accumulated values.
+        """
+
         def factory(scheduler):
             nonlocal source
 
@@ -42,4 +38,4 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
                 return accumulation[0]
             return source.map(projection)
         return defer(factory)
-    return partial
+    return scan
