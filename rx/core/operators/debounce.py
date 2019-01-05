@@ -67,24 +67,22 @@ def _debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observab
     return debounce
 
 
-def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
-    """Ignores values from an observable sequence which are followed by
-    another value within a computed throttle duration.
+def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
+    def throttle_with_mapper(source: Observable) -> Observable:
+        """Partially applied throttle_with_mapper operator.
 
-    Example:
-        >>> op = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
+        Ignores values from an observable sequence which are followed by
+        another value within a computed throttle duration.
 
-    Args:
-        throttle_duration_mapper: Mapper function to retrieve an
-        observable sequence indicating the throttle duration for each given
-        element.
+        Example:
+            >>> obs = throttle_with_mapper(source)
 
-    Returns:
-        An operator function that takes an observable source and returns
-        the throttled observable sequence.
-    """
+        Args:
+            source: The observable source to throttle.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            The throttled observable sequence.
+        """
         def subscribe(observer, scheduler=None) -> Disposable:
             cancelable = SerialDisposable()
             has_value = [False]
@@ -140,4 +138,4 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
-    return partial
+    return throttle_with_mapper

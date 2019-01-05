@@ -567,7 +567,9 @@ def switch_latest() -> Callable[[Observable], Observable]:
 
 
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
-    """Ignores values from an observable sequence which are followed by
+    """The throttle_with_mapper operator.
+
+    Ignores values from an observable sequence which are followed by
     another value within a computed throttle duration.
 
     Example:
@@ -582,12 +584,14 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
         A partially applied operator function that takes an observable
         source and returns the throttled observable sequence.
     """
-    from rx.core.operators.debounce import throttle_with_mapper as throttle_duration_mapper_
-    return throttle_duration_mapper_(throttle_duration_mapper)
+    from rx.core.operators.debounce import _throttle_with_mapper
+    return _throttle_with_mapper(throttle_duration_mapper)
 
 
 def timestamp() -> Callable[[Observable], Observable]:
-    """Records the timestamp for each value in an observable sequence.
+    """The timestamp operator.
+
+    Records the timestamp for each value in an observable sequence.
 
     Examples:
         >>> timestamp()
@@ -600,5 +604,5 @@ def timestamp() -> Callable[[Observable], Observable]:
         source and returns an observable sequence with timestamp
         information on values.
     """
-    from rx.core.operators.timestamp import timestamp as timestamp_
-    return timestamp_()
+    from rx.core.operators.timestamp import _timestamp
+    return _timestamp()
