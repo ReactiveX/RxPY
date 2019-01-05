@@ -3,6 +3,21 @@ from typing import Iterable, Callable, Any, Optional
 
 from .core import AnonymousObservable, Observer, Observable, abc, typing
 
+def catch_exception(*args: Observable) -> Observable:
+    """Continues an observable sequence that is terminated by an
+    exception with the next observable sequence.
+
+    Examples:
+        >>> res = catch_exception(xs, ys, zs)
+        >>> res = catch_exception([xs, ys, zs])
+
+    Returns:
+        An observable sequence containing elements from consecutive
+        source sequences until a source sequence terminates
+        successfully.
+    """
+    from .core.observable.catch import _catch_exception
+    return _catch_exception(*args)
 
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
     """Create observable from subscribe function."""
