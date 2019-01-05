@@ -6,19 +6,19 @@ from rx.core import Observable
 from .concat import concat
 
 
-def start_with(*args: Any) -> Callable[[Observable], Observable]:
-    """Prepends a sequence of values to an observable sequence.
+def _start_with(*args: Any) -> Callable[[Observable], Observable]:
+    def start_with(source: Observable) -> Observable:
+        """Partially applied start_with operator.
 
-    Example:
-        >>> start_with(1, 2, 3)
+        Prepends a sequence of values to an observable sequence.
 
-    Returns:
-        An operator function that takes a source observable and returns
-        the source sequence prepended with the specified values.
-    """
+        Example:
+            >>> start_with(source)
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            The source sequence prepended with the specified values.
+        """
         start = from_iterable(args)
         sequence = [start, source]
         return concat(*sequence)
-    return partial
+    return start_with

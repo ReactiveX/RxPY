@@ -1,5 +1,6 @@
 from typing import Any, Callable
-from rx import defer
+
+from rx import defer, operators as _
 from rx.core import Observable
 
 
@@ -36,6 +37,6 @@ def _scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[
                     has_accumulation[0] = True
 
                 return accumulation[0]
-            return source.map(projection)
+            return source.pipe(_.map(projection))
         return defer(factory)
     return scan

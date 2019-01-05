@@ -66,8 +66,8 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
         the count of items in the sequence.
     """
 
-    from rx.core.operators.count import count as count_
-    return count_(predicate)
+    from rx.core.operators.count import _count
+    return _count(predicate)
 
 
 def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
@@ -547,8 +547,8 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
         An operator function that takes a source observable and returns
         the source sequence prepended with the specified values.
     """
-    from rx.core.operators.startswith import start_with as start_with_
-    return start_with_(*args)
+    from rx.core.operators.startswith import _start_with
+    return _start_with(*args)
 
 
 def switch_latest() -> Callable[[Observable], Observable]:
