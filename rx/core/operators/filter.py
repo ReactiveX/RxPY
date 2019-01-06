@@ -5,24 +5,23 @@ from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Dis
 
 
 # pylint: disable=redefined-builtin
-def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
-    """Filters the elements of an observable sequence based on a
-    predicate by incorporating the element's index.
+def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
+    def filter(source: Observable) -> Observable:
+        """Partially applied filter operator.
 
-    Example:
-        >>> filter(lambda value: value < 10)(source)
+        Filters the elements of an observable sequence based on a
+        predicate.
 
-    Args:
-        predicate --  A function to test each source element for a
-            condition.
+        Example:
+            >>> filter(source)
 
-    Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence that contains elements from the input
-        sequence that satisfy the condition.
-    """
+        Args:
+            source: Source observable to filter.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            A filtered observable sequence.
+        """
+
         def subscribe(observer: Observer, scheduler: Scheduler) -> Disposable:
             def on_next(value):
                 try:
@@ -36,28 +35,26 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return filter
 
 
-def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
-    """Filters the elements of an observable sequence based on a
-    predicate by incorporating the element's index.
+def _filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+    def filteri(source: Observable) -> Observable:
+        """Partially applied indexed filter operator.
 
-    Example:
-        >>> filter(lambda value, index: (value + index) < 10)(source)
+        Filters the elements of an observable sequence based on a
+        predicate by incorporating the element's index.
 
-    Args:
-        predicate -- A function to test each source element for a
-            condition; the second parameter of the function represents the
-            index of the source element.
+        Example:
+            >>> filteri(source)
 
-    Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence that contains elements from the input
-        sequence that satisfy the condition.
-    """
+        Args:
+            source: Source observable to filter.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            A filtered observable sequence.
+        """
+
         def subscribe(observer: Observer, scheduler: Scheduler):
             count = 0
 
@@ -76,4 +73,4 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return filteri

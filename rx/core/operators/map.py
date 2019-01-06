@@ -2,9 +2,9 @@ from typing import Callable, Any
 from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
-
+# pylint: disable=redefined-builtin
 def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
-    def map(source: Observable) -> Observable:  # pylint: disable=redefined-builtin
+    def map(source: Observable) -> Observable:
         """Partially applied map operator.
 
         Project each element of an observable sequence into a new form

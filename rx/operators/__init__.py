@@ -5,7 +5,8 @@ from rx.core import Observable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 
 
-def all(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
+# pylint: disable=redefined-builtin
+def all(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Determines whether all elements of an observable sequence satisfy
     a condition.
 
@@ -16,19 +17,21 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: 
         predicate: A function to test each element for a condition.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element determining
-        whether all elements in the source sequence pass the test in the
-        specified predicate.
+        An operator function that takes an observable source and
+        returns an observable sequence containing a single element
+        determining whether all elements in the source sequence pass
+        the test in the specified predicate.
     """
     from rx.core.operators.all import all as all_
     return all_(predicate)
 
 
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
-    """Computes the average of an observable sequence of values that are
-    in the sequence or obtained by invoking a transform function on each
-    element of the input sequence if present.
+    """The average operator.
+
+    Computes the average of an observable sequence of values that
+    are in the sequence or obtained by invoking a transform function on
+    each element of the input sequence if present.
 
     Examples:
         >>> op = average()
@@ -38,9 +41,9 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
         key_mapper: A transform function to apply to each element.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
-        average of the sequence of values.
+        An operator function that takes an observable source and
+        returns an observable sequence containing a single element with
+        the average of the sequence of values.
     """
     from rx.core.operators.average import average as average_
     return average_(key_mapper)
@@ -54,25 +57,25 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
         >>> catch_exception(lambda ex: ys(ex))(xs)
 
     Args:
-        handler -- Exception handler function that returns an observable
-            sequence  given the error that occurred in the first
+        handler: Exception handler function that returns an observable
+            sequence given the error that occurred in the first
             sequence.
-        second -- Second observable sequence used to produce results
+        second: Second observable sequence used to produce results
             when an error occurred in the first sequence.
 
     Returns:
-        A function taking an observable source and returns an observable
-        sequence containing the first sequence's elements, followed by
-        the elements of the handler sequence in case an exception
-        occurred.
+        A function taking an observable source and returns an
+        observable sequence containing the first sequence's elements,
+        followed by the elements of the handler sequence in case an
+        exception occurred.
     """
     from rx.core.operators.catch import _catch_exception
     return _catch_exception(second, handler)
 
 def count(predicate=None) -> Callable[[Observable], Observable]:
-    """Returns an observable sequence containing a value that represents
-    how many elements in the specified observable sequence satisfy a
-    condition if provided, else the count of items.
+    """Returns an observable sequence containing a value that
+    represents how many elements in the specified observable sequence
+    satisfy a condition if provided, else the count of items.
 
     Examples:
         >>> op = count()
@@ -82,11 +85,11 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
         predicate: A function to test each element for a condition.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with a number
-        that represents how many elements in the input sequence satisfy
-        the condition in the predicate function if provided, else
-        the count of items in the sequence.
+        An operator function that takes an observable source and
+        returns an observable sequence containing a single element with
+        a number that represents how many elements in the input
+        sequence satisfy the condition in the predicate function if
+        provided, else the count of items in the sequence.
     """
 
     from rx.core.operators.count import _count
@@ -156,21 +159,21 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
             If not provided, defaults to an equality comparer function.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence only containing the distinct contiguous
-        elements, based on a computed key value, from the source
-        sequence.
+        An operator function that takes an observable source and
+        returns an observable sequence only containing the distinct
+        contiguous elements, based on a computed key value, from the
+        source sequence.
     """
     from rx.core.operators.distinctuntilchanged import distinct_until_changed as distinct_until_changed_
     return distinct_until_changed_(key_mapper, comparer)
 
 
 def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
-    """Invokes an action for each element in the observable sequence and
-    invokes an action on graceful or exceptional termination of the
-    observable sequence. This method can be used for debugging, logging,
-    etc. of query behavior by intercepting the message stream to run
-    arbitrary actions for messages on the pipeline.
+    """Invokes an action for each element in the observable sequence
+    and invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging,
+    logging, etc. of query behavior by intercepting the message stream
+    to run arbitrary actions for messages on the pipeline.
 
     >>> do(observer)
 
@@ -190,16 +193,16 @@ def do_action(on_next: typing.OnNext = None,
               on_error: typing.OnError = None,
               on_completed: typing.OnCompleted = None
               ) -> Callable[[Observable], Observable]:
-    """Invokes an action for each element in the observable sequence and
-    invokes an action on graceful or exceptional termination of the
-    observable sequence. This method can be used for debugging, logging,
-    etc. of query behavior by intercepting the message stream to run
-    arbitrary actions for messages on the pipeline.
+    """Invokes an action for each element in the observable sequence
+    and invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging,
+    logging, etc. of query behavior by intercepting the message stream
+    to run arbitrary actions for messages on the pipeline.
 
     Examples:
-        >>> do_action(send)(observable)
-        >>> do_action(on_next, on_error)(observable)
-        >>> do_action(on_next, on_error, on_completed)(observable)
+        >>> do_action(send)
+        >>> do_action(on_next, on_error)
+        >>> do_action(on_next, on_error, on_completed)
 
     Args:
         on_next: [Optional] Action to invoke for each element in the
@@ -210,8 +213,9 @@ def do_action(on_next: typing.OnNext = None,
             termination of the observable sequence.
 
     Returns:
-        An operator function that takes the source observable an returns
-        the source sequence with the side-effecting behavior applied.
+        An operator function that takes the source observable an
+        returns the source sequence with the side-effecting behavior
+        applied.
     """
     from rx.core.operators.do import do_action as do_action_
     return do_action_(on_next, on_error, on_completed)
@@ -229,12 +233,12 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylin
         condition.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence that contains elements from the input
-        sequence that satisfy the condition.
+        An operator function that takes an observable source and
+        returns an observable sequence that contains elements from the
+        input sequence that satisfy the condition.
     """
-    from rx.core.operators.filter import filter as filter_
-    return filter_(predicate)
+    from rx.core.operators.filter import _filter
+    return _filter(predicate)
 
 
 def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
@@ -242,7 +246,7 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
     predicate by incorporating the element's index.
 
     Example:
-        >>> op = filter(lambda value, index: (value + index) < 10)(source)
+        >>> op = filter(lambda value, index: (value + index) < 10)
 
     Args:
         predicate: A function to test each source element for a
@@ -250,16 +254,18 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
             the index of the source element.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence that contains elements from the input
-        sequence that satisfy the condition.
+        An operator function that takes an observable source and
+        returns an observable sequence that contains elements from the
+        input sequence that satisfy the condition.
     """
-    from rx.core.operators.filter import filteri as filteri_
-    return filteri_(predicate_indexed)
+    from rx.core.operators.filter import _filteri
+    return _filteri(predicate_indexed)
 
 
 def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
-    """One of the Following:
+    """The flat_map operator.
+
+    One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
@@ -268,9 +274,9 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
         >>> source.flat_map(lambda x: Observable.range(0, x))
 
     Or:
-    Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences into
-    one observable sequence.
+    Projects each element of the source observable sequence to the
+    other observable sequence and merges the resulting observable
+    sequences into one observable sequence.
 
     Example:
         >>> source.flat_map(Observable.of(1, 2, 3))
@@ -282,16 +288,18 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
     Returns:
         An operator function that takes a source observable and returns
-        an observable sequence whose elements are the result of invoking
-        the one-to-many transform function on each element of the
-        input sequence .
+        an observable sequence whose elements are the result of
+        invoking the one-to-many transform function on each element of
+        the input sequence.
     """
     from rx.core.operators.flatmap import flat_map as flat_map_
     return flat_map_(mapper)
 
 
 def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    """One of the Following:
+    """The flat_mapi operator.
+
+    One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
@@ -300,21 +308,21 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
 
     Or:
     Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences into
-    one observable sequence.
+    observable sequence and merges the resulting observable sequences
+    into one observable sequence.
 
     1 - source.flat_mapi(Observable.of(1, 2, 3))
 
     Args:
-        mapper_indexed: [Optional] A transform function to apply to each
-            element or an observable sequence to project each element
-            from the source sequence onto.
+        mapper_indexed: [Optional] A transform function to apply to
+            each element or an observable sequence to project each
+            element from the source sequence onto.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence whose elements are the result of invoking
-        the one-to-many transform function on each element of the input
-        sequence.
+        An operator function that takes an observable source and
+        returns an observable sequence whose elements are the result of
+        invoking the one-to-many transform function on each element of
+        the input sequence.
     """
     from rx.core.operators.flatmap import flat_mapi as flat_mapi_
     return flat_mapi_(mapper_indexed)
@@ -329,24 +337,26 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
 
     Args:
         mapper: A transform function to apply to each source element.
-            The second parameter of the function represents the index of
-            the source element.
+            The second parameter of the function represents the index
+            of the source element.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence whose elements are the result of invoking
-        the transform function on each element of source producing an
-        observable of Observable sequences and that at any point in time
-        produces the elements of the most recent inner observable
-        sequence that has been received.
+        An operator function that takes an observable source and
+        returns an observable sequence whose elements are the result of
+        invoking the transform function on each element of source
+        producing an observable of Observable sequences and that at any
+        point in time produces the elements of the most recent inner
+        observable sequence that has been received.
     """
     from rx.core.operators.flatmap import flat_map_latest as flat_map_latest_
     return flat_map_latest_(mapper)
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
-    """Returns the last element of an observable sequence that satisfies the
-    condition in the predicate if specified, else the last element.
+    """The last operator.
+
+    Returns the last element of an observable sequence that satisfies
+    the condition in the predicate if specified, else the last element.
 
     Examples:
         >>> op = last()
@@ -357,16 +367,16 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
             elements in the source sequence.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing the last element in the
-        observable sequence that satisfies the condition in the
+        An operator function that takes an observable source and
+        returns an observable sequence containing the last element in
+        the observable sequence that satisfies the condition in the
         predicate.
     """
     from rx.core.operators.last import last as last_
     return last_(predicate)
 
 def last_or_default(predicate=None, default_value=None) -> Observable:
-    """Return last or default element.
+    """The last_or_default operator.
 
     Returns the last element of an observable sequence that satisfies
     the condition in the predicate, or a default value if no such
@@ -385,16 +395,16 @@ def last_or_default(predicate=None, default_value=None) -> Observable:
             exists. If not specified, defaults to None.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing the last element in the
-        observable sequence that satisfies the condition in the predicate,
-        or a default value if no such element exists.
+        An operator function that takes an observable source and
+        returns an observable sequence containing the last element in
+        the observable sequence that satisfies the condition in the
+        predicate, or a default value if no such element exists.
     """
     from rx.core.operators.lastordefault import _last_or_default
     return  _last_or_default(predicate, default_value)
 
 
-def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
+def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """The map operator.
 
     Project each element of an observable sequence into a new form.
@@ -575,7 +585,9 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
 
 
 def switch_latest() -> Callable[[Observable], Observable]:
-    """Transforms an observable sequence of observable sequences into an
+    """The switch_latest operator.
+
+    Transforms an observable sequence of observable sequences into an
     observable sequence producing values only from the most recent
     observable sequence.
 
