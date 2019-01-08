@@ -5,16 +5,7 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, Seri
 from rx.concurrency import current_thread_scheduler
 
 
-def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
-    """Concatenates all the observable sequences.
-
-    1 - res = concat(xs, ys, zs)
-    2 - res = concat([xs, ys, zs])
-
-    Returns an observable sequence that contains the elements of each given
-    sequence, in sequential order.
-    """
-
+def _concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     if args and isinstance(args[0], Iterable):
         sources = iter(args[0])
     else:

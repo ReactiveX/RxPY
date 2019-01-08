@@ -1,5 +1,5 @@
 from asyncio.futures import Future
-from typing import Iterable, Callable, Any, Optional
+from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import AnonymousObservable, Observer, Observable, abc, typing
 
@@ -24,6 +24,19 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
 
     return AnonymousObservable(subscribe)
 
+def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+    """Concatenates all the observable sequences.
+
+    Examples:
+        >>> res = concat(xs, ys, zs)
+        >>>res = concat([xs, ys, zs])
+
+    Returns:
+        An observable sequence that contains the elements of each given
+        sequence, in sequential order.
+    """
+    from .core.observable.concat import _concat
+    return _concat(*args)
 
 def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
