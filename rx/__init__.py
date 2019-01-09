@@ -3,6 +3,19 @@ from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import AnonymousObservable, Observer, Observable, abc, typing
 
+def _amb(*args: Observable):
+    """Propagates the observable sequence that reacts first.
+
+    Example:
+        >>> winner = amb(xs, ys, zs)
+
+    Returns:
+        An observable sequence that surfaces any of the given sequences,
+        whichever reacted first.
+    """
+    from .core.observable.amb import _amb
+    return _amb(*args)
+
 def catch_exception(*args: Observable) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.

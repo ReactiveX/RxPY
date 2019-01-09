@@ -2,24 +2,25 @@ from typing import Callable
 from rx.core import Observable, AnonymousObservable
 
 
-def some(predicate=None) -> Callable[[Observable], Observable]:
-    """Determines whether some element of an observable sequence satisfies a
-    condition if present, else if some items are in the sequence.
+def _some(predicate=None) -> Callable[[Observable], Observable]:
+    def some(source: Observable) -> Observable:
+        """Partially applied operator.
 
-    Example:
-    result = source.some()
-    result = source.some(lambda x: x > 3)
+        Determines whether some element of an observable sequence satisfies a
+        condition if present, else if some items are in the sequence.
 
-    Keyword arguments:
-    predicate -- A function to test each element for a condition.
+        Example:
+            >>> obs = some(source)
 
-    Returns an observable sequence containing a single element
-    determining whether some elements in the source sequence pass the test
-    in the specified predicate if given, else if some items are in the
-    sequence.
-    """
+        Args:
+            predicate -- A function to test each element for a condition.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            An observable sequence containing a single element
+            determining whether some elements in the source sequence
+            pass the test in the specified predicate if given, else if
+            some items are in the sequence.
+        """
         def subscribe(observer, scheduler=None):
             def on_next(_):
                 observer.on_next(True)
@@ -31,4 +32,4 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
             return source.subscribe_(on_next, observer.on_error, on_error, scheduler)
 
         return source.filter(predicate).some() if predicate else AnonymousObservable(subscribe)
-    return partial
+    return some
