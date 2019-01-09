@@ -3,7 +3,7 @@ from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import AnonymousObservable, Observer, Observable, abc, typing
 
-def _amb(*args: Observable):
+def amb(*args: Observable):
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -15,6 +15,29 @@ def _amb(*args: Observable):
     """
     from .core.observable.amb import _amb
     return _amb(*args)
+
+
+def case(mapper, sources, default_source=None) -> Observable:
+    """Uses mapper to determine which source in sources to use.
+
+    Examples:
+        >>> res = case(mapper, { '1': obs1, '2': obs2 })
+        >>> res = case(mapper, { '1': obs1, '2': obs2 }, obs0)
+
+    Args:
+        mapper -- The function which extracts the value for to test in a
+            case statement.
+        sources -- An object which has keys which correspond to the case
+            statement labels.
+        default_source -- The observable sequence or Future that will be run
+            if the sources are not matched. If this is not provided, it
+            defaults to rx.Observabe.empty.
+
+    Returns:
+        An observable sequence which is determined by a case statement.
+    """
+    from .core.observable.case import _case
+    return _case(mapper, sources, default_source)
 
 def catch_exception(*args: Observable) -> Observable:
     """Continues an observable sequence that is terminated by an
@@ -85,6 +108,20 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     from .core.observable.empty import empty as empty_
     return empty_(scheduler)
 
+def for_in(values, result_mapper) -> Observable:
+    """Concatenates the observable sequences obtained by running the
+    specified result mapper for each element in source.
+
+    Args:
+        values: A list of values to turn into an observable sequence.
+        result_mapper: A function to apply to each item in the values
+            list to turn it into an observable sequence.
+    Returns:
+        An observable sequence from the concatenated observable
+        sequences.
+    """
+    from .core.observable.empty import _for_in
+    return _for_in(values, result_mapper)
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element
@@ -167,6 +204,29 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
     from .core.observable.range import from_range as from_range_
     return from_range_(start, stop, step)
 
+def generate(initial_state, condition, iterate, result_mapper) -> Observable:
+    """Generates an observable sequence by running a state-driven loop
+    producing the sequence's elements, using the specified scheduler to
+    send out observer messages.
+
+    Example:
+        >>> res = rx.Observable.generate(0, lambda x: x < 10,
+                                         lambda x: x + 1,
+                                         lambda x: x)
+
+    Args:
+        initial_state: Initial state.
+        condition: Condition to terminate generation (upon returning
+            False).
+        iterate: Iteration step function.
+        result_mapper: Selector function for results produced in the
+            sequence.
+
+    Returns:
+        The generated sequence.
+    """
+    from .core.observable.generate import _generate
+    return _generate(initial_state, condition, iterate, result_mapper)
 
 def never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used
