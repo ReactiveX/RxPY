@@ -715,6 +715,82 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
     from rx.core.operators.scan import _scan
     return _scan(accumulator, seed)
 
+
+def skip(count: int) -> Callable[[Observable], Observable]:
+    """The skip operator.
+
+    Bypasses a specified number of elements in an observable sequence
+    and then returns the remaining elements.
+
+    Args:
+        count: The number of elements to skip before returning the
+            remaining elements.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements that
+        occur after the specified index in the input sequence.
+    """
+    from rx.core.operators.skip import _skip
+    return _skip(count)
+
+
+def skip_last(count: int) -> Observable:
+    """The skip_last operator.
+
+    Bypasses a specified number of elements at the end of an observable
+    sequence.
+
+    This operator accumulates a queue with a length enough to store the
+    first `count` elements. As more elements are received, elements are
+    taken from the front of the queue and produced on the result
+    sequence. This causes elements to be delayed.
+
+    Args:
+        count: Number of elements to bypass at the end of the source
+        sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the source sequence
+        elements except for the bypassed ones at the end.
+    """
+    from rx.core.operators.skiplast import _skip_last
+    return _skip_last(count)
+
+
+def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
+    """The slice operator.
+
+    Slices the given observable. It is basically a wrapper around the
+    operators skip(), skip_last(), take(), take_last() and filter().
+
+    This marble diagram helps you remember how slices works with
+    streams. Positive numbers is relative to the start of the events,
+    while negative numbers are relative to the end (close) of the
+    stream.
+
+     r---e---a---c---t---i---v---e---|
+     0   1   2   3   4   5   6   7   8
+    -8  -7  -6  -5  -4  -3  -2  -1   0
+
+    Examples:
+        >>> result = source.slice(1, 10)
+        >>> result = source.slice(1, -2)
+        >>> result = source.slice(1, -1, 2)
+
+    Args:
+        stop:Last element to take of skip last
+        step: Takes every step element. Must be larger than zero
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a sliced observable sequence.
+    """
+    from rx.core.operators.slice import _slice
+    return _slice(start, stop, step)
+
+
 def some(predicate=None) -> Callable[[Observable], Observable]:
     """The some operator.
 
@@ -753,9 +829,9 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
 
 def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """Computes the sum of a sequence of values that are obtained by
-    invoking an optional transform function on each element of the input
-    sequence, else if not specified computes the sum on each item in the
-    sequence.
+    invoking an optional transform function on each element of the
+    input sequence, else if not specified computes the sum on each item
+    in the sequence.
 
     Examples:
         >>> res = sum()
@@ -790,8 +866,8 @@ def switch_latest() -> Callable[[Observable], Observable]:
     return switch_latest_()
 
 def take(count: int) -> Callable[[Observable], Observable]:
-    """Returns a specified number of contiguous elements from the start of
-    an observable sequence.
+    """Returns a specified number of contiguous elements from the start
+    of an observable sequence.
 
     Example:
         >>> op = take(5)
@@ -808,16 +884,16 @@ def take(count: int) -> Callable[[Observable], Observable]:
     return _take(count)
 
 def take_last(count: int) -> Callable[[Observable], Observable]:
-    """Returns a specified number of contiguous elements from the end of an
-    observable sequence.
+    """Returns a specified number of contiguous elements from the end
+    of an observable sequence.
 
     Example:
         >>> res = take_last(5)
 
     This operator accumulates a buffer with a length enough to store
-    elements count elements. Upon completion of the source sequence, this
-    buffer is drained on the result sequence. This causes the elements to be
-    delayed.
+    elements count elements. Upon completion of the source sequence,
+    this buffer is drained on the result sequence. This causes the
+    elements to be delayed.
 
     Args:
         count: Number of elements to take from the end of the source
