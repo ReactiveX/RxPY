@@ -2,38 +2,39 @@ from datetime import datetime
 from typing import Union, Callable
 
 from rx import from_future, throw
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
 
 
-def timeout(duetime: Union[int, datetime], other: Observable = None) -> Callable[[Observable], Observable]:
+def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
-    1 - res = source.timeout(5000); # 5 seconds
-    # As a date and timeout observable
-    2 - res = source.timeout(datetime(), Observable.return_value(42))
-    # 5 seconds and timeout observable
-    3 - res = source.timeout(5000, Observable.return_value(42))
-    # As a date and timeout observable
+    Examples:
+        >>> res = timeout(5000)
+        >>> res = timeout(datetime(), return_value(42))
+        >>> res = timeout(5000, return_value(42))
 
-    Keyword arguments:
-    duetime -- Absolute (specified as a datetime object) or relative
-        time (specified as an integer denoting milliseconds) when a
-        timeout occurs.
-    other -- Sequence to return in case of a timeout. If not
-        specified, a timeout error throwing sequence will be used.
+    Args:
+        duetime: Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) when a
+            timeout occurs.
+        other: Sequence to return in case of a timeout. If not
+            specified, a timeout error throwing sequence will be used.
+        scheduler:
 
-    Returns the source sequence switching to the other sequence in case
-        of a timeout.
+    Returns:
+        An operator function that takes and observable source and
+        returns the source sequence switching to the other sequence in
+        case of a timeout.
     """
 
     other = other or throw(Exception("Timeout"))
     other = from_future(other) if is_future(other) else other
 
-    def partial(source: Observable) -> Observable:
+    def timeout(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             scheduler = scheduler or timeout_scheduler
 
@@ -85,4 +86,4 @@ def timeout(duetime: Union[int, datetime], other: Observable = None) -> Callable
             original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
             return CompositeDisposable(subscription, timer)
         return AnonymousObservable(subscribe)
-    return partial
+    return timeout

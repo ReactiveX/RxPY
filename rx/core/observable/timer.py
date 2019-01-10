@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def observable_timer_date(duetime):
+def observable_timer_date(duetime, schduler: typing.Scheduler):
     def subscribe(observer, scheduler=None):
         def action(scheduler, state):
             observer.on_next(0)
@@ -14,14 +14,15 @@ def observable_timer_date(duetime):
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_duetime_and_period(duetime, period) -> Observable:
-    def subscribe(observer, scheduler=None):
+def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Scheduler) -> Observable:
+    def subscribe(observer, scheduler_=None):
+        _scheduler = scheduler or scheduler_
         nonlocal duetime
 
         if isinstance(duetime, int):
-            duetime = scheduler.now + scheduler.to_timedelta(duetime)
+            duetime = _scheduler.now + _scheduler.to_timedelta(duetime)
 
-        p = scheduler.normalize(period)
+        p = _scheduler.normalize(period)
         mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
@@ -36,67 +37,47 @@ def observable_timer_duetime_and_period(duetime, period) -> Observable:
             observer.on_next(count[0])
             count[0] += 1
             mad.disposable = scheduler.schedule_absolute(dt[0], action)
-        mad.disposable = scheduler.schedule_absolute(dt[0], action)
+        mad.disposable = _scheduler.schedule_absolute(dt[0], action)
         return mad
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan(duetime) -> Observable:
+def observable_timer_timespan(duetime, scheduler: typing.Scheduler) -> Observable:
 
-    def subscribe(observer, scheduler=None):
-        d = scheduler.normalize(duetime)
+    def subscribe(observer, scheduler_=None):
+        _scheduler = scheduler or scheduler_
+        d = _scheduler.normalize(duetime)
 
         def action(scheduler, state):
             observer.on_next(0)
             observer.on_completed()
 
-        return scheduler.schedule_relative(d, action)
+        return _scheduler.schedule_relative(d, action)
     return AnonymousObservable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime, period) -> Observable:
+def observable_timer_timespan_and_period(duetime, period, scheduler: typing.Scheduler) -> Observable:
     if duetime == period:
-        def subscribe(observer, scheduler=None):
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_
+
             def action(count):
                 observer.on_next(count)
                 return count + 1
 
-            return scheduler.schedule_periodic(period, action, state=0)
+            return _scheduler.schedule_periodic(period, action, state=0)
         return AnonymousObservable(subscribe)
-    return observable_timer_duetime_and_period(duetime, period)
+    return observable_timer_duetime_and_period(duetime, period, scheduler)
 
 
-def timer(duetime, period=None) -> Observable:
-    """Returns an observable sequence that produces a value after duetime
-    has elapsed and then after each period.
-
-    Examples:
-        >>> res = Observable.timer(datetime(...))
-        >>> res = Observable.timer(datetime(...), 1000)
-        >>> res = Observable.timer(5000)
-        >>> res = Observable.timer(5000, 1000)
-
-    Args:
-        duetime -- Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) at
-            which to produce the first value.
-        period -- [Optional] Period to produce subsequent values
-            (specified as an integer denoting milliseconds), or the
-            scheduler to run the timer on. If not specified, the
-            resulting timer is not recurring.
-
-    Returns:
-        An observable sequence that produces a value after due time has
-        elapsed and then each period.
-    """
-
+def _timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
     if isinstance(duetime, datetime):
         if period is None:
-            return observable_timer_date(duetime)
+            return observable_timer_date(duetime, scheduler)
         else:
-            return observable_timer_duetime_and_period(duetime, period)
+            return observable_timer_duetime_and_period(duetime, period, scheduler)
 
     if period is None:
-        return observable_timer_timespan(duetime)
+        return observable_timer_timespan(duetime, scheduler)
 
-    return observable_timer_timespan_and_period(duetime, period)
+    return observable_timer_timespan_and_period(duetime, period, scheduler)
