@@ -228,6 +228,28 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     from .core.observable.generate import _generate
     return _generate(initial_state, condition, iterate, result_mapper)
 
+
+def interval(period, scheduler: typing.Scheduler) -> Observable:
+    """Returns an observable sequence that produces a value after each
+    period.
+
+    Example:
+        >>> res = interval(1000)
+
+    Args:
+        period: Period for producing the values in the resulting
+            sequence (specified as an integer denoting milliseconds).
+        scheduler:  Scheduler to run the interval on. If not specified,
+            the timeout scheduler is used.
+
+
+    Returns:
+        An observable sequence that produces a value after each period.
+    """
+    from .core.observable.interval import _interval
+    return _interval(period, scheduler)
+
+
 def never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
@@ -295,7 +317,7 @@ def throw(exception: Exception) -> Observable:
     return throw_(exception)
 
 
-def timer(duetime, period=None) -> Observable:
+def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that produces a value after duetime
     has elapsed and then after each period.
 
@@ -313,10 +335,12 @@ def timer(duetime, period=None) -> Observable:
             (specified as an integer denoting milliseconds), or the
             scheduler to run the timer on. If not specified, the
             resulting timer is not recurring.
+        scheduler:  Scheduler to run the timer on. If not specified,
+            the timeout scheduler is used.
 
     Returns:
         An observable sequence that produces a value after due time has
         elapsed and then each period.
     """
-    from .core.observable.timer import timer as timer_
-    return timer_(duetime, period)
+    from .core.observable.timer import _timer
+    return _timer(duetime, period, scheduler)
