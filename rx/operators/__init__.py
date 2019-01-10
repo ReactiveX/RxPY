@@ -1,5 +1,5 @@
 from typing import Callable, Union, Any
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from rx.core import Observable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
@@ -95,6 +95,29 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
     from rx.core.operators.catch import _catch_exception
     return _catch_exception(second, handler)
 
+
+def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
+    """Determines whether an observable sequence contains a specified
+    element with an optional equality comparer.
+
+    Examples:
+        >>> res = contains(42)
+        >>> res = contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
+
+    Args:
+        value: The value to locate in the source sequence.
+        comparer: [Optional] An equality comparer to compare elements.
+
+    Returns:
+        A function that takes a source observable that returns an
+        observable  sequence containing a single element determining
+        whether the source sequence contains an element that has the
+        specified value.
+    """
+    from rx.core.operators.contains import _contains
+    return _contains(value, comparer)
+
+
 def count(predicate=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that
     represents how many elements in the specified observable sequence
@@ -139,6 +162,73 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
 
 
 throttle_with_timeout = debounce
+
+
+def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observable]:
+    """Returns the elements of the specified sequence or the specified
+    value in a singleton sequence if the sequence is empty.
+
+    Examples:
+        >>> res = obs = default_if_empty()
+        >>> obs = default_if_empty(False)
+
+    Args:
+        default_value: The value to return if the sequence is empty. If
+            not provided, this defaults to None.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the specified
+        default value if the source is empty otherwise, the elements of
+        the source.
+    """
+    from rx.core.operators.defaultifempty import _default_if_empty
+    return _default_if_empty(default_value)
+
+
+def delay_subscription(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
+    """Time shifts the observable sequence by delaying the
+    subscription.
+
+    Example:
+        >>> res = delay_subscription(5000) # 5s
+
+    Args:
+        duetime: Absolute or relative time to perform the subscription
+        at.
+
+    Returns:
+        A function that take a source observable and returns a
+        time-shifted observable sequence.
+    """
+    from rx.core.operators.delaysubscription import _delay_subscription
+    return _delay_subscription(duetime)
+
+
+def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
+    """Time shifts the observable sequence based on a subscription delay
+    and a delay mapper function for each element.
+
+    Examples:
+        # with mapper only
+        >>> res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
+        # with delay and mapper
+        >>> res = source.delay_with_selector(Observable.timer(2000),
+                                            lambda x: Observable.timer(x))
+
+    Args:
+        subscription_delay: [Optional] Sequence indicating the delay for the
+            subscription to the source.
+        delay_duration_mapper: [Optional] Selector function to retrieve a
+            sequence indicating the delay for each given element.
+
+    Returns:
+        A function that takes an observable source and retursn a
+        time-shifted observable sequence.
+    """
+    from rx.core.operators.delaywithmapper import _delay_with_mapper
+    return _delay_with_mapper(subscription_delay, delay_duration_mapper)
+
 
 
 def dematerialize() -> Callable[[Observable], Observable]:
