@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as _
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -25,7 +26,7 @@ class TestDo(unittest.TestCase):
                 i[0] += 1
                 sum[0] -= x
                 return sum[0]
-            return xs.do_action(action)
+            return xs.pipe(_.do_action(action))
 
         scheduler.start(create)
 
@@ -42,7 +43,7 @@ class TestDo(unittest.TestCase):
             def action(x):
                 i[0] += 1
                 return i[0]
-            return xs.do_action(action)
+            return xs.pipe(_.do_action(action))
         scheduler.start(create)
 
         self.assertEqual(4, i[0])
@@ -62,7 +63,7 @@ class TestDo(unittest.TestCase):
 
             def on_completed():
                 completed[0] = True
-            return xs.do_action(on_next=on_next, on_completed=on_completed)
+            return xs.pipe(_.do_action(on_next=on_next, on_completed=on_completed))
 
         scheduler.start(create)
 
@@ -84,7 +85,9 @@ class TestDo(unittest.TestCase):
             def on_completed():
                 nonlocal completed
                 completed = True
-            return Observable.never().do_action(on_next=on_next, on_completed=on_completed)
+            return rx.never().pipe(
+                _.do_action(on_next=on_next, on_completed=on_completed),
+                )
 
         scheduler.start(create)
 
@@ -99,7 +102,7 @@ class TestDo(unittest.TestCase):
         def create():
             def on_completed():
                 completed[0] = True
-            return xs.do_action(on_completed=on_completed)
+            return xs.pipe(_.do_action(on_completed=on_completed))
 
         scheduler.start(create)
 
