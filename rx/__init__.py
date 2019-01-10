@@ -120,7 +120,7 @@ def for_in(values, result_mapper) -> Observable:
         An observable sequence from the concatenated observable
         sequences.
     """
-    from .core.observable.empty import _for_in
+    from .core.observable.forin import _for_in
     return _for_in(values, result_mapper)
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
