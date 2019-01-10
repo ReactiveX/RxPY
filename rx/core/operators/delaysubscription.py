@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Union
+from typing import Union, Callable
 
-from rx.core import Observable, ObservableBase
+from rx import empty, timer, operators as ops
+from rx.core import Observable
 
 
-def delay_subscription(source, duetime: Union[datetime, int]) -> ObservableBase:
+def _delay_subscription(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the subscription.
 
     1 - res = source.delay_subscription(5000) # 5s
@@ -14,7 +15,9 @@ def delay_subscription(source, duetime: Union[datetime, int]) -> ObservableBase:
     Returns time-shifted sequence.
     """
 
-    def mapper(_) -> ObservableBase:
-        return Observable.empty()
+    def delay_subscription(source: Observable) -> Observable:
+        def mapper(_) -> Observable:
+            return empty()
 
-    return source.delay_with_selector(Observable.timer(duetime), mapper)
+        return source.pipe(ops.delay_with_selector(timer(duetime), mapper))
+    return delay_subscription
