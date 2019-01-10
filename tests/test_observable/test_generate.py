@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,10 +27,10 @@ class TestGenerate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: x <= 3,
-                                       lambda x: x + 1,
-                                       lambda x: x)
+            return rx.generate(0,
+                               lambda x: x <= 3,
+                               lambda x: x + 1,
+                               lambda x: x)
 
         results = scheduler.start(create)
 
@@ -45,10 +46,10 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: _raise('ex'),
-                                       lambda x: x + 1,
-                                       lambda x: x)
+            return rx.generate(0,
+                               lambda x: _raise('ex'),
+                               lambda x: x + 1,
+                               lambda x: x)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
@@ -58,10 +59,10 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: True,
-                                       lambda x: x + 1,
-                                       lambda x: _raise('ex'))
+            return rx.generate(0,
+                               lambda x: True,
+                               lambda x: x + 1,
+                               lambda x: _raise('ex'))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -71,10 +72,10 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: True,
-                                       lambda x: _raise(ex),
-                                       lambda x: x)
+            return rx.generate(0,
+                               lambda x: True,
+                               lambda x: _raise(ex),
+                               lambda x: x)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -86,10 +87,10 @@ class TestGenerate(unittest.TestCase):
         ex = 'ex'
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: True,
-                                       lambda x: x + 1,
-                                       lambda x: x)
+            return rx.generate(0,
+                               lambda x: True,
+                               lambda x: x + 1,
+                               lambda x: x)
 
         results = scheduler.start(create, disposed=200)
         assert results.messages == []
@@ -98,11 +99,11 @@ class TestGenerate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate(0,
-                                       lambda x: x <= 3,
-                                       lambda x: x + 1,
-                                       lambda x: x) \
-                .repeat(2)
+            return rx.generate(0,
+                               lambda x: x <= 3,
+                               lambda x: x + 1,
+                               lambda x: x) \
+                .pipe(ops.repeat(2))
 
         results = scheduler.start(create)
 
