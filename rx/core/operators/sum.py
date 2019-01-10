@@ -1,30 +1,40 @@
 from typing import Callable
+
+from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Mapper
 
 
-def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
-    """Computes the sum of a sequence of values that are obtained by
-    invoking an optional transform function on each element of the input
-    sequence, else if not specified computes the sum on each item in the
-    sequence.
+# pylint: disable=redefined-builtin
+def _sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
-    Example
-    res = sum()(source)
-    res = sum(lambda x: x.value)(source)
+    reducing = ops.reduce(seed=0, accumulator=lambda prev, curr: prev + curr)
 
-    key_mapper -- [Optional] A transform function to apply to each
-        element.
+    def sum(source: Observable) -> Observable:
+        """Computes the sum of a sequence of values that are obtained
+        by invoking an optional transform function on each element of
+        the input sequence, else if not specified computes the sum on
+        each item in the sequence.
 
-    Returns:
-        An function that takes a source observable and returns an
-        observable sequence containing a single element with the sum of
-        the values in the source sequence.
-    """
+        Example:
+            res = sum(source)
 
-    def partial(source: Observable) -> Observable:
+        Args:
+            key_mapper -- [Optional] A transform function to apply to
+                each element.
+
+        Returns:
+            An observable sequence containing a single element with the
+            sum of the values in the source sequence.
+        """
         if key_mapper:
-            return source.map(key_mapper).sum()
+            mapping = ops.map(key_mapper)
+            summing = ops.sum()
 
-        return source.reduce(seed=0, accumulator=lambda prev, curr: prev + curr)
-    return partial
+            return source.pipe(
+                mapping,
+                summing
+            )
+
+        return source.pipe(reducing)
+    return sum
