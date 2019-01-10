@@ -2,29 +2,28 @@ from typing import Callable
 from rx.core import Observable, AnonymousObservable
 
 
-def take_last(count: int) -> Callable[[Observable], Observable]:
-    """Returns a specified number of contiguous elements from the end of an
-    observable sequence.
+def _take_last(count: int) -> Callable[[Observable], Observable]:
+    def take_last(source: Observable) -> Observable:
+        """Returns a specified number of contiguous elements from the end of an
+        observable sequence.
 
-    Example:
-    res = source.take_last(5)
+        Example:
+            >>> res = take_last(source)
 
-    Description:
-    This operator accumulates a buffer with a length enough to store
-    elements count elements. Upon completion of the source sequence, this
-    buffer is drained on the result sequence. This causes the elements to be
-    delayed.
+        This operator accumulates a buffer with a length enough to store
+        elements count elements. Upon completion of the source sequence, this
+        buffer is drained on the result sequence. This causes the elements to be
+        delayed.
 
-    Keyword arguments:
-    :param count: Number of elements to take from the end of the source
-        sequence.
+        Args:
+            source: Number of elements to take from the end of the source
+            sequence.
 
-    :returns: An observable sequence containing the specified number of elements
-        from the end of the source sequence.
-    :rtype: Observable
-    """
+        Returns:
+            An observable sequence containing the specified number of elements
+            from the end of the source sequence.
+        """
 
-    def partial(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             q = []
 
@@ -40,4 +39,4 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return take_last

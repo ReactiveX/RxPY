@@ -39,6 +39,15 @@ def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     from rx.core.operators.amb import _amb
     return _amb(right_source)
 
+def as_observable() -> Callable[[Observable], Observable]:
+    """Hides the identity of an observable sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns and observable sequence that hides the identity of the
+        source sequence.
+    """
+
 
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
     """The average operator.
@@ -649,6 +658,48 @@ def switch_latest() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.switchlatest import switch_latest as switch_latest_
     return switch_latest_()
+
+def take(count: int) -> Callable[[Observable], Observable]:
+    """Returns a specified number of contiguous elements from the start of
+    an observable sequence.
+
+    Example:
+        >>> op = take(5)
+
+    Args:
+        count: The number of elements to return.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the specified
+        number of elements from the start of the input sequence.
+    """
+    from rx.core.operators.take import _take
+    return _take(count)
+
+def take_last(count: int) -> Callable[[Observable], Observable]:
+    """Returns a specified number of contiguous elements from the end of an
+    observable sequence.
+
+    Example:
+        >>> res = take_last(5)
+
+    This operator accumulates a buffer with a length enough to store
+    elements count elements. Upon completion of the source sequence, this
+    buffer is drained on the result sequence. This causes the elements to be
+    delayed.
+
+    Args:
+        count: Number of elements to take from the end of the source
+        sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the specified number
+        of elements from the end of the source sequence.
+    """
+    from rx.core.operators.takelast import _take_last
+    return _take_last(count)
 
 
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
