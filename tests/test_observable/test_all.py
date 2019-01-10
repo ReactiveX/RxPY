@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as _
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -19,7 +20,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, True), on_completed(250)]
@@ -30,7 +31,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, True), on_completed(250)]
@@ -41,7 +42,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(210, False), on_completed(210)]
@@ -52,7 +53,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(210, False), on_completed(210)]
@@ -63,7 +64,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(210, False), on_completed(210)]
@@ -74,7 +75,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, True), on_completed(250)]
@@ -86,7 +87,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
 
@@ -96,7 +97,7 @@ class TestAll(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.all(lambda x: x > 0)
+            return xs.pipe(_.all(lambda x: x > 0))
 
         res = scheduler.start(create=create).messages
         assert res == []

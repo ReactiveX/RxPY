@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as _
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -18,7 +19,7 @@ class TestMaterialize(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().materialize()
+            return rx.never().pipe(_.materialize())
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -28,7 +29,7 @@ class TestMaterialize(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.materialize()
+            return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 2)
@@ -37,10 +38,11 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(210, 2), on_completed(250))
 
         def create():
-            return xs.materialize()
+            return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 3)
@@ -55,7 +57,7 @@ class TestMaterialize(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
         def create():
-            return xs.materialize()
+            return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 2)
@@ -67,7 +69,7 @@ class TestMaterialize(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().materialize().dematerialize()
+            return rx.never().pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -77,7 +79,7 @@ class TestMaterialize(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.materialize().dematerialize()
+            return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 1)
@@ -85,10 +87,11 @@ class TestMaterialize(unittest.TestCase):
 
     def test_materialize_dematerialize_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(210, 2), on_completed(250))
 
         def create():
-            return xs.materialize().dematerialize()
+            return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 2)
@@ -101,7 +104,7 @@ class TestMaterialize(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
         def create():
-            return xs.materialize().dematerialize()
+            return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
         assert(len(results) == 1)
