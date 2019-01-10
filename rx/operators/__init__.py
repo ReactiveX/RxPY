@@ -131,6 +131,20 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
 throttle_with_timeout = debounce
 
 
+def dematerialize() -> Callable[[Observable], Observable]:
+    """Dematerialize operator.
+
+    Dematerializes the explicit notification values of an
+    observable sequence as implicit notifications.
+
+    Returns:
+        An observable sequence exhibiting the behavior
+        corresponding to the source sequence's notification values.
+    """
+    from rx.core.operators.dematerialize import _dematerialize
+    return _dematerialize()
+
+
 def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """The delay operator.
 
