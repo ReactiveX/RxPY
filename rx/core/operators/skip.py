@@ -1,34 +1,38 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+
+from rx.core import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 
-def skip(count: int, source: ObservableBase) -> ObservableBase:
-    """Bypasses a specified number of elements in an observable sequence
-    and then returns the remaining elements.
-
-    Keyword arguments:
-    count -- The number of elements to skip before returning the remaining
-        elements.
-
-    Returns an observable sequence that contains the elements that occur
-    after the specified index in the input sequence.
-    """
-
+def _skip(count: int) -> Callable[[Observable], Observable]:
     if count < 0:
         raise ArgumentOutOfRangeException()
 
-    observable = source
+    def skip(source: Observable) -> Observable:
+        """The skip operator.
 
-    def subscribe(observer, scheduler=None):
-        remaining = count
+        Bypasses a specified number of elements in an observable sequence
+        and then returns the remaining elements.
 
-        def on_next(value):
-            nonlocal remaining
+        Args:
+            source: The source observable.
 
-            if remaining <= 0:
-                observer.on_next(value)
-            else:
-                remaining -= 1
+        Returns:
+            An observable sequence that contains the elements that occur
+            after the specified index in the input sequence.
+        """
 
-        return observable.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+        def subscribe(observer, scheduler=None):
+            remaining = count
+
+            def on_next(value):
+                nonlocal remaining
+
+                if remaining <= 0:
+                    observer.on_next(value)
+                else:
+                    remaining -= 1
+
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return skip

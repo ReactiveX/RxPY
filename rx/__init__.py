@@ -39,6 +39,7 @@ def case(mapper, sources, default_source=None) -> Observable:
     from .core.observable.case import _case
     return _case(mapper, sources, default_source)
 
+
 def catch_exception(*args: Observable) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -55,10 +56,12 @@ def catch_exception(*args: Observable) -> Observable:
     from .core.observable.catch import _catch_exception
     return _catch_exception(*args)
 
+
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
     """Create observable from subscribe function."""
 
     return AnonymousObservable(subscribe)
+
 
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Concatenates all the observable sequences.
@@ -73,6 +76,7 @@ def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """
     from .core.observable.concat import _concat
     return _concat(*args)
+
 
 def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
@@ -108,6 +112,7 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     from .core.observable.empty import _empty
     return _empty(scheduler)
 
+
 def for_in(values, result_mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
@@ -122,6 +127,7 @@ def for_in(values, result_mapper) -> Observable:
     """
     from .core.observable.forin import _for_in
     return _for_in(values, result_mapper)
+
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element
@@ -203,6 +209,7 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
     """
     from .core.observable.range import from_range as from_range_
     return from_range_(start, stop, step)
+
 
 def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     """Generates an observable sequence by running a state-driven loop
@@ -317,14 +324,14 @@ def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observabl
 
 
 def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
-    """Returns an observable sequence that produces a value after duetime
-    has elapsed and then after each period.
+    """Returns an observable sequence that produces a value after
+    duetime has elapsed and then after each period.
 
     Examples:
-        >>> res = Observable.timer(datetime(...))
-        >>> res = Observable.timer(datetime(...), 1000)
-        >>> res = Observable.timer(5000)
-        >>> res = Observable.timer(5000, 1000)
+        >>> res = timer(datetime(...))
+        >>> res = timer(datetime(...), 1000)
+        >>> res = timer(5000)
+        >>> res = timer(5000, 1000)
 
     Args:
         duetime: Absolute (specified as a datetime object) or relative
