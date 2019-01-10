@@ -1,14 +1,21 @@
-from rx.core import ObservableBase, AnonymousObservable
+from typing import Callable
+from rx.core import Observable, AnonymousObservable
 
 
-def as_observable(source) -> ObservableBase:
-    """Hides the identity of an observable sequence.
+def _as_observable() -> Callable[[Observable], Observable]:
+    def as_observable(source: Observable) -> Observable:
+        """Hides the identity of an observable sequence.
 
-    Returns an observable sequence that hides the identity of the source
-        sequence.
-    """
+        Args:
+            source: Observable source to hide identity from.
 
-    def subscribe(observer, scheduler=None):
-        return source.subscribe(observer, scheduler)
+        Returns:
+            An observable sequence that hides the identity of the
+            source sequence.
+        """
 
-    return AnonymousObservable(subscribe)
+        def subscribe(observer, scheduler=None):
+            return source.subscribe(observer, scheduler)
+
+        return AnonymousObservable(subscribe)
+    return as_observable

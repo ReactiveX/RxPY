@@ -296,7 +296,7 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
 just = return_value
 
 
-def throw(exception: Exception) -> Observable:
+def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError
     message.
@@ -306,13 +306,14 @@ def throw(exception: Exception) -> Observable:
 
     Args:
         exception: An object used for the sequence's termination.
+        scheduler: Scheduler to schedule the error notification on.
 
     Returns:
         The observable sequence that terminates exceptionally with the
         specified exception object.
     """
     from .core.observable.throw import _throw
-    return _throw(exception)
+    return _throw(exception, scheduler)
 
 
 def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
