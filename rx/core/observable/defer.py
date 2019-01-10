@@ -5,7 +5,7 @@ from rx.core import Observable, AnonymousObservable, abc
 from rx.internal.utils import is_future
 
 
-def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
+def _defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 
