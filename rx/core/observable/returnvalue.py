@@ -6,7 +6,7 @@ from rx.concurrency import current_thread_scheduler
 from rx.core.abc.scheduler import Scheduler
 
 
-def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
+def _return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -34,24 +34,7 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
-    """Returns an observable sequence that contains a single element
-    generate from a supplier, using the specified scheduler to send out
-    observer messages.
-
-    Examples:
-        >>> res = from_callable(lambda: calculate_value())
-        >>> res = from_callable(lambda: 1 / 0) # emits an error
-
-    Args:
-        value: Single element in the resulting observable sequence.
-        scheduler: Scheduler to schedule the values on.
-
-    Returns:
-        An observable sequence containing the single specified
-        element derived from the supplier
-    """
-
+def _from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
         _scheduler = scheduler or scheduler_ or current_thread_scheduler
 

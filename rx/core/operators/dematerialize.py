@@ -4,7 +4,9 @@ from rx.core import Observable, AnonymousObservable
 
 def _dematerialize() -> Callable[[Observable], Observable]:
     def dematerialize(source: Observable) -> Observable:
-        """Dematerializes the explicit notification values of an
+        """Partially applied dematerialize operator.
+
+        Dematerializes the explicit notification values of an
         observable sequence as implicit notifications.
 
         Returns:

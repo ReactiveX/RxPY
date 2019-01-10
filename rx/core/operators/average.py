@@ -10,25 +10,25 @@ class AverageValue(object):
         self.count = count
 
 
-def average(key_mapper=None) -> Callable[[Observable], Observable]:
-    """Computes the average of an observable sequence of values that are in
-    the sequence or obtained by invoking a transform function on each
-    element of the input sequence if present.
+def _average(key_mapper=None) -> Callable[[Observable], Observable]:
+    def average(source: Observable) -> Observable:
+        """Partially applied average operator.
 
-    Examples:
-        >>> res = average()(source)
-        >>> res = average(lambda x: x.value)(source)
+        Computes the average of an observable sequence of values that
+        are in the sequence or obtained by invoking a transform
+        function on each element of the input sequence if present.
 
-    Args:
-        key_mapper -- A transform function to apply to each element.
+        Examples:
+            >>> res = average(source)
 
-    Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
-        average of the sequence of values.
-    """
+        Args:
+            source: Source observable to average.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            An observable sequence containing a single element with the
+            average of the sequence of values.
+        """
+
         if key_mapper:
             return source.pipe(
                 operators.map(key_mapper),
@@ -50,4 +50,4 @@ def average(key_mapper=None) -> Callable[[Observable], Observable]:
             operators.last(),
             operators.map(mapper)
         )
-    return partial
+    return average

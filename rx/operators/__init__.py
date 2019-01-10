@@ -39,6 +39,7 @@ def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     from rx.core.operators.amb import _amb
     return _amb(right_source)
 
+
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
     """The average operator.
 
@@ -58,8 +59,8 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
         returns an observable sequence containing a single element with
         the average of the sequence of values.
     """
-    from rx.core.operators.average import average as average_
-    return average_(key_mapper)
+    from rx.core.operators.average import _average
+    return _average(key_mapper)
 
 def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
@@ -319,8 +320,8 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
         invoking the one-to-many transform function on each element of
         the input sequence.
     """
-    from rx.core.operators.flatmap import flat_map as flat_map_
-    return flat_map_(mapper)
+    from rx.core.operators.flatmap import _flat_map
+    return _flat_map(mapper)
 
 
 def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
@@ -351,8 +352,8 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
         invoking the one-to-many transform function on each element of
         the input sequence.
     """
-    from rx.core.operators.flatmap import flat_mapi as flat_mapi_
-    return flat_mapi_(mapper_indexed)
+    from rx.core.operators.flatmap import _flat_mapi
+    return _flat_mapi(mapper_indexed)
 
 
 def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:

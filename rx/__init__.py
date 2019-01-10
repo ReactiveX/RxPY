@@ -89,8 +89,8 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
         An observable sequence whose observers trigger an invocation
         of the given observable factory function.
     """
-    from .core.observable.defer import defer as defer_
-    return defer_(observable_factory)
+    from .core.observable.defer import _defer
+    return _defer(observable_factory)
 
 
 def empty(scheduler: typing.Scheduler = None) -> Observable:
@@ -105,8 +105,8 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     Returns:
         An observable sequence with no elements.
     """
-    from .core.observable.empty import empty as empty_
-    return empty_(scheduler)
+    from .core.observable.empty import _empty
+    return _empty(scheduler)
 
 def for_in(values, result_mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
@@ -140,8 +140,8 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
         An observable sequence containing the single specified
         element derived from the supplier
     """
-    from .core.observable.returnvalue import from_callable as from_callable_
-    return from_callable_(supplier, scheduler)
+    from .core.observable.returnvalue import _from_callable
+    return _from_callable(supplier, scheduler)
 
 
 def from_future(future: Future) -> Observable:
@@ -210,9 +210,8 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     send out observer messages.
 
     Example:
-        >>> res = rx.Observable.generate(0, lambda x: x < 10,
-                                         lambda x: x + 1,
-                                         lambda x: x)
+        >>> res = generate(0, lambda x: x < 10, lambda x: x + 1,
+                           lambda x: x)
 
     Args:
         initial_state: Initial state.
@@ -242,7 +241,6 @@ def interval(period, scheduler: typing.Scheduler) -> Observable:
         scheduler:  Scheduler to run the interval on. If not specified,
             the timeout scheduler is used.
 
-
     Returns:
         An observable sequence that produces a value after each period.
     """
@@ -257,8 +255,8 @@ def never() -> Observable:
     Returns:
         An observable sequence whose observers will never get called.
     """
-    from .core.observable.never import never as never_
-    return never_()
+    from .core.observable.never import _never
+    return _never()
 
 
 def of(*args: Any) -> Observable:
@@ -269,8 +267,8 @@ def of(*args: Any) -> Observable:
     res = of(1,2,3)
 
     Returns:
-        The observable sequence whose elements are pulled from the given
-        arguments
+        The observable sequence whose elements are pulled from the
+        given arguments
     """
     return from_iterable(args)
 
@@ -281,8 +279,8 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     There is an alias called 'just'.
 
     Examples:
-        >>> res = return(42)
-        >>> res = return(42, rx.Scheduler.timeout)
+        >>> res = return_value(42)
+        >>> res = return_value(42, timeout_scheduler)
 
     Args:
         value: Single element in the resulting observable sequence.
@@ -291,8 +289,8 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
         An observable sequence containing the single specified
         element.
     """
-    from .core.observable.returnvalue import return_value as return_value_
-    return return_value_(value, scheduler)
+    from .core.observable.returnvalue import _return_value
+    return _return_value(value, scheduler)
 
 
 just = return_value
@@ -313,8 +311,8 @@ def throw(exception: Exception) -> Observable:
         The observable sequence that terminates exceptionally with the
         specified exception object.
     """
-    from .core.observable.throw import throw as throw_
-    return throw_(exception)
+    from .core.observable.throw import _throw
+    return _throw(exception)
 
 
 def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:

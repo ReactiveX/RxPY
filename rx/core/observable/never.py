@@ -2,7 +2,7 @@ from rx.core import typing
 from rx.core import Observable, AnonymousObservable, Disposable
 
 
-def never() -> Observable:
+def _never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
 
