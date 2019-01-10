@@ -22,9 +22,22 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
         determining whether all elements in the source sequence pass
         the test in the specified predicate.
     """
-    from rx.core.operators.all import all as all_
-    return all_(predicate)
+    from rx.core.operators.all import _all
+    return _all(predicate)
 
+def amb(right_source: Observable) -> Callable[[Observable], Observable]:
+    """Propagates the observable sequence that reacts first.
+
+    Example:
+        >>> op = amb(ys)
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that surfaces any of the given
+        sequences, whichever reacted first.
+    """
+    from rx.core.operators.amb import _amb
+    return _amb(right_source)
 
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
     """The average operator.
@@ -569,6 +582,28 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
     from rx.core.operators.scan import _scan
     return _scan(accumulator, seed)
 
+def some(predicate=None) -> Callable[[Observable], Observable]:
+    """The some operator.
+
+    Determines whether some element of an observable sequence satisfies a
+    condition if present, else if some items are in the sequence.
+
+    Examples:
+        >>> result = source.some()
+        >>> result = source.some(lambda x: x > 3)
+
+    Args:
+        predicate -- A function to test each element for a condition.
+
+    Returns:
+        An operator function that takes an observable source and
+        returnsobservable sequence containing a single element
+        determining whether some elements in the source sequence
+        pass the test in the specified predicate if given, else if some
+        items are in the sequence.
+    """
+    from rx.core.operators.some import _some
+    return _some(predicate)
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
