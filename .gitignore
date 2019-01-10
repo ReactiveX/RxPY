@@ -65,3 +65,4 @@ TestResults/Rx.TE.Tests_log.ldf
 .mypy_cache/
 .vscode/
 .noseids
+_build
