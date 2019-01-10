@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,23 +17,23 @@ class TestAmb(unittest.TestCase):
 
     def test_amb_never2(self):
         scheduler = TestScheduler()
-        l = Observable.never()
-        r = Observable.never()
+        l = rx.never()
+        r = rx.never()
 
         def create():
-            return l.amb(r)
+            return l.pipe(ops.amb(r))
 
         results = scheduler.start(create)
         assert results.messages == []
 
     def test_amb_never3(self):
         scheduler = TestScheduler()
-        n1 = Observable.never()
-        n2 = Observable.never()
-        n3 = Observable.never()
+        n1 = rx.never()
+        n2 = rx.never()
+        n3 = rx.never()
 
         def create():
-            return Observable.amb(n1, n2, n3)
+            return rx.amb(n1, n2, n3)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -40,11 +41,11 @@ class TestAmb(unittest.TestCase):
     def test_amb_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = Observable.never()
+        n = rx.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return n.amb(e)
+            return n.pipe(ops.amb(e))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(225)]
@@ -52,11 +53,11 @@ class TestAmb(unittest.TestCase):
     def test_amb_empty_never(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = Observable.never()
+        n = rx.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return e.amb(n)
+            return e.pipe(ops.amb(n))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(225)]
@@ -71,10 +72,12 @@ class TestAmb(unittest.TestCase):
         def action():
             source_not_disposed[0] = True
 
-        o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+        o2 = scheduler.create_hot_observable(msgs2).pipe(
+                ops.do_action(on_next=action),
+                )
 
         def create():
-            return o1.amb(o2)
+            return o1.pipe(ops.amb(o2))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 2), on_completed(240)]
@@ -91,10 +94,12 @@ class TestAmb(unittest.TestCase):
         def action():
             source_not_disposed[0] = True
 
-        o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+        o2 = scheduler.create_hot_observable(msgs2).pipe(
+                ops.do_action(on_next=action),
+                )
 
         def create():
-            return o1.amb(o2)
+            return o1.pipe(ops.amb(o2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_error(220, ex)]
@@ -109,12 +114,14 @@ class TestAmb(unittest.TestCase):
 
         def action():
             source_not_disposed[0] = True
-        o1 = scheduler.create_hot_observable(msgs1).do_action(on_next=action)
+        o1 = scheduler.create_hot_observable(msgs1).pipe(
+                ops.do_action(on_next=action),
+                )
 
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return o1.amb(o2)
+            return o1.pipe(ops.amb(o2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 3), on_completed(250)]
@@ -131,10 +138,12 @@ class TestAmb(unittest.TestCase):
         def action():
             source_not_disposed[0] = True
 
-        o2 = scheduler.create_hot_observable(msgs2).do_action(on_next=action)
+        o2 = scheduler.create_hot_observable(msgs2).pipe(
+                ops.do_action(on_next=action),
+                )
 
         def create():
-            return o1.amb(o2)
+            return o1.pipe(ops.amb(o2))
 
         results = scheduler.start(create)
 

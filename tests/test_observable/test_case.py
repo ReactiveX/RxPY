@@ -1,6 +1,6 @@
 import unittest
 
-from rx import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -23,7 +23,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.case(lambda: 1, map, zs)
+            return rx.case(lambda: 1, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 1), on_next(240, 2), on_next(270, 3), on_completed(300)]
@@ -41,7 +41,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.case(lambda: 2, map, zs)
+            return rx.case(lambda: 2, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 11), on_next(250, 12), on_next(280, 13), on_completed(310)]
@@ -59,7 +59,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.case(lambda: 3, map, zs)
+            return rx.case(lambda: 3, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(230, 21), on_next(240, 22), on_next(290, 23), on_completed(320)]
@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
         def create():
             def mapper():
                 raise Exception(ex)
-            return Observable.case(mapper, map, zs)
+            return rx.case(mapper, map, zs)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
@@ -98,7 +98,7 @@ class TestCase(unittest.TestCase):
         }
 
         def create():
-            return Observable.case(lambda: 1, map)
+            return rx.case(lambda: 1, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(210, 1), on_next(240, 2), on_next(270, 3), on_completed(300)]
@@ -114,7 +114,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.case(lambda: 2, map)
+            return rx.case(lambda: 2, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(220, 11), on_next(250, 12), on_next(280, 13), on_completed(310)]
@@ -130,7 +130,7 @@ class TestCase(unittest.TestCase):
             2: ys
         }
         def create():
-            return Observable.case(lambda: 3, map)
+            return rx.case(lambda: 3, map)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_completed(200)]
@@ -149,7 +149,7 @@ class TestCase(unittest.TestCase):
         def create():
             def mapper():
                 raise Exception(ex)
-            return Observable.case(mapper, map)
+            return rx.case(mapper, map)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,14 +16,14 @@ class TestOf(unittest.TestCase):
     def test_of(self):
         results = []
 
-        Observable.of(1, 2, 3, 4, 5).subscribe_(results.append)
+        rx.of(1, 2, 3, 4, 5).subscribe_(results.append)
 
         assert(str([1, 2, 3, 4, 5]) == str(results))
 
     def test_of_empty(self):
         results = []
 
-        Observable.of().subscribe_(results.append)
+        rx.of().subscribe_(results.append)
 
         assert(len(results) == 0)
 
@@ -31,7 +31,7 @@ class TestOf(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.of(1, 2, 3, 4, 5)
+            return rx.of(1, 2, 3, 4, 5)
 
         results = scheduler.start(create=create)
 
@@ -47,7 +47,7 @@ class TestOf(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.of(scheduler=scheduler)
+            return rx.of(scheduler=scheduler)
 
         results = scheduler.start(create=create)
 
