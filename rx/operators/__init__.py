@@ -642,6 +642,25 @@ def merge_all() -> Callable[[Observable], Observable]:
     from rx.core.operators.merge import _merge_all
     return _merge_all()
 
+
+def pairwise() -> Callable[[Observable], Observable]:
+    """The pairwise operator.
+
+    Returns a new observable that triggers on the second and subsequent
+    triggerings of the input observable. The Nth triggering of the
+    input observable passes the arguments from the N-1th and Nth
+    triggering as a pair. The argument passed to the N-1th triggering
+    is held in hidden internal state until the Nth triggering occurs.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable that triggers on successive pairs of
+        observations from the input observable as an array.
+    """
+    from rx.core.operators.pairwise import _pairwise
+    return _pairwise()
+
+
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     """The reduce operator.
 
@@ -732,6 +751,27 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
     from rx.core.operators.startswith import _start_with
     return _start_with(*args)
 
+def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """Computes the sum of a sequence of values that are obtained by
+    invoking an optional transform function on each element of the input
+    sequence, else if not specified computes the sum on each item in the
+    sequence.
+
+    Examples:
+        >>> res = sum()
+        >>> res = sum(lambda x: x.value)
+
+    Args:
+        key_mapper -- [Optional] A transform function to apply to each
+            element.
+
+    Returns:
+        An operator function that takes a source observable and returns
+        an observable sequence containing a single element with the sum
+        of the values in the source sequence.
+    """
+    from rx.core.operators.sum import _sum
+    return _sum(key_mapper)
 
 def switch_latest() -> Callable[[Observable], Observable]:
     """The switch_latest operator.
