@@ -992,3 +992,24 @@ def timestamp() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.timestamp import _timestamp
     return _timestamp()
+
+
+def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more windows.
+
+    Args:
+        window_openings: Observable sequence whose elements denote the
+            creation of windows.
+        window_closing_mapper: [Optional] A function invoked to define
+            the closing of each produced window. It defines the
+            boundaries of the produced windows (a window is started
+            when the previous one is closed, resulting in
+            non-overlapping windows).
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of windows.
+    """
+    from rx.core.operators.window import _window
+    return _window(window_openings, window_closing_mapper)
