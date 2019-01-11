@@ -7,11 +7,11 @@ def amb(*args: Observable):
     """Propagates the observable sequence that reacts first.
 
     Example:
-        >>> winner = amb(xs, ys, zs)
+        >>> winner = rx.amb(xs, ys, zs)
 
     Returns:
-        An observable sequence that surfaces any of the given sequences,
-        whichever reacted first.
+        An observable sequence that surfaces any of the given
+        sequences, whichever reacted first.
     """
     from .core.observable.amb import _amb
     return _amb(*args)
@@ -21,17 +21,17 @@ def case(mapper, sources, default_source=None) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
     Examples:
-        >>> res = case(mapper, { '1': obs1, '2': obs2 })
-        >>> res = case(mapper, { '1': obs1, '2': obs2 }, obs0)
+        >>> res = rx.case(mapper, { '1': obs1, '2': obs2 })
+        >>> res = rx.case(mapper, { '1': obs1, '2': obs2 }, obs0)
 
     Args:
-        mapper -- The function which extracts the value for to test in a
+        mapper: The function which extracts the value for to test in a
             case statement.
-        sources -- An object which has keys which correspond to the case
+        sources: An object which has keys which correspond to the case
             statement labels.
-        default_source -- The observable sequence or Future that will be run
-            if the sources are not matched. If this is not provided, it
-            defaults to rx.Observabe.empty.
+        default_source: The observable sequence or Future that will be
+            run if the sources are not matched. If this is not
+            provided, it defaults to rx.Observabe.empty.
 
     Returns:
         An observable sequence which is determined by a case statement.
@@ -39,13 +39,14 @@ def case(mapper, sources, default_source=None) -> Observable:
     from .core.observable.case import _case
     return _case(mapper, sources, default_source)
 
+
 def catch_exception(*args: Observable) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
     Examples:
-        >>> res = catch_exception(xs, ys, zs)
-        >>> res = catch_exception([xs, ys, zs])
+        >>> res = rx.catch_exception(xs, ys, zs)
+        >>> res = rx.catch_exception([xs, ys, zs])
 
     Returns:
         An observable sequence containing elements from consecutive
@@ -55,17 +56,19 @@ def catch_exception(*args: Observable) -> Observable:
     from .core.observable.catch import _catch_exception
     return _catch_exception(*args)
 
+
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
     """Create observable from subscribe function."""
 
     return AnonymousObservable(subscribe)
 
+
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Concatenates all the observable sequences.
 
     Examples:
-        >>> res = concat(xs, ys, zs)
-        >>>res = concat([xs, ys, zs])
+        >>> res = rx.concat(xs, ys, zs)
+        >>> res = rx.concat([xs, ys, zs])
 
     Returns:
         An observable sequence that contains the elements of each given
@@ -74,12 +77,13 @@ def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     from .core.observable.concat import _concat
     return _concat(*args)
 
+
 def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
-    """Returns an observable sequence that invokes the specified factory
-    function whenever a new observer subscribes.
+    """Returns an observable sequence that invokes the specified
+    factory function whenever a new observer subscribes.
 
     Example:
-        >>> res = defer(lambda: of(1, 2, 3))
+        >>> res = rx.defer(lambda: of(1, 2, 3))
 
     Args:
         observable_factory: Observable factory function to invoke for
@@ -89,15 +93,15 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
         An observable sequence whose observers trigger an invocation
         of the given observable factory function.
     """
-    from .core.observable.defer import defer as defer_
-    return defer_(observable_factory)
+    from .core.observable.defer import _defer
+    return _defer(observable_factory)
 
 
 def empty(scheduler: typing.Scheduler = None) -> Observable:
     """Returns an empty observable sequence.
 
     Example:
-        >>> obs = empty()
+        >>> obs = rx.empty()
 
     Args:
         scheduler: Scheduler to send the termination call on.
@@ -105,8 +109,9 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     Returns:
         An observable sequence with no elements.
     """
-    from .core.observable.empty import empty as empty_
-    return empty_(scheduler)
+    from .core.observable.empty import _empty
+    return _empty(scheduler)
+
 
 def for_in(values, result_mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
@@ -116,12 +121,14 @@ def for_in(values, result_mapper) -> Observable:
         values: A list of values to turn into an observable sequence.
         result_mapper: A function to apply to each item in the values
             list to turn it into an observable sequence.
+
     Returns:
         An observable sequence from the concatenated observable
         sequences.
     """
-    from .core.observable.empty import _for_in
+    from .core.observable.forin import _for_in
     return _for_in(values, result_mapper)
+
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element
@@ -129,8 +136,8 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
     observer messages.
 
     Examples:
-        >>> res = from_callable(lambda: calculate_value())
-        >>> res = from_callable(lambda: 1 / 0) # emits an error
+        >>> res = rx.from_callable(lambda: calculate_value())
+        >>> res = rx.from_callable(lambda: 1 / 0) # emits an error
 
     Args:
         value: Single element in the resulting observable sequence.
@@ -140,8 +147,8 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
         An observable sequence containing the single specified
         element derived from the supplier
     """
-    from .core.observable.returnvalue import from_callable as from_callable_
-    return from_callable_(supplier, scheduler)
+    from .core.observable.returnvalue import _from_callable
+    return _from_callable(supplier, scheduler)
 
 
 def from_future(future: Future) -> Observable:
@@ -164,10 +171,10 @@ def from_iterable(iterable: Iterable) -> Observable:
     """Converts an iterable to an observable sequence.
 
     Example:
-        >>> from_iterable([1,2,3])
+        >>> rx.from_iterable([1,2,3])
 
     Args:
-        iterable - A Python iterable
+        iterable: A Python iterable
         scheduler: An optional scheduler to schedule the values on.
 
     Returns:
@@ -188,9 +195,9 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
     messages.
 
     Examples:
-        >>> res = range(10)
-        >>> res = range(0, 10)
-        >>> res = range(0, 10, 1)
+        >>> res = rx.range(10)
+        >>> res = rx.range(0, 10)
+        >>> res = rx.range(0, 10, 1)
 
     Args:
         start: The value of the first integer in the sequence.
@@ -204,15 +211,14 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
     from .core.observable.range import from_range as from_range_
     return from_range_(start, stop, step)
 
+
 def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
 
     Example:
-        >>> res = rx.Observable.generate(0, lambda x: x < 10,
-                                         lambda x: x + 1,
-                                         lambda x: x)
+        >>> res = rx.generate(0, lambda x: x < 10, lambda x: x + 1, lambda x: x)
 
     Args:
         initial_state: Initial state.
@@ -228,6 +234,27 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     from .core.observable.generate import _generate
     return _generate(initial_state, condition, iterate, result_mapper)
 
+
+def interval(period, scheduler: typing.Scheduler) -> Observable:
+    """Returns an observable sequence that produces a value after each
+    period.
+
+    Example:
+        >>> res = rx.interval(1000)
+
+    Args:
+        period: Period for producing the values in the resulting
+            sequence (specified as an integer denoting milliseconds).
+        scheduler:  Scheduler to run the interval on. If not specified,
+            the timeout scheduler is used.
+
+    Returns:
+        An observable sequence that produces a value after each period.
+    """
+    from .core.observable.interval import _interval
+    return _interval(period, scheduler)
+
+
 def never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
@@ -235,8 +262,8 @@ def never() -> Observable:
     Returns:
         An observable sequence whose observers will never get called.
     """
-    from .core.observable.never import never as never_
-    return never_()
+    from .core.observable.never import _never
+    return _never()
 
 
 def of(*args: Any) -> Observable:
@@ -244,11 +271,11 @@ def of(*args: Any) -> Observable:
     number of arguments, regardless of number or type of the arguments.
 
     Example:
-    res = of(1,2,3)
+        >>> res = rx.of(1,2,3)
 
     Returns:
-        The observable sequence whose elements are pulled from the given
-        arguments
+        The observable sequence whose elements are pulled from the
+        given arguments
     """
     return from_iterable(args)
 
@@ -259,8 +286,8 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     There is an alias called 'just'.
 
     Examples:
-        >>> res = return(42)
-        >>> res = return(42, rx.Scheduler.timeout)
+        >>> res = rx.return_value(42)
+        >>> res = rx.return_value(42, timeout_scheduler)
 
     Args:
         value: Single element in the resulting observable sequence.
@@ -269,41 +296,42 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
         An observable sequence containing the single specified
         element.
     """
-    from .core.observable.returnvalue import return_value as return_value_
-    return return_value_(value, scheduler)
+    from .core.observable.returnvalue import _return_value
+    return _return_value(value, scheduler)
 
 
 just = return_value
 
 
-def throw(exception: Exception) -> Observable:
+def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError
     message.
 
     Example:
-        >>> res = throw(Exception('Error'))
+        >>> res = rx.throw(Exception('Error'))
 
     Args:
         exception: An object used for the sequence's termination.
+        scheduler: Scheduler to schedule the error notification on.
 
     Returns:
         The observable sequence that terminates exceptionally with the
         specified exception object.
     """
-    from .core.observable.throw import throw as throw_
-    return throw_(exception)
+    from .core.observable.throw import _throw
+    return _throw(exception, scheduler)
 
 
-def timer(duetime, period=None) -> Observable:
-    """Returns an observable sequence that produces a value after duetime
-    has elapsed and then after each period.
+def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
+    """Returns an observable sequence that produces a value after
+    duetime has elapsed and then after each period.
 
     Examples:
-        >>> res = Observable.timer(datetime(...))
-        >>> res = Observable.timer(datetime(...), 1000)
-        >>> res = Observable.timer(5000)
-        >>> res = Observable.timer(5000, 1000)
+        >>> res = rx.timer(datetime(...))
+        >>> res = rx.timer(datetime(...), 1000)
+        >>> res = rx.timer(5000)
+        >>> res = rx.timer(5000, 1000)
 
     Args:
         duetime: Absolute (specified as a datetime object) or relative
@@ -313,10 +341,81 @@ def timer(duetime, period=None) -> Observable:
             (specified as an integer denoting milliseconds), or the
             scheduler to run the timer on. If not specified, the
             resulting timer is not recurring.
+        scheduler:  Scheduler to run the timer on. If not specified,
+            the timeout scheduler is used.
 
     Returns:
         An observable sequence that produces a value after due time has
         elapsed and then each period.
     """
-    from .core.observable.timer import timer as timer_
-    return timer_(duetime, period)
+    from .core.observable.timer import _timer
+    return _timer(duetime, period, scheduler)
+
+
+def start(func, scheduler=None) -> Observable:
+    """Invokes the specified function asynchronously on the specified
+    scheduler, surfacing the result through an observable sequence.
+
+    Example:
+        >>> res = rx.start(lambda: pprint('hello'))
+        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
+
+    Args:
+        func: Function to run asynchronously.
+        scheduler: [Optional] Scheduler to run the function on. If
+            not specified, defaults to Scheduler.timeout.
+
+    Remarks:
+        The function is called immediately, not during the subscription of
+        the resulting sequence. Multiple subscriptions to the resulting
+        sequence can observe the function's result.
+    Returns:
+        An observable sequence exposing the function's result value,
+        or an exception.
+    """
+    from .core.observable.start import _start
+    return _start(func, scheduler)
+
+
+def to_async(func: Callable, scheduler=None) -> Callable:
+    """Converts the function into an asynchronous function. Each
+    invocation of the resulting asynchronous function causes an
+    invocation of the original synchronous function on the specified
+    scheduler.
+
+    Examples:
+        res = rx.to_async(lambda x, y: x + y)(4, 3)
+        res = rx.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
+        res = rx.to_async(lambda x: log.debug(x), Scheduler.timeout)('hello')
+
+    Args:
+        func: Function to convert to an asynchronous function.
+        scheduler: [Optional] Scheduler to run the function on. If not
+            specified, defaults to Scheduler.timeout.
+
+    Returns:
+        Aynchronous function.
+    """
+    from .core.observable.toasync import _to_async
+    return _to_async(func, scheduler)
+
+
+def using(resource_factory, observable_factory) -> Observable:
+    """Constructs an observable sequence that depends on a resource
+    object, whose lifetime is tied to the resulting observable
+    sequence's lifetime.
+
+    Example:
+        >>> res = rx.using(lambda: AsyncSubject(), lambda: s: s)
+
+    Args:
+        resource_factory: Factory function to obtain a resource object.
+        observable_factory: Factory function to obtain an observable
+            sequence that depends on the obtained resource.
+
+    Returns:
+        An observable sequence whose lifetime controls the lifetime
+        of the dependent resource object.
+    """
+    from .core.observable.using import _using
+    return _using(resource_factory, observable_factory)

@@ -1,7 +1,8 @@
 import logging
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable, StaticObservable, typing
+from rx import empty
+from rx.core import AnonymousObservable, Observable, typing
 from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
@@ -10,27 +11,23 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
-    """Projects each element of an observable sequence into zero or more
-    windows.
-
-    Keyword arguments:
-    window_openings -- Observable sequence whose elements denote the
-        creation of windows.
-    window_closing_mapper -- [Optional] A function invoked to define
-        the closing of each produced window. It defines the boundaries
-        of the produced windows (a window is started when the previous
-        one is closed, resulting in non-overlapping windows).
-
-    Returns an observable sequence of windows.
-    """
-
+def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
     # Make it possible to call window with a single unnamed parameter
     if not isinstance(window_openings, typing.Observable) and callable(window_openings):
         window_closing_mapper = window_openings
         window_openings = None
 
-    def partial(source: Observable) -> Observable:
+    def window(source: Observable) -> Observable:
+        """Projects each element of an observable sequence into zero or
+        more windows.
+
+        Args:
+            source: Source observable to project into windows.
+
+        Returns:
+            An observable sequence of windows.
+        """
+
         if window_openings and not window_closing_mapper:
             return observable_window_with_boundaries(source, window_openings)
 
@@ -38,11 +35,11 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
             return observable_window_with_closing_mapper(source, window_closing_mapper)
 
         return observable_window_with_openings(source, window_openings, window_closing_mapper)
-    return partial
+    return window
 
 
 def observable_window_with_openings(self, window_openings, window_closing_mapper):
-    return window_openings.group_join(self, window_closing_mapper, lambda _: StaticObservable.empty(), lambda _, window: window)
+    return window_openings.group_join(self, window_closing_mapper, lambda _: empty(), lambda _, window: window)
 
 
 def observable_window_with_boundaries(self, window_boundaries):

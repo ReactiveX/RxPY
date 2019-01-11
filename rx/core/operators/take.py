@@ -1,27 +1,29 @@
 from typing import Callable
-from rx.core import Observable, StaticObservable, AnonymousObservable
+
+from rx import empty
+from rx.core import Observable, AnonymousObservable
 from rx.internal import ArgumentOutOfRangeException
 
 
-def take(count: int) -> Callable[[Observable], Observable]:
-    """Returns a specified number of contiguous elements from the start of
-    an observable sequence.
-
-    1 - take(5)(source)
-
-    Keyword arguments:
-    count -- The number of elements to return.
-
-    Returns an observable sequence that contains the specified number of
-    elements from the start of the input sequence.
-    """
-
+def _take(count: int) -> Callable[[Observable], Observable]:
     if count < 0:
         raise ArgumentOutOfRangeException()
 
-    def partial(source: Observable) -> Observable:
+    def take(source: Observable) -> Observable:
+        """Returns a specified number of contiguous elements from the start of
+        an observable sequence.
+
+        >>> take(source)
+
+        Keyword arguments:
+        count -- The number of elements to return.
+
+        Returns an observable sequence that contains the specified number of
+        elements from the start of the input sequence.
+        """
+
         if not count:
-            return StaticObservable.empty()
+            return empty()
 
         def subscribe(observer, scheduler=None):
             remaining = count
@@ -37,4 +39,4 @@ def take(count: int) -> Callable[[Observable], Observable]:
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return take

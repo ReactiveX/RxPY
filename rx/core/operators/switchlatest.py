@@ -6,19 +6,20 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, Seri
 from rx.internal.utils import is_future
 
 
-def switch_latest() -> Callable[[Observable], Observable]:
-    """Transforms an observable sequence of observable sequences into an
-    observable sequence producing values only from the most recent
-    observable sequence.
+def _switch_latest() -> Callable[[Observable], Observable]:
+    def switch_latest(source: Observable) -> Observable:
+        """Partially applied switch_latest operator.
 
-    Returns:
-        An operator function that takes an observable source and returns
-        the observable sequence that at any point in time produces the
-        elements of the most recent inner observable sequence that has
-        been received.
-    """
+        Transforms an observable sequence of observable sequences into
+        an observable sequence producing values only from the most
+        recent observable sequence.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            An observable sequence that at any point in time produces
+            the elements of the most recent inner observable sequence
+            that has been received.
+        """
+
         def subscribe(observer, scheduler=None):
             inner_subscription = SerialDisposable()
             has_latest = [False]
@@ -62,4 +63,4 @@ def switch_latest() -> Callable[[Observable], Observable]:
             subscription = source.subscribe_(on_next, observer.on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, inner_subscription)
         return AnonymousObservable(subscribe)
-    return partial
+    return switch_latest

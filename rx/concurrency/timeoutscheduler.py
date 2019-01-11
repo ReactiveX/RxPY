@@ -1,13 +1,10 @@
-import logging
 from threading import Timer
 from datetime import timedelta
 
-from rx.core import Scheduler, Disposable
+from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
 from .schedulerbase import SchedulerBase
-
-log = logging.getLogger("Rx")
 
 
 class TimeoutScheduler(SchedulerBase):
@@ -20,6 +17,7 @@ class TimeoutScheduler(SchedulerBase):
 
         def interval():
             disposable.disposable = self.invoke_action(action, state)
+
         timer = Timer(0, interval)
         timer.setDaemon(True)
         timer.start()
@@ -42,7 +40,6 @@ class TimeoutScheduler(SchedulerBase):
             disposable.disposable = self.invoke_action(action, state)
 
         seconds = timespan.total_seconds()
-        log.debug("timeout: %s", seconds)
         timer = Timer(seconds, interval)
         timer.setDaemon(True)
         timer.start()
@@ -57,13 +54,6 @@ class TimeoutScheduler(SchedulerBase):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
-
-    def _start_timer(self, period, action):
-        timer = Timer(period, action)
-        timer.setDaemon(True)
-        timer.start()
-
-        return timer
 
 
 timeout_scheduler = TimeoutScheduler()
