@@ -7,6 +7,7 @@ from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
+from rx import operators as ops
 
 log = logging.getLogger("Rx")
 
@@ -39,7 +40,11 @@ def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Obser
 
 
 def observable_window_with_openings(self, window_openings, window_closing_mapper):
-    return window_openings.group_join(self, window_closing_mapper, lambda _: empty(), lambda _, window: window)
+    return window_openings.pipe(
+            ops.group_join(
+                    self,
+                    window_closing_mapper,
+                    lambda _: empty(), lambda _, window: window))
 
 
 def observable_window_with_boundaries(self, window_boundaries):
@@ -115,7 +120,7 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
 
             m1 = SingleAssignmentDisposable()
             m.disposable = m1
-            m1.disposable = window_close.take(1).subscribe_(noop, on_error, on_completed, scheduler)
+            m1.disposable = window_close.pipe(ops.take(1)).subscribe_(noop, on_error, on_completed, scheduler)
 
         create_window_on_completed()
         return r
