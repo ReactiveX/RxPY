@@ -475,8 +475,8 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
         point in time produces the elements of the most recent inner
         observable sequence that has been received.
     """
-    from rx.core.operators.flatmap import flat_map_latest as flat_map_latest_
-    return flat_map_latest_(mapper)
+    from rx.core.operators.flatmap import _flat_map_latest
+    return _flat_map_latest(mapper)
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
@@ -499,8 +499,8 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
         the observable sequence that satisfies the condition in the
         predicate.
     """
-    from rx.core.operators.last import last as last_
-    return last_(predicate)
+    from rx.core.operators.last import _last
+    return _last(predicate)
 
 def last_or_default(predicate=None, default_value=None) -> Observable:
     """The last_or_default operator.
@@ -583,8 +583,8 @@ def materialize() -> Callable[[Observable], Observable]:
         returns an observable sequence containing the materialized
         notification values from the source sequence.
     """
-    from rx.core.operators.materialize import materialize as materialize_
-    return materialize_()
+    from rx.core.operators.materialize import _materialize
+    return _materialize()
 
 
 def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
@@ -641,6 +641,50 @@ def merge_all() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.merge import _merge_all
     return _merge_all()
+
+def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
+    """The `min` operator.
+
+    Returns the minimum element in an observable sequence according to
+    the optional comparer else a default greater than less than check.
+
+    Examples:
+        >>> res = source.min()
+        >>> res = source.min(lambda x, y: x.value - y.value)
+
+    Args:
+        comparer: [Optional] Comparer used to compare elements.
+
+    Returns:
+        An operator function that takes an observable source and
+        reuturns an observable sequence containing a single element
+        with the minimum element in the source sequence.
+    """
+    from rx.core.operators.min import _min
+    return _min(comparer)
+
+
+def min_by(key_mapper, comparer=None) -> Observable:
+    """The `min_by` operator.
+
+    Returns the elements in an observable sequence with the minimum key
+    value according to the specified comparer.
+
+    Examples:
+        >>> res = min_by(lambda x: x.value)
+        >>> res = min_by(lambda x: x.value, lambda x, y: x - y)
+
+    Args:
+        key_mapper: Key mapper function.
+        comparer: [Optional] Comparer used to compare key values.
+
+    Returns:
+        An operator function that takes an observable source and
+        reuturns an observable sequence containing a list of zero
+        or more elements that have a minimum key value.
+    """
+    from rx.core.operators.minby import _min_by
+    return _min_by(comparer)
 
 
 def pairwise() -> Callable[[Observable], Observable]:
@@ -862,8 +906,8 @@ def switch_latest() -> Callable[[Observable], Observable]:
         time produces the elements of the most recent inner observable
         sequence that has been received.
     """
-    from rx.core.operators.switchlatest import switch_latest as switch_latest_
-    return switch_latest_()
+    from rx.core.operators.switchlatest import _switch_latest
+    return _switch_latest()
 
 def take(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the start

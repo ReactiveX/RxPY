@@ -1,27 +1,37 @@
-from rx.core import ObservableBase
+from typing import Callable
+
+from rx import operators as ops
+from rx.core import Observable, pipe
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
 def first_only(x):
-    if not len(x):
+    if not x:
         raise SequenceContainsNoElementsError()
 
     return x[0]
 
 
-def min(self, comparer=None) -> ObservableBase:
-    """Returns the minimum element in an observable sequence according to
+def _min(comparer: Callable = None) -> Callable[[Observable], Observable]:
+    """The `min` operator.
+
+    Returns the minimum element in an observable sequence according to
     the optional comparer else a default greater than less than check.
 
-    Example
-    res = source.min()
-    res = source.min(lambda x, y: x.value - y.value)
+    Examples:
+        >>> res = source.min()
+        >>> res = source.min(lambda x, y: x.value - y.value)
 
-    comparer -- {Function} [Optional] Comparer used to compare elements.
+    Args:
+        comparer: [Optional] Comparer used to compare elements.
 
-    Returns an observable sequence {Observable} containing a single element
-    with the minimum element in the source sequence.
+    Returns:
+        An observable sequence containing a single element
+        with the minimum element in the source sequence.
     """
 
-    return self.min_by(identity, comparer).map(first_only)
+    return pipe(
+        ops.min_by(identity, comparer),
+        ops.map(first_only)
+    )

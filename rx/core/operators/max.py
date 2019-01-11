@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
-from rx import operators as _
-from rx.core import Observable
+from rx import operators as ops
+from rx.core import Observable, pipe
 from rx.internal.basic import identity
 
 from .min import first_only
@@ -24,9 +24,7 @@ def _max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Obser
         maximum element in the source sequence.
     """
 
-    def max(source: Observable) -> Observable:  # pylint: disable=redefined-builtin
-        return source.pipe(
-            _.max_by(identity, comparer),
-            _.map(lambda x: first_only(x))
-        )
-    return max
+    return pipe(
+        ops.max_by(identity, comparer),
+        ops.map(first_only)
+    )
