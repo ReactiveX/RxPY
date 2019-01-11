@@ -1,6 +1,7 @@
 from typing import Callable
+
+from rx import operators as ops
 from rx.core import Observable, AnonymousObservable
-from rx.operators import filter
 
 def _some(predicate=None) -> Callable[[Observable], Observable]:
     def some(source: Observable) -> Observable:
@@ -33,10 +34,9 @@ def _some(predicate=None) -> Callable[[Observable], Observable]:
 
         if predicate:
             return source.pipe(
-                    filter(predicate),
-                    _some(),
-                    )
-        else:
-            return AnonymousObservable(subscribe)
+                ops.filter(predicate),
+                _some(),
+            )
 
+        return AnonymousObservable(subscribe)
     return some
