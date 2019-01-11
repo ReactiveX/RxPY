@@ -352,7 +352,55 @@ def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observabl
     return _timer(duetime, period, scheduler)
 
 
-def _using(resource_factory, observable_factory) -> Observable:
+def start(func, scheduler=None) -> Observable:
+    """Invokes the specified function asynchronously on the specified
+    scheduler, surfacing the result through an observable sequence.
+
+    Example:
+        >>> res = rx.start(lambda: pprint('hello'))
+        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
+
+    Args:
+        func: Function to run asynchronously.
+        scheduler: [Optional] Scheduler to run the function on. If
+            not specified, defaults to Scheduler.timeout.
+
+    Remarks:
+        The function is called immediately, not during the subscription of
+        the resulting sequence. Multiple subscriptions to the resulting
+        sequence can observe the function's result.
+    Returns:
+        An observable sequence exposing the function's result value,
+        or an exception.
+    """
+    from .core.observable.start import _start
+    return _start(func, scheduler)
+
+
+def to_async(func: Callable, scheduler=None) -> Callable:
+    """Converts the function into an asynchronous function. Each
+    invocation of the resulting asynchronous function causes an
+    invocation of the original synchronous function on the specified
+    scheduler.
+
+    Examples:
+        res = rx.to_async(lambda x, y: x + y)(4, 3)
+        res = rx.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
+        res = rx.to_async(lambda x: log.debug(x), Scheduler.timeout)('hello')
+
+    Args:
+        func: Function to convert to an asynchronous function.
+        scheduler: [Optional] Scheduler to run the function on. If not
+            specified, defaults to Scheduler.timeout.
+
+    Returns:
+        Aynchronous function.
+    """
+    from .core.observable.toasync import _to_async
+    return _to_async(func, scheduler)
+
+
+def using(resource_factory, observable_factory) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
