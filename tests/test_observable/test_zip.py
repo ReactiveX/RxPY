@@ -1,6 +1,7 @@
 import unittest
 
-from rx.core import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,11 +17,11 @@ class TestZip(unittest.TestCase):
 
     def test_zip_never_never(self):
         scheduler = TestScheduler()
-        o1 = Observable.never()
-        o2 = Observable.never()
+        o1 = rx.never()
+        o2 = rx.never()
 
         def create():
-            return o1.zip(o2, result_mapper=lambda x, y: x + y)
+            return o1.pipe(ops.zip(o2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -28,11 +29,11 @@ class TestZip(unittest.TestCase):
     def test_zip_never_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(210)]
-        o1 = Observable.never()
+        o1 = rx.never()
         o2 = scheduler.create_hot_observable(msgs)
 
         def create():
-            return o1.zip(o2, result_mapper=lambda x, y: x + y)
+            return o1.pipe(ops.zip(o2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -45,7 +46,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]
@@ -58,7 +59,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -71,7 +72,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -80,10 +81,10 @@ class TestZip(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -92,10 +93,10 @@ class TestZip(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
         results = scheduler.start(create)
         assert results.messages == []
 
@@ -107,7 +108,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2 + 3), on_completed(240)]
@@ -121,7 +122,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -135,7 +136,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -144,11 +145,11 @@ class TestZip(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs2 = [on_next(150, 1), on_error(220, ex)]
-        e1 = Observable.never()
+        e1 = rx.never()
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -157,11 +158,11 @@ class TestZip(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         msgs2 = [on_next(150, 1), on_error(220, ex)]
-        e1 = Observable.never()
+        e1 = rx.never()
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -176,7 +177,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex2)]
@@ -190,7 +191,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -204,7 +205,7 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e2.zip(e1, result_mapper=lambda x, y: x + y)
+            return e2.pipe(ops.zip(e1, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -231,17 +232,20 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+            assert(results[i].value.kind == 'N'
+                   and results[i].time == time
+                   and results[i].value.value == _sum)
 
     def test_zip_some_data_asymmetric2(self):
         scheduler = TestScheduler()
+
         def msgs1_factory():
             results = []
             for i in range(10):
@@ -262,17 +266,20 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+            assert(results[i].value.kind == 'N'
+                   and results[i].time == time
+                   and results[i].value.value == _sum)
 
     def test_zip_some_data_symmetric(self):
         scheduler = TestScheduler()
+
         def msgs1_factory():
             results = []
             for i in range(10):
@@ -292,14 +299,16 @@ class TestZip(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.zip(e2, result_mapper=lambda x, y: x + y)
+            return e1.pipe(ops.zip(e2, result_mapper=lambda x, y: x + y))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N' and results[i].time == time and results[i].value.value == _sum)
+            assert(results[i].value.kind == 'N'
+                   and results[i].time == time
+                   and results[i].value.value == _sum)
 
     def test_zip_mapper_throws(self):
         ex = 'ex'
@@ -316,7 +325,7 @@ class TestZip(unittest.TestCase):
                 else:
                     return x + y
 
-            return e1.zip(e2, result_mapper=mapper)
+            return e1.pipe(ops.zip(e2, result_mapper=mapper))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2 + 3), on_error(230, ex)]
@@ -329,7 +338,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -342,9 +351,9 @@ class TestZip(unittest.TestCase):
         n2 = []
 
         def create():
-            def mapper(x,y):
+            def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -357,9 +366,9 @@ class TestZip(unittest.TestCase):
         n2 = [2]
 
         def create():
-            def mapper(x,y):
+            def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -368,13 +377,14 @@ class TestZip(unittest.TestCase):
 
     def test_zip_with_iterable_non_empty_empty(self):
         scheduler = TestScheduler()
-        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_completed(220))
+        n1 = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(215, 2), on_completed(220))
         n2 = []
 
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(215)]
@@ -388,7 +398,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -397,13 +407,14 @@ class TestZip(unittest.TestCase):
 
     def test_zip_with_iterable_non_empty_non_empty(self):
         scheduler = TestScheduler()
-        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_completed(230))
+        n1 = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(215, 2), on_completed(230))
         n2 = [3]
 
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(215, 2 + 3), on_completed(230)]
@@ -418,7 +429,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(220, ex)]
@@ -433,7 +444,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(220, ex)]
@@ -441,22 +452,27 @@ class TestZip(unittest.TestCase):
 
     def test_zip_with_iterable_some_data_both_sides(self):
         scheduler = TestScheduler()
-        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5))
+        n1 = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(210, 2), on_next(220, 3),
+                on_next(230, 4), on_next(240, 5))
         n2 = [5, 4, 3, 2]
 
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
-        assert results.messages == [on_next(210, 7), on_next(220, 7), on_next(230, 7), on_next(240, 7)]
+        assert results.messages == [on_next(210, 7), on_next(220, 7),
+                                    on_next(230, 7), on_next(240, 7)]
         assert n1.subscriptions == [subscribe(200, 1000)]
 
     def test_zip_with_iterable_mapperthrows(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        n1 = scheduler.create_hot_observable(on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(240))
+        n1 = scheduler.create_hot_observable(
+                on_next(150, 1), on_next(215, 2), on_next(225, 4),
+                on_completed(240))
         n2 = [3, 5]
 
         def create():
@@ -464,9 +480,8 @@ class TestZip(unittest.TestCase):
                 if y == 5:
                     raise Exception(ex)
                 return x + y
-            return n1.zip(n2, result_mapper=mapper)
+            return n1.pipe(ops.zip(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(215, 2 + 3), on_error(225, ex)]
         assert n1.subscriptions == [subscribe(200, 225)]
-
