@@ -1,21 +1,24 @@
-from rx.core import Observable, StaticObservable, AnonymousObservable, Disposable
+from rx import throw
+from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import CompositeDisposable
 
 
-def using(resource_factory, observable_factory) -> Observable:
+def _using(resource_factory, observable_factory) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
 
-    1 - res = rx.Observable.using(lambda: AsyncSubject(), lambda: s: s)
+    Example:
+        >>> res = rx.using(lambda: AsyncSubject(), lambda: s: s)
 
-    Keyword arguments:
-    resource_factory -- Factory function to obtain a resource object.
-    observable_factory -- Factory function to obtain an observable
-        sequence that depends on the obtained resource.
+    Args:
+        resource_factory: Factory function to obtain a resource object.
+        observable_factory: Factory function to obtain an observable
+            sequence that depends on the obtained resource.
 
-    Returns an observable sequence whose lifetime controls the lifetime
-    of the dependent resource object.
+    Returns:
+        An observable sequence whose lifetime controls the lifetime
+        of the dependent resource object.
     """
 
     def subscribe(observer, scheduler=None):
@@ -27,7 +30,7 @@ def using(resource_factory, observable_factory) -> Observable:
 
             source = observable_factory(resource)
         except Exception as exception:
-            d = StaticObservable.throw(exception).subscribe(observer, scheduler)
+            d = throw(exception).subscribe(observer, scheduler)
             return CompositeDisposable(d, disposable)
 
         return CompositeDisposable(source.subscribe(observer, scheduler), disposable)
