@@ -1,36 +1,18 @@
 from typing import Callable
 
-from rx import operators as _
-from rx.core import Observable
+from rx import operators as ops
+from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 
 
-def _all(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=W0622
+def _all(predicate: Predicate) -> Callable[[Observable], Observable]:
 
-    filtering = _.filter(lambda v: not predicate(v))
-    mapping = _.map(lambda b: not b)
-    some = _.some()
+    filtering = ops.filter(lambda v: not predicate(v))
+    mapping = ops.map(lambda b: not b)
+    some = ops.some()
 
-    # pylint: disable=redefined-builtin
-    def all(source: Observable) -> Observable:
-        """Determines whether all elements of an observable sequence satisfy a
-        condition.
-
-        Example:
-            >>> obs = all(source)
-
-        Args:
-            source -- Source observable to check.
-
-        Returns:
-            An observable sequence containing a single element determining
-            whether all elements in the source sequence pass the test in the
-            specified predicate.
-        """
-
-        return source.pipe(
-            filtering,
-            some,
-            mapping
-        )
-    return all
+    return pipe(
+        filtering,
+        some,
+        mapping
+    )
