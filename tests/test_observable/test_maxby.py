@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -15,7 +16,7 @@ class TestMaxBy(unittest.TestCase):
     def test_maxby_empty(self):
         scheduler = TestScheduler()
         msgs = [
-            on_next(150, { "key": 1, "value": 'z' }),
+            on_next(150, {"key": 1, "value": 'z'}),
             on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
@@ -23,7 +24,7 @@ class TestMaxBy(unittest.TestCase):
         def create():
             def mapper(x):
                 return x["key"]
-            return xs.max_by(mapper)
+            return xs.pipe(ops.max_by(mapper))
 
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
@@ -42,10 +43,11 @@ class TestMaxBy(unittest.TestCase):
             }), on_completed(250)
         ]
         xs = scheduler.create_hot_observable(msgs)
+
         def create():
             def mapper(x):
                 return x["key"]
-            return xs.max_by(mapper)
+            return xs.pipe(ops.max_by(mapper))
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
         assert(res[0].value.kind == 'N')
@@ -76,7 +78,7 @@ class TestMaxBy(unittest.TestCase):
         def create():
             def mapper(x):
                 return x["key"]
-            return xs.max_by(mapper)
+            return xs.pipe(ops.max_by(mapper))
 
         res = scheduler.start(create=create).messages
         self.assertEqual(2, len(res))
@@ -122,7 +124,7 @@ class TestMaxBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.max_by(lambda x: x["key"])
+            return xs.pipe(ops.max_by(lambda x: x["key"]))
 
         res = scheduler.start(create=create).messages
 
@@ -134,7 +136,6 @@ class TestMaxBy(unittest.TestCase):
         self.assertEqual(4, res[0].value.value[1]["key"])
         self.assertEqual('r', res[0].value.value[1]["value"])
         assert(res[1].value.kind == 'C' and res[1].time == 250)
-
 
     def test_maxby_on_error(self):
         ex = 'ex'
@@ -149,7 +150,7 @@ class TestMaxBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.max_by(lambda x: x["key"])
+            return xs.pipe(ops.max_by(lambda x: x["key"]))
 
         res = scheduler.start(create=create).messages
 
@@ -166,7 +167,7 @@ class TestMaxBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.max_by(lambda x: x["key"])
+            return xs.pipe(ops.max_by(lambda x: x["key"]))
 
         res = scheduler.start(create=create).messages
         assert res == []
@@ -384,14 +385,14 @@ class TestMaxBy(unittest.TestCase):
                 "value": 'a'
             }), on_completed(250)
         ]
+
         def reverse_comparer(a, b):
             raise Exception(ex)
 
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.max_by(lambda x: x["key"], reverse_comparer)
+            return xs.pipe(ops.max_by(lambda x: x["key"], reverse_comparer))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(220, ex)]
-

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest, MockDisposable
 
 on_next = ReactiveTest.on_next
@@ -40,9 +40,10 @@ class TestUsing(unittest.TestCase):
             def create_observable(d):
                 _d[0] = d
                 create_invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
+                xs[0] = scheduler.create_cold_observable(
+                        on_next(100, scheduler.clock), on_completed(200))
                 return xs[0]
-            return Observable.using(create_resources, create_observable)
+            return rx.using(create_resources, create_observable)
 
         results = scheduler.start(create)
 
@@ -70,9 +71,10 @@ class TestUsing(unittest.TestCase):
             def create_observable(d):
                 _d[0] = d
                 create_invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_completed(200))
+                xs[0] = scheduler.create_cold_observable(
+                        on_next(100, scheduler.clock), on_completed(200))
                 return xs[0]
-            return Observable.using(create_resource, create_observable)
+            return rx.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 
@@ -101,9 +103,10 @@ class TestUsing(unittest.TestCase):
             def create_observable(d):
                 _d[0] = d
                 create_invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+                xs[0] = scheduler.create_cold_observable(
+                        on_next(100, scheduler.clock), on_error(200, ex))
                 return xs[0]
-            return Observable.using(create_resource, create_observable)
+            return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
         assert disposable[0] == _d[0]
@@ -130,10 +133,11 @@ class TestUsing(unittest.TestCase):
             def create_observable(d):
                 _d[0] = d
                 create_invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock),
-                                                         on_next(1000, scheduler.clock + 1))
+                xs[0] = scheduler.create_cold_observable(
+                        on_next(100, scheduler.clock),
+                        on_next(1000, scheduler.clock + 1))
                 return xs[0]
-            return Observable.using(create_resource, create_observable)
+            return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
         assert disposable[0] == _d[0]
@@ -156,9 +160,9 @@ class TestUsing(unittest.TestCase):
 
             def create_observable(d):
                 create_invoked[0] += 1
-                return Observable.never()
+                return rx.never()
 
-            return Observable.using(create_resource, create_observable)
+            return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
@@ -182,7 +186,7 @@ class TestUsing(unittest.TestCase):
                 create_invoked[0] += 1
                 _raise(ex)
 
-            return Observable.using(create_resource, create_observable)
+            return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]

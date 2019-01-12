@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -22,7 +23,7 @@ class TestPairwise(unittest.TestCase):
         )
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create)
 
@@ -42,7 +43,7 @@ class TestPairwise(unittest.TestCase):
         )
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create)
 
@@ -62,7 +63,7 @@ class TestPairwise(unittest.TestCase):
         )
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create)
 
@@ -85,7 +86,7 @@ class TestPairwise(unittest.TestCase):
             on_next(350, 1))
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create)
 
@@ -110,7 +111,7 @@ class TestPairwise(unittest.TestCase):
             on_completed(360))
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create)
 
@@ -133,7 +134,7 @@ class TestPairwise(unittest.TestCase):
             on_completed(360))
 
         def create():
-            return xs.pairwise()
+            return xs.pipe(ops.pairwise())
 
         results = scheduler.start(create, disposed=280)
 
