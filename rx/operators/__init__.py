@@ -1,4 +1,4 @@
-from typing import Callable, Union, Any
+from typing import Callable, Union, Any, Iterable
 from datetime import timedelta, datetime
 
 from rx.core import Observable, typing
@@ -94,6 +94,26 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
     """
     from rx.core.operators.catch import _catch_exception
     return _catch_exception(second, handler)
+
+
+def combine_latest(other: Union[Observable, Iterable[Observable]],
+                   mapper: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever any of the
+    observable sequences produces an element.
+
+    Examples:
+        >>> obs = combine_latest(other, lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+
+    Returns:
+        An operator function that takes an observable sources and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+    from rx.core.operators.combinelatest import _combine_latest
+    return _combine_latest(other, mapper)
 
 
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
@@ -703,6 +723,7 @@ def pairwise() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.pairwise import _pairwise
     return _pairwise()
+
 
 
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
