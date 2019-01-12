@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,7 +27,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_completed(420))
 
         def create():
-            return xs.default_if_empty()
+            return xs.pipe(ops.default_if_empty())
 
         results = scheduler.start(create)
 
@@ -38,7 +39,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_completed(420))
 
         def create():
-            return xs.default_if_empty(-1)
+            return xs.pipe(ops.default_if_empty(-1))
 
         results = scheduler.start(create)
 
@@ -50,7 +51,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_completed(420))
 
         def create():
-            return xs.default_if_empty(None)
+            return xs.pipe(ops.default_if_empty(None))
 
         results = scheduler.start(create)
 
@@ -62,7 +63,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_completed(420))
 
         def create():
-            return xs.default_if_empty(-1)
+            return xs.pipe(ops.default_if_empty(-1))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(420, -1), on_completed(420)]

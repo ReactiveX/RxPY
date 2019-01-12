@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -25,7 +25,7 @@ class TestToAsync(unittest.TestCase):
 
         def create():
             context = Context()
-            return Observable.to_async(context.func, scheduler)(42)
+            return rx.to_async(context.func, scheduler)(42)
 
         res = scheduler.start(create)
 
@@ -40,7 +40,7 @@ class TestToAsync(unittest.TestCase):
             def func():
                 return 0
 
-            return Observable.to_async(func, scheduler)()
+            return rx.to_async(func, scheduler)()
 
         res = scheduler.start(create)
 
@@ -55,7 +55,7 @@ class TestToAsync(unittest.TestCase):
             def func(x):
                 return x
 
-            return Observable.to_async(func, scheduler)(1)
+            return rx.to_async(func, scheduler)(1)
 
         res = scheduler.start(create)
 
@@ -70,7 +70,7 @@ class TestToAsync(unittest.TestCase):
             def func(x, y):
                 return x + y
 
-            return Observable.to_async(func, scheduler)(1, 2)
+            return rx.to_async(func, scheduler)(1, 2)
 
         res = scheduler.start(create)
 
@@ -85,7 +85,7 @@ class TestToAsync(unittest.TestCase):
             def func(x, y, z):
                 return x + y + z
 
-            return Observable.to_async(func, scheduler)(1, 2, 3)
+            return rx.to_async(func, scheduler)(1, 2, 3)
 
         res = scheduler.start(create)
 
@@ -100,7 +100,7 @@ class TestToAsync(unittest.TestCase):
             def func(a, b, c, d):
                 return a + b + c + d
 
-            return Observable.to_async(func, scheduler)(1, 2, 3, 4)
+            return rx.to_async(func, scheduler)(1, 2, 3, 4)
         res = scheduler.start(create)
 
         assert res.messages == [
@@ -115,7 +115,7 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func():
                 raise ex
-            return Observable.to_async(func, scheduler)()
+            return rx.to_async(func, scheduler)()
 
         res = scheduler.start(create)
 
@@ -130,7 +130,7 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a):
                 raise ex
-            return Observable.to_async(func, scheduler)(1)
+            return rx.to_async(func, scheduler)(1)
 
         res = scheduler.start(create)
 
@@ -145,14 +145,14 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b):
                 raise ex
-            return Observable.to_async(func, scheduler)(1, 2)
+            return rx.to_async(func, scheduler)(1, 2)
 
         res = scheduler.start(create)
 
         assert res.messages == [
             on_error(200, ex)]
 
-    def test_to_async_error0(self):
+    def test_to_async_error3(self):
         ex = Exception()
 
         scheduler = TestScheduler()
@@ -160,14 +160,14 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b, c):
                 raise ex
-            return Observable.to_async(func, scheduler)(1, 2, 3)
+            return rx.to_async(func, scheduler)(1, 2, 3)
 
         res = scheduler.start(create)
 
         assert res.messages == [
             on_error(200, ex)]
 
-    def test_to_async_error0(self):
+    def test_to_async_error4(self):
         ex = Exception()
 
         scheduler = TestScheduler()
@@ -175,7 +175,7 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b, c, d):
                 raise ex
-            return Observable.to_async(func, scheduler)(1, 2, 3, 4)
+            return rx.to_async(func, scheduler)(1, 2, 3, 4)
 
         res = scheduler.start(create)
 
