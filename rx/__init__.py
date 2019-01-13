@@ -63,6 +63,24 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
     return AnonymousObservable(subscribe)
 
 
+def combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever any of the
+    observable sequences produces an element.
+
+    Examples:
+        >>> obs = combine_latest(obs1, obs2, obs3, lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+
+    Returns:
+        An observable sequence containing the result of combining
+        elements of the sources using the specified result mapper
+        function.
+    """
+    from .core.observable.combinelatest import _combine_latest
+    return _combine_latest(*args, mapper=mapper)
+
+
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Concatenates all the observable sequences.
 
