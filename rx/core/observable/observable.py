@@ -30,8 +30,8 @@ class Observable(typing.Observable):
 
         Returns:
             self.concat(other)"""
-        from ..operators.concat import concat
-        return concat(self, other)
+        from .concat import _concat
+        return _concat(self, other)
 
     def __getitem__(self, key):
         """Slices the given observable using Python slice notation. The
@@ -68,8 +68,8 @@ class Observable(typing.Observable):
         else:
             raise TypeError("Invalid argument type.")
 
-        from ..operators.slice import slice as slice_
-        return slice_(start, stop, step)(self)
+        from ..operators.slice import _slice
+        return _slice(start, stop, step)(self)
 
     def __iadd__(self, other):
         """Pythonic use of concat.
@@ -78,10 +78,10 @@ class Observable(typing.Observable):
             xs += ys
 
         Returns:
-            self.concat(self, other)
+            rx.concat(self, other)
         """
-        from ..operators.concat import concat
-        return concat(self, other)
+        from .concat import _concat
+        return _concat(self, other)
 
     def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         return self.source.subscribe(observer, scheduler) if self.source else Disposable.empty()
