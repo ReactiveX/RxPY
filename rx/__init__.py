@@ -253,7 +253,7 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     return _generate(initial_state, condition, iterate, result_mapper)
 
 
-def interval(period, scheduler: typing.Scheduler) -> Observable:
+def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
