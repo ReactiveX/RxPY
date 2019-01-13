@@ -1,36 +1,39 @@
-from rx.core import Observable, ConnectableObservable
+from typing import Callable
+
+from rx import operators as ops
+from rx.core import Observable, ConnectableObservable, pipe
 from rx.subjects import Subject
 
 
-def publish(mapper=None) -> ConnectableObservable:
+def _publish(mapper=None) -> ConnectableObservable:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
     specialization of Multicast using a regular Subject.
 
     Example:
-    res = source.publish()
-    res = source.publish(lambda x: x)
+        >>> res = publish()
+        >>> res = publish(lambda x: x)
 
-    mapper -- {Function} [Optional] Selector function which can use the
+    mapper: [Optional] Selector function which can use the
         multicasted source sequence as many times as needed, without causing
         multiple subscriptions to the source sequence. Subscribers to the
         given source will receive all notifications of the source from the
         time of the subscription on.
 
-    Returns an observable {Observable} sequence that contains the elements
-    of a sequence produced by multicasting the source sequence within a
-    mapper function."""
+    Returns:
+        An observable sequence that contains the elements of a sequence
+        produced by multicasting the source sequence within a mapper
+        function.
+    """
 
-    def partial(source: Observable):
-        if mapper:
-            return source.multicast(subject_factory=lambda _: Subject(), mapper=mapper)
-        else:
-            return source.multicast(subject=Subject())
-    return partial
+    if mapper:
+        return pipe(ops.multicast(subject_factory=lambda _: Subject(), mapper=mapper))
+
+    return pipe(ops.multicast(subject=Subject()))
 
 
-def share(source: Observable) -> Observable:
+def _share() -> Callable[[Observable], Observable]:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original
@@ -39,6 +42,6 @@ def share(source: Observable) -> Observable:
     subscribers have unsubscribed it will unsubscribe from the source
     Observable.
 
-    This is an alias for Observable.publish().ref_count().
+    This is an alias for a composed publish() and ref_count().
     """
-    return source.publish().ref_count()
+    return pipe(_publish(), ops.ref_count())

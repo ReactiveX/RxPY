@@ -1,8 +1,10 @@
-from typing import Callable, Union, Any, Iterable
+# pylint: disable=too-many-lines
+from typing import Callable, Union, Any, Iterable, List
 from datetime import timedelta, datetime
 
-from rx.core import Observable, typing
+from rx.core import Observable, ConnectableObservable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
+from rx.subjects import Subject
 
 
 # pylint: disable=redefined-builtin
@@ -250,7 +252,6 @@ def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Ca
     return _delay_with_mapper(subscription_delay, delay_duration_mapper)
 
 
-
 def dematerialize() -> Callable[[Observable], Observable]:
     """Dematerialize operator.
 
@@ -336,9 +337,7 @@ def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
     return do_(observer)
 
 
-def do_action(on_next: typing.OnNext = None,
-              on_error: typing.OnError = None,
-              on_completed: typing.OnCompleted = None
+def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
               ) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence
     and invokes an action on graceful or exceptional termination of the
@@ -706,6 +705,38 @@ def min_by(key_mapper, comparer=None) -> Observable:
     from rx.core.operators.minby import _min_by
     return _min_by(comparer)
 
+def multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,
+              mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+    """Multicasts the source sequence notifications through an
+    instantiated subject into all uses of the sequence within a mapper
+    function. Each subscription to the resulting sequence causes a
+    separate multicast invocation, exposing the sequence resulting from
+    the mapper function's invocation. For specializations with fixed
+    subject types, see Publish, PublishLast, and Replay.
+
+    Examples:
+        >>> res = multicast(observable)
+        >>> res = multicast(subject_factory=lambda scheduler: Subject(), mapper=lambda x: x)
+
+    Args:
+        subject_factory: Factory function to create an intermediate
+            subject through which the source sequence's elements will
+            be multicast to the mapper function.
+        subject: Subject to push source elements into.
+        mapper: [Optional] Mapper function which can use the
+            multicasted source sequence subject to the policies
+            enforced by the created subject. Specified only if
+            subject_factory" is a factory function.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements of a
+        sequence produced by multicasting the source sequence within a
+        mapper function.
+    """
+    from rx.core.operators.multicast import _multicast
+    return _multicast(subject, subject_factory, mapper)
+
 
 def pairwise() -> Callable[[Observable], Observable]:
     """The pairwise operator.
@@ -724,6 +755,82 @@ def pairwise() -> Callable[[Observable], Observable]:
     from rx.core.operators.pairwise import _pairwise
     return _pairwise()
 
+
+def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
+    """Returns two observables which partition the observations of the
+    source by the given function. The first will trigger observations
+    for those values for which the predicate returns true. The second
+    will trigger observations for those values where the predicate
+    returns false. The predicate is executed once for each subscribed
+    observer. Both also propagate all error observations arising from
+    the source and each completes when the source completes.
+
+    Args:
+        predicate: The function to determine which output Observable
+        will trigger a particular observation.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a list of observables. The first triggers when the
+        predicate returns True, and the second triggers when the
+        predicate returns False.
+    """
+    from rx.core.operators.partition import _partition
+    return _partition(predicate)
+
+
+def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+    """The indexed partition operator.
+
+    Returns two observables which partition the observations of the
+    source by the given function. The first will trigger observations
+    for those values for which the predicate returns true. The second
+    will trigger observations for those values where the predicate
+    returns false. The predicate is executed once for each subscribed
+    observer. Both also propagate all error observations arising from
+    the source and each completes when the source completes.
+
+    Args:
+        predicate: The function to determine which output Observable
+        will trigger a particular observation.
+
+    Returns:
+        A list of observables. The first triggers when the predicate
+        returns True, and the second triggers when the predicate
+        returns False.
+    """
+    from rx.core.operators.partition import _partitioni
+    return _partitioni(predicate_indexed)
+
+
+def publish(mapper=None) -> ConnectableObservable:
+    """The `publish` operator.
+
+    Returns an observable sequence that is the result of invoking the
+    mapper on a connectable observable sequence that shares a single
+    subscription to the underlying sequence. This operator is a
+    specialization of Multicast using a regular Subject.
+
+    Example:
+        >>> res = publish()
+        >>> res = publish(lambda x: x)
+
+    Args:
+        mapper: [Optional] Selector function which can use the
+            multicasted source sequence as many times as needed,
+            without causing multiple subscriptions to the source
+            sequence. Subscribers to the given source will receive all
+            notifications of the source from the time of the
+            subscription on.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements of a
+        sequence produced by multicasting the source sequence within a
+        mapper function.
+    """
+    from rx.core.operators.publish import _publish
+    return _publish(mapper)
 
 
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
@@ -779,6 +886,24 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
     """
     from rx.core.operators.scan import _scan
     return _scan(accumulator, seed)
+
+
+def share() -> Callable[[Observable], Observable]:
+    """Share a single subscription among multple observers.
+
+    This is an alias for a composed publish() and ref_count().
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a new Observable that multicasts (shares) the original
+        Observable. As long as there is at least one Subscriber this
+        Observable will be subscribed and emitting data. When all
+        subscribers have unsubscribed it will unsubscribe from the
+        source
+        Observable.
+    """
+    from rx.core.operators.publish import _share
+    return _share()
 
 
 def skip(count: int) -> Callable[[Observable], Observable]:
