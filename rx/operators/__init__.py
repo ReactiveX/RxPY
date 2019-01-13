@@ -973,6 +973,48 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     return _take_last(count)
 
 
+def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    """Takes elements for the specified duration from the start of the
+    observable source sequence.
+
+    Example:
+        >>> res = take_with_time(5000)
+
+    This operator accumulates a queue with a length enough to store
+    elements received during the initial duration window. As more
+    elements are received, elements older than the specified duration
+    are taken from the queue and produced on the result sequence. This
+    causes elements to be delayed with duration.
+
+    Args:
+        duration: Duration for taking elements from the start of the
+            sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the elements taken during
+        the specified duration from the start of the source sequence.
+    """
+    from rx.core.operators.takewithtime import _take_with_time
+    return _take_with_time(duration)
+
+
+def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    """Returns an Observable that emits only the first item emitted by
+    the source Observable during sequential time windows of a specified
+    duration.
+
+    Args:
+        window_duration -- time to wait before emitting another item
+            after emitting the last item.
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable that performs the throttle operation.
+    """
+    from rx.core.operators.throttlefirst import _throttle_first
+    return _throttle_first(window_duration)
+
+
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
     """The throttle_with_mapper operator.
 
