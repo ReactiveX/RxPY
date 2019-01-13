@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -37,7 +38,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200)
+            return xs.pipe(ops.throttle_first(200))
 
         results = scheduler.start(create=create)
 
@@ -57,16 +58,13 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200)
+            return xs.pipe(ops.throttle_first(200))
 
         results = scheduler.start(create=create)
 
-
         assert results.messages == []
-
         assert xs.subscriptions == [
             subscribe(200, 1000)]
-
 
     def test_throttle_first_empty(self):
         scheduler = TestScheduler()
@@ -76,9 +74,8 @@ class TestThrottleFirst(unittest.TestCase):
             on_completed(500)
         )
 
-
         def create():
-            return xs.throttle_first(200)
+            return xs.pipe(ops.throttle_first(200))
 
         results = scheduler.start(create=create)
 
@@ -105,7 +102,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200)
+            return xs.pipe(ops.throttle_first(200))
 
         results = scheduler.start(create=create)
 
@@ -115,7 +112,6 @@ class TestThrottleFirst(unittest.TestCase):
 
         assert xs.subscriptions == [
           subscribe(200, 410)]
-
 
     def test_throttle_first_no_end(self):
         scheduler = TestScheduler()
@@ -131,7 +127,7 @@ class TestThrottleFirst(unittest.TestCase):
         )
 
         def create():
-            return xs.throttle_first(200)
+            return xs.pipe(ops.throttle_first(200))
 
         results = scheduler.start(create=create)
 
