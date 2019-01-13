@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +27,7 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite)
+            return rx.from_(iterable_finite)
 
         results = scheduler.start(create)
 
@@ -45,7 +45,7 @@ class TestFromIterable(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.from_(iterable_finite)
+            return rx.from_(iterable_finite)
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(200)]
@@ -53,8 +53,11 @@ class TestFromIterable(unittest.TestCase):
     def test_double_subscribe_to_iterable(self):
         iterable_finite = [1, 2, 3]
         scheduler = TestScheduler()
-        obs = Observable.from_(iterable_finite)
+        obs = rx.from_(iterable_finite)
 
-        results = scheduler.start(lambda: obs.concat(obs))
-        assert results.messages == [on_next(200, 1), on_next(200, 2), on_next(
-            200, 3), on_next(200, 1), on_next(200, 2), on_next(200, 3), on_completed(200)]
+        results = scheduler.start(lambda: rx.concat(obs, obs))
+
+        assert results.messages == [
+                on_next(200, 1), on_next(200, 2), on_next(200, 3),
+                on_next(200, 1), on_next(200, 2), on_next(200, 3),
+                on_completed(200)]
