@@ -1,60 +1,71 @@
 from typing import List, Callable
-from rx.core import ObservableBase
+
+from rx import operators as ops
+from rx.core import Observable
 from rx.core.typing import Predicate, PredicateIndexed
 
-from .filter import filter, filteri
-from .publish import publish
 
+def _partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
+    def partition(source: Observable) -> List[Observable]:
+        """The partially applied `partition` operator.
 
-def partition(predicate: Predicate = None) -> Callable[[ObservableBase], List[ObservableBase]]:
-    """Returns two observables which partition the observations of the
-    source by the given function. The first will trigger observations for
-    those values for which the predicate returns true. The second will
-    trigger observations for those values where the predicate returns false.
-    The predicate is executed once for each subscribed observer. Both also
-    propagate all error observations arising from the source and each
-    completes when the source completes.
+        Returns two observables which partition the observations of the
+        source by the given function. The first will trigger
+        observations for those values for which the predicate returns
+        true. The second will trigger observations for those values
+        where the predicate returns false. The predicate is executed
+        once for each subscribed observer. Both also propagate all
+        error observations arising from the source and each completes
+        when the source completes.
 
-    Keyword arguments:
-    predicate -- The function to determine which output Observable will
-        trigger a particular observation.
+        Args:
+            source: Source obserable to partition.
 
-    Returns a list of observables. The first triggers when the predicate
-    returns True, and the second triggers when the predicate returns False.
-    """
+        Returns:
+            A list of observables. The first triggers when the
+            predicate returns True, and the second triggers when the
+            predicate returns False.
+        """
 
-    def partial(source: ObservableBase) -> List[ObservableBase]:
-        published = source.pipe(publish(), ref_count())
+        published = source.pipe(
+            ops.publish(),
+            ops.ref_count()
+        )
         return [
-            published.pipe(filter(predicate)),
-            published.pipe(filter(lambda x: not predicate(x)))
+            published.pipe(ops.filter(predicate)),
+            published.pipe(ops.filter(lambda x: not predicate(x)))
         ]
-    return partial
+    return partition
 
 
-def partitioni(predicate_indexed: PredicateIndexed = None
-               ) -> Callable[[ObservableBase], List[ObservableBase]]:
-    """Returns two observables which partition the observations of the
-    source by the given function. The first will trigger observations for
-    those values for which the predicate returns true. The second will
-    trigger observations for those values where the predicate returns false.
-    The predicate is executed once for each subscribed observer. Both also
-    propagate all error observations arising from the source and each
-    completes when the source completes.
+def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+    def partitioni(source: Observable) -> List[Observable]:
+        """The partially applied indexed partition operator.
 
-    Keyword arguments:
-    predicate -- The function to determine which output Observable will
-        trigger a particular observation.
+        Returns two observables which partition the observations of the
+        source by the given function. The first will trigger
+        observations for those values for which the predicate returns
+        true. The second will trigger observations for those values
+        where the predicate returns false. The predicate is executed
+        once for each subscribed observer. Both also propagate all
+        error observations arising from the source and each completes
+        when the source completes.
 
-    Returns a list of observables. The first triggers when the predicate
-    returns True, and the second triggers when the predicate returns False.
-    """
+        Args:
+            source: Source observable to partition.
 
-    def partial(source: ObservableBase) -> List[ObservableBase]:
-        published = source.publish().ref_count()
+        Returns:
+            A list of observables. The first triggers when the
+            predicate returns True, and the second triggers when the
+            predicate returns False.
+        """
+
+        published = source.pipe(
+            ops.publish(),
+            ops.ref_count()
+        )
         return [
-            published.pipe(filteri(predicate_indexed)),
-            published.pipe(filteri(predicate_indexed=lambda x,
-                                   i: not predicate_indexed(x, i)))
+            published.pipe(ops.filteri(predicate_indexed)),
+            published.pipe(ops.filteri(predicate_indexed=lambda x, i: not predicate_indexed(x, i)))
         ]
-    return partial
+    return partitioni
