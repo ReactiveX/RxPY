@@ -1,8 +1,8 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
-from rx.operators.observable.concat import concat
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -31,7 +31,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(250)]
@@ -40,10 +40,11 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
+
         results = scheduler.start(create)
         assert results.messages == []
 
@@ -51,21 +52,22 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e2.concat(e1)
+            return e2.pipe(ops.concat(e1))
 
         results = scheduler.start(create)
         assert results.messages == []
 
     def test_concat_never_never(self):
         scheduler = TestScheduler()
-        e1 = Observable.never()
-        e2 = Observable.never()
+        e1 = rx.never()
+        e2 = rx.never()
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
+
         results = scheduler.start(create)
         assert results.messages == []
 
@@ -78,7 +80,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(250, ex)]
@@ -92,7 +94,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
@@ -106,7 +108,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
@@ -119,7 +121,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_completed(250)]
@@ -132,7 +134,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(240, 2), on_completed(250)]
@@ -141,10 +143,10 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2)]
@@ -153,10 +155,10 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = Observable.never()
+        e2 = rx.never()
 
         def create():
-            return e2.concat(e1)
+            return e2.pipe(ops.concat(e1))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -169,7 +171,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2), on_next(240, 3), on_completed(250)]
@@ -183,7 +185,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
@@ -197,7 +199,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2), on_error(250, ex)]
@@ -210,7 +212,7 @@ class TestConcat(unittest.TestCase):
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return e1.concat(e2)
+            return e1.pipe(ops.concat(e2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(
