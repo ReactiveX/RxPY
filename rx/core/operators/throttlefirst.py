@@ -5,18 +5,18 @@ from rx.core import Observable, AnonymousObservable
 from rx.concurrency import timeout_scheduler
 
 
-def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
-    """Returns an Observable that emits only the first item emitted by
-    the source Observable during sequential time windows of a specified
-    duration.
+def _throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    def throttle_first(source: Observable) -> Observable:
+        """Returns an observable that emits only the first item emitted
+        by the source Observable during sequential time windows of a
+        specifiedduration.
 
-    Keyword arguments:
-    window_duration -- time to wait before emitting another item after
-        emitting the last item.
-    Returns an Observable that performs the throttle operation.
-    """
+        Args:
+            source: Source observable to throttle.
 
-    def partial(source: Observable) -> Observable:
+        Returns:
+            An Observable that performs the throttle operation.
+        """
         def subscribe(observer, scheduler=None):
             scheduler = scheduler or timeout_scheduler
 
@@ -38,4 +38,4 @@ def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observab
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return throttle_first
