@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -35,7 +35,8 @@ class TestDefer(unittest.TestCase):
                     on_completed(200)
                 )
                 return xs[0]
-            return Observable.defer(defer)
+            return rx.defer(defer)
+
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert(1 == invoked[0])
@@ -50,9 +51,10 @@ class TestDefer(unittest.TestCase):
         def create():
             def defer(scheduler):
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(on_next(100, scheduler.clock), on_error(200, ex))
+                xs[0] = scheduler.create_cold_observable(
+                        on_next(100, scheduler.clock), on_error(200, ex))
                 return xs[0]
-            return Observable.defer(defer)
+            return rx.defer(defer)
 
         results = scheduler.start(create)
 
@@ -69,9 +71,11 @@ class TestDefer(unittest.TestCase):
             def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                    on_next(100, scheduler.clock), on_next(200, invoked[0]), on_next(1100, 1000))
+                    on_next(100, scheduler.clock),
+                    on_next(200, invoked[0]),
+                    on_next(1100, 1000))
                 return xs[0]
-            return Observable.defer(defer)
+            return rx.defer(defer)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_next(400, 1)]
@@ -88,7 +92,7 @@ class TestDefer(unittest.TestCase):
                 invoked[0] += 1
                 raise Exception(ex)
 
-            return Observable.defer(defer)
+            return rx.defer(defer)
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
