@@ -120,6 +120,22 @@ def combine_latest(other: Union[Observable, Iterable[Observable]],
     return _combine_latest(other, mapper)
 
 
+def concat(*args: Union[Observable, Iterable[Observable]]) -> Callable[[Observable], Observable]:
+    """Concatenates all the observable sequences.
+
+    Examples:
+        >>> res = concat(xs, ys, zs)
+        >>> res = concat([xs, ys, zs])
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements of
+        each given sequence, in sequential order.
+    """
+    from rx.core.operators.concat import _concat
+    return _concat(*args)
+
+
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
