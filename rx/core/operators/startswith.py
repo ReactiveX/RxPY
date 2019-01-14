@@ -1,9 +1,8 @@
 from typing import Any, Callable
 
-from rx import from_iterable
-from rx.core import Observable
+import rx
 
-from .concat import concat
+from rx.core import Observable
 
 
 def _start_with(*args: Any) -> Callable[[Observable], Observable]:
@@ -18,7 +17,7 @@ def _start_with(*args: Any) -> Callable[[Observable], Observable]:
         Returns:
             The source sequence prepended with the specified values.
         """
-        start = from_iterable(args)
+        start = rx.from_iterable(args)
         sequence = [start, source]
-        return concat(*sequence)
+        return rx.concat(*sequence)
     return start_with
