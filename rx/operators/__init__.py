@@ -49,6 +49,8 @@ def as_observable() -> Callable[[Observable], Observable]:
         returns and observable sequence that hides the identity of the
         source sequence.
     """
+    from rx.core.operators.asobservable import _as_observable
+    return _as_observable()
 
 
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
