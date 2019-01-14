@@ -164,7 +164,7 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return _count(predicate)
 
 
-def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
+def debounce(duetime: Union[int, timedelta], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -173,14 +173,15 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
 
     Args:
         duetime: Duration of the throttle period for each value
-        (specified as an integer denoting milliseconds).
+            (specified as an integer denoting milliseconds).
+        scheduler: Scheduler to debounce values on.
 
     Returns:
         An operator function that takes the source observable and
         returns the debounced observable sequence.
     """
     from rx.core.operators.debounce import _debounce
-    return _debounce(duetime)
+    return _debounce(duetime, scheduler)
 
 
 throttle_with_timeout = debounce
@@ -1115,6 +1116,31 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.takeuntil import _take_until
     return _take_until(other)
+
+
+def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Scheduler = None
+                         ) -> Callable[[Observable], Observable]:
+    """Takes elements for the specified duration until the specified end
+    time, using the specified scheduler to run timers.
+
+    Examples:
+        >>> res = source.take_until_with_time(dt, [optional scheduler])
+        >>> res = source.take_until_with_time(5000, [optional scheduler])
+
+    Args:
+        end_time: Time to stop taking elements from the source
+            sequence. If this value is less than or equal to
+            `datetime.utcnow()`, the result stream will complete
+            immediately.
+        scheduler -- Scheduler to run the timer on.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the elements taken until
+        the specified end time.
+    """
+    from rx.core.operators.takeuntilwithtime import _take_until_with_time
+    return _take_until_with_time(end_time, scheduler=None)
 
 
 def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
