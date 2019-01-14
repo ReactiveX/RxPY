@@ -926,6 +926,58 @@ def share() -> Callable[[Observable], Observable]:
     from rx.core.operators.publish import _share
     return _share()
 
+def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+    """Returns the only element of an observable sequence that satisfies the
+    condition in the optional predicate, and reports an exception if there
+    is not exactly one element in the observable sequence.
+
+    Example:
+        >>> res = single()
+        >>> res = single(lambda x: x == 42)
+
+    Args:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+
+    Returns:
+        An observable sequence containing the single element in the
+        observable sequence that satisfies the condition in the predicate.
+    """
+    from rx.core.operators.single import _single
+    return _single(predicate)
+
+
+def single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
+    """Returns the only element of an observable sequence that matches
+    the predicate, or a default value if no such element exists this
+    method reports an exception if there is more than one element in the
+    observable sequence.
+
+    Examples:
+        >>> res = single_or_default()
+        >>> res = single_or_default(lambda x: x == 42)
+        >>> res = single_or_default(lambda x: x == 42, 0)
+        >>> res = single_or_default(None, 0)
+
+    Args:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value -- [Optional] The default value if the index is
+            outside the bounds of the source sequence.
+
+    Returns:
+        An observable Sequence containing the single element in the
+    observable sequence that satisfies the condition in the predicate,
+    or a default value if no such element exists.
+    """
+    from rx.core.operators.singleordefault import _single_or_default
+    return _single_or_default(predicate, default_value)
+
+
+def single_or_default_async(has_default: bool = False, default_value: Any = None):
+    from rx.core.operators.singleordefault import _single_or_default_async
+    return _single_or_default_async(has_default, default_value)
+
 
 def skip(count: int) -> Callable[[Observable], Observable]:
     """The skip operator.

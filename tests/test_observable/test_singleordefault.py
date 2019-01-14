@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,7 +28,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.single_or_default(None, 0)
+            return xs.pipe(ops.single_or_default(None, 0))
 
         res = scheduler.start(create=create)
 
@@ -38,7 +40,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 
         def create():
-            return xs.single_or_default(None, 0)
+            return xs.pipe(ops.single_or_default(None, 0))
 
         res = scheduler.start(create=create)
 
@@ -51,7 +53,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
 
         def create():
-            return xs.single_or_default(None, 0)
+            return xs.pipe(ops.single_or_default(None, 0))
 
         res = scheduler.start(create=create)
 
@@ -68,7 +70,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
         def create():
-            return xs.single_or_default(None, 0)
+            return xs.pipe(ops.single_or_default(None, 0))
 
         res = scheduler.start(create=create)
 
@@ -83,7 +85,7 @@ class TestSingleOrDefault(unittest.TestCase):
             def predicate(x):
                 return x % 2 == 1
 
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
@@ -100,7 +102,7 @@ class TestSingleOrDefault(unittest.TestCase):
         def create():
             def predicate(x):
                 return x % 2 == 1
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
@@ -116,7 +118,7 @@ class TestSingleOrDefault(unittest.TestCase):
             def predicate(x):
                 return x == 4
 
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
@@ -131,7 +133,7 @@ class TestSingleOrDefault(unittest.TestCase):
             def predicate(x):
                 return x > 10
 
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
@@ -146,7 +148,7 @@ class TestSingleOrDefault(unittest.TestCase):
         def create():
             def predicate(x):
                 return x > 10
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
@@ -165,7 +167,7 @@ class TestSingleOrDefault(unittest.TestCase):
                 else:
                     raise Exception(ex)
 
-            return xs.single_or_default(predicate, 0)
+            return xs.pipe(ops.single_or_default(predicate, 0))
         res = scheduler.start(create=create)
 
         assert res.messages == [on_error(230, ex)]
