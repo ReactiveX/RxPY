@@ -90,7 +90,7 @@ class TestSlice(unittest.TestCase):
             on_next(410, 8),
             on_next(415, 9),
             on_completed(690)]
-        assert xs.subscriptions == [subscribe(200, 1000)]
+        assert xs.subscriptions == [subscribe(200, 690)]
 
     def test_slice_skip_first(self):
         scheduler = TestScheduler()
