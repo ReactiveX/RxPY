@@ -395,6 +395,21 @@ def start(func, scheduler=None) -> Observable:
     return _start(func, scheduler)
 
 
+def start_async(function_async) -> Observable:
+    """Invokes the asynchronous function, surfacing the result through
+    an observable sequence.
+
+    Keyword arguments:
+    function_async -- Asynchronous function which returns a Future to
+        run.
+
+    Returns an observable sequence exposing the function's result value,
+    or an exception.
+    """
+    from .core.observable.startasync import _start_async
+    return _start_async(function_async)
+
+
 def to_async(func: Callable, scheduler=None) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
