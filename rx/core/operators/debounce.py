@@ -2,30 +2,29 @@ from typing import Callable, Union, Any
 from datetime import timedelta
 
 from rx.core.typing import Disposable
-from rx.core import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable, typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
-    """Ignores values from an observable sequence which are followed by
-    another value before duetime.
-
-    Example:
-        >>> res = debounce(5000)(source) # 5 seconds
-
-    Args:
-        duetime: Duration of the throttle period for each value
-        (specified as an integer denoting milliseconds).
-
-    Returns:
-        An operator function that takes the source observable and
-        returns the debounced observable sequence.
-    """
-
+def _debounce(duetime: Union[int, timedelta], scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
     def debounce(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None) -> Disposable:
-            scheduler = scheduler or timeout_scheduler
+        """Ignores values from an observable sequence which are followed by
+        another value before duetime.
+
+        Example:
+            >>> res = debounce(source)
+
+        Args:
+            source: Source observable to debounce.
+
+        Returns:
+            An operator function that takes the source observable and
+            returns the debounced observable sequence.
+        """
+
+        def subscribe(observer, scheduler_=None) -> Disposable:
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]
@@ -44,7 +43,7 @@ def _debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observab
                         observer.on_next(value[0])
                     has_value[0] = False
 
-                d.disposable = scheduler.schedule_relative(duetime, action)
+                d.disposable = _scheduler.schedule_relative(duetime, action)
 
             def on_error(exception: Exception) -> None:
                 cancelable.dispose()
@@ -61,7 +60,7 @@ def _debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observab
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler_)
             return CompositeDisposable(subscription, cancelable)
         return AnonymousObservable(subscribe)
     return debounce
