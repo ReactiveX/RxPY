@@ -782,7 +782,7 @@ def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
     return _partition(predicate)
 
 
-def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+def partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
     """The indexed partition operator.
 
     Returns two observables which partition the observations of the
