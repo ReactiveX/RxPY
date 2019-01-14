@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -32,7 +33,7 @@ class TestTakeUntil(unittest.TestCase):
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(220, 3), on_completed(225)]
@@ -47,7 +48,7 @@ class TestTakeUntil(unittest.TestCase):
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(220, 3), on_error(225, ex)]
 
@@ -60,7 +61,7 @@ class TestTakeUntil(unittest.TestCase):
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(
@@ -71,10 +72,10 @@ class TestTakeUntil(unittest.TestCase):
         l_msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
                   on_next(230, 4), on_next(240, 5), on_completed(250)]
         l = scheduler.create_hot_observable(l_msgs)
-        r = Observable.never()
+        r = rx.never()
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(
@@ -83,11 +84,11 @@ class TestTakeUntil(unittest.TestCase):
     def test_take_until_preempt_never_next(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_next(225, 2), on_completed(250)]
-        l = Observable.never()
+        l = rx.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(225)]
@@ -96,11 +97,11 @@ class TestTakeUntil(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_error(225, ex)]
-        l = Observable.never()
+        l = rx.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(225, ex)]
@@ -108,22 +109,22 @@ class TestTakeUntil(unittest.TestCase):
     def test_take_until_nopreempt_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        l = Observable.never()
+        l = rx.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
 
     def test_take_until_nopreempt_never_never(self):
         scheduler = TestScheduler()
-        l = Observable.never()
-        r = Observable.never()
+        l = rx.never()
+        r = rx.never()
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -136,7 +137,7 @@ class TestTakeUntil(unittest.TestCase):
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]
@@ -149,12 +150,12 @@ class TestTakeUntil(unittest.TestCase):
 
         def action():
             source_not_disposed[0] = True
-        l = scheduler.create_hot_observable(l_msgs).do_action(on_next=action)
+        l = scheduler.create_hot_observable(l_msgs).pipe(ops.do_action(on_next=action))
 
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
 
@@ -170,10 +171,10 @@ class TestTakeUntil(unittest.TestCase):
 
         def action():
             signal_not_disposed[0] = True
-        r = scheduler.create_hot_observable(r_msgs).do_action(on_next=action)
+        r = scheduler.create_hot_observable(r_msgs).pipe(ops.do_action(on_next=action))
 
         def create():
-            return l.take_until(r)
+            return l.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 2), on_completed(240)]
