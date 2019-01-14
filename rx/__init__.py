@@ -437,3 +437,31 @@ def using(resource_factory, observable_factory) -> Observable:
     """
     from .core.observable.using import _using
     return _using(resource_factory, observable_factory)
+
+
+# pylint: disable=redefined-builtin
+def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever all of the
+    observable sequences have produced an element at a corresponding
+    index.
+
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
+
+    Example:
+        >>> res = zip(obs1, obs2, result_mapper=fn)
+
+    Args:
+        args: Observable sources to zip.
+        result_mapper: Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index.
+
+    Returns:
+        An observable sequence containing the result of combining
+        elements of the sources using the specified result mapper
+        function.
+    """
+    from .core.observable.zip import _zip
+    return _zip(*args, result_mapper=result_mapper)

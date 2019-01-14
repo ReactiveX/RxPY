@@ -14,7 +14,6 @@ class ConnectableObservable(Observable):
         self.has_subscription = False
         self.subscription = None
 
-        source = source.as_observable()
         super().__init__(source)
 
     def _subscribe_core(self, observer, scheduler=None):

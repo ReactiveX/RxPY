@@ -1,105 +1,78 @@
-from typing import Union, Iterable, Any
+from typing import Callable
 
-from rx import from_future
+import rx
 from rx.core import Observable, AnonymousObservable
 from rx.core.typing import Mapper
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal.utils import is_future
 
 
-def zip(*args: Union[Iterable[Any], Observable],
-        result_mapper: Mapper = None) -> Observable:
-    """Merges the specified observable sequences into one observable
-    sequence by using the mapper function whenever all of the
-    observable sequences have produced an element at a corresponding
-    index.
+def _zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    def zip(source: Observable) -> Observable:
+        """Merges the specified observable sequences into one observable
+        sequence by using the mapper function whenever all of the
+        observable sequences have produced an element at a corresponding
+        index.
 
-    The last element in the arguments must be a function to invoke for
-    each series of elements at corresponding indexes in the sources.
+        The last element in the arguments must be a function to invoke for
+        each series of elements at corresponding indexes in the sources.
 
-    1 - res = zip(obs1, obs2, result_mapper=fn)
-    2 - res = zip(xs, [1,2,3], result_mapper=fn)
+        Example:
+            >>> res = zip(source)
 
-    Keyword arguments:
-    args -- Observable sources to zip.
-    result_mapper -- Mapper function that produces an element
-        whenever all of the observable sequences have produced an
-        element at a corresponding index
+        Args:
+            source: Source observable to zip.
 
-    Returns an observable sequence containing the result of
-    combining elements of the sources using the specified result
-    mapper function.
-    """
+        Returns:
+            An observable sequence containing the result of combining
+            elements of the sources using the specified result mapper
+            function.
+        """
+        sources = [source] + list(args)
+        return rx.zip(*sources, result_mapper=result_mapper)
+    return zip
 
-    if len(args) == 2 and isinstance(args[1], Iterable):
-        return _zip_with_list(args[0], args[1], result_mapper=result_mapper)
+def _zip_with_iterable(second, result_mapper):
+    def zip_with_iterable(source: Observable) -> Observable:
+        """Merges the specified observable sequence and list into one
+        observable sequence by using the mapper function whenever all of
+        the observable sequences have produced an element at a
+        corresponding index.
 
-    sources = list(args)
-    result_mapper = result_mapper or list
+        The result mapper must be a function to invoke for each series of
+        elements at corresponding indexes in the sources.
 
-    def subscribe(observer, scheduler=None):
-        n = len(sources)
-        queues = [[] for _ in range(n)]
-        is_done = [False] * n
+        Example
+            >>> res = zip(xs, [1,2,3], result_mapper=fn)
 
-        def next(i):
-            if all([len(q) for q in queues]):
-                try:
-                    queued_values = [x.pop(0) for x in queues]
-                    res = result_mapper(*queued_values)
-                except Exception as ex:
-                    observer.on_error(ex)
-                    return
+        Args:
+            source -- Source observable to zip.
 
-                observer.on_next(res)
-            elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.on_completed()
+        Returns:
+            An observable sequence containing the result of
+            combining elements of the sources using the specified result
+        mapper function.
+        """
 
-        def done(i):
-            is_done[i] = True
-            if all(is_done):
-                observer.on_completed()
+        first = source
 
-        subscriptions = [None]*n
+        def subscribe(observer, scheduler=None):
+            length = len(second)
+            index = 0
 
-        def func(i):
-            source = sources[i]
-            sad = SingleAssignmentDisposable()
-            source = from_future(source) if is_future(source) else source
+            def on_next(left):
+                nonlocal index
 
-            def on_next(x):
-                queues[i].append(x)
-                next(i)
+                if index < length:
+                    right = second[index]
+                    index += 1
+                    try:
+                        result = result_mapper(left, right)
+                    except Exception as ex:
+                        observer.on_error(ex)
+                        return
+                    observer.on_next(result)
+                else:
+                    observer.on_completed()
 
-            sad.disposable = source.subscribe_(on_next, observer.on_error, lambda: done(i), scheduler)
-            subscriptions[i] = sad
-        for idx in range(n):
-            func(idx)
-        return CompositeDisposable(subscriptions)
-    return AnonymousObservable(subscribe)
-
-
-def _zip_with_list(source, second, result_mapper):
-    first = source
-
-    def subscribe(observer, scheduler=None):
-        length = len(second)
-        index = 0
-
-        def on_next(left):
-            nonlocal index
-
-            if index < length:
-                right = second[index]
-                index += 1
-                try:
-                    result = result_mapper(left, right)
-                except Exception as ex:
-                    observer.on_error(ex)
-                    return
-                observer.on_next(result)
-            else:
-                observer.on_completed()
-
-        return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+            return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return zip_with_iterable

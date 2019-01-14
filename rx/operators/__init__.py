@@ -1247,3 +1247,63 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """
     from rx.core.operators.window import _window
     return _window(window_openings, window_closing_mapper)
+
+
+def zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever all of the
+    observable sequences have produced an element at a corresponding
+    index.
+
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
+
+    Example:
+        >>> res = zip(obs1, obs2, result_mapper=fn)
+
+    Args:
+        args: Observable sources to zip.
+        result_mapper: Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+
+    from rx.core.operators.zip import _zip
+    return _zip(*args, result_mapper=result_mapper)
+
+
+def zip_with_iterable(second, result_mapper):
+    """Merges the specified observable sequence and list into one
+    observable sequence by using the mapper function whenever all of
+    the observable sequences have produced an element at a
+    corresponding index.
+
+    The result mapper must be a function to invoke for each series of
+    elements at corresponding indexes in the sources.
+
+    Example
+        >>> res = zip(xs, [1,2,3], result_mapper=fn)
+
+    Args:
+        second -- Iterable to zip.
+        result_mapper -- Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
+
+    Returns:
+        An operator function that takes and observable source and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+    from rx.core.operators.zip import _zip_with_iterable
+    return _zip_with_iterable(second, result_mapper)
+
+
+zip_with_list = zip_with_iterable
