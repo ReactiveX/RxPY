@@ -169,7 +169,7 @@ def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observabl
     another value before duetime.
 
     Example:
-        >>> res = debounce(5000)(source) # 5 seconds
+        >>> res = debounce(5000) # 5 seconds
 
     Args:
         duetime: Duration of the throttle period for each value
@@ -417,7 +417,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     observable sequence.
 
     Example:
-        >>> source.flat_map(lambda x: Observable.range(0, x))
+        >>> flat_map(lambda x: Observable.range(0, x))
 
     Or:
     Projects each element of the source observable sequence to the
@@ -425,7 +425,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     sequences into one observable sequence.
 
     Example:
-        >>> source.flat_map(Observable.of(1, 2, 3))
+        >>> flat_map(Observable.of(1, 2, 3))
 
     Args:
         mapper: A transform function to apply to each element or an
@@ -443,21 +443,23 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
 
 def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    """The flat_mapi operator.
+    """The `flat_mapi` operator.
 
     One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
 
-    1 - source.flat_mapi(lambda x, i: Observable.range(0, x))
+    Example:
+        >>> source.flat_mapi(lambda x, i: Observable.range(0, x))
 
     Or:
     Projects each element of the source observable sequence to the other
     observable sequence and merges the resulting observable sequences
     into one observable sequence.
 
-    1 - source.flat_mapi(Observable.of(1, 2, 3))
+    Example:
+        >>> source.flat_mapi(Observable.of(1, 2, 3))
 
     Args:
         mapper_indexed: [Optional] A transform function to apply to
@@ -1097,6 +1099,23 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     from rx.core.operators.takelast import _take_last
     return _take_last(count)
 
+def take_until(other: Observable) -> Callable[[Observable], Observable]:
+    """Returns the values from the source observable sequence until the
+    other observable sequence produces a value.
+
+    Args:
+        other: Observable sequence that terminates propagation of
+            elements of the source sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns as observable sequence containing the elements of the
+        source sequence up to the point the other sequence interrupted
+        further propagation.
+    """
+    from rx.core.operators.takeuntil import _take_until
+    return _take_until(other)
+
 
 def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
@@ -1130,8 +1149,9 @@ def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observab
     duration.
 
     Args:
-        window_duration -- time to wait before emitting another item
+        window_duration: time to wait before emitting another item
             after emitting the last item.
+
     Returns:
         An operator function that takes an observable source and
         returns an observable that performs the throttle operation.
