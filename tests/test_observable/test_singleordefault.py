@@ -1,6 +1,5 @@
 import unittest
 
-import rx
 from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
