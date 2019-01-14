@@ -1,7 +1,8 @@
 import unittest
 
-from rx.chained import Observable
-from rx.core import Observer, ObservableBase
+import rx
+from rx import operators as ops
+from rx.core import Observer, Observable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
 from rx.core import ConnectableObservable
@@ -15,7 +16,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class MySubject(ObservableBase, Observer):
+class MySubject(Observable, Observer):
 
     def __init__(self):
 
@@ -58,7 +59,7 @@ class TestConnectableObservable(unittest.TestCase):
         y = [0]
 
         s2 = Subject()
-        co2 = ConnectableObservable(Observable.return_value(1), s2)
+        co2 = ConnectableObservable(rx.return_value(1), s2)
 
         def on_next(x):
             y[0] = x
@@ -174,7 +175,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         subject = Subject()
 
-        conn = xs.multicast(subject)
+        conn = xs.pipe(ops.multicast(subject))
 
         c1 = [None]
 

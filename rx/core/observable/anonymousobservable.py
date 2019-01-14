@@ -20,5 +20,5 @@ class AnonymousObservable(Observable):
         self._subscribe = subscribe
         super().__init__()
 
-    def _subscribe_core(self, observer: abc.Observer, scheduler: abc.Scheduler = None):
+    def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None):
         return self._subscribe(observer, scheduler)
