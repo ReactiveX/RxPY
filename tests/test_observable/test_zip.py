@@ -338,7 +338,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -353,7 +353,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -368,7 +368,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -384,7 +384,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(215)]
@@ -398,7 +398,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -414,7 +414,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(215, 2 + 3), on_completed(230)]
@@ -429,7 +429,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(220, ex)]
@@ -444,7 +444,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(220, ex)]
@@ -460,7 +460,7 @@ class TestZip(unittest.TestCase):
         def create():
             def mapper(x, y):
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 7), on_next(220, 7),
@@ -480,7 +480,7 @@ class TestZip(unittest.TestCase):
                 if y == 5:
                     raise Exception(ex)
                 return x + y
-            return n1.pipe(ops.zip(n2, result_mapper=mapper))
+            return n1.pipe(ops.zip_with_iterable(n2, result_mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(215, 2 + 3), on_error(225, ex)]

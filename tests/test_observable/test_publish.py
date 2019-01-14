@@ -1,7 +1,8 @@
 import unittest
 
-from rx.chained import Observable
-from rx.core import Observer, ObservableBase
+import rx
+from rx import operators as ops
+from rx.core import Observer, Observable
 from rx.core import ConnectableObservable
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -23,7 +24,7 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class MySubject(ObservableBase, Observer):
+class MySubject(Observable, Observer):
 
     def __init__(self):
         super(MySubject, self).__init__()
@@ -31,6 +32,7 @@ class MySubject(ObservableBase, Observer):
         self.dispose_on_map = {}
         self.subscribe_count = 0
         self.disposed = False
+        self.observer = None
 
     def _subscribe_core(self, observer, scheduler=None):
         self.subscribe_count += 1
@@ -52,8 +54,8 @@ class MySubject(ObservableBase, Observer):
         if value in self.dispose_on_map:
             self.dispose_on_map[value].dispose()
 
-    def on_error(self, exception):
-        self.observer.on_error(exception)
+    def on_error(self, error):
+        self.observer.on_error(error)
 
     def on_completed(self):
         self.observer.on_completed()
@@ -79,9 +81,9 @@ class TestPublish(unittest.TestCase):
             def mapper(ys):
                 def result_mapper(a, b):
                     return a + b
-                return ys.zip(ys, result_mapper=result_mapper)
+                return ys.pipe(ops.zip(ys, result_mapper=result_mapper))
 
-            return xs.publish(mapper=mapper)
+            return xs.pipe(ops.publish(mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 6),
@@ -114,7 +116,7 @@ class TestPublish(unittest.TestCase):
             on_next(230, 3),
             on_next(240, 4),
             on_completed(250)]
-        assert(subject.disposed)
+        assert subject.disposed
 
     def test_ref_count_notconnected(self):
         disconnected = [False]
@@ -123,14 +125,14 @@ class TestPublish(unittest.TestCase):
         def factory(scheduler):
             count[0] += 1
 
-            def create(obs):
+            def create(obs, scheduler=None):
                 def func():
                     disconnected[0] = True
                 return func
 
-            return Observable.create(create)
+            return rx.create(create)
 
-        xs = Observable.defer(factory)
+        xs = rx.defer(factory)
 
         subject = MySubject()
         conn = ConnectableObservable(xs, subject)
@@ -138,22 +140,22 @@ class TestPublish(unittest.TestCase):
         dis1 = refd.subscribe()
         self.assertEqual(1, count[0])
         self.assertEqual(1, subject.subscribe_count)
-        assert(not disconnected[0])
+        assert not disconnected[0]
         dis2 = refd.subscribe()
         self.assertEqual(1, count[0])
         self.assertEqual(2, subject.subscribe_count)
-        assert(not disconnected[0])
+        assert not disconnected[0]
         dis1.dispose()
-        assert(not disconnected[0])
+        assert not disconnected[0]
         dis2.dispose()
-        assert(disconnected[0])
+        assert disconnected[0]
         disconnected[0] = False
         dis3 = refd.subscribe()
         self.assertEqual(2, count[0])
         self.assertEqual(3, subject.subscribe_count)
-        assert(not disconnected[0])
+        assert not disconnected[0]
         dis3.dispose()
-        assert(disconnected[0])
+        assert disconnected[0]
 
     def test_publish_basic(self):
         scheduler = TestScheduler()
@@ -179,7 +181,7 @@ class TestPublish(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish()
+            ys[0] = xs.pipe(ops.publish())
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -248,7 +250,7 @@ class TestPublish(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish()
+            ys[0] = xs.pipe(ops.publish())
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -310,7 +312,7 @@ class TestPublish(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish()
+            ys[0] = xs.pipe(ops.publish())
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -372,7 +374,7 @@ class TestPublish(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish()
+            ys[0] = xs.pipe(ops.publish())
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -415,8 +417,8 @@ class TestPublish(unittest.TestCase):
             subscribe(650, 800)]
 
     def test_publish_multipleconnections(self):
-        xs = Observable.never()
-        ys = xs.publish()
+        xs = rx.never()
+        ys = xs.pipe(ops.publish())
         connection1 = ys.connect()
         connection2 = ys.connect()
         assert(connection1 == connection2)
@@ -446,9 +448,9 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
 
-            return xs.publish(mapper)
+            return xs.pipe(ops.publish(mapper))
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -487,8 +489,8 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
-            return xs.publish(mapper)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+            return xs.pipe(ops.publish(mapper))
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -526,8 +528,8 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
-            return xs.publish(mapper)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+            return xs.pipe(ops.publish(mapper))
 
         results = scheduler.start(create, disposed=470)
         assert results.messages == [
