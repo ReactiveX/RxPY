@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 
@@ -17,7 +18,11 @@ class TestToArray(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.to_iterable().map(list)
+            return xs.pipe(
+                    ops.to_iterable(),
+                    ops.map(list),
+                    )
+
         results = scheduler.start(create=create).messages
 
         assert len(results) == 2
@@ -40,7 +45,7 @@ class TestToArray(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.to_iterable()
+            return xs.pipe(ops.to_iterable())
         results = scheduler.start(create=create).messages
         assert results == [self.on_error(660, ex)]
         assert xs.subscriptions == [self.subscribe(200, 660)]
@@ -56,7 +61,7 @@ class TestToArray(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.to_iterable()
+            return xs.pipe(ops.to_iterable())
 
         results = scheduler.start(create=create).messages
         assert results == []
