@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -24,7 +25,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(buffer_size=3, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(buffer_size=3, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -74,7 +75,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(buffer_size=3, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(buffer_size=3, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -116,7 +117,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(buffer_size=3, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(buffer_size=3, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scehduler, state):
@@ -158,7 +159,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(buffer_size=3, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(buffer_size=3, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -199,15 +200,15 @@ class TestReplay(unittest.TestCase):
 
     def test_replay_count_multiple_connections(self):
 
-        xs = Observable.never()
-        ys = xs.replay(None, 3)
+        xs = rx.never()
+        ys = xs.pipe(ops.replay(None, 3))
         connection1 = ys.connect()
         connection2 = ys.connect()
-        assert(connection1 == connection2)
+        assert connection1 == connection2
         connection1.dispose()
         connection2.dispose()
         connection3 = ys.connect()
-        assert(connection1 != connection3)
+        assert connection1 != connection3
 
     # def test_replay_count_lambda_zip_complete(self):
     #     scheduler = TestScheduler()
@@ -262,7 +263,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(window=150, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(window=150, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -313,7 +314,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(window=75, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(window=75, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -354,7 +355,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(window=85, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(window=85, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -396,7 +397,7 @@ class TestReplay(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.replay(window=100, scheduler=scheduler)
+            ys[0] = xs.pipe(ops.replay(window=100, scheduler=scheduler))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -436,8 +437,8 @@ class TestReplay(unittest.TestCase):
         assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 550), subscribe(650, 800)]
 
     def test_replay_time_multiple_connections(self):
-        xs = Observable.never()
-        ys = xs.replay(window=100)
+        xs = rx.never()
+        ys = xs.pipe(ops.replay(window=100))
         connection1 = ys.connect()
         connection2 = ys.connect()
         assert connection1 == connection2

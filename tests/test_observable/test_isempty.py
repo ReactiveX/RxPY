@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,7 +18,7 @@ class TestIsEmpty(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.is_empty()
+            return xs.pipe(ops.is_empty())
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, True), on_completed(250)]
@@ -28,7 +29,7 @@ class TestIsEmpty(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 
         def create():
-            return xs.is_empty()
+            return xs.pipe(ops.is_empty())
         res = scheduler.start(create=create).messages
         assert res == [on_next(210, False), on_completed(210)]
         assert xs.subscriptions == [subscribe(200, 210)]
@@ -39,7 +40,7 @@ class TestIsEmpty(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
         def create():
-            return xs.is_empty()
+            return xs.pipe(ops.is_empty())
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
         assert xs.subscriptions == [subscribe(200, 210)]
@@ -48,8 +49,7 @@ class TestIsEmpty(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1))
         def create():
-            return xs.is_empty()
+            return xs.pipe(ops.is_empty())
         res = scheduler.start(create=create).messages
         assert res == []
         assert xs.subscriptions == [subscribe(200, 1000)]
-

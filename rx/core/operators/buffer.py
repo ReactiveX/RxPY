@@ -1,8 +1,10 @@
 from typing import Callable
-from rx.core import ObservableBase as Observable
+
+from rx import operators as ops
+from rx.core import Observable, pipe
 
 
-def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
+def _buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers.
 
@@ -19,12 +21,13 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
         observable sequence of windows.
     """
 
-    def partial(source: Observable) -> Observable:
-        return source.window(buffer_openings, buffer_closing_mapper).flat_map(lambda item: item.to_iterable().map(list))
-    return partial
+    return pipe(
+        ops.window(buffer_openings, buffer_closing_mapper),
+        ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
+    )
 
 
-def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def _buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -32,28 +35,28 @@ def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
         >>> res = buffer_with_count(10)(xs)
         >>> res = buffer_with_count(10, 1)(xs)
 
-    Keyword parameters:
-    count -- Length of each buffer.
-    skip -- [Optional] Number of elements to skip between
-        creation of consecutive buffers. If not provided, defaults to
-        the count.
+    Args:
+        count: Length of each buffer.
+        skip: [Optional] Number of elements to skip between
+            creation of consecutive buffers. If not provided, defaults to
+            the count.
 
     Returns:
         A function that takes an observable source and returns an
         observable sequence of buffers.
     """
 
-    def partial(source: Observable) -> Observable:
+    def buffer_with_count(source: Observable) -> Observable:
         nonlocal skip
 
         if skip is None:
             skip = count
 
         def mapper(value):
-            return value.to_iterable().map(list)
+            return value.pipe(ops.to_iterable(), ops.map(list))
 
         def predicate(value):
             return len(value) > 0
 
-        return source.window_with_count(count, skip).flat_map(mapper).filter(predicate)
-    return partial
+        return source.pipe(ops.window_with_count(count, skip), ops.flat_map(mapper), ops.filter(predicate))
+    return buffer_with_count

@@ -1,6 +1,6 @@
 import unittest
 
-from rx.chained import Observable
+import rx
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
@@ -27,7 +27,7 @@ class TestReturnValue(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42)
+            return rx.return_value(42)
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -38,7 +38,7 @@ class TestReturnValue(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return Observable.return_value(42)
+            return rx.return_value(42)
 
         results = scheduler.start(factory, disposed=200)
         assert results.messages == []
@@ -46,7 +46,7 @@ class TestReturnValue(unittest.TestCase):
     def test_return_disposed_after_next(self):
         scheduler = TestScheduler()
         d = SerialDisposable()
-        xs = Observable.return_value(42)
+        xs = rx.return_value(42)
         results = scheduler.create_observer()
 
         def action(scheduler, state):
@@ -69,13 +69,13 @@ class TestReturnValue(unittest.TestCase):
 
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
-        xs = Observable.return_value(1)
+        xs = rx.return_value(1)
         xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
-        ys = Observable.return_value(1)
+        ys = rx.return_value(1)
         ys.subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)

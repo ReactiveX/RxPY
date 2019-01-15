@@ -8,33 +8,26 @@ from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
 
 
-def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
-    """Returns the source observable sequence or the other observable
-    sequence if duetime elapses.
-
-    Examples:
-        >>> res = timeout(5000)
-        >>> res = timeout(datetime(), return_value(42))
-        >>> res = timeout(5000, return_value(42))
-
-    Args:
-        duetime: Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) when a
-            timeout occurs.
-        other: Sequence to return in case of a timeout. If not
-            specified, a timeout error throwing sequence will be used.
-        scheduler:
-
-    Returns:
-        An operator function that takes and observable source and
-        returns the source sequence switching to the other sequence in
-        case of a timeout.
-    """
+def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None
+             ) -> Callable[[Observable], Observable]:
 
     other = other or throw(Exception("Timeout"))
     other = from_future(other) if is_future(other) else other
 
     def timeout(source: Observable) -> Observable:
+        """Returns the source observable sequence or the other observable
+        sequence if duetime elapses.
+
+        Examples:
+            >>> res = timeout(source)
+
+        Args:
+            source: Source observable to timeout
+
+        Returns:
+            An obserable sequence switching to the other sequence in
+            case of a timeout.
+        """
         def subscribe(observer, scheduler=None):
             scheduler = scheduler or timeout_scheduler
 

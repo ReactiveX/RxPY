@@ -49,6 +49,8 @@ def as_observable() -> Callable[[Observable], Observable]:
         returns and observable sequence that hides the identity of the
         source sequence.
     """
+    from rx.core.operators.asobservable import _as_observable
+    return _as_observable()
 
 
 def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
@@ -72,6 +74,49 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
     """
     from rx.core.operators.average import _average
     return _average(key_mapper)
+
+
+def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    Args:
+        buffer_openings: Observable sequence whose elements denote the
+            creation of windows.
+        buffer_closing_mapper: [optional] A function invoked to define
+            the closing of each produced window. If a closing mapper
+            function is specified for the first parameter, this
+            parameter is ignored.
+
+    Returns:
+        A function that takes an observable source and retuerns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer
+    return _buffer(buffer_openings, buffer_closing_mapper)
+
+
+def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or more
+    buffers which are produced based on element count information.
+
+    Examples:
+        >>> res = buffer_with_count(10)(xs)
+        >>> res = buffer_with_count(10, 1)(xs)
+
+    Args:
+        count: Length of each buffer.
+        skip: [Optional] Number of elements to skip between
+            creation of consecutive buffers. If not provided, defaults to
+            the count.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of buffers.
+    """
+    from rx.core.operators.buffer import _buffer_with_count
+    return _buffer_with_count(count, skip)
+
 
 def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
@@ -116,6 +161,22 @@ def combine_latest(other: Union[Observable, Iterable[Observable]],
     """
     from rx.core.operators.combinelatest import _combine_latest
     return _combine_latest(other, mapper)
+
+
+def concat(*args: Union[Observable, Iterable[Observable]]) -> Callable[[Observable], Observable]:
+    """Concatenates all the observable sequences.
+
+    Examples:
+        >>> res = concat(xs, ys, zs)
+        >>> res = concat([xs, ys, zs])
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements of
+        each given sequence, in sequential order.
+    """
+    from rx.core.operators.concat import _concat
+    return _concat(*args)
 
 
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
@@ -164,23 +225,24 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return _count(predicate)
 
 
-def debounce(duetime: Union[int, timedelta]) -> Callable[[Observable], Observable]:
+def debounce(duetime: Union[int, timedelta], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
     Example:
-        >>> res = debounce(5000)(source) # 5 seconds
+        >>> res = debounce(5000) # 5 seconds
 
     Args:
         duetime: Duration of the throttle period for each value
-        (specified as an integer denoting milliseconds).
+            (specified as an integer denoting milliseconds).
+        scheduler: Scheduler to debounce values on.
 
     Returns:
         An operator function that takes the source observable and
         returns the debounced observable sequence.
     """
     from rx.core.operators.debounce import _debounce
-    return _debounce(duetime)
+    return _debounce(duetime, scheduler)
 
 
 throttle_with_timeout = debounce
@@ -417,7 +479,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     observable sequence.
 
     Example:
-        >>> source.flat_map(lambda x: Observable.range(0, x))
+        >>> flat_map(lambda x: Observable.range(0, x))
 
     Or:
     Projects each element of the source observable sequence to the
@@ -425,7 +487,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     sequences into one observable sequence.
 
     Example:
-        >>> source.flat_map(Observable.of(1, 2, 3))
+        >>> flat_map(Observable.of(1, 2, 3))
 
     Args:
         mapper: A transform function to apply to each element or an
@@ -443,21 +505,23 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
 
 def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    """The flat_mapi operator.
+    """The `flat_mapi` operator.
 
     One of the Following:
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
 
-    1 - source.flat_mapi(lambda x, i: Observable.range(0, x))
+    Example:
+        >>> source.flat_mapi(lambda x, i: Observable.range(0, x))
 
     Or:
     Projects each element of the source observable sequence to the other
     observable sequence and merges the resulting observable sequences
     into one observable sequence.
 
-    1 - source.flat_mapi(Observable.of(1, 2, 3))
+    Example:
+        >>> source.flat_mapi(Observable.of(1, 2, 3))
 
     Args:
         mapper_indexed: [Optional] A transform function to apply to
@@ -496,6 +560,17 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.flatmap import _flat_map_latest
     return _flat_map_latest(mapper)
+
+
+def is_empty() -> Callable[[Observable], Observable]:
+    """Determines whether an observable sequence is empty.
+
+    Returns:
+        An observable sequence containing a single element
+        determining whether the source sequence is empty.
+    """
+    from rx.core.operators.isempty import _is_empty
+    return _is_empty()
 
 
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
@@ -779,7 +854,7 @@ def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
     return _partition(predicate)
 
 
-def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+def partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
     """The indexed partition operator.
 
     Returns two observables which partition the observations of the
@@ -833,6 +908,40 @@ def publish(mapper=None) -> ConnectableObservable:
     return _publish(mapper)
 
 
+def publish_value(initial_value: Any, mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """Returns an observable sequence that is the result of invoking
+    the mapper on a connectable observable sequence that shares a
+    single subscription to the underlying sequence and starts with
+    initial_value.
+
+    This operator is a specialization of Multicast using a
+    BehaviorSubject.
+
+    Examples:
+        >>> res = source.publish_value(42)
+        >>> res = source.publish_value(42, lambda x: x.map(lambda y: y * y))
+
+    Args:
+        initial_value: Initial value received by observers upon
+            subscription.
+        mapper: [Optional] Optional mapper function which can use the
+            multicasted source sequence as many times as needed,
+            without causing multiple subscriptions to the source
+            sequence. Subscribers to the given source will receive
+            immediately receive the initial value, followed by all
+            notifications of the source from the time of the
+            subscription on.
+
+    Returns:
+        An operator function that takes an obserable source and returns
+        an observable sequence that contains the elements of a
+        sequence produced by multicasting the source sequence within a
+        mapper function.
+    """
+    from rx.core.operators.publishvalue import _publish_value
+    return _publish_value(initial_value, mapper)
+
+
 def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     """The reduce operator.
 
@@ -860,6 +969,63 @@ def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable
     """
     from rx.core.operators.reduce import _reduce
     return _reduce(accumulator, seed)
+
+
+def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+    """Repeats the observable sequence a specified number of times.
+    If the repeat count is not specified, the sequence repeats
+    indefinitely.
+
+    Examples:
+        >>> repeated = repeat()
+        >>> repeated = repeat(42)
+    Args:
+        repeat_count: Number of times to repeat the sequence. If not
+        provided, repeats the sequence indefinitely.
+
+    Returns:
+        An operator function that takes an observable sources and
+        returna an observable sequence producing the elements of the
+        given sequence repeatedly.
+    """
+    from rx.core.operators.repeat import _repeat
+    return _repeat(repeat_count)
+
+
+def replay(mapper: Mapper = None, buffer_size: int = None, window: timedelta = None, scheduler: typing.Scheduler = None
+          ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+    """Returns an observable sequence that is the result of invoking the
+    mapper on a connectable observable sequence that shares a single
+    subscription to the underlying sequence replaying notifications
+    subject to a maximum time length for the replay buffer.
+
+    This operator is a specialization of Multicast using a
+    ReplaySubject.
+
+    Examples:
+        >>> res = replay(buffer_size=3)
+        >>> res = replay(buffer_size=3, window=500)
+        >>> res = replay(None, 3, 500)
+        >>> res = replay(lambda x: x.take(6).repeat(), 3, 500)
+
+    Args:
+        mapper: [Optional] Selector function which can use the multicasted
+            source sequence as many times as needed, without causing
+            multiple subscriptions to the source sequence. Subscribers to
+            the given source will receive all the notifications of the
+            source subject to the specified replay buffer trimming policy.
+        buffer_size: [Optional] Maximum element count of the replay
+            buffer.
+        window: [Optional] Maximum time length of the replay buffer.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements of a
+        sequence produced by multicasting the source sequence within a
+        mapper function.
+    """
+    from rx.core.operators.replay import _replay
+    return _replay(mapper, buffer_size, window, scheduler)
 
 
 def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
@@ -905,6 +1071,58 @@ def share() -> Callable[[Observable], Observable]:
     from rx.core.operators.publish import _share
     return _share()
 
+def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+    """Returns the only element of an observable sequence that satisfies the
+    condition in the optional predicate, and reports an exception if there
+    is not exactly one element in the observable sequence.
+
+    Example:
+        >>> res = single()
+        >>> res = single(lambda x: x == 42)
+
+    Args:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+
+    Returns:
+        An observable sequence containing the single element in the
+        observable sequence that satisfies the condition in the predicate.
+    """
+    from rx.core.operators.single import _single
+    return _single(predicate)
+
+
+def single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
+    """Returns the only element of an observable sequence that matches
+    the predicate, or a default value if no such element exists this
+    method reports an exception if there is more than one element in the
+    observable sequence.
+
+    Examples:
+        >>> res = single_or_default()
+        >>> res = single_or_default(lambda x: x == 42)
+        >>> res = single_or_default(lambda x: x == 42, 0)
+        >>> res = single_or_default(None, 0)
+
+    Args:
+        predicate -- [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value -- [Optional] The default value if the index is
+            outside the bounds of the source sequence.
+
+    Returns:
+        An observable Sequence containing the single element in the
+    observable sequence that satisfies the condition in the predicate,
+    or a default value if no such element exists.
+    """
+    from rx.core.operators.singleordefault import _single_or_default
+    return _single_or_default(predicate, default_value)
+
+
+def single_or_default_async(has_default: bool = False, default_value: Any = None):
+    from rx.core.operators.singleordefault import _single_or_default_async
+    return _single_or_default_async(has_default, default_value)
+
 
 def skip(count: int) -> Callable[[Observable], Observable]:
     """The skip operator.
@@ -948,6 +1166,23 @@ def skip_last(count: int) -> Observable:
     from rx.core.operators.skiplast import _skip_last
     return _skip_last(count)
 
+
+def skip_until(other: Observable) -> Callable[[Observable], Observable]:
+    """Returns the values from the source observable sequence only
+    after the other observable sequence produces a value.
+
+    Args:
+        other: The observable sequence that triggers propagation of
+            elements of the source sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the elements of the
+        source sequence starting from the point the other sequence
+        triggered propagation.
+    """
+    from rx.core.operators.skipuntil import _skip_until
+    return _skip_until(other)
 
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
     """The slice operator.
@@ -1097,6 +1332,48 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     from rx.core.operators.takelast import _take_last
     return _take_last(count)
 
+def take_until(other: Observable) -> Callable[[Observable], Observable]:
+    """Returns the values from the source observable sequence until the
+    other observable sequence produces a value.
+
+    Args:
+        other: Observable sequence that terminates propagation of
+            elements of the source sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns as observable sequence containing the elements of the
+        source sequence up to the point the other sequence interrupted
+        further propagation.
+    """
+    from rx.core.operators.takeuntil import _take_until
+    return _take_until(other)
+
+
+def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Scheduler = None
+                         ) -> Callable[[Observable], Observable]:
+    """Takes elements for the specified duration until the specified end
+    time, using the specified scheduler to run timers.
+
+    Examples:
+        >>> res = source.take_until_with_time(dt, [optional scheduler])
+        >>> res = source.take_until_with_time(5000, [optional scheduler])
+
+    Args:
+        end_time: Time to stop taking elements from the source
+            sequence. If this value is less than or equal to
+            `datetime.utcnow()`, the result stream will complete
+            immediately.
+        scheduler -- Scheduler to run the timer on.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the elements taken until
+        the specified end time.
+    """
+    from rx.core.operators.takeuntilwithtime import _take_until_with_time
+    return _take_until_with_time(end_time, scheduler=None)
+
 
 def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
@@ -1130,8 +1407,9 @@ def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observab
     duration.
 
     Args:
-        window_duration -- time to wait before emitting another item
+        window_duration: time to wait before emitting another item
             after emitting the last item.
+
     Returns:
         An operator function that takes an observable source and
         returns an observable that performs the throttle operation.
@@ -1182,6 +1460,45 @@ def timestamp() -> Callable[[Observable], Observable]:
     return _timestamp()
 
 
+def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None
+            ) -> Callable[[Observable], Observable]:
+    """Returns the source observable sequence or the other observable
+    sequence if duetime elapses.
+
+    Examples:
+        >>> res = timeout(5000)
+        >>> res = timeout(datetime(), return_value(42))
+        >>> res = timeout(5000, return_value(42))
+
+    Args:
+        duetime: Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) when a
+            timeout occurs.
+        other: Sequence to return in case of a timeout. If not
+            specified, a timeout error throwing sequence will be used.
+        scheduler:
+
+    Returns:
+        An operator function that takes and observable source and
+        returns the source sequence switching to the other sequence in
+        case of a timeout.
+    """
+    from rx.core.operators.timeout import _timeout
+    return _timeout(duetime, other, scheduler)
+
+
+def to_iterable() -> Callable[[Observable], Observable]:
+    """Creates an iterable from an observable sequence.
+
+    Returns:
+        An operator function that takes an obserable source and
+        returns an observable sequence containing a single element with
+        an iterable containing all the elements of the source sequence.
+    """
+    from rx.core.operators.toiterable import _to_iterable
+    return _to_iterable()
+
+
 def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
@@ -1201,3 +1518,84 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """
     from rx.core.operators.window import _window
     return _window(window_openings, window_closing_mapper)
+
+
+def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or more
+    windows which are produced based on element count information.
+
+    Examples:
+        >>> window_with_count(10)
+        >>> window_with_count(10, 1)
+
+    Args:
+        count: Length of each window.
+        skip: [Optional] Number of elements to skip between creation of
+            consecutive windows. If not specified, defaults to the
+            count.
+
+    Returns:
+        An observable sequence of windows.
+    """
+    from rx.core.operators.windowwithcount import _window_with_count
+    return _window_with_count(count, skip)
+
+
+def zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever all of the
+    observable sequences have produced an element at a corresponding
+    index.
+
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
+
+    Example:
+        >>> res = zip(obs1, obs2, result_mapper=fn)
+
+    Args:
+        args: Observable sources to zip.
+        result_mapper: Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+
+    from rx.core.operators.zip import _zip
+    return _zip(*args, result_mapper=result_mapper)
+
+
+def zip_with_iterable(second, result_mapper):
+    """Merges the specified observable sequence and list into one
+    observable sequence by using the mapper function whenever all of
+    the observable sequences have produced an element at a
+    corresponding index.
+
+    The result mapper must be a function to invoke for each series of
+    elements at corresponding indexes in the sources.
+
+    Example
+        >>> res = zip(xs, [1,2,3], result_mapper=fn)
+
+    Args:
+        second -- Iterable to zip.
+        result_mapper -- Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index
+
+    Returns:
+        An operator function that takes and observable source and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+    from rx.core.operators.zip import _zip_with_iterable
+    return _zip_with_iterable(second, result_mapper)
+
+
+zip_with_list = zip_with_iterable

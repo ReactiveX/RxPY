@@ -1,24 +1,25 @@
-from typing import Any
-from rx.core import ObservableBase, Observable
+from typing import Callable
 
+import rx
+from rx.internal.iterable import Iterable as CoreIterable
+from rx.core import Observable
 
-def repeat_value(value: Any = None, repeat_count: int = None) -> ObservableBase:
-    """Generates an observable sequence that repeats the given element
-    the specified number of times.
+def _repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+    def repeat(source: Observable) -> Observable:
+        """Repeats the observable sequence a specified number of times.
+        If the repeat count is not specified, the sequence repeats
+        indefinitely.
 
-    1 - res = repeat_value(42)
-    2 - res = repeat_value(42, 4)
+        Examples:
+            >>> repeated = source.repeat()
+            >>> repeated = source.repeat(42)
 
-    Keyword arguments:
-    value -- Element to repeat.
-    repeat_count -- [Optional] Number of times to repeat the element.
-        If not specified, repeats indefinitely.
+        Args:
+            source: The observable source to repeat.
 
-    Returns an observable sequence that repeats the given element the
-    specified number of times."""
-
-    if repeat_count == -1:
-        repeat_count = None
-
-    xs = Observable.return_value(value)
-    return xs.repeat(repeat_count)
+        Returns:
+            The observable sequence producing the elements of the given
+            sequence repeatedly.
+        """
+        return rx.defer(lambda _: rx.concat(CoreIterable.repeat(source, repeat_count)))
+    return repeat

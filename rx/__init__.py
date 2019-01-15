@@ -207,7 +207,7 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def from_range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
+def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -226,8 +226,8 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
         An observable sequence that contains a range of sequential
         integral numbers.
     """
-    from .core.observable.range import from_range as from_range_
-    return from_range_(start, stop, step)
+    from .core.observable.range import _range
+    return _range(start, stop, step)
 
 
 def generate(initial_state, condition, iterate, result_mapper) -> Observable:
@@ -253,7 +253,7 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     return _generate(initial_state, condition, iterate, result_mapper)
 
 
-def interval(period, scheduler: typing.Scheduler) -> Observable:
+def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
@@ -321,6 +321,67 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
 just = return_value
 
 
+def repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
+    """Generates an observable sequence that repeats the given element
+    the specified number of times.
+
+    Examples:
+        1 - res = repeat_value(42)
+        2 - res = repeat_value(42, 4)
+
+    Args:
+        value: Element to repeat.
+        repeat_count: [Optional] Number of times to repeat the element.
+            If not specified, repeats indefinitely.
+
+    Returns:
+        An observable sequence that repeats the given element the
+        specified number of times.
+    """
+    from .core.observable.repeat import _repeat_value
+    return _repeat_value(value, repeat_count)
+
+
+def start(func, scheduler=None) -> Observable:
+    """Invokes the specified function asynchronously on the specified
+    scheduler, surfacing the result through an observable sequence.
+
+    Example:
+        >>> res = rx.start(lambda: pprint('hello'))
+        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
+
+    Args:
+        func: Function to run asynchronously.
+        scheduler: [Optional] Scheduler to run the function on. If
+            not specified, defaults to Scheduler.timeout.
+
+    Remarks:
+        The function is called immediately, not during the subscription of
+        the resulting sequence. Multiple subscriptions to the resulting
+        sequence can observe the function's result.
+    Returns:
+        An observable sequence exposing the function's result value,
+        or an exception.
+    """
+    from .core.observable.start import _start
+    return _start(func, scheduler)
+
+
+def start_async(function_async) -> Observable:
+    """Invokes the asynchronous function, surfacing the result through
+    an observable sequence.
+
+    Keyword arguments:
+    function_async -- Asynchronous function which returns a Future to
+        run.
+
+    Returns an observable sequence exposing the function's result value,
+    or an exception.
+    """
+    from .core.observable.startasync import _start_async
+    return _start_async(function_async)
+
+
 def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError
@@ -370,31 +431,6 @@ def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observabl
     return _timer(duetime, period, scheduler)
 
 
-def start(func, scheduler=None) -> Observable:
-    """Invokes the specified function asynchronously on the specified
-    scheduler, surfacing the result through an observable sequence.
-
-    Example:
-        >>> res = rx.start(lambda: pprint('hello'))
-        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
-
-    Args:
-        func: Function to run asynchronously.
-        scheduler: [Optional] Scheduler to run the function on. If
-            not specified, defaults to Scheduler.timeout.
-
-    Remarks:
-        The function is called immediately, not during the subscription of
-        the resulting sequence. Multiple subscriptions to the resulting
-        sequence can observe the function's result.
-    Returns:
-        An observable sequence exposing the function's result value,
-        or an exception.
-    """
-    from .core.observable.start import _start
-    return _start(func, scheduler)
-
-
 def to_async(func: Callable, scheduler=None) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
@@ -437,3 +473,31 @@ def using(resource_factory, observable_factory) -> Observable:
     """
     from .core.observable.using import _using
     return _using(resource_factory, observable_factory)
+
+
+# pylint: disable=redefined-builtin
+def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function whenever all of the
+    observable sequences have produced an element at a corresponding
+    index.
+
+    The last element in the arguments must be a function to invoke for
+    each series of elements at corresponding indexes in the sources.
+
+    Example:
+        >>> res = zip(obs1, obs2, result_mapper=fn)
+
+    Args:
+        args: Observable sources to zip.
+        result_mapper: Mapper function that produces an element
+            whenever all of the observable sequences have produced an
+            element at a corresponding index.
+
+    Returns:
+        An observable sequence containing the result of combining
+        elements of the sources using the specified result mapper
+        function.
+    """
+    from .core.observable.zip import _zip
+    return _zip(*args, result_mapper=result_mapper)

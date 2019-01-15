@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.subjects import Subject
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -35,7 +36,7 @@ class TestMulticast(unittest.TestCase):
         c = [None]
 
         def action(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action)
 
         def action0(scheduler, state):
@@ -68,7 +69,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -97,7 +98,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -126,7 +127,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -160,7 +161,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -194,7 +195,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -220,7 +221,7 @@ class TestMulticast(unittest.TestCase):
         o = scheduler.create_observer()
 
         def action0(scheduler, state):
-            c[0] = xs.multicast(s)
+            c[0] = xs.pipe(ops.multicast(s))
         scheduler.schedule_absolute(50, action0)
 
         def action1(scheduler, state):
@@ -244,7 +245,7 @@ class TestMulticast(unittest.TestCase):
                 return Subject()
             def mapper(ys):
                 return ys
-            return xs.multicast(subject_factory=subject_factory, mapper=mapper)
+            return xs.pipe(ops.multicast(subject_factory=subject_factory, mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390)]
@@ -260,7 +261,7 @@ class TestMulticast(unittest.TestCase):
                 return Subject()
             def mapper(ys):
                 return ys
-            return xs.multicast(subject_factory=subject_factory, mapper=mapper)
+            return xs.pipe(ops.multicast(subject_factory=subject_factory, mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -276,7 +277,7 @@ class TestMulticast(unittest.TestCase):
                 return Subject()
             def mapper(ys):
                 return ys
-            return xs.multicast(subject_factory=subject_factory, mapper=mapper)
+            return xs.pipe(ops.multicast(subject_factory=subject_factory, mapper=mapper))
 
         results = scheduler.start(create)
 
@@ -291,8 +292,8 @@ class TestMulticast(unittest.TestCase):
             def subject_factory(scheduler):
                 return Subject()
             def mapper(ys):
-                return ys.zip(ys, result_mapper=lambda a, b: a+b)
-            return xs.multicast(subject_factory=subject_factory, mapper=mapper)
+                return ys.pipe(ops.zip(ys, result_mapper=lambda a, b: a+b))
+            return xs.pipe(ops.multicast(subject_factory=subject_factory, mapper=mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 6), on_next(240, 8), on_next(270, 10), on_next(330, 12), on_next(340, 14), on_completed(390)]

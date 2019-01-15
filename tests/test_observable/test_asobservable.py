@@ -1,6 +1,7 @@
 import unittest
 
-from rx.core import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -14,14 +15,14 @@ created = ReactiveTest.created
 
 class TestAsObservable(unittest.TestCase):
     def test_as_observable_hides(self):
-        some_observable = Observable.empty()
-        assert(some_observable.as_observable() != some_observable)
+        some_observable = rx.empty()
+        assert some_observable.pipe(ops.as_observable()) != some_observable
 
     def test_as_observable_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().as_observable()
+            return rx.never().pipe(ops.as_observable())
         results = scheduler.start(create)
 
         assert results.messages == []
@@ -31,7 +32,7 @@ class TestAsObservable(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.as_observable()
+            return xs.pipe(ops.as_observable())
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
@@ -43,7 +44,7 @@ class TestAsObservable(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
         def create():
-            return xs.as_observable()
+            return xs.pipe(ops.as_observable())
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
@@ -54,18 +55,18 @@ class TestAsObservable(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
-            return xs.as_observable()
+            return xs.pipe(ops.as_observable())
 
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
-        assert(results[0].value.kind == 'N' and results[0].value.value == 2 and results[0].time == 220)
-        assert(results[1].value.kind == 'C' and results[1].time == 250)
+        assert results[0].value.kind == 'N' and results[0].value.value == 2 and results[0].time == 220
+        assert results[1].value.kind == 'C' and results[1].time == 250
 
     def test_as_observable_isnoteager(self):
         scheduler = TestScheduler()
         subscribed = [False]
 
-        def subscribe(obs):
+        def subscribe(obs, scheduler=None):
             subscribed[0] = True
             disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe(obs)
 
@@ -73,14 +74,12 @@ class TestAsObservable(unittest.TestCase):
                 return disp.dispose()
             return func
 
-        xs = Observable.create(subscribe)
-        xs.as_observable()
-        assert(not subscribed[0])
+        xs = rx.create(subscribe)
+        xs.pipe(ops.as_observable())
+        assert not subscribed[0]
 
         def create():
-            return xs.as_observable()
+            return xs.pipe(ops.as_observable())
         scheduler.start(create)
 
-        assert(subscribed[0])
-
-
+        assert subscribed[0]

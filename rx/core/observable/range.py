@@ -4,7 +4,7 @@ from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def from_range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
+def _range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.

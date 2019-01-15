@@ -26,5 +26,5 @@ def _combine_latest(other: Union[Observable, Iterable[Observable]],
         else:
             sources += other
 
-        return rx.combine_latest(sources, mapper)
+        return rx.combine_latest(sources, mapper=mapper)
     return combine_latest

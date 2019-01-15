@@ -1,7 +1,7 @@
 from typing import Union, Callable
 from datetime import datetime, timedelta
 
-from rx import operators as _
+from rx import operators as ops
 from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
@@ -90,9 +90,9 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
 
                     mad.disposable = _scheduler.schedule_relative(duetime, action)
         subscription = source.pipe(
-            _.materialize(),
-            _.timestamp()
-        ).subscribe_(on_next, scheduler=_scheduler)
+            ops.materialize(),
+            ops.timestamp()
+        ).subscribe_(on_next, scheduler=scheduler_)
 
         return CompositeDisposable(subscription, cancelable)
     return AnonymousObservable(subscribe)
