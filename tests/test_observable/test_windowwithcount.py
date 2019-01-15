@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,8 +18,8 @@ class TestWindowWithCount(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(100, 1), on_next(210, 2), on_next(240, 3), on_next(280, 4), on_next(320, 5), on_next(350, 6), on_next(380, 7), on_next(420, 8), on_next(470, 9), on_completed(600))
         def create():
             def proj(w, i):
-                return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window_with_count(3, 2).mapi(proj).merge_all()
+                return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
+            return xs.pipe(ops.window_with_count(3, 2), ops.mapi(proj), ops.merge_all())
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6"), on_next(380, "2 7"), on_next(420, "2 8"), on_next(420, "3 8"), on_next(470, "3 9"), on_completed(600)]
@@ -30,8 +31,8 @@ class TestWindowWithCount(unittest.TestCase):
 
         def create():
             def proj(w, i):
-                return w.map(lambda x: str(i) + ' ' + str(x))
-            return xs.window_with_count(3, 2).mapi(proj).merge_all()
+                return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
+            return xs.pipe(ops.window_with_count(3, 2), ops.mapi(proj), ops.merge_all())
 
         results = scheduler.start(create, disposed=370)
         assert results.messages == [on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(280, "1 4"), on_next(320, "1 5"), on_next(350, "1 6"), on_next(350, "2 6")]
@@ -46,8 +47,8 @@ class TestWindowWithCount(unittest.TestCase):
             def mapper(w, i):
                 def mapping(x):
                     return "%s %s" % (i, x)
-                return w.map(mapping)
-            return xs.window_with_count(3, 2).mapi(mapper).merge_all()
+                return w.pipe(ops.map(mapping))
+            return xs.pipe(ops.window_with_count(3, 2), ops.mapi(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 

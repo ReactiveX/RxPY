@@ -75,6 +75,49 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
     from rx.core.operators.average import _average
     return _average(key_mapper)
 
+
+def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    Args:
+        buffer_openings: Observable sequence whose elements denote the
+            creation of windows.
+        buffer_closing_mapper: [optional] A function invoked to define
+            the closing of each produced window. If a closing mapper
+            function is specified for the first parameter, this
+            parameter is ignored.
+
+    Returns:
+        A function that takes an observable source and retuerns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer
+    return _buffer(buffer_openings, buffer_closing_mapper)
+
+
+def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or more
+    buffers which are produced based on element count information.
+
+    Examples:
+        >>> res = buffer_with_count(10)(xs)
+        >>> res = buffer_with_count(10, 1)(xs)
+
+    Args:
+        count: Length of each buffer.
+        skip: [Optional] Number of elements to skip between
+            creation of consecutive buffers. If not provided, defaults to
+            the count.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of buffers.
+    """
+    from rx.core.operators.buffer import _buffer_with_count
+    return _buffer_with_count(count, skip)
+
+
 def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -1355,6 +1398,18 @@ def timestamp() -> Callable[[Observable], Observable]:
     return _timestamp()
 
 
+def to_iterable() -> Callable[[Observable], Observable]:
+    """Creates an iterable from an observable sequence.
+
+    Returns:
+        An operator function that takes an obserable source and
+        returns an observable sequence containing a single element with
+        an iterable containing all the elements of the source sequence.
+    """
+    from rx.core.operators.toiterable import _to_iterable
+    return _to_iterable()
+
+
 def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
@@ -1374,6 +1429,26 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """
     from rx.core.operators.window import _window
     return _window(window_openings, window_closing_mapper)
+
+def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or more
+    windows which are produced based on element count information.
+
+    Examples:
+        >>> window_with_count(10)
+        >>> window_with_count(10, 1)
+
+    Args:
+        count: Length of each window.
+        skip: [Optional] Number of elements to skip between creation of
+            consecutive windows. If not specified, defaults to the
+            count.
+
+    Returns:
+        An observable sequence of windows.
+    """
+    from rx.core.operators.windowwithcount import _window_with_count
+    return _window_with_count(count, skip)
 
 
 def zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:

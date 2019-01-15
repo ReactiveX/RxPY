@@ -1,24 +1,28 @@
+from typing import Callable
 from rx.core import Observable, AnonymousObservable
 
 
-def to_iterable(source: Observable) -> Observable:
-    """Creates an iterable from an observable sequence.
+def _to_iterable() -> Callable[[Observable], Observable]:
+    def to_iterable(source: Observable) -> Observable:
+        """Creates an iterable from an observable sequence.
 
-    Returns an observable sequence containing a single element with an iterable
-    containing all the elements of the source sequence.
-    """
+        Returns:
+            An observable sequence containing a single element with an
+            iterable containing all the elements of the source
+            sequence.
+        """
+        def subscribe(observer, scheduler=None):
+            nonlocal source
 
-    def subscribe(observer, scheduler=None):
-        nonlocal source
+            queue = []
 
-        queue = []
+            def on_next(item):
+                queue.append(item)
 
-        def on_next(item):
-            queue.append(item)
+            def on_completed():
+                observer.on_next(iter(queue))
+                observer.on_completed()
 
-        def on_completed():
-            observer.on_next(iter(queue))
-            observer.on_completed()
-
-        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+        return AnonymousObservable(subscribe)
+    return to_iterable

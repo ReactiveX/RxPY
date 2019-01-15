@@ -10,18 +10,22 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def _window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
-    1 - xs.window_with_count(10)
-    2 - xs.window_with_count(10, 1)
+    Examples:
+        >>> window_with_count(10)
+        >>> window_with_count(10, 1)
 
-    count -- Length of each window.
-    skip -- [Optional] Number of elements to skip between creation of
-        consecutive windows. If not specified, defaults to the count.
+    Args:
+        count: Length of each window.
+        skip: [Optional] Number of elements to skip between creation of
+            consecutive windows. If not specified, defaults to the
+            count.
 
-    Returns an observable sequence of windows.
+    Returns:
+        An observable sequence of windows.
     """
 
     if count <= 0:
@@ -33,7 +37,7 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     if skip <= 0:
         raise ArgumentOutOfRangeException()
 
-    def partial(source: Observable) -> Observable:
+    def window_with_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             m = SingleAssignmentDisposable()
             refCountDisposable = RefCountDisposable(m)
@@ -73,4 +77,4 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
             m.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
             return refCountDisposable
         return AnonymousObservable(subscribe)
-    return partial
+    return window_with_count
