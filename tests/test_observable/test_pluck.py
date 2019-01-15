@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +28,7 @@ class TestPluck(unittest.TestCase):
             on_completed(420),
             on_error(430, Exception('ex'))
         )
-        results = scheduler.start(create=lambda: xs.pluck('prop'))
+        results = scheduler.start(create=lambda: xs.pipe(ops.pluck('prop')))
 
         assert results.messages == [
             on_next(210, 2),
@@ -59,7 +60,7 @@ class TestPluckAttr(unittest.TestCase):
             on_completed(420),
             on_error(430, Exception('ex'))
         )
-        results = scheduler.start(create=lambda: xs.pluck_attr('prop'))
+        results = scheduler.start(create=lambda: xs.pipe(ops.pluck_attr('prop')))
 
         assert results.messages == [
             on_next(210, 2),
