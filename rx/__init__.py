@@ -321,6 +321,67 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
 just = return_value
 
 
+def repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
+    """Generates an observable sequence that repeats the given element
+    the specified number of times.
+
+    Examples:
+        1 - res = repeat_value(42)
+        2 - res = repeat_value(42, 4)
+
+    Args:
+        value: Element to repeat.
+        repeat_count: [Optional] Number of times to repeat the element.
+            If not specified, repeats indefinitely.
+
+    Returns:
+        An observable sequence that repeats the given element the
+        specified number of times.
+    """
+    from .core.observable.repeat import _repeat_value
+    return _repeat_value(value, repeat_count)
+
+
+def start(func, scheduler=None) -> Observable:
+    """Invokes the specified function asynchronously on the specified
+    scheduler, surfacing the result through an observable sequence.
+
+    Example:
+        >>> res = rx.start(lambda: pprint('hello'))
+        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
+
+    Args:
+        func: Function to run asynchronously.
+        scheduler: [Optional] Scheduler to run the function on. If
+            not specified, defaults to Scheduler.timeout.
+
+    Remarks:
+        The function is called immediately, not during the subscription of
+        the resulting sequence. Multiple subscriptions to the resulting
+        sequence can observe the function's result.
+    Returns:
+        An observable sequence exposing the function's result value,
+        or an exception.
+    """
+    from .core.observable.start import _start
+    return _start(func, scheduler)
+
+
+def start_async(function_async) -> Observable:
+    """Invokes the asynchronous function, surfacing the result through
+    an observable sequence.
+
+    Keyword arguments:
+    function_async -- Asynchronous function which returns a Future to
+        run.
+
+    Returns an observable sequence exposing the function's result value,
+    or an exception.
+    """
+    from .core.observable.startasync import _start_async
+    return _start_async(function_async)
+
+
 def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError
@@ -368,46 +429,6 @@ def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observabl
     """
     from .core.observable.timer import _timer
     return _timer(duetime, period, scheduler)
-
-
-def start(func, scheduler=None) -> Observable:
-    """Invokes the specified function asynchronously on the specified
-    scheduler, surfacing the result through an observable sequence.
-
-    Example:
-        >>> res = rx.start(lambda: pprint('hello'))
-        >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
-
-    Args:
-        func: Function to run asynchronously.
-        scheduler: [Optional] Scheduler to run the function on. If
-            not specified, defaults to Scheduler.timeout.
-
-    Remarks:
-        The function is called immediately, not during the subscription of
-        the resulting sequence. Multiple subscriptions to the resulting
-        sequence can observe the function's result.
-    Returns:
-        An observable sequence exposing the function's result value,
-        or an exception.
-    """
-    from .core.observable.start import _start
-    return _start(func, scheduler)
-
-
-def start_async(function_async) -> Observable:
-    """Invokes the asynchronous function, surfacing the result through
-    an observable sequence.
-
-    Keyword arguments:
-    function_async -- Asynchronous function which returns a Future to
-        run.
-
-    Returns an observable sequence exposing the function's result value,
-    or an exception.
-    """
-    from .core.observable.startasync import _start_async
-    return _start_async(function_async)
 
 
 def to_async(func: Callable, scheduler=None) -> Callable:
