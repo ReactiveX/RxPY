@@ -1,10 +1,9 @@
-from rx.core import Observable
+from typing import Callable
+from rx import operators as ops
+from rx.core import Observable, pipe
 
-from .some import some
-from .map import map
 
-
-def is_empty(source: Observable) -> Observable:
+def _is_empty() -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence is empty.
 
     Returns:
@@ -12,7 +11,7 @@ def is_empty(source: Observable) -> Observable:
         determining whether the source sequence is empty.
     """
 
-    return source.pipe(
-        some(),
-        map(lambda b: not b)
+    return pipe(
+        ops.some(),
+        ops.map(lambda b: not b)
     )
