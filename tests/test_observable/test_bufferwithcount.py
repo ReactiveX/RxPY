@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +28,7 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.buffer_with_count(3, 2).map(lambda x: str(x))
+            return xs.pipe(ops.buffer_with_count(3, 2), ops.map(lambda x: str(x)))
 
         results = scheduler.start(create)
 
@@ -54,7 +55,7 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.buffer_with_count(3, 2).map(lambda x: str(x))
+            return xs.pipe(ops.buffer_with_count(3, 2), ops.map(lambda x: str(x)))
 
         results = scheduler.start(create, disposed=370)
 

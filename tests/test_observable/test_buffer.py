@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -40,7 +41,7 @@ class TestBuffer(unittest.TestCase):
         )
 
         def create():
-            return xs.buffer(ys)
+            return xs.pipe(ops.buffer(ys))
 
         res = scheduler.start(create=create)
 
@@ -84,7 +85,7 @@ class TestBuffer(unittest.TestCase):
         )
 
         def create():
-            return xs.buffer(ys)
+            return xs.pipe(ops.buffer(ys))
 
         res = scheduler.start(create=create)
 
@@ -125,7 +126,7 @@ class TestBuffer(unittest.TestCase):
         )
 
         def create():
-            return xs.buffer(ys)
+            return xs.pipe(ops.buffer(ys))
 
         res = scheduler.start(create=create)
 
@@ -168,7 +169,7 @@ class TestBuffer(unittest.TestCase):
         )
 
         def create():
-            return xs.buffer(ys)
+            return xs.pipe(ops.buffer(ys))
         res = scheduler.start(create=create)
 
         assert [
