@@ -1,6 +1,8 @@
 import unittest
 from datetime import datetime
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +29,7 @@ class TestTimeout(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
 
         def create():
-            return xs.timeout(500, None)
+            return xs.pipe(ops.timeout(500, None))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400)]
@@ -37,7 +39,7 @@ class TestTimeout(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400))
 
         def create():
-            return xs.timeout(205)
+            return xs.pipe(ops.timeout(205))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_next(230, 3), on_next(260, 4), on_next(300, 5), on_next(350, 6), on_completed(400)]
@@ -48,7 +50,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(50, -1), on_next(200, -2), on_next(310, -3), on_completed(320))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(350, -1), on_next(500, -2), on_next(610, -3), on_completed(620)]
@@ -61,7 +63,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(50, -1), on_next(200, -2), on_next(310, -3), on_completed(320))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -75,7 +77,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -89,7 +91,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -103,7 +105,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -117,7 +119,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -132,7 +134,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -146,7 +148,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(50, -1), on_next(200, -2), on_next(310, -3), on_completed(320))
 
         def create():
-            return xs.timeout(100, ys)
+            return xs.pipe(ops.timeout(100, ys))
 
         results = scheduler.start(create)
 
@@ -160,7 +162,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
+            return xs.pipe(ops.timeout(datetime.utcfromtimestamp(400/1000.0), ys))
 
         results = scheduler.start(create)
 
@@ -174,7 +176,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
+            return xs.pipe(ops.timeout(datetime.utcfromtimestamp(400/1000.0), ys))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(310, 1), on_completed(390)]
@@ -188,7 +190,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
+            return xs.pipe(ops.timeout(datetime.utcfromtimestamp(400/1000.0), ys))
 
         results = scheduler.start(create)
 
@@ -202,7 +204,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
+            return xs.pipe(ops.timeout(datetime.utcfromtimestamp(400/1000.0), ys))
 
         results = scheduler.start(create)
 
@@ -216,7 +218,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout(datetime.utcfromtimestamp(400/1000.0), ys)
+            return xs.pipe(ops.timeout(datetime.utcfromtimestamp(400/1000.0), ys))
 
         results = scheduler.start(create)
 

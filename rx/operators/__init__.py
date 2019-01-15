@@ -1426,6 +1426,33 @@ def timestamp() -> Callable[[Observable], Observable]:
     return _timestamp()
 
 
+def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None
+            ) -> Callable[[Observable], Observable]:
+    """Returns the source observable sequence or the other observable
+    sequence if duetime elapses.
+
+    Examples:
+        >>> res = timeout(5000)
+        >>> res = timeout(datetime(), return_value(42))
+        >>> res = timeout(5000, return_value(42))
+
+    Args:
+        duetime: Absolute (specified as a datetime object) or relative
+            time (specified as an integer denoting milliseconds) when a
+            timeout occurs.
+        other: Sequence to return in case of a timeout. If not
+            specified, a timeout error throwing sequence will be used.
+        scheduler:
+
+    Returns:
+        An operator function that takes and observable source and
+        returns the source sequence switching to the other sequence in
+        case of a timeout.
+    """
+    from rx.core.operators.timeout import _timeout
+    return _timeout(duetime, other, scheduler)
+
+
 def to_iterable() -> Callable[[Observable], Observable]:
     """Creates an iterable from an observable sequence.
 
