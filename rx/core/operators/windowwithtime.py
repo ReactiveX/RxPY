@@ -8,7 +8,7 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefC
 from rx.subjects import Subject
 
 
-def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+def _window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
     if timeshift is None:
         timeshift = timespan
 
@@ -17,7 +17,7 @@ def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observa
     if not isinstance(timeshift, timedelta):
         timeshift = timedelta(milliseconds=timeshift)
 
-    def partial(source: Observable) -> Observable:
+    def window_with_time(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             scheduler = scheduler or timeout_scheduler
 
@@ -92,4 +92,4 @@ def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observa
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
             return ref_count_disposable
         return AnonymousObservable(subscribe)
-    return partial
+    return window_with_time
