@@ -1,7 +1,7 @@
 import unittest
 import pytest
 
-from rx.chained import rx
+import rx
 from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
