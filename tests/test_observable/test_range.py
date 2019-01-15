@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,7 +18,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(0, 0)
+            return rx.range(0, 0)
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(200)]
@@ -26,7 +27,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(0, 1)
+            return rx.range(0, 1)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(200, 0), on_completed(200)]
@@ -35,7 +36,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(10, 15)
+            return rx.range(10, 15)
 
         results = scheduler.start(create)
 
@@ -50,16 +51,16 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(-10, 5)
+            return rx.range(-10, 5)
 
         results = scheduler.start(create, disposed=200)
         assert results.messages == []
 
     def test_range_double_subscribe(self):
         scheduler = TestScheduler()
-        obs = Observable.range(1, 4)
+        obs = rx.range(1, 4)
 
-        results = scheduler.start(lambda: obs.concat(obs))
+        results = scheduler.start(lambda: obs.pipe(ops.concat(obs)))
         assert results.messages == [on_next(200, 1), on_next(200, 2),
                                     on_next(200, 3), on_next(200, 1),
                                     on_next(200, 2), on_next(200, 3),
@@ -69,7 +70,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(5)
+            return rx.range(5)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(200, 0),
@@ -83,7 +84,7 @@ class TestRange(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.range(0, 10, 2)
+            return rx.range(0, 10, 2)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(200, 0),
