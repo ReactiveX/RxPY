@@ -207,7 +207,7 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def from_range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
+def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -226,8 +226,8 @@ def from_range(start: int, stop: int = None, step: int = None, scheduler: typing
         An observable sequence that contains a range of sequential
         integral numbers.
     """
-    from .core.observable.range import from_range as from_range_
-    return from_range_(start, stop, step)
+    from .core.observable.range import _range
+    return _range(start, stop, step)
 
 
 def generate(initial_state, condition, iterate, result_mapper) -> Observable:
