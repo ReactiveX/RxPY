@@ -53,4 +53,3 @@ class TestIsEmpty(unittest.TestCase):
         res = scheduler.start(create=create).messages
         assert res == []
         assert xs.subscriptions == [subscribe(200, 1000)]
-
