@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -38,7 +39,7 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish_value(1979)
+            ys[0] = xs.pipe(ops.publish_value(1979))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -111,7 +112,7 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish_value(1979)
+            ys[0] = xs.pipe(ops.publish_value(1979))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -173,7 +174,7 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish_value(1979)
+            ys[0] = xs.pipe(ops.publish_value(1979))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -237,7 +238,7 @@ class TestPublishValue(unittest.TestCase):
         results = scheduler.create_observer()
 
         def action0(scheduler, state):
-            ys[0] = xs.publish_value(1979)
+            ys[0] = xs.pipe(ops.publish_value(1979))
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
@@ -282,8 +283,8 @@ class TestPublishValue(unittest.TestCase):
             subscribe(650, 800)]
 
     def test_publish_with_initial_value_multiple_connections(self):
-        xs = Observable.never()
-        ys = xs.publish_value(1979)
+        xs = rx.never()
+        ys = xs.pipe(ops.publish_value(1979))
         connection1 = ys.connect()
         connection2 = ys.connect()
         assert(connection1 == connection2)
@@ -312,8 +313,8 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, mapper)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+            return xs.pipe(ops.publish_value(1979, mapper))
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -353,8 +354,8 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, mapper)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+            return xs.pipe(ops.publish_value(1979, mapper))
 
         results = scheduler.start(create)
 
@@ -394,8 +395,8 @@ class TestPublishValue(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.zip(_xs.skip(1), result_mapper=lambda prev, cur: cur + prev)
-            return xs.publish_value(1979, mapper)
+                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+            return xs.pipe(ops.publish_value(1979, mapper))
 
         results = scheduler.start(create, disposed=470)
         assert results.messages == [
