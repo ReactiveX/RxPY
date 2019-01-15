@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -52,7 +53,10 @@ class TestGroupBy(unittest.TestCase):
                 key_invoked[0] += 1
                 return x.lower().strip()
 
-            return xs.group_by(key_mapper, lambda x: x).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, lambda x: x),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -98,7 +102,10 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]  # Yes, this is reverse string in Python
 
-            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, element_mapper),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -146,7 +153,10 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, element_mapper),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory)
 
@@ -194,7 +204,10 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, element_mapper),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory, disposed=355)
 
@@ -244,7 +257,10 @@ class TestGroupBy(unittest.TestCase):
                 ele_invoked[0] += 1
                 return x[::-1]
 
-            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, element_mapper),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -294,7 +310,10 @@ class TestGroupBy(unittest.TestCase):
                     raise Exception(ex)
                 return x[::-1]
 
-            return xs.group_by(key_mapper, element_mapper).map(lambda g: g.key)
+            return xs.pipe(
+                    ops.group_by(key_mapper, element_mapper),
+                    ops.map(lambda g: g.key),
+                    )
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -338,7 +357,9 @@ class TestGroupBy(unittest.TestCase):
         }
 
         def action1(scheduler, state):
-            c["outer"] = xs.group_by(lambda x: x.lower().strip(), lambda x: x[::-1])
+            c["outer"] = xs.pipe(
+                    ops.group_by(lambda x: x.lower().strip(), lambda x: x[::-1]),
+                    )
 
         scheduler.schedule_absolute(created, action1)
 
@@ -414,10 +435,12 @@ class TestGroupBy(unittest.TestCase):
         }
 
         def action1(scheduler, state):
-            c["outer"] = xs.group_by(
-                lambda x: x.lower().strip(),
-                lambda x: x[::-1]
-            )
+            c["outer"] = xs.pipe(
+                    ops.group_by(
+                            lambda x: x.lower().strip(),
+                            lambda x: x[::-1],
+                            ))
+
             return c["outer"]
         scheduler.schedule_absolute(created, action1)
 
@@ -494,10 +517,12 @@ class TestGroupBy(unittest.TestCase):
         }
 
         def action1(scheduler, state):
-            c["outer"] = xs.group_by(
-                lambda x: x.lower().strip(),
-                lambda x: x[::-1]
-            )
+            c["outer"] = xs.pipe(
+                    ops.group_by(
+                            lambda x: x.lower().strip(),
+                            lambda x: x[::-1],
+                            ))
+
             return c["outer"]
         scheduler.schedule_absolute(created, action1)
 
@@ -547,10 +572,12 @@ class TestGroupBy(unittest.TestCase):
         results = [None]
 
         def action1(scheduler, state):
-            xs[0] = Observable.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
-                              .group_by(lambda s: s[0]) \
-                              .map(lambda xs: xs.to_iterable().map(list)) \
-                              .merge_all()
+            xs[0] = rx.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
+                .pipe(ops.group_by(lambda s: s[0]),
+                      ops.map(lambda xs: xs.to_iterable().pipe(ops.map(list))),
+                      ops.merge_all(),
+                      )
+
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
