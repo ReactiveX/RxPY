@@ -883,6 +883,27 @@ def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable
     return _reduce(accumulator, seed)
 
 
+def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+    """Repeats the observable sequence a specified number of times.
+    If the repeat count is not specified, the sequence repeats
+    indefinitely.
+
+    Examples:
+        >>> repeated = repeat()
+        >>> repeated = repeat(42)
+    Args:
+        repeat_count: Number of times to repeat the sequence. If not
+        provided, repeats the sequence indefinitely.
+
+    Returns:
+        An operator function that takes an observable sources and
+        returna an observable sequence producing the elements of the
+        given sequence repeatedly.
+    """
+    from rx.core.operators.repeat import _repeat
+    return _repeat(repeat_count)
+
+
 def replay(mapper: Mapper = None, buffer_size: int = None, window: timedelta = None, scheduler: typing.Scheduler = None
           ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Returns an observable sequence that is the result of invoking the
