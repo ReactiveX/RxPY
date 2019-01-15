@@ -562,6 +562,17 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     return _flat_map_latest(mapper)
 
 
+def is_empty() -> Callable[[Observable], Observable]:
+    """Determines whether an observable sequence is empty.
+
+    Returns:
+        An observable sequence containing a single element
+        determining whether the source sequence is empty.
+    """
+    from rx.core.operators.isempty import _is_empty
+    return _is_empty()
+
+
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     """The last operator.
 
@@ -1429,6 +1440,7 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """
     from rx.core.operators.window import _window
     return _window(window_openings, window_closing_mapper)
+
 
 def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
