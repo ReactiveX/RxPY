@@ -253,6 +253,32 @@ def generate(initial_state, condition, iterate, result_mapper) -> Observable:
     return _generate(initial_state, condition, iterate, result_mapper)
 
 
+def if_then(condition: Callable[[], bool], then_source: Observable,
+            else_source: Observable = None) -> Observable:
+    """Determines whether an observable collection contains values.
+
+    Examples:
+        >>> res = rx.if_then(condition, obs1)
+        >>> res = rx.if_then(condition, obs1, obs2)
+
+    Args:
+        condition: The condition which determines if the then_source or
+            else_source will be run.
+        then_source: The observable sequence or Promise that
+            will be run if the condition function returns true.
+        else_source: [Optional] The observable sequence or
+            Promise that will be run if the condition function returns
+            False. If this is not provided, it defaults to
+            rx.Observable.empty
+
+    Returns:
+        An observable sequence which is either the then_source or
+        else_source.
+    """
+    from .core.observable.ifthen import _if_then
+    return _if_then(condition, then_source, else_source)
+
+
 def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
