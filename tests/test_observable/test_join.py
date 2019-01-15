@@ -1,7 +1,8 @@
 import unittest
 from datetime import timedelta
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -67,11 +68,11 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.join(ys,
-                        lambda x: Observable.timer(x.interval),
-                        lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                        lambda x: rx.timer(x.interval),
+                        lambda y: rx.timer(y.interval),
                         lambda x, y: "%s%s" % (x.value, y.value)
-            )
+            ))
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -126,11 +127,11 @@ class TestJoin(unittest.TestCase):
             on_completed(990))
 
         def create():
-            return xs.join(ys,
-                        lambda x: Observable.timer(x.interval),
-                        lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                        lambda x: rx.timer(x.interval),
+                        lambda y: rx.timer(y.interval),
                         lambda x, y: "%s%s" % (x.value, y.value)
-            )
+            ))
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -184,11 +185,12 @@ class TestJoin(unittest.TestCase):
              on_completed(800))
 
          def create():
-             return xs.join(ys,
-                            lambda x: Observable.timer(x.interval).filter(lambda _: False),
-                            lambda y: Observable.timer(y.interval).filter(lambda _: False),
+             return xs.pipe(ops.join(ys,
+                            lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
+                            lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
                             lambda x, y: "%s%s" % (x.value, y.value)
-             )
+             ))
+
          results = scheduler.start(create=create)
          assert results.messages == [
              on_next(215, "0hat"),
@@ -241,11 +243,12 @@ class TestJoin(unittest.TestCase):
             on_completed(980))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -298,11 +301,12 @@ class TestJoin(unittest.TestCase):
             on_completed(900))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -354,11 +358,12 @@ class TestJoin(unittest.TestCase):
         on_completed(900))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -411,11 +416,12 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create, disposed=713)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -455,11 +461,12 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create, disposed=713)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -497,11 +504,12 @@ class TestJoin(unittest.TestCase):
             on_error(722, ex))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -550,12 +558,13 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval).flat_map(
-                    Observable.throw(ex) if x.value == 6 else Observable.empty()),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval).pipe(
+                        ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(215, "0hat"),
@@ -607,12 +616,13 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval).flat_map(
-                    Observable.throw(ex) if y.value == "tin" else Observable.empty()),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval).pipe(
+                    ops.flat_map(rx.throw(ex) if y.value == "tin" else rx.empty())),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -666,13 +676,14 @@ class TestJoin(unittest.TestCase):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
-                    return Observable.empty()
+                    return rx.empty()
 
-            return xs.join(ys,
+            return xs.pipe(ops.join(ys,
                 left_duration_mapper,
-                lambda y: Observable.timer(y.interval),
+                lambda y: rx.timer(y.interval),
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(210, ex)]
@@ -710,13 +721,14 @@ class TestJoin(unittest.TestCase):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
-                    return Observable.empty()
+                    return rx.empty()
 
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
                 right_duration_mapper,
                 lambda x, y: str(x.value) + y.value
-            )
+            ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(215, ex)]
@@ -756,11 +768,12 @@ class TestJoin(unittest.TestCase):
                 else:
                     return str(x.value) + y.value
 
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 result_mapper,
-                )
+                ))
+
         results = scheduler.start(create=create)
         assert results.messages == [on_error(215, ex)]
 
@@ -799,11 +812,12 @@ class TestJoin(unittest.TestCase):
                 else:
                     return str(x.value) + y.value
 
-            return xs.join(ys,
-                lambda x: Observable.timer(x.interval),
-                lambda y: Observable.timer(y.interval),
+            return xs.pipe(ops.join(ys,
+                lambda x: rx.timer(x.interval),
+                lambda y: rx.timer(y.interval),
                 result_mapper,
-                )
+                ))
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(215, ex)]
