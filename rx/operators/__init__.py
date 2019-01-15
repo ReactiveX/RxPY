@@ -1133,6 +1133,23 @@ def skip_last(count: int) -> Observable:
     return _skip_last(count)
 
 
+def skip_until(other: Observable) -> Callable[[Observable], Observable]:
+    """Returns the values from the source observable sequence only
+    after the other observable sequence produces a value.
+
+    Args:
+        other: The observable sequence that triggers propagation of
+            elements of the source sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the elements of the
+        source sequence starting from the point the other sequence
+        triggered propagation.
+    """
+    from rx.core.operators.skipuntil import _skip_until
+    return _skip_until(other)
+
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
     """The slice operator.
 
