@@ -1576,6 +1576,29 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
+def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
+                    ) -> Callable[[Observable], Observable]:
+    """The `with_latest_from` operator.
+
+    Merges the specified observable sequences into one observable
+    sequence by using the mapper function only when the first
+    observable sequence produces an element. The observables can be
+    passed either as seperate arguments or as a list.
+
+    Examples:
+        >>> op = with_latest_from(obs1, lambda o1: o1)
+        >>> op = with_latest_from([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the result of
+        combining elements of the sources using the specified result
+        mapper function.
+    """
+    from rx.core.operators.withlatestfrom import _with_latest_from
+    return _with_latest_from(*args, mapper=mapper)
+
+
 def zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequences into one observable
     sequence by using the mapper function whenever all of the
