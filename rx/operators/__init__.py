@@ -1063,6 +1063,25 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: timedelta = N
     return _replay(mapper, buffer_size, window, scheduler)
 
 
+def sample(interval=None, sampler=None) -> Callable[[Observable], Observable]:
+    """Samples the observable sequence at each interval.
+
+    Examples:
+        >>> res = sample(sample_observable) # Sampler tick sequence
+        >>> res = ample(5000) # 5 seconds
+
+    Args:
+        interval: Interval at which to sample (specified as an integer
+            denoting milliseconds).
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a sampled observable sequence.
+    """
+    from rx.core.operators.sample import _sample
+    return _sample(interval, sampler)
+
+
 def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
     """The scan operator.
 
