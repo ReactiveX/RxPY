@@ -878,6 +878,41 @@ def partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], Li
     return _partitioni(predicate_indexed)
 
 
+def pluck(key: Any) -> Callable[[Observable], Observable]:
+    """Retrieves the value of a specified key using dict-like access (as in
+    element[key]) from all elements in the Observable sequence.
+
+    To pluck an attribute of each element, use pluck_attr.
+
+    Args:
+        key: The key to pluck.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a new observable sequence of key values.
+    """
+    from rx.core.operators.pluck import _pluck
+    return _pluck(key)
+
+
+def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
+    """Retrieves the value of a specified property (using getattr) from
+    all elements in the Observable sequence.
+
+    To pluck values using dict-like access (as in element[key]) on each
+    element, use pluck.
+
+    Args:
+        property: The property to pluck.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a new observable sequence of property values.
+    """
+    from rx.core.operators.pluck import _pluck_attr
+    return _pluck_attr(prop)
+
+
 def publish(mapper=None) -> ConnectableObservable:
     """The `publish` operator.
 
