@@ -475,6 +475,25 @@ def using(resource_factory, observable_factory) -> Observable:
     return _using(resource_factory, observable_factory)
 
 
+def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
+    """Merges the specified observable sequences into one observable
+    sequence by using the mapper function only when the first
+    observable sequence produces an element. The observables can be
+    passed either as seperate arguments or as a list.
+
+    Examples:
+        >>> obs = rx.with_latest_from(obs1, lambda o1: o1)
+        >>> obs = rx.with_latest_from([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+
+    Returns:
+        An observable sequence containing the result of combining
+        elements of the sources using the specified result mapper
+        function.
+    """
+    from .core.observable.withlatestfrom import _with_latest_from
+    return _with_latest_from(*args, mapper)
+
+
 # pylint: disable=redefined-builtin
 def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
     """Merges the specified observable sequences into one observable

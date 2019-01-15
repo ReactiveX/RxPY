@@ -1576,6 +1576,11 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
+def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+    from rx.core.operators.windowwithtime import _window_with_time
+    return _window_with_time(timespan, timeshift)
+
+
 def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
                     ) -> Callable[[Observable], Observable]:
     """The `with_latest_from` operator.

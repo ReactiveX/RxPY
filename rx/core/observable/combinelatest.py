@@ -4,8 +4,7 @@ from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _combine_latest(*args: Union[Observable, Iterable[Observable]],
-                    mapper: Callable[[Any], Any]) -> Observable:
+def _combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by using the mapper function whenever any of the
     observable sequences produces an element.
