@@ -1,10 +1,12 @@
-from typing import Any, Iterable, Callable, Union
+from typing import Any, Iterable, Callable, Union, List, cast
+
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def with_latest_from(observables: Union[Observable, Iterable[Observable]],
-                     mapper: Callable[[Any], Any]) -> Observable:
+
+def _with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
+                      ) -> Callable[[Observable], Observable]:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
@@ -12,53 +14,58 @@ def with_latest_from(observables: Union[Observable, Iterable[Observable]],
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
-    1 - obs = Observable.with_latest_from(obs1, lambda o1: o1)
+    Examples:
+        >>> op = with_latest_from(obs1, lambda o1: o1)
+        >>> op = with_latest_from([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
 
-    2 - obs = Observable.with_latest_from([obs1, obs2, obs3],
-                                        lambda o1, o2, o3: o1 + o2 + o3)
-
-    Returns an observable sequence containing the result of combining
+    Returns:
+        An observable sequence containing the result of combining
     elements of the sources using the specified result mapper
     function.
     """
-    if isinstance(observables, Observable):
-        observables = [observables]
 
-    result_mapper = mapper
-    NO_VALUE = object()
+    def with_latest_from(source: Observable) -> Observable:
+        sources: List[Observable] = [source]
 
-    def subscribe(observer, scheduler=None):
+        if isinstance(args[0], Iterable):
+            sources = list(args[0])
+        else:
+            sources = cast(List[Observable], list(args))
 
-        def subscribe_all(parent, *children):
+        result_mapper = mapper
+        NO_VALUE = object()
 
-            values = [NO_VALUE for _ in children]
+        def subscribe(observer, scheduler=None):
+            def subscribe_all(parent, *children):
 
-            def subscribe_child(i, child):
-                subscription = SingleAssignmentDisposable()
+                values = [NO_VALUE for _ in children]
+
+                def subscribe_child(i, child):
+                    subscription = SingleAssignmentDisposable()
+
+                    def on_next(value):
+                        with parent.lock:
+                            values[i] = value
+                    subscription.disposable = child.subscribe_(on_next, observer.on_error, scheduler=scheduler)
+                    return subscription
+
+                parent_subscription = SingleAssignmentDisposable()
 
                 def on_next(value):
                     with parent.lock:
-                        values[i] = value
-                subscription.disposable = child.subscribe_(
-                    on_next, observer.on_error, scheduler=scheduler)
-                return subscription
+                        if NO_VALUE not in values:
+                            try:
+                                result = result_mapper(value, *values)
+                            except Exception as error:
+                                observer.on_error(error)
+                            else:
+                                observer.on_next(result)
+                disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+                parent_subscription.disposable = disp
 
-            parent_subscription = SingleAssignmentDisposable()
+                children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
 
-            def on_next(value):
-                with parent.lock:
-                    if NO_VALUE not in values:
-                        try:
-                            result = result_mapper(value, *values)
-                        except Exception as error:
-                            observer.on_error(error)
-                        else:
-                            observer.on_next(result)
-            parent_subscription.disposable = parent.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler)
-
-            children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
-
-            return [parent_subscription] + children_subscription
-        return CompositeDisposable(subscribe_all(*observables))
-    return AnonymousObservable(subscribe)
+                return [parent_subscription] + children_subscription
+            return CompositeDisposable(subscribe_all(source, *sources))
+        return AnonymousObservable(subscribe)
+    return with_latest_from
