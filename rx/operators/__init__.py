@@ -1253,6 +1253,7 @@ def share() -> Callable[[Observable], Observable]:
     from rx.core.operators.publish import _share
     return _share()
 
+
 def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that satisfies the
     condition in the optional predicate, and reports an exception if there
@@ -1366,6 +1367,7 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     from rx.core.operators.skipuntil import _skip_until
     return _skip_until(other)
 
+
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
     """The slice operator.
 
@@ -1420,6 +1422,7 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.some import _some
     return _some(predicate)
+
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
@@ -1499,6 +1502,7 @@ def switch_latest() -> Callable[[Observable], Observable]:
     from rx.core.operators.switchlatest import _switch_latest
     return _switch_latest()
 
+
 def take(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the start
     of an observable sequence.
@@ -1516,6 +1520,7 @@ def take(count: int) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.take import _take
     return _take(count)
+
 
 def take_last(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the end
@@ -1801,6 +1806,11 @@ def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observa
     return _window_with_time(timespan, timeshift)
 
 
+def window_with_time_or_count(timespan: Union[timedelta, int], count: int) -> Callable[[Observable], Observable]:
+    from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
+    return _window_with_time_or_count(timespan, count)
+
+
 def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
                     ) -> Callable[[Observable], Observable]:
     """The `with_latest_from` operator.
@@ -1848,7 +1858,6 @@ def zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable
         combining elements of the sources using the specified result
         mapper function.
     """
-
     from rx.core.operators.zip import _zip
     return _zip(*args, result_mapper=result_mapper)
 
