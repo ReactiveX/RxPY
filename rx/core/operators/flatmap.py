@@ -1,7 +1,7 @@
 import collections
 from typing import Callable
 
-from rx import from_, from_future, operators as _
+from rx import from_, from_future, operators as ops
 from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.utils import is_future
@@ -18,8 +18,8 @@ def _flat_map_internal(source, mapper=None, mapper_indexed=None):
         return result
 
     return source.pipe(
-        _.mapi(projection),
-        _.merge_all()
+        ops.mapi(projection),
+        ops.merge_all()
     )
 
 
@@ -99,7 +99,7 @@ def _flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
         """
 
         return source.pipe(
-            _.map(mapper),
-            _.switch_latest()
+            ops.map(mapper),
+            ops.switch_latest()
         )
     return flat_map_latest

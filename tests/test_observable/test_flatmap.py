@@ -1,7 +1,7 @@
 import unittest
 
 import rx
-from rx import operators as _
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 
 on_next = ReactiveTest.on_next
@@ -25,7 +25,7 @@ class TestFlatMap(unittest.TestCase):
                 on_next(200, "qux"), on_completed(250))
 
         def factory():
-            return xs.pipe(_.flat_map(ys))
+            return xs.pipe(ops.flat_map(ys))
 
         results = scheduler.start(factory)
 
@@ -51,7 +51,7 @@ class TestFlatMap(unittest.TestCase):
                 on_next(200, "qux"), on_completed(250))
 
         def factory():
-            return xs.pipe(_.flat_map(ys))
+            return xs.pipe(ops.flat_map(ys))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -74,7 +74,7 @@ class TestFlatMap(unittest.TestCase):
         ys = scheduler.create_cold_observable(
                 on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"),
                 on_next(200, "qux"), on_completed(250))
-        results = scheduler.start(lambda: xs.pipe(_.flat_map(ys)))
+        results = scheduler.start(lambda: xs.pipe(ops.flat_map(ys)))
 
         assert results.messages == [
                 on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"),
@@ -97,7 +97,7 @@ class TestFlatMap(unittest.TestCase):
         ys = scheduler.create_cold_observable(
                 on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"),
                 on_next(200, "qux"))
-        results = scheduler.start(lambda: xs.pipe(_.flat_map(ys)))
+        results = scheduler.start(lambda: xs.pipe(ops.flat_map(ys)))
 
         assert results.messages == [
                 on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"),
@@ -120,7 +120,7 @@ class TestFlatMap(unittest.TestCase):
         ys = scheduler.create_cold_observable(
                 on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"),
                 on_next(200, "qux"), on_error(300, ex))
-        results = scheduler.start(lambda: xs.pipe(_.flat_map(ys)))
+        results = scheduler.start(lambda: xs.pipe(ops.flat_map(ys)))
 
         assert results.messages == [
                 on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"),
@@ -140,7 +140,7 @@ class TestFlatMap(unittest.TestCase):
         ys = scheduler.create_cold_observable(
                 on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"),
                 on_next(200, "qux"), on_completed(250))
-        results = scheduler.start(lambda: xs.pipe(_.flat_map(ys)))
+        results = scheduler.start(lambda: xs.pipe(ops.flat_map(ys)))
 
         assert results.messages == [
                 on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"),
@@ -162,7 +162,7 @@ class TestFlatMap(unittest.TestCase):
         ys = scheduler.create_cold_observable(
                 on_next(50, "foo"), on_next(100, "bar"), on_next(150, "baz"),
                 on_next(200, "qux"), on_error(250, ex))
-        results = scheduler.start(lambda: xs.pipe(_.flat_map(ys)))
+        results = scheduler.start(lambda: xs.pipe(ops.flat_map(ys)))
 
         assert results.messages == [
                 on_next(350, "foo"), on_next(400, "bar"), on_next(450, "baz"),
@@ -198,7 +198,7 @@ class TestFlatMap(unittest.TestCase):
                 on_completed(900))
 
         def factory():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -244,7 +244,7 @@ class TestFlatMap(unittest.TestCase):
                 on_completed(900))
 
         def factory():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -290,7 +290,7 @@ class TestFlatMap(unittest.TestCase):
                         on_completed(100))))
 
         def factory():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -338,7 +338,7 @@ class TestFlatMap(unittest.TestCase):
                 on_error(900, ex))
 
         def factory():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -386,7 +386,7 @@ class TestFlatMap(unittest.TestCase):
                 on_completed(900))
 
         def factory():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -431,7 +431,7 @@ class TestFlatMap(unittest.TestCase):
                 on_completed(900))
 
         def create():
-            return xs.pipe(_.flat_map(lambda x: x))
+            return xs.pipe(ops.flat_map(lambda x: x))
         results = scheduler.start(create, disposed=700)
 
         assert results.messages == [
@@ -481,7 +481,7 @@ class TestFlatMap(unittest.TestCase):
                 if invoked[0] == 3:
                     raise Exception(ex)
                 return x
-            return xs.pipe(_.flat_map(projection))
+            return xs.pipe(ops.flat_map(projection))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -504,8 +504,8 @@ class TestFlatMap(unittest.TestCase):
 
         def factory():
             def projection(x):
-                return rx.interval(10).mapi(lambda a, b: x).take(x)
-            return xs.pipe(_.flat_map(projection))
+                return rx.interval(10).pipe(ops.mapi(lambda a, b: x), ops.take(x))
+            return xs.pipe(ops.flat_map(projection))
         results = scheduler.start(factory)
 
         assert results.messages == [
@@ -542,7 +542,7 @@ class TestFlatMap(unittest.TestCase):
                 ys = [x] * x
                 inners.append(ys)
                 return ys
-            return xs.pipe(_.flat_map(mapper))
+            return xs.pipe(ops.flat_map(mapper))
         res = scheduler.start(create)
 
         assert res.messages == [
@@ -562,42 +562,6 @@ class TestFlatMap(unittest.TestCase):
         assert xs.subscriptions == [
             subscribe(200, 600)]
         assert(4 == len(inners))
-
-    def test_flat_map_iterable_complete_result_mapper(self):
-        scheduler = TestScheduler()
-
-        xs = scheduler.create_hot_observable(
-            on_next(210, 2),
-            on_next(340, 4),
-            on_next(420, 3),
-            on_next(510, 2),
-            on_completed(600)
-        )
-
-        def create():
-            return xs.pipe(
-                _.flat_mapi(
-                        mapper_indexed=lambda x, i: [x] * x,
-                        result_mapper_indexed=lambda x, y, i: x + y,
-                        )
-                )
-        res = scheduler.start(create)
-
-        assert res.messages == [
-            on_next(210, 4),
-            on_next(210, 4),
-            on_next(340, 8),
-            on_next(340, 8),
-            on_next(340, 8),
-            on_next(340, 8),
-            on_next(420, 6),
-            on_next(420, 6),
-            on_next(420, 6),
-            on_next(510, 4),
-            on_next(510, 4),
-            on_completed(600)]
-
-        assert xs.subscriptions == [subscribe(200, 600)]
 
 
 if __name__ == '__main__':
