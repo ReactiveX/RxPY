@@ -1,6 +1,6 @@
 from typing import List
 
-from rx.core import Disposable, Observable, AnonymousObserver, typing, abc
+from rx.core import Disposable, Observable, typing, abc
 from rx.concurrency import VirtualTimeScheduler
 from .subscription import Subscription
 
@@ -31,9 +31,6 @@ class HotObservable(Observable):
             scheduler.schedule_absolute(message.time, action)
 
     def subscribe(self, observer=None, scheduler=None):
-        return self._subscribe_core(observer, scheduler)
-
-    def _subscribe_core(self, observer: abc.Observer, scheduler: abc.Scheduler = None) -> typing.Disposable:
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
