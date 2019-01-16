@@ -1,7 +1,6 @@
 import unittest
 
 import rx
-from rx import operators as ops
 from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -24,7 +23,7 @@ def _raise(ex):
 
 class TestFromCallback(unittest.TestCase):
     def test_from_callback(self):
-        res = Observable.from_callback(lambda cb: cb(True))()
+        res = rx.from_callback(lambda cb: cb(True))()
 
         def on_next(r):
             self.assertEqual(r, True)
@@ -38,7 +37,7 @@ class TestFromCallback(unittest.TestCase):
         res.subscribe_(on_next, on_error, on_completed)
 
     def test_from_callback_single(self):
-        res = Observable.from_callback(lambda file, cb: cb(file))('file.txt')
+        res = rx.from_callback(lambda file, cb: cb(file))('file.txt')
 
         def on_next(r):
             self.assertEqual(r, 'file.txt')
@@ -53,7 +52,7 @@ class TestFromCallback(unittest.TestCase):
         res.subscribe_(on_next, on_error, on_completed)
 
     def test_from_node_callback_mapper(self):
-        res = Observable.from_callback(
+        res = rx.from_callback(
             lambda f, s, t, cb: cb(f, s, t),
             lambda r: r[0]
         )(1, 2, 3)

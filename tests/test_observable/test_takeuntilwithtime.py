@@ -1,6 +1,7 @@
 from datetime import datetime
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -28,7 +29,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.take_until_with_time(datetime.utcfromtimestamp(0))
+            return xs.pipe(ops.take_until_with_time(datetime.utcfromtimestamp(0)))
 
         res = scheduler.start(create)
 
@@ -45,7 +46,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         def create():
             dt = datetime.utcfromtimestamp(250)
-            return xs.take_until_with_time(dt)
+            return xs.pipe(ops.take_until_with_time(dt))
+
         res = scheduler.start(create)
 
         assert res.messages == [on_next(210, 1), on_next(220, 2), on_completed(230)]
@@ -55,9 +57,11 @@ class TestTakeUntilWithTime(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_error(210, ex))
+
         def create():
             dt = datetime.utcfromtimestamp(0.250)
-            return xs.take_until_with_time(dt)
+            return xs.pipe(ops.take_until_with_time(dt))
+
         res = scheduler.start(create)
 
         assert res.messages == [on_error(210, ex)]
@@ -69,7 +73,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
         def create():
             dt = datetime.utcfromtimestamp(0.250)
-            return xs.take_until_with_time(dt)
+            return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
 
@@ -87,10 +91,15 @@ class TestTakeUntilWithTime(unittest.TestCase):
             on_next(260, 6),
             on_completed(270)
         )
+
         def create():
             dt235 = datetime.utcfromtimestamp(0.235)
             dt255 = datetime.utcfromtimestamp(0.255)
-            return xs.take_until_with_time(dt255).take_until_with_time(dt235)
+            return xs.pipe(
+                    ops.take_until_with_time(dt255),
+                    ops.take_until_with_time(dt235),
+                    )
+
         res = scheduler.start(create)
 
         assert res.messages == [on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235)]
@@ -111,7 +120,11 @@ class TestTakeUntilWithTime(unittest.TestCase):
         def create():
             dt235 = datetime.utcfromtimestamp(0.235)
             dt255 = datetime.utcfromtimestamp(0.255)
-            return xs.take_until_with_time(dt235).take_until_with_time(dt255)
+            return xs.pipe(
+                    ops.take_until_with_time(dt235),
+                    ops.take_until_with_time(dt255),
+                    )
+
         res = scheduler.start(create)
 
         assert res.messages == [on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235)]
