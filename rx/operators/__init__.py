@@ -525,6 +525,56 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
     return _filteri(predicate_indexed)
 
 
+def first(predicate=None) -> Callable[[Observable], Observable]:
+    """Returns the first element of an observable sequence that
+    satisfies the condition in the predicate if present else the first
+    item in the sequence.
+
+    Examples:
+        >>> res = res = first()
+        >>> res = res = first(lambda x: x > 3)
+
+    Args:
+        predicate: [Optional] A predicate function to evaluate for
+            elements in the source sequence.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence containing the first element in the
+        observable sequence that satisfies the condition in the predicate if
+        provided, else the first item in the sequence.
+    """
+    from rx.core.operators.first import _first
+    return _first(predicate)
+
+
+def first_or_default(predicate: Predicate = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+    """Returns the first element of an observable sequence that
+    satisfies the condition in the predicate, or a default value if no
+    such element exists.
+
+    Examples:
+        >>> res = first_or_default()
+        >>> res = first_or_default(lambda x: x > 3)
+        >>> res = first_or_default(lambda x: x > 3, 0)
+        >>> res = first_or_default(None, 0)
+
+    Args:
+        predicate: [optional] A predicate function to evaluate for
+            elements in the source sequence.
+        default_value: [Optional] The default value if no such element
+            exists.  If not specified, defaults to None.
+
+    Returns:
+        A function that takes an observable source and reutrn an
+        observable sequence containing the first element in the
+        observable sequence that satisfies the condition in the
+        predicate, or a default value if no such element exists.
+    """
+    from rx.core.operators.firstordefault import _first_or_default
+    return _first_or_default(predicate, default_value)
+
+
 def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """The flat_map operator.
 

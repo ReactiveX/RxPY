@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,7 +18,7 @@ class TestFirst(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
         def create():
-            return xs.first()
+            return xs.pipe(ops.first())
 
         res = scheduler.start(create=create)
 
@@ -26,7 +28,7 @@ class TestFirst(unittest.TestCase):
     def test_first_async_one(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
-        res = scheduler.start(lambda: xs.first())
+        res = scheduler.start(lambda: xs.pipe(ops.first()))
 
         assert res.messages == [on_next(210, 2), on_completed(210)]
         assert xs.subscriptions == [subscribe(200, 210)]
@@ -34,7 +36,7 @@ class TestFirst(unittest.TestCase):
     def test_first_async_many(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
-        res = scheduler.start(lambda: xs.first())
+        res = scheduler.start(lambda: xs.pipe(ops.first()))
 
         assert res.messages == [on_next(210, 2), on_completed(210)]
         assert xs.subscriptions == [subscribe(200, 210)]
@@ -43,7 +45,7 @@ class TestFirst(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
-        res = scheduler.start(lambda: xs.first())
+        res = scheduler.start(lambda: xs.pipe(ops.first()))
 
         assert res.messages == [on_error(210, ex)]
         assert xs.subscriptions == [subscribe(200, 210)]
@@ -53,7 +55,7 @@ class TestFirst(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
         def create():
-            return xs.first(lambda x: x % 2 == 1)
+            return xs.pipe(ops.first(lambda x: x % 2 == 1))
         res = scheduler.start(create=create)
 
         assert res.messages == [on_next(220, 3), on_completed(220)]
@@ -64,7 +66,7 @@ class TestFirst(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
 
         def create():
-            return xs.first(lambda x: x > 10)
+            return xs.pipe(ops.first(lambda x: x > 10))
 
         res = scheduler.start(create=create)
 
@@ -78,7 +80,7 @@ class TestFirst(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_error(220, ex))
 
         def create():
-            return xs.first(lambda x: x % 2 == 1)
+            return xs.pipe(ops.first(lambda x: x % 2 == 1))
 
         res = scheduler.start(create=create)
 
@@ -97,7 +99,7 @@ class TestFirst(unittest.TestCase):
                 else:
                     raise Exception(ex)
 
-            return xs.first(predicate)
+            return xs.pipe(ops.first(predicate))
 
         res = scheduler.start(create=create)
 
