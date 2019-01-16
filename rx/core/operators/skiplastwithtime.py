@@ -1,52 +1,55 @@
-from typing import Union
+from typing import Union, Callable
 from datetime import timedelta
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import AnonymousObservable, Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def skip_last_with_time(self, duration: Union[timedelta, int]) -> ObservableBase:
+def _skip_last_with_time(duration: Union[timedelta, int], scheduler: typing.Scheduler = None
+                        ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the end of the
     observable source sequence.
 
-    1 - res = source.skip_last_with_time(5000)
+    Example:
+        >>> res = skip_last_with_time(5000)
 
-    Description:
     This operator accumulates a queue with a length enough to store
     elements received during the initial duration window. As more
     elements are received, elements older than the specified duration
     are taken from the queue and produced on the result sequence. This
     causes elements to be delayed with duration.
 
-    Keyword arguments:
-    duration -- Duration for skipping elements from the end of the
-        sequence.
+    Args:
+        duration: Duration for skipping elements from the end of the
+            sequence.
+        scheduler: Scheduler to use for time handling.
 
-    Returns an observable sequence with the elements skipped during the
+    Returns:
+        An observable sequence with the elements skipped during the
     specified duration from the end of the source sequence.
     """
 
-    source = self
+    def skip_last_with_time(source: Observable) -> Observable:
+        def subscribe(observer, scheduler_=None):
+            nonlocal duration
 
-    def subscribe(observer, scheduler=None):
-        nonlocal duration
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            duration = _scheduler.to_timedelta(duration)
+            q = []
 
-        scheduler = scheduler or timeout_scheduler
-        duration = scheduler.to_timedelta(duration)
-        q = []
+            def on_next(x):
+                now = _scheduler.now
+                q.append({"interval": now, "value": x})
+                while len(q) and now - q[0]["interval"] >= duration:
+                    observer.on_next(q.pop(0)["value"])
 
-        def on_next(x):
-            now = scheduler.now
-            q.append({"interval": now, "value": x})
-            while len(q) and now - q[0]["interval"] >= duration:
-                observer.on_next(q.pop(0)["value"])
+            def on_completed():
+                now = _scheduler.now
+                while len(q) and now - q[0]["interval"] >= duration:
+                    observer.on_next(q.pop(0)["value"])
 
-        def on_completed():
-            now = scheduler.now
-            while len(q) and now - q[0]["interval"] >= duration:
-                observer.on_next(q.pop(0)["value"])
+                observer.on_completed()
 
-            observer.on_completed()
-
-        return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler_)
+        return AnonymousObservable(subscribe)
+    return skip_last_with_time
