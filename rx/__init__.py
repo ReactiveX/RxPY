@@ -341,6 +341,22 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
+def on_error_resume_next(*args) -> Observable:
+    """Continues an observable sequence that is terminated normally or
+    by an exception with the next observable sequence.
+
+    Examples:
+        >>> res = rx.on_error_resume_next(xs, ys, zs)
+        >>> res = rx.on_error_resume_next([xs, ys, zs])
+
+    Returns:
+        An observable sequence that concatenates the source sequences,
+        even if a sequence terminates exceptionally.
+    """
+    from .core.observable.onerrorresumenext import _on_error_resume_next
+    return _on_error_resume_next(*args)
+
+
 def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
@@ -369,8 +385,8 @@ def repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
     the specified number of times.
 
     Examples:
-        1 - res = repeat_value(42)
-        2 - res = repeat_value(42, 4)
+        1 - res = rx.repeat_value(42)
+        2 - res = rx.repeat_value(42, 4)
 
     Args:
         value: Element to repeat.
@@ -537,7 +553,6 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Cal
     return _with_latest_from(*args, mapper=mapper)
 
 
-# pylint: disable=redefined-builtin
 def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by using the mapper function whenever all of the
@@ -548,7 +563,7 @@ def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
     each series of elements at corresponding indexes in the sources.
 
     Example:
-        >>> res = zip(obs1, obs2, result_mapper=fn)
+        >>> res = rx.zip(obs1, obs2, result_mapper=fn)
 
     Args:
         args: Observable sources to zip.

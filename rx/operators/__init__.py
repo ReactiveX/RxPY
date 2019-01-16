@@ -1063,6 +1063,23 @@ def observe_on(scheduler) -> Callable[[Observable], Observable]:
     from rx.core.operators.observeon import _observe_on
     return _observe_on(scheduler)
 
+def on_error_resume_next(second) -> Callable[[Observable], Observable]:
+    """Continues an observable sequence that is terminated normally
+    or by an exception with the next observable sequence.
+
+    Keyword arguments:
+    second -- Second observable sequence used to produce results
+        after the first sequence terminates.
+
+    Returns an observable sequence that concatenates the first and
+    second sequence, even if the first sequence terminates
+    exceptionally.
+    """
+
+    from rx.core.operators.onerrorresumenext import _on_error_resume_next
+    return _on_error_resume_next(second)
+
+
 def pairwise() -> Callable[[Observable], Observable]:
     """The pairwise operator.
 

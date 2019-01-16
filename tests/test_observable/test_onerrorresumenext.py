@@ -30,7 +30,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return o1.on_error_resume_next(o2)
+            return o1.pipe(ops.on_error_resume_next(o2))
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -55,7 +55,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return o1.on_error_resume_next(o2)
+            return o1.pipe(ops.on_error_resume_next(o2))
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -82,7 +82,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            return Observable.on_error_resume_next(o1, o2, o3)
+            return rx.on_error_resume_next(o1, o2, o3)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -103,7 +103,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o5 = scheduler.create_hot_observable(msgs5)
 
         def create():
-            return Observable.on_error_resume_next(o1, o2, o3, o4, o5)
+            return rx.on_error_resume_next(o1, o2, o3, o4, o5)
         results = scheduler.start(create)
 
         assert results.messages == [
@@ -123,7 +123,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            return o1.on_error_resume_next(o2)
+            return o1.pipe(ops.on_error_resume_next(o2))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 2), on_completed(230)]
@@ -135,7 +135,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            return Observable.on_error_resume_next(o1)
+            return rx.on_error_resume_next(o1)
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(230)]
@@ -147,7 +147,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o2 = rx.never()
 
         def create():
-            return Observable.on_error_resume_next(o1, o2)
+            return rx.on_error_resume_next(o1, o2)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 2)]
@@ -159,7 +159,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            return Observable.on_error_resume_next(o1, o2)
+            return rx.on_error_resume_next(o1, o2)
 
         results = scheduler.start(create)
 
@@ -181,7 +181,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return o2
 
         def create():
-            return Observable.on_error_resume_next(o1, factory)
+            return rx.on_error_resume_next(o1, factory)
 
         results = scheduler.start(create)
 
