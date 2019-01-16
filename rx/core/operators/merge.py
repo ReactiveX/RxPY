@@ -1,35 +1,34 @@
 from typing import Callable
 
-from rx import from_future, from_iterable
+import rx
+from rx import from_future
 from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
 
-def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
-    """Merges an observable sequence of observable sequences into an
-    observable sequence, limiting the number of concurrent subscriptions
-    to inner sequences. Or merges two observable sequences into a single
-    observable sequence.
+def _merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+    def merge(source: Observable) -> Observable:
+        """Merges an observable sequence of observable sequences into
+        an observable sequence, limiting the number of concurrent
+        subscriptions to inner sequences. Or merges two observable
+        sequences into a single observable sequence.
 
-    Examples:
-        >>> merged = sources.merge(max_concurrent=1)
-        >>> merged = source.merge(other_source)
+        Examples:
+            >>> merged = merge(sources)
 
-    Args:
-        max_concurrent -- [Optional] Maximum number of inner observable
-            sequences being subscribed to concurrently or the second
-            observable sequence.
+        Args:
+            source: Source observable.
 
-    Returns the observable sequence that merges the elements of the
-    inner sequences.
-    """
+        Returns:
+            The observable sequence that merges the elements of the
+            inner sequences.
+        """
 
-    def partial(source: Observable) -> Observable:
         if max_concurrent is None:
-            args = tuple([source]) + args
-            return merge_(*args)
+            sources = tuple([source]) + args
+            return rx.merge(*sources)
 
         def subscribe(observer, scheduler=None):
             active_count = [0]
@@ -71,26 +70,7 @@ def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observabl
             group.add(source.subscribe_(on_next, observer.on_error, on_completed, scheduler))
             return group
         return AnonymousObservable(subscribe)
-    return partial
-
-
-def merge_(*args):
-    """Merges all the observable sequences into a single observable
-    sequence.
-
-    1 - merged = rx.Observable.merge(xs, ys, zs)
-    2 - merged = rx.Observable.merge([xs, ys, zs])
-
-    Returns the observable sequence that merges the elements of the
-    observable sequences.
-    """
-
-    sources = args[:]
-
-    if isinstance(sources[0], list):
-        sources = sources[0]
-
-    return from_iterable(sources).pipe(_merge_all)
+    return merge
 
 
 def _merge_all() -> Callable[[Observable], Observable]:
