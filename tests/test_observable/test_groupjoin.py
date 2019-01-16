@@ -82,12 +82,15 @@ class TestGroup_join(unittest.TestCase):
         ysd = []
 
         def create():
-            return xs.group_join(
-                ys,
-                lambda x: new_timer(xsd, x.interval, scheduler),
-                lambda y: new_timer(ysd, y.interval, scheduler),
-                lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: new_timer(xsd, x.interval, scheduler),
+                    lambda y: new_timer(ysd, y.interval, scheduler),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ), ops.merge_all()
+            )
+
 
         res = scheduler.start(create=create)
 
@@ -155,12 +158,13 @@ class TestGroup_join(unittest.TestCase):
         ysd = []
 
         def create():
-            return xs.group_join(
-                ys,
-                lambda x: new_timer(xsd, x.interval, scheduler),
-                lambda y: new_timer(ysd, y.interval, scheduler),
-                lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-            ).merge_all()
+            return xs.pipe(ops.group_join(
+                    ys,
+                    lambda x: new_timer(xsd, x.interval, scheduler),
+                    lambda y: new_timer(ysd, y.interval, scheduler),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ), ops.merge_all()
+            )
 
         res = scheduler.start(create=create)
 
@@ -221,11 +225,13 @@ class TestGroup_join(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval).filter(lambda _: False),
-                                 lambda y: Observable.timer(y.interval).filter(lambda _: False),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(ops.group_join(
+                        ys,
+                        lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
+                        lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                        lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                        ), ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
 
@@ -280,11 +286,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(980))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                    ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
 
@@ -338,11 +348,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(900))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
 
@@ -397,11 +411,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(900))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -444,11 +462,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(900))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval).filter(lambda _: False),
-                                 lambda y: Observable.timer(y.interval).filter(lambda _: False),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
+                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
         assert results.messages == [on_completed(210)]
@@ -461,11 +483,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(230))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
         results = scheduler.start(create=create)
         assert results.messages == [on_next(220, "0hat")]
 
@@ -496,11 +522,16 @@ class TestGroup_join(unittest.TestCase):
                                              on_completed(800))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
+
         results = scheduler.start(create=create, disposed=713)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -540,11 +571,15 @@ class TestGroup_join(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
         results = scheduler.start(create=create)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -582,11 +617,15 @@ class TestGroup_join(unittest.TestCase):
             on_error(722, ex))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
         results = scheduler.start(create=create)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -635,12 +674,16 @@ class TestGroup_join(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval).flat_map(
-                                     Observable.throw(ex) if x.value == 6 else Observable.empty()),
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval).pipe(
+                        ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())),
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
         results = scheduler.start(create=create)
         assert results.messages == [
             on_next(215, "0hat"),
@@ -692,12 +735,18 @@ class TestGroup_join(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval).flat_map(
-                                     Observable.throw(ex) if y.value == "tin" else Observable.empty()),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval).pipe(
+                        ops.flat_map(
+                            rx.throw(ex) if y.value == "tin" else rx.empty())
+                    ),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ),
+                ops.merge_all()
+            )
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -751,13 +800,16 @@ class TestGroup_join(unittest.TestCase):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
-                    return Observable.empty()
+                    return rx.empty()
 
-            return xs.group_join(ys,
-                                 left_duration_mapper,
-                                 lambda y: Observable.timer(y.interval),
-                                 lambda x, yy: yy.map(lambda y: str(x.value) + y.value)
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    left_duration_mapper,
+                    lambda y: rx.timer(y.interval),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ), ops.merge_all()
+            )
         results = scheduler.start(create=create)
         assert results.messages == [on_error(210, ex)]
 
@@ -796,16 +848,20 @@ class TestGroup_join(unittest.TestCase):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
-                    return Observable.empty()
+                    return rx.empty()
 
             def result_mapper(x, yy):
-                return yy.map(lambda y: x.value + y.value)
+                return yy.pipe(ops.map(lambda y: x.value + y.value))
 
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 right_duration_mapper,
-                                 result_mapper
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    right_duration_mapper,
+                    result_mapper
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
 
@@ -844,14 +900,18 @@ class TestGroup_join(unittest.TestCase):
             if x.value >= 0:
                 raise Exception(ex)
             else:
-                return yy.map(lambda y: x.value + y.value)
+                return yy.pipe(ops.map(lambda y: x.value + y.value))
 
         def create():
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 result_mapper
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    result_mapper
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
         assert results.messages == [on_error(215, ex)]
@@ -891,13 +951,17 @@ class TestGroup_join(unittest.TestCase):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
-                    return yy.map(lambda y: x.value + y.value)
+                    return yy.pipe(ops.map(lambda y: x.value + y.value))
 
-            return xs.group_join(ys,
-                                 lambda x: Observable.timer(x.interval),
-                                 lambda y: Observable.timer(y.interval),
-                                 result_mapper
-                                 ).merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    result_mapper
+                ),
+                ops.merge_all()
+            )
 
         results = scheduler.start(create=create)
 
