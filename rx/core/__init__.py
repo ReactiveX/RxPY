@@ -11,3 +11,5 @@ from .observable import Observable
 from .observable import AnonymousObservable
 from .observable import ConnectableObservable
 from .observable import GroupedObservable
+
+from .observerbase import ObserverBase
