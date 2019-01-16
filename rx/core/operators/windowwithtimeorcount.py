@@ -1,16 +1,18 @@
 from typing import Callable, Union
 from datetime import timedelta
-from rx.core import AnonymousObservable, Observable
+
+from rx.core import AnonymousObservable, Observable, typing
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
 
 
-def window_with_time_or_count(timespan: Union[timedelta, int], count: int) -> Callable[[Observable], Observable]:
-    def partial(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or timeout_scheduler
+def _window_with_time_or_count(timespan: Union[timedelta, int], count: int, scheduler: typing.Scheduler = None
+                              ) -> Callable[[Observable], Observable]:
+    def window_with_time_or_count(source: Observable) -> Observable:
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
 
             n = [0]
             s = [None]
@@ -35,7 +37,7 @@ def window_with_time_or_count(timespan: Union[timedelta, int], count: int) -> Ca
                     observer.on_next(add_ref(s[0], ref_count_disposable))
                     create_timer(new_id)
 
-                m.disposable = scheduler.schedule_relative(timespan, action)
+                m.disposable = _scheduler.schedule_relative(timespan, action)
 
             s[0] = Subject()
             observer.on_next(add_ref(s[0], ref_count_disposable))
@@ -67,7 +69,7 @@ def window_with_time_or_count(timespan: Union[timedelta, int], count: int) -> Ca
                 s[0].on_completed()
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
             return ref_count_disposable
         return AnonymousObservable(subscribe)
-    return partial
+    return window_with_time_or_count
