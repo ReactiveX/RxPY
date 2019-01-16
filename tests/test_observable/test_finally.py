@@ -20,7 +20,7 @@ class TestFinally(unittest.TestCase):
         def action():
             invasserte_count[0] += 1
             return invasserte_count
-        some_observable = rx.empty().finally_action(action)
+        some_observable = rx.empty().pipe(ops.finally_action(action))
 
         d = some_observable.subscribe()
         d.dispose()
@@ -36,7 +36,7 @@ class TestFinally(unittest.TestCase):
             def action():
                 invasserted[0] = True
                 return invasserted[0]
-            return xs.finally_action(action)
+            return xs.pipe(ops.finally_action(action))
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
@@ -53,7 +53,7 @@ class TestFinally(unittest.TestCase):
                 invasserted[0] = True
                 return invasserted[0]
 
-            return xs.finally_action(action)
+            return xs.pipe(ops.finally_action(action))
 
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
@@ -72,7 +72,7 @@ class TestFinally(unittest.TestCase):
                 invasserted[0] = True
                 return invasserted[0]
 
-            return xs.finally_action(action)
+            return xs.pipe(ops.finally_action(action))
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
