@@ -1498,6 +1498,33 @@ def skip_last(count: int) -> Observable:
     return _skip_last(count)
 
 
+def skip_last_with_time(duration: Union[timedelta, int], scheduler: typing.Scheduler = None
+                        ) -> Callable[[Observable], Observable]:
+    """Skips elements for the specified duration from the end of the
+    observable source sequence.
+
+    Example:
+        >>> res = skip_last_with_time(5000)
+
+    This operator accumulates a queue with a length enough to store
+    elements received during the initial duration window. As more
+    elements are received, elements older than the specified duration
+    are taken from the queue and produced on the result sequence. This
+    causes elements to be delayed with duration.
+
+    Args:
+        duration: Duration for skipping elements from the end of the
+            sequence.
+        scheduler: Scheduler to use for time handling.
+
+    Returns:
+        An observable sequence with the elements skipped during the
+    specified duration from the end of the source sequence.
+    """
+    from rx.core.operators.skiplastwithtime import _skip_last_with_time
+    return _skip_last_with_time(duration, scheduler)
+
+
 def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.

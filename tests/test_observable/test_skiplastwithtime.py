@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,7 +19,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_last_with_time(0)
+            return xs.pipe(ops.skip_last_with_time(0))
         res = scheduler.start(create)
 
         assert res.messages == [on_next(210, 1), on_next(220, 2), on_completed(230)]
@@ -28,7 +30,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
 
         def create():
-            return xs.skip_last_with_time(0)
+            return xs.pipe(ops.skip_last_with_time(0))
 
         res = scheduler.start(create)
 
@@ -40,7 +42,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(230))
 
         def create():
-            return xs.skip_last_with_time(15)
+            return xs.pipe(ops.skip_last_with_time(15))
 
         res = scheduler.start(create)
 
@@ -51,7 +53,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return xs.skip_last_with_time(45)
+            return xs.pipe(ops.skip_last_with_time(45))
 
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_next(270, 7), on_next(280, 8), on_next(290, 9), on_completed(300))
         res = scheduler.start(create)
@@ -64,7 +66,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_last_with_time(45)
+            return xs.pipe(ops.skip_last_with_time(45))
         res = scheduler.start(create)
 
         assert res.messages == [on_completed(230)]
@@ -76,7 +78,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            return xs.skip_last_with_time(45)
+            return xs.pipe(ops.skip_last_with_time(45))
         res = scheduler.start(create)
 
         assert res.messages == [on_error(210, ex)]
@@ -87,7 +89,7 @@ class TestSkipLastWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_last_with_time(50)
+            return xs.pipe(ops.skip_last_with_time(50))
 
         res = scheduler.start(create)
 
