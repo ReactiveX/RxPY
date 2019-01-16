@@ -1,7 +1,6 @@
 import unittest
 
 import rx
-from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -20,7 +19,7 @@ class TestIf_then(unittest.TestCase):
         ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
 
         def create():
-            return Observable.if_then(lambda: True, xs, ys)
+            return rx.if_then(lambda: True, xs, ys)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(210, 1), on_next(250, 2), on_completed(300)]
@@ -33,7 +32,7 @@ class TestIf_then(unittest.TestCase):
         ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
 
         def create():
-            return Observable.if_then(lambda: False, xs, ys)
+            return rx.if_then(lambda: False, xs, ys)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(310, 3), on_next(350, 4), on_completed(400)]
@@ -49,7 +48,7 @@ class TestIf_then(unittest.TestCase):
         def create():
             def condition():
                 raise Exception(ex)
-            return Observable.if_then(condition, xs, ys)
+            return rx.if_then(condition, xs, ys)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(200, ex)]
@@ -62,7 +61,7 @@ class TestIf_then(unittest.TestCase):
         ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
 
         def create():
-            return Observable.if_then(lambda: True, xs, ys)
+            return rx.if_then(lambda: True, xs, ys)
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(210, 1), on_next(250, 2)]
@@ -81,7 +80,7 @@ class TestIf_then(unittest.TestCase):
         def create():
             def condition():
                 return b[0]
-            return Observable.if_then(condition, xs)
+            return rx.if_then(condition, xs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3), on_completed(440)]
@@ -100,7 +99,7 @@ class TestIf_then(unittest.TestCase):
         def create():
             def condition():
                 return b[0]
-            return Observable.if_then(condition, xs)
+            return rx.if_then(condition, xs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3), on_error(440, ex)]
@@ -118,7 +117,7 @@ class TestIf_then(unittest.TestCase):
         def create():
             def condition():
                 return b[0]
-            return Observable.if_then(condition, xs)
+            return rx.if_then(condition, xs)
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3)]
@@ -127,7 +126,8 @@ class TestIf_then(unittest.TestCase):
     def test_if_default_other(self):
         b = [True]
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, 'ex'))
+        xs = scheduler.create_hot_observable(
+                on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, 'ex'))
 
         def action(scheduler, state):
             b[0] = False
@@ -136,7 +136,7 @@ class TestIf_then(unittest.TestCase):
         def create():
             def condition():
                 return b[0]
-            return Observable.if_then(condition, xs)
+            return rx.if_then(condition, xs)
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(200)]
