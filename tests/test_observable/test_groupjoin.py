@@ -225,12 +225,13 @@ class TestGroup_join(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.group_join(
-                        ys,
-                        lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
-                        lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
-                        lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
-                        ), ops.merge_all()
+            return xs.pipe(
+                ops.group_join(
+                    ys,
+                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
+                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    lambda x, yy: yy.pipe(ops.map(lambda y: str(x.value) + y.value))
+                ), ops.merge_all()
             )
 
         results = scheduler.start(create=create)
@@ -509,17 +510,18 @@ class TestGroup_join(unittest.TestCase):
             on_next(720, TimeInterval(8, TimeSpan.from_ticks(100))),
             on_next(830, TimeInterval(9, TimeSpan.from_ticks(10))),
             on_completed(900))
-        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
-                                             on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
-                                             on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
-                                             on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
-                                             on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
-                                             on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
-                                             on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
-                                             on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
-                                             on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
-                                             on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
-                                             on_completed(800))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", TimeSpan.from_ticks(20))),
+            on_next(217, TimeInterval("bat", TimeSpan.from_ticks(1))),
+            on_next(290, TimeInterval("wag", TimeSpan.from_ticks(200))),
+            on_next(300, TimeInterval("pig", TimeSpan.from_ticks(10))),
+            on_next(305, TimeInterval("cup", TimeSpan.from_ticks(50))),
+            on_next(600, TimeInterval("yak", TimeSpan.from_ticks(90))),
+            on_next(702, TimeInterval("tin", TimeSpan.from_ticks(20))),
+            on_next(712, TimeInterval("man", TimeSpan.from_ticks(10))),
+            on_next(722, TimeInterval("rat", TimeSpan.from_ticks(200))),
+            on_next(732, TimeInterval("wig", TimeSpan.from_ticks(5))),
+            on_completed(800))
 
         def create():
             return xs.pipe(
