@@ -534,7 +534,7 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Cal
         function.
     """
     from .core.observable.withlatestfrom import _with_latest_from
-    return _with_latest_from(*args, mapper)
+    return _with_latest_from(*args, mapper=mapper)
 
 
 # pylint: disable=redefined-builtin
