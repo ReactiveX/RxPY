@@ -2,6 +2,7 @@ import logging
 from typing import Callable
 from collections import OrderedDict
 
+from rx import operators as ops
 from rx.core import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
@@ -10,33 +11,35 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> Callable[[Observable], Observable]:
+def _group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
+               ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
-    Keyword arguments:
-    right -- The right observable sequence to join elements for.
-    left_duration_mapper -- A function to select the duration (expressed
-        as an observable sequence) of each element of the left observable
-        sequence, used to determine overlap.
-    right_duration_mapper -- A function to select the duration (expressed
-        as an observable sequence) of each element of the right observable
-        sequence, used to determine overlap.
-    result_mapper -- A function invoked to compute a result element for
-        any element of the left sequence with overlapping elements from the
-        right observable sequence. The first parameter passed to the
-        function is an element of the left sequence. The second parameter
-        passed to the function is an observable sequence with elements from
-        the right sequence that overlap with the left sequence's element.
+    Args:
+        right: The right observable sequence to join elements for.
+        left_duration_mapper: A function to select the duration (expressed
+            as an observable sequence) of each element of the left observable
+            sequence, used to determine overlap.
+        right_duration_mapper: A function to select the duration (expressed
+            as an observable sequence) of each element of the right observable
+            sequence, used to determine overlap.
+        result_mapper: A function invoked to compute a result element for
+            any element of the left sequence with overlapping elements from the
+            right observable sequence. The first parameter passed to the
+            function is an element of the left sequence. The second parameter
+            passed to the function is an observable sequence with elements from
+            the right sequence that overlap with the left sequence's element.
 
-    Returns an observable sequence that contains result elements computed
+    Returns:
+        An observable sequence that contains result elements computed
     from source elements that have an overlapping duration.
     """
 
     def nothing(_):
         return None
 
-    def partial(left: Observable) -> Observable:
+    def group_join(left: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             group = CompositeDisposable()
             r = RefCountDisposable(group)
@@ -93,7 +96,7 @@ def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
 
                     observer.on_error(error)
 
-                md.disposable = duration.take(1).subscribe_(nothing, on_error, expire, scheduler)
+                md.disposable = duration.pipe(ops.take(1)).subscribe_(nothing, on_error, expire, scheduler)
 
             def on_error_left(error):
                 for left_value in left_map.values():
@@ -132,7 +135,7 @@ def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
 
                         observer.on_error(error)
 
-                md.disposable = duration.take(1).subscribe_(nothing, on_error, expire, scheduler)
+                md.disposable = duration.pipe(ops.take(1)).subscribe_(nothing, on_error, expire, scheduler)
 
                 with left.lock:
                     for left_value in left_map.values():
@@ -147,4 +150,4 @@ def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
             group.add(right.subscribe_(send_right, on_error_right, scheduler=scheduler))
             return r
         return AnonymousObservable(subscribe)
-    return partial
+    return group_join
