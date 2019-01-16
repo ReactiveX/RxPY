@@ -6,15 +6,14 @@ from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Scheduler
+def _take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Scheduler = None
                           ) -> Callable[[Observable], Observable]:
     def take_until_with_time(source: Observable) -> Observable:
         """Takes elements for the specified duration until the specified end
         time, using the specified scheduler to run timers.
 
         Examples:
-            >>> res = source.take_until_with_time(dt, [optional scheduler])
-            >>> res = source.take_until_with_time(5000, [optional scheduler])
+            >>> res = take_until_with_time(source)
 
         Args:
             source: Source observale to take elements from.

@@ -1,6 +1,7 @@
 import unittest
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -29,7 +30,7 @@ class TestSample(unittest.TestCase):
             260, 4), on_next(300, 5), on_next(350, 6), on_next(380, 7), on_completed(390))
 
         def create():
-            return xs.sample(50)
+            return xs.pipe(ops.sample(50))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(250, 3), on_next(
@@ -42,7 +43,7 @@ class TestSample(unittest.TestCase):
             230, 3), on_next(260, 4), on_next(300, 5), on_next(310, 6), on_error(330, ex))
 
         def create():
-            return xs.sample(50)
+            return xs.pipe(ops.sample(50))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(250, 3), on_next(300, 5), on_error(330, ex)]
@@ -51,7 +52,7 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.empty().sample(0)
+            return rx.empty().pipe(ops.sample(0))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(200)]
@@ -61,7 +62,7 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.throw(ex).sample(0)
+            return rx.throw(ex).pipe(ops.sample(0))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
@@ -70,6 +71,6 @@ class TestSample(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.never().sample(1)
+            return rx.never().pipe(ops.sample(1))
         results = scheduler.start(create)
         assert results.messages == []

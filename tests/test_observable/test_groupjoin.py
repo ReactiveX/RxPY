@@ -1,7 +1,8 @@
 import unittest
 from datetime import timedelta
 
-from rx.chained import Observable
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
