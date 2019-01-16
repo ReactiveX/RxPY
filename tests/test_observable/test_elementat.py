@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -18,7 +20,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at(0)
+            return xs.pipe(ops.element_at(0))
 
         results = scheduler.start(create=create)
 
@@ -30,7 +32,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at(2)
+            return xs.pipe(ops.element_at(2))
 
         results = scheduler.start(create=create)
 
@@ -42,7 +44,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at(3)
+            return xs.pipe(ops.element_at(3))
         results = scheduler.start(create=create)
 
         self.assertEqual(1, len(results.messages))
@@ -56,7 +58,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_error(420, ex))
 
         def create():
-            return xs.element_at(3)
+            return xs.pipe(ops.element_at(3))
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(420, ex)]
@@ -67,7 +69,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at_or_default(0)
+            return xs.pipe(ops.element_at_or_default(0))
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(280, 42), on_completed(280)]
@@ -78,7 +80,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at_or_default(2)
+            return xs.pipe(ops.element_at_or_default(2))
 
         results = scheduler.start(create=create)
 
@@ -90,7 +92,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_next(470, 44), on_completed(600))
 
         def create():
-            return xs.element_at_or_default(3, 0)
+            return xs.pipe(ops.element_at_or_default(3, 0))
 
         results = scheduler.start(create=create)
 
@@ -103,7 +105,7 @@ class TestElementAt(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 42), on_next(360, 43), on_error(420, ex))
 
         def create():
-            return xs.element_at_or_default(3)
+            return xs.pipe(ops.element_at_or_default(3))
 
         results = scheduler.start(create=create)
 

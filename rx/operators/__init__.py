@@ -484,6 +484,47 @@ def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on
     return do_action_(on_next, on_error, on_completed)
 
 
+def element_at(index: int) -> Callable[[Observable], Observable]:
+    """Returns the element at a specified index in a sequence.
+
+    Example:
+        >>> res = source.element_at(5)
+
+    Args:
+        index: The zero-based index of the element to retrieve.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable  sequence that produces the element at
+        the specified position in the source sequence.
+    """
+    from rx.core.operators.elementatordefault import _element_at_or_default
+    return _element_at_or_default(index, False)
+
+
+def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Observable], Observable]:
+    """Returns the element at a specified index in a sequence or a
+    default value if the index is out of range.
+
+    Example:
+        >>> res = source.element_at_or_default(5)
+        >>> res = source.element_at_or_default(5, 0)
+
+    Args:
+        index -- The zero-based index of the element to retrieve.
+        default_value -- [Optional] The default value if the index is
+            outside the bounds of the source sequence.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence that produces the element at the
+        specified position in the source sequence, or a default value if
+        the index is outside the bounds of the source sequence.
+    """
+    from rx.core.operators.elementatordefault import _element_at_or_default
+    return _element_at_or_default(index, True, default_value)
+
+
 def filter(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
