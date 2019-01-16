@@ -1,3 +1,4 @@
+import rx
 from rx.core import Observable, AnonymousObserver
 
 from rx.testing import TestScheduler, ReactiveTest
@@ -337,7 +338,7 @@ def test_subject_create():
 
     v = AnonymousObserver(on_next, on_error, on_completed)
 
-    o = Observable.return_value(42)
+    o = rx.return_value(42)
 
     s = Subject.create(v, o)
 
