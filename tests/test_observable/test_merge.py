@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import rx
 from rx import operators as ops
@@ -321,32 +322,54 @@ class TestMerge(unittest.TestCase):
         assert results.messages == [on_next(310, 101), on_next(320, 102), on_next(
             410, 201), on_next(420, 202), on_next(430, 203), on_next(440, 200), on_error(500, ex)]
 
+    @pytest.mark.focus
     def test_mergeconcat_basic(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(
-            200))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
+        xs = scheduler.create_hot_observable(
+            on_next(210, scheduler.create_cold_observable(
+                on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))),
+            on_next(260, scheduler.create_cold_observable(
+                on_next(20, 4), on_next(70, 5), on_completed(200))),
+            on_next(270, scheduler.create_cold_observable(
+                on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))),
+            on_next(320, scheduler.create_cold_observable(
+                on_next(210, 9), on_next(240, 10), on_completed(300))),
+            on_completed(400))
 
         def create():
             return xs.pipe(ops.merge(max_concurrent=2))
 
         results = scheduler.start(create)
 
-        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(
-            330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(670, 9), on_next(700, 10), on_completed(760)]
+        assert results.messages == [
+            on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3),
+            on_next(330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8),
+            on_next(670, 9), on_next(700, 10), on_completed(760)]
         assert xs.subscriptions == [subscribe(200, 760)]
 
     def test_mergeconcat_basic_long(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, scheduler.create_cold_observable(on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))), on_next(260, scheduler.create_cold_observable(on_next(20, 4), on_next(70, 5), on_completed(
-            300))), on_next(270, scheduler.create_cold_observable(on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))), on_next(320, scheduler.create_cold_observable(on_next(210, 9), on_next(240, 10), on_completed(300))), on_completed(400))
+        xs = scheduler.create_hot_observable(
+            on_next(210, scheduler.create_cold_observable(
+                on_next(50, 1), on_next(100, 2), on_next(120, 3), on_completed(140))),
+            on_next(260, scheduler.create_cold_observable(
+                on_next(20, 4), on_next(70, 5), on_completed(300))),
+            on_next(270, scheduler.create_cold_observable(
+                on_next(10, 6), on_next(90, 7), on_next(110, 8), on_completed(130))),
+            on_next(320, scheduler.create_cold_observable(
+                on_next(210, 9), on_next(240, 10), on_completed(300))),
+            on_completed(400))
 
         def create():
             return xs.pipe(ops.merge(max_concurrent=2))
 
         results = scheduler.start(create)
 
-        assert results.messages == [on_next(260, 1), on_next(280, 4), on_next(310, 2), on_next(330, 3), on_next(
-            330, 5), on_next(360, 6), on_next(440, 7), on_next(460, 8), on_next(690, 9), on_next(720, 10), on_completed(780)]
+        assert results.messages == [
+            on_next(260, 1), on_next(280, 4), on_next(310, 2),
+            on_next(330, 3), on_next(330, 5), on_next(360, 6),
+            on_next(440, 7), on_next(460, 8), on_next(690, 9),
+            on_next(720, 10), on_completed(780)]
         assert xs.subscriptions == [subscribe(200, 780)]
 
     def test_mergeconcat_basic_wide(self):

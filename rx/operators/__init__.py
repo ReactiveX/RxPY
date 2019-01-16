@@ -813,8 +813,8 @@ def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observabl
     sequences into a single observable sequence.
 
     Examples:
-        >>> merged = sources.merge(max_concurrent=1)
-        >>> merged = source.merge(other_source)
+        >>> merged = merge(max_concurrent=1)
+        >>> merged = merge(other_source)
 
     Args:
         max_concurrent: [Optional] Maximum number of inner observable

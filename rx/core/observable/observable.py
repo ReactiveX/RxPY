@@ -132,15 +132,16 @@ class Observable(typing.Observable):
         """Subscribe an observer to the observable sequence.
 
         Examples:
-        1 - source.subscribe()
-        2 - source.subscribe(observer)
+            >>> source.subscribe()
+            >>> source.subscribe(observer)
 
-        Keyword arguments:
-        observer -- [Optional] The object that is to receive
-            notifications. You may subscribe using an observer or
-            callbacks, not both.
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications. You may subscribe using an observer or
+                callbacks, not both.
 
-        Return disposable object representing an observer's subscription
+        Returns:
+            Disposable object representing an observer's subscription
             to the observable sequence.
         """
 
