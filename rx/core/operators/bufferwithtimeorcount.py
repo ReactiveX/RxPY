@@ -1,23 +1,11 @@
-from rx.core import ObservableBase
+from typing import Callable
+
+from rx import operators as ops
+from rx.core import Observable, pipe
 
 
-def buffer_with_time_or_count(source, timespan, count) -> ObservableBase:
-    """Projects each element of an observable sequence into a buffer that
-    is completed when either it's full or a given amount of time has
-    elapsed.
-
-    # 5s or 50 items in an array
-    1 - res = source.buffer_with_time_or_count(5000, 50)
-    # 5s or 50 items in an array
-    2 - res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
-
-    Keyword arguments:
-    timespan -- Maximum time length of a buffer.
-    count -- Maximum element count of a buffer.
-    scheduler -- [Optional] Scheduler to run bufferin timers on. If not
-        specified, the timeout scheduler is used.
-
-    Returns an observable sequence of buffers.
-    """
-
-    return source.window_with_time_or_count(timespan, count).flat_map(lambda x: x.to_iterable())
+def _buffer_with_time_or_count(timespan, count, scheduler) -> Callable[[Observable], Observable]:
+    return pipe(
+        ops.window_with_time_or_count(timespan, count, scheduler),
+        ops.flat_map(lambda x: x.pipe(ops.to_iterable()))
+    )

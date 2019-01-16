@@ -121,6 +121,58 @@ def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _buffer_with_count(count, skip)
 
 
+def buffer_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or more
+    buffers which are produced based on timing information.
+
+    Examples:
+        # non-overlapping segments of 1 second
+        >>> res = buffer_with_time(1000)
+        # segments of 1 second with time shift 0.5 seconds
+        >>> res = buffer_with_time(1000, 500)
+
+    Args:
+        timespan: Length of each buffer (specified as an integer denoting
+            milliseconds).
+        timeshift: [Optional] Interval between creation of consecutive
+            buffers (specified as an integer denoting milliseconds), or an
+            optional scheduler parameter. If not specified, the time shift
+            corresponds to the timespan parameter, resulting in non-overlapping
+            adjacent buffers.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of buffers.
+    """
+    from rx.core.operators.bufferwithtime import _buffer_with_time
+    return _buffer_with_time(timespan, timeshift)
+
+
+def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into a buffer
+    that is completed when either it's full or a given amount of time
+    has elapsed.
+
+    Examples:
+        # 5s or 50 items in an array
+        >>> res = source.buffer_with_time_or_count(5000, 50)
+        # 5s or 50 items in an array
+        >>> res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
+
+    Args:
+        timespan: Maximum time length of a buffer.
+        count: Maximum element count of a buffer.
+        scheduler: [Optional] Scheduler to run bufferin timers on. If not
+            specified, the timeout scheduler is used.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of buffers.
+    """
+    from rx.core.operators.bufferwithtimeorcount import _buffer_with_time_or_count
+    return _buffer_with_time_or_count(timespan, count, scheduler)
+
+
 def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -996,9 +1048,9 @@ def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable
         >>> res = reduce(lambda acc, x: acc + x, 0)
 
     Args:
-        accumulator -- An accumulator function to be invoked on each
+        accumulator: An accumulator function to be invoked on each
             element.
-        seed -- Optional initial accumulator value.
+        seed: Optional initial accumulator value.
 
     Returns:
         A partially applied operator function that takes an observable
@@ -1138,7 +1190,7 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
         >>> res = single(lambda x: x == 42)
 
     Args:
-        predicate -- [Optional] A predicate function to evaluate for
+        predicate: [Optional] A predicate function to evaluate for
             elements in the source sequence.
 
     Returns:
@@ -1162,9 +1214,9 @@ def single_or_default(predicate: Predicate = None, default_value: Any = None) ->
         >>> res = single_or_default(None, 0)
 
     Args:
-        predicate -- [Optional] A predicate function to evaluate for
+        predicate: [Optional] A predicate function to evaluate for
             elements in the source sequence.
-        default_value -- [Optional] The default value if the index is
+        default_value: [Optional] The default value if the index is
             outside the bounds of the source sequence.
 
     Returns:
@@ -1284,7 +1336,7 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
         >>> result = source.some(lambda x: x > 3)
 
     Args:
-        predicate -- A function to test each element for a condition.
+        predicate: A function to test each element for a condition.
 
     Returns:
         An operator function that takes an observable source and
@@ -1320,7 +1372,7 @@ def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
         >>> res = sum(lambda x: x.value)
 
     Args:
-        key_mapper -- [Optional] A transform function to apply to each
+        key_mapper: [Optional] A transform function to apply to each
             element.
 
     Returns:
@@ -1421,7 +1473,7 @@ def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Sched
             sequence. If this value is less than or equal to
             `datetime.utcnow()`, the result stream will complete
             immediately.
-        scheduler -- Scheduler to run the timer on.
+        scheduler: Scheduler to run the timer on.
 
     Returns:
         An operator function that takes an observable source and
@@ -1685,8 +1737,8 @@ def zip_with_iterable(second, result_mapper):
         >>> res = zip(xs, [1,2,3], result_mapper=fn)
 
     Args:
-        second -- Iterable to zip.
-        result_mapper -- Mapper function that produces an element
+        second: Iterable to zip.
+        result_mapper: Mapper function that produces an element
             whenever all of the observable sequences have produced an
             element at a corresponding index
 
