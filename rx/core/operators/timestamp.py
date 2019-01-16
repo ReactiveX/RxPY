@@ -22,7 +22,7 @@ def _timestamp() -> Callable[[Observable], Observable]:
 
         Returns:
             An observable sequence with timestamp information on values.
-    """
+        """
 
         def factory(scheduler=None):
             scheduler = scheduler or timeout_scheduler
