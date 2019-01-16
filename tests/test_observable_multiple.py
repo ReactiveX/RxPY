@@ -35,7 +35,7 @@ def _raise(ex):
 
 #     // Now try again with catchException(Observable):
 #     subscribes = unsubscribes = 0
-#     s = tracer.catchException(Rx.Observable.never()).subscribe()
+#     s = tracer.catchException(Rx.rx.never()).subscribe()
 #     strictEqual(subscribes, 1, "catchException(Observable): 1 subscribes")
 #     strictEqual(unsubscribes, 0, "catchException(Observable): 0 unsubscribes")
 #     s.dispose()
@@ -44,7 +44,7 @@ def _raise(ex):
 
 #     // And now try again with catchException(function()):
 #     subscribes = unsubscribes = 0
-#     s = tracer.catchException(function () { return Rx.Observable.never() .subscribe()
+#     s = tracer.catchException(function () { return Rx.rx.never() .subscribe()
 #     strictEqual(subscribes, 1, "catchException(function): 1 subscribes")
 #     strictEqual(unsubscribes, 0, "catchException(function): 0 unsubscribes")
 #     s.dispose()

@@ -196,7 +196,7 @@ class TestDo(unittest.TestCase):
 #     saw_error = False
 #     has_completed = False
 #     scheduler.start(create)
-#         return Observable.never().do_action(function (x) {
+#         return rx.never().do_action(function (x) {
 #             i[0] += 1
 #         }, function (e) {
 #             saw_error = True

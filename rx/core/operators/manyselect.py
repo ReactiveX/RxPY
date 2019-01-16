@@ -24,10 +24,10 @@ class ChainObservable(ObservableBase):
         self.tail = AsyncSubject()
 
     def on_completed(self):
-        self.on_next(Observable.empty())
+        self.on_next(rx.empty())
 
     def on_error(self, error):
-        self.on_next(Observable.throw(error))
+        self.on_next(rx.throw(error))
 
     def on_next(self, value):
         self.tail.on_next(value)

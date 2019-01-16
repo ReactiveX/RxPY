@@ -18,17 +18,17 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
     1 - observable.group_by_until(
             lambda x: x.id,
             None,
-            lambda : Rx.Observable.never()
+            lambda : Rx.rx.never()
         )
     2 - observable.group_by_until(
             lambda x: x.id,
             lambda x: x.name,
-            lambda: Rx.Observable.never()
+            lambda: Rx.rx.never()
         )
     3 - observable.group_by_until(
             lambda x: x.id,
             lambda x: x.name,
-            lambda:  Rx.Observable.never(),
+            lambda:  Rx.rx.never(),
             lambda x: str(x))
 
     Keyword arguments:

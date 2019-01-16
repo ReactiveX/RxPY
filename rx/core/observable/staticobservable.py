@@ -271,7 +271,7 @@ class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
         else_source -- [Optional] The observable sequence or
             Promise that will be run if the condition function returns
             False. If this is not provided, it defaults to
-            rx.Observable.empty
+            rx.empty
 
         Returns an observable sequence which is either the
         then_source or else_source.
@@ -363,7 +363,7 @@ class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
         element. There is an alias called 'just'.
 
         example
-        res = rx.Observable.return_value(42)
+        res = rx.return_value(42)
 
         Keyword arguments:
         value -- Single element in the resulting observable sequence.
@@ -440,7 +440,7 @@ class StaticObservable(typing.Observable):  # pylint: disable=W0223,R0904
         exception, using the specified scheduler to send out the single
         OnError message.
 
-        1 - res = rx.Observable.throw(Exception('Error'))
+        1 - res = rx.throw(Exception('Error'))
 
         Keyword arguments:
         exception -- An object used for the sequence's termination.
