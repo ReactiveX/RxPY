@@ -1,7 +1,6 @@
 import unittest
 
 import rx
-from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 
@@ -28,11 +27,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: x <= 3,
-                                                          lambda x: x + 1,
-                                                          lambda x: x,
-                                                          lambda x: x + 1)
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: x <= 3,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(201, 0), on_next(
@@ -43,11 +42,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: _raise(ex),
-                                                          lambda x: x + 1,
-                                                          lambda x: x,
-                                                          lambda x: x + 1)
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -57,11 +56,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: True,
-                                                          lambda x: x + 1,
-                                                          lambda x: _raise(ex),
-                                                          lambda x: x + 1)
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -71,11 +70,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: True,
-                                                          lambda x: _raise(ex),
-                                                          lambda x: x,
-                                                          lambda x: x + 1)
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: x,
+                                                  lambda x: x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(201, 0), on_error(201, ex)]
@@ -85,11 +84,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: True,
-                                                          lambda x: x + 1,
-                                                          lambda x: x,
-                                                          lambda x: _raise(ex))
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: _raise(ex))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -98,11 +97,11 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return Observable.generate_with_relative_time(0,
-                                                          lambda x: True,
-                                                          lambda x: x + 1,
-                                                          lambda x: x,
-                                                          lambda x: x + 1)
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: x + 1)
 
         results = scheduler.start(create, disposed=210)
         assert results.messages == [on_next(201, 0), on_next(203, 1), on_next(206, 2)]
@@ -110,11 +109,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
     def test_generate_datetime_offset_finite(self):
         scheduler = TestScheduler()
 
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: True,
-                                                      lambda x: x + 1,
-                                                      lambda x: x,
-                                                      lambda x: scheduler.now() + x + 1)
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(201, 0), on_next(
@@ -123,11 +123,13 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
     def test_generate_datetime_offset_throw_condition(self):
         ex = 'ex'
         scheduler = TestScheduler()
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: _raise(ex),
-                                                      lambda x: x + 1,
-                                                      lambda x: x,
-                                                      lambda x: scheduler.now() + x + 1)
+
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -136,11 +138,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
 
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: True,
-                                                      lambda x: x + 1,
-                                                      lambda x: _raise(ex),
-                                                      lambda x: scheduler.now() + x + 1)
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -149,11 +152,12 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
 
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: True,
-                                                      lambda x: _raise(ex),
-                                                      lambda x: x,
-                                                      lambda x: scheduler.now() + x + 1)
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: _raise(ex),
+                                                  lambda x: x,
+                                                  lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(202, 0), on_error(202, ex)]
@@ -162,22 +166,25 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         ex = 'ex'
         scheduler = TestScheduler()
 
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: True,
-                                                      lambda x: x + 1,
-                                                      lambda x: x,
-                                                      lambda x: _raise(ex))
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: _raise(ex))
 
+        results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
 
     def test_generate_datetime_offset_dispose(self):
         scheduler = TestScheduler()
 
-        return Observable.generate_with_relative_time(0,
-                                                      lambda x: True,
-                                                      lambda x: x + 1,
-                                                      lambda x: x,
-                                                      lambda x: scheduler.now() + x + 1)
+        def create():
+            return rx.generate_with_relative_time(0,
+                                                  lambda x: True,
+                                                  lambda x: x + 1,
+                                                  lambda x: x,
+                                                  lambda x: scheduler.now() + x + 1)
 
         results = scheduler.start(create, disposed=210)
         assert results.messages == [on_next(202, 0), on_next(204, 1), on_next(207, 2)]
