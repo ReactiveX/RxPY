@@ -27,7 +27,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(210, 2), on_next(
@@ -47,7 +47,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_next(
@@ -68,7 +68,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_error(270, ex)]
@@ -87,7 +87,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_next(
@@ -107,7 +107,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(create, disposed=300)
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_next(290, 13)]
         assert xs.subscriptions == [subscribe(200, 300)]
@@ -125,7 +125,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(create, disposed=400)
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_next(
             290, 13), on_next(320, 3), on_next(350, 7), on_completed(390)]
@@ -144,7 +144,7 @@ class TestTakeWhile(unittest.TestCase):
 
                 invoked += 1
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(create, disposed=300)
         assert results.messages == [on_completed(205)]
         assert xs.subscriptions == [subscribe(200, 205)]
@@ -166,7 +166,7 @@ class TestTakeWhile(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x)
-            return xs.take_while(predicate)
+            return xs.pipe(ops.take_while(predicate))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(210, 2), on_next(260, 5), on_error(290, ex)]
@@ -179,7 +179,7 @@ class TestTakeWhile(unittest.TestCase):
             290, 13), on_next(320, 3), on_next(350, 7), on_next(390, 4), on_next(410, 17), on_next(450, 8), on_next(500, 23), on_completed(600))
 
         def factory():
-            return xs.take_while_indexed(lambda x, i: i < 5)
+            return xs.pipe(ops.take_while_indexed(lambda x, i: i < 5))
         results = scheduler.start(factory)
 
         assert results.messages == [on_next(205, 100), on_next(210, 2), on_next(

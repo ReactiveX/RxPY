@@ -1629,6 +1629,51 @@ def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Sched
     return _take_until_with_time(end_time, scheduler)
 
 
+def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+    """Returns elements from an observable sequence as long as a
+    specified condition is true. The element's index is used in the
+    logic of the predicate function.
+
+    Example:
+        >>> take_while(lambda value: value < 10)
+
+    Args:
+        predicate: A function to test each element for a condition; the
+            second parameter of the function represents the index of
+            the source element.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements from
+        the input sequence that occur before the element at which the
+        test no longer passes.
+    """
+    from rx.core.operators.takewhile import _take_while
+    return _take_while(predicate)
+
+
+def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
+    """Returns elements from an observable sequence as long as a specified
+    condition is true. The element's index is used in the logic of the
+    predicate function.
+
+    Example:
+        >>> take_while(lambda value, index: value < 10 or index < 10)
+
+    Args:
+        predicate: A function to test each element for a condition; the
+        second parameter of the function represents the index of the source
+        element.
+
+    Returns:
+        An observable sequence that contains the elements from the
+    input sequence that occur before the element at which the test no
+    longer passes.
+    """
+    from rx.core.operators.takewhile import _take_while_indexed
+    return _take_while_indexed(predicate)
+
+
 def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
