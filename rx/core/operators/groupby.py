@@ -25,7 +25,7 @@ def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], GroupedO
     """
 
     def duration_mapper(_):
-        return StaticObservable.never()
+        return Staticrx.never()
 
     def partial(source: Observable) -> GroupedObservable:
         return source.group_by_until(key_mapper, element_mapper, duration_mapper)

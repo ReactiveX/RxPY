@@ -35,17 +35,17 @@ class TestForEach(unittest.TestCase):
 
     def test_for_each_empty(self):
         lst = []
-        Observable.empty().to_blocking().for_each(lambda x: lst.append(x))
+        rx.empty().to_blocking().for_each(lambda x: lst.append(x))
         assert(lst == [])
 
     def test_For_each_index_empty(self):
         lst_x = []
-        Observable.empty().to_blocking().for_each(lambda x: lst_x.append(x))
+        rx.empty().to_blocking().for_each(lambda x: lst_x.append(x))
         assert(lst_x == [])
 
     def test_for_each_return(self):
         lst = []
-        Observable.return_value(42).to_blocking().for_each(lambda x: lst.append(x))
+        rx.return_value(42).to_blocking().for_each(lambda x: lst.append(x))
         assert(lst == [42])
 
     def test_for_each_index_return(self):
@@ -56,18 +56,18 @@ class TestForEach(unittest.TestCase):
             lst_x.append(x)
             lst_i.append(i)
 
-        Observable.return_value(42).to_blocking().for_each(action_indexed=action)
+        rx.return_value(42).to_blocking().for_each(action_indexed=action)
         assert(lst_x == [42])
         assert(lst_i == [0])
 
     def test_for_each_throws(self):
         ex = "ex"
-        xs = Observable.throw(ex)
+        xs = rx.throw(ex)
         self.assertRaises(Exception, lambda: xs.to_blocking().for_each(lambda x: _raise(ex)))
 
     def test_for_each_index_throws(self):
         ex = Exception()
-        xs = Observable.throw(ex)
+        xs = rx.throw(ex)
         self.assertRaises(Exception, lambda:xs.to_blocking().for_each(lambda x: _raise(ex)))
 
     def test_for_each_some_data(self):

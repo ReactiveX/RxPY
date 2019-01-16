@@ -22,7 +22,7 @@ def _if_then(condition: Callable[[], bool], then_source: Observable,
         else_source: [Optional] The observable sequence or
             Promise that will be run if the condition function returns
             False. If this is not provided, it defaults to
-            rx.Observable.empty
+            rx.empty
 
     Returns:
         An observable sequence which is either the then_source or

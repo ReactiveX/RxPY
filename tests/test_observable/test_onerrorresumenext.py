@@ -144,7 +144,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(220)]
         o1 = scheduler.create_hot_observable(msgs1)
-        o2 = Observable.never()
+        o2 = rx.never()
 
         def create():
             return Observable.on_error_resume_next(o1, o2)
@@ -155,7 +155,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
     def test_on_error_resume_next_start_with_never(self):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-        o1 = Observable.never()
+        o1 = rx.never()
         o2 = scheduler.create_hot_observable(msgs1)
 
         def create():

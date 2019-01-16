@@ -16,12 +16,12 @@ def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other
     Args:
         first_timeout -- [Optional] Observable sequence that represents the
             timeout for the first element. If not provided, this defaults to
-            Observable.never().
+            rx.never().
         timeout_duration_mapper -- [Optional] Selector to retrieve an
             observable sequence that represents the timeout between the
             current element and the next element.
         other -- [Optional] Sequence to return in case of a timeout. If not
-            provided, this is set to Observable.throw().
+            provided, this is set to rx.throw().
 
     Returns:
         The source sequence switching to the other sequence in case

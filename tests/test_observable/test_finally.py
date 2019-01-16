@@ -20,7 +20,7 @@ class TestFinally(unittest.TestCase):
         def action():
             invasserte_count[0] += 1
             return invasserte_count
-        some_observable = Observable.empty().finally_action(action)
+        some_observable = rx.empty().finally_action(action)
 
         d = some_observable.subscribe()
         d.dispose()
