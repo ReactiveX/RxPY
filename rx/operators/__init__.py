@@ -868,6 +868,25 @@ def multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = 
     return _multicast(subject, subject_factory, mapper)
 
 
+def observe_on(scheduler) -> Callable[[Observable], Observable]:
+    """Wraps the source sequence in order to run its observer callbacks
+    on the specified scheduler.
+
+    Args:
+        scheduler: Scheduler to notify observers on.
+
+    This only invokes observer callbacks on a scheduler. In case the
+    subscription and/or unsubscription actions have side-effects
+    that require to be run on a scheduler, use subscribe_on.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns the source sequence whose observations happen on the
+        specified scheduler.
+    """
+    from rx.core.operators.observeon import _observe_on
+    return _observe_on(scheduler)
+
 def pairwise() -> Callable[[Observable], Observable]:
     """The pairwise operator.
 
@@ -1361,6 +1380,32 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
     from rx.core.operators.startswith import _start_with
     return _start_with(*args)
 
+
+def subscribe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observable]:
+    """Subscribe on the specified scheduler.
+
+    Wrap the source sequence in order to run its subscription and
+    unsubscription logic on the specified scheduler. This operation is
+    not commonly used; see the remarks section for more information on
+    the distinction between subscribe_on and observe_on.
+
+    This only performs the side-effects of subscription and
+    unsubscription on the specified scheduler. In order to invoke
+    observer callbacks on a scheduler, use observe_on.
+
+    Args:
+        scheduler: Scheduler to perform subscription and unsubscription
+            actions on.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns the source sequence whose subscriptions and
+        un-subscriptions happen on the specified scheduler.
+    """
+    from rx.core.operators.subscribeon import _subscribe_on
+    return _subscribe_on(scheduler)
+
+
 def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the
@@ -1382,6 +1427,7 @@ def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.sum import _sum
     return _sum(key_mapper)
+
 
 def switch_latest() -> Callable[[Observable], Observable]:
     """The switch_latest operator.
@@ -1623,6 +1669,35 @@ def to_iterable() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.toiterable import _to_iterable
     return _to_iterable()
+
+
+def to_set() -> Callable[[Observable], Observable]:
+    """Converts the observable sequence to a set.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with a single value of a set
+        containing the values from the observable sequence.
+    """
+    from rx.core.operators.toset import _to_set
+    return _to_set()
+
+
+def while_do(condition) -> Callable[[Observable], Observable]:
+    """Repeats source as long as condition holds emulating a while
+    loop.
+
+    Args:
+        condition: The condition which determines if the source will be
+            repeated.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence which is repeated as long as the
+        condition holds.
+    """
+    from rx.core.operators.whiledo import _while_do
+    return _while_do(condition)
 
 
 def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:

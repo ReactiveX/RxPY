@@ -4,27 +4,27 @@ from rx.core.typing import Scheduler
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
 
-def subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
-    """Subscribe on the specified scheduler.
+def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
+    def subscribe_on(source: Observable) -> Observable:
+        """Subscribe on the specified scheduler.
 
-    Wrap the source sequence in order to run its subscription and
-    unsubscription logic on the specified scheduler. This operation is not
-    commonly used; see the remarks section for more information on the
-    distinction between subscribe_on and observe_on.
+        Wrap the source sequence in order to run its subscription and
+        unsubscription logic on the specified scheduler. This operation
+        is not commonly used; see the remarks section for more
+        information on the distinction between subscribe_on and
+        observe_on.
 
-    Keyword arguments:
-    scheduler -- Scheduler to perform subscription and unsubscription
-        actions on.
+        This only performs the side-effects of subscription and
+        unsubscription on the specified scheduler. In order to invoke
+        observer callbacks on a scheduler, use observe_on.
 
-    Returns the source sequence whose subscriptions and unsubscriptions
-    happen on the specified scheduler.
+        Args:
+            source: The source observable..
 
-    This only performs the side-effects of subscription and unsubscription
-    on the specified scheduler. In order to invoke observer callbacks on a
-    scheduler, use observe_on.
-    """
-
-    def partial(source: Observable) -> Observable:
+        Returns:
+            The source sequence whose subscriptions and
+            un-subscriptions happen on the specified scheduler.
+        """
         def subscribe(observer, _=None):
             m = SingleAssignmentDisposable()
             d = SerialDisposable()
@@ -37,4 +37,4 @@ def subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
             return d
 
         return AnonymousObservable(subscribe)
-    return partial
+    return subscribe_on
