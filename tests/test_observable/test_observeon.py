@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -16,13 +18,13 @@ class TestObserveOn(unittest.TestCase):
     def test_observe_on_normal(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                            on_next(150, 1),
-                            on_next(210, 2),
-                            on_completed(250)
-                        )
+            on_next(150, 1),
+            on_next(210, 2),
+            on_completed(250)
+        )
 
         def create():
-            return xs.observe_on(scheduler)
+            return xs.pipe(ops.observe_on(scheduler))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_completed(250)]
@@ -33,12 +35,12 @@ class TestObserveOn(unittest.TestCase):
         ex = 'ex'
 
         xs = scheduler.create_hot_observable(
-                            on_next(150, 1),
-                            on_error(210, ex)
-                        )
+            on_next(150, 1),
+            on_error(210, ex)
+        )
 
         def create():
-            return xs.observe_on(scheduler)
+            return xs.pipe(ops.observe_on(scheduler))
 
         results = scheduler.start(create)
 
@@ -49,12 +51,12 @@ class TestObserveOn(unittest.TestCase):
     def test_observe_on_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                            on_next(150, 1),
-                            on_completed(250)
-                        )
+            on_next(150, 1),
+            on_completed(250)
+        )
 
         def create():
-            return xs.observe_on(scheduler)
+            return xs.pipe(ops.observe_on(scheduler))
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(250)]
@@ -64,13 +66,12 @@ class TestObserveOn(unittest.TestCase):
     def test_observe_on_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                            on_next(150, 1)
-                        )
+            on_next(150, 1)
+        )
 
         def create():
-            return xs.observe_on(scheduler)
+            return xs.pipe(ops.observe_on(scheduler))
         results = scheduler.start(create)
 
         assert results.messages == []
         assert xs.subscriptions == [subscribe(200, 1000)]
-
