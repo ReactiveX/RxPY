@@ -1836,6 +1836,34 @@ def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: 
     return _timeout(duetime, other, scheduler)
 
 
+def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None
+                       ) -> Callable[[Observable], Observable]:
+    """Returns the source observable sequence, switching to the other
+    observable sequence if a timeout is signaled.
+
+        res = timeout_with_mapper(rx.timer(500))
+        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
+        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
+
+    Args:
+        first_timeout: [Optional] Observable sequence that represents
+            the timeout for the first element. If not provided, this
+            defaults to rx.never().
+        timeout_duration_mapper: [Optional] Selector to retrieve an
+            observable sequence that represents the timeout between the
+            current element and the next element.
+        other: [Optional] Sequence to return in case of a timeout. If
+            not provided, this is set to rx.throw().
+
+    Returns:
+        An operator function that takes an observable source and
+        returns the source sequence switching to the other sequence in
+        case of a timeout.
+    """
+    from rx.core.operators.timeoutwithmapper import _timeout_with_mapper
+    return _timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
+
+
 def time_interval() -> Callable[[Observable], Observable]:
     """Records the time interval between consecutive values in an
     observable sequence.
