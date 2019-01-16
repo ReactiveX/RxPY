@@ -803,7 +803,7 @@ def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
         zero or more elements that have a maximum key value.
     """
     from rx.core.operators.maxby import _max_by
-    return _max_by(comparer)
+    return _max_by(key_mapper, comparer)
 
 def merge_all() -> Callable[[Observable], Observable]:
     """The merge_all operator.
@@ -861,7 +861,7 @@ def min_by(key_mapper, comparer=None) -> Observable:
         or more elements that have a minimum key value.
     """
     from rx.core.operators.minby import _min_by
-    return _min_by(comparer)
+    return _min_by(key_mapper, comparer)
 
 def multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,
               mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:

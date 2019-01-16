@@ -5,7 +5,7 @@ def extrema_by(source, key_mapper, comparer):
     def subscribe(observer, scheduler=None):
         has_value = [False]
         last_key = [None]
-        list = []
+        items = []
 
         def on_next(x):
             try:
@@ -28,14 +28,13 @@ def extrema_by(source, key_mapper, comparer):
 
             if comparison > 0:
                 last_key[0] = key
-                #list.clear()
-                list[:] = []
+                items[:] = []
 
             if comparison >= 0:
-                list.append(x)
+                items.append(x)
 
         def on_completed():
-            observer.on_next(list)
+            observer.on_next(items)
             observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
