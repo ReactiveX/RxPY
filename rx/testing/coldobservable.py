@@ -12,6 +12,9 @@ class ColdObservable(Observable):
         self.messages = messages
         self.subscriptions: List[Subscription] = []
 
+    def subscribe(self, observer=None, scheduler=None):
+        return self._subscribe_core(observer, scheduler)
+
     def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
         clock = self.scheduler.to_relative(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
@@ -34,6 +37,9 @@ class ColdObservable(Observable):
         def dispose() -> None:
             start = self.subscriptions[index].subscribe
             end = self.scheduler.to_relative(self.scheduler.now)
+
+            print("Dispose cold at: %s" % self.scheduler.to_relative(self.scheduler.now))
+
             self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 
