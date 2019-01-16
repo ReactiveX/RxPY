@@ -33,33 +33,6 @@ class ConnectableObservable(Observable):
 
         return self.subscription
 
-    def ref_count(self):
-        """Returns an observable sequence that stays connected to the
-        source as long as there is at least one subscription to the
-        observable sequence.
-        """
-
-        connectable_subscription = [None]
-        count = [0]
-        source = self
-
-        def subscribe(observer, scheduler=None):
-            count[0] += 1
-            should_connect = count[0] == 1
-            subscription = source.subscribe(observer, scheduler)
-            if should_connect:
-                connectable_subscription[0] = source.connect(scheduler)
-
-            def dispose():
-                subscription.dispose()
-                count[0] -= 1
-                if not count[0]:
-                    connectable_subscription[0].dispose()
-
-            return Disposable.create(dispose)
-
-        return AnonymousObservable(subscribe)
-
     def auto_connect(self, subscriber_count=1):
         """Returns an observable sequence that stays connected to the
         source indefinitely to the observable sequence.
