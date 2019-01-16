@@ -1134,6 +1134,15 @@ def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable
     return _reduce(accumulator, seed)
 
 
+def ref_count() -> Callable[[ConnectableObservable], Observable]:
+    """Returns an observable sequence that stays connected to the
+    source as long as there is at least one subscription to the
+    observable sequence.
+    """
+    from rx.core.operators.connectable.refcount import _ref_count
+    return _ref_count()
+
+
 def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
     """Repeats the observable sequence a specified number of times.
     If the repeat count is not specified, the sequence repeats
@@ -1806,9 +1815,9 @@ def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observa
     return _window_with_time(timespan, timeshift)
 
 
-def window_with_time_or_count(timespan: Union[timedelta, int], count: int) -> Callable[[Observable], Observable]:
+def window_with_time_or_count(timespan: Union[timedelta, int], count: int, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
-    return _window_with_time_or_count(timespan, count)
+    return _window_with_time_or_count(timespan, count, scheduler)
 
 
 def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]

@@ -106,7 +106,7 @@ class TestPublish(unittest.TestCase):
         conn = ConnectableObservable(xs, subject)
 
         def create():
-            return conn.ref_count()
+            return conn.pipe(ops.ref_count())
 
         res = scheduler.start(create)
 
@@ -136,7 +136,7 @@ class TestPublish(unittest.TestCase):
 
         subject = MySubject()
         conn = ConnectableObservable(xs, subject)
-        refd = conn.ref_count()
+        refd = conn.pipe(ops.ref_count())
         dis1 = refd.subscribe()
         self.assertEqual(1, count[0])
         self.assertEqual(1, subject.subscribe_count)
