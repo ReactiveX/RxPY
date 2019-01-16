@@ -1,36 +1,37 @@
 from typing import Callable
-from rx.core import Observable, StaticObservable, AnonymousObservable
+
+import rx
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
-def timeout_with_selector(first_timeout=None, timeout_duration_mapper=None, other=None) -> Callable[[Observable], Observable]:
+def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
-    1 - res = source.timeout_with_selector(rx.Observable.timer(500))
-    2 - res = source.timeout_with_selector(rx.Observable.timer(500),
-                lambda x: rx.Observable.timer(200))
-    3 - res = source.timeout_with_selector(rx.Observable.timer(500),
-                lambda x: rx.Observable.timer(200)),
-                rx.Observable.return_value(42))
+        res = timeout_with_mapper(rx.timer(500))
+        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
+        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
 
-    first_timeout -- [Optional] Observable sequence that represents the
-        timeout for the first element. If not provided, this defaults to
-        Observable.never().
-    timeout_duration_mapper -- [Optional] Selector to retrieve an
-        observable sequence that represents the timeout between the
-        current element and the next element.
-    other -- [Optional] Sequence to return in case of a timeout. If not
-        provided, this is set to Observable.throw().
+    Args:
+        first_timeout -- [Optional] Observable sequence that represents the
+            timeout for the first element. If not provided, this defaults to
+            Observable.never().
+        timeout_duration_mapper -- [Optional] Selector to retrieve an
+            observable sequence that represents the timeout between the
+            current element and the next element.
+        other -- [Optional] Sequence to return in case of a timeout. If not
+            provided, this is set to Observable.throw().
 
-    Returns the source sequence switching to the other sequence in case
+    Returns:
+        The source sequence switching to the other sequence in case
     of a timeout.
     """
 
-    first_timeout = first_timeout or StaticObservable.never()
-    other = other or StaticObservable.throw(Exception('Timeout'))
+    first_timeout = first_timeout or rx.never()
+    other = other or rx.throw(Exception('Timeout'))
 
-    def partial(source: Observable) -> Observable:
+    def timeout_with_mapper(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             subscription = SerialDisposable()
             timer = SerialDisposable()
@@ -98,4 +99,4 @@ def timeout_with_selector(first_timeout=None, timeout_duration_mapper=None, othe
             original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
             return CompositeDisposable(subscription, timer)
         return AnonymousObservable(subscribe)
-    return partial
+    return timeout_with_mapper

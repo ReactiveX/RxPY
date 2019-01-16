@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -32,7 +34,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: ys)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: ys))
 
         results = scheduler.start(create)
 
@@ -63,7 +65,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
 
         results = scheduler.start(create)
 
@@ -80,7 +82,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable(on_next(50, 'boo!'))
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
         results = scheduler.start(create)
 
         self.assertEqual(3, len(results.messages))
@@ -98,7 +100,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable(on_completed(50))
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
         results = scheduler.start(create)
 
         self.assertEqual(3, len(results.messages))
@@ -123,7 +125,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
                 else:
                     raise Exception(ex)
 
-            return xs.timeout_with_selector(ys, mapper)
+            return xs.pipe(ops.timeout_with_mapper(ys, mapper))
 
         results = scheduler.start(create)
 
@@ -144,7 +146,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable(on_error(50, ex))
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(310, 1), on_next(350, 2), on_error(400, ex)]
@@ -160,7 +162,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
         results = scheduler.start(create)
 
         assert results.messages == [on_error(250, ex)]
@@ -176,7 +178,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         zs = scheduler.create_cold_observable()
 
         def create():
-            return xs.timeout_with_selector(ys, lambda _: zs)
+            return xs.pipe(ops.timeout_with_mapper(ys, lambda _: zs))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(310, 1), on_next(350, 2), on_next(420, 3), on_error(450, ex)]
