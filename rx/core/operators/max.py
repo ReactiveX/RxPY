@@ -16,7 +16,7 @@ def _max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Obser
         >>> op = max(lambda x, y:  x.value - y.value)
 
     Args:
-        comparer -- [Optional] Comparer used to compare elements.
+        comparer: [Optional] Comparer used to compare elements.
 
     Returns:
         An operator function that takes an observable source and returns

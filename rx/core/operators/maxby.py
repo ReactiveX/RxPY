@@ -6,6 +6,8 @@ from .minby import extrema_by
 
 
 def _max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+    comparer = comparer or default_sub_comparer
+
     def max_by(source: Observable) -> Observable:
         """Partially applied max_by operator.
 
@@ -22,6 +24,5 @@ def _max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
             An observable sequence containing a list of zero or more
             elements that have a maximum key value.
         """
-        comparer = comparer or default_sub_comparer
         return extrema_by(source, key_mapper, comparer)
     return max_by
