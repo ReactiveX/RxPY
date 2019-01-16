@@ -57,7 +57,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.empty().pipe(ops.time_interval())
+            return rx.empty().pipe(ops.timestamp())
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(200)]
@@ -67,7 +67,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.throw(ex).pipe(ops.time_interval())
+            return rx.throw(ex).pipe(ops.timestamp())
 
         results = scheduler.start(create)
         assert results.messages == [on_error(200, ex)]
@@ -76,7 +76,7 @@ class TestTimeInterval(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.never().pipe(ops.time_interval())
+            return rx.never().pipe(ops.timestamp())
 
         results = scheduler.start(create)
         assert results.messages == []

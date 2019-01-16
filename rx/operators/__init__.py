@@ -1836,6 +1836,21 @@ def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: 
     return _timeout(duetime, other, scheduler)
 
 
+def time_interval() -> Callable[[Observable], Observable]:
+    """Records the time interval between consecutive values in an
+    observable sequence.
+
+        >>> res = time_interval()
+
+    Return:
+        An operator function that takes an observable source and
+        returns an observable sequence with time interval information
+        on values.
+    """
+    from rx.core.operators.timeinterval import _time_interval
+    return _time_interval()
+
+
 def to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
     """Converts an existing observable sequence to a Future.
 
