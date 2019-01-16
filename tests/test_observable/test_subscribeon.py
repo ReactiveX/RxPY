@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -22,7 +24,7 @@ class TestSubscribeOn(unittest.TestCase):
         )
 
         def create():
-            return xs.subscribe_on(scheduler)
+            return xs.pipe(ops.subscribe_on(scheduler))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_completed(250)]
@@ -37,7 +39,7 @@ class TestSubscribeOn(unittest.TestCase):
         )
 
         def create():
-            return xs.subscribe_on(scheduler)
+            return xs.pipe(ops.subscribe_on(scheduler))
 
         results = scheduler.start(create)
 
@@ -52,7 +54,7 @@ class TestSubscribeOn(unittest.TestCase):
         )
 
         def create():
-            return xs.subscribe_on(scheduler)
+            return xs.pipe(ops.subscribe_on(scheduler))
 
         results = scheduler.start(create)
 
@@ -66,7 +68,7 @@ class TestSubscribeOn(unittest.TestCase):
         )
 
         def create():
-            return xs.subscribe_on(scheduler)
+            return xs.pipe(ops.subscribe_on(scheduler))
 
         results = scheduler.start(create)
 

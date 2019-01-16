@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -32,7 +34,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -72,7 +74,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -114,7 +116,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
 
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
@@ -162,7 +164,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
 
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
@@ -210,7 +212,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -257,7 +259,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -303,7 +305,7 @@ class TestPartition(unittest.TestCase):
         results2 = scheduler.create_observer()
 
         def action0(scheduler, state):
-            observables.extend(xs.partition(is_even))
+            observables.extend(xs.pipe(ops.partition(is_even)))
 
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 

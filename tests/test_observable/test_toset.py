@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,7 +28,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            return xs.to_set()
+            return xs.pipe(ops.to_set())
 
         results = scheduler.start(create)
         assert results.messages == [on_next(660, set([2, 3, 4, 5])), on_completed(660)]
@@ -48,7 +50,7 @@ class TestToDict(unittest.TestCase):
             on_error(660, error)
         )
 
-        results = scheduler.start(lambda: xs.to_set())
+        results = scheduler.start(lambda: xs.pipe(ops.to_set()))
 
         assert results.messages == [
             on_error(660, error)]
@@ -67,7 +69,7 @@ class TestToDict(unittest.TestCase):
             on_next(550, 5)
         )
 
-        results = scheduler.start(lambda: xs.to_set())
+        results = scheduler.start(lambda: xs.pipe(ops.to_set()))
 
         assert results.messages == []
 
