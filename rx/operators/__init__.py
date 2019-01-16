@@ -1,4 +1,6 @@
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
+
+from asyncio import Future
 from typing import Callable, Union, Any, Iterable, List
 from datetime import timedelta, datetime
 
@@ -7,7 +9,6 @@ from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
 
 
-# pylint: disable=redefined-builtin
 def all(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Determines whether all elements of an observable sequence satisfy
     a condition.
@@ -27,6 +28,7 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
     from rx.core.operators.all import _all
     return _all(predicate)
 
+
 def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     """Propagates the observable sequence that reacts first.
 
@@ -40,6 +42,7 @@ def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.amb import _amb
     return _amb(right_source)
+
 
 def as_observable() -> Callable[[Observable], Observable]:
     """Hides the identity of an observable sequence.
@@ -143,8 +146,8 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
     return _catch_exception(second, handler)
 
 
-def combine_latest(other: Union[Observable, Iterable[Observable]],
-                   mapper: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+def combine_latest(other: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
+                  ) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequences into one observable
     sequence by using the mapper function whenever any of the
     observable sequences produces an element.
@@ -1426,7 +1429,7 @@ def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Sched
         the specified end time.
     """
     from rx.core.operators.takeuntilwithtime import _take_until_with_time
-    return _take_until_with_time(end_time, scheduler=None)
+    return _take_until_with_time(end_time, scheduler)
 
 
 def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
@@ -1539,6 +1542,23 @@ def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: 
     """
     from rx.core.operators.timeout import _timeout
     return _timeout(duetime, other, scheduler)
+
+
+def to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
+    """Converts an existing observable sequence to a Future.
+
+    Example:
+        op = to_future(asyncio.Future);
+
+    Args:
+        future_ctor: [Optional] The constructor of the future.
+
+    Returns:
+        An operator function that takes an obserable source and returns
+        a future with the last value from the observable sequence.
+    """
+    from rx.core.operators.tofuture import _to_future
+    return _to_future(future_ctor)
 
 
 def to_iterable() -> Callable[[Observable], Observable]:

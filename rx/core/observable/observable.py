@@ -22,6 +22,19 @@ class Observable(typing.Observable):
         self.lock = threading.RLock()
         self.source: Optional[abc.Observable] = source
 
+    def __await__(self) -> Any:
+        """Awaits the given observable.
+
+        Returns:
+            The last item of the observable sequence.
+
+        Raises:
+            TypeError: If key is not of type int or slice
+        """
+        from ..operators.tofuture import _to_future
+        return iter(self.pipe(_to_future()))
+
+
     def __add__(self, other):
         """Pythonic version of concat.
 
