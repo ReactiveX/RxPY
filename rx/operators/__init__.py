@@ -628,6 +628,34 @@ def is_empty() -> Callable[[Observable], Observable]:
     return _is_empty()
 
 
+def join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> Callable[[Observable], Observable]:
+    """Correlates the elements of two sequences based on overlapping
+    durations.
+
+    Args:
+        right: The right observable sequence to join elements for.
+        left_duration_mapper: A function to select the duration
+            (expressed as an observable sequence) of each element of
+            the left observable sequence, used to determine overlap.
+        right_duration_mapper: A function to select the duration
+            (expressed as an observable sequence) of each element of
+            the right observable sequence, used to determine overlap.
+        result_mapper: A function invoked to compute a result element
+            for any two overlapping elements of the left and right
+            observable sequences. The parameters passed to the function
+            correspond with the elements from the left and right source
+            sequences for which overlap occurs.
+
+    Return:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains result elements
+        computed from source elements that have an overlapping
+        duration.
+    """
+    from rx.core.operators.join import _join
+    return _join(right, left_duration_mapper, right_duration_mapper, result_mapper)
+
+
 def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     """The last operator.
 
