@@ -1,3 +1,5 @@
+# pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
+
 from asyncio.futures import Future
 from typing import Iterable, Callable, Any, Optional, Union
 
@@ -205,6 +207,21 @@ def from_iterable(iterable: Iterable) -> Observable:
 
 from_ = from_iterable
 from_list = from_iterable
+
+
+def merge(*args) -> Observable:
+    """Merges all the observable sequences into a single observable
+    sequence.
+
+    1 - merged = rx.merge(xs, ys, zs)
+    2 - merged = rx.merge([xs, ys, zs])
+
+    Returns:
+        The observable sequence that merges the elements of the
+        observable sequences.
+    """
+    from .core.observable.merge import _merge
+    return _merge(*args)
 
 
 def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:

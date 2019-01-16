@@ -805,6 +805,31 @@ def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     from rx.core.operators.maxby import _max_by
     return _max_by(key_mapper, comparer)
 
+
+def merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+    """Merges an observable sequence of observable sequences into an
+    observable sequence, limiting the number of concurrent
+    subscriptions to inner sequences. Or merges two observable
+    sequences into a single observable sequence.
+
+    Examples:
+        >>> merged = sources.merge(max_concurrent=1)
+        >>> merged = source.merge(other_source)
+
+    Args:
+        max_concurrent: [Optional] Maximum number of inner observable
+            sequences being subscribed to concurrently or the second
+            observable sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns the observable sequence that merges the elements of the
+        inner sequences.
+    """
+    from rx.core.operators.merge import _merge
+    return _merge(*args, max_concurrent=max_concurrent)
+
+
 def merge_all() -> Callable[[Observable], Observable]:
     """The merge_all operator.
 
@@ -818,6 +843,7 @@ def merge_all() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.merge import _merge_all
     return _merge_all()
+
 
 def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
     """The `min` operator.
