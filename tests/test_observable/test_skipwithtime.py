@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -17,7 +18,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_with_time(0)
+            return xs.pipe(ops.skip_with_time(0))
 
         res = scheduler.start(create)
 
@@ -29,7 +30,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_with_time(15)
+            return xs.pipe(ops.skip_with_time(15))
 
         res = scheduler.start(create)
 
@@ -41,7 +42,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
 
         def create():
-            return xs.skip_with_time(50)
+            return xs.pipe(ops.skip_with_time(50))
 
         res = scheduler.start(create)
 
@@ -54,7 +55,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            return xs.skip_with_time(50)
+            return xs.pipe(ops.skip_with_time(50))
 
         res = scheduler.start(create)
 
@@ -66,7 +67,7 @@ class TestSkipWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.skip_with_time(50)
+            return xs.pipe(ops.skip_with_time(50))
 
         res = scheduler.start(create)
 
@@ -75,10 +76,16 @@ class TestSkipWithTime(unittest.TestCase):
 
     def test_skip_twice1(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
+        xs = scheduler.create_hot_observable(
+                on_next(210, 1), on_next(220, 2), on_next(230, 3),
+                on_next(240, 4), on_next(250, 5), on_next(260, 6),
+                on_completed(270))
 
         def create():
-            return xs.skip_with_time(15).skip_with_time(30)
+            return xs.pipe(
+                    ops.skip_with_time(15),
+                    ops.skip_with_time(30),
+                    )
 
         res = scheduler.start(create)
 
@@ -87,10 +94,16 @@ class TestSkipWithTime(unittest.TestCase):
 
     def test_skip_twice2(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270))
+        xs = scheduler.create_hot_observable(
+                on_next(210, 1), on_next(220, 2), on_next(230, 3),
+                on_next(240, 4), on_next(250, 5), on_next(260, 6),
+                on_completed(270))
 
         def create():
-            return xs.skip_with_time(30).skip_with_time(15)
+            return xs.pipe(
+                    ops.skip_with_time(30),
+                    ops.skip_with_time(15),
+                    )
 
         res = scheduler.start(create)
 
