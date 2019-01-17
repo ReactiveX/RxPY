@@ -42,7 +42,7 @@ def case(mapper, sources, default_source=None) -> Observable:
     return _case(mapper, sources, default_source)
 
 
-def catch_exception(*args: Observable) -> Observable:
+def catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 

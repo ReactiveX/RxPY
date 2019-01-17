@@ -1339,6 +1339,27 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: timedelta = N
     return _replay(mapper, buffer_size, window, scheduler)
 
 
+def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
+    """Repeats the source observable sequence the specified number of
+    times or until it successfully terminates. If the retry count is
+    not specified, it retries indefinitely.
+
+    Examples:
+        >>> retried = retry()
+        >>> retried = retry(42)
+
+    Args:
+        retry_count: [Optional] Number of times to retry the sequence.
+            If not provided, retry the sequence indefinitely.
+
+    Returns:
+        An observable sequence producing the elements of the given
+        sequence repeatedly until it terminates successfully.
+    """
+    from rx.core.operators.retry import _retry
+    return _retry(retry_count)
+
+
 def sample(interval=None, sampler=None) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
 

@@ -1,10 +1,11 @@
+from typing import Iterable, Union
+
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
-from rx.internal import Iterable
 
 
-def _catch_exception(*args: Observable) -> Observable:
+def _catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
@@ -21,7 +22,7 @@ def _catch_exception(*args: Observable) -> Observable:
     if isinstance(args[0], (list, Iterable)):
         sources = args[0]
     else:
-        sources = list(args)
+        sources = iter(args)
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
@@ -30,7 +31,6 @@ def _catch_exception(*args: Observable) -> Observable:
         cancelable = SerialDisposable()
         last_exception = [None]
         is_disposed = []
-        e = iter(sources)
 
         def action(action1, state=None):
             def on_error(exn):
@@ -41,7 +41,7 @@ def _catch_exception(*args: Observable) -> Observable:
                 return
 
             try:
-                current = next(e)
+                current = next(sources)
             except StopIteration:
                 if last_exception[0]:
                     observer.on_error(last_exception[0])
