@@ -1,6 +1,7 @@
 from typing import Callable
 from collections import OrderedDict
 
+from rx.operators import take
 from rx.core import AnonymousObservable, Observable
 from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
@@ -54,7 +55,7 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.take(1).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
 
                 for val in right_map.values():
                     try:
@@ -94,7 +95,7 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.take(1).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
 
                 for val in left_map.values():
                     try:
