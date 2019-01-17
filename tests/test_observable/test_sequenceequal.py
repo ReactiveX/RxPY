@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -18,7 +20,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: xs.sequence_equal(ys))
+        results = scheduler.start(lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(720, True), on_completed(720)]
         assert xs.subscriptions == [subscribe(200, 720)]
@@ -30,7 +32,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: ys.sequence_equal(xs))
+        results = scheduler.start(lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(720, True), on_completed(720)]
         assert xs.subscriptions == [subscribe(200, 720)]
@@ -42,7 +44,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: xs.sequence_equal(ys))
+        results = scheduler.start(lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
         assert xs.subscriptions == [subscribe(200, 310)]
@@ -54,7 +56,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_completed(720)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: ys.sequence_equal(xs))
+        results = scheduler.start(lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
         assert xs.subscriptions == [subscribe(200, 310)]
@@ -66,7 +68,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: xs.sequence_equal(ys))
+        results = scheduler.start(lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(510, False), on_completed(510)]
         assert xs.subscriptions == [subscribe(200, 510)]
@@ -78,7 +80,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 8)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(lambda: ys.sequence_equal(xs))
+        results = scheduler.start(lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(510, False), on_completed(510)]
         assert xs.subscriptions == [subscribe(200, 510)]
@@ -90,7 +92,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 9), on_next(400, 9), on_next(410, 10), on_next(490, 11), on_next(550, 12), on_next(560, 13)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: xs.sequence_equal(ys))
+        results = scheduler.start(create=lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(490, False), on_completed(490)]
         assert xs.subscriptions == [subscribe(200, 490)]
@@ -102,7 +104,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(280, 4), on_next(300, 5), on_next(330, 6), on_next(340, 7), on_next(350, 9), on_next(400, 9), on_next(410, 10), on_next(490, 11), on_next(550, 12), on_next(560, 13)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: ys.sequence_equal(xs))
+        results = scheduler.start(create=lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(490, False), on_completed(490)]
         assert xs.subscriptions == [subscribe(200, 490)]
@@ -114,7 +116,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(400, 4), on_completed(420)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: xs.sequence_equal(ys))
+        results = scheduler.start(create=lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(420, False), on_completed(420)]
         assert xs.subscriptions == [subscribe(200, 420)]
@@ -126,7 +128,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(90, 1), on_next(270, 3), on_next(400, 4), on_completed(420)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: ys.sequence_equal(xs))
+        results = scheduler.start(create=lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(420, False), on_completed(420)]
         assert xs.subscriptions == [subscribe(200, 420)]
@@ -143,7 +145,7 @@ class TestSequenceEqual(unittest.TestCase):
         def create():
             def comparer(a, b):
                 raise Exception(ex)
-            return xs.sequence_equal(ys, comparer)
+            return xs.pipe(ops.sequence_equal(ys, comparer))
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(270, ex)]
@@ -161,7 +163,7 @@ class TestSequenceEqual(unittest.TestCase):
         def create():
             def comparer(a, b):
                 raise Exception(ex)
-            return ys.sequence_equal(xs, comparer)
+            return ys.pipe(ops.sequence_equal(xs, comparer))
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(270, ex)]
@@ -174,7 +176,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(290, 1), on_next(310, 2), on_completed(350)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: xs.sequence_equal(ys))
+        results = scheduler.start(create=lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
         assert xs.subscriptions == [subscribe(200, 310)]
@@ -186,7 +188,7 @@ class TestSequenceEqual(unittest.TestCase):
         msgs2 = [on_next(290, 1), on_next(310, 2), on_completed(350)]
         xs = scheduler.create_hot_observable(msgs1)
         ys = scheduler.create_hot_observable(msgs2)
-        results = scheduler.start(create=lambda: ys.sequence_equal(xs))
+        results = scheduler.start(create=lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
         assert xs.subscriptions == [subscribe(200, 310)]
@@ -197,7 +199,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 
         def create():
-            return xs.sequence_equal([3, 4, 5, 6, 7])
+            return xs.pipe(ops.sequence_equal([3, 4, 5, 6, 7]))
 
         res = scheduler.start(create=create)
 
@@ -209,7 +211,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 
         def create():
-            return xs.sequence_equal([3, 4, 9, 6, 7])
+            return xs.pipe(ops.sequence_equal([3, 4, 9, 6, 7]))
 
         res = scheduler.start(create=create)
 
@@ -223,7 +225,7 @@ class TestSequenceEqual(unittest.TestCase):
         def create():
             def comparer(x, y):
                 return x % 2 == y % 2
-            return xs.sequence_equal([3 - 2, 4, 5, 6 + 42, 7 - 6], comparer)
+            return xs.pipe(ops.sequence_equal([3 - 2, 4, 5, 6 + 42, 7 - 6], comparer))
 
         res = scheduler.start(create=create)
 
@@ -237,7 +239,7 @@ class TestSequenceEqual(unittest.TestCase):
         def create():
             def comparer(x, y):
                 return x % 2 == y % 2
-            return xs.sequence_equal([3 - 2, 4, 5 + 9, 6 + 42, 7 - 6], comparer)
+            return xs.pipe(ops.sequence_equal([3 - 2, 4, 5 + 9, 6 + 42, 7 - 6], comparer))
 
         res = scheduler.start(create=create)
 
@@ -258,7 +260,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 
         def create():
-            return xs.sequence_equal([3, 4, 5, 6, 7], on_error_comparer(5, ex))
+            return xs.pipe(ops.sequence_equal([3, 4, 5, 6, 7], on_error_comparer(5, ex)))
 
         res = scheduler.start(create=create)
 
@@ -270,7 +272,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 
         def create():
-            return xs.sequence_equal([3, 4, 5, 6, 7, 8])
+            return xs.pipe(ops.sequence_equal([3, 4, 5, 6, 7, 8]))
 
         res = scheduler.start(create=create)
 
@@ -282,7 +284,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_next(310, 5), on_next(340, 6), on_next(450, 7), on_completed(510))
 
         def create():
-            return xs.sequence_equal([3, 4, 5, 6])
+            return xs.pipe(ops.sequence_equal([3, 4, 5, 6]))
 
         res = scheduler.start(create=create)
 
@@ -295,7 +297,7 @@ class TestSequenceEqual(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(110, 1), on_next(190, 2), on_next(240, 3), on_next(290, 4), on_error(310, ex))
 
         def create():
-            return xs.sequence_equal([3, 4])
+            return xs.pipe(ops.sequence_equal([3, 4]))
 
         res = scheduler.start(create=create)
 
