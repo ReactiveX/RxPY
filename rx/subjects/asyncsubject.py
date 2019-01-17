@@ -74,7 +74,7 @@ class AsyncSubject(Observable, Observer):
                 for o in os:
                     o.on_completed()
 
-    def on_error(self, exception):
+    def on_error(self, error):
         os = None
 
         with self.lock:
@@ -83,11 +83,11 @@ class AsyncSubject(Observable, Observer):
                 os = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
-                self.exception = exception
+                self.exception = error
 
         if os:
             for o in os:
-                o.on_error(exception)
+                o.on_error(error)
 
     def on_next(self, value):
         with self.lock:
