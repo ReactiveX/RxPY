@@ -1,6 +1,6 @@
 from rx.core import AnonymousObservable, Observable
 from rx.internal.exceptions import SequenceContainsNoElementsError
-
+from rx import operators as ops
 
 def last_or_default_async(source, has_default=False, default_value=None):
     def subscribe(observer, scheduler=None):
@@ -38,7 +38,10 @@ def _last_or_default(predicate=None, default_value=None) -> Observable:
         """
 
         if predicate:
-            return source.filter(predicate).last_or_default(None, default_value)
+            return source.pipe(
+                    ops.filter(predicate),
+                    ops.last_or_default(None, default_value),
+                    )
 
         return last_or_default_async(source, True, default_value)
     return last_or_default
