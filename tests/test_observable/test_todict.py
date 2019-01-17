@@ -1,5 +1,7 @@
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -26,7 +28,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            return xs.to_dict(lambda x: x * 2, lambda x: x * 4)
+            return xs.pipe(ops.to_dict(lambda x: x * 2, lambda x: x * 4))
 
         res = scheduler.start(create)
         print(res.messages)
@@ -52,7 +54,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            return xs.to_dict(lambda x: x * 2, lambda x: x * 4)
+            return xs.pipe(ops.to_dict(lambda x: x * 2, lambda x: x * 4))
 
         res = scheduler.start(create)
 
@@ -83,7 +85,7 @@ class TestToDict(unittest.TestCase):
                     return x * 2
                 else:
                     raise ex
-            return xs.to_dict(key_mapper, lambda x: x * 4)
+            return xs.pipe(ops.to_dict(key_mapper, lambda x: x * 4))
 
         res = scheduler.start(create)
 
@@ -114,7 +116,7 @@ class TestToDict(unittest.TestCase):
                 raise ex
 
         def create():
-            return xs.to_dict(lambda x: x * 2 , value_mapper)
+            return xs.pipe(ops.to_dict(lambda x: x * 2 , value_mapper))
 
         res = scheduler.start(create)
 
@@ -136,7 +138,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            return xs.to_dict(lambda x: x * 2, lambda x: x * 4)
+            return xs.pipe(ops.to_dict(lambda x: x * 2, lambda x: x * 4))
 
         res = scheduler.start(create)
 
