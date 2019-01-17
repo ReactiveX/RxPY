@@ -1869,6 +1869,36 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     from rx.core.operators.takelast import _take_last
     return _take_last(count)
 
+
+def take_last_buffer(count) -> Callable[[Observable], Observable]:
+    """The `take_last_buffer` operator.
+
+    Returns an array with the specified number of contiguous elements
+    from the end of an observable sequence.
+
+    Example:
+        >>> res = source.take_last(5)
+
+    This operator accumulates a buffer with a length enough to store
+    elements count elements. Upon completion of the source sequence,
+    this buffer is drained on the result sequence. This causes the
+    elements to be delayed.
+
+    Args:
+        count: Number of elements to take from the end of the source
+        sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing a single list with
+        the specified number of elements from the end of the source
+        sequence.
+    """
+    from rx.core.operators.takelastbuffer import _take_last_buffer
+    return _take_last_buffer(count)
+
+
+
 def take_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
