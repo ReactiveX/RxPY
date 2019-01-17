@@ -1543,6 +1543,54 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
+def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable]:
+    """The `skip_while` operator.
+
+    Bypasses elements in an observable sequence as long as a specified
+    condition is true and then returns the remaining elements. The
+    element's index is used in the logic of the predicate function.
+
+    Example:
+        >>> skip_while(lambda value: value < 10)
+
+    Args:
+        predicate: A function to test each element for a condition; the
+            second parameter of the function represents the index of
+            the source element.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements from
+        the input sequence starting at the first element in the linear
+        series that does not pass the test specified by predicate.
+    """
+    from rx.core.operators.skipwhile import _skip_while
+    return _skip_while(predicate)
+
+
+def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observable], Observable]:
+    """Bypasses elements in an observable sequence as long as a
+    specified condition is true and then returns the remaining elements.
+    The element's index is used in the logic of the predicate function.
+
+    Example:
+        >>> skip_while(lambda value, index: value < 10 or index < 10)
+
+    Args:
+        predicate: A function to test each element for a condition; the
+            second parameter of the function represents the index of the
+            source element.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains the elements from
+        the input sequence starting at the first element in the linear
+        series that does not pass the test specified by predicate.
+    """
+    from rx.core.operators.skipwhile import _skip_while_indexed
+    return _skip_while_indexed(predicate)
+
+
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
     """The slice operator.
 
