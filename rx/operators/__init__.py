@@ -1484,6 +1484,33 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[
     return _scan(accumulator, seed)
 
 
+def sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = None
+                   ) -> Callable[[Observable], Observable]:
+    """Determines whether two sequences are equal by comparing the
+    elements pairwise using a specified equality comparer.
+
+    Examples:
+        >>> res = sequence_equal([1,2,3])
+        >>> res = sequence_equal([{ "value": 42 }], lambda x, y: x.value == y.value)
+        >>> res = sequence_equal(rx.return_value(42))
+        >>> res = sequence_equal(rx.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
+
+    Args:
+        second: Second observable sequence or array to compare.
+        comparer: [Optional] Comparer used to compare elements of both
+            sequences. No guarantees on order of comparer arguments.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence that contains a single element
+        which indicates whether both sequences are of equal length and
+        their corresponding elements are equal according to the
+        specified equality comparer.
+    """
+    from rx.core.operators.sequenceequal import _sequence_equal
+    return _sequence_equal(second, comparer)
+
+
 def share() -> Callable[[Observable], Observable]:
     """Share a single subscription among multple observers.
 
