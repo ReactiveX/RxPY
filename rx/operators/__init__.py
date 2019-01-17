@@ -2142,6 +2142,26 @@ def time_interval() -> Callable[[Observable], Observable]:
     return _time_interval()
 
 
+def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None
+           ) -> Callable[[Observable], Observable]:
+    """Converts the observable sequence to a Map if it exists.
+
+    Args:
+        key_mapper: A function which produces the key for the
+            dictionary.
+        element_mapper: [Optional] An optional function which produces
+            the element for the dictionary. If not present, defaults to
+            the value from the observable sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with a single value of a
+        dictionary containing the values from the observable sequence.
+    """
+    from rx.core.operators.todict import _to_dict
+    return _to_dict(key_mapper, element_mapper)
+
+
 def to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
     """Converts an existing observable sequence to a Future.
 
