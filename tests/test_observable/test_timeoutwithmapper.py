@@ -111,7 +111,7 @@ class TestTimeoutWithSelector(unittest.TestCase):
         assert ys.subscriptions == [subscribe(200, 310)]
         assert zs.subscriptions == [subscribe(310, 350), subscribe(350, 400)]
 
-    def test_timeout_duration_simple_timeout_by_completion(self):
+    def test_timeout_duration_simple_timeout_by_completion2(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450))

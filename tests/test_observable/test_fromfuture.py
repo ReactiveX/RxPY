@@ -1,11 +1,9 @@
-import unittest
-
-from nose import SkipTest
-import rx
 import asyncio
 from asyncio import Future
+import unittest
 
-from rx import Observable
+import rx
+
 
 class TestFromFuture(unittest.TestCase):
 
@@ -21,7 +19,7 @@ class TestFromFuture(unittest.TestCase):
             source = rx.from_future(future)
 
             def on_next(x):
-                success[0] = 42 == x
+                success[0] = x == 42
 
             def on_error(err):
                 success[1] = False
@@ -29,7 +27,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = True
 
-            subscription = source.subscribe_(on_next, on_error, on_completed)
+            source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -56,10 +54,10 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe_(on_next, on_error, on_completed)
+            source.subscribe_(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
-        assert(all(success))
+        assert all(success)
 
     def test_future_dispose(self):
         loop = asyncio.get_event_loop()
@@ -85,4 +83,4 @@ class TestFromFuture(unittest.TestCase):
             subscription.dispose()
 
         loop.run_until_complete(go())
-        assert(all(success))
+        assert all(success)
