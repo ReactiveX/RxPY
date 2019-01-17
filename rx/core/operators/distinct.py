@@ -2,9 +2,6 @@ from typing import Callable
 from rx.core import Observable, AnonymousObservable
 from rx.internal.basic import default_comparer
 
-# Swap out for Array.findIndex
-
-
 def array_index_of_comparer(array, item, comparer):
     for i, a in enumerate(array):
         if comparer(a, item):
@@ -24,29 +21,27 @@ class HashSet:
         return ret_value
 
 
-def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
-    """Returns an observable sequence that contains only distinct
-    elements according to the key_mapper and the comparer. Usage of
-    this operator should be considered carefully due to the maintenance
-    of an internal lookup structure which can grow large.
-
-    Example:
-    res = obs = xs.distinct()
-    obs = xs.distinct(lambda x: x.id)
-    obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
-
-    Keyword arguments:
-    key_mapper -- [Optional]  A function to compute the comparison key
-        for each element.
-    comparer -- [Optional]  Used to compare items in the collection.
-
-    Returns an observable sequence only containing the distinct
-    elements, based on a computed key value, from the source sequence.
-    """
-
+def _distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
 
-    def partial(source: Observable) -> Observable:
+    def distinct(source: Observable) -> Observable:
+        """Returns an observable sequence that contains only distinct
+        elements according to the key_mapper and the comparer. Usage of
+        this operator should be considered carefully due to the maintenance
+        of an internal lookup structure which can grow large.
+
+        Examples:
+            >>> res = obs = distinct(source)
+
+        Args:
+            source: Source observable to return distinct items from.
+
+        Returns:
+            An observable sequence only containing the distinct
+            elements, based on a computed key value, from the source
+            sequence.
+        """
+
         def subscribe(observer, scheduler=None):
             hashset = HashSet(comparer)
 
@@ -64,4 +59,4 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
             return source.subscribe_(on_next, observer.on_error,
                                      observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return partial
+    return distinct

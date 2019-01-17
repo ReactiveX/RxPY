@@ -1,6 +1,8 @@
 import math
 import unittest
 
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +29,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 4), on_next(300, 2), on_next(350, 1), on_next(380, 3), on_next(400, 5), on_completed(420))
 
         def create():
-            return xs.distinct()
+            return xs.pipe(ops.distinct())
 
         results = scheduler.start(create)
 
@@ -39,7 +41,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(280, 4), on_next(300, 2), on_next(350, 2), on_next(380, 3), on_next(400, 4), on_completed(420))
 
         def create():
-            return xs.distinct()
+            return xs.pipe(ops.distinct())
 
         results = scheduler.start(create)
 
@@ -53,7 +55,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         def create():
             def key_mapper(x):
                 return x / 2
-            return xs.distinct(key_mapper)
+            return xs.pipe(ops.distinct(key_mapper))
 
         results = scheduler.start(create)
 
@@ -68,7 +70,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             def key_mapper(x):
                 return math.floor(x / 2.0)
 
-            return xs.distinct(key_mapper)
+            return xs.pipe(ops.distinct(key_mapper))
         results = scheduler.start(create)
 
         assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 7), on_completed(420)]
@@ -86,7 +88,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
                 else:
                     return math.floor(x / 2.0)
 
-            return xs.distinct(key_mapper)
+            return xs.pipe(ops.distinct(key_mapper))
 
         results = scheduler.start(create)
 

@@ -408,6 +408,32 @@ def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) ->
     return _delay(duetime)
 
 
+def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+    """Returns an observable sequence that contains only distinct
+    elements according to the key_mapper and the comparer. Usage of
+    this operator should be considered carefully due to the maintenance
+    of an internal lookup structure which can grow large.
+
+    Examples:
+        >>> res = obs = xs.distinct()
+        >>> obs = xs.distinct(lambda x: x.id)
+        >>> obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
+
+    Args:
+        key_mapper: [Optional]  A function to compute the comparison key
+            for each element.
+        comparer: [Optional]  Used to compare items in the collection.
+
+    Returns:
+        An operator function that takes an observable source and 
+        returns an observable sequence only containing the distinct
+        elements, based on a computed key value, from the source 
+        sequence.
+    """
+    from rx.core.operators.distinct import _distinct
+    return _distinct(key_mapper, comparer)
+
+
 def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
