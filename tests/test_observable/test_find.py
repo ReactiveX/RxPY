@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -20,7 +21,7 @@ class TestFind(unittest.TestCase):
         )
 
         def create():
-            return xs.find(lambda x,i,s: True)
+            return xs.pipe(ops.find(lambda x, i, s: True))
 
         res = scheduler.start(create)
 
@@ -34,7 +35,7 @@ class TestFind(unittest.TestCase):
         )
 
         def create():
-            return xs.find(lambda x,i,s: True)
+            return xs.pipe(ops.find(lambda x, i, s: True))
 
         res = scheduler.start(create)
 
@@ -51,7 +52,7 @@ class TestFind(unittest.TestCase):
         )
 
         def create():
-            return xs.find(lambda x,i,s: x==2)
+            return xs.pipe(ops.find(lambda x, i, s: x == 2))
         res = scheduler.start(create)
 
         assert res.messages == [
@@ -67,7 +68,7 @@ class TestFind(unittest.TestCase):
         )
 
         def create():
-            return xs.find(lambda x,i,s: x==3)
+            return xs.pipe(ops.find(lambda x, i, s: x == 3))
         res = scheduler.start(create)
 
         assert res.messages == [
@@ -84,7 +85,7 @@ class TestFind(unittest.TestCase):
         )
 
         def create():
-            return xs.find(lambda x,i,s: x==3)
+            return xs.pipe(ops.find(lambda x, i, s: x == 3))
         res = scheduler.start(create)
 
         assert res.messages == [
@@ -102,7 +103,7 @@ class TestFind(unittest.TestCase):
         def create():
             def predicate(x, i, source):
                 raise Exception(ex)
-            return xs.find(predicate)
+            return xs.pipe(ops.find(predicate))
         res = scheduler.start(create)
 
         assert res.messages == [

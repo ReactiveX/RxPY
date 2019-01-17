@@ -425,9 +425,9 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
         comparer: [Optional]  Used to compare items in the collection.
 
     Returns:
-        An operator function that takes an observable source and 
+        An operator function that takes an observable source and
         returns an observable sequence only containing the distinct
-        elements, based on a computed key value, from the source 
+        elements, based on a computed key value, from the source
         sequence.
     """
     from rx.core.operators.distinct import _distinct
@@ -590,6 +590,43 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
     """
     from rx.core.operators.filter import _filteri
     return _filteri(predicate_indexed)
+
+
+def find(predicate: Predicate) -> Callable[[Observable], Observable]:
+    """Searches for an element that matches the conditions defined by
+    the specified predicate, and returns the first occurrence within
+    the entire Observable sequence.
+
+    Args:
+        predicate: The predicate that defines the conditions of the
+            element to search for.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the first element that
+        matches the conditions defined by the specified predicate, if
+        found otherwise, None.
+    """
+    from rx.core.operators.find import _find_value
+    return _find_value(predicate, False)
+
+
+def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
+    """Searches for an element that matches the conditions defined by
+    the specified predicate, and returns an Observable sequence with the
+    zero-based index of the first occurrence within the entire
+    Observable sequence.
+
+    Keyword Arguments:
+    predicate -- The predicate that defines the conditions of the
+        element to search for.
+
+    Returns an observable sequence with the zero-based index of the
+    first occurrence of an element that matches the conditions defined
+    by match, if found; otherwise, -1.
+    """
+    from rx.core.operators.find import _find_value
+    return _find_value(predicate, True)
 
 
 def first(predicate=None) -> Callable[[Observable], Observable]:
