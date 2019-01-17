@@ -510,6 +510,22 @@ def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on
     return do_action_(on_next, on_error, on_completed)
 
 
+def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+    """Repeats source as long as condition holds emulating a do while
+    loop.
+
+    Args:
+        condition: The condition which determines if the source will be
+            repeated.
+
+    Returns:
+        An observable sequence which is repeated as long
+        as the condition holds.
+    """
+    from rx.core.operators.dowhile import _do_while
+    return _do_while(condition)
+
+
 def element_at(index: int) -> Callable[[Observable], Observable]:
     """Returns the element at a specified index in a sequence.
 
