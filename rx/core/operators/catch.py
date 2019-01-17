@@ -1,8 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
-from rx.core import typing
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
@@ -21,7 +20,7 @@ def catch_handler(source, handler) -> Observable:
                 observer.on_error(ex)
                 return
 
-            result = from_future(result) if is_future(result) else result
+            result = rx.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler)
@@ -37,28 +36,26 @@ def catch_handler(source, handler) -> Observable:
 
 
 def _catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
-    """Continues an observable sequence that is terminated by an
-    exception with the next observable sequence.
-
-    Examples:
-        >>> catch_exception(ys)(xs)
-        >>> catch_exception(lambda ex: ys(ex))(xs)
-
-    Args:
-        handler -- Exception handler function that returns an observable
-            sequence  given the error that occurred in the first
-            sequence.
-        second -- Second observable sequence used to produce results
-            when an error occurred in the first sequence.
-
-    Returns:
-        A function taking an observable source and returns an observable
-        sequence containing the first sequence's elements, followed by
-        the elements of the handler sequence in case an exception
-        occurred.
-    """
-
     def catch_exception(source: Observable) -> Observable:
+        """Continues an observable sequence that is terminated by an
+        exception with the next observable sequence.
+
+        Examples:
+            >>> catch_exception(ys)
+            >>> catch_exception(lambda ex: ys(ex))
+
+        Args:
+            handler -- Exception handler function that returns an
+                observable sequence  given the error that occurred in
+                the first sequence.
+            second -- Second observable sequence used to produce
+                results when an error occurred in the first sequence.
+
+        Returns:
+            An observable sequence containing the first sequence's
+            elements, followed by the elements of the handler sequence
+            in case an exception occurred.
+        """
         if handler or not isinstance(second, typing.Observable):
             return catch_handler(source, handler or second)
 

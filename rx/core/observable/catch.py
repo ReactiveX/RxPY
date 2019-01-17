@@ -20,7 +20,7 @@ def _catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observab
     """
 
     if isinstance(args[0], (list, Iterable)):
-        sources = args[0]
+        sources = iter(args[0])
     else:
         sources = iter(args)
 
