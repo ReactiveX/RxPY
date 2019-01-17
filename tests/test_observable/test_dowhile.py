@@ -1,5 +1,6 @@
 import unittest
 
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 
@@ -15,7 +16,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             self.on_completed(250))
 
         def create():
-            return xs.do_while(lambda _: False)
+            return xs.pipe(ops.do_while(lambda _: False))
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -36,7 +37,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             self.on_completed(250))
 
         def create():
-            return xs.do_while(lambda _: True)
+            return xs.pipe(ops.do_while(lambda _: True))
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -64,7 +65,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_cold_observable(self.on_error(50, ex))
 
         def create():
-            return xs.do_while(lambda _: True)
+            return xs.pipe(ops.do_while(lambda _: True))
         results = scheduler.start(create=create)
 
         assert results.messages == [self.on_error(250, ex)]
@@ -75,7 +76,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
         xs = scheduler.create_cold_observable(self.on_next(50, 1))
 
         def create():
-            return xs.do_while(lambda _: True)
+            return xs.pipe(ops.do_while(lambda _: True))
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -96,7 +97,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
             def condition(x):
                 n[0] += 1
                 return n[0]<3
-            return xs.do_while(condition)
+            return xs.pipe(ops.do_while(condition))
         results = scheduler.start(create=create)
 
         assert results.messages == [
@@ -136,7 +137,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
                     return True
                 else:
                     raise Exception(ex)
-            return xs.do_while(condition)
+            return xs.pipe(ops.do_while(condition))
         results = scheduler.start(create=create)
 
         assert results.messages == [
