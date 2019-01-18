@@ -209,42 +209,29 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def merge(*args) -> Observable:
-    """Merges all the observable sequences into a single observable
-    sequence.
+def generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper) -> Observable:
+    """Generates an observable sequence by iterating a state from an
+    initial state until the condition fails.
 
-    1 - merged = rx.merge(xs, ys, zs)
-    2 - merged = rx.merge([xs, ys, zs])
-
-    Returns:
-        The observable sequence that merges the elements of the
-        observable sequences.
-    """
-    from .core.observable.merge import _merge
-    return _merge(*args)
-
-
-def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
-    """Generates an observable sequence of integral numbers within a
-    specified range, using the specified scheduler to send out observer
-    messages.
-
-    Examples:
-        >>> res = rx.range(10)
-        >>> res = rx.range(0, 10)
-        >>> res = rx.range(0, 10, 1)
+    Example:
+        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: x, lambda x: 500)
 
     Args:
-        start: The value of the first integer in the sequence.
-        count: The number of sequential integers to generate.
-        scheduler: The scheduler to schedule the values on.
+        initial_state: Initial state.
+        condition: Condition to terminate generation (upon returning
+            false).
+        iterate: Iteration step function.
+        result_mapper: Selector function for results produced in the
+            sequence.
+        time_mapper: Time mapper function to control the speed of
+            values being produced each iteration, returning integer
+            values denoting milliseconds.
 
     Returns:
-        An observable sequence that contains a range of sequential
-        integral numbers.
+        The generated sequence.
     """
-    from .core.observable.range import _range
-    return _range(start, stop, step)
+    from .core.observable.generatewithrelativetime import _generate_with_relative_time
+    return _generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper)
 
 
 def generate(initial_state, condition, iterate, result_mapper) -> Observable:
@@ -316,6 +303,21 @@ def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     return _interval(period, scheduler)
 
 
+def merge(*args) -> Observable:
+    """Merges all the observable sequences into a single observable
+    sequence.
+
+    1 - merged = rx.merge(xs, ys, zs)
+    2 - merged = rx.merge([xs, ys, zs])
+
+    Returns:
+        The observable sequence that merges the elements of the
+        observable sequences.
+    """
+    from .core.observable.merge import _merge
+    return _merge(*args)
+
+
 def never() -> Observable:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
@@ -355,6 +357,29 @@ def on_error_resume_next(*args) -> Observable:
     """
     from .core.observable.onerrorresumenext import _on_error_resume_next
     return _on_error_resume_next(*args)
+
+
+def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
+    """Generates an observable sequence of integral numbers within a
+    specified range, using the specified scheduler to send out observer
+    messages.
+
+    Examples:
+        >>> res = rx.range(10)
+        >>> res = rx.range(0, 10)
+        >>> res = rx.range(0, 10, 1)
+
+    Args:
+        start: The value of the first integer in the sequence.
+        count: The number of sequential integers to generate.
+        scheduler: The scheduler to schedule the values on.
+
+    Returns:
+        An observable sequence that contains a range of sequential
+        integral numbers.
+    """
+    from .core.observable.range import _range
+    return _range(start, stop, step)
 
 
 def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
