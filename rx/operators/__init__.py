@@ -1740,6 +1740,28 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
+def skip_until_with_time(start_time: Union[datetime, int]) -> Callable[[Observable], Observable]:
+    """Skips elements from the observable source sequence until the
+    specified start time.
+    Errors produced by the source sequence are always forwarded to the
+    result sequence, even if the error occurs before the start time.
+
+    Examples:
+        >>> res = source.skip_until_with_time(datetime);
+        >>> res = source.skip_until_with_time(5000);
+
+    Args:
+        start_time -- Time to start taking elements from the source
+            sequence. If this value is less than or equal to Date(), no
+            elements will be skipped.
+
+    Returns: An observable sequence with the elements skipped
+    until the specified start time.
+    """
+    from rx.core.operators.skipuntilwithtime import _skip_until_with_time
+    return _skip_until_with_time(start_time)
+
+
 def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable]:
     """The `skip_while` operator.
 
@@ -1786,6 +1808,35 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     """
     from rx.core.operators.skipwhile import _skip_while_indexed
     return _skip_while_indexed(predicate)
+
+
+def skip_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    """Skips elements for the specified duration from the start of the
+    observable source sequence.
+
+    Args:
+        >>> res = skip_with_time(5000)
+
+    Specifying a zero value for duration doesn't guarantee no elements
+    will be dropped from the start of the source sequence. This is a
+    side-effect of the asynchrony introduced by the scheduler, where
+    the action that causes callbacks from the source sequence to be
+    forwarded may not execute immediately, despite the zero due time.
+
+    Errors produced by the source sequence are always forwarded to the
+    result sequence, even if the error occurs before the duration.
+
+    Args:
+    duration: Duration for skipping elements from the start of the
+        sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the elements skipped during
+        the specified duration from the start of the source sequence.
+    """
+    from rx.core.operators.skipwithtime import _skip_with_time
+    return _skip_with_time(duration)
 
 
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:

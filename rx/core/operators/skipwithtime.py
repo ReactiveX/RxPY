@@ -1,49 +1,52 @@
-from typing import Union
+from typing import Union, Callable
 from datetime import timedelta
 
-from rx.core import ObservableBase, AnonymousObservable
+from rx.core import Observable, AnonymousObservable
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
-def skip_with_time(source: ObservableBase, duration: Union[timedelta, int]) -> ObservableBase:
-    """Skips elements for the specified duration from the start of the
-    observable source sequence.
+def _skip_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+    def skip_with_time(source: Observable) -> Observable:
+        """Skips elements for the specified duration from the start of
+        the observable source sequence.
 
-    Example:
-    1 - res = source.skip_with_time(5000)
+        Args:
+            >>> res = skip_with_time(5000)
 
-    Description:
-    Specifying a zero value for duration doesn't guarantee no elements
-    will be dropped from the start of the source sequence. This is a
-    side-effect of the asynchrony introduced by the scheduler, where the
-    action that causes callbacks from the source sequence to be
-    forwarded may not execute immediately, despite the zero due time.
+        Specifying a zero value for duration doesn't guarantee no
+        elements will be dropped from the start of the source sequence.
+        This is a side-effect of the asynchrony introduced by the
+        scheduler, where the action that causes callbacks from the
+        source sequence to be forwarded may not execute immediately,
+        despite the zero due time.
 
-    Errors produced by the source sequence are always forwarded to the
-    result sequence, even if the error occurs before the duration.
+        Errors produced by the source sequence are always forwarded to
+        the result sequence, even if the error occurs before the
+        duration.
 
-    Keyword arguments:
-    duration -- Duration for skipping elements from the start of the
-        sequence.
+        Args:
+            duration: Duration for skipping elements from the start of
+            the sequence.
 
-    Returns an observable sequence with the elements skipped during the
-    specified duration from the start of the source sequence.
-    """
+        Returns:
+            An observable sequence with the elements skipped during the
+            specified duration from the start of the source sequence.
+        """
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or timeout_scheduler
-        open = [False]
+        def subscribe(observer, scheduler=None):
+            scheduler = scheduler or timeout_scheduler
+            open = [False]
 
-        def action(scheduler, state):
-            open[0] = True
+            def action(scheduler, state):
+                open[0] = True
 
-        t = scheduler.schedule_relative(duration, action)
+            t = scheduler.schedule_relative(duration, action)
 
-        def on_next(x):
-            if open[0]:
-                observer.on_next(x)
+            def on_next(x):
+                if open[0]:
+                    observer.on_next(x)
 
-        d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return CompositeDisposable(t, d)
-    return AnonymousObservable(subscribe)
-
+            d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return CompositeDisposable(t, d)
+        return AnonymousObservable(subscribe)
+    return skip_with_time
