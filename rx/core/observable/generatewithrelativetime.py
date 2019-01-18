@@ -3,28 +3,26 @@ from rx.concurrency import timeout_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper) -> Observable:
+def _generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
-    res = source.generate_with_relative_time(0,
-        lambda x: True,
-        lambda x: x + 1,
-        lambda x: x,
-        lambda x: 500)
+    Example:
+        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: x, lambda x: 500)
 
-    Keyword arguments:
-    initial_state -- Initial state.
-    condition -- Condition to terminate generation (upon returning
-        false).
-    iterate -- Iteration step function.
-    result_mapper -- Selector function for results produced in the
-        sequence.
-    time_mapper -- Time mapper function to control the speed of
-        values being produced each iteration, returning integer values
-        denoting milliseconds.
+    Args:
+        initial_state: Initial state.
+        condition: Condition to terminate generation (upon returning
+            false).
+        iterate: Iteration step function.
+        result_mapper: Selector function for results produced in the
+            sequence.
+        time_mapper: Time mapper function to control the speed of
+            values being produced each iteration, returning integer
+            values denoting milliseconds.
 
-    Returns the generated sequence.
+    Returns:
+        The generated sequence.
     """
 
     def subscribe(observer, scheduler=None):
