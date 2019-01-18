@@ -1,9 +1,10 @@
 from typing import Any, Callable
 from threading import RLock
 
-from rx.core import abc, Observable
+from rx.core import abc
 from rx.internal import Iterable
 
+from .observable import Observable
 from ..anonymousobserver import AnonymousObserver
 
 

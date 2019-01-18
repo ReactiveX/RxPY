@@ -1,4 +1,3 @@
-from __future__ import annotations
 import threading
 from typing import Any, List, Optional
 
@@ -86,7 +85,6 @@ class Subject(Observable, Observer):
         Keyword arguments:
         value -- The value to send to all subscribed observers.
         """
-
         os = None
         with self.lock:
             self.check_disposed()

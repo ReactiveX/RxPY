@@ -62,7 +62,6 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             endtime[0] = datetime.utcnow()
-            print("release")
             gate.release()
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)

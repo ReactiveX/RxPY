@@ -23,7 +23,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(720, True), on_completed(720)]
-        assert xs.subscriptions == [subscribe(200, 720)]
+        assert xs.subscriptions == [subscribe(200, 510)]
         assert ys.subscriptions == [subscribe(200, 720)]
 
     def test_sequence_equal_equal_sym(self):
@@ -35,7 +35,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(720, True), on_completed(720)]
-        assert xs.subscriptions == [subscribe(200, 720)]
+        assert xs.subscriptions == [subscribe(200, 510)]
         assert ys.subscriptions == [subscribe(200, 720)]
 
     def test_sequence_equal_not_equal_left(self):
@@ -119,7 +119,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(create=lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(420, False), on_completed(420)]
-        assert xs.subscriptions == [subscribe(200, 420)]
+        assert xs.subscriptions == [subscribe(200, 330)]
         assert ys.subscriptions == [subscribe(200, 420)]
 
     def test_sequence_equal_not_equal_3_sym(self):
@@ -131,7 +131,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(create=lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(420, False), on_completed(420)]
-        assert xs.subscriptions == [subscribe(200, 420)]
+        assert xs.subscriptions == [subscribe(200, 330)]
         assert ys.subscriptions == [subscribe(200, 420)]
 
     def test_sequence_equal_comparer_throws(self):
@@ -179,7 +179,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(create=lambda: xs.pipe(ops.sequence_equal(ys)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
-        assert xs.subscriptions == [subscribe(200, 310)]
+        assert xs.subscriptions == [subscribe(200, 300)]
         assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequence_equal_not_equal_4_sym(self):
@@ -191,7 +191,7 @@ class TestSequenceEqual(unittest.TestCase):
         results = scheduler.start(create=lambda: ys.pipe(ops.sequence_equal(xs)))
 
         assert results.messages == [on_next(310, False), on_completed(310)]
-        assert xs.subscriptions == [subscribe(200, 310)]
+        assert xs.subscriptions == [subscribe(200, 300)]
         assert ys.subscriptions == [subscribe(200, 310)]
 
     def test_sequenceequal_iterable_equal(self):

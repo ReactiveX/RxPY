@@ -225,7 +225,7 @@ class TestWindow(unittest.TestCase):
                 on_next(260, "0 4"), on_next(340, "1 6"), on_next(410, "1 7"),
                 on_next(410, "3 7"), on_next(420, "1 8"), on_next(420, "3 8"),
                 on_next(470, "3 9"), on_completed(900)]
-        assert xs.subscriptions == [subscribe(200, 900)]
+        assert xs.subscriptions == [subscribe(200, 590)]
         assert ys.subscriptions == [subscribe(200, 900)]
 
     def test_window_opening_closings_on_error(self):

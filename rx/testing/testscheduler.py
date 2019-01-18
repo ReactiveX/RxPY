@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from rx import empty
+import rx
 from rx.core import Observable, Disposable
 from rx.concurrency import VirtualTimeScheduler
 
@@ -22,10 +22,10 @@ class TestScheduler(VirtualTimeScheduler):
         time.
 
         Keyword arguments:
-        duetime -- Absolute virtual time at which to execute the
+        duetime: Absolute virtual time at which to execute the
             action.
-        action -- Action to be executed.
-        state -- State passed to the action to be executed.
+        action: Action to be executed.
+        state: State passed to the action to be executed.
 
         Returns disposable object used to cancel the scheduled action
             (best effort).
@@ -41,27 +41,27 @@ class TestScheduler(VirtualTimeScheduler):
         return absolute + relative
 
     def start(self, create=None, created=None, subscribed=None, disposed=None) -> MockObserver:
-        """Starts the test scheduler and uses the specified virtual times to
-        invoke the factory function, subscribe to the resulting sequence, and
-        dispose the subscription.
+        """Starts the test scheduler and uses the specified virtual
+        times to invoke the factory function, subscribe to the
+        resulting sequence, and dispose the subscription.
 
-        Keyword arguments:
-        :param types.FunctionType create: Factory method to create an
-            observable sequence.
-        :param int created: Virtual time at which to invoke the factory to
-            create an observable sequence.
-        :param int subscribed: Virtual time at which to subscribe to the
-            created observable sequence.
-        :param int disposed: Virtual time at which to dispose the subscription.
+        Args:
+            create: Factory method to create an observable sequence.
+            created: Virtual time at which to invoke the factory to
+                create an observable sequence.
+            subscribed: Virtual time at which to subscribe to the
+                created observable sequence.
+            disposed: Virtual time at which to dispose the
+            subscription.
 
-        :returns: Observer with timestamped recordings of notification messages
-        that were received during the virtual time window when the subscription
-        to the source sequence was active.
-        :rtype: MockObserver
+        Returns:
+            Observer with timestamped recordings of notification
+            messages that were received during the virtual time window
+            when the subscription to the source sequence was active.
         """
 
         # Defaults
-        create = create or empty
+        create = create or rx.never
         created = created or ReactiveTest.created
         subscribed = subscribed or ReactiveTest.subscribed
         disposed = disposed or ReactiveTest.disposed
@@ -95,8 +95,8 @@ class TestScheduler(VirtualTimeScheduler):
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
 
-        Keyword arguments:
-        messages -- Notifications to surface through the created sequence at
+        Args:
+            messages: Notifications to surface through the created sequence at
             their specified absolute virtual times.
 
         Returns hot observable sequence that can be used to assert the timing
@@ -113,14 +113,14 @@ class TestScheduler(VirtualTimeScheduler):
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 
-        Keyword arguments:
-        :param list[Notification] args: Notifications to surface through the
-            created sequence at their specified virtual time offsets from the
-            sequence subscription time.
+        Args:
+            args: Notifications to surface through the created sequence
+                at their specified virtual time offsets from the
+                sequence subscription time.
 
-        :returns: Cold observable sequence that can be used to assert the
+        Returns:
+            Cold observable sequence that can be used to assert the
             timing of subscriptions and notifications.
-        :rtype: Observable
         """
 
         if args and isinstance(args[0], list):
