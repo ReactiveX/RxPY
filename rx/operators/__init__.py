@@ -567,6 +567,22 @@ def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Ob
     return _element_at_or_default(index, True, default_value)
 
 
+def expand(mapper: Mapper) -> Observable:
+    """Expands an observable sequence by recursively invoking mapper.
+
+    Args:
+        mapper: Mapper function to invoke for each produced element,
+            resulting in another sequence to which the mapper will be
+            invoked recursively again.
+
+    Returns:
+        An observable sequence containing all the elements produced
+    by the recursive expansion.
+    """
+    from rx.core.operators.expand import _expand
+    return _expand(mapper)
+
+
 def filter(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
@@ -1978,6 +1994,32 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
     from rx.core.operators.takelastbuffer import _take_last_buffer
     return _take_last_buffer(count)
 
+
+def take_last_with_time(duration) -> Callable[[Observable], Observable]:
+    """Returns elements within the specified duration from the end of
+    the observable source sequence.
+
+    Example:
+        >>> res = take_last_with_time(5000)
+
+    This operator accumulates a queue with a length enough to store
+    elements received during the initial duration window. As more
+    elements are received, elements older than the specified duration
+    are taken from the queue and produced on the result sequence. This
+    causes elements to be delayed with duration.
+
+    Args:
+        duration: Duration for taking elements from the end of the
+        sequence.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the elements taken
+        during the specified duration from the end of the source
+        sequence.
+    """
+    from rx.core.operators.takelastwithtime import _take_last_with_time
+    return _take_last_with_time(duration)
 
 
 def take_until(other: Observable) -> Callable[[Observable], Observable]:

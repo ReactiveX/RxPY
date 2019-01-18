@@ -171,6 +171,24 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
     return _from_callable(supplier, scheduler)
 
 
+def from_callback(func: Callable, mapper: typing.Mapper = None) -> Callable[[], Observable]:
+    """Converts a callback function to an observable sequence.
+
+    Args:
+        func: Function with a callback as the last parameter to
+            convert to an Observable sequence.
+        mapper: [Optional] A mapper which takes the arguments
+            from the callback to produce a single item to yield on next.
+
+    Returns:
+        A function, when executed with the required parameters minus
+        the callback, produces an Observable sequence with a single value of
+        the arguments to the callback as a list.
+    """
+    from .core.observable.fromcallback import _from_callback
+    return _from_callback(func, mapper)
+
+
 def from_future(future: Future) -> Observable:
     """Converts a Future to an Observable sequence
 
