@@ -27,15 +27,6 @@ Because Observable sequences are data streams, you can query them using standard
   - [reactivex.io: Tutorials](http://reactivex.io/tutorials.html)
   - [reactivex.io: Operators](http://reactivex.io/documentation/operators.html)
 
-# Install
-
-RxPY v3.x runs on [Python](http://www.python.org/) 3. To install RxPY:
-
-`pip3 install rx`
-
-For Python 2.x you need to use version 1.6
-
-`pip3 install rx==1.6.1`
 
 # Community
 
