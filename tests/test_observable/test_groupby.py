@@ -574,7 +574,7 @@ class TestGroupBy(unittest.TestCase):
         def action1(scheduler, state):
             xs[0] = rx.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]) \
                 .pipe(ops.group_by(lambda s: s[0]),
-                      ops.map(lambda xs: xs.to_iterable().pipe(ops.map(list))),
+                      ops.map(lambda xs: xs.pipe(ops.to_iterable(), ops.map(list))),
                       ops.merge_all(),
                       )
 
