@@ -1,6 +1,6 @@
 import threading
 
-from rx.core.blockingobservable import BlockingObservable
+from rx.core import BlockingObservable
 from rx.internal import Iterable, AnonymousIterable
 
 

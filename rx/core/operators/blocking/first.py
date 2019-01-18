@@ -1,6 +1,6 @@
 
 from typing import Any
-from rx.core.blockingobservable import BlockingObservable
+from rx.core import BlockingObservable
 
 
 def first(source: BlockingObservable) -> Any:

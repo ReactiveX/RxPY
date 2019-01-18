@@ -4,7 +4,7 @@ from asyncio import Future
 from typing import Callable, Union, Any, Iterable, List
 from datetime import timedelta, datetime
 
-from rx.core import Observable, ConnectableObservable, GroupedObservable, typing
+from rx.core import Observable, ConnectableObservable, GroupedObservable, BlockingObservable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
 
@@ -624,6 +624,26 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
     return _filteri(predicate_indexed)
 
 
+def finally_action(action: Callable) -> Callable[[Observable], Observable]:
+    """Invokes a specified action after the source observable sequence
+    terminates gracefully or exceptionally.
+
+    Example:
+        res = finally(lambda: print('sequence ended')
+
+    Args:
+        action: Action to invoke after the source observable sequence
+            terminates.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the action-invoking
+        termination behavior applied.
+    """
+    from rx.core.operators.finallyaction import _finally_action
+    return _finally_action(action)
+
+
 def find(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns the first occurrence within
@@ -888,11 +908,25 @@ def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
     return _group_join(right, left_duration_mapper, right_duration_mapper, result_mapper)
 
 
+def ignore_elements() -> Observable:
+    """Ignores all elements in an observable sequence leaving only the
+    termination messages.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an empty observable sequence that signals termination,
+        successful or exceptional, of the source sequence.
+    """
+    from rx.core.operators.ignoreelements import _ignore_elements
+    return _ignore_elements()
+
+
 def is_empty() -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence is empty.
 
     Returns:
-        An observable sequence containing a single element
+        An operator function that takes an observable source and
+        returns an observable sequence containing a single element
         determining whether the source sequence is empty.
     """
     from rx.core.operators.isempty import _is_empty
@@ -2314,6 +2348,11 @@ def time_interval() -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.timeinterval import _time_interval
     return _time_interval()
+
+
+def to_blocking() -> Callable[[Observable], BlockingObservable]:
+    from rx.core.operators.toblocking import _to_blocking
+    return _to_blocking()
 
 
 def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None

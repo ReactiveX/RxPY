@@ -1,6 +1,10 @@
+from typing import Callable
+
 from rx.core import Observable
-from rx.core.blockingobservable import BlockingObservable
+from rx.core.observable import BlockingObservable
 
 
-def to_blocking(source: Observable):
-    return BlockingObservable(source)
+def _to_blocking() -> Callable[[Observable], BlockingObservable]:
+    def to_blocking(source: Observable) -> BlockingObservable:
+        return BlockingObservable(source)
+    return to_blocking
