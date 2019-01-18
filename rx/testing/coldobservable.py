@@ -12,7 +12,7 @@ class ColdObservable(Observable):
         self.messages = messages
         self.subscriptions: List[Subscription] = []
 
-    def subscribe(self, observer=None, scheduler=None):
+    def subscribe(self, observer=None, scheduler=None) -> typing.Disposable:
         clock = self.scheduler.to_relative(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1

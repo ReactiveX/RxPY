@@ -30,7 +30,7 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def subscribe(self, observer=None, scheduler=None):
+    def subscribe(self, observer=None, scheduler=None) -> typing.Disposable:
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
