@@ -1,7 +1,7 @@
 import threading
 from typing import Callable, Any
 
-from rx.core.blockingobservable import BlockingObservable
+from rx.core import BlockingObservable
 
 
 def for_each(source: BlockingObservable,
