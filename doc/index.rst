@@ -14,6 +14,7 @@ observable collections and pipable query operators in Python.
     :caption: Contents:
 
     installation
+    rationale
     get_started
     reference
 
