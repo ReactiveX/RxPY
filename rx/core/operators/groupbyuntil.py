@@ -1,13 +1,14 @@
 from typing import Callable
 from collections import OrderedDict
 
+from rx import operators as ops
 from rx.core import Observable, AnonymousObservable, GroupedObservable
 from rx.subjects import Subject
 from rx.disposables import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import identity
 
 
-def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], GroupedObservable]:
+def _group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -15,27 +16,16 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
     value as a reclaimed group occurs, the group will be reborn with a
     new lifetime request.
 
-    1 - observable.group_by_until(
-            lambda x: x.id,
-            None,
-            lambda : Rx.rx.never()
-        )
-    2 - observable.group_by_until(
-            lambda x: x.id,
-            lambda x: x.name,
-            lambda: Rx.rx.never()
-        )
-    3 - observable.group_by_until(
-            lambda x: x.id,
-            lambda x: x.name,
-            lambda:  Rx.rx.never(),
-            lambda x: str(x))
+    Examples:
+        >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
+        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never())
+        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never(), lambda x: str(x))
 
-    Keyword arguments:
-    key_mapper -- A function to extract the key for each element.
-    duration_mapper -- A function to signal the expiration of a group.
+    Args:
+        key_mapper: A function to extract the key for each element.
+        duration_mapper: A function to signal the expiration of a group.
 
-    Returns a sequence of observable groups, each of which corresponds to
+    Returns: a sequence of observable groups, each of which corresponds to
     a unique key value, containing all elements that share that same key
     value. If a group's lifetime expires, a new group with the same key
     value can be created once an element with such a key value is
@@ -44,7 +34,7 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
 
     element_mapper = element_mapper or identity
 
-    def partial(source: Observable) -> GroupedObservable:
+    def group_by_until(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             writers = OrderedDict()
             group_disposable = CompositeDisposable()
@@ -104,7 +94,7 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
                     def on_completed():
                         expire()
 
-                    sad.disposable = duration.take(1).subscribe_(on_next, on_error, on_completed, scheduler)
+                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(on_next, on_error, on_completed, scheduler)
 
                 try:
                     element = element_mapper(x)
@@ -132,4 +122,4 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
             return ref_count_disposable
         return AnonymousObservable(subscribe)
-    return partial
+    return group_by_until

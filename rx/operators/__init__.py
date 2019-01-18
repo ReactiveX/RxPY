@@ -4,7 +4,7 @@ from asyncio import Future
 from typing import Callable, Union, Any, Iterable, List
 from datetime import timedelta, datetime
 
-from rx.core import Observable, ConnectableObservable, typing
+from rx.core import Observable, ConnectableObservable, GroupedObservable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
 
@@ -785,6 +785,60 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     """
     from rx.core.operators.flatmap import _flat_map_latest
     return _flat_map_latest(mapper)
+
+
+def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observable]:
+    """Groups the elements of an observable sequence according to a
+    specified key mapper function and comparer and selects the
+    resulting elements by using a specified function.
+
+    Examples:
+        >>> group_by(lambda x: x.id)
+        >>> group_by(lambda x: x.id, lambda x: x.name)
+        >>> group_by(lambda x: x.id, lambda x: x.name, lambda x: str(x))
+
+    Keyword arguments:
+        key_mapper: A function to extract the key for each element.
+        element_mapper: [Optional] A function to map each source
+            element to an element in an observable group.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a sequence of observable groups, each of which
+        corresponds to a unique key value, containing all elements that
+        share that same key value.
+    """
+    from rx.core.operators.groupby import _group_by
+    return _group_by(key_mapper, element_mapper)
+
+
+def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], Observable]:
+    """Groups the elements of an observable sequence according to a
+    specified key mapper function. A duration mapper function is used
+    to control the lifetime of groups. When a group expires, it
+    receives an OnCompleted notification. When a new element with the
+    same key value as a reclaimed group occurs, the group will be
+    reborn with a new lifetime request.
+
+    Examples:
+        >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
+        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never())
+        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never(), lambda x: str(x))
+
+    Args:
+        key_mapper: A function to extract the key for each element.
+        duration_mapper: A function to signal the expiration of a group.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns a sequence of observable groups, each of which
+        corresponds to a unique key value, containing all elements that
+        share that same key value. If a group's lifetime expires, a new
+        group with the same key value can be created once an element
+        with such a key value is encountered.
+    """
+    from rx.core.operators.groupbyuntil import _group_by_until
+    return _group_by_until(key_mapper, element_mapper, duration_mapper)
 
 
 def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
