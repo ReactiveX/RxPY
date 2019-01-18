@@ -1,11 +1,11 @@
-from typing import Callable, Any
+from typing import Callable
 
 from rx.core import typing
 from rx.core import Observable, AnonymousObservable, Disposable
 from rx.core.typing import Mapper
 
 
-def from_callback(func: Callable, mapper: Mapper = None) -> Callable[[...], Observable]:
+def _from_callback(func: Callable, mapper: Mapper = None) -> Callable[[], Observable]:
     """Converts a callback function to an observable sequence.
 
     Args:
