@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 from rx import operators as ops
 from rx.subjects import Subject
@@ -30,7 +31,7 @@ class TestMulticast(unittest.TestCase):
             on_next(340, 7),
             on_completed(390))
 
-        o = scheduler.create_observer()
+        obv = scheduler.create_observer()
         d1 = [None]
         d2 = [None]
         c = [None]
@@ -40,7 +41,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action)
 
         def action0(scheduler, state):
-            d1[0] = c[0].subscribe(o, scheduler)
+            d1[0] = c[0].subscribe(obv, scheduler)
         scheduler.schedule_absolute(100, action0)
 
         def action1(scheduler, state):
@@ -53,7 +54,7 @@ class TestMulticast(unittest.TestCase):
 
         scheduler.start()
 
-        assert o.messages == [
+        assert obv.messages == [
             on_next(210, 3),
             on_next(240, 4),
             on_next(270, 5)]
@@ -64,7 +65,10 @@ class TestMulticast(unittest.TestCase):
         d1 = [None]
         d2 = [None]
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(40, 0), on_next(90, 1), on_next(150, 2), on_next(210, 3), on_next(240, 4), on_next(270, 5), on_next(330, 6), on_next(340, 7), on_completed(390))
+        xs = scheduler.create_hot_observable(
+            on_next(40, 0), on_next(90, 1), on_next(150, 2),
+            on_next(210, 3), on_next(240, 4), on_next(270, 5),
+            on_next(330, 6), on_next(340, 7), on_completed(390))
         s = Subject()
         o = scheduler.create_observer()
 

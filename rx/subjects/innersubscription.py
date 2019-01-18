@@ -1,8 +1,8 @@
 import threading
 
-from rx.core import Disposable
+from rx.core import typing
 
-class InnerSubscription(Disposable):
+class InnerSubscription(typing.Disposable):
     def __init__(self, subject, observer):
         self.subject = subject
         self.observer = observer

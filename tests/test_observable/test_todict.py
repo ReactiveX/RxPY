@@ -31,7 +31,6 @@ class TestToDict(unittest.TestCase):
             return xs.pipe(ops.to_dict(lambda x: x * 2, lambda x: x * 4))
 
         res = scheduler.start(create)
-        print(res.messages)
         assert res.messages == [
             on_next(660, {4: 8, 6: 12, 8: 16, 10: 20}),
             on_completed(660)]

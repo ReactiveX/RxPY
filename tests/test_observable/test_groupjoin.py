@@ -119,10 +119,10 @@ class TestGroup_join(unittest.TestCase):
             on_completed(990)]
 
         assert xs.subscriptions == [
-            subscribe(200, 990)]
+            subscribe(200, 900)]
 
         assert ys.subscriptions == [
-            subscribe(200, 990)]
+            subscribe(200, 800)]
 
     def test_group_join_op_normal_ii(self):
         scheduler = TestScheduler()
@@ -192,7 +192,7 @@ class TestGroup_join(unittest.TestCase):
             on_completed(910)]
 
         assert xs.subscriptions == [
-            subscribe(200, 910)]
+            subscribe(200, 721)]
 
         assert ys.subscriptions == [
             subscribe(200, 910)]

@@ -16,8 +16,7 @@ def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] =
 
     Examples:
         >>> res = multicast(observable)
-        >>> res = multicast(subject_factory=lambda scheduler: Subject(),
-                                mapper=lambda x: x)
+        >>> res = multicast(subject_factory=lambda scheduler: Subject(), mapper=lambda x: x)
 
     Args:
         subject_factory: Factory function to create an intermediate
@@ -29,9 +28,10 @@ def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] =
             by the created subject. Specified only if subject_factory" is a
             factory function.
 
-    Returns: An observable sequence that contains the elements of a
-    sequence produced by multicasting the source sequence within a
-    mapper function.
+    Returns:
+        An observable sequence that contains the elements of a sequence
+        produced by multicasting the source sequence within a mapper
+        function.
     """
 
     def multicast(source: Observable) -> Union[Observable, ConnectableObservable]:
@@ -42,6 +42,5 @@ def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] =
 
                 return CompositeDisposable(subscription, connectable.connect(scheduler))
             return AnonymousObservable(subscribe)
-
         return ConnectableObservable(source, subject)
     return multicast
