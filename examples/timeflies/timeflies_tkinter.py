@@ -34,7 +34,7 @@ def main():
             mapper
         )
 
-    labeler = ops.flat_mapi(handle_label)
+    labeler = ops.flat_map_indexed(handle_label)
     mapper = ops.map(lambda c: Label(frame, text=c))
 
     rx.from_(text).pipe(
