@@ -1,7 +1,8 @@
+from typing import Iterable
 import threading
 
 from rx.core import BlockingObservable
-from rx.internal import Iterable, AnonymousIterable
+from rx.internal import AnonymousIterable
 
 
 def to_iterable(source: BlockingObservable) -> Iterable:

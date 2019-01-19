@@ -22,6 +22,13 @@ def is_future(fut: Any) -> bool:
     return callable(getattr(fut, "add_done_callback", None))
 
 
+def infinite():
+    n = 0
+    while True:
+        yield n
+        n += 1
+
+
 class TimeInterval(object):
 
     def __init__(self, value, interval):
