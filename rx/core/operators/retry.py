@@ -1,8 +1,8 @@
-import sys
 from typing import Callable
 
 import rx
 from rx.core import Observable
+from rx.internal.utils import infinite
 
 
 def _retry(retry_count: int = None) -> Callable[[Observable], Observable]:
@@ -23,7 +23,11 @@ def _retry(retry_count: int = None) -> Callable[[Observable], Observable]:
         sequence repeatedly until it terminates successfully.
     """
 
+    if retry_count is None:
+        gen = infinite()
+    else:
+        gen = range(retry_count)
 
     def retry(source: Observable) -> Observable:
-        return rx.catch_exception(source for sourc in range(retry_count or sys.maxsize))
+        return rx.catch_exception(source for _ in gen)
     return retry

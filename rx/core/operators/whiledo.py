@@ -1,13 +1,13 @@
-from typing import Callable
+from typing import Callable, Any
+import itertools
 
 import rx
 from rx.core import Observable
 
-from rx.internal.iterable import Iterable
-from rx.internal.utils import is_future
+from rx.internal.utils import is_future, infinite
 
 
-def _while_do(condition) -> Callable[[Observable], Observable]:
+def _while_do(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
     def while_do(source: Observable) -> Observable:
         """Repeats source as long as condition holds emulating a while
         loop.
@@ -21,5 +21,5 @@ def _while_do(condition) -> Callable[[Observable], Observable]:
             condition holds.
         """
         source = rx.from_future(source) if is_future(source) else source
-        return rx.concat(Iterable.while_do(condition, source))
+        return rx.concat(itertools.takewhile(condition, (source for x in infinite())))
     return while_do
