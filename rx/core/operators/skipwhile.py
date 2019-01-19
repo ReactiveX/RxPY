@@ -45,7 +45,7 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
 
 def _skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observable], Observable]:
     return pipe(
-        ops.mapi(lambda x, i: (x, i)),
+        ops.map_indexed(lambda x, i: (x, i)),
         ops.skip_while(lambda x: predicate(*x)),
         ops.map(lambda x: x[0])
     )

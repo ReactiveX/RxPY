@@ -504,7 +504,7 @@ class TestFlatMap(unittest.TestCase):
 
         def factory():
             def projection(x):
-                return rx.interval(10).pipe(ops.mapi(lambda a, b: x), ops.take(x))
+                return rx.interval(10).pipe(ops.map_indexed(lambda a, b: x), ops.take(x))
             return xs.pipe(ops.flat_map(projection))
         results = scheduler.start(factory)
 

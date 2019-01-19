@@ -35,7 +35,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -66,7 +66,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -98,7 +98,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -129,7 +129,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -157,7 +157,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -186,7 +186,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(window_closing_mapper=closings),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -216,7 +216,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(ys, closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -248,7 +248,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(ys, closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -277,7 +277,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(ys, closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -307,7 +307,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(ys, closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
         results = scheduler.start(create=create)
@@ -338,7 +338,7 @@ class TestWindow(unittest.TestCase):
 
             return xs.pipe(
                     ops.window(ys, closing),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
         results = scheduler.start(create=create)
@@ -380,7 +380,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
                     ops.window(ys),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
         res = scheduler.start(create=create)
@@ -431,7 +431,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
                     ops.window(ys),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 
@@ -477,7 +477,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
                     ops.window(ys),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
         res = scheduler.start(create=create)
@@ -526,7 +526,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
                     ops.window(ys),
-                    ops.mapi(mapper),
+                    ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
 

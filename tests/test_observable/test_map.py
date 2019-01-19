@@ -4,7 +4,7 @@ from rx import Observable, return_value, throw, empty, create
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposables import SerialDisposable
 
-from rx.operators import map, mapi
+from rx.operators import map, map_indexed
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -28,7 +28,7 @@ def _raise(ex):
 class TestSelect(unittest.TestCase):
 
     def test_map_throws(self):
-        mapper = mapi(lambda x, y: x)
+        mapper = map_indexed(lambda x, y: x)
         with self.assertRaises(RxException):
             return_value(1).pipe(
                 mapper
@@ -196,7 +196,7 @@ class TestSelect(unittest.TestCase):
 
     def test_map_with_index_throws(self):
         with self.assertRaises(RxException):
-            mapper = mapi(lambda x, index: x)
+            mapper = map_indexed(lambda x, index: x)
 
             return return_value(1).pipe(
                 mapper
@@ -231,7 +231,7 @@ class TestSelect(unittest.TestCase):
 
             return x + index * 10
 
-        d.disposable = xs.pipe(mapi(projection)).subscribe(results)
+        d.disposable = xs.pipe(map_indexed(projection)).subscribe(results)
 
         def action(scheduler, state):
             return d.dispose()
@@ -253,7 +253,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.pipe(mapi(projection))
+            return xs.pipe(map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [on_next(210, 5), on_next(
@@ -272,7 +272,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.pipe(mapi(projection))
+            return xs.pipe(map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [on_next(210, 5), on_next(240, 14), on_next(290, 23), on_next(350, 32)]
@@ -291,7 +291,7 @@ class TestSelect(unittest.TestCase):
                 invoked[0] += 1
                 return (x + 1) + (index * 10)
 
-            return xs.pipe(mapi(projection))
+            return xs.pipe(map_indexed(projection))
 
         results = scheduler.start(factory)
 
@@ -314,7 +314,7 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
                 return (x + 1) + (index * 10)
 
-            return xs.pipe(mapi(projection))
+            return xs.pipe(map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [on_next(210, 5), on_next(240, 14), on_error(290, ex)]

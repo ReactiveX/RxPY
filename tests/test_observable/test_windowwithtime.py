@@ -36,7 +36,7 @@ class TestWindowWithTime(unittest.TestCase):
                 def proj(y):
                     return "%s %s" % (i, y)
                 return ys.pipe(ops.map(proj), ops.concat(rx.return_value('%s end' % i)))
-            return xs.pipe(ops.window_with_time(100), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 
@@ -78,7 +78,7 @@ class TestWindowWithTime(unittest.TestCase):
                     return "%s %s" % (i, y)
 
                 return ys.pipe(ops.map(proj), ops.concat(rx.return_value('%s end' % i)))
-            return xs.pipe(ops.window_with_time(100, 50), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100, 50), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 
@@ -95,7 +95,7 @@ class TestWindowWithTime(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
 
-            return xs.pipe(ops.window_with_time(100, 70), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 
@@ -113,7 +113,7 @@ class TestWindowWithTime(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
 
-            return xs.pipe(ops.window_with_time(100, 70), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 
@@ -130,7 +130,7 @@ class TestWindowWithTime(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
 
-            return xs.pipe(ops.window_with_time(100, 70), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create, disposed=370)
         assert results.messages == [on_next(210, "0 2"), on_next(240, "0 3"), on_next(280, "0 4"), on_next(
@@ -146,7 +146,7 @@ class TestWindowWithTime(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
 
-            return xs.pipe(ops.window_with_time(100), ops.mapi(mapper), ops.merge_all())
+            return xs.pipe(ops.window_with_time(100), ops.map_indexed(mapper), ops.merge_all())
 
         results = scheduler.start(create)
 

@@ -35,15 +35,15 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return map
 
 
-def _mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    def mapi(source: Observable) -> Observable:
-        """Partially applied mapi operator.
+def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+    def map_indexed(source: Observable) -> Observable:
+        """Partially applied indexed map operator.
 
         Project each element of an observable sequence into a new form
         by incorporating the element's index.
 
         Example:
-            >>> ret = map(source)
+            >>> ret = map_indexed(source)
 
         Args:
             source: The observable source to transform.
@@ -70,4 +70,4 @@ def _mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observ
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return mapi
+    return map_indexed

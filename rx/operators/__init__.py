@@ -1034,12 +1034,12 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _map(mapper)
 
 
-def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
     Example:
-        >>> ret = mapi(lambda value, index: value * value + index)
+        >>> ret = map_indexed(lambda value, index: value * value + index)
 
     Args:
         mapper_indexed: A transform function to apply to each source
@@ -1052,8 +1052,8 @@ def mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observa
         the result of invoking the transform function on each element
         of the source.
     """
-    from rx.core.operators.map import _mapi
-    return _mapi(mapper_indexed)
+    from rx.core.operators.map import _map_indexed
+    return _map_indexed(mapper_indexed)
 
 
 def materialize() -> Callable[[Observable], Observable]:
