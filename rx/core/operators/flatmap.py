@@ -52,15 +52,15 @@ def _flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return flat_map
 
 
-def _flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    def flat_mapi(source: Observable) -> Observable:
+def _flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+    def flat_map_indexed(source: Observable) -> Observable:
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one
         observable sequence.
 
         Example:
-            >>> flat_mapi(source)
+            >>> flat_map_indexed(source)
 
         Args:
             source: Source observable to flat map.
@@ -76,7 +76,7 @@ def _flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], O
         else:
             ret = _flat_map_internal(source, mapper=lambda _: mapper_indexed)
         return ret
-    return flat_mapi
+    return flat_map_indexed
 
 
 def _flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:

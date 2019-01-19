@@ -765,8 +765,8 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _flat_map(mapper)
 
 
-def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
-    """The `flat_mapi` operator.
+def flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+    """The `flat_map_indexed` operator.
 
     One of the Following:
     Projects each element of an observable sequence to an observable
@@ -774,7 +774,7 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
     observable sequence.
 
     Example:
-        >>> source.flat_mapi(lambda x, i: Observable.range(0, x))
+        >>> source.flat_map_indexed(lambda x, i: Observable.range(0, x))
 
     Or:
     Projects each element of the source observable sequence to the other
@@ -782,7 +782,7 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
     into one observable sequence.
 
     Example:
-        >>> source.flat_mapi(Observable.of(1, 2, 3))
+        >>> source.flat_map_indexed(Observable.of(1, 2, 3))
 
     Args:
         mapper_indexed: [Optional] A transform function to apply to
@@ -795,8 +795,8 @@ def flat_mapi(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Ob
         invoking the one-to-many transform function on each element of
         the input sequence.
     """
-    from rx.core.operators.flatmap import _flat_mapi
-    return _flat_mapi(mapper_indexed)
+    from rx.core.operators.flatmap import _flat_map_indexed
+    return _flat_map_indexed(mapper_indexed)
 
 
 def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
