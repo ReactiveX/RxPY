@@ -1,17 +1,13 @@
 from datetime import datetime, timedelta
 import os
 import unittest
-
-from nose import SkipTest
+import pytest
 
 from rx.concurrency import GtkScheduler
 
-try:
-    import gi
-    gi.require_version('Gtk', '3.0')
-    from gi.repository import GLib, Gtk
-except ImportError:
-    raise SkipTest("Need python-gi")
+gi = pytest.importorskip("gi")
+gi.require_version('Gtk', '3.0')
+from gi.repository import GLib, Gtk
 
 
 # Removing GNOME_DESKTOP_SESSION_ID from environment

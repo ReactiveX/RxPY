@@ -1,20 +1,19 @@
 import unittest
 from datetime import datetime, timedelta
+import pytest
 
-from nose import SkipTest
-try:
-    import tkinter
-except ImportError:
-    raise SkipTest("Tkinter not installed")
+tkinter = pytest.importorskip("tkinter")
 
 try:
     root = tkinter.Tk()
+    display = True
 except Exception:
-    raise SkipTest("No display, skipping")
+    display = False
 
 from rx.concurrency import TkinterScheduler
 
 
+@pytest.mark.skipif("display == False")
 class TestTkinterScheduler(unittest.TestCase):
 
     def test_tkinter_schedule_now(self):

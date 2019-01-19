@@ -1,5 +1,5 @@
 import sys
-from nose.tools import raises
+import pytest
 
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import ReplaySubject
@@ -509,25 +509,25 @@ def test_subject_disposed():
         subject[0].on_next(5)
     scheduler.schedule_absolute(550, action13)
 
-    @raises(DisposedException)
     def action14(scheduler, state=None):
-        subject[0].on_next(6)
+        with pytest.raises(DisposedException):
+            subject[0].on_next(6)
     scheduler.schedule_absolute(650, action14)
 
-    @raises(DisposedException)
     def action15(scheduler, state=None):
-        subject[0].on_completed()
+        with pytest.raises(DisposedException):
+            subject[0].on_completed()
     scheduler.schedule_absolute(750, action15)
 
-    @raises(DisposedException)
     def action16(scheduler, state=None):
-        subject[0].on_error(Exception())
+        with pytest.raises(DisposedException):
+            subject[0].on_error(Exception())
 
     scheduler.schedule_absolute(850, action16)
 
-    @raises(DisposedException)
     def action17(scheduler, state=None):
-        subject[0].subscribe(None)
+        with pytest.raises(DisposedException):
+            subject[0].subscribe(None)
 
     scheduler.schedule_absolute(950, action17)
 

@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
+import pytest
 
-from nose import SkipTest
-try:
-    import twisted
-except ImportError:
-    raise SkipTest("Twisted not installed")
+twisted = pytest.importorskip("twisted")
 
 from twisted.internet import reactor, defer
 from twisted.trial import unittest
