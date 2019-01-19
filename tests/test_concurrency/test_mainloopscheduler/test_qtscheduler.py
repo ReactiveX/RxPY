@@ -1,7 +1,6 @@
 import unittest
 from datetime import datetime, timedelta
-
-from nose import SkipTest
+import pytest
 
 try:
     from PyQt4 import QtCore
@@ -15,7 +14,7 @@ except ImportError:
             from PySide import QtCore
             from PySide.QtGui import QApplication
         except ImportError:
-            raise SkipTest("Need PyQt4, PyQt5, or PySide")
+            skip = True
 
 
 from rx.concurrency import QtScheduler
@@ -31,12 +30,13 @@ def make_app():
     return app
 
 
+@pytest.mark.skipif("skip == True")
 class TestQtScheduler(unittest.TestCase):
 
     def test_qt_schedule_now(self):
         scheduler = QtScheduler(QtCore)
         res = scheduler.now - datetime.utcnow()
-        assert(res < timedelta(seconds=1))
+        assert res < timedelta(seconds=1)
 
     def test_qt_schedule_action(self):
         app = make_app()

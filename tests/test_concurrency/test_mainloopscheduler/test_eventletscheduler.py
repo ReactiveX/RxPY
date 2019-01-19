@@ -1,19 +1,17 @@
 import unittest
 from datetime import datetime, timedelta
-
-from nose import SkipTest
-try:
-    import eventlet
-except ImportError:
-    raise SkipTest("Eventlet not installed")
+import pytest
 
 from rx.concurrency import EventLetEventScheduler
+
+eventlet = pytest.importorskip("eventlet")
+
 
 class TestEventLetEventScheduler(unittest.TestCase):
 
     def test_eventlet_schedule_now(self):
         scheduler = EventLetEventScheduler()
-        res = scheduler.now() - datetime.now()
+        res = scheduler.now - datetime.now()
         assert(res < timedelta(seconds=1))
 
     def test_eventlet_schedule_action(self):
