@@ -19,5 +19,5 @@ def _delay_subscription(duetime: Union[datetime, int]) -> Callable[[Observable],
         def mapper(_) -> Observable:
             return empty()
 
-        return source.pipe(ops.delay_with_selector(timer(duetime), mapper))
+        return source.pipe(ops.delay_with_mapper(timer(duetime), mapper))
     return delay_subscription
