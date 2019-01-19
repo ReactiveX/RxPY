@@ -10,16 +10,16 @@ T_in = TypeVar('T_in', contravariant=True)
 Action = Callable[[], None]
 ScheduledAction = Callable[[abc.Scheduler, Any], None]
 
-OnNext = Callable[[Any], None]                   # pylint: disable=C0103
-OnError = Callable[[Exception], None]            # pylint: disable=C0103
-OnCompleted = Callable[[], None]                 # pylint: disable=C0103
+OnNext = Callable[[Any], None]
+OnError = Callable[[Exception], None]
+OnCompleted = Callable[[], None]
 
 Mapper = Callable[[Any], Any]
-MapperIndexed = Callable[[Any, int], Any]        # pylint: disable=C0103
-Predicate = Callable[[Any], bool]                # pylint: disable=C0103
-PredicateIndexed = Callable[[Any, int], bool]    # pylint: disable=C0103
-Accumulator = Callable[[Any, Any], Any]          # pylint: disable=C0103
-Dispose = Callable[[], None]                     # pylint: disable=C0103
+MapperIndexed = Callable[[Any, int], Any]
+Predicate = Callable[[Any], bool]
+PredicateIndexed = Callable[[Any, int], bool]
+Accumulator = Callable[[Any, Any], Any]
+Dispose = Callable[[], None]
 
 
 class Disposable(abc.Disposable):
