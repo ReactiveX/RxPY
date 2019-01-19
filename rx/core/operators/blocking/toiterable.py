@@ -1,8 +1,8 @@
 from typing import Iterable
 import threading
 
+from rx import operators as ops
 from rx.core import BlockingObservable
-from rx.internal import AnonymousIterable
 
 
 def to_iterable(source: BlockingObservable) -> Iterable:
@@ -24,7 +24,7 @@ def to_iterable(source: BlockingObservable) -> Iterable:
         condition.notify()  # signal that a new item is available
         condition.release()
 
-    source.observable.materialize().subscribe_(on_next)
+    source.observable.pipe(ops.materialize()).subscribe_(on_next)
 
     def gen():
         """Generator producing values for the iterator"""
@@ -44,4 +44,4 @@ def to_iterable(source: BlockingObservable) -> Iterable:
             condition.release()
             yield notification.value
 
-    return AnonymousIterable(gen())
+    return gen()
