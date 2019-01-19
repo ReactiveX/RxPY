@@ -350,10 +350,10 @@ def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Ca
 
     Examples:
         # with mapper only
-        >>> res = source.delay_with_selector(lambda x: Scheduler.timer(5000))
+        >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5000))
         # with delay and mapper
-        >>> res = source.delay_with_selector(Observable.timer(2000),
-                                            lambda x: Observable.timer(x))
+        >>> res = source.delay_with_mapper(Observable.timer(2000),
+                                           lambda x: Observable.timer(x))
 
     Args:
         subscription_delay: [Optional] Sequence indicating the delay for the
