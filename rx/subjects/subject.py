@@ -62,8 +62,8 @@ class Subject(Observable, Observer):
     def on_error(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception.
 
-        Keyword arguments:
-        error -- The exception to send to all subscribed observers.
+        Args:
+            error: The exception to send to all subscribed observers.
         """
 
         os = None
@@ -82,8 +82,8 @@ class Subject(Observable, Observer):
     def on_next(self, value: Any) -> None:
         """Notifies all subscribed observers with the value.
 
-        Keyword arguments:
-        value -- The value to send to all subscribed observers.
+        Args:
+            value: The value to send to all subscribed observers.
         """
         os = None
         with self.lock:
