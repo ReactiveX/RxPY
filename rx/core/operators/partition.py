@@ -38,8 +38,8 @@ def _partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]
     return partition
 
 
-def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
-    def partitioni(source: Observable) -> List[Observable]:
+def _partition_indexed(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+    def partition_indexed(source: Observable) -> List[Observable]:
         """The partially applied indexed partition operator.
 
         Returns two observables which partition the observations of the
@@ -68,4 +68,4 @@ def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], L
             published.pipe(ops.filter_indexed(predicate_indexed)),
             published.pipe(ops.filter_indexed(predicate_indexed=lambda x, i: not predicate_indexed(x, i)))
         ]
-    return partitioni
+    return partition_indexed
