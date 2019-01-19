@@ -38,15 +38,15 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     return filter
 
 
-def _filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
-    def filteri(source: Observable) -> Observable:
+def _filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+    def filter_indexed(source: Observable) -> Observable:
         """Partially applied indexed filter operator.
 
         Filters the elements of an observable sequence based on a
         predicate by incorporating the element's index.
 
         Example:
-            >>> filteri(source)
+            >>> filter_indexed(source)
 
         Args:
             source: Source observable to filter.
@@ -73,4 +73,4 @@ def _filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
-    return filteri
+    return filter_indexed

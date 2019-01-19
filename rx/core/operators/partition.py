@@ -65,7 +65,7 @@ def _partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], L
             ops.ref_count()
         )
         return [
-            published.pipe(ops.filteri(predicate_indexed)),
-            published.pipe(ops.filteri(predicate_indexed=lambda x, i: not predicate_indexed(x, i)))
+            published.pipe(ops.filter_indexed(predicate_indexed)),
+            published.pipe(ops.filter_indexed(predicate_indexed=lambda x, i: not predicate_indexed(x, i)))
         ]
     return partitioni
