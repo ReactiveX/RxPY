@@ -1304,7 +1304,7 @@ def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
     return _partition(predicate)
 
 
-def partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
+def partition_indexed(predicate_indexed: PredicateIndexed) -> Callable[[Observable], List[Observable]]:
     """The indexed partition operator.
 
     Returns two observables which partition the observations of the
@@ -1324,8 +1324,8 @@ def partitioni(predicate_indexed: PredicateIndexed) -> Callable[[Observable], Li
         returns True, and the second triggers when the predicate
         returns False.
     """
-    from rx.core.operators.partition import _partitioni
-    return _partitioni(predicate_indexed)
+    from rx.core.operators.partition import _partition_indexed
+    return _partition_indexed(predicate_indexed)
 
 
 def pluck(key: Any) -> Callable[[Observable], Observable]:
