@@ -18,7 +18,7 @@ def _flat_map_internal(source, mapper=None, mapper_indexed=None):
         return result
 
     return source.pipe(
-        ops.mapi(projection),
+        ops.map_indexed(projection),
         ops.merge_all()
     )
 
