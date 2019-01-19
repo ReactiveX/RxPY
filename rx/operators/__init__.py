@@ -603,12 +603,12 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylin
     return _filter(predicate)
 
 
-def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+def filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
 
     Example:
-        >>> op = filter(lambda value, index: (value + index) < 10)
+        >>> op = filter_indexed(lambda value, index: (value + index) < 10)
 
     Args:
         predicate: A function to test each source element for a
@@ -620,8 +620,8 @@ def filteri(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable]
         returns an observable sequence that contains elements from the
         input sequence that satisfy the condition.
     """
-    from rx.core.operators.filter import _filteri
-    return _filteri(predicate_indexed)
+    from rx.core.operators.filter import _filter_indexed
+    return _filter_indexed(predicate_indexed)
 
 
 def finally_action(action: Callable) -> Callable[[Observable], Observable]:

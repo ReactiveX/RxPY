@@ -51,7 +51,7 @@ def _slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Obse
 
         if has_step:
             if step > 1:
-                pipeline.append(ops.filteri(lambda x, i: i % step == 0))
+                pipeline.append(ops.filter_indexed(lambda x, i: i % step == 0))
             elif step < 0:
                 # Reversing events is not supported
                 raise TypeError("Negative step not supported.")

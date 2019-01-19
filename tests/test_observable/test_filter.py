@@ -3,7 +3,7 @@ import unittest
 from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposables import SerialDisposable
 
-from rx.operators import filter, filteri
+from rx.operators import filter, filter_indexed
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -242,7 +242,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -261,7 +261,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return True
 
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 3), on_next(270, 4), on_next(340, 5), on_next(380, 6), on_next(
@@ -279,7 +279,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return False
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create)
 
@@ -298,7 +298,7 @@ class TestFilter(unittest.TestCase):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
 
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create, disposed=400)
         assert results.messages == [on_next(230, 3), on_next(390, 7)]
@@ -316,7 +316,7 @@ class TestFilter(unittest.TestCase):
             def predicate(x, index):
                 invoked[0] += 1
                 return is_prime(x + index * 10)
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create)
 
@@ -339,7 +339,7 @@ class TestFilter(unittest.TestCase):
                     raise Exception(ex)
 
                 return is_prime(x + index * 10)
-            return xs.pipe(filteri(predicate))
+            return xs.pipe(filter_indexed(predicate))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 3), on_error(380, ex)]
@@ -362,7 +362,7 @@ class TestFilter(unittest.TestCase):
                     d.dispose()
 
                 return is_prime(x + index * 10)
-            ys[0] = xs.pipe(filteri(predicate))
+            ys[0] = xs.pipe(filter_indexed(predicate))
 
         scheduler.schedule_absolute(created, action1)
 
