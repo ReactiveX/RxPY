@@ -1,14 +1,15 @@
-from typing import Callable
+from typing import Callable, Union
 from datetime import timedelta
 
-from rx.core import AnonymousObservable, Observable
+from rx.core import AnonymousObservable, Observable, typing
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
 
 
-def _window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+def _window_with_time(timespan: Union[timedelta, int], timeshift: Union[timedelta, int] = None,
+                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     if timeshift is None:
         timeshift = timespan
 
@@ -18,8 +19,8 @@ def _window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observ
         timeshift = timedelta(milliseconds=timeshift)
 
     def window_with_time(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or timeout_scheduler
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
 
             timer_d = SerialDisposable()
             next_shift = [timeshift]
@@ -67,7 +68,7 @@ def _window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observ
                         s.on_completed()
 
                     create_timer()
-                m.disposable = scheduler.schedule_relative(ts, action)
+                m.disposable = _scheduler.schedule_relative(ts, action)
 
             q.append(Subject())
             observer.on_next(add_ref(q[0], ref_count_disposable))
@@ -89,7 +90,7 @@ def _window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observ
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
             return ref_count_disposable
         return AnonymousObservable(subscribe)
     return window_with_time

@@ -2475,9 +2475,10 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: Union[timedelta, int], timeshift: Union[timedelta, int] = None,
+                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
-    return _window_with_time(timespan, timeshift)
+    return _window_with_time(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(timespan: Union[timedelta, int], count: int, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
