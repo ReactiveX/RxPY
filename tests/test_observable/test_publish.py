@@ -79,9 +79,10 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(ys):
-                def result_mapper(a, b):
-                    return a + b
-                return ys.pipe(ops.zip(ys, result_mapper=result_mapper))
+                return ys.pipe(
+                        ops.zip(ys),
+                        ops.map(sum),
+                        )
 
             return xs.pipe(ops.publish(mapper=mapper))
         results = scheduler.start(create)
@@ -448,7 +449,10 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+                return _xs.pipe(
+                        ops.zip(_xs.pipe(ops.skip(1))),
+                        ops.map(sum),
+                        )
 
             return xs.pipe(ops.publish(mapper))
         results = scheduler.start(create)
@@ -489,7 +493,11 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+                return _xs.pipe(
+                        ops.zip(_xs.pipe(ops.skip(1))),
+                        ops.map(sum),
+                        )
+
             return xs.pipe(ops.publish(mapper))
         results = scheduler.start(create)
 
@@ -528,7 +536,11 @@ class TestPublish(unittest.TestCase):
 
         def create():
             def mapper(_xs):
-                return _xs.pipe(ops.zip(_xs.pipe(ops.skip(1)), result_mapper=lambda prev, cur: cur + prev))
+                return _xs.pipe(
+                        ops.zip(_xs.pipe(ops.skip(1))),
+                        ops.map(sum)
+                        )
+
             return xs.pipe(ops.publish(mapper))
 
         results = scheduler.start(create, disposed=470)

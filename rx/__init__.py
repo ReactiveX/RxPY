@@ -593,28 +593,21 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Cal
     return _with_latest_from(*args, mapper=mapper)
 
 
-def zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
+def zip(*args: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using the mapper function whenever all of the
+    sequence by using a tuple aggregation whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
-    The last element in the arguments must be a function to invoke for
-    each series of elements at corresponding indexes in the sources.
-
     Example:
-        >>> res = rx.zip(obs1, obs2, result_mapper=fn)
+        >>> res = rx.zip(obs1, obs2)
 
     Args:
         args: Observable sources to zip.
-        result_mapper: Mapper function that produces an element
-            whenever all of the observable sequences have produced an
-            element at a corresponding index.
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources using the specified result mapper
-        function.
+        elements of the sources as tuple.
     """
     from .core.observable.zip import _zip
-    return _zip(*args, result_mapper=result_mapper)
+    return _zip(*args)
