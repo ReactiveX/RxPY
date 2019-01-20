@@ -14,7 +14,8 @@ class TestTwistedScheduler(unittest.TestCase):
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
         res = scheduler.now - datetime.now()
-        assert(res < timedelta(seconds=1))
+
+        assert res < timedelta(seconds=1)
 
     @defer.inlineCallbacks
     def test_twisted_schedule_action(self):
@@ -41,7 +42,7 @@ class TestTwistedScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = reactor.seconds()
 
-        scheduler.schedule_relative(200, action)
+        scheduler.schedule_relative(0.2, action)
 
         promise = defer.Deferred()
         def done():
@@ -58,7 +59,7 @@ class TestTwistedScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(10, action)
+        d = scheduler.schedule_relative(0.01, action)
         d.dispose()
 
         promise = defer.Deferred()

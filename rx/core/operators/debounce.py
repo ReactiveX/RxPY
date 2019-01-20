@@ -7,7 +7,7 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, Seri
 from rx.concurrency import timeout_scheduler
 
 
-def _debounce(duetime: Union[int, timedelta], scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
+def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
     def debounce(source: Observable) -> Observable:
         """Ignores values from an observable sequence which are followed by
         another value before duetime.

@@ -39,8 +39,7 @@ class TimeInterval(object):
 
 
 def new_timer(l, t, scheduler):
-    timer = scheduler.create_cold_observable(on_next(t, 0),
-                                             on_completed(t))
+    timer = scheduler.create_cold_observable(on_next(t, 0), on_completed(t))
     l.append(timer)
     return timer
 

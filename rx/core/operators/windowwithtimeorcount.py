@@ -8,7 +8,7 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefC
 from rx.subjects import Subject
 
 
-def _window_with_time_or_count(timespan: Union[timedelta, int], count: int, scheduler: typing.Scheduler = None
+def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, scheduler: typing.Scheduler = None
                               ) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):

@@ -5,7 +5,7 @@ from rx.core import AnonymousObservable, Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def _skip_last_with_time(duration: Union[timedelta, int], scheduler: typing.Scheduler = None
+def _skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
                         ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the end of the
     observable source sequence.
@@ -40,12 +40,12 @@ def _skip_last_with_time(duration: Union[timedelta, int], scheduler: typing.Sche
             def on_next(x):
                 now = _scheduler.now
                 q.append({"interval": now, "value": x})
-                while len(q) and now - q[0]["interval"] >= duration:
+                while q and now - q[0]["interval"] >= duration:
                     observer.on_next(q.pop(0)["value"])
 
             def on_completed():
                 now = _scheduler.now
-                while len(q) and now - q[0]["interval"] >= duration:
+                while q and now - q[0]["interval"] >= duration:
                     observer.on_next(q.pop(0)["value"])
 
                 observer.on_completed()

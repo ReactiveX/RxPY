@@ -98,7 +98,7 @@ def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int]
     return AnonymousObservable(subscribe)
 
 
-def _delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     def delay(source: Observable) -> Observable:
         """Time shifts the observable sequence.
 

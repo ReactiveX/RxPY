@@ -1,4 +1,6 @@
-from rx.core import Disposable
+from typing import Any
+
+from rx.core import Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -12,23 +14,24 @@ class TkinterScheduler(SchedulerBase):
     def __init__(self, master):
         self.master = master
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
-        return self.schedule_relative(0, action, state)
+        return self.schedule_relative(0.0, action, state)
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort)."""
 
-        msecs = self.to_relative(duetime)
-
+        msecs = int(self.to_seconds(duetime)*1000.0)
         disposable = SingleAssignmentDisposable()
 
         def invoke_action():
@@ -41,15 +44,17 @@ class TkinterScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort)."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)

@@ -59,7 +59,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            dt = datetime.utcfromtimestamp(0.250)
+            dt = datetime.utcfromtimestamp(250)
             return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
@@ -72,7 +72,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            dt = datetime.utcfromtimestamp(0.250)
+            dt = datetime.utcfromtimestamp(250)
             return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
@@ -93,8 +93,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt235 = datetime.utcfromtimestamp(0.235)
-            dt255 = datetime.utcfromtimestamp(0.255)
+            dt235 = datetime.utcfromtimestamp(235)
+            dt255 = datetime.utcfromtimestamp(255)
             return xs.pipe(
                     ops.take_until_with_time(dt255),
                     ops.take_until_with_time(dt235),
@@ -118,8 +118,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt235 = datetime.utcfromtimestamp(0.235)
-            dt255 = datetime.utcfromtimestamp(0.255)
+            dt235 = datetime.utcfromtimestamp(235)
+            dt255 = datetime.utcfromtimestamp(255)
             return xs.pipe(
                     ops.take_until_with_time(dt235),
                     ops.take_until_with_time(dt255),

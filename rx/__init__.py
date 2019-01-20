@@ -504,7 +504,8 @@ def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observabl
     return _throw(exception, scheduler)
 
 
-def timer(duetime, period=None, scheduler: typing.Scheduler = None) -> Observable:
+def timer(duetime: typing.AbsoluteOrRelativeTime, period: typing.RelativeTime = None,
+          scheduler: typing.Scheduler = None) -> Observable:
     """Returns an observable sequence that produces a value after
     duetime has elapsed and then after each period.
 

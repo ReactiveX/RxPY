@@ -3,7 +3,7 @@ import threading
 from typing import Any, Optional, List
 from datetime import timedelta
 
-from rx.core import Observer, Observable
+from rx.core import Observer, Observable, typing
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
 from rx.core.scheduledobserver import ScheduledObserver
@@ -26,15 +26,15 @@ class ReplaySubject(Observable, Observer):
     and future observers, subject to buffer trimming policies.
     """
 
-    def __init__(self, buffer_size: int = None, window=None, scheduler=None):
+    def __init__(self, buffer_size: int = None, window: typing.RelativeTime = None, scheduler: typing.Scheduler = None):
         """Initializes a new instance of the ReplaySubject class with
         the specified buffer size, window and scheduler.
 
-        Keyword arguments:
-        buffer_size -- [Optional] Maximum element count of the replay
-            buffer.
-        window [Optional] -- Maximum time length of the replay buffer.
-        scheduler -- [Optional] Scheduler the observers are invoked on.
+        Args:
+            buffer_size: [Optional] Maximum element count of the replay
+                buffer.
+            window [Optional]: Maximum time length of the replay buffer.
+            scheduler: [Optional] Scheduler the observers are invoked on.
         """
 
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size

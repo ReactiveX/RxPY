@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Generic, TypeVar, Callable, Any
+from typing import Generic, TypeVar, Callable, Any, Union
 from datetime import datetime, timedelta
 
 from . import abc
@@ -20,6 +20,9 @@ Predicate = Callable[[Any], bool]
 PredicateIndexed = Callable[[Any, int], bool]
 Accumulator = Callable[[Any, Any], Any]
 Dispose = Callable[[], None]
+AbsoluteTime = Union[datetime, float]
+RelativeTime = Union[timedelta, float]
+AbsoluteOrRelativeTime = Union[datetime, timedelta, float]
 
 
 class Disposable(abc.Disposable):
@@ -45,11 +48,11 @@ class Scheduler(abc.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self, duetime: timedelta, action: ScheduledAction, state=None):
+    def schedule_relative(self, duetime: RelativeTime, action: ScheduledAction, state: Any = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self, duetime, action: ScheduledAction, state=None):
+    def schedule_absolute(self, duetime: AbsoluteTime, action: ScheduledAction, state: Any = None) -> Disposable:
         return NotImplemented
 
 

@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import Union, Callable
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _skip_until_with_time(start_time: Union[datetime, int]) -> Callable[[Observable], Observable]:
+def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
     def skip_until_with_time(source: Observable) -> Observable:
         """Skips elements from the observable source sequence until the
         specified start time.
@@ -20,7 +20,7 @@ def _skip_until_with_time(start_time: Union[datetime, int]) -> Callable[[Observa
             >>> res = source.skip_until_with_time(5000)
 
         Args:
-            start_time -- Time to start taking elements from the source
+            start_time: Time to start taking elements from the source
                 sequence. If this value is less than or equal to
                 `datetime.utcnow`, no elements will be skipped.
 

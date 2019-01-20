@@ -76,8 +76,8 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                    ops.skip_until_with_time(datetime.utcfromtimestamp(0.215)),
-                    ops.skip_until_with_time(datetime.utcfromtimestamp(0.230)),
+                    ops.skip_until_with_time(datetime.utcfromtimestamp(215)),
+                    ops.skip_until_with_time(datetime.utcfromtimestamp(230)),
                     )
 
         res = scheduler.start(create)
@@ -98,8 +98,8 @@ class TestSkipUntilWithTIme(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                    ops.skip_until_with_time(datetime.utcfromtimestamp(0.230)),
-                    ops.skip_until_with_time(datetime.utcfromtimestamp(0.215)),
+                    ops.skip_until_with_time(datetime.utcfromtimestamp(230)),
+                    ops.skip_until_with_time(datetime.utcfromtimestamp(215)),
                     )
 
         res = scheduler.start(create)

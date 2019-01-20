@@ -1,7 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from rx.core import Scheduler
-
 from .newthreadscheduler import NewThreadScheduler
 
 

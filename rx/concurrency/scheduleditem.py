@@ -1,3 +1,7 @@
+from typing import Any
+from datetime import datetime
+
+from rx.core import Scheduler, typing
 from rx.disposables import SingleAssignmentDisposable
 
 
@@ -5,13 +9,13 @@ def default_sub_comparer(x, y):
     return 0 if x == y else 1 if x > y else -1
 
 
-class ScheduledItem(object):
-    def __init__(self, scheduler, state, action, duetime):
+class ScheduledItem:
+    def __init__(self, scheduler: Scheduler, state: Any, action: typing.ScheduledAction, duetime: typing.AbsoluteTime):
         self.scheduler = scheduler
         self.state = state
         self.action = action
         self.duetime = duetime
-        self.disposable = SingleAssignmentDisposable()
+        self.disposable: typing.Disposable = SingleAssignmentDisposable()
 
     def invoke(self):
         ret = self.scheduler.invoke_action(self.action, self.state)

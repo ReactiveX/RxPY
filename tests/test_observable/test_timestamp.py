@@ -18,7 +18,7 @@ class Timestamp(object):
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
             timestamp = timestamp - datetime.utcfromtimestamp(0)
-            timestamp = int(timestamp.microseconds / 1000)
+            timestamp = int(timestamp.seconds)  # FIXME: Must fix when tests run at fraction of seconds.
 
         self.value = value
         self.timestamp = timestamp
@@ -42,16 +42,18 @@ class TestTimeInterval(unittest.TestCase):
         def create():
             def mapper(x):
                 return Timestamp(x.value, x.timestamp)
+
             return xs.pipe(
-                    ops.timestamp(),
-                    ops.map(mapper),
-                    )
+                ops.timestamp(),
+                ops.map(mapper),
+            )
 
         results = scheduler.start(create)
         assert results.messages == [
-                on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)),
-                on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)),
-                on_next(350, Timestamp(6, 350)), on_completed(400)]
+            on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)),
+            on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)),
+            on_next(350, Timestamp(6, 350)), on_completed(400)
+        ]
 
     def test_timestamp_empty(self):
         scheduler = TestScheduler()

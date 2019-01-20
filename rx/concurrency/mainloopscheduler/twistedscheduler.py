@@ -31,7 +31,7 @@ class TwistedScheduler(SchedulerBase):
         from twisted.internet.task import deferLater
 
         scheduler = self
-        seconds = self.to_relative(duetime)/1000.0
+        seconds = self.to_seconds(duetime)
 
         disposable = SingleAssignmentDisposable()
 
@@ -65,4 +65,4 @@ class TwistedScheduler(SchedulerBase):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
 
-        return self.to_datetime(int(self.reactor.seconds()*1000))
+        return self.to_datetime(int(self.reactor.seconds()))

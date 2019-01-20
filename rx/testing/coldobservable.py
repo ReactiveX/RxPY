@@ -13,7 +13,7 @@ class ColdObservable(Observable):
         self.subscriptions: List[Subscription] = []
 
     def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
-        clock = self.scheduler.to_relative(self.scheduler.now)
+        clock = self.scheduler.to_seconds(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
         disposable = CompositeDisposable()
@@ -33,7 +33,7 @@ class ColdObservable(Observable):
 
         def dispose() -> None:
             start = self.subscriptions[index].subscribe
-            end = self.scheduler.to_relative(self.scheduler.now)
+            end = self.scheduler.to_seconds(self.scheduler.now)
             self.subscriptions[index] = Subscription(start, end)
             disposable.dispose()
 

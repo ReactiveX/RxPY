@@ -34,7 +34,7 @@ class TestGEventScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = datetime.now()
 
-        scheduler.schedule_relative(200, action)
+        scheduler.schedule_relative(0.2, action)
 
         gevent.sleep(0.3)
         diff = endtime[0]-starttime
@@ -46,7 +46,7 @@ class TestGEventScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(10, action)
+        d = scheduler.schedule_relative(0.01, action)
         d.dispose()
 
         gevent.sleep(0.1)

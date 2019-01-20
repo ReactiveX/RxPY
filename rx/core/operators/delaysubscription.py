@@ -1,23 +1,27 @@
 from datetime import datetime
 from typing import Union, Callable
 
-from rx import empty, timer, operators as ops
-from rx.core import Observable
+import rx
+from rx import operators as ops
+from rx.core import Observable, typing
 
 
-def _delay_subscription(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
-    """Time shifts the observable sequence by delaying the subscription.
-
-    1 - res = source.delay_subscription(5000) # 5s
-
-    duetime -- Absolute or relative time to perform the subscription at.
-
-    Returns time-shifted sequence.
-    """
-
+def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
     def delay_subscription(source: Observable) -> Observable:
-        def mapper(_) -> Observable:
-            return empty()
+        """Time shifts the observable sequence by delaying the subscription.
 
-        return source.pipe(ops.delay_with_mapper(timer(duetime), mapper))
+        Exampeles.
+            >>> res = source.delay_subscription(5)
+
+        Args:
+            source: Source subscription to delay.
+
+        Returns:
+            Time-shifted sequence.
+        """
+
+        def mapper(_) -> Observable:
+            return rx.empty()
+
+        return source.pipe(ops.delay_with_mapper(rx.timer(duetime), mapper))
     return delay_subscription

@@ -14,7 +14,9 @@ class AutoDetachObserver(ObserverBase):
     def _on_next_core(self, value):
         try:
             self._observer.on_next(value)
-        except Exception:
+        except Exception as ex:
+            import sys, traceback
+            traceback.print_exc(file=sys.stdout)
             self.dispose()
             raise
 

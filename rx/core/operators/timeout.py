@@ -8,7 +8,7 @@ from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
 
 
-def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None
+def _timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
              ) -> Callable[[Observable], Observable]:
 
     other = other or throw(Exception("Timeout"))
@@ -28,13 +28,13 @@ def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler:
             An obserable sequence switching to the other sequence in
             case of a timeout.
         """
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or timeout_scheduler
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
 
             if isinstance(duetime, datetime):
-                scheduler_method = scheduler.schedule_absolute
+                scheduler_method = _scheduler.schedule_absolute
             else:
-                scheduler_method = scheduler.schedule_relative
+                scheduler_method = _scheduler.schedule_relative
 
             switched = [False]
             _id = [0]
@@ -76,7 +76,7 @@ def _timeout(duetime: Union[int, datetime], other: Observable = None, scheduler:
                     _id[0] += 1
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
+            original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler_)
             return CompositeDisposable(subscription, timer)
         return AnonymousObservable(subscribe)
     return timeout

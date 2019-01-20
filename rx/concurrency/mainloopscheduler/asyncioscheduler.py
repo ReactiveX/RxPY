@@ -72,7 +72,7 @@ class AsyncIOScheduler(SchedulerBase):
 
     def _schedule_relative(self, duetime, action, state=None):
         scheduler = self
-        seconds = self.to_relative(duetime)/1000.0
+        seconds = self.to_seconds(duetime)
         if seconds == 0:
             return scheduler.schedule(action, state)
 
@@ -90,7 +90,7 @@ class AsyncIOScheduler(SchedulerBase):
 
     def _schedule_relative_threadsafe(self, duetime, action, state=None):
         scheduler = self
-        seconds = self.to_relative(duetime)/1000.0
+        seconds = self.to_seconds(duetime)
         if seconds == 0:
             return scheduler.schedule(action, state)
 

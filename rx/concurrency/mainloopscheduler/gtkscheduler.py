@@ -16,7 +16,7 @@ class GtkScheduler(SchedulerBase):
         from gi.repository import GLib
 
         scheduler = self
-        msecs = self.to_relative(time)
+        msecs = int(self.to_seconds(time)*1000)
 
         disposable = SingleAssignmentDisposable()
 
