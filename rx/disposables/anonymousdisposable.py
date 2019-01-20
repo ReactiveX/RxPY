@@ -1,18 +1,18 @@
 from threading import RLock
 
 from rx.internal import noop
-from rx.core.typing import Disposable, Dispose
+from rx.core.typing import Disposable, Action
 
 
 class AnonymousDisposable(Disposable):
     """Main disposable class"""
 
-    def __init__(self, action: Dispose = None) -> None:
-        """Creates a disposable object that invokes the specified action
-        when disposed.
+    def __init__(self, action: Action = None) -> None:
+        """Creates a disposable object that invokes the specified
+        action when disposed.
 
         Args:
-            action -- Action to run during the first call to dispose.
+            action: Action to run during the first call to dispose.
                 The action is guaranteed to be run at most once.
 
         Returns:
