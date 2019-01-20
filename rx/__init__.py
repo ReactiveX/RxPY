@@ -252,27 +252,25 @@ def generate_with_relative_time(initial_state, condition, iterate, result_mapper
     return _generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper)
 
 
-def generate(initial_state, condition, iterate, result_mapper) -> Observable:
+def generate(initial_state, condition, iterate) -> Observable:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
 
     Example:
-        >>> res = rx.generate(0, lambda x: x < 10, lambda x: x + 1, lambda x: x)
+        >>> res = rx.generate(0, lambda x: x < 10, lambda x: x + 1)
 
     Args:
         initial_state: Initial state.
         condition: Condition to terminate generation (upon returning
             False).
         iterate: Iteration step function.
-        result_mapper: Selector function for results produced in the
-            sequence.
 
     Returns:
         The generated sequence.
     """
     from .core.observable.generate import _generate
-    return _generate(initial_state, condition, iterate, result_mapper)
+    return _generate(initial_state, condition, iterate)
 
 
 def if_then(condition: Callable[[], bool], then_source: Observable,

@@ -3,7 +3,7 @@ from rx.concurrency import current_thread_scheduler
 from rx.disposables import MultipleAssignmentDisposable
 
 
-def _generate(initial_state, condition, iterate, result_mapper) -> Observable:
+def _generate(initial_state, condition, iterate) -> Observable:
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
         first = [True]
@@ -22,7 +22,7 @@ def _generate(initial_state, condition, iterate, result_mapper) -> Observable:
 
                 has_result = condition(state[0])
                 if has_result:
-                    result = result_mapper(state[0])
+                    result = state[0]
 
             except Exception as exception:  # pylint: disable=broad-except
                 observer.on_error(exception)
