@@ -8,15 +8,15 @@ from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, RefC
 from rx.subjects import Subject
 
 
-def _window_with_time(timespan: Union[timedelta, int], timeshift: Union[timedelta, int] = None,
+def _window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
                       scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     if timeshift is None:
         timeshift = timespan
 
     if not isinstance(timespan, timedelta):
-        timespan = timedelta(milliseconds=timespan)
+        timespan = timedelta(seconds=timespan)
     if not isinstance(timeshift, timedelta):
-        timeshift = timedelta(milliseconds=timeshift)
+        timeshift = timedelta(seconds=timeshift)
 
     def window_with_time(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):

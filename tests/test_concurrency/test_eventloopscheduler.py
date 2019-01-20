@@ -72,7 +72,7 @@ class TestEventLoopScheduler(unittest.TestCase):
     def test_eventloop_schedule_action_periodic(self):
         scheduler = EventLoopScheduler()
         gate = threading.Semaphore(0)
-        period = 50
+        period = 0.050
         counter = [3]
 
         def action(state):

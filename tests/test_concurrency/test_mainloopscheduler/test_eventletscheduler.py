@@ -33,7 +33,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = datetime.now()
 
-        scheduler.schedule_relative(200, action)
+        scheduler.schedule_relative(2.0, action)
 
         eventlet.sleep(0.3)
         diff = endtime[0]-starttime
@@ -45,7 +45,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(10, action)
+        d = scheduler.schedule_relative(1.0, action)
         d.dispose()
 
         eventlet.sleep(0.1)
@@ -53,7 +53,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
 
     def test_eventlet_schedule_action_periodic(self):
         scheduler = EventLetEventScheduler()
-        period = 50
+        period = .050
         counter = [3]
 
 

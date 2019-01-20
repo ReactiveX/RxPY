@@ -138,7 +138,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                         self.timer.setDaemon(True)
                         self.timer.start()
 
-                if len(self.ready_list):
+                if self.ready_list:
                     ready = self.ready_list[:]
                     self.ready_list = []
                 else:
@@ -150,7 +150,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
             if self.exit_if_empty:
                 with self.condition:
-                    if not len(self.ready_list) and not len(self.queue):
+                    if not self.ready_list and not self.queue:
                         self.thread = None
                         return
 

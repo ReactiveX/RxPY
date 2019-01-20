@@ -1,8 +1,9 @@
+from typing import Any
 from rx.internal.basic import default_comparer
 
 
 class Recorded:
-    def __init__(self, time, value, comparer=None):
+    def __init__(self, time: int, value: Any, comparer=None):
         self.time = time
         self.value = value
         self.comparer = comparer or default_comparer

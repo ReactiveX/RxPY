@@ -280,7 +280,7 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return _count(predicate)
 
 
-def debounce(duetime: Union[int, timedelta], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -325,7 +325,7 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: Union[datetime, int]) -> Callable[[Observable], Observable]:
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
 
@@ -383,7 +383,7 @@ def dematerialize() -> Callable[[Observable], Observable]:
     return _dematerialize()
 
 
-def delay(duetime: Union[timedelta, int], scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """The delay operator.
 
     Time shifts the observable sequence by duetime. The relative time
@@ -1486,7 +1486,7 @@ def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
     return _repeat(repeat_count)
 
 
-def replay(mapper: Mapper = None, buffer_size: int = None, window: timedelta = None, scheduler: typing.Scheduler = None
+def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None, scheduler: typing.Scheduler = None
           ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
@@ -1729,7 +1729,7 @@ def skip_last(count: int) -> Observable:
     return _skip_last(count)
 
 
-def skip_last_with_time(duration: Union[timedelta, int], scheduler: typing.Scheduler = None
+def skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
                         ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the end of the
     observable source sequence.
@@ -1774,23 +1774,25 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
-def skip_until_with_time(start_time: Union[datetime, int]) -> Callable[[Observable], Observable]:
+def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
     """Skips elements from the observable source sequence until the
     specified start time.
     Errors produced by the source sequence are always forwarded to the
     result sequence, even if the error occurs before the start time.
 
     Examples:
-        >>> res = source.skip_until_with_time(datetime);
-        >>> res = source.skip_until_with_time(5000);
+        >>> res = skip_until_with_time(datetime)
+        >>> res = skip_until_with_time(5000)
 
     Args:
-        start_time -- Time to start taking elements from the source
+        start_time: Time to start taking elements from the source
             sequence. If this value is less than or equal to Date(), no
             elements will be skipped.
 
-    Returns: An observable sequence with the elements skipped
-    until the specified start time.
+    Returns:
+        An operator function that takes an obserable source and
+        returns an observable sequence with the elements skipped
+        until the specified start time.
     """
     from rx.core.operators.skipuntilwithtime import _skip_until_with_time
     return _skip_until_with_time(start_time)
@@ -1823,16 +1825,17 @@ def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable
 
 def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observable], Observable]:
     """Bypasses elements in an observable sequence as long as a
-    specified condition is true and then returns the remaining elements.
-    The element's index is used in the logic of the predicate function.
+    specified condition is true and then returns the remaining
+    elements. The element's index is used in the logic of the predicate
+    function.
 
     Example:
         >>> skip_while(lambda value, index: value < 10 or index < 10)
 
     Args:
         predicate: A function to test each element for a condition; the
-            second parameter of the function represents the index of the
-            source element.
+            second parameter of the function represents the index of
+            the source element.
 
     Returns:
         An operator function that takes an observable source and
@@ -1844,7 +1847,7 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     return _skip_while_indexed(predicate)
 
 
-def skip_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
 
@@ -1908,8 +1911,9 @@ def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Obser
 def some(predicate=None) -> Callable[[Observable], Observable]:
     """The some operator.
 
-    Determines whether some element of an observable sequence satisfies a
-    condition if present, else if some items are in the sequence.
+    Determines whether some element of an observable sequence
+    satisfies a condition if present, else if some items are in the
+    sequence.
 
     Examples:
         >>> result = source.some()
@@ -2125,14 +2129,14 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     return _take_until(other)
 
 
-def take_until_with_time(end_time: Union[datetime, int], scheduler: typing.Scheduler = None
+def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
                          ) -> Callable[[Observable], Observable]:
-    """Takes elements for the specified duration until the specified end
-    time, using the specified scheduler to run timers.
+    """Takes elements for the specified duration until the specified
+    end time, using the specified scheduler to run timers.
 
     Examples:
-        >>> res = source.take_until_with_time(dt, [optional scheduler])
-        >>> res = source.take_until_with_time(5000, [optional scheduler])
+        >>> res = take_until_with_time(dt, [optional scheduler])
+        >>> res = take_until_with_time(5000, [optional scheduler])
 
     Args:
         end_time: Time to stop taking elements from the source
@@ -2174,17 +2178,17 @@ def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observ
 
 
 def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
-    """Returns elements from an observable sequence as long as a specified
-    condition is true. The element's index is used in the logic of the
-    predicate function.
+    """Returns elements from an observable sequence as long as a
+    specified condition is true. The element's index is used in the
+    logic of the predicate function.
 
     Example:
         >>> take_while(lambda value, index: value < 10 or index < 10)
 
     Args:
         predicate: A function to test each element for a condition; the
-        second parameter of the function represents the index of the source
-        element.
+        second parameter of the function represents the index of the
+        source element.
 
     Returns:
         An observable sequence that contains the elements from the
@@ -2195,7 +2199,8 @@ def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observ
     return _take_while_indexed(predicate)
 
 
-def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+                  ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 
@@ -2221,7 +2226,8 @@ def take_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Ob
     return _take_with_time(duration)
 
 
-def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+                  ) -> Callable[[Observable], Observable]:
     """Returns an Observable that emits only the first item emitted by
     the source Observable during sequential time windows of a specified
     duration.
@@ -2235,7 +2241,7 @@ def throttle_first(window_duration: Union[timedelta, int]) -> Callable[[Observab
         returns an observable that performs the throttle operation.
     """
     from rx.core.operators.throttlefirst import _throttle_first
-    return _throttle_first(window_duration)
+    return _throttle_first(window_duration, scheduler)
 
 
 def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
@@ -2280,7 +2286,7 @@ def timestamp() -> Callable[[Observable], Observable]:
     return _timestamp()
 
 
-def timeout(duetime: Union[int, datetime], other: Observable = None, scheduler: typing.Scheduler = None
+def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
             ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
@@ -2475,13 +2481,14 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan: Union[timedelta, int], timeshift: Union[timedelta, int] = None,
-                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
+                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
     return _window_with_time(timespan, timeshift, scheduler)
 
 
-def window_with_time_or_count(timespan: Union[timedelta, int], count: int, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
+                              scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
     return _window_with_time_or_count(timespan, count, scheduler)
 

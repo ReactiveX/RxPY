@@ -1,7 +1,7 @@
-from typing import Callable, Any
+from typing import Callable, Any, List
 
 import rx
-from rx.core import Observable, Disposable
+from rx.core import Observable, Disposable, typing
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -17,22 +17,23 @@ class TestScheduler(VirtualTimeScheduler):
 
     __test__ = False
 
-    def schedule_absolute(self, duetime: int, action: Callable, state: Any = None) -> Disposable:
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: Callable, state: Any = None) -> Disposable:
         """Schedules an action to be executed at the specified virtual
         time.
 
-        Keyword arguments:
-        duetime: Absolute virtual time at which to execute the
-            action.
-        action: Action to be executed.
-        state: State passed to the action to be executed.
+        Args:
+            duetime: Absolute virtual time at which to execute the
+                action.
+            action: Action to be executed.
+            state: State passed to the action to be executed.
 
-        Returns disposable object used to cancel the scheduled action
+        Returns:
+            Disposable object used to cancel the scheduled action
             (best effort).
         """
 
-        duetime = duetime if isinstance(duetime, int) else self.to_relative(duetime)
-        return super(TestScheduler, self).schedule_absolute(duetime, action, state)
+        duetime = duetime if isinstance(duetime, float) else self.to_seconds(duetime)
+        return super().schedule_absolute(duetime, action, state)
 
     @staticmethod
     def add(absolute, relative):
@@ -133,9 +134,6 @@ class TestScheduler(VirtualTimeScheduler):
         """Creates an observer that records received notification messages and
         timestamps those. Return an Observer that can be used to assert the
         timing of received notifications.
-
-        :returns: Observer
-        :rtype: MockObserver
         """
 
         return MockObserver(self)

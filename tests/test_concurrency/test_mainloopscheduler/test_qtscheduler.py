@@ -65,7 +65,7 @@ class TestQtScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = datetime.utcnow()
 
-        scheduler.schedule_relative(200, action)
+        scheduler.schedule_relative(0.2, action)
 
         def done():
             app.quit()
@@ -84,7 +84,7 @@ class TestQtScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(100, action)
+        d = scheduler.schedule_relative(0.1, action)
         d.dispose()
 
         def done():
@@ -98,7 +98,7 @@ class TestQtScheduler(unittest.TestCase):
         app = make_app()
 
         scheduler = QtScheduler(QtCore)
-        period = 50
+        period = 0.050
         counter = [3]
 
         def action(state):

@@ -1,11 +1,10 @@
-from typing import Union, Callable
-from datetime import timedelta
+from typing import Callable
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
-def _skip_with_time(duration: Union[timedelta, int]) -> Callable[[Observable], Observable]:
+def _skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Observable]:
     def skip_with_time(source: Observable) -> Observable:
         """Skips elements for the specified duration from the start of
         the observable source sequence.

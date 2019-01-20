@@ -17,7 +17,7 @@ created = ReactiveTest.created
 class TimeInterval(object):
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
-            interval = int(interval.microseconds / 1000.0)
+            interval = int(interval.seconds)  # FIXME: Must fix when tests run at fraction of seconds.
 
         self.value = value
         self.interval = interval
@@ -34,17 +34,19 @@ class TestTimeInterval(unittest.TestCase):
     def test_time_interval_regular(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_next(230, 3),
-                on_next(260, 4), on_next(300, 5), on_next(350, 6),
-                on_completed(400))
+            on_next(150, 1), on_next(210, 2), on_next(230, 3),
+            on_next(260, 4), on_next(300, 5), on_next(350, 6),
+            on_completed(400)
+        )
 
         def create():
             def mapper(x):
                 return TimeInterval(x.value, x.interval)
+
             return xs.pipe(
-                    ops.time_interval(),
-                    ops.map(mapper),
-                    )
+                ops.time_interval(),
+                ops.map(mapper),
+            )
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -84,9 +86,9 @@ class TestTimeInterval(unittest.TestCase):
         import datetime
         import time
         xs = rx.of(1, 2).pipe(
-                ops.time_interval(),
-                ops.pluck_attr('interval'),
-                )
+            ops.time_interval(),
+            ops.pluck_attr('interval'),
+        )
 
         l = []
         d = xs.subscribe_(l.append)

@@ -43,7 +43,7 @@ class NewThreadScheduler(SchedulerBase):
     def schedule_periodic(self, period, action, state=None):
         """Schedule a periodic piece of work."""
 
-        secs = self.to_relative(period) / 1000.0
+        secs = self.to_seconds(period)
         disposed = []
 
         s = [state]

@@ -30,7 +30,7 @@ class TestTkinterScheduler(unittest.TestCase):
         scheduler.schedule(action)
 
         def done():
-            assert(ran[0] == True)
+            assert ran[0] == True
             root.quit()
 
         root.after_idle(done)
@@ -44,12 +44,12 @@ class TestTkinterScheduler(unittest.TestCase):
         def action(scheduler, state):
             endtime[0] = datetime.utcnow()
 
-        scheduler.schedule_relative(200, action)
+        scheduler.schedule_relative(0.2, action)
 
         def done():
             root.quit()
             diff = endtime[0]-starttime
-            assert(diff > timedelta(milliseconds=180))
+            assert diff > timedelta(milliseconds=180)
 
         root.after(300, done)
         root.mainloop()
@@ -60,7 +60,7 @@ class TestTkinterScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        d = scheduler.schedule_relative(100, action)
+        d = scheduler.schedule_relative(0.1, action)
         d.dispose()
 
         def done():
@@ -72,7 +72,7 @@ class TestTkinterScheduler(unittest.TestCase):
 
     def test_tkinter_schedule_action_periodic(self):
         scheduler = TkinterScheduler(root)
-        period = 50
+        period = 0.050
         counter = [3]
 
         def action(state):

@@ -45,7 +45,7 @@ class IOLoopScheduler(SchedulerBase):
         action (best effort)."""
 
         scheduler = self
-        seconds = scheduler.to_relative(duetime)/1000.0
+        seconds = scheduler.to_seconds(duetime)
         if not seconds:
             return scheduler.schedule(action, state)
 

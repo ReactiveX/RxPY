@@ -37,7 +37,7 @@ class WxScheduler(SchedulerBase):
 
     def _wxtimer_schedule(self, time, action, state, periodic=False):
         scheduler = self
-        msecs = self.to_relative(time)
+        msecs = self.to_seconds(time)
 
         disposable = SingleAssignmentDisposable()
 

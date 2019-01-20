@@ -3,10 +3,11 @@ from typing import List
 from rx.core import Disposable, Observable, typing, abc
 from rx.concurrency import VirtualTimeScheduler
 from .subscription import Subscription
+from .recorded import Recorded
 
 
 class HotObservable(Observable):
-    def __init__(self, scheduler: VirtualTimeScheduler, messages) -> None:
+    def __init__(self, scheduler: VirtualTimeScheduler, messages: List[Recorded]) -> None:
         super().__init__()
 
         self.scheduler = scheduler

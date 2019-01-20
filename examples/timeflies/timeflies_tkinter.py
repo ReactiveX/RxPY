@@ -27,7 +27,7 @@ def main():
         label.config(dict(borderwidth=0, padx=0, pady=0))
 
         mapper = ops.map(lambda ev: (label, ev, i))
-        delayer = ops.delay(i*100)
+        delayer = ops.delay(i*0.1)
 
         return mousemove.pipe(
             delayer,

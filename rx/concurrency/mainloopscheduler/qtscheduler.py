@@ -16,7 +16,7 @@ class QtScheduler(SchedulerBase):
 
     def _qtimer_schedule(self, time, action, state, periodic=False):
         scheduler = self
-        msecs = self.to_relative(time)
+        msecs = int(self.to_seconds(time)*1000.0)
 
         disposable = SingleAssignmentDisposable()
 

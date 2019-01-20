@@ -47,7 +47,7 @@ class GEventScheduler(SchedulerBase):
         action (best effort)."""
 
         scheduler = self
-        seconds = self.to_relative(duetime)/1000.0
+        seconds = self.to_seconds(duetime)
         if not seconds:
             return scheduler.schedule(action, state)
 

@@ -1,6 +1,5 @@
 import unittest
 
-import rx
 from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -29,7 +28,10 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.pipe(ops.buffer_with_time(100, 70), ops.map(lambda x: ",".join([str(a) for a in x])))
+            return xs.pipe(
+                ops.buffer_with_time(100, 70),
+                ops.map(lambda x: ",".join([str(a) for a in x]))
+            )
 
         results = scheduler.start(create)
 
@@ -59,7 +61,10 @@ class TestBufferWithCount(unittest.TestCase):
             on_error(600, ex))
 
         def create():
-            return xs.pipe(ops.buffer_with_time(100, 70), ops.map(lambda x: ",".join([str(a) for a in x])))
+            return xs.pipe(
+                ops.buffer_with_time(100, 70),
+                ops.map(lambda x: ",".join([str(a) for a in x]))
+            )
 
         results = scheduler.start(create)
 
@@ -87,7 +92,10 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.pipe(ops.buffer_with_time(100, 70), ops.map(lambda x: ",".join([str(a) for a in x])))
+            return xs.pipe(
+                ops.buffer_with_time(100, 70),
+                ops.map(lambda x: ",".join([str(a) for a in x]))
+            )
 
         results = scheduler.start(create, disposed=370)
         assert results.messages == [on_next(300, "2,3,4")]
@@ -108,7 +116,10 @@ class TestBufferWithCount(unittest.TestCase):
             on_completed(600))
 
         def create():
-            return xs.pipe(ops.buffer_with_time(100), ops.map(lambda x: ",".join([str(a) for a in x])))
+            return xs.pipe(
+                ops.buffer_with_time(100),
+                ops.map(lambda x: ",".join([str(a) for a in x]))
+            )
 
         results = scheduler.start(create)
 
