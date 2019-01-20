@@ -6,7 +6,8 @@ from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
+def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+                         ) -> Callable[[Observable], Observable]:
     def skip_until_with_time(source: Observable) -> Observable:
         """Skips elements from the observable source sequence until the
         specified start time.
@@ -34,18 +35,19 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable
         else:
             scheduler_method = 'schedule_relative'
 
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or timeout_scheduler
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
+
             open = [False]
 
             def on_next(x):
                 if open[0]:
                     observer.on_next(x)
-            subscription = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            subscription = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
 
             def action(scheduler, state):
                 open[0] = True
-            disposable = getattr(scheduler, scheduler_method)(start_time, action)
+            disposable = getattr(_scheduler, scheduler_method)(start_time, action)
             return CompositeDisposable(disposable, subscription)
         return AnonymousObservable(subscribe)
     return skip_until_with_time

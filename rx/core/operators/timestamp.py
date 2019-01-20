@@ -1,13 +1,13 @@
 from typing import Callable
 
 from rx import defer
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import Timestamp
 from rx import operators
 
 
-def _timestamp() -> Callable[[Observable], Observable]:
+def _timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     def timestamp(source: Observable) -> Observable:
         """Records the timestamp for each value in an observable sequence.
 
@@ -24,9 +24,9 @@ def _timestamp() -> Callable[[Observable], Observable]:
             An observable sequence with timestamp information on values.
         """
 
-        def factory(scheduler=None):
-            scheduler = scheduler or timeout_scheduler
-            mapper = operators.map(lambda value: Timestamp(value=value, timestamp=scheduler.now))
+        def factory(scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            mapper = operators.map(lambda value: Timestamp(value=value, timestamp=_scheduler.now))
 
             return source.pipe(mapper)
         return defer(factory)

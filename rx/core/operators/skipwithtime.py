@@ -4,7 +4,7 @@ from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
-def _skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Observable]:
+def _skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     def skip_with_time(source: Observable) -> Observable:
         """Skips elements for the specified duration from the start of
         the observable source sequence.
@@ -32,20 +32,20 @@ def _skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Obs
             specified duration from the start of the source sequence.
         """
 
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or timeout_scheduler
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
             open = [False]
 
             def action(scheduler, state):
                 open[0] = True
 
-            t = scheduler.schedule_relative(duration, action)
+            t = _scheduler.schedule_relative(duration, action)
 
             def on_next(x):
                 if open[0]:
                     observer.on_next(x)
 
-            d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
             return CompositeDisposable(t, d)
         return AnonymousObservable(subscribe)
     return skip_with_time
