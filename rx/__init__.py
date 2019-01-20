@@ -3,7 +3,7 @@
 from asyncio.futures import Future
 from typing import Iterable, Callable, Any, Optional, Union
 
-from .core import AnonymousObservable, Observer, Observable, abc, typing
+from .core import AnonymousObservable, Observer, Observable, abc, typing, pipe
 
 def amb(*args: Observable):
     """Propagates the observable sequence that reacts first.
