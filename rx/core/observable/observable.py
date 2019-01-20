@@ -125,34 +125,8 @@ class Observable(typing.Observable):
             Disposable object representing an observer's subscription
             to the observable sequence.
         """
-        observer = AnonymousObserver(on_next, on_error, on_completed)
-        return self.subscribe(observer, scheduler)
 
-    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        """Subscribe an observer to the observable sequence.
-
-        Examples:
-            >>> source.subscribe()
-            >>> source.subscribe(observer)
-
-        Args:
-            observer: [Optional] The object that is to receive
-                notifications. You may subscribe using an observer or
-                callbacks, not both.
-
-        Returns:
-            Disposable object representing an observer's subscription
-            to the observable sequence.
-        """
-
-        observer = observer or AnonymousObserver()
-        assert isinstance(observer, (abc.Observer, types.GeneratorType))
-
-        if isinstance(observer, types.GeneratorType):
-            if inspect.getgeneratorstate(observer) == inspect.GEN_CREATED:
-                observer.send(None)
-
-        auto_detach_observer = AutoDetachObserver(observer)
+        auto_detach_observer = AutoDetachObserver(on_next, on_error, on_completed)
 
         def fix_subscriber(subscriber):
             """Fixes subscriber to make sure it returns a Disposable instead
@@ -186,6 +160,30 @@ class Observable(typing.Observable):
 
         # Hide the identity of the auto detach observer
         return Disposable.create(auto_detach_observer.dispose)
+
+
+    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:
+        """Subscribe an observer to the observable sequence.
+
+        Examples:
+            >>> source.subscribe()
+            >>> source.subscribe(observer)
+
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications. You may subscribe using an observer or
+                callbacks, not both.
+
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
+        """
+
+        observer = observer or AnonymousObserver()
+        assert isinstance(observer, abc.Observer)
+
+        return self.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
+
 
     def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
         """Compose multiple operators left to right.
