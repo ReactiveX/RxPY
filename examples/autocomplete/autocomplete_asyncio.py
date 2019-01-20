@@ -17,7 +17,7 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.websocket import WebSocketHandler
 
-from rx import operators as _
+from rx import operators as ops
 from rx.concurrency import AsyncIOScheduler
 from rx.subjects import Subject
 
@@ -52,11 +52,11 @@ class WSHandler(WebSocketHandler):
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
         searcher = self.subject.pipe(
-            _.map(lambda x: x["term"]),
-            _.filter(lambda text: len(text) > 2),  # Only if the text is longer than 2 characters
-            _.debounce(0.750),                     # Pause for 750ms
-            _.distinct_until_changed(),            # Only if the value has changed
-            _.flat_map_latest(search_wikipedia)
+            ops.map(lambda x: x["term"]),
+            ops.filter(lambda text: len(text) > 2),  # Only if the text is longer than 2 characters
+            ops.debounce(0.750),                     # Pause for 750ms
+            ops.distinct_until_changed(),            # Only if the value has changed
+            ops.flat_map_latest(search_wikipedia)
         )
 
         def send_response(x):
