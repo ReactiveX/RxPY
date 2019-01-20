@@ -1,3 +1,5 @@
+from typing import Any
+
 import math
 import types
 
@@ -6,7 +8,7 @@ from .recorded import Recorded
 from .subscription import Subscription
 
 
-def is_prime(i):
+def is_prime(i: int) -> bool:
     """Tests if number is prime or not"""
 
     if i <= 1:
@@ -21,8 +23,8 @@ def is_prime(i):
 
 
 # New predicate tests
-class OnNextPredicate(object):
-    def __init__(self, predicate):
+class OnNextPredicate:
+    def __init__(self, predicate) -> None:
         self.predicate = predicate
 
     def __eq__(self, other):
@@ -35,7 +37,7 @@ class OnNextPredicate(object):
         return self.predicate(other.value)
 
 
-class OnErrorPredicate(object):
+class OnErrorPredicate:
     def __init__(self, predicate):
         self.predicate = predicate
 
@@ -55,23 +57,23 @@ class ReactiveTest:
     disposed = 1000
 
     @staticmethod
-    def on_next(ticks, value):
+    def on_next(ticks: int, value: Any) -> Recorded:
         if isinstance(value, types.FunctionType):
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
     @staticmethod
-    def on_error(ticks, exception):
+    def on_error(ticks: int, exception: Exception) -> Recorded:
         if isinstance(exception, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
 
     @staticmethod
-    def on_completed(ticks):
+    def on_completed(ticks: int) -> Recorded:
         return Recorded(ticks, OnCompleted())
 
     @staticmethod
-    def subscribe(start, end):
+    def subscribe(start: int, end: int) -> Subscription:
         return Subscription(start, end)

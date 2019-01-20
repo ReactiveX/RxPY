@@ -44,6 +44,7 @@ class Condition(object):
     def notify_all(self):
         raise NotImplementedError
 
+
 def synchronized(lock):
     """A decorator for synchronizing access to a given function."""
 
