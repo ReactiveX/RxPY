@@ -56,18 +56,34 @@ class Scheduler(abc.Scheduler):
 
 
 class Observer(Generic[T_in], abc.Observer):
+    """ Observer abstract base class
+
+    An Observer is the entity that receives all emissions of a subscribed
+    Observable.
+    """
     __slots__ = ()
 
     @abstractmethod
     def on_next(self, value: T_in) -> None:
+        """Notify the observer of a new element in the sequence.
+
+        Args:
+            value: The received element.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def on_error(self, error: Exception) -> None:
+        """Notify the observer that an exception has occurred.
+
+        Args:
+            error: The error that has occurred.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def on_completed(self) -> None:
+        """Notifies the observer of the end of the sequence."""
         raise NotImplementedError
 
 
