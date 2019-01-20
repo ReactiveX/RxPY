@@ -32,7 +32,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: x <= 3,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: x + 1
             )
 
@@ -49,23 +48,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: _raise(ex),
                 lambda x: x + 1,
-                lambda x: x,
-                lambda x: x + 1
-            )
-
-        results = scheduler.start(create)
-        assert results.messages == [on_error(200, ex)]
-
-    def test_generate_timespan_throw_result_mapper(self):
-        ex = 'ex'
-        scheduler = TestScheduler()
-
-        def create():
-            return rx.generate_with_relative_time(
-                0,
-                lambda x: True,
-                lambda x: x + 1,
-                lambda x: _raise(ex),
                 lambda x: x + 1
             )
 
@@ -81,7 +63,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: _raise(ex),
-                lambda x: x,
                 lambda x: x + 1
             )
 
@@ -97,7 +78,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: _raise(ex)
             )
 
@@ -112,7 +92,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: x + 1
             )
 
@@ -127,7 +106,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: x <= 3,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: x + 1
             )
 
@@ -145,22 +123,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: _raise(ex),
                 lambda x: x + 1,
-                lambda x: x,
-                lambda x: x + 1)
-
-        results = scheduler.start(create)
-        assert results.messages == [on_error(200, ex)]
-
-    def test_generate_datetime_offset_throw_result_mapper(self):
-        ex = 'ex'
-        scheduler = TestScheduler()
-
-        def create():
-            return rx.generate_with_relative_time(
-                0,
-                lambda x: True,
-                lambda x: x + 1,
-                lambda x: _raise(ex),
                 lambda x: x + 1)
 
         results = scheduler.start(create)
@@ -175,7 +137,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: _raise(ex),
-                lambda x: x,
                 lambda x: x + 1)
 
         results = scheduler.start(create)
@@ -190,7 +151,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: _raise(ex)
             )
 
@@ -205,7 +165,6 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
                 0,
                 lambda x: True,
                 lambda x: x + 1,
-                lambda x: x,
                 lambda x: x + 1
             )
 

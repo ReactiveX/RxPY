@@ -227,20 +227,18 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper) -> Observable:
+def generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
     Example:
-        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: x, lambda x: 500)
+        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 500)
 
     Args:
         initial_state: Initial state.
         condition: Condition to terminate generation (upon returning
             false).
         iterate: Iteration step function.
-        result_mapper: Selector function for results produced in the
-            sequence.
         time_mapper: Time mapper function to control the speed of
             values being produced each iteration, returning integer
             values denoting milliseconds.
@@ -249,7 +247,7 @@ def generate_with_relative_time(initial_state, condition, iterate, result_mapper
         The generated sequence.
     """
     from .core.observable.generatewithrelativetime import _generate_with_relative_time
-    return _generate_with_relative_time(initial_state, condition, iterate, result_mapper, time_mapper)
+    return _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
 
 def generate(initial_state, condition, iterate) -> Observable:
