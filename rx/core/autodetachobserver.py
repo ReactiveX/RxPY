@@ -1,32 +1,48 @@
+from typing import Any
+
+from rx.internal import noop, default_error
 from rx.disposables import SingleAssignmentDisposable
 
-from .observerbase import ObserverBase
+from .typing import Observer
 
 
-class AutoDetachObserver(ObserverBase):
+class AutoDetachObserver(Observer):
 
-    def __init__(self, observer):
-        super(AutoDetachObserver, self).__init__()
+    def __init__(self, on_next=None, on_error=None, on_completed=None):
+        self._on_next = on_next or noop
+        self._on_error = on_error or default_error
+        self._on_completed = on_completed or noop
 
-        self._observer = observer
         self._subscription = SingleAssignmentDisposable()
+        self.is_stopped = False
 
-    def _on_next_core(self, value):
+    def on_next(self, value: Any) -> None:
+        if self.is_stopped:
+            return
+
         try:
-            self._observer.on_next(value)
+            self._on_next(value)
         except Exception:
             self.dispose()
             raise
 
-    def _on_error_core(self, error):
+    def on_error(self, error) -> None:
+        if self.is_stopped:
+            return
+        self.is_stopped = True
+
         try:
-            self._observer.on_error(error)
+            self._on_error(error)
         finally:
             self.dispose()
 
-    def _on_completed_core(self):
+    def on_completed(self) -> None:
+        if self.is_stopped:
+            return
+        self.is_stopped = True
+
         try:
-            self._observer.on_completed()
+            self._on_completed()
         finally:
             self.dispose()
 
@@ -35,6 +51,14 @@ class AutoDetachObserver(ObserverBase):
 
     subscription = property(fset=set_disposable)
 
-    def dispose(self):
-        super().dispose()
+    def dispose(self) -> None:
+        self.is_stopped = True
         self._subscription.dispose()
+
+    def fail(self, exn: Exception) -> bool:
+        if self.is_stopped:
+            return False
+
+        self.is_stopped = True
+        self._on_error(exn)
+        return True
