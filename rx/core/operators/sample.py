@@ -1,12 +1,11 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable
 
 
 def sample_observable(source, sampler):
-
     def subscribe(observer, scheduler=None):
         at_end = [None]
         has_value = [None]
@@ -34,7 +33,7 @@ def sample_observable(source, sampler):
     return AnonymousObservable(subscribe)
 
 
-def _sample(interval=None, sampler=None) -> Callable[[Observable], Observable]:
+def _sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     def sample(source: Observable) -> Observable:
         """Samples the observable sequence at each interval.
 
@@ -44,11 +43,12 @@ def _sample(interval=None, sampler=None) -> Callable[[Observable], Observable]:
         Args:
             source: Source sequence to sample.
 
-        Returns sampled observable sequence.
+        Returns:
+            Sampled observable sequence.
         """
 
         if interval is None:
             return sample_observable(source, sampler)
 
-        return sample_observable(source, rx.interval(interval))
+        return sample_observable(source, rx.interval(interval, scheduler=scheduler))
     return sample

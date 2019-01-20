@@ -121,7 +121,8 @@ def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _buffer_with_count(count, skip)
 
 
-def buffer_with_time(timespan, timeshift=None) -> Callable[[Observable], Observable]:
+def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
+                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -145,7 +146,7 @@ def buffer_with_time(timespan, timeshift=None) -> Callable[[Observable], Observa
         returns an observable sequence of buffers.
     """
     from rx.core.operators.bufferwithtime import _buffer_with_time
-    return _buffer_with_time(timespan, timeshift)
+    return _buffer_with_time(timespan, timeshift, scheduler)
 
 
 def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Observable], Observable]:
@@ -325,7 +326,8 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+                      ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
 
@@ -335,13 +337,14 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Obse
     Args:
         duetime: Absolute or relative time to perform the subscription
         at.
+        scheduler: Scheduler to delay subscription on.
 
     Returns:
         A function that take a source observable and returns a
         time-shifted observable sequence.
     """
     from rx.core.operators.delaysubscription import _delay_subscription
-    return _delay_subscription(duetime)
+    return _delay_subscription(duetime, scheduler=scheduler)
 
 
 def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
@@ -405,7 +408,7 @@ def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> C
         observable and returns a time-shifted sequence.
     """
     from rx.core.operators.delay import _delay
-    return _delay(duetime)
+    return _delay(duetime, scheduler)
 
 
 def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
@@ -1486,8 +1489,8 @@ def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
     return _repeat(repeat_count)
 
 
-def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None, scheduler: typing.Scheduler = None
-          ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None,
+           scheduler: typing.Scheduler = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications
@@ -1519,7 +1522,7 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
         mapper function.
     """
     from rx.core.operators.replay import _replay
-    return _replay(mapper, buffer_size, window, scheduler)
+    return _replay(mapper, buffer_size, window, scheduler=scheduler)
 
 
 def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
@@ -1543,7 +1546,7 @@ def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
     return _retry(retry_count)
 
 
-def sample(interval=None, sampler=None) -> Callable[[Observable], Observable]:
+def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
 
     Examples:
@@ -1753,7 +1756,7 @@ def skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Schedul
     specified duration from the end of the source sequence.
     """
     from rx.core.operators.skiplastwithtime import _skip_last_with_time
-    return _skip_last_with_time(duration, scheduler)
+    return _skip_last_with_time(duration, scheduler=scheduler)
 
 
 def skip_until(other: Observable) -> Callable[[Observable], Observable]:
@@ -1774,7 +1777,8 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
-def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
+def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+                        ) -> Callable[[Observable], Observable]:
     """Skips elements from the observable source sequence until the
     specified start time.
     Errors produced by the source sequence are always forwarded to the
@@ -1795,7 +1799,7 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime) -> Callable[
         until the specified start time.
     """
     from rx.core.operators.skipuntilwithtime import _skip_until_with_time
-    return _skip_until_with_time(start_time)
+    return _skip_until_with_time(start_time, scheduler=scheduler)
 
 
 def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable]:
@@ -1847,7 +1851,8 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     return _skip_while_indexed(predicate)
 
 
-def skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Observable]:
+def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+                  ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
 
@@ -1873,7 +1878,7 @@ def skip_with_time(duration: typing.RelativeTime) -> Callable[[Observable], Obse
         the specified duration from the start of the source sequence.
     """
     from rx.core.operators.skipwithtime import _skip_with_time
-    return _skip_with_time(duration)
+    return _skip_with_time(duration, scheduler=scheduler)
 
 
 def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
@@ -2084,7 +2089,7 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
     return _take_last_buffer(count)
 
 
-def take_last_with_time(duration) -> Callable[[Observable], Observable]:
+def take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Returns elements within the specified duration from the end of
     the observable source sequence.
 
@@ -2108,7 +2113,7 @@ def take_last_with_time(duration) -> Callable[[Observable], Observable]:
         sequence.
     """
     from rx.core.operators.takelastwithtime import _take_last_with_time
-    return _take_last_with_time(duration)
+    return _take_last_with_time(duration, scheduler=scheduler)
 
 
 def take_until(other: Observable) -> Callable[[Observable], Observable]:
@@ -2151,7 +2156,7 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typ
         the specified end time.
     """
     from rx.core.operators.takeuntilwithtime import _take_until_with_time
-    return _take_until_with_time(end_time, scheduler)
+    return _take_until_with_time(end_time, scheduler=scheduler)
 
 
 def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
@@ -2223,7 +2228,7 @@ def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
         the specified duration from the start of the source sequence.
     """
     from rx.core.operators.takewithtime import _take_with_time
-    return _take_with_time(duration)
+    return _take_with_time(duration, scheduler=scheduler)
 
 
 def throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Scheduler = None
@@ -2266,7 +2271,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
     return _throttle_with_mapper(throttle_duration_mapper)
 
 
-def timestamp() -> Callable[[Observable], Observable]:
+def timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """The timestamp operator.
 
     Records the timestamp for each value in an observable sequence.
@@ -2283,7 +2288,7 @@ def timestamp() -> Callable[[Observable], Observable]:
         information on values.
     """
     from rx.core.operators.timestamp import _timestamp
-    return _timestamp()
+    return _timestamp(scheduler=scheduler)
 
 
 def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
@@ -2341,7 +2346,7 @@ def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=
     return _timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
 
 
-def time_interval() -> Callable[[Observable], Observable]:
+def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Records the time interval between consecutive values in an
     observable sequence.
 
@@ -2353,7 +2358,7 @@ def time_interval() -> Callable[[Observable], Observable]:
         on values.
     """
     from rx.core.operators.timeinterval import _time_interval
-    return _time_interval()
+    return _time_interval(scheduler=scheduler)
 
 
 def to_blocking() -> Callable[[Observable], BlockingObservable]:

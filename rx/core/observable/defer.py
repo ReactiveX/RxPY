@@ -13,7 +13,7 @@ def _defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observa
         >>> res = defer(lambda: of(1, 2, 3))
 
     Args:
-        observable_factory -- Observable factory function to invoke for
+        observable_factory: Observable factory function to invoke for
         each observer that subscribes to the resulting sequence.
 
     Returns:

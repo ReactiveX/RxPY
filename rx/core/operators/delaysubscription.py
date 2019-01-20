@@ -6,7 +6,8 @@ from rx import operators as ops
 from rx.core import Observable, typing
 
 
-def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Observable], Observable]:
+def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+                       ) -> Callable[[Observable], Observable]:
     def delay_subscription(source: Observable) -> Observable:
         """Time shifts the observable sequence by delaying the subscription.
 
@@ -23,5 +24,7 @@ def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime) -> Callable[[Obs
         def mapper(_) -> Observable:
             return rx.empty()
 
-        return source.pipe(ops.delay_with_mapper(rx.timer(duetime), mapper))
+        return source.pipe(
+            ops.delay_with_mapper(rx.timer(duetime, scheduler=scheduler), mapper)
+        )
     return delay_subscription

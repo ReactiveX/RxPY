@@ -69,7 +69,7 @@ def _flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observa
             An observable sequence whose elements are the result of invoking
             the one-to-many transform function on each element of the input
             sequence.
-    """
+        """
 
         if callable(mapper_indexed):
             ret = _flat_map_internal(source, mapper_indexed=mapper_indexed)

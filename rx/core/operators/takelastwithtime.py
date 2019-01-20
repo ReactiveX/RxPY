@@ -1,9 +1,9 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable, AnonymousObservable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def _take_last_with_time(duration) -> Callable[[Observable], Observable]:
+def _take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     def take_last_with_time(source: Observable) -> Observable:
         """Returns elements within the specified duration from the end
         of the observable source sequence.
@@ -25,21 +25,21 @@ def _take_last_with_time(duration) -> Callable[[Observable], Observable]:
             An observable sequence with the elements taken during the
             specified duration from the end of the source sequence.
         """
-        def subscribe(observer, scheduler=None):
+        def subscribe(observer, scheduler_=None):
             nonlocal duration
 
-            scheduler = scheduler or timeout_scheduler
-            duration = scheduler.to_timedelta(duration)
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            duration = _scheduler.to_timedelta(duration)
             q = []
 
             def on_next(x):
-                now = scheduler.now
+                now = _scheduler.now
                 q.append({"interval": now, "value": x})
                 while q and now - q[0]["interval"] >= duration:
                     q.pop(0)
 
             def on_completed():
-                now = scheduler.now
+                now = _scheduler.now
                 while q:
                     _next = q.pop(0)
                     if now - _next["interval"] <= duration:
@@ -47,6 +47,6 @@ def _take_last_with_time(duration) -> Callable[[Observable], Observable]:
 
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler_)
         return AnonymousObservable(subscribe)
     return take_last_with_time
