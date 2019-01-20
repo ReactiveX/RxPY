@@ -1491,7 +1491,9 @@ def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
 
 def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None,
            scheduler: typing.Scheduler = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
-    """Returns an observable sequence that is the result of invoking the
+    """The `replay` operator.
+
+    Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications
     subject to a maximum time length for the replay buffer.
@@ -1506,11 +1508,12 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
         >>> res = replay(lambda x: x.take(6).repeat(), 3, 500)
 
     Args:
-        mapper: [Optional] Selector function which can use the multicasted
-            source sequence as many times as needed, without causing
-            multiple subscriptions to the source sequence. Subscribers to
-            the given source will receive all the notifications of the
-            source subject to the specified replay buffer trimming policy.
+        mapper: [Optional] Selector function which can use the
+            multicasted source sequence as many times as needed,
+            without causing multiple subscriptions to the source
+            sequence. Subscribers to the given source will receive all
+            the notifications of the source subject to the specified
+            replay buffer trimming policy.
         buffer_size: [Optional] Maximum element count of the replay
             buffer.
         window: [Optional] Maximum time length of the replay buffer.
@@ -1637,9 +1640,11 @@ def share() -> Callable[[Observable], Observable]:
 
 
 def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
-    """Returns the only element of an observable sequence that satisfies the
-    condition in the optional predicate, and reports an exception if there
-    is not exactly one element in the observable sequence.
+    """The `single`operator.
+
+    Returns the only element of an observable sequence that satisfies
+    the condition in the optional predicate, and reports an exception
+    if there is not exactly one element in the observable sequence.
 
     Example:
         >>> res = single()
@@ -1650,8 +1655,10 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
             elements in the source sequence.
 
     Returns:
-        An observable sequence containing the single element in the
-        observable sequence that satisfies the condition in the predicate.
+        An operator function that takes an observable source and
+        returns an observable sequence containing the single element in
+        the observable sequence that satisfies the condition in the
+        predicate.
     """
     from rx.core.operators.single import _single
     return _single(predicate)
@@ -1660,8 +1667,8 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
 def single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
-    method reports an exception if there is more than one element in the
-    observable sequence.
+    method reports an exception if there is more than one element in
+    the observable sequence.
 
     Examples:
         >>> res = single_or_default()
@@ -1676,9 +1683,10 @@ def single_or_default(predicate: Predicate = None, default_value: Any = None) ->
             outside the bounds of the source sequence.
 
     Returns:
-        An observable Sequence containing the single element in the
-    observable sequence that satisfies the condition in the predicate,
-    or a default value if no such element exists.
+        An operator function that takes an observable source and
+        returns an observable sequence containing the single element in
+        the observable sequence that satisfies the condition in the
+        predicate, or a default value if no such element exists.
     """
     from rx.core.operators.singleordefault import _single_or_default
     return _single_or_default(predicate, default_value)
@@ -1790,8 +1798,8 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: t
 
     Args:
         start_time: Time to start taking elements from the source
-            sequence. If this value is less than or equal to Date(), no
-            elements will be skipped.
+            sequence. If this value is less than or equal to
+            `datetime.utcnow()`, no elements will be skipped.
 
     Returns:
         An operator function that takes an obserable source and

@@ -15,7 +15,7 @@ def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable
         >>> pipe(f)(source) == f(source)
         >>> pipe(f, g)(source) == g(f(source))
         >>> pipe(f, g, h)(source) == h(g(f(source)))
-    ...
+        ...
 
     Returns:
         The composed observable.
