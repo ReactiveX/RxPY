@@ -1,8 +1,7 @@
 from typing import Callable, Any
 from abc import abstractmethod
 
-from .disposable import Disposable
-from .typing import Observer
+from .typing import Observer, Disposable
 
 
 class ObserverBase(Observer, Disposable):
@@ -26,8 +25,9 @@ class ObserverBase(Observer, Disposable):
     def on_error(self, error: Exception) -> None:
         """Notify the observer that an exception has occurred.
 
-        Keyword arguments:
-        error -- The error that has occurred."""
+        Args:
+            error: The error that occurred.
+        """
 
         if not self.is_stopped:
             self.is_stopped = True
@@ -77,5 +77,6 @@ class ObserverBase(Observer, Disposable):
         Returns an observer that hides the identity of the specified
         observer.
         """
-        from .observerextensions import as_observer
-        return as_observer(self)
+        from .anonymousobserver import AnonymousObserver
+        return AnonymousObserver(self.on_next, self.on_error, self.on_completed)
+
