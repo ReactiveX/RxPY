@@ -29,14 +29,14 @@ def infinite():
         n += 1
 
 
-class TimeInterval(object):
+class TimeInterval:
 
     def __init__(self, value, interval):
         self.value = value
         self.interval = interval
 
 
-class Timestamp(object):
+class Timestamp:
 
     def __init__(self, value, timestamp):
         self.value = value
