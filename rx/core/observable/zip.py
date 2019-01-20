@@ -5,32 +5,24 @@ from rx.internal.utils import is_future
 
 # pylint: disable=redefined-builtin
 
-def _zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
+def _zip(*args: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using the mapper function whenever all of the
+    sequence by using a tuple aggregation whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
-    The last element in the arguments must be a function to invoke for
-    each series of elements at corresponding indexes in the sources.
-
     Example:
-        >>> res = zip(obs1, obs2, result_mapper=fn)
+        >>> res = zip(obs1, obs2)
 
     Args:
         args: Observable sources to zip.
-        result_mapper: Mapper function that produces an element
-            whenever all of the observable sequences have produced an
-            element at a corresponding index.
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources using the specified result mapper
-        function.
+        elements of the sources as tuple.
     """
 
     sources = list(args)
-    result_mapper = result_mapper or tuple
 
     def subscribe(observer, scheduler=None):
         n = len(sources)
@@ -41,7 +33,7 @@ def _zip(*args: Observable, result_mapper: typing.Mapper = None) -> Observable:
             if all([len(q) for q in queues]):
                 try:
                     queued_values = [x.pop(0) for x in queues]
-                    res = result_mapper(*queued_values)
+                    res = tuple(queued_values)
                 except Exception as ex:  # pylint: disable=broad-except
                     observer.on_error(ex)
                     return

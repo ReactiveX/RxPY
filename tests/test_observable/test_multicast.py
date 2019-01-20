@@ -296,7 +296,11 @@ class TestMulticast(unittest.TestCase):
             def subject_factory(scheduler):
                 return Subject()
             def mapper(ys):
-                return ys.pipe(ops.zip(ys, result_mapper=lambda a, b: a+b))
+                return ys.pipe(
+                        ops.zip(ys),
+                        ops.map(sum),
+                        )
+
             return xs.pipe(ops.multicast(subject_factory=subject_factory, mapper=mapper))
         results = scheduler.start(create)
 

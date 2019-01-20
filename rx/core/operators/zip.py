@@ -5,15 +5,12 @@ from rx.core import Observable, AnonymousObservable
 from rx.core.typing import Mapper
 
 
-def _zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def _zip(*args: Observable) -> Callable[[Observable], Observable]:
     def zip(source: Observable) -> Observable:
         """Merges the specified observable sequences into one observable
-        sequence by using the mapper function whenever all of the
+        sequence by using tuple aggregation whenever all of the
         observable sequences have produced an element at a corresponding
         index.
-
-        The last element in the arguments must be a function to invoke for
-        each series of elements at corresponding indexes in the sources.
 
         Example:
             >>> res = zip(source)
@@ -23,11 +20,10 @@ def _zip(*args: Observable, result_mapper: Mapper = None) -> Callable[[Observabl
 
         Returns:
             An observable sequence containing the result of combining
-            elements of the sources using the specified result mapper
-            function.
+            elements of the sources as tuple.
         """
         sources = [source] + list(args)
-        return rx.zip(*sources, result_mapper=result_mapper)
+        return rx.zip(*sources)
     return zip
 
 def _zip_with_iterable(second, result_mapper):
