@@ -1,4 +1,4 @@
-.. reference_observable:
+.. _reference_observable_factory:
 
 Observable Factory
 =====================

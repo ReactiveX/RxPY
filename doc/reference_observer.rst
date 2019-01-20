@@ -1,7 +1,10 @@
 .. reference_observer:
 
-Observer
-========
+Observable and Observer
+========================
 
-.. autoclass:: rx.core.Observer
+.. autoclass:: rx.Observable
+    :members:
+
+.. autoclass:: rx.Observer
     :members:
