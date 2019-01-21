@@ -2,8 +2,10 @@
 import time
 import logging
 import threading
+from typing import Any, Dict
 from datetime import timedelta
 
+from rx.core import typing
 from rx.internal import PriorityQueue
 
 from .schedulerbase import SchedulerBase
@@ -14,7 +16,7 @@ log = logging.getLogger('Rx')
 
 class Trampoline(object):
     @classmethod
-    def run(cls, queue):
+    def run(cls, queue) -> None:
         while queue:
             item = queue.dequeue()
             if not item.is_cancelled():
@@ -31,23 +33,25 @@ class Trampoline(object):
 
 class CurrentThreadScheduler(SchedulerBase):
     """Represents an object that schedules units of work on the current
-    thread. You never want to schedule timeouts using the CurrentThreadScheduler
-    since it will block the current thread while waiting."""
+    thread. You never want to schedule timeouts using the
+    CurrentThreadScheduler since it will block the current thread while
+    waiting.
+    """
 
-    def __init__(self):
-        """Gets a scheduler that schedules work as soon as possible on the
-        current thread."""
+    def __init__(self) -> None:
+        """Creates a scheduler that schedules work as soon as possible on
+        the current thread."""
 
-        self.queues = dict()
+        self.queues: Dict[int, PriorityQueue] = dict()
         self.lock = threading.RLock()
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
         return self.schedule_relative(timedelta(0), action, state)
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
         duetime = self.to_timedelta(duetime)
@@ -70,27 +74,27 @@ class CurrentThreadScheduler(SchedulerBase):
 
         return si.disposable
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=None)
 
-    def get_queue(self):
+    def _get_queue(self) -> PriorityQueue:
         ident = threading.current_thread().ident
 
         with self.lock:
             return self.queues.get(ident)
 
-    def set_queue(self, queue):
+    def _set_queue(self, queue: PriorityQueue):
         ident = threading.current_thread().ident
 
         with self.lock:
             self.queues[ident] = queue
 
-    queue = property(get_queue, set_queue)
+    queue = property(_get_queue, _set_queue)
 
-    def schedule_required(self):
+    def schedule_required(self) -> bool:
         """Test if scheduling is required.
 
         Gets a value indicating whether the caller must call a

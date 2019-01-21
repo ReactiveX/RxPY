@@ -1,17 +1,18 @@
 from datetime import timedelta
+from typing import Any
 
-from rx.core import Scheduler
+from rx.core import Scheduler, typing
 from rx.internal.exceptions import WouldBlockException
 from .schedulerbase import SchedulerBase
 
 
 class ImmediateScheduler(SchedulerBase):
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         return self.invoke_action(action, state)
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
         duetime = self.to_timedelta(duetime)
@@ -20,7 +21,7 @@ class ImmediateScheduler(SchedulerBase):
 
         return self.invoke_action(action, state)
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)

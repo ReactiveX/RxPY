@@ -18,7 +18,8 @@ class SchedulerBase(Scheduler):
 
         return Disposable.empty()
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None
+                         ) -> typing.Disposable:
         """Schedules a periodic piece of work.
 
         Args:
@@ -49,9 +50,11 @@ class SchedulerBase(Scheduler):
 
     @property
     def now(self) -> datetime:
-        """Represents a notion of time for this scheduler. Tasks being
-        scheduled on a scheduler will adhere to the time denoted by this
-        property.
+        """Returns the current time.
+
+        Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by
+        this property.
         """
 
         return default_now()
@@ -91,7 +94,7 @@ class SchedulerBase(Scheduler):
         return timespan
 
     @classmethod
-    def normalize(cls, timespan: typing.RelativeTime):
+    def normalize(cls, timespan: typing.RelativeTime) -> typing.RelativeTime:
         """Normalizes the specified timespan value to a positive value.
 
         Args:
