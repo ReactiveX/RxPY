@@ -2563,32 +2563,25 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     return _zip(*args)
 
 
-def zip_with_iterable(second, result_mapper):
+def zip_with_iterable(second):
     """Merges the specified observable sequence and list into one
-    observable sequence by using the mapper function whenever all of
+    observable sequence by using a tupple aggregation whenever all of
     the observable sequences have produced an element at a
     corresponding index.
 
-    The result mapper must be a function to invoke for each series of
-    elements at corresponding indexes in the sources.
-
     Example
-        >>> res = zip(xs, [1,2,3], result_mapper=fn)
+        >>> res = zip(xs, [1,2,3])
 
     Args:
         second: Iterable to zip.
-        result_mapper: Mapper function that produces an element
-            whenever all of the observable sequences have produced an
-            element at a corresponding index
 
     Returns:
         An operator function that takes and observable source and
         returns an observable sequence containing the result of
-        combining elements of the sources using the specified result
-        mapper function.
+        combining elements of the sources as tuple.
     """
     from rx.core.operators.zip import _zip_with_iterable
-    return _zip_with_iterable(second, result_mapper)
+    return _zip_with_iterable(second)
 
 
 zip_with_list = zip_with_iterable
