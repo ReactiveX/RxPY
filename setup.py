@@ -35,10 +35,10 @@ setup(
     tests_require=['pytest', "pytest-asyncio"],
 
     packages=['rx', 'rx.internal', 'rx.core', 'rx.core.abc',
-              'rx.core.operators', 'rx.core.observable', 'rx.operators',
+              'rx.core.operators', 'rx.core.observable', 'rx.core.observer',
               'rx.core.operators.blocking', 'rx.core.operators.connectable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler',
-              'rx.disposables', 'rx.subjects',
+              'rx.operators', 'rx.disposables', 'rx.subjects',
               'rx.testing'],
     package_dir={'rx': 'rx'},
     include_package_data=True,
