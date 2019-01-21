@@ -7,7 +7,7 @@ from rx.internal.utils import is_future
 
 def _zip(*args: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using a tuple aggregation whenever all of the
+    sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 

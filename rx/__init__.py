@@ -595,7 +595,7 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Cal
 
 def zip(*args: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using a tuple aggregation whenever all of the
+    sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
@@ -607,7 +607,7 @@ def zip(*args: Observable) -> Observable:
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources as tuple.
+        elements of the sources as a tuple.
     """
     from .core.observable.zip import _zip
     return _zip(*args)
