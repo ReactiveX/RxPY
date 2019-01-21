@@ -56,12 +56,7 @@ def _zip_with_iterable(second):
                 if index < length:
                     right = second[index]
                     index += 1
-                    try:
-                        result = (left, right)
-
-                    except Exception as ex:
-                        observer.on_error(ex)
-                        return
+                    result = (left, right)
                     observer.on_next(result)
                 else:
                     observer.on_completed()
