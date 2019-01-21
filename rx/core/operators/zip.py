@@ -8,7 +8,7 @@ from rx.core.typing import Mapper
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:
     def zip(source: Observable) -> Observable:
         """Merges the specified observable sequences into one observable
-        sequence by using tuple aggregation whenever all of the
+        sequence by creating a tuple whenever all of the
         observable sequences have produced an element at a corresponding
         index.
 
@@ -20,7 +20,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
 
         Returns:
             An observable sequence containing the result of combining
-            elements of the sources as tuple.
+            elements of the sources as a tuple.
         """
         sources = [source] + list(args)
         return rx.zip(*sources)
@@ -29,7 +29,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
 def _zip_with_iterable(second):
     def zip_with_iterable(source: Observable) -> Observable:
         """Merges the specified observable sequence and list into one
-        observable sequence by using a tuple aggregation whenever all of
+        observable sequence by creating a tuple whenever all of
         the observable sequences have produced an element at a
         corresponding index.
 
@@ -41,7 +41,7 @@ def _zip_with_iterable(second):
 
         Returns:
             An observable sequence containing the result of
-            combining elements of the sources as tuple.
+            combining elements of the sources as a tuple.
         """
 
         first = source

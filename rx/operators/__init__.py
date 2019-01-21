@@ -2544,7 +2544,7 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Cal
 
 def zip(*args: Observable) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequences into one observable
-    sequence by using a tuple aggregation whenever all of the
+    sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
@@ -2557,7 +2557,7 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     Returns:
         An operator function that takes an observable source and
         returns an observable sequence containing the result of
-        combining elements of the sources as tuple.
+        combining elements of the sources as a tuple.
     """
     from rx.core.operators.zip import _zip
     return _zip(*args)
@@ -2565,7 +2565,7 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
 
 def zip_with_iterable(second):
     """Merges the specified observable sequence and list into one
-    observable sequence by using a tupple aggregation whenever all of
+    observable sequence by creating a tuple whenever all of
     the observable sequences have produced an element at a
     corresponding index.
 
@@ -2578,7 +2578,7 @@ def zip_with_iterable(second):
     Returns:
         An operator function that takes and observable source and
         returns an observable sequence containing the result of
-        combining elements of the sources as tuple.
+        combining elements of the sources as a tuple.
     """
     from rx.core.operators.zip import _zip_with_iterable
     return _zip_with_iterable(second)
