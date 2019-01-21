@@ -47,12 +47,13 @@ class Notification:
         """Returns an observable sequence with a single notification,
         using the specified scheduler, else the immediate scheduler.
 
-        Keyword arguments:
-        scheduler -- [Optional] Scheduler to send out the notification
-            calls on.
+        Args:
+            scheduler: [Optional] Scheduler to send out the notification
+                calls on.
 
-        Returns an observable sequence that surfaces the behavior of the
-        notification upon subscription.
+        Returns:
+            An observable sequence that surfaces the behavior of the
+            notification upon subscription.
         """
 
         scheduler = scheduler or immediate_scheduler
@@ -140,11 +141,12 @@ class OnCompleted(Notification):
 def from_notifier(handler):
     """Creates an observer from a notification callback.
 
-    Keyword arguments:
-    handler -- Action that handles a notification.
+    Args:
+        handler: Action that handles a notification.
 
-    Returns the observer object that invokes the specified handler using
-    a notification corresponding to each message it receives.
+    Returns:
+        The observer object that invokes the specified handler using
+        a notification corresponding to each message it receives.
     """
 
     def _on_next(value):
