@@ -1,4 +1,4 @@
-.. reference_subject:
+.. _reference_subject:
 
 Subject
 ========

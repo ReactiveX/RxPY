@@ -1,4 +1,4 @@
-.. reference_observer:
+.. _reference_observer:
 
 Observable and Observer
 ========================
