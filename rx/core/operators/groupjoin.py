@@ -42,22 +42,22 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
     def group_join(left: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             group = CompositeDisposable()
-            r = RefCountDisposable(group)
+            rcd = RefCountDisposable(group)
             left_map = OrderedDict()
             right_map = OrderedDict()
             left_id = [0]
             right_id = [0]
 
             def on_next_left(value):
-                s = Subject()
+                subject = Subject()
 
                 with left.lock:
                     _id = left_id[0]
                     left_id[0] += 1
-                    left_map[_id] = s
+                    left_map[_id] = subject
 
                 try:
-                    result = result_mapper(value, add_ref(s, r))
+                    result = result_mapper(value, add_ref(subject, rcd))
                 except Exception as e:
                     log.error("*** Exception: %s" % e)
                     for left_value in left_map.values():
@@ -69,7 +69,7 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
                 observer.on_next(result)
 
                 for right_value in right_map.values():
-                    s.on_next(right_value)
+                    subject.on_next(right_value)
 
                 md = SingleAssignmentDisposable()
                 group.add(md)
@@ -77,7 +77,7 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
                 def expire():
                     if _id in left_map:
                         del left_map[_id]
-                        s.on_completed()
+                        subject.on_completed()
 
                     group.remove(md)
 
@@ -148,6 +148,6 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
                 observer.on_error(error)
 
             group.add(right.subscribe_(send_right, on_error_right, scheduler=scheduler))
-            return r
+            return rcd
         return AnonymousObservable(subscribe)
     return group_join
