@@ -1,7 +1,7 @@
 from typing import Callable, Any
 from abc import abstractmethod
 
-from .typing import Observer, Disposable
+from ..typing import Observer, Disposable
 
 
 class ObserverBase(Observer, Disposable):

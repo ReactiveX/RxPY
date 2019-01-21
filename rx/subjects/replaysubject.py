@@ -6,7 +6,7 @@ from datetime import timedelta
 from rx.core import Observer, Observable, typing
 from rx.internal import DisposedException
 from rx.concurrency import current_thread_scheduler
-from rx.core.scheduledobserver import ScheduledObserver
+from rx.core.observer.scheduledobserver import ScheduledObserver
 
 
 class RemovableDisposable:

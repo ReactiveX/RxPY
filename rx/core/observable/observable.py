@@ -1,14 +1,12 @@
 # By design, pylint: disable=C0302
-import types
-import inspect
 import threading
 from typing import Any, Callable, Optional
 
 from rx.concurrency import current_thread_scheduler
 
 from ..disposable import Disposable
-from ..autodetachobserver import AutoDetachObserver
-from ..anonymousobserver import AnonymousObserver
+from ..observer import AutoDetachObserver
+from ..observer import AnonymousObserver
 from .. import typing, abc
 
 

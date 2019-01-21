@@ -4,7 +4,7 @@ from threading import RLock
 from rx.core import abc
 
 from .observable import Observable
-from ..anonymousobserver import AnonymousObserver
+from ..observer import AnonymousObserver
 
 
 class BlockingObservable(abc.Observable):

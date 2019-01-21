@@ -3,7 +3,7 @@ from typing import Any
 from rx.internal import noop, default_error
 from rx.disposables import SingleAssignmentDisposable
 
-from .typing import Observer
+from ..typing import Observer
 
 
 class AutoDetachObserver(Observer):

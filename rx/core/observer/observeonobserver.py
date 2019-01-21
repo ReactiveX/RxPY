@@ -1,4 +1,4 @@
-from rx.core.scheduledobserver import ScheduledObserver
+from .scheduledobserver import ScheduledObserver
 
 
 class ObserveOnObserver(ScheduledObserver):
