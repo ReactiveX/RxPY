@@ -685,13 +685,15 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
     zero-based index of the first occurrence within the entire
     Observable sequence.
 
-    Keyword Arguments:
-    predicate -- The predicate that defines the conditions of the
-        element to search for.
+    Args:
+        predicate: The predicate that defines the conditions of the
+            element to search for.
 
-    Returns an observable sequence with the zero-based index of the
-    first occurrence of an element that matches the conditions defined
-    by match, if found; otherwise, -1.
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence with the zero-based index of the
+        first occurrence of an element that matches the conditions
+        defined by match, if found; otherwise, -1.
     """
     from rx.core.operators.find import _find_value
     return _find_value(predicate, True)
@@ -713,8 +715,8 @@ def first(predicate=None) -> Callable[[Observable], Observable]:
     Returns:
         A function that takes an observable source and returns an
         observable sequence containing the first element in the
-        observable sequence that satisfies the condition in the predicate if
-        provided, else the first item in the sequence.
+        observable sequence that satisfies the condition in the
+        predicate if provided, else the first item in the sequence.
     """
     from rx.core.operators.first import _first
     return _first(predicate)
