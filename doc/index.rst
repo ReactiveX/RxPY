@@ -17,6 +17,7 @@ observable collections and pipable query operators in Python.
     rationale
     get_started
     migration
+    operators
     reference
 
 Indices and tables
