@@ -1,10 +1,12 @@
+from typing import Iterable, Union
+
 import rx
 from rx import operators as ops
 from rx.core import Observable
 
 
 
-def _merge(*args) -> Observable:
+def _merge(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Merges all the observable sequences into a single observable
     sequence.
 
@@ -18,9 +20,7 @@ def _merge(*args) -> Observable:
 
     sources = args[:]
 
-    if isinstance(sources[0], list):
+    if isinstance(sources[0], Iterable):
         sources = sources[0]
 
     return rx.from_iterable(sources).pipe(ops.merge_all())
-
-
