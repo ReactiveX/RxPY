@@ -1,11 +1,13 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
-from asyncio.futures import Future
+from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
-from .core import AnonymousObservable, Observer, Observable, abc, typing, pipe
+from .core import Observer, Observable, abc, typing, pipe
+from .core import AnonymousObservable as _AnonymousObservable
 
-def amb(*args: Observable):
+
+def amb(*args: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -62,7 +64,7 @@ def catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observabl
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
     """Create observable from subscribe function."""
 
-    return AnonymousObservable(subscribe)
+    return _AnonymousObservable(subscribe)
 
 
 def combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
@@ -189,7 +191,7 @@ def from_callback(func: Callable, mapper: typing.Mapper = None) -> Callable[[], 
     return _from_callback(func, mapper)
 
 
-def from_future(future: Future) -> Observable:
+def from_future(future: _Future) -> Observable:
     """Converts a Future to an Observable sequence
 
     Args:
