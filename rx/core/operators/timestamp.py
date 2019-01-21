@@ -3,8 +3,12 @@ from typing import Callable
 from rx import defer
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
-from rx.internal.utils import Timestamp
 from rx import operators
+
+class Timestamp:
+    def __init__(self, value, timestamp):
+        self.value = value
+        self.timestamp = timestamp
 
 
 def _timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:

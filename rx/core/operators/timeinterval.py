@@ -2,8 +2,12 @@ from typing import Callable
 
 from rx import operators as ops
 from rx.core import Observable, AnonymousObservable, typing
-from rx.internal.utils import TimeInterval
 from rx.concurrency import timeout_scheduler
+
+class TimeInterval:
+    def __init__(self, value, interval):
+        self.value = value
+        self.interval = interval
 
 
 def _time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
@@ -33,4 +37,3 @@ def _time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable],
             return source.pipe(ops.map(mapper)).subscribe(observer, scheduler_)
         return AnonymousObservable(subscribe)
     return time_interval
-    
