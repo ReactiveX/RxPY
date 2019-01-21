@@ -4,36 +4,34 @@ from rx.core import Observer, AnonymousObservable, Disposable, Observable, typin
 from rx.disposables import CompositeDisposable
 
 
-def do_action(on_next: typing.OnNext = None,
-              on_error: typing.OnError = None,
-              on_completed: typing.OnCompleted = None
-              ) -> Callable[[Observable], Observable]:
-    """Invokes an action for each element in the observable sequence and
-    invokes an action on graceful or exceptional termination of the
-    observable sequence. This method can be used for debugging, logging,
-    etc. of query behavior by intercepting the message stream to run
-    arbitrary actions for messages on the pipeline.
+def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
+               ) -> Callable[[Observable], Observable]:
+    def do_action(source: Observable) -> Observable:
+        """Invokes an action for each element in the observable
+        sequence and invokes an action on graceful or exceptional
+        termination of the observable sequence. This method can be used
+        for debugging, logging, etc. of query behavior by intercepting
+        the message stream to run arbitrary actions for messages on the
+        pipeline.
 
-    Examples:
-        >>> do_action(send)(observable)
-        >>> do_action(on_next, on_error)(observable)
-        >>> do_action(on_next, on_error, on_completed)(observable)
+        Examples:
+            >>> do_action(send)(observable)
+            >>> do_action(on_next, on_error)(observable)
+            >>> do_action(on_next, on_error, on_completed)(observable)
 
-    Args:
-        on_next: [Optional] Action to invoke for each element in the
-            observable sequence.
-        on_error: [Optional] Action to invoke on exceptional
-            termination of the observable sequence.
-        on_completed: [Optional] Action to invoke on graceful
-            termination of the observable sequence.
+        Args:
+            on_next: [Optional] Action to invoke for each element in
+                the observable sequence.
+            on_error: [Optional] Action to invoke on exceptional
+                termination of the observable sequence.
+            on_completed: [Optional] Action to invoke on graceful
+                termination of the observable sequence.
 
-    Returns:
-        An operator function that takes the source observable and
-        returns the source sequence with the side-effecting behavior
-        applied.
-    """
+        Returns:
+            An observable source sequence with the side-effecting
+            behavior applied.
+        """
 
-    def partial(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             def _on_next(x):
                 if not on_next:
@@ -70,7 +68,7 @@ def do_action(on_next: typing.OnNext = None,
 
             return source.subscribe_(_on_next, _on_error, _on_completed)
         return AnonymousObservable(subscribe)
-    return partial
+    return do_action
 
 
 def do(observer: Observer) -> Callable[[Observable], Observable]:

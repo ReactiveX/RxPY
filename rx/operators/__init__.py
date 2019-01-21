@@ -509,8 +509,8 @@ def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on
         returns the source sequence with the side-effecting behavior
         applied.
     """
-    from rx.core.operators.do import do_action as do_action_
-    return do_action_(on_next, on_error, on_completed)
+    from rx.core.operators.do import _do_action
+    return _do_action(on_next, on_error, on_completed)
 
 
 def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
