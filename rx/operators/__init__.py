@@ -570,6 +570,19 @@ def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Ob
     return _element_at_or_default(index, True, default_value)
 
 
+def exclusive() -> Callable[[Observable], Observable]:
+    """Performs a exclusive waiting for the first to finish before
+    subscribing to another observable. Observables that come in between
+    subscriptions will be dropped on the floor.
+
+    Returns:
+        An exclusive observable with only the results that
+        happen when subscribed.
+    """
+    from rx.core.operators.exclusive import _exclusive
+    return _exclusive()
+
+
 def expand(mapper: Mapper) -> Observable:
     """Expands an observable sequence by recursively invoking mapper.
 
