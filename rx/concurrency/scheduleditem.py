@@ -1,5 +1,4 @@
 from typing import Any
-from datetime import datetime
 
 from rx.core import Scheduler, typing
 from rx.disposables import SingleAssignmentDisposable
