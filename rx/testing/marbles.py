@@ -1,66 +1,64 @@
 import re
 import threading
 
-from rx.core import AnonymousObservable
+from rx.disposables import CompositeDisposable
+from rx.core import AnonymousObservable, Observable
 from rx.concurrency import new_thread_scheduler
+from rx.core.notification import OnNext, OnError, OnCompleted
 
-from .coldobservable import ColdObservable
-from .reactivetest import ReactiveTest
-
-on_next = ReactiveTest.on_next
-on_completed = ReactiveTest.on_completed
-on_error = ReactiveTest.on_error
 
 _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)
 
 
-def from_marbles(string):
+def from_marbles(string: str) -> Observable:
     """Convert a marble diagram string to an observable sequence, using
     an optional scheduler to enumerate the events.
 
     Special characters:
-    - = Timespan of 100 ms
-    x = on_error()
-    | = on_completed()
+        - = Timespan of 100 ms
+        x = on_error()
+        | = on_completed()
 
     All other characters are treated as an on_next() event at the given
     moment they are found on the string.
 
     Examples:
-    1 - res = rx.Observable.from_string("1-2-3-|")
-    2 - res = rx.Observable.from_string("1-(42)-3-|")
-    3 - res = rx.Observable.from_string("1-2-3-x", rx.Scheduler.timeout)
+        >>> res = rx.from_string("1-2-3-|")
+        >>> res = rx.from_string("1-(42)-3-|")
+        >>> res = rx.from_string("1-2-3-x", timeout_scheduler)
 
-    Keyword arguments:
-    string -- String with marble diagram
-    scheduler -- [Optional] Scheduler to run the the input sequence on.
+    Args:
+        string: String with marble diagram
+        scheduler: [Optional] Scheduler to run the the input sequence on.
 
-    Returns the observable sequence whose elements are pulled from the
-    given marble diagram string.
+    Returns:
+        The observable sequence whose elements are pulled from the
+        given marble diagram string.
     """
 
+    disposable = CompositeDisposable()
     completed = [False]
     messages = []
     timespan = [0]
 
     def handle_timespan(value):
-        timespan[0] += 100
+        timespan[0] += 0.1
 
     def handle_on_next(value):
         timespan[0] += 10
         if value in ('T', 'F'):
-            value = True if value == 'T' else False
-        messages.append(on_next(timespan[0], value))
+            value = value == 'T'
+        messages.append((OnNext(value), timespan[0]))
 
     def handle_on_completed(value):
-        timespan[0] += 10
-        messages.append(on_completed(timespan[0]))
+        timespan[0] += 0.01
+        messages.append((OnCompleted(), timespan[0]))
         completed[0] = True
 
     def handle_on_error(value):
-        timespan[0] += 10
-        messages.append(on_error(timespan[0], value))
+        timespan[0] += 0.01
+        messages.append((OnError(value), timespan[0]))
         completed[0] = True
 
     specials = {
@@ -77,19 +75,28 @@ def from_marbles(string):
                 func(token)
 
     if not completed[0]:
-        messages.append(on_completed(timespan[0]))
+        messages.append((OnCompleted(), timespan[0]))
 
-    return ColdObservable(scheduler, messages)
+    def subscribe(observer, scheduler):
+        for message in messages:
+            notification, timespan = message
+
+            # Don't make closures within a loop
+            action = notification.accept(observer)
+            disposable.add(scheduler.schedule_relative(timespan, action))
+        return disposable
+    return AnonymousObservable(subscribe)
 
 
 def to_marbles(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
-    Keyword arguments:
-    scheduler -- [Optional] The scheduler used to run the the input
-        sequence on.
+    Args:
+        scheduler: [Optional] The scheduler used to run the the input
+            sequence on.
 
-    Returns Observable
+    Returns:
+        Observable stream.
     """
     source = self
 
@@ -129,11 +136,12 @@ def to_marbles(self, scheduler=None):
 def to_marbles_blocking(self, scheduler=None):
     """Convert an observable sequence into a marble diagram string
 
-    Keyword arguments:
-    scheduler -- [Optional] The scheduler used to run the the input
-        sequence on.
+    Args:
+        scheduler: [Optional] The scheduler used to run the the input
+            sequence on.
 
-    Returns marble string.
+    Returns:
+        Marble string.
     """
 
     latch = threading.Event()
