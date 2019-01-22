@@ -18,22 +18,24 @@ class Notification:
         """Invokes the delegate corresponding to the notification or an
         observer and returns the produced result.
 
-        1 - notification.accept(observer)
-        2 - notification.accept(on_next, on_error, on_completed)
+        Examples:
+            >>> notification.accept(observer)
+            >>> notification.accept(on_next, on_error, on_completed)
 
-        Keyword arguments:
-        on_next -- Delegate to invoke for an OnNext notification.
-        on_error -- [Optional] Delegate to invoke for an OnError
-            notification.
-        on_completed -- [Optional] Delegate to invoke for an OnCompleted
-            notification.
+        Args:
+            on_next: Delegate to invoke for an OnNext notification.
+            on_error: [Optional] Delegate to invoke for an OnError
+                notification.
+            on_completed: [Optional] Delegate to invoke for an
+                OnCompleted notification.
 
-        Returns result produced by the observation."""
+        Returns:
+            Result produced by the observation."""
 
         if isinstance(on_next, Observer):
             return self._accept_observer(on_next)
-        else:
-            return self._accept(on_next, on_error, on_completed)
+
+        return self._accept(on_next, on_error, on_completed)
 
     @abstractmethod
     def _accept(self, on_next, on_error, on_completed):
@@ -48,8 +50,8 @@ class Notification:
         using the specified scheduler, else the immediate scheduler.
 
         Args:
-            scheduler: [Optional] Scheduler to send out the notification
-                calls on.
+            scheduler: [Optional] Scheduler to send out the
+                notification calls on.
 
         Returns:
             An observable sequence that surfaces the behavior of the

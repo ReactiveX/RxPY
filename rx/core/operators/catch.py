@@ -45,10 +45,10 @@ def _catch_exception(second: Observable = None, handler=None) -> Callable[[Obser
             >>> catch_exception(lambda ex: ys(ex))
 
         Args:
-            handler -- Exception handler function that returns an
+            handler: Exception handler function that returns an
                 observable sequence  given the error that occurred in
                 the first sequence.
-            second -- Second observable sequence used to produce
+            second: Second observable sequence used to produce
                 results when an error occurred in the first sequence.
 
         Returns:
