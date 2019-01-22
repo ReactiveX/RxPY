@@ -70,6 +70,7 @@ class WxScheduler(SchedulerBase):
 
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
+
         return self._wxtimer_schedule(0, action, state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
@@ -77,12 +78,13 @@ class WxScheduler(SchedulerBase):
         """Schedules an action to be executed after duetime.
 
         Args:
-            duetime: {timedelta} Relative time after which to execute the action.
-            action: {Function} Action to be executed.
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
 
         Returns:
             The disposable object used to cancel the scheduled action
-            (best effort)."""
+            (best effort).
+        """
         return self._wxtimer_schedule(duetime, action, state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
@@ -90,12 +92,13 @@ class WxScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime.
 
         Args:
-            duetime: {datetime} Absolute time after which to execute the action.
-            action: {Function} Action to be executed.
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
 
         Returns:
-            {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+            The disposable object used to cancel the scheduled
+        action (best effort).
+        """
 
         duetime = self.to_datetime(duetime)
         return self._wxtimer_schedule(duetime, action, state)

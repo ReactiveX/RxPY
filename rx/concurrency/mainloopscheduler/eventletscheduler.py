@@ -1,12 +1,14 @@
 import logging
+from typing import Any
+from datetime import datetime
 
-eventlet = None
-
-from rx.core import Disposable
+from rx.core import Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
+
+eventlet = None
 
 
 class EventLetEventScheduler(SchedulerBase):
@@ -15,13 +17,13 @@ class EventLetEventScheduler(SchedulerBase):
     http://eventlet.net/
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Lazy import
         global eventlet
         import eventlet
         import eventlet.hubs
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         disposable = SingleAssignmentDisposable()
@@ -36,15 +38,18 @@ class EventLetEventScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         scheduler = self
         seconds = self.to_seconds(duetime)
@@ -65,22 +70,25 @@ class EventLetEventScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort)."""
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
 
     @property
-    def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled
-        on a scheduler will adhere to the time denoted by this property."""
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by
+        this property."""
 
         return self.to_datetime(eventlet.hubs.hub.time.time())

@@ -29,7 +29,8 @@ class TkinterScheduler(SchedulerBase):
 
         Returns:
             The disposable object used to cancel the scheduled action
-            (best effort)."""
+            (best effort).
+        """
 
         msecs = int(self.to_seconds(duetime)*1000.0)
         disposable = SingleAssignmentDisposable()
@@ -54,7 +55,8 @@ class TkinterScheduler(SchedulerBase):
 
         Returns:
             The disposable object used to cancel the scheduled action
-            (best effort)."""
+            (best effort).
+        """
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
