@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from typing import Any, Union
+from typing import Any, Union, Optional
 
-from rx.core import Scheduler, Disposable, typing, abc
+from rx.core import Scheduler, Disposable, typing
 from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
@@ -13,20 +13,20 @@ class SchedulerBase(Scheduler):
 
     def invoke_action(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         ret = action(self, state)
-        if isinstance(ret, abc.Disposable):
+        if isinstance(ret, typing.Disposable):
             return ret
 
         return Disposable.empty()
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction, state: Any = None
                          ) -> typing.Disposable:
         """Schedules a periodic piece of work.
 
         Args:
-            period -- Period in seconds or timedelta for running the
+            period: Period in seconds or timedelta for running the
                 work periodically.
-            action -- Action to be executed.
-            state -- [Optional] Initial state passed to the action upon
+            action: Action to be executed.
+            state: [Optional] Initial state passed to the action upon
                 the first iteration.
 
         Returns:
@@ -34,16 +34,18 @@ class SchedulerBase(Scheduler):
             recurring action (best effort)."""
 
         disposable = MultipleAssignmentDisposable()
-        state = [state]
 
-        def invoke_action(scheduler, _):
+        def invoke_action(scheduler: Scheduler, _: Any) -> Optional[Disposable]:
+            nonlocal state
+
             if disposable.is_disposed:
-                return
+                return None
 
-            new_state = action(state[0])
+            new_state = action(state)
             if new_state is not None:
-                state[0] = new_state
+                state = new_state
             disposable.disposable = self.schedule_relative(period, invoke_action, state)
+            return None
 
         disposable.disposable = self.schedule_relative(period, invoke_action, state)
         return disposable
@@ -60,7 +62,7 @@ class SchedulerBase(Scheduler):
         return default_now()
 
     @classmethod
-    def to_seconds(cls, timespan: Union[float, timedelta, datetime]) -> float:
+    def to_seconds(cls, timespan: typing.AbsoluteOrRelativeTime) -> float:
         """Converts time value to seconds"""
 
         if isinstance(timespan, datetime):
@@ -72,7 +74,7 @@ class SchedulerBase(Scheduler):
         return timespan
 
     @classmethod
-    def to_datetime(cls, duetime: Union[float, timedelta, datetime]) -> datetime:
+    def to_datetime(cls, duetime: typing.AbsoluteOrRelativeTime) -> datetime:
         """Converts time value to datetime"""
 
         if isinstance(duetime, timedelta):
@@ -83,7 +85,7 @@ class SchedulerBase(Scheduler):
         return duetime
 
     @classmethod
-    def to_timedelta(cls, timespan: Union[float, timedelta, datetime]) -> timedelta:
+    def to_timedelta(cls, timespan: typing.AbsoluteOrRelativeTime) -> timedelta:
         """Converts time value to timedelta"""
 
         if isinstance(timespan, datetime):
@@ -102,11 +104,16 @@ class SchedulerBase(Scheduler):
 
         Returns:
             The specified timespan value if it is zero or positive;
-            otherwise, 0
+            otherwise, 0.0
         """
 
-        nospan = timedelta(0) if isinstance(timespan, timedelta) else 0.0
-        if not timespan or timespan < nospan:
-            timespan = nospan
+        if isinstance(timespan, timedelta):
+            nospan = timedelta(0)
+            if not timespan or timespan < nospan:
+                return nospan
+
+        elif isinstance(timespan, float):
+            if not timespan or timespan < 0.0:
+                return 0.0
 
         return timespan

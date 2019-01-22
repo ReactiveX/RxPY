@@ -78,7 +78,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
         return Disposable.create(si.cancel)
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction, state: Any = None
                          ) -> typing.Disposable:
         """Schedule a periodic piece of work."""
 

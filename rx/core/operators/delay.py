@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Callable
 from datetime import datetime, timedelta
 
 from rx import operators as ops
@@ -13,7 +13,7 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source: Observable, duetime: Union[timedelta, int],
+def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                               scheduler: typing.Scheduler = None) -> Observable:
 
     def subscribe(observer, scheduler_=None):

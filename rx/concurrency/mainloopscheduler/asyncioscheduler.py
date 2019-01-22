@@ -24,7 +24,7 @@ class AsyncIOScheduler(SchedulerBase):
         else:
             return self._schedule_threadsafe(action, state)
 
-    def _schedule(self, action, state=None):
+    def _schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         disposable = SingleAssignmentDisposable()
 
         def interval():

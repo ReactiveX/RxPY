@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Generic, TypeVar, Callable, Any, Union
+from typing import Generic, TypeVar, Callable, Any, Union, Optional
 from datetime import datetime, timedelta
 
 from . import abc
@@ -8,7 +8,6 @@ T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 
 Action = Callable[[], None]
-ScheduledAction = Callable[[abc.Scheduler, Any], None]
 
 OnNext = Callable[[Any], None]
 OnError = Callable[[Exception], None]
@@ -32,6 +31,10 @@ class Disposable(abc.Disposable):
     @abstractmethod
     def dispose(self) -> None:
         raise NotImplementedError
+
+
+ScheduledAction = Callable[['Scheduler', Any], Optional[Disposable]]
+ScheduledPeriodicAction = Callable[[Any], Any]
 
 
 class Scheduler(abc.Scheduler):
