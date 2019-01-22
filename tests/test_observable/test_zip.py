@@ -49,8 +49,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]
@@ -65,8 +64,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -81,8 +79,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -96,8 +93,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -111,8 +107,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -127,8 +122,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2 + 3), on_completed(240)]
@@ -144,8 +138,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -161,8 +154,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -177,8 +169,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -193,8 +184,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -211,8 +201,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex2)]
@@ -228,8 +217,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -245,8 +233,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e2.pipe(
                 ops.zip(e1),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
@@ -275,8 +262,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -312,8 +298,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -348,8 +333,7 @@ class TestZip(unittest.TestCase):
         def create():
             return e1.pipe(
                 ops.zip(e2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create).messages
         assert(length == len(results))
@@ -368,8 +352,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -384,8 +367,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -400,8 +382,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -411,14 +392,13 @@ class TestZip(unittest.TestCase):
     def test_zip_with_iterable_non_empty_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(215, 2), on_completed(220))
+            on_next(150, 1), on_next(215, 2), on_completed(220))
         n2 = []
 
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -433,8 +413,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -450,8 +429,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -467,8 +445,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -484,8 +461,7 @@ class TestZip(unittest.TestCase):
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
@@ -495,15 +471,14 @@ class TestZip(unittest.TestCase):
     def test_zip_with_iterable_some_data_both_sides(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_next(220, 3),
-                on_next(230, 4), on_next(240, 5))
+            on_next(150, 1), on_next(210, 2), on_next(220, 3),
+            on_next(230, 4), on_next(240, 5))
         n2 = [5, 4, 3, 2]
 
         def create():
             return n1.pipe(
                 ops.zip_with_iterable(n2),
-                ops.map(sum),
-                )
+                ops.map(sum))
 
         results = scheduler.start(create)
 
