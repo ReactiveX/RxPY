@@ -1,12 +1,13 @@
 import logging
-from datetime import timedelta
-
-pygame = None
+from typing import Any
+from datetime import timedelta, datetime
 
 from rx.internal import PriorityQueue
+from rx.core import typing
+from rx.concurrency import ScheduledItem
 from rx.concurrency.schedulerbase import SchedulerBase
-from rx.concurrency.scheduleditem import ScheduledItem
 
+pygame = None
 log = logging.getLogger("Rx")
 
 
@@ -25,7 +26,7 @@ class PyGameScheduler(SchedulerBase):
 
         self.queue = PriorityQueue()
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         log.debug("PyGameScheduler.schedule(state=%s)", state)
@@ -42,15 +43,18 @@ class PyGameScheduler(SchedulerBase):
             if not item.is_cancelled():
                 item.invoke()
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         dt = self.now + self.to_timedelta(duetime)
         si = ScheduledItem(self, state, action, dt)
@@ -59,21 +63,24 @@ class PyGameScheduler(SchedulerBase):
 
         return si.disposable
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort)."""
 
         return self.schedule_relative(duetime - self.now, action, state)
 
     @property
-    def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled
-        on a scheduler will adhere to the time denoted by this property."""
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by
+        this property."""
 
         return self.to_datetime(pygame.time.get_ticks())
