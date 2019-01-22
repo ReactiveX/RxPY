@@ -13,4 +13,4 @@ For Python 2.x you need to use version 1.6
 
 .. code:: python
 
-    pip3 install rx==1.6.1
+    pip install rx==1.6.1
