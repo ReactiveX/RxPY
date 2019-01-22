@@ -6,6 +6,7 @@ from . import abc
 
 T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
+TState = TypeVar('TState')  # Can be anything
 
 Action = Callable[[], None]
 
@@ -32,9 +33,8 @@ class Disposable(abc.Disposable):
     def dispose(self) -> None:
         raise NotImplementedError
 
-
-ScheduledAction = Callable[['Scheduler', Any], Optional[Disposable]]
-ScheduledPeriodicAction = Callable[[Any], Any]
+ScheduledAction = Callable[['Scheduler', TState], Optional[Disposable]]
+ScheduledPeriodicAction = Callable[[TState], TState]
 
 
 class Scheduler(abc.Scheduler):
@@ -46,15 +46,15 @@ class Scheduler(abc.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule(self, action: ScheduledAction, state: Any = None) -> Disposable:
+    def schedule(self, action: ScheduledAction, state: TState = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self, duetime: RelativeTime, action: ScheduledAction, state: Any = None) -> Disposable:
+    def schedule_relative(self, duetime: RelativeTime, action: ScheduledAction, state: TState = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self, duetime: AbsoluteTime, action: ScheduledAction, state: Any = None) -> Disposable:
+    def schedule_absolute(self, duetime: AbsoluteTime, action: ScheduledAction, state: TState = None) -> Disposable:
         return NotImplemented
 
 

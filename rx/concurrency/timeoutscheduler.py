@@ -11,7 +11,7 @@ from .schedulerbase import SchedulerBase
 class TimeoutScheduler(SchedulerBase):
     """A scheduler that schedules work via a timed callback based upon platform."""
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None):
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed."""
 
         disposable = SingleAssignmentDisposable()
@@ -27,7 +27,7 @@ class TimeoutScheduler(SchedulerBase):
             timer.cancel()
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_relative(self, duetime, action: typing.ScheduledAction, state: Any = None):
+    def schedule_relative(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""
 
         scheduler = self
@@ -50,7 +50,7 @@ class TimeoutScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_absolute(self, duetime, action: typing.ScheduledAction, state: Any = None):
+    def schedule_absolute(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""
 
         duetime = self.to_datetime(duetime)

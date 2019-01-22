@@ -61,14 +61,16 @@ class VirtualTimeScheduler(SchedulerBase):
         runat = self.add(self.clock, self.to_seconds(duetime))
         return self.schedule_absolute(duetime=runat, action=action, state=state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction, state: Any = None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: typing.TState = None):
         """Schedules an action to be executed at duetime."""
 
-        si = ScheduledItem(self, state, action, duetime)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
         self.queue.enqueue(si)
         return si.disposable
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None):
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
+                          state: typing.TState = None):
         scheduler = SchedulePeriodic(self, period, action, state)
         return scheduler.start()
 

@@ -1,6 +1,7 @@
 import logging
 import threading
-from typing import Any, List
+from datetime import datetime
+from typing import Any, List, Optional
 
 from rx.core import Disposable, typing
 from rx.concurrency import ScheduledItem
@@ -27,8 +28,8 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
         self.lock = threading.RLock()
         self.thread_factory = thread_factory or default_factory
-        self.thread = None
-        self.timer = None
+        self.thread: Optional[threading.Thread] = None
+        self.timer: Optional[threading.Timer] = None
         self.condition = threading.Condition(self.lock)
         self.queue = PriorityQueue()
         self.ready_list: List[ScheduledItem] = []
@@ -36,13 +37,13 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
         self.exit_if_empty = exit_if_empty
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         if self.is_disposed:
             raise DisposedException()
 
-        si = ScheduledItem(self, state, action, self.now)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, self.now)
 
         with self.condition:
             self.ready_list.append(si)
@@ -52,21 +53,21 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         return Disposable.create(si.cancel)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
-        dt = self.to_timedelta(duetime)
-        return self.schedule_absolute(dt + self.now, action, state)
+        dt: datetime = self.now + self.to_timedelta(duetime)
+        return self.schedule_absolute(dt, action, state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
         if self.is_disposed:
             raise DisposedException()
 
         dt = self.to_datetime(duetime)
-        si = ScheduledItem(self, state, action, dt)
+        si: ScheduledItem[typing.TState]= ScheduledItem(self, state, action, dt)
 
         with self.condition:
             if dt < self.now:
@@ -82,7 +83,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                          ) -> typing.Disposable:
         """Schedule a periodic piece of work."""
 
-        disposed = []
+        disposed: List[bool] = []
 
         s = [state]
 
@@ -107,8 +108,9 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         called under the gate."""
 
         if not self.thread:
-            self.thread = self.thread_factory(self.run)
-            self.thread.start()
+            thread = self.thread_factory(self.run)
+            self.thread = thread
+            thread.start()
 
     def run(self) -> None:
         """Event loop scheduled on the designated event loop thread.
@@ -139,7 +141,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                         seconds = due.total_seconds()
                         log.debug("timeout: %s", seconds)
 
-                        self.timer = threading.Timer(seconds, self.tick, args=(_next,))
+                        self.timer = threading.Timer(seconds, self.tick, args=[_next])
                         self.timer.setDaemon(True)
                         self.timer.start()
 

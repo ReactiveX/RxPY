@@ -39,7 +39,7 @@ class EventLetEventScheduler(SchedulerBase):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -71,7 +71,7 @@ class EventLetEventScheduler(SchedulerBase):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:

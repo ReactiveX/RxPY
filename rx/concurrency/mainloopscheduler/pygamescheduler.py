@@ -44,7 +44,7 @@ class PyGameScheduler(SchedulerBase):
                 item.invoke()
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -57,14 +57,14 @@ class PyGameScheduler(SchedulerBase):
         """
 
         dt = self.now + self.to_timedelta(duetime)
-        si = ScheduledItem(self, state, action, dt)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
         self.queue.enqueue(si)
 
         return si.disposable
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from rx.core import Disposable
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
@@ -76,7 +77,7 @@ class IOLoopScheduler(SchedulerBase):
         return self.schedule_relative(duetime - self.now, action, state)
 
     @property
-    def now(self):
+    def now(self) -> datetime:
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
 

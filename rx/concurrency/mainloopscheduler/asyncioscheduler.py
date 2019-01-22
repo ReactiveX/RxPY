@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from typing import Any
+from datetime import datetime
 
 from concurrent.futures import Future
 from rx.core import Disposable, typing
@@ -17,14 +17,14 @@ class AsyncIOScheduler(SchedulerBase):
         self.loop = loop or asyncio.get_event_loop()
         self.threadsafe = threadsafe
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
         if self.threadsafe is False:
             return self._schedule(action, state)
         else:
             return self._schedule_threadsafe(action, state)
 
-    def _schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def _schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         disposable = SingleAssignmentDisposable()
 
         def interval():
@@ -57,7 +57,7 @@ class AsyncIOScheduler(SchedulerBase):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -129,7 +129,7 @@ class AsyncIOScheduler(SchedulerBase):
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -147,7 +147,7 @@ class AsyncIOScheduler(SchedulerBase):
         return self.schedule_relative(duetime - self.now, action, state)
 
     @property
-    def now(self):
+    def now(self) -> datetime:
         """Represents a notion of time for this scheduler. Tasks being
         scheduled on a scheduler will adhere to the time denoted by this
         property.

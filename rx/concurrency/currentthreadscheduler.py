@@ -2,7 +2,7 @@
 import time
 import logging
 import threading
-from typing import Any, Dict
+from typing import Dict
 from datetime import timedelta
 
 from rx.core import typing
@@ -16,7 +16,7 @@ log = logging.getLogger('Rx')
 
 class Trampoline(object):
     @classmethod
-    def run(cls, queue) -> None:
+    def run(cls, queue: PriorityQueue) -> None:
         while queue:
             item = queue.dequeue()
             if not item.is_cancelled():
@@ -45,19 +45,20 @@ class CurrentThreadScheduler(SchedulerBase):
         self.queues: Dict[int, PriorityQueue] = dict()
         self.lock = threading.RLock()
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
         return self.schedule_relative(timedelta(0), action, state)
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
         duetime = self.to_timedelta(duetime)
 
-        dt = self.now + SchedulerBase.normalize(duetime)
-        si = ScheduledItem(self, state, action, dt)
+        dt = self.now + SchedulerBase.to_timedelta(SchedulerBase.normalize(duetime))
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
         queue = self.queue
         if queue is None:
@@ -74,7 +75,8 @@ class CurrentThreadScheduler(SchedulerBase):
 
         return si.disposable
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)

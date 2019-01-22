@@ -1,8 +1,9 @@
 import time
 import logging
 import threading
+from typing import List
 
-from rx.core import Scheduler, Disposable
+from rx.core import Scheduler, Disposable, typing
 from .schedulerbase import SchedulerBase
 from .eventloopscheduler import EventLoopScheduler
 
@@ -23,28 +24,32 @@ class NewThreadScheduler(SchedulerBase):
 
         self.thread_factory = thread_factory or default_factory
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
         return scheduler.schedule(action, state)
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
         scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
         return scheduler.schedule_relative(duetime, action, state)
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
-        return self.schedule_relative(duetime - self.now, action, state=None)
+        dt = SchedulerBase.to_datetime(duetime)
+        return self.schedule_relative(dt - self.now, action, state=None)
 
-    def schedule_periodic(self, period, action, state=None):
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedule a periodic piece of work."""
 
         secs = self.to_seconds(period)
-        disposed = []
+        disposed: List[bool] = []
 
         s = [state]
 

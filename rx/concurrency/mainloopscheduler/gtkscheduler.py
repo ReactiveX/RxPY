@@ -43,12 +43,12 @@ class GtkScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
         return self._gtk_schedule(0, action, state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -62,7 +62,7 @@ class GtkScheduler(SchedulerBase):
         return self._gtk_schedule(duetime, action, state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: Any = None) -> typing.Disposable:
+                          state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -77,7 +77,8 @@ class GtkScheduler(SchedulerBase):
         duetime = self.to_datetime(duetime)
         return self._gtk_schedule(duetime, action, state)
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction, state: Any = None):
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
+                          state: typing.TState = None):
         """Schedules a periodic piece of work to be executed in the Qt
         mainloop.
 
