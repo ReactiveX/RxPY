@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Iterable
 
 from rx.disposables import CompositeDisposable
 
@@ -16,7 +16,7 @@ def is_future(fut: Any) -> bool:
     return callable(getattr(fut, "add_done_callback", None))
 
 
-def infinite():
+def infinite() -> Iterable[int]:
     n = 0
     while True:
         yield n

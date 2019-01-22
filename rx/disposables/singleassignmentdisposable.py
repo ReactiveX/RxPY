@@ -10,7 +10,7 @@ class SingleAssignmentDisposable(Disposable):
     disposable resource has already been set, future attempts to set the
     underlying disposable resource will throw an Error."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes a new instance of the SingleAssignmentDisposable
         class.
         """

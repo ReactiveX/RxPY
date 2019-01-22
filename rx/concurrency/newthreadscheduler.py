@@ -13,10 +13,10 @@ class NewThreadScheduler(SchedulerBase):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
-    def __init__(self, thread_factory=None):
+    def __init__(self, thread_factory=None) -> None:
         super(NewThreadScheduler, self).__init__()
 
-        def default_factory(target, args=None):
+        def default_factory(target, args=None) -> threading.Thread:
             t = threading.Thread(target=target, args=args or [])
             t.setDaemon(True)
             return t
