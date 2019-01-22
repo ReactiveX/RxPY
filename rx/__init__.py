@@ -139,6 +139,9 @@ def for_in(values, mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
+    Note:
+        This is just a wrapper for `rx.concat(map(mapper, values))`
+
     Args:
         values: A list of values to turn into an observable sequence.
         mapper: A function to apply to each item in the values
@@ -179,12 +182,13 @@ def from_callback(func: Callable, mapper: typing.Mapper = None) -> Callable[[], 
         func: Function with a callback as the last parameter to
             convert to an Observable sequence.
         mapper: [Optional] A mapper which takes the arguments
-            from the callback to produce a single item to yield on next.
+            from the callback to produce a single item to yield on
+            next.
 
     Returns:
         A function, when executed with the required parameters minus
-        the callback, produces an Observable sequence with a single value of
-        the arguments to the callback as a list.
+        the callback, produces an Observable sequence with a single
+        value of the arguments to the callback as a list.
     """
     from .core.observable.fromcallback import _from_callback
     return _from_callback(func, mapper)
@@ -455,9 +459,9 @@ def start(func, scheduler=None) -> Observable:
             not specified, defaults to Scheduler.timeout.
 
     Remarks:
-        The function is called immediately, not during the subscription of
-        the resulting sequence. Multiple subscriptions to the resulting
-        sequence can observe the function's result.
+        The function is called immediately, not during the subscription
+        of the resulting sequence. Multiple subscriptions to the
+        resulting sequence can observe the function's result.
     Returns:
         An observable sequence exposing the function's result value,
         or an exception.
@@ -474,8 +478,9 @@ def start_async(function_async) -> Observable:
     function_async -- Asynchronous function which returns a Future to
         run.
 
-    Returns an observable sequence exposing the function's result value,
-    or an exception.
+    Returns:
+        An observable sequence exposing the function's result value,
+        or an exception.
     """
     from .core.observable.startasync import _start_async
     return _start_async(function_async)
