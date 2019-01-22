@@ -894,7 +894,7 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
     return _group_by_until(key_mapper, element_mapper, duration_mapper)
 
 
-def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
+def group_join(right, left_duration_mapper, right_duration_mapper,
                ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
@@ -907,22 +907,16 @@ def group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
         right_duration_mapper: A function to select the duration
             (expressed as an observable sequence) of each element of
             the right observable sequence, used to determine overlap.
-        result_mapper: A function invoked to compute a result element
-            for any element of the left sequence with overlapping
-            elements from the right observable sequence. The first
-            parameter passed to the function is an element of the left
-            sequence. The second parameter passed to the function is an
-            observable sequence with elements from the right sequence
-            that overlap with the left sequence's element.
+
 
     Returns:
         An operator function that takes an observable source and
-        returns an observable sequence that contains result elements
-        computed from source elements that have an overlapping
+        returns an observable sequence that contains elements combined into
+        a tuple from source elements that have an overlapping
         duration.
     """
     from rx.core.operators.groupjoin import _group_join
-    return _group_join(right, left_duration_mapper, right_duration_mapper, result_mapper)
+    return _group_join(right, left_duration_mapper, right_duration_mapper)
 
 
 def ignore_elements() -> Observable:
