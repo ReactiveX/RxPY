@@ -12,8 +12,8 @@ log = logging.getLogger('Rx')
 
 
 class EventLoopScheduler(SchedulerBase, Disposable):
-    """Creates an object that schedules units of work on a designated thread.
-    """
+    """Creates an object that schedules units of work on a designated
+    thread."""
 
     def __init__(self, thread_factory=None, exit_if_empty=False):
         super(EventLoopScheduler, self).__init__()
@@ -52,6 +52,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime."""
+
         dt = self.to_timedelta(duetime)
         return self.schedule_absolute(dt + self.now, action, state)
 
@@ -98,17 +99,17 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         return Disposable.create(dispose)
 
     def ensure_thread(self):
-        """Ensures there is an event loop thread running. Should be called
-        under the gate."""
+        """Ensures there is an event loop thread running. Should be
+        called under the gate."""
 
         if not self.thread:
             self.thread = self.thread_factory(self.run)
             self.thread.start()
 
     def run(self):
-        """Event loop scheduled on the designated event loop thread. The loop is
-        suspended/resumed using the event which gets set by calls to Schedule,
-        the next item timer, or calls to dispose."""
+        """Event loop scheduled on the designated event loop thread.
+        The loop is suspended/resumed using the event which gets set by
+        calls to Schedule, the next item timer, or calls to dispose."""
 
         while True:
             ready = []
@@ -155,8 +156,8 @@ class EventLoopScheduler(SchedulerBase, Disposable):
                         return
 
     def dispose(self):
-        """Ends the thread associated with this scheduler. All remaining work
-        in the scheduler queue is abandoned.
+        """Ends the thread associated with this scheduler. All
+        remaining work in the scheduler queue is abandoned.
         """
 
         with self.condition:

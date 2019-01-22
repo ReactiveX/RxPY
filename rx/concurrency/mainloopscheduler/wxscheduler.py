@@ -1,6 +1,7 @@
 import logging
+from typing import Any
 
-from rx.core import Disposable
+from rx.core import Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -29,8 +30,8 @@ class WxScheduler(SchedulerBase):
     def cancel_all(self):
         """Cancel all scheduled actions.
 
-        Should be called when destroying wx controls to prevent accessing
-        dead wx objects in actions that might be pending.
+        Should be called when destroying wx controls to prevent
+        accessing dead wx objects in actions that might be pending.
         """
         for timer in self._timers:
             timer.Stop()
@@ -67,45 +68,51 @@ class WxScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
         return self._wxtimer_schedule(0, action, state)
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: {timedelta} Relative time after which to execute the action.
+            action: {Function} Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort)."""
         return self._wxtimer_schedule(duetime, action, state)
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: {datetime} Absolute time after which to execute the action.
+            action: {Function} Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
+        Returns:
+            {Disposable} The disposable object used to cancel the scheduled
         action (best effort)."""
 
         duetime = self.to_datetime(duetime)
         return self._wxtimer_schedule(duetime, action, state)
 
-    def schedule_periodic(self, period, action, state=None):
+    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None):
         """Schedules a periodic piece of work to be executed in the Qt
         mainloop.
 
-        Keyword arguments:
-        period -- Period in milliseconds for running the work periodically.
-        action -- Action to be executed.
-        state -- [Optional] Initial state passed to the action upon the first
-            iteration.
+        Args:
+            period: Period in milliseconds for running the work
+                periodically.
+            action: Action to be executed.
+            state: [Optional] Initial state passed to the action upon
+                the first iteration.
 
-        Returns the disposable object used to cancel the scheduled recurring
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled
+            recurring action (best effort)."""
 
         return self._wxtimer_schedule(period, action, state, periodic=True)

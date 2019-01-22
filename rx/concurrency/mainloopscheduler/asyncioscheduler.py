@@ -1,8 +1,9 @@
 import logging
 import asyncio
+from typing import Any
 
 from concurrent.futures import Future
-from rx.core import Disposable
+from rx.core import Disposable, typing
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -16,7 +17,7 @@ class AsyncIOScheduler(SchedulerBase):
         self.loop = loop or asyncio.get_event_loop()
         self.threadsafe = threadsafe
 
-    def schedule(self, action, state=None):
+    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
         if self.threadsafe is False:
             return self._schedule(action, state)
@@ -55,16 +56,19 @@ class AsyncIOScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the
-            action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Relative time after which to execute the
+                action.
+            action: Action to be executed.
 
-        Returns {Disposable} The disposable object used to cancel the
-        scheduled action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
         if self.threadsafe is False:
             return self._schedule_relative(duetime, action, state)
         else:
@@ -124,18 +128,19 @@ class AsyncIOScheduler(SchedulerBase):
 
         return CompositeDisposable(disposable, Disposable.create(dispose))
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
+                          state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        :param datetime duetime: Absolute time after which to execute the
+        Args:
+            duetime: Absolute time after which to execute the
             action.
-        :param types.FunctionType action: Action to be executed.
-        :param T state: Optional state to be given to the action function.
+            action: Action to be executed.
+            state: Optional state to be given to the action function.
 
-        :returns: The disposable object used to cancel the scheduled action
+        Returns:
+            The disposable object used to cancel the scheduled action
             (best effort).
-        :rtype: Disposable
         """
 
         duetime = self.to_datetime(duetime)
