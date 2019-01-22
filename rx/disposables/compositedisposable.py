@@ -20,8 +20,8 @@ class CompositeDisposable(Disposable):
         """Adds a disposable to the CompositeDisposable or disposes the
         disposable if the CompositeDisposable is disposed
 
-        Keyword arguments:
-        item -- Disposable to add."""
+        Args:
+            item: Disposable to add."""
 
         should_dispose = False
         with self.lock:
@@ -34,8 +34,8 @@ class CompositeDisposable(Disposable):
             item.dispose()
 
     def remove(self, item):
-        """Removes and disposes the first occurrence of a disposable from
-        the CompositeDisposable."""
+        """Removes and disposes the first occurrence of a disposable
+        from the CompositeDisposable."""
 
         if self.is_disposed:
             return
@@ -82,10 +82,11 @@ class CompositeDisposable(Disposable):
         """Determines whether the CompositeDisposable contains a specific
         disposable.
 
-        Keyword arguments:
-        item -- Disposable to search for
+        Args:
+            item: Disposable to search for
 
-        Returns True if the disposable was found; otherwise, False"""
+        Returns:
+            True if the disposable was found; otherwise, False"""
 
         return item in self.disposables
 
