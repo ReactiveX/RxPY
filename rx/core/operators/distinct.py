@@ -15,9 +15,9 @@ class HashSet:
         self.set = []
 
     def push(self, value):
-        ret_value = array_index_of_comparer(
-            self.set, value, self.comparer) == -1
-        ret_value and self.set.append(value)
+        ret_value = array_index_of_comparer(self.set, value, self.comparer) == -1
+        if ret_value:
+            self.set.append(value)
         return ret_value
 
 
@@ -56,7 +56,6 @@ def _distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observab
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe_(on_next, observer.on_error,
-                                     observer.on_completed, scheduler)
+            return source.subscribe_(on_next, observer.on_error,observer.on_completed, scheduler)
         return AnonymousObservable(subscribe)
     return distinct
