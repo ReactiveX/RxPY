@@ -65,12 +65,12 @@ def _window_with_count(count: int, skip: int = None) -> Callable[[Observable], O
                     create_window()
 
             def on_error(exception):
-                while len(q):
+                while q:
                     q.pop(0).on_error(exception)
                 observer.on_error(exception)
 
             def on_completed():
-                while len(q):
+                while q:
                     q.pop(0).on_completed()
                 observer.on_completed()
 

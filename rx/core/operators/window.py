@@ -41,10 +41,10 @@ def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Obser
 
 def observable_window_with_openings(self, window_openings, window_closing_mapper):
     return window_openings.pipe(
-            ops.group_join(
-                    self,
-                    window_closing_mapper,
-                    lambda _: empty(), lambda _, window: window))
+        ops.group_join(
+            self,
+            window_closing_mapper,
+            lambda _: empty(), lambda _, window: window))
 
 
 def observable_window_with_boundaries(self, window_boundaries):
@@ -108,7 +108,6 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
             try:
                 window_close = window_closing_mapper()
             except Exception as exception:
-                log.error("*** Exception: %s" % exception)
                 observer.on_error(exception)
                 return
 
