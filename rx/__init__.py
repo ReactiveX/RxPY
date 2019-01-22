@@ -135,21 +135,20 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     return _empty(scheduler)
 
 
-def for_in(values, result_mapper) -> Observable:
+def for_in(values, mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
     Args:
         values: A list of values to turn into an observable sequence.
-        result_mapper: A function to apply to each item in the values
+        mapper: A function to apply to each item in the values
             list to turn it into an observable sequence.
 
     Returns:
         An observable sequence from the concatenated observable
         sequences.
     """
-    from .core.observable.forin import _for_in
-    return _for_in(values, result_mapper)
+    return concat(map(mapper, values))
 
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
