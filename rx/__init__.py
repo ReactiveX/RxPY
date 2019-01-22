@@ -73,8 +73,8 @@ def combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Calla
     observable sequences produces an element.
 
     Examples:
-        >>> obs = combine_latest(obs1, obs2, obs3, lambda o1, o2, o3: o1 + o2 + o3)
-        >>> obs = combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = rx.combine_latest(obs1, obs2, obs3, lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = rx.combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
 
     Returns:
         An observable sequence containing the result of combining
@@ -237,7 +237,7 @@ def generate_with_relative_time(initial_state, condition, iterate, time_mapper) 
     initial state until the condition fails.
 
     Example:
-        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 500)
+        res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 500)
 
     Args:
         initial_state: Initial state.
@@ -474,9 +474,9 @@ def start_async(function_async) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
-    Keyword arguments:
-    function_async -- Asynchronous function which returns a Future to
-        run.
+    Args:
+        function_async: Asynchronous function which returns a Future to
+            run.
 
     Returns:
         An observable sequence exposing the function's result value,
@@ -514,8 +514,8 @@ def timer(duetime: typing.AbsoluteOrRelativeTime, period: typing.RelativeTime = 
     Examples:
         >>> res = rx.timer(datetime(...))
         >>> res = rx.timer(datetime(...), 1000)
-        >>> res = rx.timer(5000)
-        >>> res = rx.timer(5000, 1000)
+        >>> res = rx.timer(5.0)
+        >>> res = rx.timer(5.0, 1.00)
 
     Args:
         duetime: Absolute (specified as a datetime object) or relative

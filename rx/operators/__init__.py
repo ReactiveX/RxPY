@@ -128,9 +128,9 @@ def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTi
 
     Examples:
         # non-overlapping segments of 1 second
-        >>> res = buffer_with_time(1000)
+        >>> res = buffer_with_time(1.0)
         # segments of 1 second with time shift 0.5 seconds
-        >>> res = buffer_with_time(1000, 500)
+        >>> res = buffer_with_time(1.0, 0.5)
 
     Args:
         timespan: Length of each buffer (specified as an integer denoting
@@ -156,9 +156,9 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
 
     Examples:
         # 5s or 50 items in an array
-        >>> res = source.buffer_with_time_or_count(5000, 50)
+        >>> res = source.buffer_with_time_or_count(5.0, 50)
         # 5s or 50 items in an array
-        >>> res = source.buffer_with_time_or_count(5000, 50, Scheduler.timeout)
+        >>> res = source.buffer_with_time_or_count(5.0, 50, Scheduler.timeout)
 
     Args:
         timespan: Maximum time length of a buffer.
@@ -286,7 +286,7 @@ def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -
     another value before duetime.
 
     Example:
-        >>> res = debounce(5000) # 5 seconds
+        >>> res = debounce(5.0) # 5 seconds
 
     Args:
         duetime: Duration of the throttle period for each value
@@ -332,7 +332,7 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
     subscription.
 
     Example:
-        >>> res = delay_subscription(5000) # 5s
+        >>> res = delay_subscription(5.0) # 5s
 
     Args:
         duetime: Absolute or relative time to perform the subscription
@@ -348,15 +348,14 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
 
 
 def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
-    """Time shifts the observable sequence based on a subscription delay
-    and a delay mapper function for each element.
+    """Time shifts the observable sequence based on a subscription
+    delay and a delay mapper function for each element.
 
     Examples:
         # with mapper only
-        >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5000))
+        >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5.0))
         # with delay and mapper
-        >>> res = source.delay_with_mapper(Observable.timer(2000),
-                                           lambda x: Observable.timer(x))
+        >>> res = source.delay_with_mapper(rx.timer(2.0), lambda x: rx.timer(x))
 
     Args:
         subscription_delay: [Optional] Sequence indicating the delay for the
@@ -394,7 +393,7 @@ def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> C
 
     Examples:
         >>> res = delay(timedelta(seconds=10))
-        >>> res = delay(5000)
+        >>> res = delay(5.0)
 
     Args:
         duetime: Relative time specified as an integer denoting
@@ -1569,7 +1568,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
 
     Examples:
         >>> res = sample(sample_observable) # Sampler tick sequence
-        >>> res = ample(5000) # 5 seconds
+        >>> res = sample(5.0) # 5 seconds
 
     Args:
         interval: Interval at which to sample (specified as an integer
@@ -1761,7 +1760,7 @@ def skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Schedul
     observable source sequence.
 
     Example:
-        >>> res = skip_last_with_time(5000)
+        >>> res = skip_last_with_time(5.0)
 
     This operator accumulates a queue with a length enough to store
     elements received during the initial duration window. As more
@@ -1809,7 +1808,7 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: t
 
     Examples:
         >>> res = skip_until_with_time(datetime)
-        >>> res = skip_until_with_time(5000)
+        >>> res = skip_until_with_time(5.0)
 
     Args:
         start_time: Time to start taking elements from the source
@@ -1880,7 +1879,7 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
     observable source sequence.
 
     Args:
-        >>> res = skip_with_time(5000)
+        >>> res = skip_with_time(5.0)
 
     Specifying a zero value for duration doesn't guarantee no elements
     will be dropped from the start of the source sequence. This is a
@@ -2117,7 +2116,7 @@ def take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Schedul
     the observable source sequence.
 
     Example:
-        >>> res = take_last_with_time(5000)
+        >>> res = take_last_with_time(5.0)
 
     This operator accumulates a queue with a length enough to store
     elements received during the initial duration window. As more
@@ -2164,7 +2163,7 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typ
 
     Examples:
         >>> res = take_until_with_time(dt, [optional scheduler])
-        >>> res = take_until_with_time(5000, [optional scheduler])
+        >>> res = take_until_with_time(5.0, [optional scheduler])
 
     Args:
         end_time: Time to stop taking elements from the source
@@ -2233,7 +2232,7 @@ def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
     observable source sequence.
 
     Example:
-        >>> res = take_with_time(5000)
+        >>> res = take_with_time(5.0)
 
     This operator accumulates a queue with a length enough to store
     elements received during the initial duration window. As more
@@ -2320,9 +2319,9 @@ def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: t
     sequence if duetime elapses.
 
     Examples:
-        >>> res = timeout(5000)
+        >>> res = timeout(5.0)
         >>> res = timeout(datetime(), return_value(42))
-        >>> res = timeout(5000, return_value(42))
+        >>> res = timeout(5.0, return_value(42))
 
     Args:
         duetime: Absolute (specified as a datetime object) or relative

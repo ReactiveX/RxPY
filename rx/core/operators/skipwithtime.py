@@ -10,7 +10,7 @@ def _skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler =
         the observable source sequence.
 
         Args:
-            >>> res = skip_with_time(5000)
+            >>> res = skip_with_time(5.0)
 
         Specifying a zero value for duration doesn't guarantee no
         elements will be dropped from the start of the source sequence.

@@ -18,7 +18,7 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
 
         Examples:
             >>> res = source.skip_until_with_time(datetime)
-            >>> res = source.skip_until_with_time(5000)
+            >>> res = source.skip_until_with_time(5.0)
 
         Args:
             start_time: Time to start taking elements from the source

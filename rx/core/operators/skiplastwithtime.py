@@ -11,7 +11,7 @@ def _skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Schedu
     observable source sequence.
 
     Example:
-        >>> res = skip_last_with_time(5000)
+        >>> res = skip_last_with_time(5.0)
 
     This operator accumulates a queue with a length enough to store
     elements received during the initial duration window. As more
