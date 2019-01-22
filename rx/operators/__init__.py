@@ -199,24 +199,23 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
     return _catch_exception(second, handler)
 
 
-def combine_latest(other: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
+def combine_latest(other: Union[Observable, Iterable[Observable]],
                   ) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequences into one observable
-    sequence by using the mapper function whenever any of the
+    sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
     Examples:
-        >>> obs = combine_latest(other, lambda o1, o2, o3: o1 + o2 + o3)
-        >>> obs = combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = combine_latest(other)
+        >>> obs = combine_latest([obs1, obs2, obs3])
 
     Returns:
         An operator function that takes an observable sources and
         returns an observable sequence containing the result of
-        combining elements of the sources using the specified result
-        mapper function.
+        combining elements of the sources into a tuple.
     """
     from rx.core.operators.combinelatest import _combine_latest
-    return _combine_latest(other, mapper)
+    return _combine_latest(other)
 
 
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Callable[[Observable], Observable]:
