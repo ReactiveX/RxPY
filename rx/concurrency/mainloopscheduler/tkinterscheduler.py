@@ -32,12 +32,12 @@ class TkinterScheduler(SchedulerBase):
             (best effort).
         """
 
-        msecs = int(self.to_seconds(duetime)*1000.0)
         disposable = SingleAssignmentDisposable()
 
         def invoke_action():
             disposable.disposable = self.invoke_action(action, state)
 
+        msecs = int(self.to_seconds(duetime)*1000.0)
         alarm = self.master.after(msecs, invoke_action)
 
         def dispose():

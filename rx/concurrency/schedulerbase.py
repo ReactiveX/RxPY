@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from rx.core import Scheduler, Disposable, typing
+from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState
 from rx.disposables import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
@@ -11,15 +12,15 @@ class SchedulerBase(Scheduler):
     schedulers.
     """
 
-    def invoke_action(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
+    def invoke_action(self, action: ScheduledAction, state: TState = None) -> typing.Disposable:
         ret = action(self, state)
         if isinstance(ret, typing.Disposable):
             return ret
 
         return Disposable.empty()
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
-                          state: typing.TState = None) -> typing.Disposable:
+    def schedule_periodic(self, period: typing.RelativeTime, action: ScheduledPeriodicAction,
+                          state: TState = None) -> typing.Disposable:
         """Schedules a periodic piece of work.
 
         Args:
@@ -35,7 +36,7 @@ class SchedulerBase(Scheduler):
 
         disposable = MultipleAssignmentDisposable()
 
-        def invoke_action(scheduler: Scheduler, _: typing.TState) -> Optional[Disposable]:
+        def invoke_action(scheduler: Scheduler, _: TState) -> Optional[Disposable]:
             nonlocal state
 
             if disposable.is_disposed:

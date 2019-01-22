@@ -3,7 +3,7 @@ import logging
 import threading
 from typing import List
 
-from rx.core import Scheduler, Disposable, typing
+from rx.core import Disposable, typing
 from .schedulerbase import SchedulerBase
 from .eventloopscheduler import EventLoopScheduler
 
@@ -53,7 +53,7 @@ class NewThreadScheduler(SchedulerBase):
 
         s = [state]
 
-        def run():
+        def run() -> None:
             while True:
                 time.sleep(secs)
                 if disposed:

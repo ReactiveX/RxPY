@@ -38,7 +38,6 @@ class WxScheduler(SchedulerBase):
 
     def _wxtimer_schedule(self, time, action, state, periodic=False):
         scheduler = self
-        msecs = self.to_seconds(time)
 
         disposable = SingleAssignmentDisposable()
 
@@ -52,6 +51,7 @@ class WxScheduler(SchedulerBase):
 
         log.debug("timeout: %s", msecs)
 
+        msecs = int(self.to_seconds(time)*1000.0)
         if msecs == 0:
             msecs = 1  # wx.Timer doesn't support zero.
 
@@ -104,7 +104,7 @@ class WxScheduler(SchedulerBase):
         return self._wxtimer_schedule(duetime, action, state)
 
     def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
-                         state: typing.TState = None):
+                          state: typing.TState = None):
         """Schedules a periodic piece of work to be executed in the Qt
         mainloop.
 
