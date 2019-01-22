@@ -11,7 +11,6 @@ observable collections and pipable query operators in Python.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Contents:
 
     installation
     rationale
@@ -20,9 +19,4 @@ observable collections and pipable query operators in Python.
     operators
     reference
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

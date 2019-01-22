@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import guzzle_sphinx_theme
 sys.path.insert(0, os.path.abspath('../'))
 
 
@@ -42,7 +43,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
-#    'sphinx.ext.githubpages',
+    'guzzle_sphinx_theme',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,8 +52,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
-#source_suffix = '.rst'
+source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
@@ -78,13 +78,20 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'
+html_theme_path = guzzle_sphinx_theme.html_theme_path()
+html_theme = 'guzzle_sphinx_theme'
+html_title = "RxPY Documentation"
+html_short_title = "RxPY 3.0"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 # html_theme_options = {}
+html_theme_options = {
+    "projectlink": "https://github.com/ReactiveX/RxPY",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -101,13 +108,7 @@ html_static_path = ['_static']
 #
 
 html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',
-        'searchbox.html',
-        'donate.html',
-    ]
+    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']
 }
 
 
