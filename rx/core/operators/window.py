@@ -40,12 +40,19 @@ def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Obser
 
 
 def observable_window_with_openings(self, window_openings, window_closing_mapper):
+
+    def mapper(args):
+        _, window = args
+        return window
+
     return window_openings.pipe(
         ops.group_join(
             self,
             window_closing_mapper,
-            lambda _: empty(), lambda _, window: window))
-
+            lambda _: empty(),
+            ),
+        ops.map(mapper),
+        )
 
 def observable_window_with_boundaries(self, window_boundaries):
     source = self

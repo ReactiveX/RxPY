@@ -68,11 +68,18 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                        lambda x: rx.timer(x.interval),
-                        lambda y: rx.timer(y.interval),
-                        lambda x, y: "%s%s" % (x.value, y.value)
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -126,12 +133,20 @@ class TestJoin(unittest.TestCase):
             on_next(732, TimeInterval("wig", 5)),
             on_completed(990))
 
+
         def create():
-            return xs.pipe(ops.join(ys,
-                        lambda x: rx.timer(x.interval),
-                        lambda y: rx.timer(y.interval),
-                        lambda x, y: "%s%s" % (x.value, y.value)
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -158,8 +173,8 @@ class TestJoin(unittest.TestCase):
             on_completed(910)]
 
     def test_join_op_normal_iii(self):
-         scheduler = TestScheduler()
-         xs = scheduler.create_hot_observable(
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
              on_next(210, TimeInterval(0, 10)),
              on_next(219, TimeInterval(1, 5)),
              on_next(240, TimeInterval(2, 10)),
@@ -171,7 +186,7 @@ class TestJoin(unittest.TestCase):
              on_next(720, TimeInterval(8, 100)),
              on_next(830, TimeInterval(9, 10)),
              on_completed(900))
-         ys = scheduler.create_hot_observable(
+        ys = scheduler.create_hot_observable(
              on_next(215, TimeInterval("hat", 20)),
              on_next(217, TimeInterval("bat", 1)),
              on_next(290, TimeInterval("wag", 200)),
@@ -184,15 +199,22 @@ class TestJoin(unittest.TestCase):
              on_next(732, TimeInterval("wig", 5)),
              on_completed(800))
 
-         def create():
-             return xs.pipe(ops.join(ys,
-                            lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
-                            lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
-                            lambda x, y: "%s%s" % (x.value, y.value)
-             ))
+        def create():
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
 
-         results = scheduler.start(create=create)
-         assert results.messages == [
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
+                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    ),
+                ops.map(mapper),
+                )
+
+        results = scheduler.start(create=create)
+        assert results.messages == [
              on_next(215, "0hat"),
              on_next(217, "0bat"),
              on_next(219, "1hat"),
@@ -243,11 +265,18 @@ class TestJoin(unittest.TestCase):
             on_completed(980))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -301,11 +330,18 @@ class TestJoin(unittest.TestCase):
             on_completed(900))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -334,35 +370,44 @@ class TestJoin(unittest.TestCase):
 
     def test_join_op_normal_vi(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, TimeInterval(0, 10)),
-        on_next(219, TimeInterval(1, 5)),
-        on_next(240, TimeInterval(2, 10)),
-        on_next(300, TimeInterval(3, 100)),
-        on_next(310, TimeInterval(4, 80)),
-        on_next(500, TimeInterval(5, 90)),
-        on_next(700, TimeInterval(6, 25)),
-        on_next(710, TimeInterval(7, 30)),
-        on_next(720, TimeInterval(8, 200)),
-        on_next(830, TimeInterval(9, 10)),
-        on_completed(850))
-        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)),
-        on_next(217, TimeInterval("bat", 1)),
-        on_next(290, TimeInterval("wag", 200)),
-        on_next(300, TimeInterval("pig", 10)),
-        on_next(305, TimeInterval("cup", 50)),
-        on_next(600, TimeInterval("yak", 90)),
-        on_next(702, TimeInterval("tin", 20)),
-        on_next(712, TimeInterval("man", 10)),
-        on_next(722, TimeInterval("rat", 20)),
-        on_next(732, TimeInterval("wig", 5)),
-        on_completed(900))
+        xs = scheduler.create_hot_observable(
+            on_next(210, TimeInterval(0, 10)),
+            on_next(219, TimeInterval(1, 5)),
+            on_next(240, TimeInterval(2, 10)),
+            on_next(300, TimeInterval(3, 100)),
+            on_next(310, TimeInterval(4, 80)),
+            on_next(500, TimeInterval(5, 90)),
+            on_next(700, TimeInterval(6, 25)),
+            on_next(710, TimeInterval(7, 30)),
+            on_next(720, TimeInterval(8, 200)),
+            on_next(830, TimeInterval(9, 10)),
+            on_completed(850))
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", 20)),
+            on_next(217, TimeInterval("bat", 1)),
+            on_next(290, TimeInterval("wag", 200)),
+            on_next(300, TimeInterval("pig", 10)),
+            on_next(305, TimeInterval("cup", 50)),
+            on_next(600, TimeInterval("yak", 90)),
+            on_next(702, TimeInterval("tin", 20)),
+            on_next(712, TimeInterval("man", 10)),
+            on_next(722, TimeInterval("rat", 20)),
+            on_next(732, TimeInterval("wig", 5)),
+            on_completed(900))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -403,7 +448,8 @@ class TestJoin(unittest.TestCase):
             on_next(720, TimeInterval(8, 100)),
             on_next(830, TimeInterval(9, 10)),
             on_completed(900))
-        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)),
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", 20)),
             on_next(217, TimeInterval("bat", 1)),
             on_next(290, TimeInterval("wag", 200)),
             on_next(300, TimeInterval("pig", 10)),
@@ -416,11 +462,18 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create, disposed=713)
         assert results.messages == [
@@ -461,11 +514,18 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                    )
 
         results = scheduler.start(create=create, disposed=713)
         assert results.messages == [
@@ -504,11 +564,18 @@ class TestJoin(unittest.TestCase):
             on_error(722, ex))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -545,7 +612,8 @@ class TestJoin(unittest.TestCase):
             on_next(720, TimeInterval(8, 100)),
             on_next(830, TimeInterval(9, 10)),
             on_completed(900))
-        ys = scheduler.create_hot_observable(on_next(215, TimeInterval("hat", 20)),
+        ys = scheduler.create_hot_observable(
+            on_next(215, TimeInterval("hat", 20)),
             on_next(217, TimeInterval("bat", 1)),
             on_next(290, TimeInterval("wag", 200)),
             on_next(300, TimeInterval("pig", 10)),
@@ -558,16 +626,23 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval).pipe(
-                        ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())),
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval).pipe(ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())),
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [on_next(215, "0hat"),
+        assert results.messages == [
+            on_next(215, "0hat"),
             on_next(217, "0bat"),
             on_next(219, "1hat"),
             on_next(300, "3wag"),
@@ -616,12 +691,18 @@ class TestJoin(unittest.TestCase):
             on_completed(800))
 
         def create():
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval).pipe(
-                    ops.flat_map(rx.throw(ex) if y.value == "tin" else rx.empty())),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    lambda y: rx.timer(y.interval).pipe(ops.flat_map(rx.throw(ex) if y.value == "tin" else rx.empty())),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -678,11 +759,18 @@ class TestJoin(unittest.TestCase):
                 else:
                     return rx.empty()
 
-            return xs.pipe(ops.join(ys,
-                left_duration_mapper,
-                lambda y: rx.timer(y.interval),
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
+
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    left_duration_mapper,
+                    lambda y: rx.timer(y.interval),
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 
@@ -723,100 +811,18 @@ class TestJoin(unittest.TestCase):
                 else:
                     return rx.empty()
 
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                right_duration_mapper,
-                lambda x, y: str(x.value) + y.value
-            ))
+            def mapper(xy):
+                x, y = xy
+                return "{}{}".format(x.value, y.value)
 
-        results = scheduler.start(create=create)
-
-        assert results.messages == [on_error(215, ex)]
-
-    def test_join_op_error_vii(self):
-        ex = 'ex'
-        scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(
-            on_next(210, TimeInterval(0, 10)),
-            on_next(219, TimeInterval(1, 5)),
-            on_next(240, TimeInterval(2, 10)),
-            on_next(300, TimeInterval(3, 100)),
-            on_next(310, TimeInterval(4, 80)),
-            on_next(500, TimeInterval(5, 90)),
-            on_next(700, TimeInterval(6, 25)),
-            on_next(710, TimeInterval(7, 300)),
-            on_next(720, TimeInterval(8, 100)),
-            on_next(830, TimeInterval(9, 10)),
-            on_completed(900))
-        ys = scheduler.create_hot_observable(
-            on_next(215, TimeInterval("hat", 20)),
-            on_next(217, TimeInterval("bat", 1)),
-            on_next(290, TimeInterval("wag", 200)),
-            on_next(300, TimeInterval("pig", 10)),
-            on_next(305, TimeInterval("cup", 50)),
-            on_next(600, TimeInterval("yak", 90)),
-            on_next(702, TimeInterval("tin", 20)),
-            on_next(712, TimeInterval("man", 10)),
-            on_next(722, TimeInterval("rat", 200)),
-            on_next(732, TimeInterval("wig", 5)),
-            on_completed(800))
-
-        def create():
-            def result_mapper(x, y):
-                if x.value >= 0:
-                    raise Exception(ex)
-                else:
-                    return str(x.value) + y.value
-
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                result_mapper,
-                ))
-
-        results = scheduler.start(create=create)
-        assert results.messages == [on_error(215, ex)]
-
-    def test_join_op_error_viii(self):
-        ex = 'ex'
-        scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(
-            on_next(210, TimeInterval(0, 10)),
-            on_next(219, TimeInterval(1, 5)),
-            on_next(240, TimeInterval(2, 10)),
-            on_next(300, TimeInterval(3, 100)),
-            on_next(310, TimeInterval(4, 80)),
-            on_next(500, TimeInterval(5, 90)),
-            on_next(700, TimeInterval(6, 25)),
-            on_next(710, TimeInterval(7, 300)),
-            on_next(720, TimeInterval(8, 100)),
-            on_next(830, TimeInterval(9, 10)),
-            on_completed(900))
-        ys = scheduler.create_hot_observable(
-            on_next(215, TimeInterval("hat", 20)),
-            on_next(217, TimeInterval("bat", 1)),
-            on_next(290, TimeInterval("wag", 200)),
-            on_next(300, TimeInterval("pig", 10)),
-            on_next(305, TimeInterval("cup", 50)),
-            on_next(600, TimeInterval("yak", 90)),
-            on_next(702, TimeInterval("tin", 20)),
-            on_next(712, TimeInterval("man", 10)),
-            on_next(722, TimeInterval("rat", 200)),
-            on_next(732, TimeInterval("wig", 5)),
-            on_completed(800))
-
-        def create():
-            def result_mapper(x, y):
-                if x.value >= 0:
-                    raise Exception(ex)
-                else:
-                    return str(x.value) + y.value
-
-            return xs.pipe(ops.join(ys,
-                lambda x: rx.timer(x.interval),
-                lambda y: rx.timer(y.interval),
-                result_mapper,
-                ))
+            return xs.pipe(
+                ops.join(
+                    ys,
+                    lambda x: rx.timer(x.interval),
+                    right_duration_mapper,
+                    ),
+                ops.map(mapper),
+                )
 
         results = scheduler.start(create=create)
 

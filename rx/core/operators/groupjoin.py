@@ -11,7 +11,7 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def _group_join(right, left_duration_mapper, right_duration_mapper, result_mapper
+def _group_join(right, left_duration_mapper, right_duration_mapper
                ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
@@ -24,15 +24,9 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
         right_duration_mapper: A function to select the duration (expressed
             as an observable sequence) of each element of the right observable
             sequence, used to determine overlap.
-        result_mapper: A function invoked to compute a result element for
-            any element of the left sequence with overlapping elements from the
-            right observable sequence. The first parameter passed to the
-            function is an element of the left sequence. The second parameter
-            passed to the function is an observable sequence with elements from
-            the right sequence that overlap with the left sequence's element.
 
     Returns:
-        An observable sequence that contains result elements computed
+        An observable sequence that contains elements combined into a tuple
     from source elements that have an overlapping duration.
     """
 
@@ -57,7 +51,7 @@ def _group_join(right, left_duration_mapper, right_duration_mapper, result_mappe
                     left_map[_id] = subject
 
                 try:
-                    result = result_mapper(value, add_ref(subject, rcd))
+                    result = (value, add_ref(subject, rcd))
                 except Exception as e:
                     log.error("*** Exception: %s" % e)
                     for left_value in left_map.values():

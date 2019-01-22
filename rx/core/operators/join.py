@@ -7,7 +7,7 @@ from rx.internal import noop
 from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
 
 
-def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> Callable[[Observable], Observable]:
+def _join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observable], Observable]:
     def join(source: Observable) -> Observable:
         """Correlates the elements of two sequences based on
         overlapping durations.
@@ -16,8 +16,8 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
             source: Source observable.
 
         Return:
-            An observable sequence that contains result elements
-            computed from source elements that have an overlapping
+            An observable sequence that contains elements
+            combined into a tuple from source elements that have an overlapping
             duration.
         """
 
@@ -58,12 +58,7 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
                 md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
 
                 for val in right_map.values():
-                    try:
-                        result = result_mapper(value, val)
-                    except Exception as exception:
-                        observer.on_error(exception)
-                        return
-
+                    result = (value, val)
                     observer.on_next(result)
 
             def on_completed_left():
@@ -98,12 +93,7 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
                 md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
 
                 for val in left_map.values():
-                    try:
-                        result = result_mapper(val, value)
-                    except Exception as exception:
-                        observer.on_error(exception)
-                        return
-
+                    result = (val, value)
                     observer.on_next(result)
 
             def on_completed_right():
@@ -115,4 +105,3 @@ def _join(right, left_duration_mapper, right_duration_mapper, result_mapper) -> 
             return group
         return AnonymousObservable(subscribe)
     return join
- 
