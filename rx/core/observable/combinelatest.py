@@ -4,19 +4,18 @@ from rx.core import Observable, AnonymousObservable, typing
 from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
+def _combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using the mapper function whenever any of the
+    sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
     Examples:
-        >>> obs = combine_latest(obs1, obs2, obs3, lambda o1, o2, o3: o1 + o2 + o3)
-        >>> obs = combine_latest([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = combine_latest(obs1, obs2, obs3)
+        >>> obs = combine_latest([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources using the specified result mapper
-        function.
+        elements of the sources into a tuple.
     """
 
     sources: List[Observable] = []
@@ -26,7 +25,7 @@ def _combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Call
     else:
         sources += list(cast(Iterable[Observable], args))
 
-    result_mapper = mapper
+#    result_mapper = mapper
     parent = sources[0]
 
     def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None):
@@ -40,13 +39,9 @@ def _combine_latest(*args: Union[Observable, Iterable[Observable]], mapper: Call
             has_value[i] = True
 
             if has_value_all[0] or all(has_value):
-                try:
-                    res = result_mapper(*values)
-                except Exception as ex:
-                    observer.on_error(ex)
-                    return
-
+                res = tuple(values)
                 observer.on_next(res)
+
             elif all([x for j, x in enumerate(is_done) if j != i]):
                 observer.on_completed()
 

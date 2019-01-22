@@ -5,10 +5,10 @@ from rx.core import Observable, typing
 
 
 def _combine_latest(other: Union[Observable, Iterable[Observable]],
-                    mapper: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+                    ) -> Callable[[Observable], Observable]:
     def combine_latest(source: Observable) -> Observable:
         """Merges the specified observable sequences into one
-        observable sequence by using the mapper function whenever any
+        observable sequence by creating a tuple whenever any
         of the observable sequences produces an element.
 
         Examples:
@@ -16,8 +16,7 @@ def _combine_latest(other: Union[Observable, Iterable[Observable]],
 
         Returns:
             An observable sequence containing the result of combining
-            elements of the sources using the specified result mapper
-            function.
+            elements of the sources into a tuple.
         """
         sources: List[Observable] = [source]
 
@@ -26,5 +25,5 @@ def _combine_latest(other: Union[Observable, Iterable[Observable]],
         else:
             sources += other
 
-        return rx.combine_latest(sources, mapper=mapper)
+        return rx.combine_latest(sources)
     return combine_latest
