@@ -4,7 +4,7 @@ from rx.core import typing
 from rx.core import Observable, AnonymousObservable, Disposable
 
 
-def from_future(future: Future) -> Observable:
+def _from_future(future: Future) -> Observable:
     """Converts a Future to an Observable sequence
 
     Args:

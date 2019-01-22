@@ -205,8 +205,8 @@ def from_future(future: _Future) -> Observable:
         An observable sequence which wraps the existing future success
         and failure.
     """
-    from .core.observable.fromfuture import from_future as from_future_
-    return from_future_(future)
+    from .core.observable.fromfuture import _from_future
+    return _from_future(future)
 
 
 def from_iterable(iterable: Iterable) -> Observable:
