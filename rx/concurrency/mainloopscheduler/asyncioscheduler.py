@@ -1,9 +1,10 @@
 import logging
 import asyncio
 from datetime import datetime
-
 from concurrent.futures import Future
-from rx.core import Disposable, typing
+
+from rx import disposable
+from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -21,26 +22,26 @@ class AsyncIOScheduler(SchedulerBase):
         """Schedules an action to be executed."""
         if self.threadsafe is False:
             return self._schedule(action, state)
-        else:
-            return self._schedule_threadsafe(action, state)
+
+        return self._schedule_threadsafe(action, state)
 
     def _schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
         handle = self.loop.call_soon(interval)
 
         def dispose():
             handle.cancel()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def _schedule_threadsafe(self, action, state=None):
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         handle = self.loop.call_soon_threadsafe(interval)
 
@@ -54,7 +55,7 @@ class AsyncIOScheduler(SchedulerBase):
             self.loop.call_soon_threadsafe(cancel_handle)
             future.result()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -80,17 +81,17 @@ class AsyncIOScheduler(SchedulerBase):
         if seconds == 0:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         handle = self.loop.call_later(seconds, interval)
 
         def dispose():
             handle.cancel()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def _schedule_relative_threadsafe(self, duetime, action, state=None):
         scheduler = self
@@ -98,10 +99,10 @@ class AsyncIOScheduler(SchedulerBase):
         if seconds == 0:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         # the operations on the list used here are atomic, so there is no
         # need to protect its access with a lock
@@ -126,7 +127,7 @@ class AsyncIOScheduler(SchedulerBase):
             self.loop.call_soon_threadsafe(cancel_handle)
             future.result()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

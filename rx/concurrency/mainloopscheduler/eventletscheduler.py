@@ -2,7 +2,8 @@ import logging
 from typing import Any
 from datetime import datetime
 
-from rx.core import Disposable, typing
+from rx import disposable
+from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -26,17 +27,17 @@ class EventLetEventScheduler(SchedulerBase):
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         timer = [eventlet.spawn(interval)]
 
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -56,10 +57,10 @@ class EventLetEventScheduler(SchedulerBase):
         if not seconds:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", seconds)
         timer = [eventlet.spawn_after(seconds, interval)]
@@ -68,7 +69,7 @@ class EventLetEventScheduler(SchedulerBase):
             # nonlocal timer
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

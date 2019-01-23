@@ -1,7 +1,8 @@
 import logging
 from typing import Any
 
-from rx.core import Disposable, typing
+from rx import disposable
+from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -39,7 +40,7 @@ class WxScheduler(SchedulerBase):
     def _wxtimer_schedule(self, time, action, state, periodic=False):
         scheduler = self
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         periodic_state = [state]
 
@@ -47,7 +48,7 @@ class WxScheduler(SchedulerBase):
             if periodic:
                 periodic_state[0] = action(periodic_state[0])
             else:
-                disposable.disposable = action(scheduler, state)
+                sad.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", msecs)
 
@@ -66,7 +67,7 @@ class WxScheduler(SchedulerBase):
             timer.Stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""

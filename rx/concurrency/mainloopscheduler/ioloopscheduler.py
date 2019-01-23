@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from rx.core import Disposable
+from rx import disposable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -20,12 +20,12 @@ class IOLoopScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
         disposed = [False]
 
         def interval():
             if not disposed[0]:
-                disposable.disposable = self.invoke_action(action, state)
+                sad.disposable = self.invoke_action(action, state)
 
         self.loop.add_callback(interval)
 
@@ -33,7 +33,7 @@ class IOLoopScheduler(SchedulerBase):
             # nonlocal
             disposed[0] = True
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -50,10 +50,10 @@ class IOLoopScheduler(SchedulerBase):
         if not seconds:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         log.debug("timeout: %s", seconds)
         handle = self.loop.call_later(seconds, interval)
@@ -61,7 +61,7 @@ class IOLoopScheduler(SchedulerBase):
         def dispose():
             self.loop.remove_timeout(handle)
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

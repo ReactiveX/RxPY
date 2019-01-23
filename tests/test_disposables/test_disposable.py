@@ -1,4 +1,4 @@
-from rx.core import Disposable
+from rx import disposable
 from rx.disposable import BooleanDisposable, SingleAssignmentDisposable
 from rx.disposable import CompositeDisposable, SerialDisposable
 from rx.disposable import RefCountDisposable
@@ -8,8 +8,8 @@ def test_anonymousdisposable_create():
     def action():
         pass
 
-    disposable = Disposable.create(action)
-    assert disposable
+    disp = disposable.create(action)
+    assert disp
 
 
 def test_anonymousdisposable_dispose():
@@ -18,14 +18,14 @@ def test_anonymousdisposable_dispose():
     def action():
         disposed[0] = True
 
-    d = Disposable.create(action)
+    d = disposable.create(action)
     assert not disposed[0]
     d.dispose()
     assert disposed[0]
 
 
 def test_emptydisposable():
-    d = Disposable.empty()
+    d = disposable.empty()
     assert d
     d.dispose()
 
@@ -51,7 +51,7 @@ def test_futuredisposable_disposeafterset():
     def action():
         disposed[0] = True
 
-    dd = Disposable.create(action)
+    dd = disposable.create(action)
     d.disposable = dd
     assert dd == d.disposable
     assert not disposed[0]
@@ -68,7 +68,7 @@ def test_futuredisposable_disposebeforeset():
         disposed[0] = True
 
     d = SingleAssignmentDisposable()
-    dd = Disposable.create(dispose)
+    dd = disposable.create(dispose)
 
     assert not disposed[0]
     d.dispose()
@@ -80,8 +80,8 @@ def test_futuredisposable_disposebeforeset():
     assert disposed[0]
 
 def test_groupdisposable_contains():
-    d1 = Disposable.empty()
-    d2 = Disposable.empty()
+    d1 = disposable.empty()
+    d2 = disposable.empty()
 
     g = CompositeDisposable(d1, d2)
 
@@ -90,8 +90,8 @@ def test_groupdisposable_contains():
     assert g.contains(d2)
 
 def test_groupdisposable_add():
-    d1 = Disposable.empty()
-    d2 = Disposable.empty()
+    d1 = disposable.empty()
+    d2 = disposable.empty()
 
     g = CompositeDisposable(d1)
 
@@ -108,12 +108,12 @@ def test_groupdisposable_addafterdispose():
     def action1():
         disp1[0] = True
 
-    d1 = Disposable.create(action1)
+    d1 = disposable.create(action1)
 
     def action2():
         disp2[0] = True
 
-    d2 = Disposable.create(action2)
+    d2 = disposable.create(action2)
 
     g = CompositeDisposable(d1)
     assert g.length == 1
@@ -130,11 +130,11 @@ def test_groupdisposable_remove():
 
     def action1():
         disp1[0] = True
-    d1 = Disposable.create(action1)
+    d1 = disposable.create(action1)
 
     def action2():
         disp2[0] = True
-    d2 = Disposable.create(action2)
+    d2 = disposable.create(action2)
 
     g = CompositeDisposable(d1, d2)
 
@@ -155,7 +155,7 @@ def test_groupdisposable_remove():
 
     def action3():
         disp3[0] = True
-    d3 = Disposable.create(action3)
+    d3 = disposable.create(action3)
     assert not g.remove(d3)
     assert not disp3[0]
 
@@ -164,11 +164,11 @@ def test_groupdisposable_clear():
     disp2 = [False]
     def action1():
         disp1[0] = True
-    d1 = Disposable.create(action1)
+    d1 = disposable.create(action1)
 
     def action2():
         disp2[0] = True
-    d2 = Disposable.create(action2)
+    d2 = disposable.create(action2)
 
     g = CompositeDisposable(d1, d2)
     assert g.length == 2
@@ -181,7 +181,7 @@ def test_groupdisposable_clear():
     disp3 = [False]
     def action3():
         disp3[0] = True
-    d3 = Disposable.create(action3)
+    d3 = disposable.create(action3)
     g.add(d3);
     assert not disp3[0]
     assert g.length == 1
@@ -197,7 +197,7 @@ def test_mutabledisposable_replacebeforedispose():
 
     def action1():
         disp1[0] = True
-    d1 = Disposable.create(action1)
+    d1 = disposable.create(action1)
     m.disposable = d1
 
     assert d1 == m.disposable
@@ -205,7 +205,7 @@ def test_mutabledisposable_replacebeforedispose():
 
     def action2():
         disp2[0] = True
-    d2 = Disposable.create(action2)
+    d2 = disposable.create(action2)
     m.disposable = d2
 
     assert d2 == m.disposable
@@ -220,7 +220,7 @@ def test_mutabledisposable_replaceafterdispose():
 
     def action1():
         disp1[0] = True
-    d1 = Disposable.create(action1)
+    d1 = disposable.create(action1)
     m.disposable = d1
 
     assert m.disposable == None
@@ -228,7 +228,7 @@ def test_mutabledisposable_replaceafterdispose():
 
     def action2():
         disp2[0] = True
-    d2 = Disposable.create(action2)
+    d2 = disposable.create(action2)
     m.disposable = d2
 
     assert m.disposable == None
@@ -240,7 +240,7 @@ def test_mutabledisposable_dispose():
 
     def action():
         disp[0] = True
-    d = Disposable.create(action)
+    d = disposable.create(action)
     m.disposable = d
 
     assert d == m.disposable

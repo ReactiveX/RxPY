@@ -2,7 +2,6 @@ from typing import Callable
 
 import rx
 from rx.core import Observable, AnonymousObservable
-from rx.core.typing import Mapper
 
 
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:

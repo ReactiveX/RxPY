@@ -107,8 +107,8 @@ def _merge_all() -> Callable[[Observable], Observable]:
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                disposable = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
-                inner_subscription.disposable = disposable
+                subscription = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
+                inner_subscription.disposable = subscription
 
             def on_completed():
                 is_stopped[0] = True

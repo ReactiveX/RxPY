@@ -1,5 +1,7 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable, Disposable
+
+from rx import disposable
+from rx.core import Observable, AnonymousObservable
 
 
 def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
@@ -31,6 +33,6 @@ def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
                 finally:
                     action()
 
-            return Disposable.create(dispose)
+            return disposable.create(dispose)
         return AnonymousObservable(subscribe)
     return finally_action

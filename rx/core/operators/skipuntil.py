@@ -36,10 +36,10 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
                     observer.on_completed()
 
             subs = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-            disposable = CompositeDisposable(subs)
+            subscriptions = CompositeDisposable(subs)
 
             right_subscription = SingleAssignmentDisposable()
-            disposable.add(right_subscription)
+            subscriptions.add(right_subscription)
 
             def on_next2(x):
                 is_open[0] = True
@@ -50,6 +50,6 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
 
             right_subscription.disposable = other.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
 
-            return disposable
+            return subscriptions
         return AnonymousObservable(subscribe)
     return skip_until

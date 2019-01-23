@@ -1,6 +1,7 @@
 from typing import Any
 
-from rx.core import Disposable, typing
+from rx import disposable
+from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -32,10 +33,10 @@ class TkinterScheduler(SchedulerBase):
             (best effort).
         """
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def invoke_action():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         msecs = int(self.to_seconds(duetime)*1000.0)
         alarm = self.master.after(msecs, invoke_action)
@@ -43,7 +44,7 @@ class TkinterScheduler(SchedulerBase):
         def dispose():
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

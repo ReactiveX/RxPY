@@ -1,8 +1,8 @@
 from typing import List
 
 from rx import disposable
-from rx.core import Disposable, Observable, typing
-from rx.disposable import CompositeDisposable
+from rx.core import Observable, typing
+
 from .subscription import Subscription
 
 
@@ -18,7 +18,7 @@ class ColdObservable(Observable):
         clock = self.scheduler.to_seconds(self.scheduler.now)
         self.subscriptions.append(Subscription(clock))
         index = len(self.subscriptions) - 1
-        disp = CompositeDisposable()
+        disp = disposable.CompositeDisposable()
 
         def get_action(notification):
             def action(scheduler, state):

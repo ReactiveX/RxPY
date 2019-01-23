@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, Callable
+from typing import Callable
 
 from rx.core import Observable, AnonymousObservable, typing
 from rx.disposable import CompositeDisposable
@@ -47,7 +47,7 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
 
             def action(scheduler, state):
                 open[0] = True
-            disposable = getattr(_scheduler, scheduler_method)(start_time, action)
-            return CompositeDisposable(disposable, subscription)
+            disp = getattr(_scheduler, scheduler_method)(start_time, action)
+            return CompositeDisposable(disp, subscription)
         return AnonymousObservable(subscribe)
     return skip_until_with_time

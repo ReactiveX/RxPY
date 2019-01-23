@@ -1,4 +1,5 @@
 from threading import RLock
+
 from rx.core import Disposable
 
 
@@ -63,8 +64,8 @@ class CompositeDisposable(Disposable):
             current_disposable = self.disposable
             self.disposable = []
 
-        for disposable in current_disposable:
-            disposable.dispose()
+        for disp in current_disposable:
+            disp.dispose()
 
     def clear(self):
         """Removes and disposes all disposable from the

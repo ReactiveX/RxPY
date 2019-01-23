@@ -6,6 +6,8 @@ from typing import Iterable, Callable, Any, Optional, Union
 from .core import Observer, Observable, abc, typing, pipe
 from .core import AnonymousObservable as _AnonymousObservable
 
+from . import disposable
+
 
 def amb(*args: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
@@ -558,7 +560,8 @@ def to_async(func: Callable, scheduler=None) -> Callable:
     return _to_async(func, scheduler)
 
 
-def using(resource_factory, observable_factory) -> Observable:
+def using(resource_factory: Callable[[], typing.Disposable], observable_factory: Callable[[typing.Disposable], Observable]
+         ) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.

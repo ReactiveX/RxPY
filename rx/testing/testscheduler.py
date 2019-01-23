@@ -42,7 +42,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         return absolute + relative
 
-    def start(self, create=None, created=None, subscribed=None, disposed=None) -> MockObserver:
+    def start(self, create=None, created=None, subscribed=None, disposed=None) -> MockObserver:  # type: ignore
         """Starts the test scheduler and uses the specified virtual
         times to invoke the factory function, subscribe to the
         resulting sequence, and dispose the subscription.

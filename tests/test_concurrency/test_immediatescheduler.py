@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime, timedelta
 
-from rx.core import Disposable
+from rx import disposable
 from rx.concurrency import ImmediateScheduler
 
 
@@ -41,7 +41,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
         def action(scheduler, state=None):
             xx[0] = state
-            return Disposable.empty()
+            return disposable.empty()
 
         scheduler.schedule(action, 42)
         assert xx[0] == 42
@@ -52,7 +52,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
         def action(scheduler, state=None):
              xx[0] = state
-             return Disposable.empty()
+             return disposable.empty()
 
         scheduler.schedule_absolute(datetime.utcnow(), action, 42)
         assert xx[0] == 42
@@ -63,7 +63,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
         def action(scheduler, state=None):
              xx[0] = state
-             return Disposable.empty()
+             return disposable.empty()
 
         scheduler.schedule_relative(timedelta(0), action, 42)
         assert xx[0] == 42
@@ -78,7 +78,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
             def inner_action(scheduler, y):
                 yy[0] = y
-                return Disposable.empty()
+                return disposable.empty()
 
             return scheduler.schedule(inner_action, 43)
 
@@ -96,7 +96,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
             def inner_action(scheduler, state=None):
                 yy[0] = state
-                return Disposable.empty()
+                return disposable.empty()
 
             return scheduler.schedule_absolute(datetime.utcnow(), inner_action, 43)
 
@@ -115,7 +115,7 @@ class TestImmediateScheduler(unittest.TestCase):
 
             def inner_action(scheduler, state):
                 yy[0] = state
-                return Disposable.empty()
+                return disposable.empty()
 
             return scheduler.schedule_relative(timedelta(0), inner_action, 43)
 

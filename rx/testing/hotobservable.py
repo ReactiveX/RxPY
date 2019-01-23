@@ -1,8 +1,9 @@
 from typing import List
 
 from rx import disposable
-from rx.core import Observable, typing, abc
+from rx.core import Observable, typing
 from rx.concurrency import VirtualTimeScheduler
+
 from .subscription import Subscription
 from .recorded import Recorded
 
@@ -14,7 +15,7 @@ class HotObservable(Observable):
         self.scheduler = scheduler
         self.messages = messages
         self.subscriptions: List[Subscription] = []
-        self.observers: List[abc.Observer] = []
+        self.observers: List[typing.Observer] = []
 
         observable = self
 

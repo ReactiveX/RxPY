@@ -41,6 +41,6 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
             nonlocal disposed
             disposed = True
 
-        disposable = AnonymousDisposable(dispose)
-        return CompositeDisposable(_scheduler.schedule(action), disposable)
+        disp = AnonymousDisposable(dispose)
+        return CompositeDisposable(_scheduler.schedule(action), disp)
     return AnonymousObservable(subscribe)

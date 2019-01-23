@@ -2,8 +2,8 @@
 import threading
 from typing import Any, Callable, Optional
 
-from rx.concurrency import current_thread_scheduler
 from rx import disposable
+from rx.concurrency import current_thread_scheduler
 
 from ..observer import AutoDetachObserver
 from ..observer import AnonymousObserver
