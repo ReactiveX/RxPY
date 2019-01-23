@@ -4,24 +4,23 @@ from rx.core import Observable, AnonymousObservable
 
 
 def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
-    """Returns elements from an observable sequence as long as a specified
-    condition is true. The element's index is used in the logic of the
-    predicate function.
-
-    Example:
-        >>> take_while(lambda value: value < 10)
-
-    Args:
-        predicate: A function to test each element for a condition; the
-            second parameter of the function represents the index of
-            the source element.
-
-    Returns:
-        An observable sequence that contains the elements from the
-    input sequence that occur before the element at which the test no
-    longer passes.
-    """
     def take_while(source: Observable) -> Observable:
+        """Returns elements from an observable sequence as long as a
+        specified condition is true. The element's index is used in the
+        logic of the predicate function.
+
+        Example:
+            >>> take_while(source)
+
+        Args:
+            source: The source observable to take from.
+
+        Returns:
+            An observable sequence that contains the elements from the
+            input sequence that occur before the element at which the
+            test no longer passes.
+        """
+
         def subscribe(observer, scheduler=None):
             running = True
 
@@ -49,30 +48,29 @@ def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Obser
 
 
 def _take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
-    """Returns elements from an observable sequence as long as a specified
-    condition is true. The element's index is used in the logic of the
-    predicate function.
-
-    Example:
-        >>> take_while(lambda value, index: value < 10 or index < 10)
-
-    Args:
-        predicate: A function to test each element for a condition; the
-        second parameter of the function represents the index of the source
-        element.
-
-    Returns:
-        An observable sequence that contains the elements from the
-    input sequence that occur before the element at which the test no
-    longer passes.
-    """
-
     def take_while_indexed(source: Observable) -> Observable:
+        """Returns elements from an observable sequence as long as a
+        specified condition is true. The element's index is used in the
+        logic of the predicate function.
+
+        Example:
+            >>> take_while(source)
+
+        Args:
+            source: Source observable to take from.
+
+        Returns:
+            An observable sequence that contains the elements from the
+            input sequence that occur before the element at which the
+            test no longer passes.
+        """
+
         def subscribe(observer, scheduler=None):
             running, i = True, 0
 
-            def on_next(value):
+            def on_next(value: Any) -> None:
                 nonlocal running, i
+
                 with source.lock:
                     if not running:
                         return
