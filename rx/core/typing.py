@@ -7,6 +7,9 @@ from . import abc
 T_out = TypeVar('T_out', covariant=True)
 T_in = TypeVar('T_in', contravariant=True)
 TState = TypeVar('TState')  # Can be anything
+T1 = TypeVar('T1')
+T2 = TypeVar('T2')
+
 
 Action = Callable[[], None]
 
@@ -14,11 +17,11 @@ OnNext = Callable[[Any], None]
 OnError = Callable[[Exception], None]
 OnCompleted = Callable[[], None]
 
-Mapper = Callable[[Any], Any]
-MapperIndexed = Callable[[Any, int], Any]
-Predicate = Callable[[Any], bool]
-PredicateIndexed = Callable[[Any, int], bool]
-Accumulator = Callable[[Any, Any], Any]
+Mapper = Callable[[T1], T2]
+MapperIndexed = Callable[[T1, int], T2]
+Predicate = Callable[[T1], bool]
+PredicateIndexed = Callable[[T1, int], bool]
+Accumulator = Callable[[TState, T1], TState]
 AbsoluteTime = Union[datetime, float]
 RelativeTime = Union[timedelta, float]
 AbsoluteOrRelativeTime = Union[datetime, timedelta, float]
@@ -32,6 +35,7 @@ class Disposable(abc.Disposable):
     @abstractmethod
     def dispose(self) -> None:
         raise NotImplementedError
+
 
 ScheduledAction = Callable[['Scheduler', TState], Optional[Disposable]]
 ScheduledPeriodicAction = Callable[[TState], TState]

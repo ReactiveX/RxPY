@@ -1,5 +1,5 @@
 from threading import RLock
-from rx.core.disposable import Disposable
+from rx.core import Disposable
 
 
 class SingleAssignmentDisposable(Disposable):

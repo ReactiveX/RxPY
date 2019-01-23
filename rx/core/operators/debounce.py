@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from rx.core.typing import Disposable
 from rx.core import AnonymousObservable, Observable, typing
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 
 

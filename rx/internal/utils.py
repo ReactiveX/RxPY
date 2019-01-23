@@ -1,6 +1,6 @@
 from typing import Any, Iterable
 
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def add_ref(xs, r):

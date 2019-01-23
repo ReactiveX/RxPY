@@ -1,7 +1,7 @@
 from typing import Iterable, Union, cast
 
 from rx.core import Observable, AnonymousObservable, Disposable
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 
 

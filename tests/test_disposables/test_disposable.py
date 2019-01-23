@@ -1,7 +1,7 @@
 from rx.core import Disposable
-from rx.disposables import BooleanDisposable, SingleAssignmentDisposable
-from rx.disposables import CompositeDisposable, SerialDisposable
-from rx.disposables import RefCountDisposable
+from rx.disposable import BooleanDisposable, SingleAssignmentDisposable
+from rx.disposable import CompositeDisposable, SerialDisposable
+from rx.disposable import RefCountDisposable
 
 
 def test_anonymousdisposable_create():

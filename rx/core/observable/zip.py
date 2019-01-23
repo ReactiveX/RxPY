@@ -1,6 +1,6 @@
 from rx import from_future
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 # pylint: disable=redefined-builtin

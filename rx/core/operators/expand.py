@@ -1,6 +1,6 @@
 from rx.core import Observable, AnonymousObservable
 from rx.core.typing import Mapper
-from rx.disposables import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
+from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
 
 

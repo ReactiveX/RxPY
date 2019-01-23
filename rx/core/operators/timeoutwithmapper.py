@@ -2,7 +2,7 @@ from typing import Callable
 
 import rx
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
 def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None) -> Callable[[Observable], Observable]:

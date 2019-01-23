@@ -2,7 +2,7 @@ from typing import Union, Callable
 
 from rx.core import Observable, AnonymousObservable, ConnectableObservable
 from rx.core.typing import Subject, Mapper
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,

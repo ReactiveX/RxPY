@@ -1,7 +1,7 @@
 import re
 import threading
 
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 from rx.core import AnonymousObservable, Observable
 from rx.concurrency import new_thread_scheduler
 from rx.core.notification import OnNext, OnError, OnCompleted

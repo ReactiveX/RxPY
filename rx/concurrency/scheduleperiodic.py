@@ -1,4 +1,4 @@
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 
 class SchedulePeriodic(object):

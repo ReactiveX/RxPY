@@ -1,7 +1,7 @@
 import unittest
 
 from rx.testing import TestScheduler, ReactiveTest, is_prime
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 from rx.operators import filter, filter_indexed
 

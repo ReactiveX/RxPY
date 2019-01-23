@@ -1,5 +1,5 @@
 from rx.core import Disposable
-from rx.disposables import SingleAssignmentDisposable
+from rx.disposable import SingleAssignmentDisposable
 
 from .schedulerbase import SchedulerBase
 

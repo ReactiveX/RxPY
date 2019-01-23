@@ -34,7 +34,7 @@ class RefCountDisposable(Disposable):
 
     def dispose(self):
         """Disposes the underlying disposable only when all dependent
-        disposables have been disposed."""
+        disposable have been disposed."""
 
         if self.is_disposed:
             return

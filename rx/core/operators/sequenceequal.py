@@ -3,7 +3,7 @@ import collections
 
 import rx
 from rx.core import AnonymousObservable, Observable
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 from rx.internal import default_comparer
 
 

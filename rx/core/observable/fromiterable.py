@@ -2,7 +2,7 @@ from typing import Iterable, Any
 
 from rx.core import Observable, AnonymousObservable, typing
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import CompositeDisposable, AnonymousDisposable
+from rx.disposable import CompositeDisposable, AnonymousDisposable
 
 
 def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:

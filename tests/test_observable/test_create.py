@@ -3,7 +3,7 @@ import unittest
 from rx import create
 from rx.core import Disposable
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import BooleanDisposable
+from rx.disposable import BooleanDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

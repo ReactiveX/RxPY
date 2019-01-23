@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx.core import Observer, AnonymousObservable, Disposable, Observable, typing
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None

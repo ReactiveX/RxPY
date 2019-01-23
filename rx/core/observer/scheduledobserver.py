@@ -3,7 +3,7 @@ from typing import List, Any
 
 from rx.core import abc
 from rx.core.typing import Action
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 from .observerbase import ObserverBase
 

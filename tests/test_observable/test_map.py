@@ -2,7 +2,7 @@ import unittest
 
 from rx import Observable, return_value, throw, empty, create
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 from rx.operators import map, map_indexed
 

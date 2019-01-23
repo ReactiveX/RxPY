@@ -4,7 +4,7 @@ from collections import OrderedDict
 from rx.operators import take
 from rx.core import AnonymousObservable, Observable
 from rx.internal import noop
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
 
 def _join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observable], Observable]:

@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+from rx import disposable
 from rx.core import Scheduler, Disposable, typing
 from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState
-from rx.disposables import MultipleAssignmentDisposable
+from rx.disposable import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
@@ -17,7 +18,7 @@ class SchedulerBase(Scheduler):
         if isinstance(ret, typing.Disposable):
             return ret
 
-        return Disposable.empty()
+        return disposable.empty()
 
     def schedule_periodic(self, period: typing.RelativeTime, action: ScheduledPeriodicAction,
                           state: TState = None) -> typing.Disposable:
@@ -34,22 +35,22 @@ class SchedulerBase(Scheduler):
             The disposable object used to cancel the scheduled
             recurring action (best effort)."""
 
-        disposable = MultipleAssignmentDisposable()
+        disp = MultipleAssignmentDisposable()
 
         def invoke_action(scheduler: Scheduler, _: TState) -> Optional[Disposable]:
             nonlocal state
 
-            if disposable.is_disposed:
+            if disp.is_disposed:
                 return None
 
             new_state = action(state)
             if new_state is not None:
                 state = new_state
-            disposable.disposable = self.schedule_relative(period, invoke_action, state)
+            disp.disposable = self.schedule_relative(period, invoke_action, state)
             return None
 
-        disposable.disposable = self.schedule_relative(period, invoke_action, state)
-        return disposable
+        disp.disposable = self.schedule_relative(period, invoke_action, state)
+        return disp
 
     @property
     def now(self) -> datetime:

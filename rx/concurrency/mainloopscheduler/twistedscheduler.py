@@ -2,7 +2,7 @@ import logging
 
 from rx.core import Disposable
 from rx.concurrency.schedulerbase import SchedulerBase
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
 log = logging.getLogger("Rx")
 

@@ -1,5 +1,5 @@
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
 

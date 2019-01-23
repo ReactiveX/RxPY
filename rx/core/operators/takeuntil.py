@@ -3,7 +3,7 @@ from typing import Callable
 from rx import from_future
 from rx.internal import noop
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 from rx.internal.utils import is_future
 
 

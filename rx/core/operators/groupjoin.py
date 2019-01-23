@@ -5,7 +5,7 @@ from collections import OrderedDict
 from rx import operators as ops
 from rx.core import AnonymousObservable, Observable
 from rx.internal.utils import add_ref
-from rx.disposables import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
 from rx.subjects import Subject
 
 log = logging.getLogger("Rx")

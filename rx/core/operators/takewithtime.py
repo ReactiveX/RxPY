@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 

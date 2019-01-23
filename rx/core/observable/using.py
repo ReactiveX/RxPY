@@ -1,6 +1,6 @@
 from rx import throw
 from rx.core import Observable, AnonymousObservable, Disposable
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def _using(resource_factory, observable_factory) -> Observable:

@@ -2,7 +2,7 @@ from typing import Callable
 
 import rx
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def sample_observable(source, sampler):

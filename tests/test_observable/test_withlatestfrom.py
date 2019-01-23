@@ -4,7 +4,7 @@ import rx
 from rx import operators as ops
 from rx.core import Disposable
 from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

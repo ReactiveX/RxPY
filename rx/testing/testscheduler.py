@@ -1,6 +1,7 @@
-from typing import Callable, Any, List
+from typing import Callable, Any
 
 import rx
+from rx import disposable
 from rx.core import Observable, Disposable, typing
 from rx.concurrency import VirtualTimeScheduler
 
@@ -74,19 +75,19 @@ class TestScheduler(VirtualTimeScheduler):
         def action_create(scheduler, state):
             """Called at create time. Defaults to 100"""
             source[0] = create()
-            return Disposable.empty()
+            return disposable.empty()
         self.schedule_absolute(created, action_create)
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
             subscription[0] = source[0].subscribe(observer, scheduler)
-            return Disposable.empty()
+            return disposable.empty()
         self.schedule_absolute(subscribed, action_subscribe)
 
         def action_dispose(scheduler, state):
             """Called at dispose time. Defaults to 1000"""
             subscription[0].dispose()
-            return Disposable.empty()
+            return disposable.empty()
         self.schedule_absolute(disposed, action_dispose)
 
         super().start()

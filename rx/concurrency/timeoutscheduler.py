@@ -3,7 +3,7 @@ from threading import Timer
 from datetime import timedelta
 
 from rx.core import Disposable, typing
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
 from .schedulerbase import SchedulerBase
 
