@@ -1,11 +1,11 @@
 from typing import Any, Callable
 
-from rx import defer, operators as _
+from rx import defer, operators as ops
+from rx.internal.utils import NotSet
 from rx.core import Observable
 
-
-def _scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
-    has_seed = seed is not None
+def _scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+    has_seed = seed is not NotSet
 
     def scan(source: Observable) -> Observable:
         """Partially applied scan operator.
@@ -37,6 +37,6 @@ def _scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[
                     has_accumulation[0] = True
 
                 return accumulation[0]
-            return source.pipe(_.map(projection))
+            return source.pipe(ops.map(projection))
         return defer(factory)
     return scan

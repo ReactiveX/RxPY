@@ -21,3 +21,9 @@ def infinite() -> Iterable[int]:
     while True:
         yield n
         n += 1
+
+
+class NotSet:
+    def __repr__(self):
+        return 'NotSet'
+

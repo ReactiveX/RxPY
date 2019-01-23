@@ -1,6 +1,7 @@
 import unittest
 
-from rx import operators as _
+import rx
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -20,7 +21,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(lambda acc, x: acc + x, 42))
+            return xs.pipe(ops.reduce(lambda acc, x: acc + x, 42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, 42), on_completed(250)]
@@ -31,7 +32,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, 42 + 24), on_completed(250)]
@@ -43,7 +44,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -54,7 +55,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == []
@@ -72,7 +73,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x, seed=42))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x, seed=42))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(260, 10 + 42), on_completed(260)]
@@ -83,7 +84,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert len(res) == 1
@@ -95,7 +96,7 @@ class TestReduce(unittest.TestCase):
         msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
 
         def create():
-            return xs.pipe(_.reduce(accumulator=lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x))
 
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
@@ -108,7 +109,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -119,7 +120,7 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == []
@@ -137,10 +138,15 @@ class TestReduce(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(_.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(260, 10), on_completed(260)]
+
+    def test_reduce_seed_none_does_not_crash(self):
+        rx.empty().pipe(
+            ops.reduce(lambda acc, v: v, seed=None)
+        ).subscribe()
 
 if __name__ == '__main__':
     unittest.main()

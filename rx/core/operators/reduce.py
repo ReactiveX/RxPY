@@ -1,26 +1,27 @@
 from typing import Any, Callable
-from rx.core import Observable
 
-from rx import operators as _
+from rx import operators as ops
+from rx.internal.utils import NotSet
+from rx.core import Observable, pipe
 
 
-def _reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
+def _reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
     accumulator value.
 
     For aggregation behavior with incremental intermediate results, see
-    Observable.scan.
+    `scan()`.
 
     Examples:
         >>> res = reduce(lambda acc, x: acc + x)
         >>> res = reduce(lambda acc, x: acc + x, 0)
 
-    Keyword arguments:
-        accumulator -- An accumulator function to be
+    Args:
+        accumulator: An accumulator function to be
             invoked on each element.
-        seed -- Optional initial accumulator value.
+        seed: Optional initial accumulator value.
 
     Returns:
         An operator function that takes an observable source and returns
@@ -28,12 +29,11 @@ def _reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callabl
         final accumulator value.
     """
 
-    scanner = _.scan(accumulator, seed=seed)
-    initial = _.start_with(seed)
 
-    def reduce(source: Observable) -> Observable:
-        if seed is not None:
-            return source.pipe(scanner, initial, _.last())
-        else:
-            return source.pipe(_.scan(accumulator), _.last())
-    return reduce
+    if seed is not NotSet:
+        initial = ops.start_with(seed)
+        scanner = ops.scan(accumulator, seed=seed)
+
+        return pipe(scanner, initial, ops.last())
+
+    return pipe(ops.scan(accumulator), ops.last())

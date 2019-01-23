@@ -4,6 +4,7 @@ from asyncio import Future
 from typing import Callable, Union, Any, Iterable, List
 from datetime import timedelta, datetime
 
+from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, BlockingObservable, typing
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
@@ -989,7 +990,8 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.last import _last
     return _last(predicate)
 
-def last_or_default(predicate=None, default_value=None) -> Observable:
+
+def last_or_default(predicate=None, default_value=None) -> Callable[[Observable], Observable]:
     """The last_or_default operator.
 
     Returns the last element of an observable sequence that satisfies
@@ -1432,7 +1434,7 @@ def publish_value(initial_value: Any, mapper: Mapper = None) -> Callable[[Observ
     return _publish_value(initial_value, mapper)
 
 
-def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
+def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The reduce operator.
 
     Applies an accumulator function over an observable sequence,
@@ -1570,7 +1572,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
     return _sample(interval, sampler)
 
 
-def scan(accumulator: Callable[[Any, Any], Any], seed: Any = None) -> Callable[[Observable], Observable]:
+def scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The scan operator.
 
     Applies an accumulator function over an observable sequence and
