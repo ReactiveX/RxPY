@@ -2,7 +2,7 @@ from typing import Callable
 
 import rx
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
 

@@ -2,7 +2,7 @@ from typing import Callable, Any
 
 from rx import from_future
 from rx.core import AnonymousObservable, Observable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
 

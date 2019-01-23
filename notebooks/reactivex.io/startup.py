@@ -86,10 +86,10 @@ class Subscriber:
 def subs(src, **kw):
     # required for e.g. .multicast:
     obs = Subscriber(src, **kw)
-    disposable = src.subscribe(obs)
+    subscription = src.subscribe(obs)
     if kw.pop('return_subscriber', None):
-        return disposable, obs
-    return disposable
+        return subscription, obs
+    return subscription
 
 
 # getting the current thread

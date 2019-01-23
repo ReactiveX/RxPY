@@ -3,6 +3,7 @@ import threading
 from datetime import datetime
 from typing import Any, List, Optional
 
+from rx import disposable
 from rx.core import Disposable, typing
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
@@ -50,7 +51,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
-        return Disposable.create(si.cancel)
+        return disposable.create(si.cancel)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -77,7 +78,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
             self.condition.notify()  # signal that a new item is available
             self.ensure_thread()
 
-        return Disposable.create(si.cancel)
+        return disposable.create(si.cancel)
 
     def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction, state: Any = None
                          ) -> typing.Disposable:
@@ -101,7 +102,7 @@ class EventLoopScheduler(SchedulerBase, Disposable):
         def dispose():
             disposed.append(True)
 
-        return Disposable.create(dispose)
+        return disposable.create(dispose)
 
     def ensure_thread(self) -> None:
         """Ensures there is an event loop thread running. Should be

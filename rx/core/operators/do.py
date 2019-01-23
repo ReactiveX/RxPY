@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx.core import Observer, AnonymousObservable, Disposable, Observable, typing
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
 def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
@@ -147,8 +147,8 @@ def do_on_dispose(source: Observable, on_dispose):
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        disposable = source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
-        composite_disposable.add(disposable)
+        subscription = source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
+        composite_disposable.add(subscription)
         return composite_disposable
 
     return AnonymousObservable(subscribe)
@@ -262,8 +262,8 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             composite_disposable = CompositeDisposable()
             composite_disposable.add(OnDispose(was_invoked))
-            disposable = source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
-            composite_disposable.add(disposable)
+            subscription = source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
+            composite_disposable.add(subscription)
 
             return composite_disposable
 

@@ -1,9 +1,13 @@
-from rx import throw
+from typing import Callable
+
+import rx
+from rx import disposable
 from rx.core import Observable, AnonymousObservable, Disposable
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 
 
-def _using(resource_factory, observable_factory) -> Observable:
+def _using(resource_factory: Callable[[], Disposable], observable_factory: Callable[[Disposable], Observable]
+          ) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
@@ -22,16 +26,17 @@ def _using(resource_factory, observable_factory) -> Observable:
     """
 
     def subscribe(observer, scheduler=None):
-        disposable = Disposable.empty()
+        disp = disposable.empty()
+
         try:
             resource = resource_factory()
-            if resource:
-                disposable = resource
+            if resource is not None:
+                disp = resource
 
             source = observable_factory(resource)
         except Exception as exception:
-            d = throw(exception).subscribe(observer, scheduler)
-            return CompositeDisposable(d, disposable)
+            d = rx.throw(exception).subscribe(observer, scheduler)
+            return CompositeDisposable(d, disp)
 
-        return CompositeDisposable(source.subscribe(observer, scheduler), disposable)
+        return CompositeDisposable(source.subscribe(observer, scheduler), disp)
     return AnonymousObservable(subscribe)

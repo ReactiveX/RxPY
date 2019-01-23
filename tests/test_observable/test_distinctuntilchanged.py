@@ -1,7 +1,7 @@
 import unittest
 
 import rx
-from rx import operators as _
+from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -27,7 +27,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.never().pipe(_.distinct_until_changed())
+            return rx.never().pipe(ops.distinct_until_changed())
         results = scheduler.start(create)
 
         assert results.messages == []
@@ -37,7 +37,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
@@ -48,7 +48,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
         assert(results[0].value.kind == 'N' and results[0].time == 220 and results[0].value.value == 2)
@@ -60,7 +60,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
@@ -77,7 +77,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
 
         results = scheduler.start(create).messages
         self.assertEqual(5, len(results))
@@ -93,7 +93,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             220, 2), on_next(230, 2), on_next(240, 2), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
 
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
@@ -106,7 +106,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             220, 3), on_next(225, 2), on_next(230, 2), on_next(230, 1), on_next(240, 2), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed())
+            return xs.pipe(ops.distinct_until_changed())
 
         results = scheduler.start(create).messages
         self.assertEqual(6, len(results))
@@ -124,8 +124,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                    _.distinct_until_changed(comparer=lambda x, y: True),
-                    )
+                ops.distinct_until_changed(comparer=lambda x, y: True)
+            )
 
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
@@ -139,8 +139,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                    _.distinct_until_changed(comparer=lambda x, y: False),
-                    )
+                ops.distinct_until_changed(comparer=lambda x, y: False)
+            )
 
         results = scheduler.start(create).messages
         self.assertEqual(5, len(results))
@@ -156,7 +156,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             220, 4), on_next(230, 3), on_next(240, 5), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed(lambda x: x % 2))
+            return xs.pipe(ops.distinct_until_changed(lambda x: x % 2))
 
         results = scheduler.start(create).messages
         self.assertEqual(3, len(results))
@@ -170,7 +170,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
 
         def create():
-            return xs.pipe(_.distinct_until_changed(lambda x: _raise(ex)))
+            return xs.pipe(ops.distinct_until_changed(lambda x: _raise(ex)))
         results = scheduler.start(create)
         assert results.messages == [on_error(210, ex)]
 
@@ -181,8 +181,8 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                    _.distinct_until_changed(comparer=lambda x, y: _raise(ex)),
-                    )
+                ops.distinct_until_changed(comparer=lambda x, y: _raise(ex)),
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_error(220, ex)]

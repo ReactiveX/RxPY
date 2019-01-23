@@ -5,7 +5,7 @@ from rx import empty
 from rx.core import AnonymousObservable, Observable, typing
 from rx.internal.utils import add_ref
 from rx.internal import noop
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
+from rx.disposable import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
 from rx.subjects import Subject
 from rx import operators as ops
 

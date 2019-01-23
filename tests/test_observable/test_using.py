@@ -23,7 +23,7 @@ def _raise(ex):
 
 class TestUsing(unittest.TestCase):
     def test_using_null(self):
-        disposable = [None]
+        disp = [None]
         xs = [None]
         _d = [None]
 
@@ -34,8 +34,8 @@ class TestUsing(unittest.TestCase):
         def create():
             def create_resources():
                 dispose_invoked[0] += 1
-                disposable[0] = None
-                return disposable[0]
+                disp[0] = None
+                return disp[0]
 
             def create_observable(d):
                 _d[0] = d
@@ -47,15 +47,15 @@ class TestUsing(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert (disposable[0] == _d[0])
+        assert (disp[0] == _d[0])
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert (1 == create_invoked[0])
         assert (1 == dispose_invoked[0])
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        assert (disposable[0] is None)
+        assert (disp[0] is None)
 
     def test_using_complete(self):
-        disposable = [None]
+        disp = [None]
         xs = [None]
         _d = [None]
         scheduler = TestScheduler()
@@ -65,8 +65,8 @@ class TestUsing(unittest.TestCase):
         def create():
             def create_resource():
                 dispose_invoked[0] += 1
-                disposable[0] = MockDisposable(scheduler)
-                return disposable[0]
+                disp[0] = MockDisposable(scheduler)
+                return disp[0]
 
             def create_observable(d):
                 _d[0] = d
@@ -78,27 +78,27 @@ class TestUsing(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert disposable == _d
+        assert disp == _d
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        disposable[0].disposes = [200, 400]
+        disp[0].disposes = [200, 400]
 
     def test_using_error(self):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
         ex = 'ex'
-        disposable = [None]
+        disp = [None]
         xs = [None]
         _d = [None]
 
         def create():
             def create_resource():
                 dispose_invoked[0] += 1
-                disposable[0] = MockDisposable(scheduler)
-                return disposable[0]
+                disp[0] = MockDisposable(scheduler)
+                return disp[0]
 
             def create_observable(d):
                 _d[0] = d
@@ -109,15 +109,15 @@ class TestUsing(unittest.TestCase):
             return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        assert disposable[0] == _d[0]
+        assert disp[0] == _d[0]
         assert results.messages == [on_next(300, 200), on_error(400, ex)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        assert disposable[0].disposes == [200, 400]
+        assert disp[0].disposes == [200, 400]
 
     def test_using_dispose(self):
-        disposable = [None]
+        disp = [None]
         xs = [None]
         _d = [None]
         scheduler = TestScheduler()
@@ -127,8 +127,8 @@ class TestUsing(unittest.TestCase):
         def create():
             def create_resource():
                 dispose_invoked[0] += 1
-                disposable[0] = MockDisposable(scheduler)
-                return disposable[0]
+                disp[0] = MockDisposable(scheduler)
+                return disp[0]
 
             def create_observable(d):
                 _d[0] = d
@@ -140,12 +140,12 @@ class TestUsing(unittest.TestCase):
             return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
 
-        assert disposable[0] == _d[0]
+        assert disp[0] == _d[0]
         assert results.messages == [on_next(300, 200)]
         assert 1 == create_invoked[0]
         assert 1 == dispose_invoked[0]
         assert xs[0].subscriptions == [subscribe(200, 1000)]
-        assert disposable[0].disposes == [200, 1000]
+        assert disp[0].disposes == [200, 1000]
 
     def test_using_throw_resource_mapper(self):
         scheduler = TestScheduler()
@@ -173,14 +173,14 @@ class TestUsing(unittest.TestCase):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
-        disposable = [None]
+        disp = [None]
         ex = 'ex'
 
         def create():
             def create_resource():
                 dispose_invoked[0] += 1
-                disposable[0] = MockDisposable(scheduler)
-                return disposable[0]
+                disp[0] = MockDisposable(scheduler)
+                return disp[0]
 
             def create_observable(d):
                 create_invoked[0] += 1
@@ -192,4 +192,4 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_error(200, ex)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
-        assert disposable[0].disposes == [200, 200]
+        assert disp[0].disposes == [200, 200]

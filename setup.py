@@ -40,7 +40,7 @@ setup(
               'rx.core.operators', 'rx.core.observable', 'rx.core.observer',
               'rx.core.operators.blocking', 'rx.core.operators.connectable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler',
-              'rx.operators', 'rx.disposables', 'rx.subjects',
+              'rx.operators', 'rx.disposable', 'rx.subjects',
               'rx.testing'],
     package_dir={'rx': 'rx'},
     include_package_data=True,

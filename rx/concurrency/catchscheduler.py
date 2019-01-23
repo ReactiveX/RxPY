@@ -1,5 +1,6 @@
+from rx import disposable
 from rx.core import Disposable
-from rx.disposables import SingleAssignmentDisposable
+from rx.disposable import SingleAssignmentDisposable
 
 from .schedulerbase import SchedulerBase
 
@@ -48,7 +49,7 @@ class CatchScheduler(SchedulerBase):
             except Exception as ex:
                 if not parent._handler(ex):
                     raise Exception(ex)
-                return Disposable.empty()
+                return disposable.empty()
         return wrapped_action
 
     def _get_recursive_wrapper(self, scheduler):

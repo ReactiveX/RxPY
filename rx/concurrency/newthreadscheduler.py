@@ -3,7 +3,8 @@ import logging
 import threading
 from typing import List
 
-from rx.core import Disposable, typing
+from rx import disposable
+from rx.core import typing
 from .schedulerbase import SchedulerBase
 from .eventloopscheduler import EventLoopScheduler
 
@@ -69,6 +70,6 @@ class NewThreadScheduler(SchedulerBase):
         def dispose():
             disposed.append(True)
 
-        return Disposable.create(dispose)
+        return disposable.create(dispose)
 
 new_thread_scheduler = NewThreadScheduler()

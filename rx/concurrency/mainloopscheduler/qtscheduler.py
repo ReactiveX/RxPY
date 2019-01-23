@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from rx.core import Disposable, typing
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
 log = logging.getLogger("Rx")
@@ -19,7 +19,7 @@ class QtScheduler(SchedulerBase):
         scheduler = self
         msecs = int(self.to_seconds(time)*1000.0)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         periodic_state = [state]
 
@@ -27,7 +27,7 @@ class QtScheduler(SchedulerBase):
             if periodic:
                 periodic_state[0] = action(periodic_state[0])
             else:
-                disposable.disposable = action(scheduler, state)
+                sad.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", msecs)
 
@@ -42,7 +42,7 @@ class QtScheduler(SchedulerBase):
             timer.stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""

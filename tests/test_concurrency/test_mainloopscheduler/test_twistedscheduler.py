@@ -24,7 +24,7 @@ class TestTwistedScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             ran[0] = True
-        disposable = scheduler.schedule(action)
+        scheduler.schedule(action)
 
         promise = defer.Deferred()
         def done():

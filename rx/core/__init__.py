@@ -1,6 +1,5 @@
 # flake8: noqa
-from .typing import Observer, Scheduler
-from .disposable import Disposable
+from .typing import Observer, Scheduler, Disposable
 
 
 from .pipe import pipe

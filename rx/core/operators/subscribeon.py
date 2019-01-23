@@ -1,7 +1,7 @@
 from typing import Callable
 from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Scheduler
-from rx.disposables import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
+from rx.disposable import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
 
 def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:

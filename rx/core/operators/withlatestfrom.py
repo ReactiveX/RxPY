@@ -1,7 +1,7 @@
 from typing import Any, Iterable, Callable, Union, List, cast
 
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
 

@@ -1,9 +1,9 @@
-from typing import Any
 from threading import Timer
 from datetime import timedelta
 
-from rx.core import Disposable, typing
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx import disposable
+from rx.core import typing
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
 from .schedulerbase import SchedulerBase
 
@@ -14,10 +14,10 @@ class TimeoutScheduler(SchedulerBase):
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed."""
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         timer = Timer(0, interval)
         timer.setDaemon(True)
@@ -25,7 +25,7 @@ class TimeoutScheduler(SchedulerBase):
 
         def dispose():
             timer.cancel()
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_relative(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""
@@ -35,10 +35,10 @@ class TimeoutScheduler(SchedulerBase):
         if timespan == timedelta(0):
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         seconds = timespan.total_seconds()
         timer = Timer(seconds, interval)
@@ -48,7 +48,7 @@ class TimeoutScheduler(SchedulerBase):
         def dispose():
             timer.cancel()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""

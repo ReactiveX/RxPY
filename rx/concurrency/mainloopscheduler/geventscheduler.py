@@ -1,11 +1,10 @@
 import logging
 
-gevent = None
-
-from rx.core import Disposable
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx import disposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
+gevent = None
 log = logging.getLogger("Rx")
 
 
@@ -24,17 +23,17 @@ class GEventScheduler(SchedulerBase):
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state)
 
         timer = [gevent.spawn(interval)]
 
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -51,10 +50,10 @@ class GEventScheduler(SchedulerBase):
         if not seconds:
             return scheduler.schedule(action, state)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            sad.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
         timer = [gevent.spawn_later(seconds, interval)]
@@ -63,7 +62,7 @@ class GEventScheduler(SchedulerBase):
             # nonlocal timer
             timer[0].kill()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

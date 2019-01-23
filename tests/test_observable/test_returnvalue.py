@@ -2,7 +2,7 @@ import unittest
 
 import rx
 from rx.testing import TestScheduler, ReactiveTest
-from rx.disposables import SerialDisposable
+from rx.disposable import SerialDisposable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

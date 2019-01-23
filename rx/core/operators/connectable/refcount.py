@@ -1,6 +1,7 @@
 from typing import Callable
 
-from rx.core import Disposable, ConnectableObservable, Observable, AnonymousObservable
+from rx import disposable
+from rx.core import ConnectableObservable, Observable, AnonymousObservable
 
 
 def _ref_count() -> Callable[[ConnectableObservable], Observable]:
@@ -26,7 +27,7 @@ def _ref_count() -> Callable[[ConnectableObservable], Observable]:
                 if not count[0]:
                     connectable_subscription[0].dispose()
 
-            return Disposable.create(dispose)
+            return disposable.create(dispose)
 
         return AnonymousObservable(subscribe)
 

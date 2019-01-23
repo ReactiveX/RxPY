@@ -1,4 +1,5 @@
 from threading import RLock
+
 from rx.core import Disposable
 
 
@@ -8,9 +9,9 @@ class CompositeDisposable(Disposable):
 
     def __init__(self, *args):
         if args and isinstance(args[0], list):
-            self.disposables = args[0]
+            self.disposable = args[0]
         else:
-            self.disposables = list(args)
+            self.disposable = list(args)
 
         self.is_disposed = False
         self.lock = RLock()
@@ -28,7 +29,7 @@ class CompositeDisposable(Disposable):
             if self.is_disposed:
                 should_dispose = True
             else:
-                self.disposables.append(item)
+                self.disposable.append(item)
 
         if should_dispose:
             item.dispose()
@@ -42,8 +43,8 @@ class CompositeDisposable(Disposable):
 
         should_dispose = False
         with self.lock:
-            if item in self.disposables:
-                self.disposables.remove(item)
+            if item in self.disposable:
+                self.disposable.remove(item)
                 should_dispose = True
 
         if should_dispose:
@@ -52,7 +53,7 @@ class CompositeDisposable(Disposable):
         return should_dispose
 
     def dispose(self):
-        """Disposes all disposables in the group and removes them from
+        """Disposes all disposable in the group and removes them from
         the group."""
 
         if self.is_disposed:
@@ -60,22 +61,22 @@ class CompositeDisposable(Disposable):
 
         with self.lock:
             self.is_disposed = True
-            current_disposables = self.disposables
-            self.disposables = []
+            current_disposable = self.disposable
+            self.disposable = []
 
-        for disposable in current_disposables:
-            disposable.dispose()
+        for disp in current_disposable:
+            disp.dispose()
 
     def clear(self):
-        """Removes and disposes all disposables from the
+        """Removes and disposes all disposable from the
         CompositeDisposable, but does not dispose the
         CompositeDisposable."""
 
         with self.lock:
-            current_disposables = self.disposables
-            self.disposables = []
+            current_disposable = self.disposable
+            self.disposable = []
 
-        for disposable in current_disposables:
+        for disposable in current_disposable:
             disposable.dispose()
 
     def contains(self, item):
@@ -88,14 +89,14 @@ class CompositeDisposable(Disposable):
         Returns:
             True if the disposable was found; otherwise, False"""
 
-        return item in self.disposables
+        return item in self.disposable
 
     def to_list(self):
-        return self.disposables[:]
+        return self.disposable[:]
 
     def __len__(self):
-        return len(self.disposables)
+        return len(self.disposable)
 
     @property
     def length(self):
-        return len(self.disposables)
+        return len(self.disposable)

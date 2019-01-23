@@ -1,7 +1,7 @@
 import re
 import threading
 
-from rx.disposables import CompositeDisposable
+from rx.disposable import CompositeDisposable
 from rx.core import AnonymousObservable, Observable
 from rx.concurrency import new_thread_scheduler
 from rx.core.notification import OnNext, OnError, OnCompleted
@@ -37,7 +37,7 @@ def from_marbles(string: str) -> Observable:
         given marble diagram string.
     """
 
-    disposable = CompositeDisposable()
+    disp = CompositeDisposable()
     completed = [False]
     messages = []
     timespan = [0]
@@ -83,8 +83,8 @@ def from_marbles(string: str) -> Observable:
 
             # Don't make closures within a loop
             action = notification.accept(observer)
-            disposable.add(scheduler.schedule_relative(timespan, action))
-        return disposable
+            disp.add(scheduler.schedule_relative(timespan, action))
+        return disp
     return AnonymousObservable(subscribe)
 
 

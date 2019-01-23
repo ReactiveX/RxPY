@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import MultipleAssignmentDisposable
+from rx.disposable import MultipleAssignmentDisposable
 
 
 def observable_timer_date(duetime, scheduler: typing.Scheduler = None):

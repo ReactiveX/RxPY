@@ -1,8 +1,9 @@
 import threading
 from typing import Any, List, Optional
 
+from rx import disposable
 from rx.core import typing
-from rx.core import Observer, Observable, Disposable, Scheduler
+from rx.core import Observer, Observable, Scheduler
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
@@ -38,10 +39,10 @@ class Subject(Observable, Observer):
 
             if self.exception:
                 observer.on_error(self.exception)
-                return Disposable.empty()
+                return disposable.empty()
 
             observer.on_completed()
-            return Disposable.empty()
+            return disposable.empty()
 
     def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the

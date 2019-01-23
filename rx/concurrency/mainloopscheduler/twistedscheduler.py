@@ -1,8 +1,8 @@
 import logging
 
-from rx.core import Disposable
+from rx import disposable
 from rx.concurrency.schedulerbase import SchedulerBase
-from rx.disposables import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
 log = logging.getLogger("Rx")
 
@@ -35,10 +35,10 @@ class TwistedScheduler(SchedulerBase):
         scheduler = self
         seconds = self.to_seconds(duetime)
 
-        disposable = SingleAssignmentDisposable()
+        sad = SingleAssignmentDisposable()
 
         def interval():
-            disposable.disposable = action(scheduler, state)
+            sad.disposable = action(scheduler, state)
 
         log.debug("timeout: %s", seconds)
         handle = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
@@ -47,7 +47,7 @@ class TwistedScheduler(SchedulerBase):
             if not handle.called:
                 handle.cancel()
 
-        return CompositeDisposable(disposable, Disposable.create(dispose))
+        return CompositeDisposable(sad, disposable.create(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

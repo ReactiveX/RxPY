@@ -2,9 +2,9 @@
 import threading
 from typing import Any, Callable, Optional
 
+from rx import disposable
 from rx.concurrency import current_thread_scheduler
 
-from ..disposable import Disposable
 from ..observer import AutoDetachObserver
 from ..observer import AnonymousObserver
 from .. import typing, abc
@@ -94,7 +94,7 @@ class Observable(typing.Observable):
         return _concat(self, other)
 
     def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        return self.source.subscribe(observer, scheduler) if self.source else Disposable.empty()
+        return self.source.subscribe(observer, scheduler) if self.source else disposable.empty()
 
     def subscribe_(self,
                    on_next: typing.OnNext = None,
@@ -129,7 +129,7 @@ class Observable(typing.Observable):
             """Fixes subscriber to make sure it returns a Disposable instead
             of None or a dispose function"""
             if not hasattr(subscriber, "dispose"):
-                subscriber = Disposable.create(subscriber)
+                subscriber = disposable.create(subscriber)
 
             return subscriber
 
@@ -156,7 +156,7 @@ class Observable(typing.Observable):
             set_disposable()
 
         # Hide the identity of the auto detach observer
-        return Disposable.create(auto_detach_observer.dispose)
+        return disposable.create(auto_detach_observer.dispose)
 
 
     def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:

@@ -1,7 +1,7 @@
 from typing import Any, Callable, Iterable, Union, List, cast
 
 from rx.core import Observable, AnonymousObservable, typing
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
 def _combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:

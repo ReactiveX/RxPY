@@ -1,7 +1,7 @@
 from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 from rx.concurrency import current_thread_scheduler
-from rx.disposables import MultipleAssignmentDisposable
+from rx.disposable import MultipleAssignmentDisposable
 
 
 def _range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:

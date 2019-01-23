@@ -1,7 +1,7 @@
 from typing import Generic, Optional
 
 from rx.core import typing
-from rx.disposables import SingleAssignmentDisposable
+from rx.disposable import SingleAssignmentDisposable
 
 from .schedulerbase import SchedulerBase
 

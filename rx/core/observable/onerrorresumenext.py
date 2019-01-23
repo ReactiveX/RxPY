@@ -1,5 +1,6 @@
+import rx
 from rx.core import Observable, AnonymousObservable
-from rx.disposables import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
 
@@ -15,8 +16,6 @@ def _on_error_resume_next(*args) -> Observable:
         An observable sequence that concatenates the source sequences,
         even if a sequence terminates exceptionally.
     """
-    # curently not in:
-    # 3 - res = Observable.on_error_resume_next(xs, factory)
 
     if args and isinstance(args[0], list):
         sources = iter(args[0])
@@ -36,7 +35,7 @@ def _on_error_resume_next(*args) -> Observable:
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = Observable.from_future(source) if is_future(source) else source
+            current = rx.from_future(source) if is_future(source) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d

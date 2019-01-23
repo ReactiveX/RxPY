@@ -1,5 +1,7 @@
 import threading
-from rx.core import Observer, Observable, Disposable
+
+from rx import disposable
+from rx.core import Observer, Observable
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
@@ -51,7 +53,7 @@ class BehaviorSubject(Observable, Observer):
         else:
             observer.on_completed()
 
-        return Disposable.empty()
+        return disposable.empty()
 
     def on_completed(self):
         """Notifies all subscribed observers of the end of the sequence."""
