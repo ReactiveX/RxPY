@@ -5,23 +5,22 @@ from rx.disposables import CompositeDisposable, SingleAssignmentDisposable
 
 
 
-def _with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]
+def _with_latest_from(*args: Union[Observable, Iterable[Observable]]
                       ) -> Callable[[Observable], Observable]:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
-    sequence by using the mapper function only when the first
+    sequence by creating a tuple only when the first
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
     Examples:
-        >>> op = with_latest_from(obs1, lambda o1: o1)
-        >>> op = with_latest_from([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+        >>> op = with_latest_from(obs1)
+        >>> op = with_latest_from([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
-    elements of the sources using the specified result mapper
-    function.
+    elements of the sources into a tuple.
     """
 
     def with_latest_from(source: Observable) -> Observable:
@@ -32,7 +31,6 @@ def _with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Ca
         else:
             sources = cast(List[Observable], list(args))
 
-        result_mapper = mapper
         NO_VALUE = object()
 
         def subscribe(observer, scheduler=None):
@@ -54,12 +52,9 @@ def _with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Ca
                 def on_next(value):
                     with parent.lock:
                         if NO_VALUE not in values:
-                            try:
-                                result = result_mapper(value, *values)
-                            except Exception as error:
-                                observer.on_error(error)
-                            else:
-                                observer.on_next(result)
+                            result = (value,) + tuple(values)
+                            observer.on_next(result)
+
                 disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
                 parent_subscription.disposable = disp
 
