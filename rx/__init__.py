@@ -582,23 +582,22 @@ def using(resource_factory: Callable[[], typing.Disposable], observable_factory:
     return _using(resource_factory, observable_factory)
 
 
-def with_latest_from(*args: Union[Observable, Iterable[Observable]], mapper: Callable[[Any], Any]) -> Observable:
+def with_latest_from(*args: Union[Observable, Iterable[Observable]]) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by using the mapper function only when the first
+    sequence by creating a tuple only when the first
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
     Examples:
-        >>> obs = rx.with_latest_from(obs1, lambda o1: o1)
-        >>> obs = rx.with_latest_from([obs1, obs2, obs3], lambda o1, o2, o3: o1 + o2 + o3)
+        >>> obs = rx.with_latest_from(obs1)
+        >>> obs = rx.with_latest_from([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources using the specified result mapper
-        function.
+        elements of the sources into a tuple.
     """
     from .core.observable.withlatestfrom import _with_latest_from
-    return _with_latest_from(*args, mapper=mapper)
+    return _with_latest_from(*args)
 
 
 def zip(*args: Observable) -> Observable:
