@@ -31,7 +31,7 @@ Because Observable sequences are data streams, you can query them using standard
 
 RxPY v3.x runs on [Python](http://www.python.org/) 3.6 or above. To install RxPY:
 
-`pip3 install rx`
+`pip3 install --pre rx`
 
 For Python 2.x you need to use version 1.6
 
