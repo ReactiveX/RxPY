@@ -194,6 +194,35 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
 
+    def test_starmap_no_mapper(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            # 100 create
+            on_next(180, (1, 10)),
+            # 200 subscribe
+            on_next(210, (2, 20)),
+            on_next(240, (3, 30)),
+            on_next(290, (4, 40)),
+            on_next(350, (5, 50)),
+            on_completed(400),
+            on_next(410, (-1, -10)),
+            on_completed(420),
+            on_error(430, 'ex'))
+
+        def factory():
+            return xs.pipe(ops.starmap())
+
+        results = scheduler.start(factory)
+        assert results.messages == [
+            on_next(210, (2, 20)),
+            on_next(240, (3, 30)),
+            on_next(290, (4, 40)),
+            on_next(350, (5, 50)),
+            on_completed(400)]
+
+        assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
+
+
     def test_starmap_mapper_with_one_element(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(

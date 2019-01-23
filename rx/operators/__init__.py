@@ -1972,6 +1972,10 @@ def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """
 
     from rx.core import pipe
+
+    def identity(*args): return args
+
+    mapper = mapper or identity
     return pipe(map(lambda values: mapper(*values)))
 
 
