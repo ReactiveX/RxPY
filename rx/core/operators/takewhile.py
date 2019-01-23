@@ -66,7 +66,8 @@ def _take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Obser
         """
 
         def subscribe(observer, scheduler=None):
-            running, i = True, 0
+            running = True
+            i = 0
 
             def on_next(value: Any) -> None:
                 nonlocal running, i
