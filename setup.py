@@ -9,7 +9,8 @@ setup(
     name='Rx',
     version='3.0.0-alpha',
     description='Reactive Extensions (Rx) for Python',
-    long_description=("is a library for composing asynchronous and "
+    long_description=(
+        "is a library for composing asynchronous and "
         "event-based programs using observable collections and LINQ-style "
         "query operators in Python."),
     author='Dag Brattli',
@@ -18,6 +19,7 @@ setup(
     url='http://reactivex.io',
     download_url='https://github.com/ReactiveX/RxPY',
     zip_safe=True,
+    python_requires='>=3.5.0',
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
