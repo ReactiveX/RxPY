@@ -17,8 +17,8 @@ class Observable(typing.Observable):
     methods to allow classic Rx chaining of operators."""
 
     def __init__(self, source: abc.Observable = None) -> None:
-        self.lock = threading.RLock()
         self.source: Optional[abc.Observable] = source
+        self.lock = threading.RLock()
 
     def __await__(self) -> Any:
         """Awaits the given observable.
@@ -31,7 +31,6 @@ class Observable(typing.Observable):
         """
         from ..operators.tofuture import _to_future
         return iter(self.pipe(_to_future()))
-
 
     def __add__(self, other):
         """Pythonic version of concat.
@@ -46,10 +45,10 @@ class Observable(typing.Observable):
 
     def __getitem__(self, key):
         """Slices the given observable using Python slice notation. The
-        arguments to slice is start, stop and step given within brackets
-        [] and separated with the ':' character. It is basically a
-        wrapper around the operators skip(), skip_last(), take(),
-        take_last() and filter().
+        arguments to slice is start, stop and step given within
+        brackets [] and separated with the ':' character. It is
+        basically a wrapper around the operators skip(), skip_last(),
+        take(), take_last() and filter().
 
         This marble diagram helps you remember how slices works with
         streams. Positive numbers is relative to the start of the
