@@ -19,7 +19,7 @@ setup(
     url='http://reactivex.io',
     download_url='https://github.com/ReactiveX/RxPY',
     zip_safe=True,
-    python_requires='>=3.5.0',
+    python_requires='>=3.6.0',
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
