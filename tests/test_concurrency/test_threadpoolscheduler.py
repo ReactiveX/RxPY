@@ -3,7 +3,9 @@ import unittest
 
 from datetime import datetime, timedelta
 import threading
-from rx.concurrency import ThreadPoolScheduler, thread_pool_scheduler
+from rx.concurrency import ThreadPoolScheduler
+
+thread_pool_scheduler = ThreadPoolScheduler()
 
 
 class TestThreadPoolScheduler(unittest.TestCase):

@@ -28,4 +28,3 @@ class ThreadPoolScheduler(NewThreadScheduler):
 
         super().__init__(thread_factory)
 
-thread_pool_scheduler = ThreadPoolScheduler()

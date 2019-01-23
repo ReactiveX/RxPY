@@ -3,9 +3,10 @@ import threading
 
 from rx.disposable import CompositeDisposable
 from rx.core import AnonymousObservable, Observable
-from rx.concurrency import new_thread_scheduler
+from rx.concurrency import NewThreadScheduler
 from rx.core.notification import OnNext, OnError, OnCompleted
 
+new_thread_scheduler = NewThreadScheduler()
 
 _pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
 _tokens = re.compile(_pattern)

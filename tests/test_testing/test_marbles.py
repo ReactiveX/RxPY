@@ -2,7 +2,7 @@ import unittest
 
 from rx import Observable
 from rx.testing import marbles, TestScheduler
-from rx.concurrency import timeout_scheduler, new_thread_scheduler
+#from rx.concurrency import timeout_scheduler, new_thread_scheduler
 
 # marble sequences to test:
 tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
