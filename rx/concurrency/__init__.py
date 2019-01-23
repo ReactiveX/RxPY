@@ -12,14 +12,3 @@ except ImportError:
 from .eventloopscheduler import EventLoopScheduler
 from .historicalscheduler import HistoricalScheduler
 from .catchscheduler import CatchScheduler
-
-from .mainloopscheduler import AsyncIOScheduler
-from .mainloopscheduler import IOLoopScheduler
-from .mainloopscheduler import GEventScheduler
-from .mainloopscheduler import GtkScheduler
-from .mainloopscheduler import TwistedScheduler
-from .mainloopscheduler import TkinterScheduler
-from .mainloopscheduler import PyGameScheduler
-from .mainloopscheduler import QtScheduler
-from .mainloopscheduler import WxScheduler
-from .mainloopscheduler import EventLetEventScheduler

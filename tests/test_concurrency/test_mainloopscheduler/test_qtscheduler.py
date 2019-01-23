@@ -17,7 +17,7 @@ except ImportError:
             skip = True
 
 
-from rx.concurrency import QtScheduler
+from rx.concurrency.mainloopscheduler import QtScheduler
 
 app = None  # Prevent garbage collection
 

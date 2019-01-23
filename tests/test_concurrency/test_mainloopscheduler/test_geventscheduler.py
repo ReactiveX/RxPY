@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 import pytest
 
-from rx.concurrency import GEventScheduler
+from rx.concurrency.mainloopscheduler import GEventScheduler
 
 
 gevent = pytest.importorskip("gevent")

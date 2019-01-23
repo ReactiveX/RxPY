@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 import pytest
 
-from rx.concurrency import EventLetEventScheduler
+from rx.concurrency.mainloopscheduler import EventLetEventScheduler
 
 eventlet = pytest.importorskip("eventlet")
 

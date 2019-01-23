@@ -5,7 +5,7 @@ import pytest
 tornado = pytest.importorskip("tornado")
 from tornado import ioloop
 
-from rx.concurrency import IOLoopScheduler
+from rx.concurrency.mainloopscheduler import IOLoopScheduler
 
 
 class TestIOLoopScheduler(unittest.TestCase):

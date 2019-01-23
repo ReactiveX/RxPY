@@ -3,7 +3,7 @@ import os
 import unittest
 import pytest
 
-from rx.concurrency import GtkScheduler
+from rx.concurrency.mainloopscheduler import GtkScheduler
 
 gi = pytest.importorskip("gi")
 gi.require_version('Gtk', '3.0')

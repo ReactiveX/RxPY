@@ -3,8 +3,7 @@ import threading
 import unittest
 from datetime import datetime, timedelta
 
-import rx
-from rx.concurrency import AsyncIOScheduler
+from rx.concurrency.mainloopscheduler import AsyncIOScheduler
 
 
 class TestAsyncIOScheduler(unittest.TestCase):
@@ -30,7 +29,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler.schedule(action)
 
             yield from asyncio.sleep(0.1, loop=loop)
-            assert(ran is True)
+            assert ran is True
 
         loop.run_until_complete(go())
 
