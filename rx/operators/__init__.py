@@ -597,7 +597,7 @@ def expand(mapper: Mapper) -> Observable:
     return _expand(mapper)
 
 
-def filter(predicate: Predicate) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
+def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
 
@@ -958,8 +958,8 @@ def join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observ
 
     Return:
         An operator function that takes an observable source and
-        returns an observable sequence that contains elements combined into a
-        tuple from source elements that have an overlapping
+        returns an observable sequence that contains elements combined
+        into a tuple from source elements that have an overlapping
         duration.
     """
     from rx.core.operators.join import _join
@@ -1074,7 +1074,7 @@ def materialize() -> Callable[[Observable], Observable]:
     return _materialize()
 
 
-def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:  # pylint: disable=redefined-builtin
+def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
