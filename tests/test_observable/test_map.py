@@ -108,6 +108,31 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
 
+    def test_map_default_mapper(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(180, 1),
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(290, 4),
+            on_next(350, 5),
+            on_completed(400),
+            on_next(410, -1),
+            on_completed(420),
+            on_error(430, 'ex'))
+
+        def factory():
+            return xs.pipe(map())
+
+        results = scheduler.start(factory)
+        assert results.messages == [
+            on_next(210, 2),
+            on_next(240, 3),
+            on_next(290, 4),
+            on_next(350, 5),
+            on_completed(400)]
+        assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
+
     def test_map_completed_two(self):
         for i in range(100):
             scheduler = TestScheduler()
@@ -260,6 +285,32 @@ class TestSelect(unittest.TestCase):
             240, 14), on_next(290, 23), on_next(350, 32), on_completed(400)]
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
+
+    def test_map_with_index_default_mapper(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(180, 5),
+            on_next(210, 4),
+            on_next(240, 3),
+            on_next(290, 2),
+            on_next(350, 1),
+            on_completed(400),
+            on_next(410, -1),
+            on_completed(420),
+            on_error(430, 'ex'))
+
+        def factory():
+            return xs.pipe(map_indexed())
+
+        results = scheduler.start(factory)
+        assert results.messages == [
+            on_next(210, 4),
+            on_next(240, 3),
+            on_next(290, 2),
+            on_next(350, 1),
+            on_completed(400)]
+
+        assert xs.subscriptions == [subscribe(200, 400)]
 
     def test_map_with_index_not_completed(self):
         scheduler = TestScheduler()
