@@ -1950,6 +1950,35 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
     return _some(predicate)
 
 
+
+def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+    """The starmap operator.
+
+    Unpack combined elements of an observable sequence and return an
+    observable sequence of values by invoking the mapper function with the
+    unpacked elements as positionnal arguments.
+
+    Example:
+        >>> starmap(lambda x, y: x + y)
+
+    Args:
+        mapper: A transform function to invoke with unpacked elemments as
+        arguments.
+
+    Returns:
+        An operator function that takes an observable source and returns an
+        observable sequence cointaining the results of invoking the
+        mapper function with unpacked elements of the source.
+    """
+
+    from rx.core import pipe
+
+    def identity(*args): return args
+
+    mapper = mapper or identity
+    return pipe(map(lambda values: mapper(*values)))
+
+
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
 
