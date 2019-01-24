@@ -1,11 +1,11 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Callable, Union, Any, Iterable, List
+from typing import Callable, Union, Any, Iterable, List, cast
 from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
-from rx.core import Observable, ConnectableObservable, GroupedObservable, BlockingObservable, typing
+from rx.core import Observable, ConnectableObservable, GroupedObservable, BlockingObservable, typing, pipe
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
 
@@ -1179,7 +1179,7 @@ def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
     return _min(comparer)
 
 
-def min_by(key_mapper, comparer=None) -> Observable:
+def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -1200,6 +1200,7 @@ def min_by(key_mapper, comparer=None) -> Observable:
     """
     from rx.core.operators.minby import _min_by
     return _min_by(key_mapper, comparer)
+
 
 def multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,
               mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
@@ -1954,29 +1955,32 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
 def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """The starmap operator.
 
-    Unpack combined elements of an observable sequence and return an
-    observable sequence of values by invoking the mapper function with the
-    unpacked elements as positionnal arguments.
+    Unpack arguments grouped as tuple elements of an observable
+    sequence and return an observable sequence of values by invoking
+    the mapper function with star applied unpacked elements as
+    positional arguments.
+
+    Use instead of `map()` when the the arguments to the mapper is
+    grouped as tuples and the mapper function takes multiple arguments.
 
     Example:
         >>> starmap(lambda x, y: x + y)
 
     Args:
-        mapper: A transform function to invoke with unpacked elemments as
-        arguments.
+        mapper: A transform function to invoke with unpacked elements
+            as arguments.
 
     Returns:
-        An operator function that takes an observable source and returns an
-        observable sequence cointaining the results of invoking the
-        mapper function with unpacked elements of the source.
+        An operator function that takes an observable source and
+        returns an observable sequence containing the results of
+        invoking the mapper function with unpacked elements of the
+        source.
     """
 
-    from rx.core import pipe
+    if mapper is None:
+        return pipe()
 
-    def identity(*args): return args
-
-    mapper = mapper or identity
-    return pipe(map(lambda values: mapper(*values)))
+    return pipe(map(lambda values: cast(Mapper, mapper)(*values)))
 
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
