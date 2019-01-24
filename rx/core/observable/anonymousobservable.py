@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from rx.core import abc, typing
+from rx.core import typing
 
 from .observable import Observable
 
