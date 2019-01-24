@@ -176,7 +176,7 @@ Typically, you do not want to save Observables into intermediary variables for e
 
 ```python
 import rx
-import operators as ops
+from rx import operators as ops
 
 rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
     ops.map(lambda s: len(s)),
@@ -190,7 +190,6 @@ On top of data, Observables can also emit events. By treating data and events th
 
 ```python
 import rx
-
 from rx import operators as ops
 
 rx.interval(1000).pipe(
@@ -274,13 +273,15 @@ Another way to implement mutlicasting is to use the `auto_connect()` operator on
 
 ```python
 from random import randint
-from rx import from_range, operators as op
+
+import rx
+from rx import operators as ops
 
 
-three_emissions = from_range(1, 3)
+three_emissions = rx.range(1, 3)
 
 three_random_ints = three_emissions.pipe(
-    op.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
+    ops.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
 )
 
 three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
@@ -293,13 +294,12 @@ three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format
 You can compose different Observables together using factories like `merge()`, `concat()`, `zip()`, and `Observable.combine_latest()`. Even if Observables are working on different threads (using the `subscribe_on()` and `observe_on()` operators), they will be combined safely. For instance, we can use `zip()` to slow down emitting 5 Strings by zipping them with an `Observable.interval()`. We will take one emission from each source and zip them into a tuple.
 
 ```python
-from rx import of, interval, zip
+import rx
 
-letters = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+letters = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+intervals = rx.interval(1000)
 
-intervals = interval(1000)
-
-zip(letters, intervals, lambda s, i: (s, i)) \
+rx.zip(letters, intervals, lambda s, i: (s, i)) \
     .subscribe(lambda t: print(t))
 
 input("Press any key to quit\n")
@@ -317,7 +317,8 @@ You can create Observables off of virtually anything, and it is often helpful to
 
 ```python
 from sqlalchemy import create_engine, text
-from rx import Observable
+import rx
+from rx import operators as ops
 
 engine = create_engine('sqlite:///rexon_metals.db')
 conn = engine.connect()
@@ -327,9 +328,9 @@ def customer_for_id(customer_id):
     return Observable.from_(conn.execute(stmt, id=customer_id))
 
 # Query customers with IDs 1, 3, and 5
-Observable.of(1, 3, 5) \
-    .flat_map(lambda id: customer_for_id(id)) \
-    .subscribe_(lambda r: print(r))
+rx.of(1, 3, 5).pipe(
+    ops.flat_map(lambda id: customer_for_id(id))
+).subscribe_(lambda r: print(r))
 ```
 
 **OUTPUT:**
@@ -356,7 +357,8 @@ import random
 import time
 from threading import current_thread
 
-from rx import Observable
+import rx
+from rx import operators as ops
 from rx.concurrency import ThreadPoolScheduler
 
 
@@ -370,27 +372,33 @@ optimal_thread_count = multiprocessing.cpu_count()
 pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
 # Create Process 1
-Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
-    .map(lambda s: intense_calculation(s)) \
-    .subscribe_on(pool_scheduler) \
-    .subscribe_(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
-                on_error=lambda e: print(e),
-                on_completed=lambda: print("PROCESS 1 done!"))
+rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    ops.map(lambda s: intense_calculation(s)),
+    ops.subscribe_on(pool_scheduler)
+).subscribe_(
+    on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
+    on_error=lambda e: print(e),
+    on_completed=lambda: print("PROCESS 1 done!")
+)
 
 # Create Process 2
-Observable.range(1, 10) \
-    .map(lambda s: intense_calculation(s)) \
-    .subscribe_on(pool_scheduler) \
-    .subscribe_(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
-                on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
+rx.range(1, 10).pipe(
+    ops.map(lambda s: intense_calculation(s)),
+    ops.subscribe_on(pool_scheduler)
+).subscribe_(
+    on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
+    on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!")
+)
 
 # Create Process 3, which is infinite
-Observable.interval(1000) \
-    .map(lambda i: i * 100) \
-    .observe_on(pool_scheduler) \
-    .map(lambda s: intense_calculation(s)) \
-    .subscribe_(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
-                on_error=lambda e: print(e))
+rx.interval(1000).pipe(
+    ops.map(lambda i: i * 100),
+    ops.observe_on(pool_scheduler),
+    ops.map(lambda s: intense_calculation(s))
+).subscribe_(
+    on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
+    on_error=lambda e: print(e)
+)
 
 input("Press any key to exit\n")
 ```
@@ -423,28 +431,19 @@ Disposables implements a context manager so you may use them in `with` statement
 Observable sequences may be concatenated using `+`, so you can write:
 
 ```python
-from rx import of
+import rx
 
-xs = of(1,2,3)
-ys = of(4,5,6)
+xs = rx.of(1,2,3)
+ys = rx.of(4,5,6)
 zs = xs + ys  # Concatenate observables
-```
-
-Observable sequences may be repeated using `*=`, so you can write:
-
-```python
-from rx import of
-
-xs = of(1,2,3)
-ys = xs * 4
 ```
 
 Observable sequences may be sliced using `[start:stop:step]`, so you can write:
 
 ```python
-from rx import of
+import rx
 
-xs = of(1,2,3,4,5,6)
+xs = rx.of(1,2,3,4,5,6)
 ys = xs[1:-1]
 ```
 
