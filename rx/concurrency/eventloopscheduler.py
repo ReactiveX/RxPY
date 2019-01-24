@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, List, Optional
 
 from rx import disposable
-from rx.core import Disposable, typing
+from rx.core import typing
 from rx.concurrency import ScheduledItem
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
@@ -14,7 +14,7 @@ from .schedulerbase import SchedulerBase
 log = logging.getLogger('Rx')
 
 
-class EventLoopScheduler(SchedulerBase, Disposable):
+class EventLoopScheduler(SchedulerBase, typing.Disposable):
     """Creates an object that schedules units of work on a designated
     thread."""
 

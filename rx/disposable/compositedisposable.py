@@ -1,6 +1,6 @@
 from threading import RLock
 
-from rx.core import Disposable
+from rx.core.typing import Disposable
 
 
 class CompositeDisposable(Disposable):

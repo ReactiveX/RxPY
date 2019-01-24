@@ -2,7 +2,8 @@ from typing import Callable
 
 import rx
 from rx import disposable
-from rx.core import Observable, AnonymousObservable, Disposable
+from rx.core import Observable, AnonymousObservable
+from rx.core.typing import Disposable
 from rx.disposable import CompositeDisposable
 
 

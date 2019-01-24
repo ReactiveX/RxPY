@@ -2,7 +2,7 @@ from typing import Callable, Optional
 
 from rx.core import typing
 
-from .observable import Observable
+from .observablebase import ObservableBase as Observable
 
 
 class AnonymousObservable(Observable):

@@ -3,7 +3,7 @@
 from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
-from .core import Observer, Observable, abc, typing, pipe
+from .core import Observable, abc, typing, pipe
 from .core import AnonymousObservable as _AnonymousObservable
 
 from . import disposable

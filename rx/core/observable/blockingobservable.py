@@ -1,13 +1,13 @@
 from typing import Any, Callable, Iterable
 from threading import RLock
 
-from rx.core import abc
+from rx.core import typing
 
-from .observable import Observable
+from .observablebase import ObservableBase as Observable
 from ..observer import AnonymousObserver
 
 
-class BlockingObservable(abc.Observable):
+class BlockingObservable(typing.Observable):
     def __init__(self, observable: Observable = None):
         """Turns an observable into a blocking observable.
 
@@ -18,7 +18,7 @@ class BlockingObservable(abc.Observable):
         self.observable = observable
         self.lock = RLock()
 
-    def subscribe(self, observer: abc.Observer = None, scheduler: abc.Scheduler = None) -> abc.Disposable:
+    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:
         """Subscribe an observer to the observable sequence.
 
         Examples:

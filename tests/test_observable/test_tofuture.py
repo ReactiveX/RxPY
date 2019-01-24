@@ -1,13 +1,9 @@
 
-import sys
 import unittest
 import asyncio
 
-
 import rx
-from rx.core import Observable, Disposable
-from rx.testing import TestScheduler, ReactiveTest
-from rx.disposable import SerialDisposable
+from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

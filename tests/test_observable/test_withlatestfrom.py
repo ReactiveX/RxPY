@@ -2,9 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.core import Disposable
-from rx.testing import TestScheduler, ReactiveTest, is_prime, MockDisposable
-from rx.disposable import SerialDisposable
+from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

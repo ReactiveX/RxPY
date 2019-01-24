@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from rx import disposable
-from rx.core import Scheduler, Disposable, typing
-from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState
+from rx.core import typing
+from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState, Disposable
 from rx.disposable import MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
-class SchedulerBase(Scheduler):
+class SchedulerBase(typing.Scheduler):
     """Provides a set of static properties to access commonly used
     schedulers.
     """
@@ -37,7 +37,7 @@ class SchedulerBase(Scheduler):
 
         disp = MultipleAssignmentDisposable()
 
-        def invoke_action(scheduler: Scheduler, _: TState) -> Optional[Disposable]:
+        def invoke_action(scheduler: typing.Scheduler, _: TState) -> Optional[Disposable]:
             nonlocal state
 
             if disp.is_disposed:

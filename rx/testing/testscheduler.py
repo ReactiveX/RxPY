@@ -2,7 +2,8 @@ from typing import Callable, Any
 
 import rx
 from rx import disposable
-from rx.core import Observable, Disposable, typing
+from rx.core import Observable, typing
+from rx.core.typing import Disposable
 from rx.concurrency import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable

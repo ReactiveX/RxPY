@@ -10,7 +10,7 @@ from ..observer import AnonymousObserver
 from .. import typing, abc
 
 
-class Observable(typing.Observable):
+class ObservableBase(typing.Observable):
     """Observables base class.
 
     Represents a push-style collection and contains all operators as
@@ -182,7 +182,7 @@ class Observable(typing.Observable):
         return self.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
 
 
-    def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
+    def pipe(self, *operators: Callable[['ObservableBase'], 'ObservableBase']) -> 'ObservableBase':
         """Compose multiple operators left to right.
 
         Composes zero or more operators into a functional composition.

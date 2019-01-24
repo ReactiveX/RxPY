@@ -1,9 +1,9 @@
 from rx.disposable import CompositeDisposable
 
-from .observable import Observable
+from .observablebase import ObservableBase
 from .anonymousobservable import AnonymousObservable
 
-class GroupedObservable(Observable):
+class GroupedObservable(ObservableBase):
     def __init__(self, key, underlying_observable, merged_disposable=None):
         super(GroupedObservable, self).__init__()
         self.key = key

@@ -1,7 +1,8 @@
 from typing import Any
 
 from rx.core import typing
-from rx.core import Observable, Observer, Scheduler
+from rx.core import Observable
+from rx.core.typing import Observer, Scheduler
 
 
 class AnonymousSubject(Observable, Observer):

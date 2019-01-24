@@ -2,7 +2,7 @@ from threading import RLock
 from typing import Optional
 
 from rx.core import typing
-from rx.core import Disposable
+from rx.core.typing import Disposable
 
 
 class SerialDisposable(Disposable):
@@ -12,13 +12,13 @@ class SerialDisposable(Disposable):
     """
 
     def __init__(self) -> None:
-        self.current: Optional[typing.Disposable] = None
+        self.current: Optional[Disposable] = None
         self.is_disposed = False
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self) -> Optional[typing.Disposable]:
+    def get_disposable(self) -> Optional[Disposable]:
         return self.current
 
     def set_disposable(self, value) -> None:
@@ -27,7 +27,7 @@ class SerialDisposable(Disposable):
         disposable object. Assigning this property disposes the previous
         disposable object."""
 
-        old: Optional[typing.Disposable] = None
+        old: Optional[Disposable] = None
 
         with self.lock:
             should_dispose = self.is_disposed
@@ -47,7 +47,7 @@ class SerialDisposable(Disposable):
         """Disposes the underlying disposable as well as all future
         replacements."""
 
-        old: Optional[typing.Disposable] = None
+        old: Optional[Disposable] = None
 
         with self.lock:
             if not self.is_disposed:

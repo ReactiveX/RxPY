@@ -1,10 +1,7 @@
 # flake8: noqa
-from .typing import Observer, Scheduler, Disposable
-
-
 from .pipe import pipe
 
-from .observable import Observable
+from .observable import ObservableBase as Observable
 from .observable import AnonymousObservable, ConnectableObservable
 from .observable import GroupedObservable, BlockingObservable
 

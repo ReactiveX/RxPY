@@ -1,4 +1,4 @@
-from rx.core import Observer
+from rx.core.typing import Observer
 from rx.testing import TestScheduler, ReactiveTest
 from rx.core.notification import OnNext, OnError, OnCompleted
 
