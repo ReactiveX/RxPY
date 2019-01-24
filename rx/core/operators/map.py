@@ -1,9 +1,15 @@
 from typing import Callable, Any
+
+from rx.internal.basic import identity
 from rx.core import AnonymousObservable, Observable
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
+
 # pylint: disable=redefined-builtin
 def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+
+    _mapper = mapper or identity
+
     def map(source: Observable) -> Observable:
         """Partially applied map operator.
 
@@ -22,14 +28,10 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
             of the source.
         """
 
-        def identity(value): return value
-
-        mapper_ = mapper or identity
-
-        def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
+        def subscribe(obv: Observer, scheduler: Scheduler = None) -> Disposable:
             def on_next(value: Any) -> None:
                 try:
-                    result = mapper_(value)
+                    result = _mapper(value)
                 except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
@@ -41,6 +43,11 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
 
 def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+    def _identity(value: Any, index: int) -> Any:
+        return value
+
+    _mapper_indexed = mapper_indexed or _identity
+
     def map_indexed(source: Observable) -> Observable:
         """Partially applied indexed map operator.
 
@@ -59,18 +66,14 @@ def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable],
             of the source.
         """
 
-        def identity(value, index): return value
-
-        mapper_indexed_ = mapper_indexed or identity
-
-        def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
+        def subscribe(obv: Observer, scheduler: Scheduler = None) -> Disposable:
             count = 0
 
             def on_next(value: Any) -> None:
                 nonlocal count
 
                 try:
-                    result = mapper_indexed_(value, count)
+                    result = _mapper_indexed(value, count)
                 except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
