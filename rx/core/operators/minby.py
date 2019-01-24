@@ -1,3 +1,5 @@
+from typing import Callable
+
 from rx.core import AnonymousObservable, Observable
 from rx.internal.basic import default_sub_comparer
 
@@ -14,7 +16,7 @@ def extrema_by(source, key_mapper, comparer):
                 observer.on_error(ex)
                 return
 
-            comparison = 0;
+            comparison = 0
 
             if not has_value[0]:
                 has_value[0] = True
@@ -41,7 +43,7 @@ def extrema_by(source, key_mapper, comparer):
     return AnonymousObservable(subscribe)
 
 
-def _min_by(key_mapper, comparer=None) -> Observable:
+def _min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -56,8 +58,8 @@ def _min_by(key_mapper, comparer=None) -> Observable:
         comparer: [Optional] Comparer used to compare key values.
 
     Returns:
-        An observable sequence containing a list of zero
-        or more elements that have a minimum key value.
+        An observable sequence containing a list of zero or more
+        elements that have a minimum key value.
     """
 
     comparer = comparer or default_sub_comparer
