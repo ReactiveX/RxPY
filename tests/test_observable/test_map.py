@@ -28,7 +28,7 @@ def _raise(ex):
 class TestSelect(unittest.TestCase):
 
     def test_map_throws(self):
-        mapper = map_indexed(lambda x, y: x)
+        mapper = map(lambda x: x)
         with self.assertRaises(RxException):
             return_value(1).pipe(
                 mapper
