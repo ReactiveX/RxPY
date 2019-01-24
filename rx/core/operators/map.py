@@ -21,10 +21,15 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
             result of invoking the transform function on each element
             of the source.
         """
+
+        def identity(value): return value
+
+        mapper_ = mapper or identity
+
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             def on_next(value: Any) -> None:
                 try:
-                    result = mapper(value)
+                    result = mapper_(value)
                 except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
@@ -54,6 +59,10 @@ def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable],
             of the source.
         """
 
+        def identity(value, index): return value
+
+        mapper_indexed_ = mapper_indexed or identity
+
         def subscribe(obv: Observer, scheduler: Scheduler) -> Disposable:
             count = 0
 
@@ -61,7 +70,7 @@ def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable],
                 nonlocal count
 
                 try:
-                    result = mapper_indexed(value, count)
+                    result = mapper_indexed_(value, count)
                 except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
