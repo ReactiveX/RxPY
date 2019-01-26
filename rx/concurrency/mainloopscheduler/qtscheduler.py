@@ -1,5 +1,6 @@
 import logging
 
+from rx import disposable
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
