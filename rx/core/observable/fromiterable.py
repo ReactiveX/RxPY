@@ -2,7 +2,7 @@ from typing import Iterable, Any
 
 from rx.core import Observable, AnonymousObservable, typing
 from rx.concurrency import current_thread_scheduler
-from rx.disposable import CompositeDisposable, AnonymousDisposable
+from rx.disposable import CompositeDisposable, Disposable
 
 
 def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
@@ -41,6 +41,6 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
             nonlocal disposed
             disposed = True
 
-        disp = AnonymousDisposable(dispose)
+        disp = Disposable(dispose)
         return CompositeDisposable(_scheduler.schedule(action), disp)
     return AnonymousObservable(subscribe)

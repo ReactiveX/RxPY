@@ -1,6 +1,6 @@
 from typing import Any
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
@@ -44,7 +44,7 @@ class TkinterScheduler(SchedulerBase):
         def dispose():
             self.master.after_cancel(alarm)
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

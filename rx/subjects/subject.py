@@ -1,9 +1,9 @@
 import threading
 from typing import Any, List, Optional
 
-from rx import disposable
-from rx.core.typing import Observer, Scheduler, Disposable
-from rx.core import Observable
+from rx.disposable import Disposable
+from rx.core.typing import Observer, Scheduler
+from rx.core import Observable, typing
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
@@ -30,7 +30,7 @@ class Subject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> Disposable:
+    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> typing.Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -39,10 +39,10 @@ class Subject(Observable, Observer):
 
             if self.exception:
                 observer.on_error(self.exception)
-                return disposable.empty()
+                return Disposable()
 
             observer.on_completed()
-            return disposable.empty()
+            return Disposable()
 
     def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the

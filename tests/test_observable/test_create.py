@@ -1,7 +1,7 @@
 import unittest
 
 import rx
-from rx import disposable
+from rx.disposable import Disposable
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposable import BooleanDisposable
 
@@ -139,7 +139,7 @@ class TestCreate(unittest.TestCase):
             def subscribe(o, observer=None):
                 o.on_next(1)
                 o.on_next(2)
-                return disposable.empty()
+                return Disposable()
             return rx.create(subscribe)
         results = scheduler.start(_create)
 
@@ -154,7 +154,7 @@ class TestCreate(unittest.TestCase):
                 o.on_next(100)
                 o.on_error('ex')
                 o.on_completed()
-                return disposable.empty()
+                return Disposable()
             return rx.create(subscribe)
 
         results = scheduler.start(_create)
@@ -170,7 +170,7 @@ class TestCreate(unittest.TestCase):
                 o.on_next(100)
                 o.on_error('foo')
                 o.on_completed()
-                return disposable.empty()
+                return Disposable()
 
             return rx.create(subscribe)
         results = scheduler.start(_create)
@@ -220,7 +220,7 @@ class TestCreate(unittest.TestCase):
     def test_create_observer_throws(self):
         def subscribe1(o, _):
             o.on_next(1)
-            return disposable.empty()
+            return Disposable()
 
         def on_next(x):
             _raise('ex')
@@ -230,14 +230,14 @@ class TestCreate(unittest.TestCase):
 
         def subscribe2(o, _):
             o.on_error('exception')
-            return disposable.empty()
+            return Disposable()
 
         with self.assertRaises(RxException):
             rx.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o, _):
             o.on_completed()
-            return disposable.empty()
+            return Disposable()
 
         with self.assertRaises(RxException):
             rx.create(subscribe3).subscribe_(on_completed=_raise('ex'))

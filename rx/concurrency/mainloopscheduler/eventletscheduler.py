@@ -2,7 +2,7 @@ import logging
 from typing import Any
 from datetime import datetime
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
@@ -37,7 +37,7 @@ class EventLetEventScheduler(SchedulerBase):
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -69,7 +69,7 @@ class EventLetEventScheduler(SchedulerBase):
             # nonlocal timer
             timer[0].kill()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

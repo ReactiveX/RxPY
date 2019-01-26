@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
-from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState, Disposable
+from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState
 from rx.disposable import SerialDisposable
 from rx.internal.basic import default_now
 
@@ -18,7 +18,7 @@ class SchedulerBase(typing.Scheduler):
         if isinstance(ret, typing.Disposable):
             return ret
 
-        return disposable.empty()
+        return Disposable()
 
     def schedule_periodic(self, period: typing.RelativeTime, action: ScheduledPeriodicAction,
                           state: TState = None) -> typing.Disposable:

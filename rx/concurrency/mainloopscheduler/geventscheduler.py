@@ -1,6 +1,6 @@
 import logging
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -33,7 +33,7 @@ class GEventScheduler(SchedulerBase):
         def dispose():
             timer[0].kill()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -62,7 +62,7 @@ class GEventScheduler(SchedulerBase):
             # nonlocal timer
             timer[0].kill()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

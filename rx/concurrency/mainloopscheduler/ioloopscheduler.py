@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
@@ -33,7 +33,7 @@ class IOLoopScheduler(SchedulerBase):
             # nonlocal
             disposed[0] = True
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(self, duetime, action, state=None):
         """Schedules an action to be executed after duetime.
@@ -61,7 +61,7 @@ class IOLoopScheduler(SchedulerBase):
         def dispose():
             self.loop.remove_timeout(handle)
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

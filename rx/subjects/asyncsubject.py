@@ -1,6 +1,6 @@
 import threading
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import Observable
 from rx.core.typing import Observer
 from rx.internal import DisposedException
@@ -51,7 +51,7 @@ class AsyncSubject(Observable, Observer):
         else:
             observer.on_completed()
 
-        return disposable.empty()
+        return Disposable()
 
     def on_completed(self):
         value = None

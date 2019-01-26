@@ -1,6 +1,6 @@
 from asyncio.futures import Future
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 
@@ -34,6 +34,6 @@ def _from_future(future: Future) -> Observable:
             if future and future.cancel:
                 future.cancel()
 
-        return disposable.create(dispose)
+        return Disposable(dispose)
 
     return AnonymousObservable(subscribe)

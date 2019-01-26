@@ -1,9 +1,8 @@
 from threading import Timer
 from datetime import timedelta
 
-from rx import disposable
 from rx.core import typing
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Disposable
 
 from .schedulerbase import SchedulerBase
 
@@ -25,7 +24,7 @@ class TimeoutScheduler(SchedulerBase):
 
         def dispose():
             timer.cancel()
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""
@@ -48,7 +47,7 @@ class TimeoutScheduler(SchedulerBase):
         def dispose():
             timer.cancel()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action: typing.ScheduledAction, state: typing.TState = None):
         """Schedules an action to be executed after duetime."""

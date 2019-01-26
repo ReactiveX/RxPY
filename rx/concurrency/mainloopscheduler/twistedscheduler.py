@@ -1,6 +1,6 @@
 import logging
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.concurrency.schedulerbase import SchedulerBase
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
@@ -47,7 +47,7 @@ class TwistedScheduler(SchedulerBase):
             if not handle.called:
                 handle.cancel()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime, action, state=None):
         """Schedules an action to be executed at duetime.

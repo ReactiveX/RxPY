@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 from rx.core.typing import Mapper
@@ -45,7 +45,7 @@ def _from_callback(func: Callable, mapper: Mapper = None) -> Callable[[], Observ
 
             arguments.append(handler)
             func(*arguments)
-            return disposable.empty()
+            return Disposable()
 
         return AnonymousObservable(subscribe)
     return function

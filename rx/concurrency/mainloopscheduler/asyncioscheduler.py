@@ -3,7 +3,7 @@ import asyncio
 from datetime import datetime
 from concurrent.futures import Future
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
@@ -35,7 +35,7 @@ class AsyncIOScheduler(SchedulerBase):
         def dispose():
             handle.cancel()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def _schedule_threadsafe(self, action, state=None):
         sad = SingleAssignmentDisposable()
@@ -55,7 +55,7 @@ class AsyncIOScheduler(SchedulerBase):
             self.loop.call_soon_threadsafe(cancel_handle)
             future.result()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -91,7 +91,7 @@ class AsyncIOScheduler(SchedulerBase):
         def dispose():
             handle.cancel()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def _schedule_relative_threadsafe(self, duetime, action, state=None):
         scheduler = self
@@ -127,7 +127,7 @@ class AsyncIOScheduler(SchedulerBase):
             self.loop.call_soon_threadsafe(cancel_handle)
             future.result()
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

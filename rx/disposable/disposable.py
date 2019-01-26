@@ -1,13 +1,13 @@
 from threading import RLock
 
 from rx.internal import noop
-from rx.core.typing import Disposable, Action
+from rx.core import typing
 
 
-class AnonymousDisposable(Disposable):
+class Disposable(typing.Disposable):
     """Main disposable class"""
 
-    def __init__(self, action: Action = None) -> None:
+    def __init__(self, action: typing.Action = None) -> None:
         """Creates a disposable object that invokes the specified
         action when disposed.
 

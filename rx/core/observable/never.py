@@ -1,4 +1,4 @@
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.core import Observable, AnonymousObservable
 
@@ -12,6 +12,6 @@ def _never() -> Observable:
     """
 
     def subscribe(_: typing.Observer, __: typing.Scheduler = None) -> typing.Disposable:
-        return disposable.empty()
+        return Disposable()
 
     return AnonymousObservable(subscribe)

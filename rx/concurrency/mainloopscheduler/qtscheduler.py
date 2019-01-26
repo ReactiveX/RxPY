@@ -1,6 +1,6 @@
 import logging
 
-from rx import disposable
+from rx.disposable import Disposable
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
@@ -42,7 +42,7 @@ class QtScheduler(SchedulerBase):
             timer.stop()
             self._timers.remove(timer)
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""

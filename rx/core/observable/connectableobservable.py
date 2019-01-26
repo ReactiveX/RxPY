@@ -1,4 +1,4 @@
-from rx import disposable
+from rx.disposable import Disposable
 from rx.disposable import CompositeDisposable
 
 from .observablebase import ObservableBase
@@ -29,7 +29,7 @@ class ConnectableObservable(ObservableBase):
                 self.has_subscription = False
 
             subscription = self.source.subscribe(self.subject, scheduler)
-            self.subscription = CompositeDisposable(subscription, disposable.create(dispose))
+            self.subscription = CompositeDisposable(subscription, Disposable(dispose))
 
         return self.subscription
 
@@ -64,5 +64,5 @@ class ConnectableObservable(ObservableBase):
                 count[0] -= 1
                 is_connected[0] = False
 
-            return disposable.create(dispose)
+            return Disposable(dispose)
         return AnonymousObservable(subscribe)

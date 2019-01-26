@@ -39,7 +39,7 @@ class GtkScheduler(SchedulerBase):
         def dispose():
             stopped[0] = True
 
-        return CompositeDisposable(sad, disposable.create(dispose))
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
