@@ -36,6 +36,7 @@ class PyGameScheduler(SchedulerBase):
         while self.queue:
             item = self.queue.peek()
             diff = item.duetime - self.now
+
             if diff > timedelta(0):
                 break
 
@@ -83,4 +84,4 @@ class PyGameScheduler(SchedulerBase):
         scheduled on a scheduler will adhere to the time denoted by
         this property."""
 
-        return self.to_datetime(pygame.time.get_ticks())
+        return datetime.utcnow()

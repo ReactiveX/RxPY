@@ -1,10 +1,11 @@
 import sys
-import logging
-
-from rx.subjects import Subject
-from rx.concurrency import PyGameScheduler
 
 import pygame
+
+from rx import operators as ops
+from rx.subjects import Subject
+from rx.concurrency.mainloopscheduler import PyGameScheduler
+
 
 #FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
 #logging.basicConfig(format=FORMAT, level=logging.DEBUG)
@@ -58,7 +59,9 @@ def main():
             print("Got error: %s" % err)
             sys.exit()
 
-        mousemove.delay(i * i * 50, scheduler=scheduler).subscribe(on_next, on_error=on_error)
+        mousemove.pipe(
+            ops.delay(0.1 * i, scheduler=scheduler)
+        ).subscribe_(on_next, on_error=on_error)
 
     for i, image in enumerate(images):
         handle_image(i, image)
@@ -82,7 +85,7 @@ def main():
                 update.append(rect)
 
             pygame.display.update(update)
-            #pygame.display.flip()
+            pygame.display.flip()
             draw = []
             erase = []
 
