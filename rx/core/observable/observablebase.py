@@ -11,7 +11,7 @@ from .. import typing, abc
 
 
 class ObservableBase(typing.Observable):
-    """Observables base class.
+    """Observable base class.
 
     Represents a push-style collection and contains all operators as
     methods to allow classic Rx chaining of operators."""
