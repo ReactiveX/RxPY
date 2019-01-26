@@ -37,9 +37,13 @@ class SchedulerBase(typing.Scheduler):
 
         disp = SerialDisposable()
 
-        def invoke_action(scheduler: typing.Scheduler, state: TState) -> Optional[Disposable]:
+        def invoke_action(scheduler: typing.Scheduler, _: TState) -> Optional[Disposable]:
+            nonlocal state
+
             if disp.is_disposed:
                 return None
+
+            disp.disposable = self.schedule_relative(period, invoke_action, None)
 
             try:
                 new_state = action(state)
@@ -47,7 +51,9 @@ class SchedulerBase(typing.Scheduler):
                 disp.dispose()
                 raise
 
-            disp.disposable = self.schedule_relative(period, invoke_action, new_state)
+            if state is not None:
+                state = new_state
+
             return None
 
         disp.disposable = self.schedule_relative(period, invoke_action, state)
