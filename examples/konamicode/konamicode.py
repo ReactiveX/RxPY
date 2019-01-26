@@ -32,7 +32,7 @@ class WSHandler(WebSocketHandler):
             ops.filter(lambda equal: equal)
         )
         # 4. we then subscribe to the Trues, and signal Konami! if we see any
-        query.subscribe_(lambda x: self.write_message("Konami!"))
+        query.subscribe(lambda x: self.write_message("Konami!"))
 
     def on_message(self, message):
         obj = json_decode(message)

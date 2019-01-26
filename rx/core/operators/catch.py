@@ -23,7 +23,7 @@ def catch_handler(source, handler) -> Observable:
             result = rx.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = result.subscribe(observer, scheduler)
+            d.disposable = result.subscribe(observer, scheduler=scheduler)
 
         d1.disposable = source.subscribe_(
             observer.on_next,

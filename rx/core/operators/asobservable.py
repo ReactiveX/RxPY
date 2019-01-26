@@ -15,7 +15,7 @@ def _as_observable() -> Callable[[Observable], Observable]:
         """
 
         def subscribe(observer, scheduler=None):
-            return source.subscribe(observer, scheduler)
+            return source.subscribe(observer, scheduler=scheduler)
 
         return Observable(subscribe)
     return as_observable

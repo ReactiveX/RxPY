@@ -17,7 +17,7 @@ class ConnectableObservable(ObservableBase):
         super().__init__(source)
 
     def _subscribe_core(self, observer, scheduler=None):
-        return self.subject.subscribe(observer, scheduler)
+        return self.subject.subscribe(observer, scheduler=scheduler)
 
     def connect(self, scheduler=None):
         """Connects the observable."""

@@ -35,8 +35,8 @@ def _using(resource_factory: Callable[[], typing.Disposable],
 
             source = observable_factory(resource)
         except Exception as exception:
-            d = rx.throw(exception).subscribe(observer, scheduler)
+            d = rx.throw(exception).subscribe(observer, scheduler=scheduler)
             return CompositeDisposable(d, disp)
 
-        return CompositeDisposable(source.subscribe(observer, scheduler), disp)
+        return CompositeDisposable(source.subscribe(observer, scheduler=scheduler), disp)
     return Observable(subscribe)

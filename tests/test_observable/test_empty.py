@@ -43,7 +43,7 @@ class TestEmpty(unittest.TestCase):
     def test_empty_observer_throw_exception(self):
         scheduler = TestScheduler()
         xs = empty()
-        xs.subscribe_(lambda x: None, lambda ex: None, lambda: _raise('ex'), scheduler)
+        xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'), scheduler)
 
         with self.assertRaises(RxException):
             scheduler.start()

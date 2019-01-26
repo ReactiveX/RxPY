@@ -34,6 +34,6 @@ def _take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler =
                 observer.on_completed()
 
             disp = _scheduler.schedule_relative(duration, action)
-            return CompositeDisposable(disp, source.subscribe(observer, scheduler_))
+            return CompositeDisposable(disp, source.subscribe(observer, scheduler=scheduler_))
         return Observable(subscribe)
     return take_with_time

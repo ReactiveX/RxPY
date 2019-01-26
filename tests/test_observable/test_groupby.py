@@ -375,7 +375,7 @@ class TestGroupBy(unittest.TestCase):
                     c["inner_subscriptions"][group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action21)
-            c["outer_subscription"] = c["outer"].subscribe_(next, scheduler=scheduler)
+            c["outer_subscription"] = c["outer"].subscribe(next, scheduler=scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         def action3(scheduler, state):
@@ -450,7 +450,7 @@ class TestGroupBy(unittest.TestCase):
                 inners[group.key] = group
                 results[group.key] = c["result"]
                 inner_subscriptions[group.key] = group.subscribe(c["result"], scheduler)
-            c["outer_subscription"] = c["outer"].subscribe_(on_next, scheduler=scheduler)
+            c["outer_subscription"] = c["outer"].subscribe(on_next, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 
@@ -536,7 +536,7 @@ class TestGroupBy(unittest.TestCase):
                     inner_subscriptions[group.key] = group.subscribe(result, scheduler)
 
                 scheduler.schedule_relative(100, action3)
-            c["outer_subscription"] = c["outer"].subscribe_(on_next, lambda e: None, scheduler=scheduler)
+            c["outer_subscription"] = c["outer"].subscribe(on_next, lambda e: None, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
 

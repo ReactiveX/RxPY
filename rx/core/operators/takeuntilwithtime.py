@@ -35,6 +35,6 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: ty
                 observer.on_completed()
 
             task = scheduler_method(end_time, action)
-            return CompositeDisposable(task, source.subscribe(observer, scheduler_))
+            return CompositeDisposable(task, source.subscribe(observer, scheduler=scheduler_))
         return Observable(subscribe)
     return take_until_with_time

@@ -123,7 +123,7 @@ import rx
 
 source = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-source.subscribe_(
+source.subscribe(
     on_next=lambda value: print("Received {0}".format(value)),
     on_completed=lambda: print("Done!"),
     on_error=lambda error: print("Error Occurred: {0}".format(error))
@@ -137,7 +137,7 @@ import rx
 
 source = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-source.subscribe_(lambda value: print("Received {0}".format(value)))
+source.subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -162,7 +162,7 @@ composed = source.pipe(
     ops.map(lambda s: len(s)),
     ops.filter(lambda i: i >= 5)
 )
-composed.subscribe_(lambda value: print("Received {0}".format(value)))
+composed.subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 **OUTPUT:**
@@ -181,7 +181,7 @@ from rx import operators as ops
 rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
     ops.map(lambda s: len(s)),
     ops.filter(lambda i: i >= 5)
-).subscribe_(lambda value: print("Received {0}".format(value)))
+).subscribe(lambda value: print("Received {0}".format(value)))
 ```
 
 ## Emitting Events
@@ -194,7 +194,7 @@ from rx import operators as ops
 
 rx.interval(1000).pipe(
     ops.map(lambda i: "{0} Mississippi".format(i))
-).subscribe_(lambda s: print(s))
+).subscribe(lambda s: print(s))
 
 input("Press any key to quit\n")
 ```
@@ -226,8 +226,8 @@ three_emissions = rx.from_range(1, 3)
 mapper = ops.map(lambda i: randint(1, 100000))
 three_random_ints = three_emissions.pipe(mapper)
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 ```
 
 **OUTPUT:**
@@ -252,8 +252,8 @@ three_random_ints = three_emissions.pipe(
     op.map(lambda i: randint(1, 100000)).publish()
 )
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i)))
 
 three_random_ints.connect()
 ```
@@ -284,8 +284,8 @@ three_random_ints = three_emissions.pipe(
     ops.map(lambda i: randint(1, 100000)).publish().auto_connect(2)
 )
 
-three_random_ints.subscribe_(lambda i: print("Subscriber 1 Received: {0}".format(i)))
-three_random_ints.subscribe_(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
+three_random_ints.subscribe(lambda i: print("Subscriber 1 Received: {0}".format(i)))
+three_random_ints.subscribe(lambda i: print("Subscriber 2 Received: {0}".format(i))) # second subscriber triggers firing
 
 ```
 
@@ -330,7 +330,7 @@ def customer_for_id(customer_id):
 # Query customers with IDs 1, 3, and 5
 rx.of(1, 3, 5).pipe(
     ops.flat_map(lambda id: customer_for_id(id))
-).subscribe_(lambda r: print(r))
+).subscribe(lambda r: print(r))
 ```
 
 **OUTPUT:**
@@ -375,7 +375,7 @@ pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
     ops.map(lambda s: intense_calculation(s)),
     ops.subscribe_on(pool_scheduler)
-).subscribe_(
+).subscribe(
     on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
     on_error=lambda e: print(e),
     on_completed=lambda: print("PROCESS 1 done!")
@@ -385,7 +385,7 @@ rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
 rx.range(1, 10).pipe(
     ops.map(lambda s: intense_calculation(s)),
     ops.subscribe_on(pool_scheduler)
-).subscribe_(
+).subscribe(
     on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
     on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!")
 )
@@ -395,7 +395,7 @@ rx.interval(1000).pipe(
     ops.map(lambda i: i * 100),
     ops.observe_on(pool_scheduler),
     ops.map(lambda s: intense_calculation(s))
-).subscribe_(
+).subscribe(
     on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
     on_error=lambda e: print(e)
 )

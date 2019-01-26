@@ -73,17 +73,17 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             return_value((1, 10)).pipe(
                 mapper
-            ).subscribe_(lambda x: _raise("ex"))
+            ).subscribe(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             throw('ex').pipe(
                 mapper
-            ).subscribe_(on_error=lambda ex: _raise(ex))
+            ).subscribe(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             empty().pipe(
                 mapper
-            ).subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+            ).subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         def subscribe(observer, scheduler=None):
             _raise('ex')

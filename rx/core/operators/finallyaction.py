@@ -22,7 +22,7 @@ def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
 
         def subscribe(observer, scheduler=None):
             try:
-                subscription = source.subscribe(observer, scheduler)
+                subscription = source.subscribe(observer, scheduler=scheduler)
             except Exception:
                 action()
                 raise

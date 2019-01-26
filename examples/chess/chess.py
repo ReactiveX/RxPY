@@ -61,7 +61,7 @@ def main():
 
         mousemove.pipe(
             ops.delay(0.1 * i, scheduler=scheduler)
-        ).subscribe_(on_next, on_error=on_error)
+        ).subscribe(on_next, on_error=on_error)
 
     for i, image in enumerate(images):
         handle_image(i, image)

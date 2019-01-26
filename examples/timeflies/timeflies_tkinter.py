@@ -3,7 +3,7 @@ from tkinter import Tk, Label, Frame
 import rx
 from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency import TkinterScheduler
+from rx.concurrency.mainloopscheduler import TkinterScheduler
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
     rx.from_(text).pipe(
         mapper,
         labeler
-    ).subscribe_(on_next, on_error=print, scheduler=scheduler)
+    ).subscribe(on_next, on_error=print, scheduler=scheduler)
 
     frame.pack()
     root.mainloop()

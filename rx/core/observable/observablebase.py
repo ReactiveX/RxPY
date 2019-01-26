@@ -1,12 +1,11 @@
 # By design, pylint: disable=C0302
 import threading
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union, cast
 
 from rx.disposable import Disposable
 from rx.concurrency import current_thread_scheduler
 
 from ..observer import AutoDetachObserver
-from ..observer import AnonymousObserver
 from .. import typing, abc
 
 
@@ -94,14 +93,56 @@ class ObservableBase(typing.Observable):
         return _concat(self, other)
 
     def _subscribe_core(self, observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        return self.source.subscribe(observer, scheduler) if self.source else Disposable()
+        return self.source.subscribe(observer, scheduler=scheduler) if self.source else Disposable()
+
+    def subscribe(self,  # pylint: disable=too-many-arguments,arguments-differ
+                  observer: Union[typing.Observer, typing.OnNext] = None,
+                  on_error: typing.OnError = None,
+                  on_completed: typing.OnCompleted = None,
+                  on_next: typing.OnNext = None,
+                  *,
+                  scheduler: typing.Scheduler = None,
+                  ) -> typing.Disposable:
+        """Subscribe an observer to the observable sequence.
+
+        Examples:
+            >>> source.subscribe()
+            >>> source.subscribe(observer)
+            >>> source.subscribe(observer, scheduler=scheduler)
+            >>> source.subscribe(on_next)
+            >>> source.subscribe(on_next, on_error)
+            >>> source.subscribe(on_next, on_error, on_completed)
+            >>> source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
+
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications. You may subscribe using an observer or
+                callbacks, not both.
+            scheduler: [Optional] The default scheduler to use for this
+                subscription.
+
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
+        """
+
+        if observer:
+            if isinstance(observer, typing.Observer) or hasattr(observer, "on_next"):
+                on_next = cast(typing.Observer, observer).on_next
+                on_error = cast(typing.Observer, observer).on_error
+                on_completed = cast(typing.Observer, observer).on_completed
+            else:
+                on_next = observer
+
+        return self.subscribe_(on_next, on_error, on_completed, scheduler)
+
 
     def subscribe_(self,
                    on_next: typing.OnNext = None,
                    on_error: typing.OnError = None,
                    on_completed: typing.OnCompleted = None,
                    scheduler: typing.Scheduler = None
-                   ) -> typing.Disposable:
+                  ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -157,29 +198,6 @@ class ObservableBase(typing.Observable):
 
         # Hide the identity of the auto detach observer
         return Disposable(auto_detach_observer.dispose)
-
-
-    def subscribe(self, observer: typing.Observer = None, scheduler: typing.Scheduler = None) -> typing.Disposable:
-        """Subscribe an observer to the observable sequence.
-
-        Examples:
-            >>> source.subscribe()
-            >>> source.subscribe(observer)
-
-        Args:
-            observer: [Optional] The object that is to receive
-                notifications. You may subscribe using an observer or
-                callbacks, not both.
-
-        Returns:
-            Disposable object representing an observer's subscription
-            to the observable sequence.
-        """
-
-        observer = observer or AnonymousObserver()
-        assert isinstance(observer, abc.Observer)
-
-        return self.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
 
 
     def pipe(self, *operators: Callable[['ObservableBase'], 'ObservableBase']) -> 'ObservableBase':

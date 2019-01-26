@@ -38,7 +38,7 @@ def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] =
         if subject_factory:
             def subscribe(observer, scheduler=None):
                 connectable = source.pipe(_multicast(subject=subject_factory(scheduler)))
-                subscription = mapper(connectable).subscribe(observer, scheduler)
+                subscription = mapper(connectable).subscribe(observer, scheduler=scheduler)
 
                 return CompositeDisposable(subscription, connectable.connect(scheduler))
             return Observable(subscribe)

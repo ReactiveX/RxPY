@@ -28,5 +28,5 @@ def _defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observa
             return throw(ex).subscribe(observer)
 
         result = from_future(result) if is_future(result) else result
-        return result.subscribe(observer, scheduler)
+        return result.subscribe(observer, scheduler=scheduler)
     return Observable(subscribe)

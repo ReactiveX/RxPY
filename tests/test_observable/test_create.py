@@ -116,21 +116,21 @@ class TestCreate(unittest.TestCase):
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe).subscribe_(lambda x: _raise('ex'))
+            rx.create(subscribe).subscribe(lambda x: _raise('ex'))
 
         def subscribe2(o):
             o.on_error('exception')
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
+            rx.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o):
             o.on_completed()
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe3).subscribe_(on_completed=lambda: _raise('ex'))
+            rx.create(subscribe3).subscribe(on_completed=lambda: _raise('ex'))
 
     def test_create_next(self):
         scheduler = TestScheduler()
@@ -226,18 +226,18 @@ class TestCreate(unittest.TestCase):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            rx.create(subscribe1).subscribe_(on_next)
+            rx.create(subscribe1).subscribe(on_next)
 
         def subscribe2(o, _):
             o.on_error('exception')
             return Disposable()
 
         with self.assertRaises(RxException):
-            rx.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
+            rx.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o, _):
             o.on_completed()
             return Disposable()
 
         with self.assertRaises(RxException):
-            rx.create(subscribe3).subscribe_(on_completed=_raise('ex'))
+            rx.create(subscribe3).subscribe(on_completed=_raise('ex'))

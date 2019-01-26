@@ -34,7 +34,7 @@ class TestFromCallback(unittest.TestCase):
         def on_completed():
             assert(True)
 
-        res.subscribe_(on_next, on_error, on_completed)
+        res.subscribe(on_next, on_error, on_completed)
 
     def test_from_callback_single(self):
         res = rx.from_callback(lambda file, cb: cb(file))('file.txt')
@@ -48,7 +48,7 @@ class TestFromCallback(unittest.TestCase):
         def on_completed():
             assert(True)
 
-        res.subscribe_(on_next, on_error, on_completed)
+        res.subscribe(on_next, on_error, on_completed)
 
     def test_from_node_callback_mapper(self):
         res = rx.from_callback(
@@ -65,4 +65,4 @@ class TestFromCallback(unittest.TestCase):
         def on_completed():
             assert(True)
 
-        res.subscribe_(on_next, on_error, on_completed)
+        res.subscribe(on_next, on_error, on_completed)

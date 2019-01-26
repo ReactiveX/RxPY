@@ -13,7 +13,7 @@ class AnonymousSubject(ObservableBase, Observer):
         self.observable = observable
 
     def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> typing.Disposable:
-        return self.observable.subscribe(observer, scheduler)
+        return self.observable.subscribe(observer, scheduler=scheduler)
 
     def on_next(self, value: Any) -> None:
         self.observer.on_next(value)

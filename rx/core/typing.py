@@ -98,7 +98,7 @@ class Observable(Generic[T_out], abc.Observable):
     __slots__ = ()
 
     @abstractmethod
-    def subscribe(self, observer: Observer[T_out] = None, scheduler: Scheduler = None) -> Disposable:
+    def subscribe(self, observer: Observer[T_out] = None, *, scheduler: Scheduler = None) -> Disposable:
         raise NotImplementedError
 
 

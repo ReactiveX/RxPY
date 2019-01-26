@@ -51,7 +51,7 @@ def _timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: 
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
-                        subscription.disposable = other.subscribe(observer, scheduler)
+                        subscription.disposable = other.subscribe(observer, scheduler=scheduler)
 
                 timer.disposable = scheduler_method(duetime, action)
 

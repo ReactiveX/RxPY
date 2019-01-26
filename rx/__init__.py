@@ -322,7 +322,7 @@ def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     return _interval(period, scheduler)
 
 
-def merge(*args) -> Observable:
+def merge(*args: Observable) -> Observable:
     """Merges all the observable sequences into a single observable
     sequence.
 

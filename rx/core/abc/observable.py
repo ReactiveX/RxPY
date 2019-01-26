@@ -7,5 +7,5 @@ class Observable(ABC):
     __slots__ = ()
 
     @abstractmethod
-    def subscribe(self, observer=None, scheduler=None):
+    def subscribe(self, observer=None, *, scheduler=None):
         raise NotImplementedError

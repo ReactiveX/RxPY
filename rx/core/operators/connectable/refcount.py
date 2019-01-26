@@ -17,7 +17,7 @@ def _ref_count() -> Callable[[ConnectableObservable], Observable]:
         def subscribe(observer, scheduler=None):
             count[0] += 1
             should_connect = count[0] == 1
-            subscription = source.subscribe(observer, scheduler)
+            subscription = source.subscribe(observer, scheduler=scheduler)
             if should_connect:
                 connectable_subscription[0] = source.connect(scheduler)
 

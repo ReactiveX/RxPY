@@ -344,7 +344,7 @@ def test_subject_create():
 
     def on_next2(x):
         _x[0] = x
-    s.subscribe_(on_next2)
+    s.subscribe(on_next2)
 
     assert(42 == _x[0])
     s.on_next(21)

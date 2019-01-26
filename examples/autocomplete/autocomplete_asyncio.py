@@ -18,7 +18,7 @@ from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.websocket import WebSocketHandler
 
 from rx import operators as ops
-from rx.concurrency import AsyncIOScheduler
+from rx.concurrency.mainloopscheduler import AsyncIOScheduler
 from rx.subjects import Subject
 
 
@@ -65,7 +65,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex):
             print(ex)
 
-        searcher.subscribe_(send_response, on_error, scheduler=scheduler)
+        searcher.subscribe(send_response, on_error, scheduler=scheduler)
 
     def on_message(self, message):
         obj = json_decode(message)
