@@ -1,11 +1,10 @@
 from rx.disposable import Disposable
 from rx.disposable import CompositeDisposable
 
-from .observablebase import ObservableBase
 from .observable import Observable
 
 
-class ConnectableObservable(ObservableBase):
+class ConnectableObservable(Observable):
     """Represents an observable that can be connected and
     disconnected."""
 
@@ -13,8 +12,9 @@ class ConnectableObservable(ObservableBase):
         self.subject = subject
         self.has_subscription = False
         self.subscription = None
+        self.source = source
 
-        super().__init__(source)
+        super().__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer, scheduler=scheduler)

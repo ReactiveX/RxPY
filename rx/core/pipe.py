@@ -1,6 +1,6 @@
 from typing import Callable
 from functools import reduce
-from .observable import ObservableBase as Observable
+from .observable import Observable
 
 
 def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable], Observable]:

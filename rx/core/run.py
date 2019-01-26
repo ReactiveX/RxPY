@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.concurrency import NewThreadScheduler
-from .observable import ObservableBase as Observable
+from .observable import Observable
 
 
 scheduler = NewThreadScheduler()
