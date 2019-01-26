@@ -35,14 +35,14 @@ def catch_handler(source, handler) -> Observable:
     return AnonymousObservable(subscribe)
 
 
-def _catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
-    def catch_exception(source: Observable) -> Observable:
+def _catch(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+    def catch(source: Observable) -> Observable:
         """Continues an observable sequence that is terminated by an
         exception with the next observable sequence.
 
         Examples:
-            >>> catch_exception(ys)
-            >>> catch_exception(lambda ex: ys(ex))
+            >>> catch(ys)
+            >>> catch(lambda ex: ys(ex))
 
         Args:
             handler: Exception handler function that returns an
@@ -59,5 +59,5 @@ def _catch_exception(second: Observable = None, handler=None) -> Callable[[Obser
         if handler or not isinstance(second, typing.Observable):
             return catch_handler(source, handler or second)
 
-        return rx.catch_exception([source, second])
-    return catch_exception
+        return rx.catch([source, second])
+    return catch

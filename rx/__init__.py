@@ -46,21 +46,21 @@ def case(mapper, sources, default_source=None) -> Observable:
     return _case(mapper, sources, default_source)
 
 
-def catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observable:
+def catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
     Examples:
-        >>> res = rx.catch_exception(xs, ys, zs)
-        >>> res = rx.catch_exception([xs, ys, zs])
+        >>> res = rx.catch(xs, ys, zs)
+        >>> res = rx.catch([xs, ys, zs])
 
     Returns:
         An observable sequence containing elements from consecutive
         source sequences until a source sequence terminates
         successfully.
     """
-    from .core.observable.catch import _catch_exception
-    return _catch_exception(*args)
+    from .core.observable.catch import _catch
+    return _catch(*args)
 
 
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):

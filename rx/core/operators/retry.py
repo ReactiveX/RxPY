@@ -29,5 +29,5 @@ def _retry(retry_count: int = None) -> Callable[[Observable], Observable]:
         gen = range(retry_count)
 
     def retry(source: Observable) -> Observable:
-        return rx.catch_exception(source for _ in gen)
+        return rx.catch(source for _ in gen)
     return retry

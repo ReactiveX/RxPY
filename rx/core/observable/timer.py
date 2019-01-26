@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from rx.concurrency import timeout_scheduler
 from rx.core import Observable, AnonymousObservable, typing
 from rx.disposable import MultipleAssignmentDisposable
 
@@ -18,7 +19,7 @@ def observable_timer_date(duetime, scheduler: typing.Scheduler = None):
 
 def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Scheduler = None) -> Observable:
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_
+        _scheduler = scheduler or scheduler_ or timeout_scheduler
         nonlocal duetime
 
         if not isinstance(duetime, datetime):
@@ -46,7 +47,7 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Sched
 
 def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Observable:
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_
+        _scheduler = scheduler or scheduler_ or timeout_scheduler
         d = _scheduler.normalize(duetime)
 
         def action(scheduler, state):
@@ -61,7 +62,7 @@ def observable_timer_timespan_and_period(duetime: typing.RelativeTime, period: t
                                          scheduler: typing.Scheduler = None) -> Observable:
     if duetime == period:
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_
+            _scheduler = scheduler or scheduler_ or timeout_scheduler
 
             def action(count):
                 observer.on_next(count)

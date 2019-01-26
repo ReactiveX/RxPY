@@ -175,13 +175,13 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     return _buffer_with_time_or_count(timespan, count, scheduler)
 
 
-def catch_exception(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+def catch(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
     Examples:
-        >>> catch_exception(ys)(xs)
-        >>> catch_exception(lambda ex: ys(ex))(xs)
+        >>> catch(ys)
+        >>> catch(lambda ex: ys(ex))
 
     Args:
         handler: Exception handler function that returns an observable
@@ -196,8 +196,8 @@ def catch_exception(second: Observable = None, handler=None) -> Callable[[Observ
         followed by the elements of the handler sequence in case an
         exception occurred.
     """
-    from rx.core.operators.catch import _catch_exception
-    return _catch_exception(second, handler)
+    from rx.core.operators.catch import _catch
+    return _catch(second, handler)
 
 
 def combine_latest(other: Union[Observable, Iterable[Observable]],

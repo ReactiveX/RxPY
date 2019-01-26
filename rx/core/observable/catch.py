@@ -6,13 +6,13 @@ from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Seria
 from rx.concurrency import current_thread_scheduler
 
 
-def _catch_exception(*args: Union[Iterable[Observable], Observable]) -> Observable:
+def _catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
     Examples:
-        >>> res = catch_exception(xs, ys, zs)
-        >>> res = catch_exception([xs, ys, zs])
+        >>> res = catch(xs, ys, zs)
+        >>> res = catch([xs, ys, zs])
 
     Returns:
         An observable sequence containing elements from consecutive
