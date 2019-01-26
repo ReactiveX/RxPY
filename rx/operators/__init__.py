@@ -5,7 +5,7 @@ from typing import Callable, Union, Any, Iterable, List, cast
 from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
-from rx.core import Observable, ConnectableObservable, GroupedObservable, BlockingObservable, typing, pipe
+from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
 from rx.subjects import Subject
 
@@ -2404,11 +2404,6 @@ def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], 
     """
     from rx.core.operators.timeinterval import _time_interval
     return _time_interval(scheduler=scheduler)
-
-
-def to_blocking() -> Callable[[Observable], BlockingObservable]:
-    from rx.core.operators.toblocking import _to_blocking
-    return _to_blocking()
 
 
 def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None

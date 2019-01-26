@@ -199,3 +199,25 @@ class ObservableBase(typing.Observable):
         """
         from ..pipe import pipe
         return pipe(*operators)(self)
+
+
+    def run(self) -> Any:
+        """Run source synchronously.
+
+        Subscribes to the observable source. Then blocks and waits for the
+        observable source to either complete or error. Returns the
+        last value emitted, or thows exception if any error occured.
+
+        Examples:
+            >>> result = run(source)
+
+        Raises:
+            SequenceContainsNoElementsError: if observable completes
+                (on_completed) without any values being emitted.
+            Exception: raises exception if any error (on_error) occured.
+
+        Returns:
+            The last element emitted from the observable.
+        """
+        from ..run import run
+        return run(self)

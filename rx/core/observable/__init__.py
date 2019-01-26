@@ -2,4 +2,3 @@ from .observablebase import ObservableBase
 from .anonymousobservable import AnonymousObservable
 from .connectableobservable import ConnectableObservable
 from .groupedobservable import GroupedObservable
-from .blockingobservable import BlockingObservable
