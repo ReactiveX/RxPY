@@ -39,8 +39,8 @@ class CurrentThreadScheduler(SchedulerBase):
     """
 
     def __init__(self) -> None:
-        """Creates a scheduler that schedules work as soon as possible on
-        the current thread."""
+        """Creates a scheduler that schedules work as soon as possible
+        on the current thread."""
 
         self.queues: Dict[int, PriorityQueue] = dict()
         self.lock = threading.RLock()
