@@ -2,7 +2,7 @@ from typing import Callable
 from datetime import datetime, timedelta
 
 from rx import operators as ops
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
 
@@ -95,7 +95,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
         ).subscribe_(on_next, scheduler=scheduler_)
 
         return CompositeDisposable(subscription, cancelable)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:

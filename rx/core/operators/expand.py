@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.core.typing import Mapper
 from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
@@ -70,5 +70,5 @@ def _expand(mapper: Mapper) -> Observable:
             active_count[0] += 1
             ensure_active()
             return d
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return expand

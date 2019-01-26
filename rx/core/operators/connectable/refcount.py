@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx.disposable import Disposable
-from rx.core import ConnectableObservable, Observable, AnonymousObservable
+from rx.core import ConnectableObservable, Observable
 
 
 def _ref_count() -> Callable[[ConnectableObservable], Observable]:
@@ -29,6 +29,6 @@ def _ref_count() -> Callable[[ConnectableObservable], Observable]:
 
             return Disposable(dispose)
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
 
     return ref_count

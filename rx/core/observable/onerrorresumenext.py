@@ -1,6 +1,6 @@
 import rx
 from rx.concurrency import current_thread_scheduler
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
@@ -51,4 +51,4 @@ def _on_error_resume_next(*args) -> Observable:
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

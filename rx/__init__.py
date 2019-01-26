@@ -4,7 +4,6 @@ from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
-from .core import AnonymousObservable as _AnonymousObservable
 
 from . import disposable
 
@@ -66,7 +65,7 @@ def catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
 def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
     """Create observable from subscribe function."""
 
-    return _AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:

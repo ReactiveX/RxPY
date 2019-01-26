@@ -1,12 +1,12 @@
 from typing import List
 
 from rx.disposable import Disposable, CompositeDisposable
-from rx.core import Observable, typing
+from rx.core import ObservableBase, typing
 
 from .subscription import Subscription
 
 
-class ColdObservable(Observable):
+class ColdObservable(ObservableBase):
     def __init__(self, scheduler, messages) -> None:
         super().__init__()
 

@@ -1,5 +1,5 @@
 from typing import Any, Callable
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.typing import Disposable
 
 
@@ -34,5 +34,5 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return default_if_empty

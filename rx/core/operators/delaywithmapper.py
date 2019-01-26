@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
@@ -80,5 +80,5 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
                     start))
 
             return CompositeDisposable(subscription, delays)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return delay_with_mapper

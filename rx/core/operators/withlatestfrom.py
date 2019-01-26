@@ -1,6 +1,6 @@
 from typing import Any, Iterable, Callable, Union, List, cast
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
@@ -62,5 +62,5 @@ def _with_latest_from(*args: Union[Observable, Iterable[Observable]]
 
                 return [parent_subscription] + children_subscription
             return CompositeDisposable(subscribe_all(source, *sources))
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return with_latest_from

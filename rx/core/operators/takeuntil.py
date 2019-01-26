@@ -2,7 +2,7 @@ from typing import Callable
 
 from rx import from_future
 from rx.internal import noop
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable
 from rx.internal.utils import is_future
 
@@ -32,5 +32,5 @@ def _take_until(other: Observable) -> Callable[[Observable], Observable]:
                 source.subscribe(observer),
                 other.subscribe_(on_completed, observer.on_error, noop, scheduler)
             )
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return take_until

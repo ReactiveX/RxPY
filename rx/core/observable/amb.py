@@ -1,7 +1,7 @@
 from rx import never
 
 from rx import operators as _
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 

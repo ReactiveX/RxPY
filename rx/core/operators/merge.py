@@ -2,7 +2,7 @@ from typing import Callable
 
 import rx
 from rx import from_future
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
@@ -69,7 +69,7 @@ def _merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observab
 
             group.add(source.subscribe_(on_next, observer.on_error, on_completed, scheduler))
             return group
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return merge
 
 
@@ -118,5 +118,5 @@ def _merge_all() -> Callable[[Observable], Observable]:
             m.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
             return group
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return merge_all

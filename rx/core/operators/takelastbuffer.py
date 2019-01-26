@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
@@ -38,5 +38,5 @@ def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return take_last_buffer

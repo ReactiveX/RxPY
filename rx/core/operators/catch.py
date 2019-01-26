@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
@@ -32,7 +32,7 @@ def catch_handler(source, handler) -> Observable:
             scheduler
         )
         return subscription
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _catch(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:

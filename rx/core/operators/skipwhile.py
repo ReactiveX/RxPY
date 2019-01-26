@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx import operators as ops
-from rx.core import Observable, AnonymousObservable, typing, pipe
+from rx.core import Observable, typing, pipe
 
 
 def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable]:
@@ -39,7 +39,7 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
                     observer.on_next(value)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return skip_while
 
 

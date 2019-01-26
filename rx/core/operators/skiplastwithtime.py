@@ -1,7 +1,7 @@
 from typing import Union, Callable
 from datetime import timedelta
 
-from rx.core import AnonymousObservable, Observable, typing
+from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
@@ -51,5 +51,5 @@ def _skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Schedu
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler_)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return skip_last_with_time

@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _to_set() -> Callable[[Observable], Observable]:
@@ -18,5 +18,5 @@ def _to_set() -> Callable[[Observable], Observable]:
                 observer.on_completed()
 
             return source.subscribe_(s.add, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return to_set

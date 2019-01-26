@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable
 
@@ -39,4 +39,4 @@ def _using(resource_factory: Callable[[], typing.Disposable],
             return CompositeDisposable(d, disp)
 
         return CompositeDisposable(source.subscribe(observer, scheduler), disp)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

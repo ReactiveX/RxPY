@@ -3,14 +3,14 @@ from typing import Any, List, Optional
 
 from rx.disposable import Disposable
 from rx.core.typing import Observer, Scheduler
-from rx.core import Observable, typing
+from rx.core import ObservableBase, typing
 from rx.internal import DisposedException
 
 from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, Observer):
+class Subject(ObservableBase, Observer):
     """Represents an object that is both an observable sequence as well
     as an observer. Each notification is broadcasted to all subscribed
     observers.

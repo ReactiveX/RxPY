@@ -2,7 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.core import ConnectableObservable, Observable
+from rx.core import ConnectableObservable, ObservableBase
 from rx.core.typing import Observer
 from rx.testing import TestScheduler, ReactiveTest
 
@@ -24,7 +24,7 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class MySubject(Observable, Observer):
+class MySubject(ObservableBase, Observer):
 
     def __init__(self):
         super(MySubject, self).__init__()

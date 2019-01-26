@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.internal.basic import default_comparer
 
 def array_index_of_comparer(array, item, comparer):
@@ -57,5 +57,5 @@ def _distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observab
 
                 hashset.push(key) and observer.on_next(x)
             return source.subscribe_(on_next, observer.on_error,observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return distinct

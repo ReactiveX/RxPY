@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.internal.basic import identity, default_comparer
 
 
@@ -54,5 +54,5 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
                     observer.on_next(value)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return partial

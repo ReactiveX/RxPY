@@ -1,7 +1,7 @@
 from typing import Iterable, Union, cast
 
 from rx.disposable import Disposable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.concurrency import current_thread_scheduler
 
@@ -45,4 +45,4 @@ def _concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
             is_disposed = True
 
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

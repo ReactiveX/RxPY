@@ -2,7 +2,7 @@ import logging
 from typing import Callable
 
 from rx import empty
-from rx.core import AnonymousObservable, Observable, typing
+from rx.core import Observable, typing
 from rx.internal.utils import add_ref
 from rx.internal import noop
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
@@ -84,7 +84,7 @@ def observable_window_with_boundaries(self, window_boundaries):
 
         d.add(window_boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
         return r
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def observable_window_with_closing_mapper(self, window_closing_mapper):
@@ -130,4 +130,4 @@ def observable_window_with_closing_mapper(self, window_closing_mapper):
 
         create_window_on_completed()
         return r
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

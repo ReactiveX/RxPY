@@ -3,7 +3,7 @@ from rx.concurrency import immediate_scheduler
 
 from .typing import Observer
 from .observer import AnonymousObserver
-from .observable import AnonymousObservable
+from .observable import Observable
 
 
 class Notification:
@@ -68,7 +68,7 @@ class Notification:
                     observer.on_completed()
 
             return scheduler.schedule(action)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
 
     def equals(self, other):
         """Indicates whether this instance and a specified object are

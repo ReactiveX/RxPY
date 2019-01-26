@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -51,5 +51,5 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
             right_subscription.disposable = other.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
 
             return subscriptions
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return skip_until

@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _skip_last(count: int) -> Observable:
@@ -34,5 +34,5 @@ def _skip_last(count: int) -> Observable:
                     observer.on_next(front)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return skip_last

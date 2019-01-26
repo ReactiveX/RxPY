@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from rx.concurrency import timeout_scheduler
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import MultipleAssignmentDisposable
 
 
@@ -14,7 +14,7 @@ def observable_timer_date(duetime, scheduler: typing.Scheduler = None):
             observer.on_completed()
 
         return _scheduler.schedule_absolute(duetime, action)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Scheduler = None) -> Observable:
@@ -42,7 +42,7 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Sched
             mad.disposable = scheduler.schedule_absolute(dt[0], action)
         mad.disposable = _scheduler.schedule_absolute(dt[0], action)
         return mad
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Observable:
@@ -55,7 +55,7 @@ def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: typing.Sc
             observer.on_completed()
 
         return _scheduler.schedule_relative(d, action)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def observable_timer_timespan_and_period(duetime: typing.RelativeTime, period: typing.RelativeTime,
@@ -69,7 +69,7 @@ def observable_timer_timespan_and_period(duetime: typing.RelativeTime, period: t
                 return count + 1
 
             return _scheduler.schedule_periodic(period, action, state=0)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return observable_timer_duetime_and_period(duetime, period, scheduler)
 
 

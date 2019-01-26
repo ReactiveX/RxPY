@@ -2,7 +2,7 @@ from rx.disposable import Disposable
 from rx.disposable import CompositeDisposable
 
 from .observablebase import ObservableBase
-from .anonymousobservable import AnonymousObservable
+from .observable import Observable
 
 
 class ConnectableObservable(ObservableBase):
@@ -65,4 +65,4 @@ class ConnectableObservable(ObservableBase):
                 is_connected[0] = False
 
             return Disposable(dispose)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)

@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from rx.core import typing
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.concurrency import current_thread_scheduler
 from rx.core.abc.scheduler import Scheduler
 
@@ -31,7 +31,7 @@ def _return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
             observer.on_completed()
 
         return _scheduler.schedule(action)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
@@ -48,4 +48,4 @@ def _from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Ob
                 observer.on_error(e)
         return _scheduler.schedule(action)
 
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

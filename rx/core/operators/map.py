@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 from rx.internal.basic import identity
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
 
@@ -38,7 +38,7 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
                     obv.on_next(result)
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return map
 
 
@@ -81,5 +81,5 @@ def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable],
                     obv.on_next(result)
 
             return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return map_indexed

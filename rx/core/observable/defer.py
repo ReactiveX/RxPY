@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx import throw, from_future
-from rx.core import Observable, AnonymousObservable, abc
+from rx.core import Observable, abc
 from rx.internal.utils import is_future
 
 
@@ -29,4 +29,4 @@ def _defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observa
 
         result = from_future(result) if is_future(result) else result
         return result.subscribe(observer, scheduler)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

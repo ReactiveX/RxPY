@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 
 
@@ -30,7 +30,7 @@ def sample_observable(source, sampler):
             source.subscribe_(on_next, observer.on_error, on_completed, scheduler),
             sampler.subscribe_(sample_subscribe, observer.on_error, sample_subscribe, scheduler)
         )
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:

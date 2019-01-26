@@ -1,6 +1,6 @@
 from typing import Any, Callable, Iterable, Union, List, cast
 
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
@@ -71,4 +71,4 @@ def _combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observabl
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

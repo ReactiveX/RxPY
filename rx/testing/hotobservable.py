@@ -1,14 +1,14 @@
 from typing import List
 
 from rx.disposable import Disposable
-from rx.core import Observable, typing
+from rx.core import ObservableBase, typing
 from rx.concurrency import VirtualTimeScheduler
 
 from .subscription import Subscription
 from .recorded import Recorded
 
 
-class HotObservable(Observable):
+class HotObservable(ObservableBase):
     def __init__(self, scheduler: VirtualTimeScheduler, messages: List[Recorded]) -> None:
         super().__init__()
 

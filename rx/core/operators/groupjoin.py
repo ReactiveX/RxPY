@@ -3,7 +3,7 @@ from typing import Callable
 from collections import OrderedDict
 
 from rx import operators as ops
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
 from rx.subjects import Subject
@@ -143,5 +143,5 @@ def _group_join(right, left_duration_mapper, right_duration_mapper
 
             group.add(right.subscribe_(send_right, on_error_right, scheduler=scheduler))
             return rcd
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return group_join

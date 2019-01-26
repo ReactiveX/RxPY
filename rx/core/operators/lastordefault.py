@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx import operators as ops
 
@@ -21,7 +21,7 @@ def last_or_default_async(source, has_default=False, default_value=None):
                 observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _last_or_default(predicate=None, default_value=None) -> Callable[[Observable], Observable]:

@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _pairwise() -> Callable[[Observable], Observable]:
@@ -38,5 +38,5 @@ def _pairwise() -> Callable[[Observable], Observable]:
                     observer.on_next(pair)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return pairwise

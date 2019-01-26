@@ -1,6 +1,6 @@
 from typing import Any, Callable
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
@@ -43,7 +43,7 @@ def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Obser
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return take_while
 
 
@@ -90,5 +90,5 @@ def _take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Obser
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return take_while_indexed

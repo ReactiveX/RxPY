@@ -2,7 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.core import AnonymousObservable
+from rx.core import Observable
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -130,7 +130,7 @@ class TestSkipUntil(unittest.TestCase):
         def subscribe(observer, scheduler=None):
             disposed[0] = True
 
-        r = AnonymousObservable(subscribe)
+        r = Observable(subscribe)
 
         def create():
             return l.pipe(ops.skip_until(r))

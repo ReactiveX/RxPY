@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.core.notification import OnNext, OnError, OnCompleted
 
 
@@ -31,5 +31,5 @@ def _materialize() -> Callable[[Observable], Observable]:
                 observer.on_completed()
 
             return source.subscribe_(on_next, on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return materialize

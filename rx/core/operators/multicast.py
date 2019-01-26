@@ -1,6 +1,6 @@
 from typing import Union, Callable
 
-from rx.core import Observable, AnonymousObservable, ConnectableObservable
+from rx.core import Observable, ConnectableObservable
 from rx.core.typing import Subject, Mapper
 from rx.disposable import CompositeDisposable
 
@@ -41,6 +41,6 @@ def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] =
                 subscription = mapper(connectable).subscribe(observer, scheduler)
 
                 return CompositeDisposable(subscription, connectable.connect(scheduler))
-            return AnonymousObservable(subscribe)
+            return Observable(subscribe)
         return ConnectableObservable(source, subject)
     return multicast

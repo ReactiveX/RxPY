@@ -2,7 +2,7 @@ from typing import Callable
 from collections import OrderedDict
 
 from rx import operators as ops
-from rx.core import Observable, AnonymousObservable, GroupedObservable
+from rx.core import Observable, GroupedObservable
 from rx.subjects import Subject
 from rx.disposable import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import identity
@@ -121,5 +121,5 @@ def _group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Ob
 
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
             return ref_count_disposable
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return group_by_until

@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.internal import noop
 
 
@@ -15,5 +15,5 @@ def _ignore_elements() -> Observable:
         def subscribe(observer, scheduler=None):
             return source.subscribe_(noop, observer.on_error, observer.on_completed, scheduler)
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return ignore_elements

@@ -2,7 +2,7 @@ from typing import Callable, Union, Any
 from datetime import timedelta
 
 from rx.core.typing import Disposable
-from rx.core import AnonymousObservable, Observable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 
@@ -62,7 +62,7 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
 
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler_)
             return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return debounce
 
 
@@ -136,5 +136,5 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
 
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return throttle_with_mapper

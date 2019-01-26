@@ -1,7 +1,7 @@
 from typing import Callable
 
 from rx import operators as ops
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 def _some(predicate=None) -> Callable[[Observable], Observable]:
     def some(source: Observable) -> Observable:
@@ -38,5 +38,5 @@ def _some(predicate=None) -> Callable[[Observable], Observable]:
                 _some(),
             )
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return some

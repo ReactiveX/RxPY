@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.typing import Predicate
 
 
@@ -27,5 +27,5 @@ def _find_value(predicate: Predicate, yield_index) -> Callable[[Observable], Obs
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return find_value

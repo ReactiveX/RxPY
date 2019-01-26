@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.internal import ArgumentOutOfRangeException
 
 
@@ -34,5 +34,5 @@ def _skip(count: int) -> Callable[[Observable], Observable]:
                     remaining -= 1
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return skip

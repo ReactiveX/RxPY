@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 from rx import from_future
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
@@ -62,5 +62,5 @@ def _switch_latest() -> Callable[[Observable], Observable]:
 
             subscription = source.subscribe_(on_next, observer.on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, inner_subscription)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return switch_latest

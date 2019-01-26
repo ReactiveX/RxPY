@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
@@ -37,5 +37,5 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Sche
                     observer.on_next(x)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=_scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return throttle_first

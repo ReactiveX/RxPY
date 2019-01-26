@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from rx import operators as ops
-from rx.core import AnonymousObservable, Observable, pipe
+from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
@@ -21,7 +21,7 @@ def _first_or_default_async(has_default=False, default_value=None):
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return first_or_default_async
 
 

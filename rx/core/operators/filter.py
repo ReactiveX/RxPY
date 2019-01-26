@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Disposable
 
 
@@ -34,7 +34,7 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
                     observer.on_next(value)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return filter
 
 
@@ -72,5 +72,5 @@ def _filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Obs
                     observer.on_next(value)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return filter_indexed

@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.concurrency import timeout_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
@@ -58,4 +58,4 @@ def _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
         mad.disposable = scheduler.schedule_relative(0, action)
         return mad
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

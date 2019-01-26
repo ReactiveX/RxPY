@@ -2,10 +2,10 @@ from typing import Callable, Optional
 
 from rx.core import typing
 
-from .observablebase import ObservableBase as Observable
+from .observablebase import ObservableBase
 
 
-class AnonymousObservable(Observable):
+class Observable(ObservableBase):
     """Class to create an Observable instance from a delegate-based
     implementation of the Subscribe method."""
 

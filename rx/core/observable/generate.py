@@ -1,4 +1,4 @@
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.concurrency import current_thread_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
@@ -36,4 +36,4 @@ def _generate(initial_state, condition, iterate) -> Observable:
 
         mad.disposable = scheduler.schedule(action)
         return mad
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

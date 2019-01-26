@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:
@@ -61,5 +61,5 @@ def _zip_with_iterable(second):
                     observer.on_completed()
 
             return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return zip_with_iterable

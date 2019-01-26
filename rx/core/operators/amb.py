@@ -1,7 +1,7 @@
 from typing import Any
 
 from rx import from_future
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -69,5 +69,5 @@ def _amb(right_source: Observable):
             right_d = right_source.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
             right_subscription.disposable = right_d
             return CompositeDisposable(left_subscription, right_subscription)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return amb

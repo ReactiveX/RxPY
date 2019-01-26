@@ -2,7 +2,7 @@ import re
 import threading
 
 from rx.disposable import CompositeDisposable
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.concurrency import NewThreadScheduler
 from rx.core.notification import OnNext, OnError, OnCompleted
 
@@ -86,7 +86,7 @@ def from_marbles(string: str) -> Observable:
             action = notification.accept(observer)
             disp.add(scheduler.schedule_relative(timespan, action))
         return disp
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def to_marbles(self, scheduler=None):
@@ -131,7 +131,7 @@ def to_marbles(self, scheduler=None):
             observer.on_completed()
 
         return source.subscribe_(on_next, on_error, on_completed)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def to_marbles_blocking(self, scheduler=None):

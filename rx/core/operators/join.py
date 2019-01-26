@@ -2,7 +2,7 @@ from typing import Callable
 from collections import OrderedDict
 
 from rx.operators import take
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.internal import noop
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
@@ -103,5 +103,5 @@ def _join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Obser
 
             group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right))
             return group
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return join

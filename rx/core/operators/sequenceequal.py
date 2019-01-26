@@ -2,7 +2,7 @@ from typing import Any, Callable
 import collections
 
 import rx
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable
 from rx.internal import default_comparer
 
@@ -101,5 +101,5 @@ def _sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = N
             subscription1 = first.subscribe_(on_next1, observer.on_error, on_completed1, scheduler)
             subscription2 = second.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
             return CompositeDisposable(subscription1, subscription2)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return sequence_equal

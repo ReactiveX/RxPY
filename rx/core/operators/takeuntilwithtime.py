@@ -1,7 +1,7 @@
 from typing import Callable, Union
 from datetime import datetime
 
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
@@ -36,5 +36,5 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: ty
 
             task = scheduler_method(end_time, action)
             return CompositeDisposable(task, source.subscribe(observer, scheduler_))
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return take_until_with_time

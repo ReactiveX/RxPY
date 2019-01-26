@@ -1,5 +1,5 @@
 from rx import from_future
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -63,4 +63,4 @@ def _zip(*args: Observable) -> Observable:
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

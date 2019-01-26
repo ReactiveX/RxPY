@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Union, Callable
 
 from rx import from_future, throw
-from rx.core import Observable, AnonymousObservable, typing
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
@@ -78,5 +78,5 @@ def _timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: 
 
             original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler_)
             return CompositeDisposable(subscription, timer)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return timeout

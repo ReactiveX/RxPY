@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable, typing
+from rx.core import Observable, typing
 from rx.core.typing import Observer, Disposable
 from rx.disposable import CompositeDisposable
 
@@ -68,7 +68,7 @@ def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, o
                     observer.on_completed()
 
             return source.subscribe_(_on_next, _on_error, _on_completed)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return do_action
 
 
@@ -112,7 +112,7 @@ def do_after_next(source, after_next):
                 observer.on_error(e)
 
         return source.subscribe_(on_next, observer.on_error, observer.on_completed)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def do_on_subscribe(source: Observable, on_subscribe):
@@ -128,7 +128,7 @@ def do_on_subscribe(source: Observable, on_subscribe):
         on_subscribe()
         return source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
 
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def do_on_dispose(source: Observable, on_dispose):
@@ -152,7 +152,7 @@ def do_on_dispose(source: Observable, on_dispose):
         composite_disposable.add(subscription)
         return composite_disposable
 
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def do_on_terminate(source, on_terminate):
@@ -183,7 +183,7 @@ def do_on_terminate(source, on_terminate):
                 observer.on_error(exception)
 
         return source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def do_after_terminate(source, after_terminate):
@@ -211,7 +211,7 @@ def do_after_terminate(source, after_terminate):
                 observer.on_error(err)
 
         return source.subscribe(observer.on_next, on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
@@ -268,5 +268,5 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             return composite_disposable
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return partial

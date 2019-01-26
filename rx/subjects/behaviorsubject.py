@@ -1,14 +1,14 @@
 import threading
 
 from rx.disposable import Disposable
-from rx.core import Observable
+from rx.core import ObservableBase
 from rx.core.typing import Observer
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(Observable, Observer):
+class BehaviorSubject(ObservableBase, Observer):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.

@@ -1,7 +1,7 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -54,5 +54,5 @@ def _exclusive() -> Callable[[Observable], Observable]:
 
             m.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
             return g
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return exclusive

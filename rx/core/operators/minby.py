@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.internal.basic import default_sub_comparer
 
 def extrema_by(source, key_mapper, comparer):
@@ -40,7 +40,7 @@ def extrema_by(source, key_mapper, comparer):
             observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)
 
 
 def _min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:

@@ -1,7 +1,7 @@
 from typing import Callable, Any
 
 from rx.core import typing
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 
 def _to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None
@@ -42,6 +42,6 @@ def _to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], A
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return to_dict
 

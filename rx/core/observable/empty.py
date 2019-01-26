@@ -1,7 +1,7 @@
 from typing import Any
 
 from rx.core import typing
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 from rx.concurrency import immediate_scheduler
 
 
@@ -13,4 +13,4 @@ def _empty(scheduler: typing.Scheduler = None) -> Observable:
             observer.on_completed()
 
         return _scheduler.schedule(action)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

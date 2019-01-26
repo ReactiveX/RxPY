@@ -1,7 +1,7 @@
 from typing import Callable, Union
 from datetime import timedelta
 
-from rx.core import AnonymousObservable, Observable, typing
+from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
@@ -71,5 +71,5 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
 
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
             return ref_count_disposable
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return window_with_time_or_count

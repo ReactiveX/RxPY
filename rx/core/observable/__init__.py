@@ -1,4 +1,4 @@
 from .observablebase import ObservableBase
-from .anonymousobservable import AnonymousObservable
+from .observable import Observable
 from .connectableobservable import ConnectableObservable
 from .groupedobservable import GroupedObservable

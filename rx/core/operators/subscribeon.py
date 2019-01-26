@@ -1,5 +1,5 @@
 from typing import Callable
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.typing import Scheduler
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
 
@@ -36,5 +36,5 @@ def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
             m.disposable = scheduler.schedule(action)
             return d
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return subscribe_on

@@ -1,7 +1,7 @@
 from typing import Any
 
 from rx.core import typing
-from rx.core import Observable, AnonymousObservable
+from rx.core import Observable
 
 from rx.concurrency import immediate_scheduler
 
@@ -16,4 +16,4 @@ def _throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observab
             observer.on_error(exception)
 
         return _scheduler.schedule(action)
-    return AnonymousObservable(subscribe)
+    return Observable(subscribe)

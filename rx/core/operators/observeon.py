@@ -1,6 +1,6 @@
 from typing import Callable
 
-from rx.core import AnonymousObservable, Observable
+from rx.core import Observable
 from rx.core.observer import ObserveOnObserver
 
 
@@ -25,5 +25,5 @@ def _observe_on(scheduler) -> Callable[[Observable], Observable]:
         def subscribe(observer, _=None):
             return source.subscribe(ObserveOnObserver(scheduler, observer))
 
-        return AnonymousObservable(subscribe)
+        return Observable(subscribe)
     return observe_on
