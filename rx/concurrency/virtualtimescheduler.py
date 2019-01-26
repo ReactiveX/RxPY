@@ -7,7 +7,6 @@ from rx.core import typing
 
 from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
-from .scheduleperiodic import SchedulePeriodic
 
 log = logging.getLogger("Rx")
 
@@ -68,11 +67,6 @@ class VirtualTimeScheduler(SchedulerBase):
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
         self.queue.enqueue(si)
         return si.disposable
-
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
-                          state: typing.TState = None):
-        scheduler = SchedulePeriodic(self, period, action, state)
-        return scheduler.start()
 
     def start(self) -> None:
         """Starts the virtual time scheduler."""
