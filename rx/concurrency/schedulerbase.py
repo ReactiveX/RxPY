@@ -4,7 +4,7 @@ from typing import Optional
 from rx import disposable
 from rx.core import typing
 from rx.core.typing import ScheduledAction, ScheduledPeriodicAction, TState, Disposable
-from rx.disposable import MultipleAssignmentDisposable
+from rx.disposable import SerialDisposable
 from rx.internal.basic import default_now
 
 
@@ -35,18 +35,19 @@ class SchedulerBase(typing.Scheduler):
             The disposable object used to cancel the scheduled
             recurring action (best effort)."""
 
-        disp = MultipleAssignmentDisposable()
+        disp = SerialDisposable()
 
-        def invoke_action(scheduler: typing.Scheduler, _: TState) -> Optional[Disposable]:
-            nonlocal state
-
+        def invoke_action(scheduler: typing.Scheduler, state: TState) -> Optional[Disposable]:
             if disp.is_disposed:
                 return None
 
-            new_state = action(state)
-            if new_state is not None:
-                state = new_state
-            disp.disposable = self.schedule_relative(period, invoke_action, state)
+            try:
+                new_state = action(state)
+            except Exception:
+                disp.dispose()
+                raise
+
+            disp.disposable = self.schedule_relative(period, invoke_action, new_state)
             return None
 
         disp.disposable = self.schedule_relative(period, invoke_action, state)
