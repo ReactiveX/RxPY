@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='Rx',
-    version='3.0.0-alpha',
+    version='3.0.0-alpha2',
     description='Reactive Extensions (Rx) for Python',
     long_description=(
         "is a library for composing asynchronous and "
@@ -37,8 +37,8 @@ setup(
     tests_require=['pytest', "pytest-asyncio"],
 
     packages=['rx', 'rx.internal', 'rx.core', 'rx.core.abc',
-              'rx.core.operators', 'rx.core.observable', 'rx.core.observer',
-              'rx.core.operators.blocking', 'rx.core.operators.connectable',
+              'rx.core.operators', 'rx.core.observable',
+              'rx.core.observer', 'rx.core.operators.connectable',
               'rx.concurrency', 'rx.concurrency.mainloopscheduler',
               'rx.operators', 'rx.disposable', 'rx.subjects',
               'rx.testing'],
