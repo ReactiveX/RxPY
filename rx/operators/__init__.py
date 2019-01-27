@@ -1202,7 +1202,7 @@ def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     return _min_by(key_mapper, comparer)
 
 
-def multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,
+def multicast(subject: typing.Subject = None, subject_factory: Callable[[], typing.Subject] = None,
               mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
