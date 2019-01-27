@@ -1,35 +1,61 @@
-from typing import List
-import re
+from typing import List, Union, Dict
+from collections import namedtuple
 
 from rx.core import Observable
 from rx.disposable import CompositeDisposable
 from rx.concurrency import NewThreadScheduler
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Callable, Scheduler
+from rx.testing import ReactiveTest, TestScheduler, Recorded
 
 new_thread_scheduler = NewThreadScheduler()
 
-_pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
-_tokens = re.compile(_pattern)
 
-def from_marbles(string: str, timespan=0.1) -> Observable:
-    """Convert a marble diagram string to an observable sequence, using
+def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
+                 error: Exception = None, scheduler: Scheduler = None) -> Observable:
+    """Convert a marble diagram string to a cold observable sequence, using
     an optional scheduler to enumerate the events.
 
-    Special characters:
-        - = Timespan of timespan seconds
-        x = on_error()
-        | = on_completed()
+    Each character in the string will advance time by timespan
+    (exept for space). Characters that are not special (see the table below)
+    will be interpreted as a value to be emitted. Digit 0-9 will be cast
+    to int.
 
-    All other characters are treated as an on_next() event at the given
-    moment they are found on the string.
+    Special characters:
+        +--------+--------------------------------------------------------+
+        |  `-`   | advance time by timespan                               |
+        +--------+--------------------------------------------------------+
+        |  `#`   | on_error()                                             |
+        +--------+--------------------------------------------------------+
+        |  `|`   | on_completed()                                         |
+        +--------+--------------------------------------------------------+
+        |  `(`   | open a group of marbles sharing the same timestamp     |
+        +--------+--------------------------------------------------------+
+        |  `)`   | close a group of marbles                               |
+        +--------+--------------------------------------------------------+
+        | space  | used to align multiple diagrams, does not advance time.|
+        +--------+--------------------------------------------------------+
+
+    In a group of marbles, the position of the initial `(` determines the
+    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
+    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
 
     Examples:
-        >>> res = rx.from_marbles("1-2-3-|")
-        >>> res = rx.from_marbles("1-(42)-3-|")
-        >>> res = rx.from_marbles("1-2-3-x", timeout_scheduler)
+        >>> from_marbles("--1--(42)-3--|")
+        >>> from_marbles("a--B--c-", lookup={'a': 1, 'B': 2, 'c': 3})
+        >>> from_marbles("a--b---#", error=ValueError("foo"))
 
     Args:
         string: String with marble diagram
+
+        timespan: [Optional] duration of each character in second.
+            If not specified, defaults to 0.1s.
+
+        lookup: [Optional] dict used to convert a marble into a specified
+            value. If not specified, defaults to {}.
+
+        error: [Optional] exception that will be use in place of the # symbol.
+            If not specified, defaults to Exception('error').
+
         scheduler: [Optional] Scheduler to run the the input sequence
             on.
 
@@ -39,49 +65,11 @@ def from_marbles(string: str, timespan=0.1) -> Observable:
     """
 
     disp = CompositeDisposable()
-    completed = [False]
-    messages = []
-    timedelta = [0]
+    records = parse(string, timespan=timespan, lookup=lookup, error=error)
 
-    def handle_timespan(value):
-        timedelta[0] += timespan
-
-    def handle_on_next(value):
-        try:
-            value = int(value)
-        except Exception:
-            pass
-
-        if value in ('T', 'F'):
-            value = value == 'T'
-        messages.append((OnNext(value), timedelta[0]))
-
-    def handle_on_completed(value):
-        messages.append((OnCompleted(), timedelta[0]))
-        completed[0] = True
-
-    def handle_on_error(value):
-        messages.append((OnError(value), timedelta[0]))
-        completed[0] = True
-
-    specials = {
-        '-': handle_timespan,
-        'x': handle_on_error,
-        'X': handle_on_error,
-        '|': handle_on_completed
-    }
-
-    for groups in _tokens.findall(string):
-        for token in groups:
-            if token:
-                func = specials.get(token, handle_on_next)
-                func(token)
-
-    if not completed[0]:
-        messages.append((OnCompleted(), timedelta[0]))
-
-    def schedule_msg(message, observer, scheduler):
-        notification, timespan = message
+    def schedule_msg(record, observer, scheduler):
+        timespan = record.time
+        notification = record.value
 
         def action(scheduler, state=None):
             notification.accept(observer)
@@ -91,9 +79,9 @@ def from_marbles(string: str, timespan=0.1) -> Observable:
     def subscribe(observer, scheduler):
         scheduler = scheduler or new_thread_scheduler
 
-        for message in messages:
+        for record in records:
             # Don't make closures within a loop
-            schedule_msg(message, observer, scheduler)
+            schedule_msg(record, observer, scheduler)
         return disp
     return Observable(subscribe)
 
@@ -154,3 +142,256 @@ def stringify(value):
         string = "(%s)" % string
 
     return string
+
+
+def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativeTime = 0,
+          lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+    """Convert a marble diagram string to a list of records of type
+    :class:`rx.testing.recorded.Recorded`.
+
+    Each character in the string will advance time by timespan
+    (exept for space). Characters that are not special (see the table below)
+    will be interpreted as a value to be emitted according to their horizontal
+    position in the diagram. Digit 0-9 will be cast to :class:`int`.
+
+    Special characters:
+        +--------+--------------------------------------------------------+
+        |  `-`   | advance time by timespan                               |
+        +--------+--------------------------------------------------------+
+        |  `#`   | on_error()                                             |
+        +--------+--------------------------------------------------------+
+        |  `|`   | on_completed()                                         |
+        +--------+--------------------------------------------------------+
+        |  `(`   | open a group of marbles sharing the same timestamp     |
+        +--------+--------------------------------------------------------+
+        |  `)`   | close a group of marbles                               |
+        +--------+--------------------------------------------------------+
+        |  `^`   | subscription (hot observable only)                     |
+        +--------+--------------------------------------------------------+
+        | space  | used to align multiple diagrams, does not advance time.|
+        +--------+--------------------------------------------------------+
+
+    In a group of marbles, the position of the initial `(` determines the
+    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
+    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
+
+    If a subscription symbol `^` is specified (hot observable), each marble
+    will be emitted at a time relative to their position from the '^'symbol.
+    E.g. if subscription time is set to 0, Every marbles
+    that appears before the `^` will have negative timestamp.
+
+    Examples:
+        >>> res = parse("1-2-3-|")
+        >>> res = parse("--1--^-(42)-3--|")
+        >>> res = parse("a--B---c-", lookup={'a': 1, 'B': 2, 'c': 3})
+
+    Args:
+        string: String with marble diagram
+
+        timespan: [Optional] duration of each character.
+            Default set to 1.
+
+        lookup: [Optional] dict used to convert a marble into a specified
+            value. If not specified, defaults to {}.
+
+        time_shift: [Optional] absolute time of subscription.
+            If not specified, defaults to 0.
+
+        error: [Optional] exception that will be use in place of the # symbol.
+            If not specified, defaults to Exception('error').
+
+    Returns:
+        A list of records of type :class:`rx.testing.recorded.Recorded`
+        containing time and :class:`Notification` as value.
+    """
+
+    error = error or Exception('error')
+    lookup = lookup or {}
+
+    string = string.replace(' ', '')
+
+    isub = string.find('^')
+    if isub > 0:
+        time_shift -= isub * timespan
+
+    records = []
+    group_frame = 0
+    in_group = False
+    has_subscribe = False
+
+    def check_group_opening():
+        if in_group:
+            raise ValueError(
+                "A group of items must be closed before opening a new one. "
+                'Got "{}..."'.format(string[:char_frame+1]))
+
+    def check_group_closing():
+        if not in_group:
+            raise ValueError(
+                "A Group of items have already been closed before. "
+                "Got {} ...".format(string[:char_frame+1]))
+
+    def check_subscription():
+        if has_subscribe:
+            raise ValueError(
+                "Only one subscription is allowed for a hot observable. "
+                "Got {} ...".format(string[:char_frame+1]))
+
+    def shift(frame):
+        return frame + time_shift
+
+    for i, char in enumerate(string):
+        char_frame = i * timespan
+
+        if char == '(':
+            check_group_opening()
+            in_group = True
+            group_frame = char_frame
+
+        elif char == ')':
+            check_group_closing()
+            in_group = False
+
+        elif char == '-':
+            pass
+
+        elif char == '|':
+            frame = group_frame if in_group else char_frame
+            record = ReactiveTest.on_completed(shift(frame))
+            records.append(record)
+
+        elif char == '#':
+            frame = group_frame if in_group else char_frame
+            record = ReactiveTest.on_error(shift(frame), error)
+            records.append(record)
+
+        elif char == '^':
+            check_subscription()
+
+        else:
+            frame = group_frame if in_group else char_frame
+            try:
+                char = int(char)
+            except ValueError:
+                pass
+            value = lookup.get(char, char)
+            record = ReactiveTest.on_next(shift(frame), value)
+            records.append(record)
+
+    if in_group:
+        raise ValueError(
+            "The last group of items has been opened but never closed. "
+            "Missing a ')."
+            )
+
+    return records
+
+
+TestContext = namedtuple('TestContext', 'start, cold, hot, exp')
+
+
+def test_context(timespan=1):
+    """
+    Initialize a :class:`TestScheduler` and return a namedtuple containing the
+    following functions that wrap its methods.
+
+    :func:`cold()`:
+    Parse a marbles string and return a cold observable
+
+    :func:`hot()`:
+    Parse a marbles string and return a hot observable
+
+    :func:`start()`:
+    Start the test scheduler and invoke the create function,
+    subscribe to the resulting sequence, dispose the subscription and
+    return the resulting records
+
+    :func:`exp()`:
+    Parse a marbles string and return a list of records
+
+    Examples:
+        >>> start, cold, hot, exp = test_context()
+
+        >>> context = test_context()
+        >>> context.cold("--a--b--#", error=Exception("foo"))
+
+        >>> e0 = hot("a---^-b---c-|")
+        >>> ex = exp("    --b---c-|")
+        >>> results = start(e1)
+        >>> assert results.messages == ex
+
+    The underlying test scheduler is initialized with the following
+    parameters:
+        - created time = 100
+        - subscribed = 200
+        - disposed = 1000
+
+    **IMPORTANT**: regarding :func:`hot()`, a marble declared as the
+    fisrt character will be skipped by the test scheduler.
+    E.g. `hot("a--b--")` will only emit `b`.
+    """
+
+    scheduler = TestScheduler()
+    created = 100
+    disposed = 1000
+    subscribed = 200
+
+    def start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
+
+        def default_create():
+            return create
+
+        if isinstance(create, Observable):
+            create_function = default_create
+        else:
+            create_function = create
+
+        mock_observer = scheduler.start(
+            create=create_function,
+            created=created,
+            subscribed=subscribed,
+            disposed=disposed,
+            )
+        return mock_observer.messages
+
+    def expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+        if string.find('^') >= 0:
+            raise ValueError(
+                'Expected function does not support subscription symbol "^".'
+                'Got "{}"'.format(string))
+
+        return parse(
+            string,
+            timespan=timespan,
+            time_shift=subscribed,
+            lookup=lookup,
+            error=error,
+            )
+
+    def cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+        if string.find('^') >= 0:
+            raise ValueError(
+                'Cold observable does not support subscription symbol "^".'
+                'Got "{}"'.format(string))
+
+        records = parse(
+            string,
+            timespan=timespan,
+            time_shift=0,
+            lookup=lookup,
+            error=error,
+            )
+        return scheduler.create_cold_observable(records)
+
+    def hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+        records = parse(
+            string,
+            timespan=timespan,
+            time_shift=subscribed,
+            lookup=lookup,
+            error=error,
+            )
+        return scheduler.create_hot_observable(records)
+
+    return TestContext(start, cold, hot, expected)
+

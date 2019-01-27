@@ -2,10 +2,13 @@ import unittest
 
 from rx import Observable
 from rx.testing import marbles, TestScheduler
+from rx.testing.reactivetest import ReactiveTest
+
+
 #from rx.concurrency import timeout_scheduler, new_thread_scheduler
 
 # marble sequences to test:
-tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
+#tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
 
 
 # class TestFromToMarbles(unittest.TestCase):
@@ -41,4 +44,456 @@ tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'
     #     expected = [t.replace('-', '') for t in tested_marbles]
     #     self._run_test(expected, new_thread_scheduler, TestScheduler())
 
+class TestParse(unittest.TestCase):
 
+    def test_parse_on_error(self):
+        string = "#"
+        results = marbles.parse(string)
+        expected = [ReactiveTest.on_error(0, Exception('error'))]
+        assert results == expected
+
+    def test_parse_on_error_specified(self):
+        string = "#"
+        ex = Exception('Foo')
+        results = marbles.parse(string, error=ex)
+        expected = [ReactiveTest.on_error(0, ex)]
+        assert results == expected
+
+    def test_parse_on_complete(self):
+        string = "|"
+        results = marbles.parse(string)
+        expected = [ReactiveTest.on_completed(0)]
+        assert results == expected
+
+    def test_parse_on_next(self):
+        string = "a"
+        results = marbles.parse(string)
+        expected = [ReactiveTest.on_next(0, 'a')]
+        assert results == expected
+
+    def test_parse_timespan(self):
+        string = "a--b---c"
+        "         012345678901234567890"
+        ts = 0.1
+        results = marbles.parse(string, timespan=ts)
+        expected = [
+            ReactiveTest.on_next(0 * ts, 'a'),
+            ReactiveTest.on_next(3 * ts, 'b'),
+            ReactiveTest.on_next(7 * ts, 'c'),
+            ]
+        assert results == expected
+
+    def test_parse_marble_completed(self):
+        string = "-ab-c--|"
+        "         012345678901234567890"
+        results = marbles.parse(string)
+        expected = [
+                ReactiveTest.on_next(1, 'a'),
+                ReactiveTest.on_next(2, 'b'),
+                ReactiveTest.on_next(4, 'c'),
+                ReactiveTest.on_completed(7),
+                ]
+        assert results == expected
+
+    def test_parse_marble_with_error(self):
+        string = "-ab-c--#--"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        results = marbles.parse(string, error=ex)
+        expected = [
+                ReactiveTest.on_next(1, 'a'),
+                ReactiveTest.on_next(2, 'b'),
+                ReactiveTest.on_next(4, 'c'),
+                ReactiveTest.on_error(7, ex),
+                ]
+        assert results == expected
+
+    def test_parse_marble_with_space(self):
+        string = " -a  b- c-  - |"
+        "         012345678901234567890"
+        results = marbles.parse(string)
+        expected = [
+                ReactiveTest.on_next(1, 'a'),
+                ReactiveTest.on_next(2, 'b'),
+                ReactiveTest.on_next(4, 'c'),
+                ReactiveTest.on_completed(7),
+                ]
+        assert results == expected
+
+
+    def test_parse_marble_with_group(self):
+        string = "-(ab)-c--|"
+        "         012345678901234567890"
+        results = marbles.parse(string)
+        expected = [
+                ReactiveTest.on_next(1, 'a'),
+                ReactiveTest.on_next(1, 'b'),
+                ReactiveTest.on_next(6, 'c'),
+                ReactiveTest.on_completed(9),
+                ]
+        assert results == expected
+
+
+
+    def test_parse_marble_lookup(self):
+        string = "-ab-c-12-3-|"
+        "         012345678901234567890"
+        lookup = {
+            'a': 'aa',
+            'b': 'bb',
+            'c': 'cc',
+            1: '11',
+            2: '22',
+            3: 33,
+            }
+
+        results = marbles.parse(string, lookup=lookup)
+        expected = [
+                ReactiveTest.on_next(1, 'aa'),
+                ReactiveTest.on_next(2, 'bb'),
+                ReactiveTest.on_next(4, 'cc'),
+                ReactiveTest.on_next(6, '11'),
+                ReactiveTest.on_next(7, '22'),
+                ReactiveTest.on_next(9, 33),
+                ReactiveTest.on_completed(11),
+                ]
+        assert results == expected
+
+
+    def test_parse_marble_subscribe(self):
+        string = "-ab--^-c-d-|"
+        "       8654321012345678901234567890"
+        results = marbles.parse(string)
+        expected = [
+                ReactiveTest.on_next(-4, 'a'),
+                ReactiveTest.on_next(-3, 'b'),
+                ReactiveTest.on_next(2, 'c'),
+                ReactiveTest.on_next(4, 'd'),
+                ReactiveTest.on_completed(6),
+                ]
+        assert results == expected
+
+    def test_parse_marble_time_shift(self):
+        string = "-ab----c-d-|"
+        "         012345678901234567890"
+        offset = 10
+        results = marbles.parse(string, time_shift=offset)
+        expected = [
+                ReactiveTest.on_next(1 + offset, 'a'),
+                ReactiveTest.on_next(2 + offset, 'b'),
+                ReactiveTest.on_next(7 + offset, 'c'),
+                ReactiveTest.on_next(9 + offset, 'd'),
+                ReactiveTest.on_completed(11 + offset),
+                ]
+        assert results == expected
+
+
+    def test_parse_marble_time_shift_and_subscribe(self):
+        string = "-ab--^--c-d-|"
+        "        654321012345678901234567890"
+        offset = 10
+        results = marbles.parse(string, time_shift=offset)
+        expected = [
+                ReactiveTest.on_next(-4 + offset, 'a'),
+                ReactiveTest.on_next(-3 + offset, 'b'),
+                ReactiveTest.on_next(3 + offset, 'c'),
+                ReactiveTest.on_next(5 + offset, 'd'),
+                ReactiveTest.on_completed(7 + offset),
+                ]
+        assert results == expected
+
+
+class TestFromMarble(unittest.TestCase):
+    def create_factory(self, observable):
+        def create():
+            return observable
+        return create
+
+    def test_from_marbles_on_error(self):
+        string = "#"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+
+        expected = [ReactiveTest.on_error(200, Exception('error'))]
+        assert results == expected
+
+    def test_from_marbles_on_error_specified(self):
+        string = "#"
+        ex = Exception('Foo')
+        obs = marbles.from_marbles(string, error=ex)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+
+        expected = [ReactiveTest.on_error(200, ex)]
+        assert results == expected
+
+    def test_from_marbles_on_complete(self):
+        string = "|"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [ReactiveTest.on_completed(200)]
+        assert results == expected
+
+    def test_from_marbles_on_next(self):
+        string = "a"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [ReactiveTest.on_next(200, 'a')]
+        assert results == expected
+
+    def test_from_marbles_timespan(self):
+        string = "a--b---c"
+        "         012345678901234567890"
+        ts = 0.5
+        obs = marbles.from_marbles(string, timespan=ts)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+            ReactiveTest.on_next(0 * ts + 200, 'a'),
+            ReactiveTest.on_next(3 * ts + 200, 'b'),
+            ReactiveTest.on_next(7 * ts + 200, 'c'),
+            ]
+        assert results == expected
+
+    def test_from_marbles_marble_completed(self):
+        string = "-ab-c--|"
+        "         012345678901234567890"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'a'),
+                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_completed(200.7),
+                ]
+        assert results == expected
+
+    def test_from_marbles_marble_with_error(self):
+        string = "-ab-c--#--"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        obs = marbles.from_marbles(string, error=ex)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'a'),
+                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_error(200.7, ex),
+                ]
+        assert results == expected
+
+    def test_from_marbles_marble_with_space(self):
+        string = " -a  b- c-  - |"
+        "         012  34 56  7 8901234567890"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'a'),
+                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_completed(200.7),
+                ]
+        assert results == expected
+
+    def test_from_marbles_marble_with_group(self):
+        string = "-(ab)-c--|"
+        "         012345678901234567890"
+        obs = marbles.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'a'),
+                ReactiveTest.on_next(200.1, 'b'),
+                ReactiveTest.on_next(200.6, 'c'),
+                ReactiveTest.on_completed(200.9),
+                ]
+        assert results == expected
+
+    def test_from_marbles_marble_lookup(self):
+        string = "-ab-c-12-3-|"
+        "         012345678901234567890"
+        lookup = {
+            'a': 'aa',
+            'b': 'bb',
+            'c': 'cc',
+            1: '11',
+            2: '22',
+            3: 33,
+            }
+        obs = marbles.from_marbles(string, lookup=lookup)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'aa'),
+                ReactiveTest.on_next(200.2, 'bb'),
+                ReactiveTest.on_next(200.4, 'cc'),
+                ReactiveTest.on_next(200.6, '11'),
+                ReactiveTest.on_next(200.7, '22'),
+                ReactiveTest.on_next(200.9, 33),
+                ReactiveTest.on_completed(201.1),
+                ]
+        assert results == expected
+
+
+class TestTestContext(unittest.TestCase):
+
+    def test_start_with_cold_never(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("----")
+        "           012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = []
+        assert results == expected
+
+    def test_start_with_cold_empty(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("------|")
+        "           012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = [ReactiveTest.on_completed(206)]
+        assert results == expected
+
+    def test_start_with_cold_normal(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("12--3-|")
+        "           012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = [
+            ReactiveTest.on_next(200, 1),
+            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(204, 3),
+            ReactiveTest.on_completed(206),
+            ]
+        assert results == expected
+
+    def test_start_with_cold_no_create_function(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("12--3-|")
+        "           012345678901234567890"
+
+        results = start(obs)
+        expected = [
+            ReactiveTest.on_next(200, 1),
+            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(204, 3),
+            ReactiveTest.on_completed(206),
+            ]
+        assert results == expected
+
+
+    def test_start_with_hot_never(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = hot("------")
+        "          012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = []
+        assert results == expected
+
+    def test_start_with_hot_empty(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = hot("---|")
+        "          012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = [ReactiveTest.on_completed(203),]
+        assert results == expected
+
+    def test_start_with_hot_normal(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = hot("-12--3-|")
+        "          012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = [
+            ReactiveTest.on_next(201, 1),
+            ReactiveTest.on_next(202, 2),
+            ReactiveTest.on_next(205, 3),
+            ReactiveTest.on_completed(207),
+            ]
+        assert results == expected
+
+    def test_start_with_hot_subscribe(self):
+        start, cold, hot, exp = marbles.test_context()
+        obs = hot("12-^-3--4--5-|")
+        "             012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        expected = [
+            ReactiveTest.on_next(202, 3),
+            ReactiveTest.on_next(205, 4),
+            ReactiveTest.on_next(208, 5),
+            ReactiveTest.on_completed(210),
+            ]
+        assert results == expected
+
+    def test_exp(self):
+        start, cold, hot, exp = marbles.test_context()
+        results = exp("12--3--4--5-|")
+        "              012345678901234567890"
+
+        expected = [
+            ReactiveTest.on_next(200, 1),
+            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(204, 3),
+            ReactiveTest.on_next(207, 4),
+            ReactiveTest.on_next(210, 5),
+            ReactiveTest.on_completed(212),
+            ]
+        assert results == expected
+
+    def test_start_with_hot_and_exp(self):
+
+        start, cold, hot, exp = marbles.test_context()
+        obs = hot("       12-^-3--4--5-|")
+        expected = exp("     --3--4--5-|")
+        "                    012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        assert results == expected
+
+    def test_start_with_cold_and_exp(self):
+
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("     12--3--4--5-|")
+        expected = exp(" 12--3--4--5-|")
+        "                012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        assert results == expected
