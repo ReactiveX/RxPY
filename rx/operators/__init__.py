@@ -175,7 +175,8 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     return _buffer_with_time_or_count(timespan, count, scheduler)
 
 
-def catch(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+def catch(second: Observable = None, handler: Callable[[Exception, Observable], Observable] = None
+          ) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
