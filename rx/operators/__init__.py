@@ -359,13 +359,13 @@ def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Ca
         >>> res = source.delay_with_mapper(rx.timer(2.0), lambda x: rx.timer(x))
 
     Args:
-        subscription_delay: [Optional] Sequence indicating the delay for the
-            subscription to the source.
-        delay_duration_mapper: [Optional] Selector function to retrieve a
-            sequence indicating the delay for each given element.
+        subscription_delay: [Optional] Sequence indicating the delay
+            for the subscription to the source.
+        delay_duration_mapper: [Optional] Selector function to retrieve
+            a sequence indicating the delay for each given element.
 
     Returns:
-        A function that takes an observable source and retursn a
+        A function that takes an observable source and returns a
         time-shifted observable sequence.
     """
     from rx.core.operators.delaywithmapper import _delay_with_mapper
@@ -423,8 +423,8 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
         >>> obs = xs.distinct(lambda x: x.id, lambda a,b: a == b)
 
     Args:
-        key_mapper: [Optional]  A function to compute the comparison key
-            for each element.
+        key_mapper: [Optional]  A function to compute the comparison
+            key for each element.
         comparer: [Optional]  Used to compare items in the collection.
 
     Returns:
@@ -795,9 +795,9 @@ def flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observab
         >>> source.flat_map_indexed(lambda x, i: Observable.range(0, x))
 
     Or:
-    Projects each element of the source observable sequence to the other
-    observable sequence and merges the resulting observable sequences
-    into one observable sequence.
+    Projects each element of the source observable sequence to the
+    other observable sequence and merges the resulting observable
+    sequences into one observable sequence.
 
     Example:
         >>> source.flat_map_indexed(Observable.of(1, 2, 3))
