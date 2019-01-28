@@ -3,7 +3,7 @@ from typing import Callable
 import rx
 from rx.core import Observable
 
-
+# pylint: disable=redefined-builtin
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:
     def zip(source: Observable) -> Observable:
         """Merges the specified observable sequences into one observable
@@ -21,8 +21,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
             An observable sequence containing the result of combining
             elements of the sources as a tuple.
         """
-        sources = [source] + list(args)
-        return rx.zip(*sources)
+        return rx.zip(source, *args)
     return zip
 
 def _zip_with_iterable(second):
@@ -33,10 +32,10 @@ def _zip_with_iterable(second):
         corresponding index.
 
         Example
-            >>> res = zip(xs, [1,2,3])
+            >>> res = zip(source)
 
         Args:
-            source -- Source observable to zip.
+            source: Source observable to zip.
 
         Returns:
             An observable sequence containing the result of

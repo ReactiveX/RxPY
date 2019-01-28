@@ -2589,10 +2589,10 @@ def zip_with_iterable(second):
     corresponding index.
 
     Example
-        >>> res = zip(xs, [1,2,3])
+        >>> res = zip([1,2,3])
 
     Args:
-        second: Iterable to zip.
+        second: Iterable to zip with the source observable..
 
     Returns:
         An operator function that takes and observable source and

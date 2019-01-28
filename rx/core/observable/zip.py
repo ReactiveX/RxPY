@@ -24,7 +24,7 @@ def _zip(*args: Observable) -> Observable:
 
     sources = list(args)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None):
         n = len(sources)
         queues = [[] for _ in range(n)]
         is_done = [False] * n

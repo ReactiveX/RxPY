@@ -7,17 +7,6 @@ from rx.core import Observable
 
 
 def _merge(*args: Union[Observable, Iterable[Observable]]) -> Observable:
-    """Merges all the observable sequences into a single observable
-    sequence.
-
-    1 - merged = rx.merge(xs, ys, zs)
-    2 - merged = rx.merge([xs, ys, zs])
-
-    Returns:
-        The observable sequence that merges the elements of the
-        observable sequences.
-    """
-
     sources = args[:]
 
     if isinstance(sources[0], Iterable):
