@@ -6,7 +6,7 @@ from rx.disposable import SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
 
-def catch_handler(source, handler) -> Observable:
+def catch_handler(source: Observable, handler: Callable[[Exception, Observable], Observable]) -> Observable:
     def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -15,7 +15,7 @@ def catch_handler(source, handler) -> Observable:
 
         def on_error(exception):
             try:
-                result = handler(exception)
+                result = handler(exception, source)
             except Exception as ex:  # By design. pylint: disable=W0703
                 observer.on_error(ex)
                 return
@@ -35,19 +35,20 @@ def catch_handler(source, handler) -> Observable:
     return Observable(subscribe)
 
 
-def _catch(second: Observable = None, handler=None) -> Callable[[Observable], Observable]:
+def _catch(second: Observable = None, handler: Callable[[Exception, Observable], Observable] = None
+          ) -> Callable[[Observable], Observable]:
     def catch(source: Observable) -> Observable:
         """Continues an observable sequence that is terminated by an
         exception with the next observable sequence.
 
         Examples:
             >>> catch(ys)
-            >>> catch(lambda ex: ys(ex))
+            >>> catch(lambda ex, src: ys(ex))
 
         Args:
             handler: Exception handler function that returns an
-                observable sequence  given the error that occurred in
-                the first sequence.
+                observable sequence  given the error and source observable
+                that occurred in the first sequence.
             second: Second observable sequence used to produce
                 results when an error occurred in the first sequence.
 

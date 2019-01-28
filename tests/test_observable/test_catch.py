@@ -132,7 +132,7 @@ class TestCatch(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            def handler(e):
+            def handler(e, source):
                 handler_called[0] = True
                 return o2
 
@@ -151,7 +151,7 @@ class TestCatch(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            def handler(e):
+            def handler(e, source):
                 handler_called[0] = True
                 return o2
 
@@ -171,7 +171,7 @@ class TestCatch(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            def handler(e):
+            def handler(e, source):
                 handler_called[0] = True
                 raise Exception(ex2)
             return o1.pipe(ops.catch(handler))
@@ -194,10 +194,10 @@ class TestCatch(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            def handler1(e):
+            def handler1(e, source):
                 first_handler_called[0] = True
                 return o2
-            def handler2(e):
+            def handler2(e, source):
                 second_handler_called[0] = True
                 return o3
             return o1.pipe(ops.catch(handler1), ops.catch(handler2))
@@ -222,11 +222,11 @@ class TestCatch(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            def handler1(e):
+            def handler1(e, source):
                 first_handler_called[0] = True
                 assert(e == ex)
                 return o2
-            def handler2(e):
+            def handler2(e, source):
                 second_handler_called[0] = True
                 assert(e == ex2)
                 return o3
