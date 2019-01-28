@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Iterable
 
 import rx
 from rx.core import Observable
@@ -25,7 +25,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
         return rx.zip(*sources)
     return zip
 
-def _zip_with_iterable(second):
+def _zip_with_iterable(seq: Iterable):
     def zip_with_iterable(source: Observable) -> Observable:
         """Merges the specified observable sequence and list into one
         observable sequence by creating a tuple whenever all of
@@ -33,32 +33,32 @@ def _zip_with_iterable(second):
         corresponding index.
 
         Example
-            >>> res = zip(xs, [1,2,3])
+            >>> res = zip(source)
 
         Args:
-            source -- Source observable to zip.
+            source: Source observable to zip.
 
         Returns:
-            An observable sequence containing the result of
-            combining elements of the sources as a tuple.
+            An observable sequence containing the result of combining
+            elements of the sources as a tuple.
         """
 
         first = source
+        second = iter(seq)
 
         def subscribe(observer, scheduler=None):
-            length = len(second)
             index = 0
 
             def on_next(left):
                 nonlocal index
 
-                if index < length:
-                    right = second[index]
-                    index += 1
+                try:
+                    right = next(second)
+                except StopIteration:
+                    observer.on_completed()
+                else:
                     result = (left, right)
                     observer.on_next(result)
-                else:
-                    observer.on_completed()
 
             return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return Observable(subscribe)
