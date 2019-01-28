@@ -1,12 +1,11 @@
-from typing import Any, Iterable, Callable, Union, List, cast
+from typing import Callable
 
+import rx
 from rx.core import Observable
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
 
-def _with_latest_from(*args: Union[Observable, Iterable[Observable]]
-                      ) -> Callable[[Observable], Observable]:
+def _with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
@@ -16,7 +15,7 @@ def _with_latest_from(*args: Union[Observable, Iterable[Observable]]
 
     Examples:
         >>> op = with_latest_from(obs1)
-        >>> op = with_latest_from([obs1, obs2, obs3])
+        >>> op = with_latest_from(obs1, obs2, obs3)
 
     Returns:
         An observable sequence containing the result of combining
@@ -24,43 +23,5 @@ def _with_latest_from(*args: Union[Observable, Iterable[Observable]]
     """
 
     def with_latest_from(source: Observable) -> Observable:
-        sources: List[Observable] = [source]
-
-        if isinstance(args[0], Iterable):
-            sources = list(args[0])
-        else:
-            sources = cast(List[Observable], list(args))
-
-        NO_VALUE = object()
-
-        def subscribe(observer, scheduler=None):
-            def subscribe_all(parent, *children):
-
-                values = [NO_VALUE for _ in children]
-
-                def subscribe_child(i, child):
-                    subscription = SingleAssignmentDisposable()
-
-                    def on_next(value):
-                        with parent.lock:
-                            values[i] = value
-                    subscription.disposable = child.subscribe_(on_next, observer.on_error, scheduler=scheduler)
-                    return subscription
-
-                parent_subscription = SingleAssignmentDisposable()
-
-                def on_next(value):
-                    with parent.lock:
-                        if NO_VALUE not in values:
-                            result = (value,) + tuple(values)
-                            observer.on_next(result)
-
-                disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
-                parent_subscription.disposable = disp
-
-                children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
-
-                return [parent_subscription] + children_subscription
-            return CompositeDisposable(subscribe_all(source, *sources))
-        return Observable(subscribe)
+        return rx.with_latest_from(source, *sources)
     return with_latest_from

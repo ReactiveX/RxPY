@@ -581,7 +581,7 @@ def using(resource_factory: Callable[[], typing.Disposable], observable_factory:
     return _using(resource_factory, observable_factory)
 
 
-def with_latest_from(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def with_latest_from(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple only when the first
     observable sequence produces an element. The observables can be
@@ -596,7 +596,7 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]]) -> Observab
         elements of the sources into a tuple.
     """
     from .core.observable.withlatestfrom import _with_latest_from
-    return _with_latest_from(*args)
+    return _with_latest_from(*sources)
 
 
 def zip(*args: Observable) -> Observable:

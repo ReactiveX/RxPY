@@ -1,15 +1,38 @@
-from typing import Any, Iterable, Callable, Union, List, cast
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
-from rx import operators as ops
 from rx.core import Observable
 
 
-def _with_latest_from(*args: Union[Observable, Iterable[Observable]]) -> Observable:
-    sources: List[Observable] = []
+def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
+    NO_VALUE = object()
 
-    if isinstance(args[0], Iterable):
-        sources += list(args[0])
-    else:
-        sources += list(cast(Iterable[Observable], args))
+    def subscribe(observer, scheduler=None):
+        def subscribe_all(parent, *children):
 
-    return ops.with_latest_from(sources[1:])(sources[0])
+            values = [NO_VALUE for _ in children]
+
+            def subscribe_child(i, child):
+                subscription = SingleAssignmentDisposable()
+
+                def on_next(value):
+                    with parent.lock:
+                        values[i] = value
+                subscription.disposable = child.subscribe_(on_next, observer.on_error, scheduler=scheduler)
+                return subscription
+
+            parent_subscription = SingleAssignmentDisposable()
+
+            def on_next(value):
+                with parent.lock:
+                    if NO_VALUE not in values:
+                        result = (value,) + tuple(values)
+                        observer.on_next(result)
+
+            disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            parent_subscription.disposable = disp
+
+            children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
+
+            return [parent_subscription] + children_subscription
+        return CompositeDisposable(subscribe_all(parent, *sources))
+    return Observable(subscribe)

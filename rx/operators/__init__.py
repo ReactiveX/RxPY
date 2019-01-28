@@ -2539,8 +2539,7 @@ def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
     return _window_with_time_or_count(timespan, count, scheduler)
 
 
-def with_latest_from(*args: Union[Observable, Iterable[Observable]]
-                    ) -> Callable[[Observable], Observable]:
+def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]:
     """The `with_latest_from` operator.
 
     Merges the specified observable sequences into one observable
@@ -2558,7 +2557,7 @@ def with_latest_from(*args: Union[Observable, Iterable[Observable]]
         combining elements of the sources into a tuple.
     """
     from rx.core.operators.withlatestfrom import _with_latest_from
-    return _with_latest_from(*args)
+    return _with_latest_from(*sources)
 
 
 def zip(*args: Observable) -> Callable[[Observable], Observable]:
