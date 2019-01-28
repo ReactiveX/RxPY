@@ -164,8 +164,8 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     Args:
         timespan: Maximum time length of a buffer.
         count: Maximum element count of a buffer.
-        scheduler: [Optional] Scheduler to run bufferin timers on. If not
-            specified, the timeout scheduler is used.
+        scheduler: [Optional] Scheduler to run bufferin timers on. If
+            not specified, the timeout scheduler is used.
 
     Returns:
         An operator function that takes an observable source and
