@@ -15,7 +15,7 @@ This branch is work-in-progress.
 
 Reactive Extensions for Python (RxPY) is a set of libraries for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators in Python. Using Rx, developers represent asynchronous data streams with Observables, query asynchronous data streams using operators, and parameterize concurrency in data/event streams using Schedulers.
 
-Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs.You can put various transformations in-between the source Observable and the consuming Observer as well.
+Using Rx, you can represent multiple asynchronous data streams (that come from diverse sources, e.g., stock quote, Tweets, computer events, web service requests, etc.), and subscribe to the event stream using the Observer object. The Observable notifies the subscribed Observer instance whenever an event occurs. You can put various transformations in-between the source Observable and the consuming Observer as well.
 
 Because Observable sequences are data streams, you can query them using standard LINQ-like query operators implemented by the Observable type. Thus you can filter, map, reduce, compose and perform time-based operations on multiple events easily by using these static LINQ operators. In addition, there are a number of other reactive stream specific operators that allow powerful queries to be written. Cancellation, exceptions, and synchronization are also handled gracefully by using the methods on the Observable object.
 
@@ -186,13 +186,13 @@ rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
 
 ## Emitting Events
 
-On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1000 milliseconds. This `Observable` will run infinitely and never call `on_complete`.
+On top of data, Observables can also emit events. By treating data and events the same way, you can do powerful compositions to make the two work together. Below, we have an `Observable` that emits a consecutive integer every 1 second. This `Observable` will run infinitely and never call `on_complete`.
 
 ```python
 import rx
 from rx import operators as ops
 
-rx.interval(1000).pipe(
+rx.interval(1.0).pipe(
     ops.map(lambda i: "{0} Mississippi".format(i))
 ).subscribe(lambda s: print(s))
 
@@ -297,7 +297,7 @@ You can compose different Observables together using factories like `merge()`, `
 import rx
 
 letters = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
-intervals = rx.interval(1000)
+intervals = rx.interval(1.0)
 
 rx.zip(letters, intervals, lambda s, i: (s, i)) \
     .subscribe(lambda t: print(t))
@@ -391,7 +391,7 @@ rx.range(1, 10).pipe(
 )
 
 # Create Process 3, which is infinite
-rx.interval(1000).pipe(
+rx.interval(1.0).pipe(
     ops.map(lambda i: i * 100),
     ops.observe_on(pool_scheduler),
     ops.map(lambda s: intense_calculation(s))
@@ -477,12 +477,12 @@ With RxPY you should use [named keyword arguments](https://docs.python.org/2/glo
 ```python
 from rx import timer
 
-res = timer(5000) # Yes
-res = timer(5000, 1000) # Yes
-res = timer(5000, 1000, Scheduler.timeout) # Yes
+res = timer(5.0) # Yes
+res = timer(5.0, 1.0) # Yes
+res = timer(5.0, 1.0, Scheduler.timeout) # Yes
 res = timer(, scheduler=Scheduler.timeout) # Yes, but must name
 
-res = timer(5000, Scheduler.timeout) # No, this is an error
+res = timer(5.0, Scheduler.timeout) # No, this is an error
 ```
 
 Thus when an operator like `timer()` has multiple optional arguments you should name your arguments. At least the arguments marked as optional.
