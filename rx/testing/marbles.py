@@ -76,12 +76,12 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
 
         disp.add(scheduler.schedule_relative(timespan, action))
 
-    def subscribe(observer, scheduler):
-        scheduler = scheduler or new_thread_scheduler
+    def subscribe(observer, scheduler_):
+        _scheduler = scheduler or scheduler_ or new_thread_scheduler
 
         for record in records:
             # Don't make closures within a loop
-            schedule_msg(record, observer, scheduler)
+            schedule_msg(record, observer, _scheduler)
         return disp
     return Observable(subscribe)
 
