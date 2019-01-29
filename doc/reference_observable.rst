@@ -1,7 +1,7 @@
-.. _reference_observable_factory:
+.. _reference_observable:
 
-Observable Factory
-=====================
+Observable
+===========
 
-.. automodule:: rx
+.. autoclass:: rx.Observable
     :members:

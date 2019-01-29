@@ -5,7 +5,7 @@ Get Started
 
 An :class:`Observable <rx.Observable>` is the core type in ReactiveX. It
 serially pushes items, known as *emissions*, through a series of operators until
-it finally arrives at an :class:`Observer <rx.Observer>`, where they are
+it finally arrives at an Observer, where they are
 consumed.
 
 Push-based (rather than pull-based) iteration opens up powerful new
@@ -14,24 +14,26 @@ possibilities to express code and concurrency much more quickly. Because an
 composing the two together becomes trivial.
 
 There are many ways to create an :class:`Observable <rx.Observable>` that hands
-items to an :class:`Observer <rx.Observer>`. You can use a :func:`create()
-<rx.create>` factory and pass it a function that hands items to the
-:class:`Observer <rx.Observer>`. The :class:`Observer <rx.Observer>` implements
-:meth:`on_next() <rx.Observer.on_next>`, :meth:`on_completed()
-<rx.Observer.on_completed>`, and :meth:`on_error() <rx.Observer.on_error>`
-functions. The :meth:`on_next() <rx.Observer.on_next>` is used to pass items.
-The :meth:`on_completed() <rx.Observer.on_completed>` will signal no more items
-are coming, and the :meth:`on_error() <rx.Observer.on_error>` signals an error.
+items to an Observer. You can use a :func:`create()
+<rx.create>` factory and pass it functions that handle items:
 
-For instance, you can implement an :class:`Observer <rx.Observer>` with these three methods and
-simply print these events. Then the `create()` can leverage a function that
-passes five strings to the :class:`Observer <rx.Observer>` by calling those events.
+* The *on_next* function is called each time the Observable emits an item.
+* The *on_completed* function is called when the Observale completes.
+* The *on_error* function is called when an error occurs on the Observable.
+
+You do not have to specify all three events types. You can pick and choose which
+events you want to observe by providing only some of the callbacks, or simply by
+providing a single lambda for *on_next*. Typically in production, you will want
+to provide an *on_error* handler so that errors are explicitly handled by the
+subscriber.
+
+Let's consider the following example:
 
 .. code:: python
 
-    from rx import Observer, create
+    from rx import create
 
-    def push_five_strings(observer):
+    def push_five_strings(observer, scheduler):
         observer.on_next("Alpha")
         observer.on_next("Beta")
         observer.on_next("Gamma")
@@ -39,20 +41,18 @@ passes five strings to the :class:`Observer <rx.Observer>` by calling those even
         observer.on_next("Epsilon")
         observer.on_completed()
 
-    class PrintObserver(Observer):
-
-        def on_next(self, value):
-            print("Received {0}".format(value))
-
-        def on_completed(self):
-            print("Done!")
-
-        def on_error(self, error):
-            print("Error Occurred: {0}".format(error))
-
     source = create(push_five_strings)
 
-    source.subscribe(PrintObserver())
+    source.subscribe(
+        on_next = lambda i: print("Received {0}".format(i)),
+        on_error = lambda e: print("Error Occurred: {0}".format(e)),
+        on_completed = lambda: print("Done!"),
+    )
+
+An Observable is created with create. On subscription, the *push_five_strings*
+function is called. This function emits five items. The three callbacks provided
+to the *subscribe* function simply print the received items and completion
+states. Note that the use of lambdas simplify the code in this basic example. 
 
 Output:
 
@@ -69,36 +69,8 @@ However, there are many :ref:`Observable factories
 <reference_observable_factory>` for common sources of emissions. To simply push
 five items, we can rid the :func:`create() <rx.create>` and its backing
 function, and use :func:`of() <rx.of>`. This factory accepts an argument list,
-iterates each emission as an :meth:`on_next() <rx.Observer.on_next>`, and then
-calls :meth:`on_completed() <rx.Observer.on_completed>` when iteration is
-complete. Therefore, we can simply pass these five Strings as arguments to it.
-
-.. code:: python
-
-    from rx import Observer
-
-    class PrintObserver(Observer):
-
-        def on_next(self, value):
-            print("Received {0}".format(value))
-
-        def on_completed(self):
-            print("Done!")
-
-        def on_error(self, error):
-            print("Error Occurred: {0}".format(error))
-
-    source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
-
-    source.subscribe(PrintObserver())
-
-
-Most of the time you will not want to go through the verbosity of implementing
-your own :class:`Observer <rx.Observer>`. You can instead pass 1 to 3 lambda
-arguments to :meth:`subscribe() <rx.Observable.subscribe>` specifying the
-:meth:`on_next() <rx.Observer.on_next>`, :meth:`on_completed()
-<rx.Observer.on_completed>`, and :meth:`on_error()
-<rx.Observer.on_error>` actions.
+iterates on each argument to emit them as items, and the completes. Therefore,
+we can simply pass these five Strings as arguments to it:
 
 .. code:: python
 
@@ -106,16 +78,14 @@ arguments to :meth:`subscribe() <rx.Observable.subscribe>` specifying the
 
     source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-    source.subscribe_(on_next=lambda value: print("Received {0}".format(value)),
-                    on_completed=lambda: print("Done!"),
-                    on_error=lambda error: print("Error Occurred: {0}".format(error))
-                    )
+    source.subscribe(
+        on_next = lambda i: print("Received {0}".format(i)),
+        on_error = lambda e: print("Error Occurred: {0}".format(e)),
+        on_completed = lambda: print("Done!"),
+    )
 
-You do not have to specify all three events types. You can pick and choose which
-events you want to observe using the named arguments, or simply provide a single
-lambda for the :meth:`on_next() <rx.Observer.on_next>`. Typically in production,
-you will want to provide an :meth:`on_error() <rx.Observer.on_error>` so errors
-are explicitly handled by the subscriber.
+And a single parameter can be provided to the subscribe function if completion
+and error are ignored:
 
 .. code:: python
 
@@ -183,22 +153,91 @@ operations. That way your code is readable and tells a story much more easily.
 Custom operator
 ---------------
 
+As operators chains grow up, the chains must be split to make the code more
+readable. New operators are implemented as functions, and can be directly used
+in the *pipe* operator. When an operator is implemented as a composition of
+other operators, then the implementation is straightforward, thanks to the
+*pipe* function:
+
+.. code:: python
+
+    from rx import of, pipe, operators as op
+
+    def length_more_than_5():
+        return pipe(
+            op.map(lambda s: len(s)),
+            op.filter(lambda i: i >= 5),
+        )
+
+    of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        length_more_than_5()
+    ).subscribe_(lambda value: print("Received {0}".format(value)))
+
+In this example, the *pipe* and *filter* operators are grouped in a new
+*length_more_then_5* operator.
+
+It is also possible to create an operator that is not a composition of other
+operators. This allows to fully control the subscription logic and items
+emissions:
+
+ .. code:: python
+
+    from rx import of, pipe, create
+
+    def lowercase():
+        def _lowercase(source):
+            def subscribe(observer, scheduler = None):
+                def on_next(value):
+                    observer.on_next(value.lower())
+
+                return source.subscribe(
+                    on_next, 
+                    observer.on_error, 
+                    observer.on_completed, 
+                    scheduler)
+            return create(subscribe)
+        return _lowercase
+
+    of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+            lowercase()
+        ).subscribe_(lambda value: print("Received {0}".format(value)))
+
+In this example, the *lowsercase* operator converts all received items to
+lowercase. The structure of the *_lowercase* function is a very common way to
+implement custom operators: It takes a source Observable as input, and returns a
+custom Observable. The source observable is subscribed only when the output
+Observable is subscribed. This allows to chain subscription calls when building
+a pipeline.
+
+Output:
+
+.. code:: console
+
+    Received alpha
+    Received beta
+    Received gamma
+    Received delta
+    Received epsilon
+
 Concurrency
 -----------
 
+CPU Concurrency
+................
+
 To achieve concurrency, you use two operators: :func:`subscribe_on()
 <rx.operators.subscribe_on>` and :func:`observe_on() <rx.operators.observe_on>`.
-Both need a *Scheduler* which provides a thread for each subscription to do work
-(see section on Schedulers below). The :class:`ThreadPoolScheduler
-<rx.concurrency.ThreadPoolScheduler>` is a good choice to create a pool of reusable
-worker threads.
+Both need a :ref:`Scheduler <reference_scheduler>` which provides a thread for
+each subscription to do work (see section on Schedulers below). The
+:class:`ThreadPoolScheduler <rx.concurrency.ThreadPoolScheduler>` is a good
+choice to create a pool of reusable worker threads.
 
 .. attention::
 
-    [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) has the potential to
+    `GIL <https://wiki.python.org/moin/GlobalInterpreterLock>`_ has the potential to
     undermine your concurrency performance, as it prevents multiple threads from
     accessing the same line of code simultaneously. Libraries like
-    [NumPy](http://www.numpy.org/) can mitigate this for parallel intensive
+    `NumPy <http://www.numpy.org/>`_ can mitigate this for parallel intensive
     computations as they free the GIL. RxPy may also minimize thread overlap to some
     degree. Just be sure to test your application with concurrency and ensure there
     is a performance gain.
@@ -282,3 +321,10 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     PROCESS 2: Thread-2 4
     PROCESS 3: Thread-7 300
 
+
+IO Concurrency
+................
+
+
+Default Scheduler
+..................
