@@ -9,6 +9,38 @@ from rx.testing import ReactiveTest, TestScheduler, Recorded
 
 new_thread_scheduler = NewThreadScheduler()
 
+from rx import operators as ops
+from datetime import datetime
+import rx
+
+def hot(string: str, timespan: RelativeTime = 0.1, start_time:AbsoluteOrRelativeTime=0,
+        lookup: Dict = None, error: Exception = None, scheduler: Scheduler = None) -> Observable:
+
+    scheduler_ = scheduler or new_thread_scheduler
+
+    cold_observable = from_marbles(
+        string,
+        timespan=timespan,
+        lookup=lookup,
+        error=error,
+        scheduler=scheduler_,
+        )
+    values = rx.timer(start_time, scheduler=scheduler_).pipe(
+        ops.flat_map(lambda _: cold_observable),
+        ops.publish(),
+        )
+
+#    duetime = start_time
+#    if isinstance(start_time, datetime):
+#        duetime = scheduler_.to_timedelta(start_time - scheduler_.now)
+#    values = cold_observable.pipe(
+#        ops.delay(duetime, scheduler=scheduler_),
+#        ops.publish(),
+#        )
+
+    values.connect()
+    return values
+
 
 def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
                  error: Exception = None, scheduler: Scheduler = None) -> Observable:
@@ -336,7 +368,7 @@ def test_context(timespan=1):
     disposed = 1000
     subscribed = 200
 
-    def start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
+    def test_start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
 
         def default_create():
             return create
@@ -354,7 +386,7 @@ def test_context(timespan=1):
             )
         return mock_observer.messages
 
-    def expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+    def test_expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
         if string.find('^') >= 0:
             raise ValueError(
                 'Expected function does not support subscription symbol "^".'
@@ -368,7 +400,7 @@ def test_context(timespan=1):
             error=error,
             )
 
-    def cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+    def test_cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
         if string.find('^') >= 0:
             raise ValueError(
                 'Cold observable does not support subscription symbol "^".'
@@ -381,15 +413,24 @@ def test_context(timespan=1):
             error=error,
             )
 
-    def hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
-        records = parse(
+    def test_hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+#        records = parse(
+#            string,
+#            timespan=timespan,
+#            time_shift=subscribed,
+#            lookup=lookup,
+#            error=error,
+#            )
+#        return scheduler.create_hot_observable(records)
+        hot_obs = hot(
             string,
             timespan=timespan,
-            time_shift=subscribed,
+            start_time=subscribed,
             lookup=lookup,
             error=error,
+            scheduler=scheduler,
             )
-        return scheduler.create_hot_observable(records)
+        return hot_obs
 
-    return TestContext(start, cold, hot, expected)
+    return TestContext(test_start, test_cold, test_hot, test_expected)
 
