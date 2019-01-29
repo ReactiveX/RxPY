@@ -327,7 +327,7 @@ def test_context(timespan=1):
         - disposed = 1000
 
     **IMPORTANT**: regarding :func:`hot()`, a marble declared as the
-    fisrt character will be skipped by the test scheduler.
+    first character will be skipped by the test scheduler.
     E.g. `hot("a--b--")` will only emit `b`.
     """
 
@@ -374,14 +374,12 @@ def test_context(timespan=1):
                 'Cold observable does not support subscription symbol "^".'
                 'Got "{}"'.format(string))
 
-        records = parse(
+        return from_marbles(
             string,
             timespan=timespan,
-            time_shift=0,
             lookup=lookup,
             error=error,
             )
-        return scheduler.create_cold_observable(records)
 
     def hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
         records = parse(
