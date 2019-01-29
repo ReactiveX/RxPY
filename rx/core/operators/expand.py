@@ -1,10 +1,12 @@
+from typing import Callable
+
 from rx.core import Observable
 from rx.core.typing import Mapper
 from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
 from rx.concurrency import immediate_scheduler
 
 
-def _expand(mapper: Mapper) -> Observable:
+def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
     def expand(source: Observable) -> Observable:
         """Expands an observable sequence by recursively invoking
         mapper.

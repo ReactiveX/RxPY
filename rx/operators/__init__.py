@@ -583,7 +583,7 @@ def exclusive() -> Callable[[Observable], Observable]:
     return _exclusive()
 
 
-def expand(mapper: Mapper) -> Observable:
+def expand(mapper: Mapper) -> Callable[[Observable], Observable]:
     """Expands an observable sequence by recursively invoking mapper.
 
     Args:
