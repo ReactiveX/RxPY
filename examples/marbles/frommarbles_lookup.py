@@ -1,3 +1,5 @@
+import time
+
 import rx
 from rx import concurrency as ccy
 from rx.testing import marbles
@@ -16,3 +18,4 @@ observable.subscribe_(
     scheduler=ccy.timeout_scheduler,
     )
 
+time.sleep(3)

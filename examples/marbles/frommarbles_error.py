@@ -1,3 +1,5 @@
+import time
+
 import rx
 from rx import concurrency as ccy
 from rx.testing import marbles
@@ -14,3 +16,5 @@ source.subscribe(
     on_completed=lambda: print('good job!'),
     scheduler=ccy.timeout_scheduler,
     )
+
+time.sleep(3)

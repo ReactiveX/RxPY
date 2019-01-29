@@ -1,3 +1,5 @@
+import time
+
 from rx import operators as ops
 from rx import concurrency as ccy
 from rx.testing.marbles import from_marbles
@@ -20,3 +22,5 @@ source.subscribe_(
     on_completed=lambda: print('good job!'),
     scheduler=ccy.timeout_scheduler,
     )
+
+time.sleep(3)
