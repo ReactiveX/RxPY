@@ -24,6 +24,7 @@ def infinite() -> Iterable[int]:
 
 
 class NotSet:
+    """Sentinel value."""
+
     def __repr__(self):
         return 'NotSet'
-
