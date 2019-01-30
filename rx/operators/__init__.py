@@ -458,8 +458,8 @@ def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observab
         contiguous elements, based on a computed key value, from the
         source sequence.
     """
-    from rx.core.operators.distinctuntilchanged import distinct_until_changed as distinct_until_changed_
-    return distinct_until_changed_(key_mapper, comparer)
+    from rx.core.operators.distinctuntilchanged import _distinct_until_changed
+    return _distinct_until_changed(key_mapper, comparer)
 
 
 def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
