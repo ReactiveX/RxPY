@@ -232,6 +232,75 @@ from_ = from_iterable
 from_list = from_iterable
 
 
+def from_marbles(string: str, timespan:typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None,
+                 lookup = None, error: Exception = None) -> Observable:
+    """Convert a marble diagram string to a cold observable sequence, using
+    an optional scheduler to enumerate the events.
+
+    Each character in the string will advance time by timespan
+    (exept for space). Characters that are not special (see the table below)
+    will be interpreted as a value to be emitted. numbers will be cast
+    to int or float.
+
+    Special characters:
+        +--------+--------------------------------------------------------+
+        |  `-`   | advance time by timespan                               |
+        +--------+--------------------------------------------------------+
+        |  `#`   | on_error()                                             |
+        +--------+--------------------------------------------------------+
+        |  `|`   | on_completed()                                         |
+        +--------+--------------------------------------------------------+
+        |  `(`   | open a group of marbles sharing the same timestamp     |
+        +--------+--------------------------------------------------------+
+        |  `)`   | close a group of marbles                               |
+        +--------+--------------------------------------------------------+
+        | space  | used to align multiple diagrams, does not advance time.|
+        +--------+--------------------------------------------------------+
+
+    In a group of marbles, the position of the initial `(` determines the
+    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
+    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
+
+    Examples:
+        >>> from_marbles("--1--(42)-3--|")
+        >>> from_marbles("a--B--c-", lookup={'a': 1, 'B': 2, 'c': 3})
+        >>> from_marbles("a--b---#", error=ValueError("foo"))
+
+    Args:
+        string: String with marble diagram
+
+        timespan: [Optional] duration of each character in second.
+            If not specified, defaults to 0.1s.
+
+        lookup: [Optional] dict used to convert a marble into a specified
+            value. If not specified, defaults to {}.
+
+        error: [Optional] exception that will be use in place of the # symbol.
+            If not specified, defaults to Exception('error').
+
+        scheduler: [Optional] Scheduler to run the the input sequence
+            on.
+
+    Returns:
+        The observable sequence whose elements are pulled from the
+        given marble diagram string.
+    """
+
+    from .core.observable.marbles import from_marbles as _from_marbles
+    return _from_marbles(string, timespan=timespan, lookup=lookup, error=error, scheduler=scheduler)
+
+cold = from_marbles
+
+# TODO: need to move hot() operator (not in alphabetic order)
+# TODO: write the doc
+def hot(string, timespan: typing.RelativeTime=0.1, start_time = 0.0, scheduler: typing.Scheduler = None,
+       lookup = None, error: Exception = None) -> Observable:
+
+    from .core.observable.marbles import hot as _hot
+    return _hot(string, timespan=timespan, start_time=start_time, lookup=lookup, error=error, scheduler=scheduler)
+
+
+
 def generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.

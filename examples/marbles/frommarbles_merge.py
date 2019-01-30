@@ -2,10 +2,9 @@ import time
 
 import rx
 from rx import concurrency as ccy
-from rx.testing import marbles
 
-source0 = marbles.from_marbles('a-----d---1--------4-|', timespan=0.1)
-source1 = marbles.from_marbles('--b-c-------2---3-|   ', timespan=0.1)
+source0 = rx.cold('a-----d---1--------4-|', timespan=0.1)
+source1 = rx.cold('--b-c-------2---3-|   ', timespan=0.1)
 
 observable = rx.merge(source0, source1)
 

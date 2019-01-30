@@ -2,12 +2,11 @@ import time
 
 import rx
 from rx import concurrency as ccy
-from rx.testing import marbles
 
 err = ValueError("I don't like 5!")
 
-src0 = marbles.from_marbles('12-----4-----67--|', timespan=0.2)
-src1 = marbles.from_marbles('----3----5-#      ', timespan=0.2, error=err)
+src0 = rx.from_marbles('12-----4-----67--|', timespan=0.2)
+src1 = rx.from_marbles('----3----5-#      ', timespan=0.2, error=err)
 
 source = rx.merge(src0, src1)
 source.subscribe(

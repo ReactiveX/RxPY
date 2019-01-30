@@ -1,14 +1,14 @@
 import time
 
+import rx
 from rx import operators as ops
 from rx import concurrency as ccy
-from rx.testing.marbles import from_marbles
 
-a = from_marbles(' ---a---a----------------a-|')
-b = from_marbles('    ---b---b---|            ')
-c = from_marbles('             ---c---c---|   ')
-d = from_marbles('                --d---d---| ')
-e1 = from_marbles('a--b--------c--d-------|   ')
+a = rx.cold(' ---a---a----------------a-|')
+b = rx.cold('    ---b---b---|            ')
+c = rx.cold('             ---c---c---|   ')
+d = rx.cold('                --d---d---| ')
+e1 = rx.cold('a--b--------c--d-------|   ')
 
 observableLookup = {"a": a, "b": b, "c": c, "d": d}
 

@@ -1,7 +1,9 @@
 import unittest
 
+import rx
+from rx.core.observable.marbles import parse
 from rx import Observable
-from rx.testing import marbles, TestScheduler
+from rx.testing import TestScheduler, marbles
 from rx.testing.reactivetest import ReactiveTest
 
 
@@ -48,26 +50,26 @@ class TestParse(unittest.TestCase):
 
     def test_parse_on_error(self):
         string = "#"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [ReactiveTest.on_error(0, Exception('error'))]
         assert results == expected
 
     def test_parse_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
-        results = marbles.parse(string, error=ex)
+        results = parse(string, error=ex)
         expected = [ReactiveTest.on_error(0, ex)]
         assert results == expected
 
     def test_parse_on_complete(self):
         string = "|"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [ReactiveTest.on_completed(0)]
         assert results == expected
 
     def test_parse_on_next(self):
         string = "a"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [ReactiveTest.on_next(0, 'a')]
         assert results == expected
 
@@ -75,7 +77,7 @@ class TestParse(unittest.TestCase):
         string = "a--b---c"
         "         012345678901234567890"
         ts = 0.1
-        results = marbles.parse(string, timespan=ts)
+        results = parse(string, timespan=ts)
         expected = [
             ReactiveTest.on_next(0 * ts, 'a'),
             ReactiveTest.on_next(3 * ts, 'b'),
@@ -86,7 +88,7 @@ class TestParse(unittest.TestCase):
     def test_parse_marble_completed(self):
         string = "-ab-c--|"
         "         012345678901234567890"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [
                 ReactiveTest.on_next(1, 'a'),
                 ReactiveTest.on_next(2, 'b'),
@@ -99,7 +101,7 @@ class TestParse(unittest.TestCase):
         string = "-ab-c--#--"
         "         012345678901234567890"
         ex = Exception('ex')
-        results = marbles.parse(string, error=ex)
+        results = parse(string, error=ex)
         expected = [
                 ReactiveTest.on_next(1, 'a'),
                 ReactiveTest.on_next(2, 'b'),
@@ -111,7 +113,7 @@ class TestParse(unittest.TestCase):
     def test_parse_marble_with_space(self):
         string = " -a  b- c-  - |"
         "         012345678901234567890"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [
                 ReactiveTest.on_next(1, 'a'),
                 ReactiveTest.on_next(2, 'b'),
@@ -124,7 +126,7 @@ class TestParse(unittest.TestCase):
     def test_parse_marble_with_group(self):
         string = "-(ab)-c--|"
         "         012345678901234567890"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [
                 ReactiveTest.on_next(1, 'a'),
                 ReactiveTest.on_next(1, 'b'),
@@ -147,7 +149,7 @@ class TestParse(unittest.TestCase):
             3: 33,
             }
 
-        results = marbles.parse(string, lookup=lookup)
+        results = parse(string, lookup=lookup)
         expected = [
                 ReactiveTest.on_next(1, 'aa'),
                 ReactiveTest.on_next(2, 'bb'),
@@ -163,7 +165,7 @@ class TestParse(unittest.TestCase):
     def test_parse_marble_subscribe(self):
         string = "-ab--^-c-d-|"
         "       8654321012345678901234567890"
-        results = marbles.parse(string)
+        results = parse(string)
         expected = [
                 ReactiveTest.on_next(-4, 'a'),
                 ReactiveTest.on_next(-3, 'b'),
@@ -177,7 +179,7 @@ class TestParse(unittest.TestCase):
         string = "-ab----c-d-|"
         "         012345678901234567890"
         offset = 10
-        results = marbles.parse(string, time_shift=offset)
+        results = parse(string, time_shift=offset)
         expected = [
                 ReactiveTest.on_next(1 + offset, 'a'),
                 ReactiveTest.on_next(2 + offset, 'b'),
@@ -192,7 +194,7 @@ class TestParse(unittest.TestCase):
         string = "-ab--^--c-d-|"
         "        654321012345678901234567890"
         offset = 10
-        results = marbles.parse(string, time_shift=offset)
+        results = parse(string, time_shift=offset)
         expected = [
                 ReactiveTest.on_next(-4 + offset, 'a'),
                 ReactiveTest.on_next(-3 + offset, 'b'),
@@ -211,7 +213,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_error(self):
         string = "#"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
@@ -221,7 +223,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
-        obs = marbles.from_marbles(string, error=ex)
+        obs = rx.from_marbles(string, error=ex)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
@@ -230,7 +232,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_complete(self):
         string = "|"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_completed(200)]
@@ -238,7 +240,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_next(self):
         string = "a"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_next(200, 'a')]
@@ -248,7 +250,7 @@ class TestFromMarble(unittest.TestCase):
         string = "a--b---c"
         "         012345678901234567890"
         ts = 0.5
-        obs = marbles.from_marbles(string, timespan=ts)
+        obs = rx.from_marbles(string, timespan=ts)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -261,7 +263,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_completed(self):
         string = "-ab-c--|"
         "         012345678901234567890"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -276,7 +278,7 @@ class TestFromMarble(unittest.TestCase):
         string = "-ab-c--#--"
         "         012345678901234567890"
         ex = Exception('ex')
-        obs = marbles.from_marbles(string, error=ex)
+        obs = rx.from_marbles(string, error=ex)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -290,7 +292,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_with_space(self):
         string = " -a  b- c-  - |"
         "         012  34 56  7 8901234567890"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -304,7 +306,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_with_group(self):
         string = "-(ab)-c--|"
         "         012345678901234567890"
-        obs = marbles.from_marbles(string)
+        obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -326,7 +328,7 @@ class TestFromMarble(unittest.TestCase):
             2: '22',
             3: 33,
             }
-        obs = marbles.from_marbles(string, lookup=lookup)
+        obs = rx.from_marbles(string, lookup=lookup)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
