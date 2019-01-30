@@ -5,7 +5,7 @@ from rx.core.observable.marbles import parse
 from rx import Observable
 from rx.testing import TestScheduler, marbles
 from rx.testing.reactivetest import ReactiveTest
-
+from rx.core import notification
 
 #from rx.concurrency import timeout_scheduler, new_thread_scheduler
 
@@ -46,31 +46,43 @@ from rx.testing.reactivetest import ReactiveTest
     #     expected = [t.replace('-', '') for t in tested_marbles]
     #     self._run_test(expected, new_thread_scheduler, TestScheduler())
 
+def mess_on_next(time, value):
+    return (time, notification.OnNext(value))
+
+
+def mess_on_error(time, error):
+    return (time, notification.OnError(error))
+
+
+def mess_on_completed(time):
+    return (time, notification.OnCompleted())
+
+
 class TestParse(unittest.TestCase):
 
     def test_parse_on_error(self):
         string = "#"
         results = parse(string)
-        expected = [ReactiveTest.on_error(0, Exception('error'))]
+        expected = [mess_on_error(0, Exception('error'))]
         assert results == expected
 
     def test_parse_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
         results = parse(string, error=ex)
-        expected = [ReactiveTest.on_error(0, ex)]
+        expected = [mess_on_error(0, ex)]
         assert results == expected
 
     def test_parse_on_complete(self):
         string = "|"
         results = parse(string)
-        expected = [ReactiveTest.on_completed(0)]
+        expected = [mess_on_completed(0)]
         assert results == expected
 
     def test_parse_on_next(self):
         string = "a"
         results = parse(string)
-        expected = [ReactiveTest.on_next(0, 'a')]
+        expected = [mess_on_next(0, 'a')]
         assert results == expected
 
     def test_parse_timespan(self):
@@ -79,9 +91,9 @@ class TestParse(unittest.TestCase):
         ts = 0.1
         results = parse(string, timespan=ts)
         expected = [
-            ReactiveTest.on_next(0 * ts, 'a'),
-            ReactiveTest.on_next(3 * ts, 'b'),
-            ReactiveTest.on_next(7 * ts, 'c'),
+            mess_on_next(0 * ts, 'a'),
+            mess_on_next(3 * ts, 'b'),
+            mess_on_next(7 * ts, 'c'),
             ]
         assert results == expected
 
@@ -90,10 +102,10 @@ class TestParse(unittest.TestCase):
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                ReactiveTest.on_next(1, 'a'),
-                ReactiveTest.on_next(2, 'b'),
-                ReactiveTest.on_next(4, 'c'),
-                ReactiveTest.on_completed(7),
+                mess_on_next(1, 'a'),
+                mess_on_next(2, 'b'),
+                mess_on_next(4, 'c'),
+                mess_on_completed(7),
                 ]
         assert results == expected
 
@@ -103,10 +115,10 @@ class TestParse(unittest.TestCase):
         ex = Exception('ex')
         results = parse(string, error=ex)
         expected = [
-                ReactiveTest.on_next(1, 'a'),
-                ReactiveTest.on_next(2, 'b'),
-                ReactiveTest.on_next(4, 'c'),
-                ReactiveTest.on_error(7, ex),
+                mess_on_next(1, 'a'),
+                mess_on_next(2, 'b'),
+                mess_on_next(4, 'c'),
+                mess_on_error(7, ex),
                 ]
         assert results == expected
 
@@ -115,27 +127,24 @@ class TestParse(unittest.TestCase):
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                ReactiveTest.on_next(1, 'a'),
-                ReactiveTest.on_next(2, 'b'),
-                ReactiveTest.on_next(4, 'c'),
-                ReactiveTest.on_completed(7),
+                mess_on_next(1, 'a'),
+                mess_on_next(2, 'b'),
+                mess_on_next(4, 'c'),
+                mess_on_completed(7),
                 ]
         assert results == expected
-
 
     def test_parse_marble_with_group(self):
         string = "-(ab)-c--|"
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                ReactiveTest.on_next(1, 'a'),
-                ReactiveTest.on_next(1, 'b'),
-                ReactiveTest.on_next(6, 'c'),
-                ReactiveTest.on_completed(9),
+                mess_on_next(1, 'a'),
+                mess_on_next(1, 'b'),
+                mess_on_next(6, 'c'),
+                mess_on_completed(9),
                 ]
         assert results == expected
-
-
 
     def test_parse_marble_lookup(self):
         string = "-ab-c-12-3-|"
@@ -151,27 +160,13 @@ class TestParse(unittest.TestCase):
 
         results = parse(string, lookup=lookup)
         expected = [
-                ReactiveTest.on_next(1, 'aa'),
-                ReactiveTest.on_next(2, 'bb'),
-                ReactiveTest.on_next(4, 'cc'),
-                ReactiveTest.on_next(6, '11'),
-                ReactiveTest.on_next(7, '22'),
-                ReactiveTest.on_next(9, 33),
-                ReactiveTest.on_completed(11),
-                ]
-        assert results == expected
-
-
-    def test_parse_marble_subscribe(self):
-        string = "-ab--^-c-d-|"
-        "       8654321012345678901234567890"
-        results = parse(string)
-        expected = [
-                ReactiveTest.on_next(-4, 'a'),
-                ReactiveTest.on_next(-3, 'b'),
-                ReactiveTest.on_next(2, 'c'),
-                ReactiveTest.on_next(4, 'd'),
-                ReactiveTest.on_completed(6),
+                mess_on_next(1, 'aa'),
+                mess_on_next(2, 'bb'),
+                mess_on_next(4, 'cc'),
+                mess_on_next(6, '11'),
+                mess_on_next(7, '22'),
+                mess_on_next(9, 33),
+                mess_on_completed(11),
                 ]
         assert results == expected
 
@@ -181,26 +176,11 @@ class TestParse(unittest.TestCase):
         offset = 10
         results = parse(string, time_shift=offset)
         expected = [
-                ReactiveTest.on_next(1 + offset, 'a'),
-                ReactiveTest.on_next(2 + offset, 'b'),
-                ReactiveTest.on_next(7 + offset, 'c'),
-                ReactiveTest.on_next(9 + offset, 'd'),
-                ReactiveTest.on_completed(11 + offset),
-                ]
-        assert results == expected
-
-
-    def test_parse_marble_time_shift_and_subscribe(self):
-        string = "-ab--^--c-d-|"
-        "        654321012345678901234567890"
-        offset = 10
-        results = parse(string, time_shift=offset)
-        expected = [
-                ReactiveTest.on_next(-4 + offset, 'a'),
-                ReactiveTest.on_next(-3 + offset, 'b'),
-                ReactiveTest.on_next(3 + offset, 'c'),
-                ReactiveTest.on_next(5 + offset, 'd'),
-                ReactiveTest.on_completed(7 + offset),
+                mess_on_next(1 + offset, 'a'),
+                mess_on_next(2 + offset, 'b'),
+                mess_on_next(7 + offset, 'c'),
+                mess_on_next(9 + offset, 'd'),
+                mess_on_completed(11 + offset),
                 ]
         assert results == expected
 
@@ -400,7 +380,6 @@ class TestTestContext(unittest.TestCase):
             ]
         assert results == expected
 
-
     def test_start_with_hot_never(self):
         start, cold, hot, exp = marbles.test_context()
         obs = hot("------")
@@ -422,7 +401,7 @@ class TestTestContext(unittest.TestCase):
             return obs
 
         results = start(create)
-        expected = [ReactiveTest.on_completed(203),]
+        expected = [ReactiveTest.on_completed(203), ]
         assert results == expected
 
     def test_start_with_hot_normal(self):
@@ -439,23 +418,6 @@ class TestTestContext(unittest.TestCase):
             ReactiveTest.on_next(202, 2),
             ReactiveTest.on_next(205, 3),
             ReactiveTest.on_completed(207),
-            ]
-        assert results == expected
-
-    def test_start_with_hot_subscribe(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = hot("12-^-3--4--5-|")
-        "             012345678901234567890"
-
-        def create():
-            return obs
-
-        results = start(create)
-        expected = [
-            ReactiveTest.on_next(202, 3),
-            ReactiveTest.on_next(205, 4),
-            ReactiveTest.on_next(208, 5),
-            ReactiveTest.on_completed(210),
             ]
         assert results == expected
 
@@ -477,9 +439,9 @@ class TestTestContext(unittest.TestCase):
     def test_start_with_hot_and_exp(self):
 
         start, cold, hot, exp = marbles.test_context()
-        obs = hot("       12-^-3--4--5-|")
-        expected = exp("     --3--4--5-|")
-        "                    012345678901234567890"
+        obs = hot("     --3--4--5-|")
+        expected = exp("--3--4--5-|")
+        "               012345678901234567890"
 
         def create():
             return obs

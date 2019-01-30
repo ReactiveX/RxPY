@@ -1,19 +1,17 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
-from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
 from rx import Observable
+from rx.core import notification
 from rx.disposable import CompositeDisposable
 from rx.concurrency import NewThreadScheduler
+from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
 
 # TODO: hot() should not rely on operators since it could be used for testing
 import rx
 from rx import operators as ops
 
-# TODO: remove dependency to testing
-from rx.testing.recorded import Recorded
-from rx.testing.reactivetest import ReactiveTest
-
 new_thread_scheduler = NewThreadScheduler()
+
 
 # TODO: rename start_time to duetime
 # TODO: use a plain impelementation instead of operators
@@ -94,11 +92,10 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
     """
 
     disp = CompositeDisposable()
-    records = parse(string, timespan=timespan, lookup=lookup, error=error)
+    messages = parse(string, timespan=timespan, lookup=lookup, error=error)
 
-    def schedule_msg(record, observer, scheduler):
-        timespan = record.time
-        notification = record.value
+    def schedule_msg(message, observer, scheduler):
+        timespan, notification = message
 
         def action(scheduler, state=None):
             notification.accept(observer)
@@ -108,9 +105,10 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
     def subscribe(observer, scheduler_):
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
 
-        for record in records:
-            # Don't make closures within a loop
-            schedule_msg(record, observer, _scheduler)
+        for message in messages:
+
+           # Don't make closures within a loop
+            schedule_msg(message, observer, _scheduler)
         return disp
     return Observable(subscribe)
 
@@ -175,8 +173,9 @@ def stringify(value):
 # TODO: remove support of subscription symbol ^
 # TODO: consecutive characters should be considered as one element
 # TODO: add support of comma , to split elements in group
+# TODO: complete the definition of the return type List[tuple]
 def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativeTime = 0,
-          lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+          lookup: Dict = None, error: Exception = None) -> List[Tuple]:
     """Convert a marble diagram string to a list of records of type
     :class:`rx.testing.recorded.Recorded`.
 
@@ -197,19 +196,12 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
         +--------+--------------------------------------------------------+
         |  `)`   | close a group of marbles                               |
         +--------+--------------------------------------------------------+
-        |  `^`   | subscription (hot observable only)                     |
-        +--------+--------------------------------------------------------+
         | space  | used to align multiple diagrams, does not advance time.|
         +--------+--------------------------------------------------------+
 
     In a group of marbles, the position of the initial `(` determines the
     timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
     emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
-
-    If a subscription symbol `^` is specified (hot observable), each marble
-    will be emitted at a time relative to their position from the '^'symbol.
-    E.g. if subscription time is set to 0, Every marbles
-    that appears before the `^` will have negative timestamp.
 
     Examples:
         >>> res = parse("1-2-3-|")
@@ -245,7 +237,7 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
     if isub > 0:
         time_shift -= isub * timespan
 
-    records = []
+    messages = []
     group_frame = 0
     in_group = False
     has_subscribe = False
@@ -288,14 +280,13 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
 
         elif char == '|':
             frame = group_frame if in_group else char_frame
-            record = ReactiveTest.on_completed(shift(frame))
-            records.append(record)
+            message = (shift(frame), notification.OnCompleted())
+            messages.append(message)
 
         elif char == '#':
             frame = group_frame if in_group else char_frame
-            record = ReactiveTest.on_error(shift(frame), error)
-            records.append(record)
-
+            message = (shift(frame), notification.OnError(error))
+            messages.append(message)
         elif char == '^':
             check_subscription()
 
@@ -306,8 +297,8 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
             except ValueError:
                 pass
             value = lookup.get(char, char)
-            record = ReactiveTest.on_next(shift(frame), value)
-            records.append(record)
+            message = (shift(frame), notification.OnNext(value))
+            messages.append(message)
 
     if in_group:
         raise ValueError(
@@ -315,5 +306,5 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
             "Missing a ')."
             )
 
-    return records
+    return messages
 
