@@ -1,13 +1,14 @@
-from typing import Callable
+from typing import Callable, NamedTuple, Any
+from datetime import timedelta
+
 
 from rx import operators as ops
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
-class TimeInterval:
-    def __init__(self, value, interval):
-        self.value = value
-        self.interval = interval
+class TimeInterval(NamedTuple):
+    value: Any
+    interval: timedelta
 
 
 def _time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
