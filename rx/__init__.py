@@ -300,6 +300,10 @@ def hot(string, timespan: typing.RelativeTime=0.1, start_time = 0.0, scheduler: 
     return _hot(string, timespan=timespan, start_time=start_time, lookup=lookup, error=error, scheduler=scheduler)
 
 
+def to_marbles(scheduler: typing.Scheduler = None, timespan = 0.1) -> str:
+    from .core.observable.marbles import to_marbles as _to_marbles
+    return _to_marbles(scheduler=scheduler, timespan=timespan)
+
 
 def generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
     """Generates an observable sequence by iterating a state from an
