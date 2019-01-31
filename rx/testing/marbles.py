@@ -1,11 +1,11 @@
-from typing import List, Union, Dict
+from typing import List, Tuple, Union, Dict
 from collections import namedtuple
 
 import rx
 from rx.core import Observable
 from rx.concurrency import NewThreadScheduler
 from rx.core.typing import Callable
-from rx.testing import TestScheduler, Recorded
+from rx.testing import TestScheduler, Recorded, ReactiveTest
 from rx.core.observable.marbles import parse
 
 new_thread_scheduler = NewThreadScheduler()
@@ -83,13 +83,15 @@ def test_context(timespan=1):
                 'Expected function does not support subscription symbol "^".'
                 'Got "{}"'.format(string))
 
-        return parse(
+        messages = parse(
             string,
             timespan=timespan,
             time_shift=subscribed,
             lookup=lookup,
             error=error,
             )
+        return messages_to_records(messages)
+
 
     def test_cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
         if string.find('^') >= 0:
@@ -105,14 +107,6 @@ def test_context(timespan=1):
             )
 
     def test_hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
-#        records = parse(
-#            string,
-#            timespan=timespan,
-#            time_shift=subscribed,
-#            lookup=lookup,
-#            error=error,
-#            )
-#        return scheduler.create_hot_observable(records)
         hot_obs = rx.hot(
             string,
             timespan=timespan,
@@ -125,3 +119,24 @@ def test_context(timespan=1):
 
     return TestContext(test_start, test_cold, test_hot, test_expected)
 
+
+def messages_to_records(messages: List[Tuple]) -> List[Recorded]:
+    """
+    Helper function to convert messages returned by parse() to a list of
+    Recorded.
+    """
+    records = []
+
+    dispatcher = dict(
+        N=lambda t, n: ReactiveTest.on_next(t, n.value),
+        E=lambda t, n: ReactiveTest.on_error(t, n.exception),
+        C=lambda t, n: ReactiveTest.on_completed(t)
+        )
+
+    for message in messages:
+        time, notification = message
+        kind = notification.kind
+        record = dispatcher[kind](time, notification)
+        records.append(record)
+
+    return records
