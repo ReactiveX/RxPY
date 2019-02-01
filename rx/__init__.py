@@ -287,17 +287,29 @@ def from_marbles(string: str, timespan:typing.RelativeTime = 0.1, scheduler: typ
     """
 
     from .core.observable.marbles import from_marbles as _from_marbles
-    return _from_marbles(string, timespan=timespan, lookup=lookup, error=error, scheduler=scheduler)
+    return _from_marbles(
+        string,
+        timespan=timespan,
+        lookup=lookup,
+        error=error,
+        scheduler=scheduler)
+
 
 cold = from_marbles
 
 # TODO: need to move hot() operator (not in alphabetic order)
 # TODO: write the doc
-def hot(string, timespan: typing.RelativeTime=0.1, start_time = 0.0, scheduler: typing.Scheduler = None,
-       lookup = None, error: Exception = None) -> Observable:
+def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRelativeTime = 0.0,
+        scheduler: typing.Scheduler = None, lookup = None, error: Exception = None) -> Observable:
 
     from .core.observable.marbles import hot as _hot
-    return _hot(string, timespan=timespan, start_time=start_time, lookup=lookup, error=error, scheduler=scheduler)
+    return _hot(
+        string,
+        timespan=timespan,
+        duetime=duetime,
+        lookup=lookup,
+        error=error,
+        scheduler=scheduler)
 
 
 def to_marbles(scheduler: typing.Scheduler = None, timespan = 0.1) -> str:

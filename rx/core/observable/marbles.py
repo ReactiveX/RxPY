@@ -1,8 +1,11 @@
 from typing import List, Dict, Tuple
 import re
+import threading
+from datetime import datetime, timedelta
 
 from rx import Observable
 from rx.core import notification
+from rx.disposable import Disposable
 from rx.disposable import CompositeDisposable
 from rx.concurrency import NewThreadScheduler
 from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
@@ -32,27 +35,57 @@ pattern = r'|'.join([
 tokens = re.compile(pattern)
 
 
-# TODO: rename start_time to duetime
 # TODO: use a plain impelementation instead of operators
-def hot(string: str, timespan: RelativeTime = 0.1, start_time:AbsoluteOrRelativeTime=0,
+def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTime=0,
         lookup: Dict = None, error: Exception = None, scheduler: Scheduler = None) -> Observable:
 
-    scheduler_ = scheduler or new_thread_scheduler
+    _scheduler = scheduler or new_thread_scheduler
 
-    cold_observable = from_marbles(
+    messages = parse(
         string,
+        time_shift=duetime,
         timespan=timespan,
         lookup=lookup,
         error=error,
-        scheduler=scheduler_,
-        )
-    values = rx.timer(start_time, scheduler=scheduler_).pipe(
-        ops.flat_map(lambda _: cold_observable),
-        ops.publish(),
         )
 
-    values.connect()
-    return values
+    lock = threading.RLock()
+    is_completed = False
+    observers = []
+
+    def subscribe(observer, scheduler=None):
+        if not is_completed:
+            with lock:
+                observers.append(observer)
+            # should a hot observable already completed or on error
+            # re-push on_completed/on_error at subscription time?
+
+        def dispose():
+            with lock:
+                try:
+                    observers.remove(observer)
+                except ValueError:
+                    pass
+
+        return Disposable(dispose)
+
+    def create_action(notification):
+        def action(scheduler, state=None):
+            with lock:
+                for observer in observers:
+                    notification.accept(observer)
+        return action
+
+    for message in messages:
+        timespan, notification = message
+        action = create_action(notification)
+
+        # Don't make closures within a loop
+        _scheduler.schedule_relative(timespan, action)
+
+    return Observable(subscribe)
+
+
 
 
 def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
@@ -191,7 +224,7 @@ def stringify(value):
     return string
 
 # TODO: complete the definition of the return type List[tuple]
-def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativeTime = 0,
+def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
           lookup: Dict = None, error: Exception = None) -> List[Tuple]:
     """Convert a marble diagram string to a list of records of type
     :class:`rx.testing.recorded.Recorded`.

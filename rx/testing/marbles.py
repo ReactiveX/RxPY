@@ -110,7 +110,7 @@ def test_context(timespan=1):
         hot_obs = rx.hot(
             string,
             timespan=timespan,
-            start_time=subscribed,
+            duetime=subscribed,
             lookup=lookup,
             error=error,
             scheduler=scheduler,

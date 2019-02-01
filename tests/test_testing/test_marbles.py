@@ -299,6 +299,20 @@ class TestFromMarble(unittest.TestCase):
                 ]
         assert results == expected
 
+    def test_from_marbles_marble_with_consecutive_symbols(self):
+        string = "-ab(12)#--"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        obs = rx.from_marbles(string, error=ex)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.3, 12),
+                ReactiveTest.on_error(200.7, ex),
+                ]
+        assert results == expected
+
     def test_from_marbles_marble_with_space(self):
         string = " -a  b- c-  - |"
         "          01  23 45  6 78901234567890"
@@ -359,47 +373,55 @@ class TestHot(unittest.TestCase):
     def test_hot_on_error(self):
         string = "#"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
 
-        expected = [ReactiveTest.on_error(200, Exception('error'))]
+        expected = [ReactiveTest.on_error(200.1, Exception('error'))]
         assert results == expected
 
     def test_hot_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        obs = rx.hot(string, 0.1, 200.1, error=ex, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
 
-        expected = [ReactiveTest.on_error(200, ex)]
+        expected = [ReactiveTest.on_error(200.1, ex)]
         assert results == expected
 
     def test_hot_on_complete(self):
         string = "|"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
-        expected = [ReactiveTest.on_completed(200.0)]
+        expected = [ReactiveTest.on_completed(200.1)]
         assert results == expected
 
     def test_hot_on_next(self):
         string = "a"
         scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [ReactiveTest.on_next(200.1, 'a')]
+        assert results == expected
+
+    def test_hot_skipped_at_200(self):
+        string = "a"
+        scheduler = TestScheduler()
         obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
-        expected = [ReactiveTest.on_next(200.0, 'a')]
+        expected = []
         assert results == expected
 
     def test_hot_timespan(self):
-        string = "a--b---c"
+        string = "-a-b---c"
         "         012345678901234567890"
         ts = 0.5
         scheduler = TestScheduler()
         obs = rx.hot(string, ts, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-            ReactiveTest.on_next(0 * ts + 200.0, 'a'),
+            ReactiveTest.on_next(1 * ts + 200.0, 'a'),
             ReactiveTest.on_next(3 * ts + 200.0, 'b'),
             ReactiveTest.on_next(7 * ts + 200.0, 'c'),
             ]
@@ -428,6 +450,20 @@ class TestHot(unittest.TestCase):
         expected = [
                 ReactiveTest.on_next(200.1, 'ab'),
                 ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_error(200.7, ex),
+                ]
+        assert results == expected
+
+    def test_from_marbles_marble_with_consecutive_symbols(self):
+        string = "-ab(12)#--"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.3, 12),
                 ReactiveTest.on_error(200.7, ex),
                 ]
         assert results == expected
