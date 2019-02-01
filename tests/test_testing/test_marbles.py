@@ -350,6 +350,140 @@ class TestFromMarble(unittest.TestCase):
         assert results == expected
 
 
+class TestHot(unittest.TestCase):
+    def create_factory(self, observable):
+        def create():
+            return observable
+        return create
+
+    def test_hot_on_error(self):
+        string = "#"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+
+        expected = [ReactiveTest.on_error(200, Exception('error'))]
+        assert results == expected
+
+    def test_hot_on_error_specified(self):
+        string = "#"
+        ex = Exception('Foo')
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+
+        expected = [ReactiveTest.on_error(200, ex)]
+        assert results == expected
+
+    def test_hot_on_complete(self):
+        string = "|"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [ReactiveTest.on_completed(200.0)]
+        assert results == expected
+
+    def test_hot_on_next(self):
+        string = "a"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [ReactiveTest.on_next(200.0, 'a')]
+        assert results == expected
+
+    def test_hot_timespan(self):
+        string = "a--b---c"
+        "         012345678901234567890"
+        ts = 0.5
+        scheduler = TestScheduler()
+        obs = rx.hot(string, ts, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+            ReactiveTest.on_next(0 * ts + 200.0, 'a'),
+            ReactiveTest.on_next(3 * ts + 200.0, 'b'),
+            ReactiveTest.on_next(7 * ts + 200.0, 'c'),
+            ]
+        assert results == expected
+
+    def test_hot_marble_completed(self):
+        string = "-ab-c--|"
+        "         012345678901234567890"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_completed(200.7),
+                ]
+        assert results == expected
+
+    def test_hot_marble_with_error(self):
+        string = "-ab-c--#--"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_error(200.7, ex),
+                ]
+        assert results == expected
+
+    def test_hot_marble_with_space(self):
+        string = " -a  b- c-  - |"
+        "          01  23 45  6 78901234567890"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.4, 'c'),
+                ReactiveTest.on_completed(200.7),
+                ]
+        assert results == expected
+
+    def test_hot_marble_with_group(self):
+        string = "-(ab)-c-(12.5,def)--(6,|)"
+        "         01234567890123456789012345"
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'ab'),
+                ReactiveTest.on_next(200.6, 'c'),
+                ReactiveTest.on_next(200.8, str(12.5)),
+                ReactiveTest.on_next(200.8, 'def'),
+                ReactiveTest.on_next(202.0, 6),
+                ReactiveTest.on_completed(202.0),
+                ]
+        assert results == expected
+
+    def test_hot_marble_lookup(self):
+        string = "-ab-c-12-3-|"
+        "         012345678901234567890"
+        lookup = {
+            'ab': 'aabb',
+            'c': 'cc',
+            12: '1122',
+            3: 33,
+            }
+        scheduler = TestScheduler()
+        obs = rx.hot(string, 0.1, 200.0, lookup=lookup, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(200.1, 'aabb'),
+                ReactiveTest.on_next(200.4, 'cc'),
+                ReactiveTest.on_next(200.6, '1122'),
+                ReactiveTest.on_next(200.9, 33),
+                ReactiveTest.on_completed(201.1),
+                ]
+        assert results == expected
+
+
+
 class TestTestContext(unittest.TestCase):
 
     def test_start_with_cold_never(self):
