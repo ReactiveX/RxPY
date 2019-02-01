@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple
+import re
 
 from rx import Observable
 from rx.core import notification
@@ -12,12 +13,29 @@ from rx import operators as ops
 
 new_thread_scheduler = NewThreadScheduler()
 
+# tokens will be search with pipe in the order below
+# group of elements: match any characters surrounding by ()
+pattern_group = r"(\(.*?\))"
+# timespan: match one or multiple hyphens
+pattern_ticks = r"(-+)"
+# comma err: match any comma which is not in a group
+pattern_comma_error = r"(,)"
+# element: match | or # or one or more characters which are not - | # ( ) ,
+pattern_element = r"(#|\||[^-,()#\|]+)"
+
+pattern = r'|'.join([
+    pattern_group,
+    pattern_ticks,
+    pattern_comma_error,
+    pattern_element,
+    ])
+tokens = re.compile(pattern)
+
 
 # TODO: rename start_time to duetime
 # TODO: use a plain impelementation instead of operators
 def hot(string: str, timespan: RelativeTime = 0.1, start_time:AbsoluteOrRelativeTime=0,
         lookup: Dict = None, error: Exception = None, scheduler: Scheduler = None) -> Observable:
-
 
     scheduler_ = scheduler or new_thread_scheduler
 
@@ -58,6 +76,8 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
         |  `(`   | open a group of marbles sharing the same timestamp     |
         +--------+--------------------------------------------------------+
         |  `)`   | close a group of marbles                               |
+        +--------+--------------------------------------------------------+
+        |  `,`   | separate elements in a group                           |
         +--------+--------------------------------------------------------+
         | space  | used to align multiple diagrams, does not advance time.|
         +--------+--------------------------------------------------------+
@@ -107,7 +127,7 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
 
         for message in messages:
 
-           # Don't make closures within a loop
+            # Don't make closures within a loop
             schedule_msg(message, observer, _scheduler)
         return disp
     return Observable(subscribe)
@@ -170,9 +190,6 @@ def stringify(value):
 
     return string
 
-# TODO: remove support of subscription symbol ^
-# TODO: consecutive characters should be considered as one element
-# TODO: add support of comma , to split elements in group
 # TODO: complete the definition of the return type List[tuple]
 def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativeTime = 0,
           lookup: Dict = None, error: Exception = None) -> List[Tuple]:
@@ -195,6 +212,8 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
         |  `(`   | open a group of marbles sharing the same timestamp     |
         +--------+--------------------------------------------------------+
         |  `)`   | close a group of marbles                               |
+        +--------+--------------------------------------------------------+
+        |  `,`   | separate elements in a group                           |
         +--------+--------------------------------------------------------+
         | space  | used to align multiple diagrams, does not advance time.|
         +--------+--------------------------------------------------------+
@@ -233,78 +252,47 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: AbsoluteOrRelativ
 
     string = string.replace(' ', '')
 
-    isub = string.find('^')
-    if isub > 0:
-        time_shift -= isub * timespan
-
-    messages = []
-    group_frame = 0
-    in_group = False
-    has_subscribe = False
-
-    def check_group_opening():
-        if in_group:
-            raise ValueError(
-                "A group of items must be closed before opening a new one. "
-                'Got "{}..."'.format(string[:char_frame+1]))
-
-    def check_group_closing():
-        if not in_group:
-            raise ValueError(
-                "A Group of items have already been closed before. "
-                "Got {} ...".format(string[:char_frame+1]))
-
-    def check_subscription():
-        if has_subscribe:
-            raise ValueError(
-                "Only one subscription is allowed for a hot observable. "
-                "Got {} ...".format(string[:char_frame+1]))
-
-    def shift(frame):
-        return frame + time_shift
-
-    for i, char in enumerate(string):
-        char_frame = i * timespan
-
-        if char == '(':
-            check_group_opening()
-            in_group = True
-            group_frame = char_frame
-
-        elif char == ')':
-            check_group_closing()
-            in_group = False
-
-        elif char == '-':
-            pass
-
-        elif char == '|':
-            frame = group_frame if in_group else char_frame
-            message = (shift(frame), notification.OnCompleted())
-            messages.append(message)
-
-        elif char == '#':
-            frame = group_frame if in_group else char_frame
-            message = (shift(frame), notification.OnError(error))
-            messages.append(message)
-        elif char == '^':
-            check_subscription()
-
-        else:
-            frame = group_frame if in_group else char_frame
+    # try to cast a string to an int, then to a float
+    def try_number(element):
+        try:
+            return int(element)
+        except ValueError:
             try:
-                char = int(char)
+                return float(element)
             except ValueError:
-                pass
-            value = lookup.get(char, char)
-            message = (shift(frame), notification.OnNext(value))
-            messages.append(message)
+                return element
 
-    if in_group:
-        raise ValueError(
-            "The last group of items has been opened but never closed. "
-            "Missing a ')."
-            )
+    def map_element(time, element):
+        if element == '|':
+            return (time, notification.OnCompleted())
+        elif element == '#':
+            return (time, notification.OnError(error))
+        else:
+            value = try_number(element)
+            value = lookup.get(value, value)
+            return (time, notification.OnNext(value))
+
+    iframe = 0
+    messages = []
+    for results in tokens.findall(string):
+        timestamp = iframe * timespan + time_shift
+        group, ticks, comma_error, element = results
+
+        if group:
+            elements = group[1:-1].split(',')
+            grp_messages = [map_element(timestamp, elm) for elm in elements if elm !='']
+            messages.extend(grp_messages)
+            iframe += len(group)
+
+        if ticks:
+            iframe += len(ticks)
+
+        if comma_error:
+            raise ValueError("Comma is only allowed in group of elements.")
+
+        if element:
+            message = map_element(timestamp, element)
+            messages.append(message)
+            iframe += len(element)
 
     return messages
-

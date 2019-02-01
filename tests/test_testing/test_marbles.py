@@ -60,32 +60,32 @@ def mess_on_completed(time):
 
 class TestParse(unittest.TestCase):
 
-    def test_parse_on_error(self):
+    def test_parse_just_on_error(self):
         string = "#"
         results = parse(string)
         expected = [mess_on_error(0, Exception('error'))]
         assert results == expected
 
-    def test_parse_on_error_specified(self):
+    def test_parse_just_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
         results = parse(string, error=ex)
         expected = [mess_on_error(0, ex)]
         assert results == expected
 
-    def test_parse_on_complete(self):
+    def test_parse_just_on_completed(self):
         string = "|"
         results = parse(string)
         expected = [mess_on_completed(0)]
         assert results == expected
 
-    def test_parse_on_next(self):
+    def test_parse_just_on_next(self):
         string = "a"
         results = parse(string)
         expected = [mess_on_next(0, 'a')]
         assert results == expected
 
-    def test_parse_timespan(self):
+    def test_parse_marble_timespan(self):
         string = "a--b---c"
         "         012345678901234567890"
         ts = 0.1
@@ -97,52 +97,89 @@ class TestParse(unittest.TestCase):
             ]
         assert results == expected
 
+    def test_parse_marble_multiple_digits(self):
+        string = "-ab-cde--"
+        "         012345678901234567890"
+        results = parse(string)
+        expected = [
+                mess_on_next(1, 'ab'),
+                mess_on_next(4, 'cde'),
+                ]
+        assert results == expected
+
+    def test_parse_marble_multiple_digits_int(self):
+        string = "-1-22-333-"
+        "         012345678901234567890"
+        results = parse(string)
+        expected = [
+                mess_on_next(1, 1),
+                mess_on_next(3, 22),
+                mess_on_next(6, 333),
+                ]
+        assert results == expected
+
+    def test_parse_marble_multiple_digits_float(self):
+        string = "-1.0--2.345--6.7e8-"
+        "         012345678901234567890"
+        results = parse(string)
+        expected = [
+                mess_on_next(1, float('1.0')),
+                mess_on_next(6, float('2.345')),
+                mess_on_next(13, float('6.7e8')),
+                ]
+        assert results == expected
+
     def test_parse_marble_completed(self):
         string = "-ab-c--|"
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(2, 'b'),
+                mess_on_next(1, 'ab'),
                 mess_on_next(4, 'c'),
                 mess_on_completed(7),
                 ]
         assert results == expected
 
     def test_parse_marble_with_error(self):
-        string = "-ab-c--#--"
+        string = "-a-b-c--#--"
         "         012345678901234567890"
         ex = Exception('ex')
         results = parse(string, error=ex)
         expected = [
                 mess_on_next(1, 'a'),
-                mess_on_next(2, 'b'),
-                mess_on_next(4, 'c'),
-                mess_on_error(7, ex),
+                mess_on_next(3, 'b'),
+                mess_on_next(5, 'c'),
+                mess_on_error(8, ex),
                 ]
         assert results == expected
 
     def test_parse_marble_with_space(self):
-        string = " -a  b- c-  - |"
-        "         012345678901234567890"
+        string = " -a  b- c-  de |"
+        "          01  23 45  67 8901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(2, 'b'),
+                mess_on_next(1, 'ab'),
                 mess_on_next(4, 'c'),
-                mess_on_completed(7),
+                mess_on_next(6, 'de'),
+                mess_on_completed(8),
                 ]
         assert results == expected
 
     def test_parse_marble_with_group(self):
-        string = "-(ab)-c--|"
-        "         012345678901234567890"
+        string = "-x(ab,12,1.5)-c--(de)-|"
+        "         012345678901234567890123"
+        "         0         1         2   "
         results = parse(string)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(1, 'b'),
-                mess_on_next(6, 'c'),
-                mess_on_completed(9),
+                mess_on_next(1, 'x'),
+                mess_on_next(2, 'ab'),
+                mess_on_next(2, 12),
+                mess_on_next(2, float('1.5')),
+
+                mess_on_next(14, 'c'),
+                mess_on_next(17, 'de'),
+
+                mess_on_completed(22),
                 ]
         assert results == expected
 
@@ -150,21 +187,17 @@ class TestParse(unittest.TestCase):
         string = "-ab-c-12-3-|"
         "         012345678901234567890"
         lookup = {
-            'a': 'aa',
-            'b': 'bb',
+            'ab': 'aabb',
             'c': 'cc',
-            1: '11',
-            2: '22',
+            12: '1122',
             3: 33,
             }
 
         results = parse(string, lookup=lookup)
         expected = [
-                mess_on_next(1, 'aa'),
-                mess_on_next(2, 'bb'),
+                mess_on_next(1, 'aabb'),
                 mess_on_next(4, 'cc'),
-                mess_on_next(6, '11'),
-                mess_on_next(7, '22'),
+                mess_on_next(6, '1122'),
                 mess_on_next(9, 33),
                 mess_on_completed(11),
                 ]
@@ -176,8 +209,7 @@ class TestParse(unittest.TestCase):
         offset = 10
         results = parse(string, time_shift=offset)
         expected = [
-                mess_on_next(1 + offset, 'a'),
-                mess_on_next(2 + offset, 'b'),
+                mess_on_next(1 + offset, 'ab'),
                 mess_on_next(7 + offset, 'c'),
                 mess_on_next(9 + offset, 'd'),
                 mess_on_completed(11 + offset),
@@ -247,8 +279,7 @@ class TestFromMarble(unittest.TestCase):
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-                ReactiveTest.on_next(200.1, 'a'),
-                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.1, 'ab'),
                 ReactiveTest.on_next(200.4, 'c'),
                 ReactiveTest.on_completed(200.7),
                 ]
@@ -262,8 +293,7 @@ class TestFromMarble(unittest.TestCase):
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-                ReactiveTest.on_next(200.1, 'a'),
-                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.1, 'ab'),
                 ReactiveTest.on_next(200.4, 'c'),
                 ReactiveTest.on_error(200.7, ex),
                 ]
@@ -271,29 +301,30 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_marble_with_space(self):
         string = " -a  b- c-  - |"
-        "         012  34 56  7 8901234567890"
+        "          01  23 45  6 78901234567890"
         obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-                ReactiveTest.on_next(200.1, 'a'),
-                ReactiveTest.on_next(200.2, 'b'),
+                ReactiveTest.on_next(200.1, 'ab'),
                 ReactiveTest.on_next(200.4, 'c'),
                 ReactiveTest.on_completed(200.7),
                 ]
         assert results == expected
 
     def test_from_marbles_marble_with_group(self):
-        string = "-(ab)-c--|"
+        string = "-(ab)-c-(12.5,def)--(6,|)"
         "         012345678901234567890"
         obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-                ReactiveTest.on_next(200.1, 'a'),
-                ReactiveTest.on_next(200.1, 'b'),
+                ReactiveTest.on_next(200.1, 'ab'),
                 ReactiveTest.on_next(200.6, 'c'),
-                ReactiveTest.on_completed(200.9),
+                ReactiveTest.on_next(200.8, str(12.5)),
+                ReactiveTest.on_next(200.8, 'def'),
+                ReactiveTest.on_next(202.0, 6),
+                ReactiveTest.on_completed(202.0),
                 ]
         assert results == expected
 
@@ -301,22 +332,18 @@ class TestFromMarble(unittest.TestCase):
         string = "-ab-c-12-3-|"
         "         012345678901234567890"
         lookup = {
-            'a': 'aa',
-            'b': 'bb',
+            'ab': 'aabb',
             'c': 'cc',
-            1: '11',
-            2: '22',
+            12: '1122',
             3: 33,
             }
         obs = rx.from_marbles(string, lookup=lookup)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-                ReactiveTest.on_next(200.1, 'aa'),
-                ReactiveTest.on_next(200.2, 'bb'),
+                ReactiveTest.on_next(200.1, 'aabb'),
                 ReactiveTest.on_next(200.4, 'cc'),
-                ReactiveTest.on_next(200.6, '11'),
-                ReactiveTest.on_next(200.7, '22'),
+                ReactiveTest.on_next(200.6, '1122'),
                 ReactiveTest.on_next(200.9, 33),
                 ReactiveTest.on_completed(201.1),
                 ]
@@ -359,8 +386,7 @@ class TestTestContext(unittest.TestCase):
 
         results = start(create)
         expected = [
-            ReactiveTest.on_next(200, 1),
-            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(200, 12),
             ReactiveTest.on_next(204, 3),
             ReactiveTest.on_completed(206),
             ]
@@ -373,8 +399,7 @@ class TestTestContext(unittest.TestCase):
 
         results = start(obs)
         expected = [
-            ReactiveTest.on_next(200, 1),
-            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(200, 12),
             ReactiveTest.on_next(204, 3),
             ReactiveTest.on_completed(206),
             ]
@@ -414,8 +439,7 @@ class TestTestContext(unittest.TestCase):
 
         results = start(create)
         expected = [
-            ReactiveTest.on_next(201, 1),
-            ReactiveTest.on_next(202, 2),
+            ReactiveTest.on_next(201, 12),
             ReactiveTest.on_next(205, 3),
             ReactiveTest.on_completed(207),
             ]
@@ -427,8 +451,7 @@ class TestTestContext(unittest.TestCase):
         "              012345678901234567890"
 
         expected = [
-            ReactiveTest.on_next(200, 1),
-            ReactiveTest.on_next(201, 2),
+            ReactiveTest.on_next(200, 12),
             ReactiveTest.on_next(204, 3),
             ReactiveTest.on_next(207, 4),
             ReactiveTest.on_next(210, 5),
@@ -454,6 +477,19 @@ class TestTestContext(unittest.TestCase):
         start, cold, hot, exp = marbles.test_context()
         obs = cold("     12--3--4--5-|")
         expected = exp(" 12--3--4--5-|")
+        "                012345678901234567890"
+
+        def create():
+            return obs
+
+        results = start(create)
+        assert results == expected
+
+    def test_start_with_cold_and_exp_group(self):
+
+        start, cold, hot, exp = marbles.test_context()
+        obs = cold("     12--(3,6.5)----(5,#)-e-|")
+        expected = exp(" 12--(3,6.5)----(5,#)    ")
         "                012345678901234567890"
 
         def create():
