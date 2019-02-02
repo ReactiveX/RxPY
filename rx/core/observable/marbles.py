@@ -51,10 +51,11 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTim
 
     lock = threading.RLock()
     is_completed = False
+    is_on_error = False
     observers = []
 
     def subscribe(observer, scheduler=None):
-        if not is_completed:
+        if not is_completed and not is_on_error:
             with lock:
                 observers.append(observer)
             # should a hot observable already completed or on error
@@ -71,9 +72,18 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTim
 
     def create_action(notification):
         def action(scheduler, state=None):
+            nonlocal is_completed
+            nonlocal is_on_error
+
             with lock:
                 for observer in observers:
                     notification.accept(observer)
+
+                if notification.kind == 'C':
+                    is_completed = True
+                elif notification.kind == 'E':
+                    is_on_error = True
+
         return action
 
     for message in messages:
@@ -315,6 +325,9 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
             elements = group[1:-1].split(',')
             grp_messages = [map_element(timestamp, elm) for elm in elements if elm !='']
             messages.extend(grp_messages)
+            kinds = [m[1].kind for m in grp_messages]
+            if 'E' in kinds or 'C' in kinds:
+                break
             iframe += len(group)
 
         if ticks:
@@ -326,6 +339,9 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
         if element:
             message = map_element(timestamp, element)
             messages.append(message)
+            kind = message[1].kind
+            if kind == 'E' or kind == 'C':
+                break
             iframe += len(element)
 
     return messages

@@ -114,6 +114,32 @@ class TestParse(unittest.TestCase):
                 ]
         assert results == expected
 
+    def test_parse_marble_with_error_skip_next_elements(self):
+        string = "-a-b-c--#--(de,#,|)-f-"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        results = parse(string, error=ex)
+        expected = [
+                mess_on_next(1, 'a'),
+                mess_on_next(3, 'b'),
+                mess_on_next(5, 'c'),
+                mess_on_error(8, ex),
+                ]
+        assert results == expected
+
+    def test_parse_marble_with_on_completed_skip_next_elements(self):
+        string = "-a-b-c--|--(de,#,|)-f-"
+        "         012345678901234567890"
+        ex = Exception('ex')
+        results = parse(string, error=ex)
+        expected = [
+                mess_on_next(1, 'a'),
+                mess_on_next(3, 'b'),
+                mess_on_next(5, 'c'),
+                mess_on_completed(8),
+                ]
+        assert results == expected
+
     def test_parse_marble_with_space(self):
         string = " -a  b- c-  de |"
         "          01  23 45  67 8901234567890"
@@ -415,7 +441,7 @@ class TestHot(unittest.TestCase):
                 ]
         assert results == expected
 
-    def test_from_marbles_marble_with_consecutive_symbols(self):
+    def test_hot_marble_with_consecutive_symbols(self):
         string = "-ab(12)#--"
         "         012345678901234567890"
         ex = Exception('ex')
