@@ -10,9 +10,6 @@ from rx.disposable import CompositeDisposable
 from rx.concurrency import NewThreadScheduler
 from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
 
-# TODO: hot() should not rely on operators since it could be used for testing
-import rx
-from rx import operators as ops
 
 new_thread_scheduler = NewThreadScheduler()
 
@@ -35,31 +32,32 @@ pattern = r'|'.join([
 tokens = re.compile(pattern)
 
 
-# TODO: use a plain impelementation instead of operators
-def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTime=0,
+def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTime = 0.0,
         lookup: Dict = None, error: Exception = None, scheduler: Scheduler = None) -> Observable:
 
     _scheduler = scheduler or new_thread_scheduler
 
+    if isinstance(duetime, datetime):
+        duetime = duetime - _scheduler.now
+
     messages = parse(
         string,
-        time_shift=duetime,
         timespan=timespan,
+        time_shift=duetime,
         lookup=lookup,
         error=error,
         )
 
     lock = threading.RLock()
-    is_completed = False
-    is_on_error = False
+    is_stopped = False
     observers = []
 
     def subscribe(observer, scheduler=None):
-        if not is_completed and not is_on_error:
+        # should a hot observable already completed or on error
+        # re-push on_completed/on_error at subscription time?
+        if not is_stopped:
             with lock:
                 observers.append(observer)
-            # should a hot observable already completed or on error
-            # re-push on_completed/on_error at subscription time?
 
         def dispose():
             with lock:
@@ -72,17 +70,14 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTim
 
     def create_action(notification):
         def action(scheduler, state=None):
-            nonlocal is_completed
-            nonlocal is_on_error
+            nonlocal is_stopped
 
             with lock:
                 for observer in observers:
                     notification.accept(observer)
 
-                if notification.kind == 'C':
-                    is_completed = True
-                elif notification.kind == 'E':
-                    is_on_error = True
+                if notification.kind in ('C', 'E'):
+                    is_stopped = True
 
         return action
 
@@ -92,67 +87,11 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime:AbsoluteOrRelativeTim
 
         # Don't make closures within a loop
         _scheduler.schedule_relative(timespan, action)
-
     return Observable(subscribe)
-
-
 
 
 def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
                  error: Exception = None, scheduler: Scheduler = None) -> Observable:
-    """Convert a marble diagram string to a cold observable sequence, using
-    an optional scheduler to enumerate the events.
-
-    Each character in the string will advance time by timespan
-    (exept for space). Characters that are not special (see the table below)
-    will be interpreted as a value to be emitted. Digit 0-9 will be cast
-    to int.
-
-    Special characters:
-        +--------+--------------------------------------------------------+
-        |  `-`   | advance time by timespan                               |
-        +--------+--------------------------------------------------------+
-        |  `#`   | on_error()                                             |
-        +--------+--------------------------------------------------------+
-        |  `|`   | on_completed()                                         |
-        +--------+--------------------------------------------------------+
-        |  `(`   | open a group of marbles sharing the same timestamp     |
-        +--------+--------------------------------------------------------+
-        |  `)`   | close a group of marbles                               |
-        +--------+--------------------------------------------------------+
-        |  `,`   | separate elements in a group                           |
-        +--------+--------------------------------------------------------+
-        | space  | used to align multiple diagrams, does not advance time.|
-        +--------+--------------------------------------------------------+
-
-    In a group of marbles, the position of the initial `(` determines the
-    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
-    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
-
-    Examples:
-        >>> from_marbles("--1--(42)-3--|")
-        >>> from_marbles("a--B--c-", lookup={'a': 1, 'B': 2, 'c': 3})
-        >>> from_marbles("a--b---#", error=ValueError("foo"))
-
-    Args:
-        string: String with marble diagram
-
-        timespan: [Optional] duration of each character in second.
-            If not specified, defaults to 0.1s.
-
-        lookup: [Optional] dict used to convert a marble into a specified
-            value. If not specified, defaults to {}.
-
-        error: [Optional] exception that will be use in place of the # symbol.
-            If not specified, defaults to Exception('error').
-
-        scheduler: [Optional] Scheduler to run the the input sequence
-            on.
-
-    Returns:
-        The observable sequence whose elements are pulled from the
-        given marble diagram string.
-    """
 
     disp = CompositeDisposable()
     messages = parse(string, timespan=timespan, lookup=lookup, error=error)
@@ -233,16 +172,15 @@ def stringify(value):
 
     return string
 
-# TODO: complete the definition of the return type List[tuple]
-def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
-          lookup: Dict = None, error: Exception = None) -> List[Tuple]:
-    """Convert a marble diagram string to a list of records of type
-    :class:`rx.testing.recorded.Recorded`.
+
+def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 0.0, lookup: Dict = None,
+          error: Exception = None) -> List[Tuple[RelativeTime, notification.Notification]]:
+    """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
     (exept for space). Characters that are not special (see the table below)
-    will be interpreted as a value to be emitted according to their horizontal
-    position in the diagram. Digit 0-9 will be cast to :class:`int`.
+    will be interpreted as a value to be emitted. numbers will be cast
+    to int or float.
 
     Special characters:
         +--------+--------------------------------------------------------+
@@ -258,7 +196,7 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
         +--------+--------------------------------------------------------+
         |  `,`   | separate elements in a group                           |
         +--------+--------------------------------------------------------+
-        | space  | used to align multiple diagrams, does not advance time.|
+        | space  | used to align multiple diagrams, does not advance time |
         +--------+--------------------------------------------------------+
 
     In a group of marbles, the position of the initial `(` determines the
@@ -266,32 +204,37 @@ def parse(string: str, timespan: RelativeTime = 1, time_shift: RelativeTime = 0,
     emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
 
     Examples:
-        >>> res = parse("1-2-3-|")
-        >>> res = parse("--1--^-(42)-3--|")
-        >>> res = parse("a--B---c-", lookup={'a': 1, 'B': 2, 'c': 3})
+        >>> from_marbles("--1--(2,3)-4--|")
+        >>> from_marbles("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
+        >>> from_marbles("a--b---#", error=ValueError("foo"))
 
     Args:
         string: String with marble diagram
 
-        timespan: [Optional] duration of each character.
-            Default set to 1.
+        timespan: [Optional] duration of each character in second.
+            If not specified, defaults to 0.1s.
 
         lookup: [Optional] dict used to convert a marble into a specified
             value. If not specified, defaults to {}.
 
-        time_shift: [Optional] absolute time of subscription.
-            If not specified, defaults to 0.
+        time_shift: [Optional] time used to delay every elements.
+            If not specified, defaults to 0.0s.
 
         error: [Optional] exception that will be use in place of the # symbol.
             If not specified, defaults to Exception('error').
 
     Returns:
-        A list of records of type :class:`rx.testing.recorded.Recorded`
-        containing time and :class:`Notification` as value.
+        A list of messages defined as a tuple of (timespan, notification).
+
     """
 
     error = error or Exception('error')
     lookup = lookup or {}
+
+    if isinstance(timespan, timedelta):
+        timespan = timespan.total_seconds()
+    if isinstance(time_shift, timedelta):
+        time_shift = time_shift.total_seconds()
 
     string = string.replace(' ', '')
 

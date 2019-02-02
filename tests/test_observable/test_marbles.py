@@ -5,6 +5,7 @@ from rx.core import notification
 from rx.core.observable.marbles import parse
 from rx.testing import TestScheduler
 from rx.testing.reactivetest import ReactiveTest
+import datetime
 
 
 def mess_on_next(time, value):
@@ -24,26 +25,26 @@ class TestParse(unittest.TestCase):
     def test_parse_just_on_error(self):
         string = "#"
         results = parse(string)
-        expected = [mess_on_error(0, Exception('error'))]
+        expected = [mess_on_error(0.0, Exception('error'))]
         assert results == expected
 
     def test_parse_just_on_error_specified(self):
         string = "#"
         ex = Exception('Foo')
         results = parse(string, error=ex)
-        expected = [mess_on_error(0, ex)]
+        expected = [mess_on_error(0.0, ex)]
         assert results == expected
 
     def test_parse_just_on_completed(self):
         string = "|"
         results = parse(string)
-        expected = [mess_on_completed(0)]
+        expected = [mess_on_completed(0.0)]
         assert results == expected
 
     def test_parse_just_on_next(self):
         string = "a"
         results = parse(string)
-        expected = [mess_on_next(0, 'a')]
+        expected = [mess_on_next(0.0, 'a')]
         assert results == expected
 
     def test_parse_marble_timespan(self):
@@ -58,13 +59,25 @@ class TestParse(unittest.TestCase):
             ]
         assert results == expected
 
+    def test_parse_marble_timedelta(self):
+        string = "a--b---c"
+        "         012345678901234567890"
+        ts = 0.1
+        results = parse(string, timespan=datetime.timedelta(seconds=ts))
+        expected = [
+            mess_on_next(0 * ts, 'a'),
+            mess_on_next(3 * ts, 'b'),
+            mess_on_next(7 * ts, 'c'),
+            ]
+        assert results == expected
+
     def test_parse_marble_multiple_digits(self):
         string = "-ab-cde--"
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 'ab'),
-                mess_on_next(4, 'cde'),
+                mess_on_next(1.0, 'ab'),
+                mess_on_next(4.0, 'cde'),
                 ]
         assert results == expected
 
@@ -73,9 +86,9 @@ class TestParse(unittest.TestCase):
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 1),
-                mess_on_next(3, 22),
-                mess_on_next(6, 333),
+                mess_on_next(1.0, 1),
+                mess_on_next(3.0, 22),
+                mess_on_next(6.0, 333),
                 ]
         assert results == expected
 
@@ -84,9 +97,9 @@ class TestParse(unittest.TestCase):
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, float('1.0')),
-                mess_on_next(6, float('2.345')),
-                mess_on_next(13, float('6.7e8')),
+                mess_on_next(1.0, float('1.0')),
+                mess_on_next(6.0, float('2.345')),
+                mess_on_next(13.0, float('6.7e8')),
                 ]
         assert results == expected
 
@@ -95,9 +108,9 @@ class TestParse(unittest.TestCase):
         "         012345678901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 'ab'),
-                mess_on_next(4, 'c'),
-                mess_on_completed(7),
+                mess_on_next(1.0, 'ab'),
+                mess_on_next(4.0, 'c'),
+                mess_on_completed(7.0),
                 ]
         assert results == expected
 
@@ -107,10 +120,10 @@ class TestParse(unittest.TestCase):
         ex = Exception('ex')
         results = parse(string, error=ex)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(3, 'b'),
-                mess_on_next(5, 'c'),
-                mess_on_error(8, ex),
+                mess_on_next(1.0, 'a'),
+                mess_on_next(3.0, 'b'),
+                mess_on_next(5.0, 'c'),
+                mess_on_error(8.0, ex),
                 ]
         assert results == expected
 
@@ -120,10 +133,10 @@ class TestParse(unittest.TestCase):
         ex = Exception('ex')
         results = parse(string, error=ex)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(3, 'b'),
-                mess_on_next(5, 'c'),
-                mess_on_error(8, ex),
+                mess_on_next(1.0, 'a'),
+                mess_on_next(3.0, 'b'),
+                mess_on_next(5.0, 'c'),
+                mess_on_error(8.0, ex),
                 ]
         assert results == expected
 
@@ -133,10 +146,10 @@ class TestParse(unittest.TestCase):
         ex = Exception('ex')
         results = parse(string, error=ex)
         expected = [
-                mess_on_next(1, 'a'),
-                mess_on_next(3, 'b'),
-                mess_on_next(5, 'c'),
-                mess_on_completed(8),
+                mess_on_next(1.0, 'a'),
+                mess_on_next(3.0, 'b'),
+                mess_on_next(5.0, 'c'),
+                mess_on_completed(8.0),
                 ]
         assert results == expected
 
@@ -145,10 +158,10 @@ class TestParse(unittest.TestCase):
         "          01  23 45  67 8901234567890"
         results = parse(string)
         expected = [
-                mess_on_next(1, 'ab'),
-                mess_on_next(4, 'c'),
-                mess_on_next(6, 'de'),
-                mess_on_completed(8),
+                mess_on_next(1.0, 'ab'),
+                mess_on_next(4.0, 'c'),
+                mess_on_next(6.0, 'de'),
+                mess_on_completed(8.0),
                 ]
         assert results == expected
 
@@ -158,15 +171,15 @@ class TestParse(unittest.TestCase):
         "         0         1         2   "
         results = parse(string)
         expected = [
-                mess_on_next(1, 'x'),
-                mess_on_next(2, 'ab'),
-                mess_on_next(2, 12),
-                mess_on_next(2, float('1.5')),
+                mess_on_next(1.0, 'x'),
+                mess_on_next(2.0, 'ab'),
+                mess_on_next(2.0, 12),
+                mess_on_next(2.0, float('1.5')),
 
-                mess_on_next(14, 'c'),
-                mess_on_next(17, 'de'),
+                mess_on_next(14.0, 'c'),
+                mess_on_next(17.0, 'de'),
 
-                mess_on_completed(22),
+                mess_on_completed(22.0),
                 ]
         assert results == expected
 
@@ -182,24 +195,24 @@ class TestParse(unittest.TestCase):
 
         results = parse(string, lookup=lookup)
         expected = [
-                mess_on_next(1, 'aabb'),
-                mess_on_next(4, 'cc'),
-                mess_on_next(6, '1122'),
-                mess_on_next(9, 33),
-                mess_on_completed(11),
+                mess_on_next(1.0, 'aabb'),
+                mess_on_next(4.0, 'cc'),
+                mess_on_next(6.0, '1122'),
+                mess_on_next(9.0, 33),
+                mess_on_completed(11.0),
                 ]
         assert results == expected
 
     def test_parse_marble_time_shift(self):
         string = "-ab----c-d-|"
         "         012345678901234567890"
-        offset = 10
+        offset = 10.0
         results = parse(string, time_shift=offset)
         expected = [
-                mess_on_next(1 + offset, 'ab'),
-                mess_on_next(7 + offset, 'c'),
-                mess_on_next(9 + offset, 'd'),
-                mess_on_completed(11 + offset),
+                mess_on_next(1.0 + offset, 'ab'),
+                mess_on_next(7.0 + offset, 'c'),
+                mess_on_next(9.0 + offset, 'd'),
+                mess_on_completed(11.0 + offset),
                 ]
         assert results == expected
 
@@ -216,7 +229,7 @@ class TestFromMarble(unittest.TestCase):
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
-        expected = [ReactiveTest.on_error(200, Exception('error'))]
+        expected = [ReactiveTest.on_error(200.0, Exception('error'))]
         assert results == expected
 
     def test_from_marbles_on_error_specified(self):
@@ -226,7 +239,7 @@ class TestFromMarble(unittest.TestCase):
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
-        expected = [ReactiveTest.on_error(200, ex)]
+        expected = [ReactiveTest.on_error(200.0, ex)]
         assert results == expected
 
     def test_from_marbles_on_complete(self):
@@ -234,7 +247,7 @@ class TestFromMarble(unittest.TestCase):
         obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
-        expected = [ReactiveTest.on_completed(200)]
+        expected = [ReactiveTest.on_completed(200.0)]
         assert results == expected
 
     def test_from_marbles_on_next(self):
@@ -242,7 +255,7 @@ class TestFromMarble(unittest.TestCase):
         obs = rx.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
-        expected = [ReactiveTest.on_next(200, 'a')]
+        expected = [ReactiveTest.on_next(200.0, 'a')]
         assert results == expected
 
     def test_from_marbles_timespan(self):
@@ -253,9 +266,9 @@ class TestFromMarble(unittest.TestCase):
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
-            ReactiveTest.on_next(0 * ts + 200, 'a'),
-            ReactiveTest.on_next(3 * ts + 200, 'b'),
-            ReactiveTest.on_next(7 * ts + 200, 'c'),
+            ReactiveTest.on_next(0 * ts + 200.0, 'a'),
+            ReactiveTest.on_next(3 * ts + 200.0, 'b'),
+            ReactiveTest.on_next(7 * ts + 200.0, 'c'),
             ]
         assert results == expected
 
@@ -505,3 +518,32 @@ class TestHot(unittest.TestCase):
                 ]
         assert results == expected
 
+    def test_hot_marble_with_datetime(self):
+        string = "-ab-c--|"
+        "         012345678901234567890"
+        scheduler = TestScheduler()
+        duetime = scheduler.now + datetime.timedelta(seconds=300.0)
+
+        obs = rx.hot(string, 0.1, duetime, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(300.1, 'ab'),
+                ReactiveTest.on_next(300.4, 'c'),
+                ReactiveTest.on_completed(300.7),
+                ]
+        assert results == expected
+
+    def test_hot_marble_with_timedelta(self):
+        string = "-ab-c--|"
+        "         012345678901234567890"
+        scheduler = TestScheduler()
+        duetime = datetime.timedelta(seconds=300.0)
+
+        obs = rx.hot(string, 0.1, duetime, scheduler=scheduler)
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+                ReactiveTest.on_next(300.1, 'ab'),
+                ReactiveTest.on_next(300.4, 'c'),
+                ReactiveTest.on_completed(300.7),
+                ]
+        assert results == expected
