@@ -239,7 +239,7 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
 
     Each character in the string will advance time by timespan
     (exept for space). Characters that are not special (see the table below)
-    will be interpreted as a value to be emitted. numbers will be cast
+    will be interpreted as a value to be emitted. Numbers will be cast
     to int or float.
 
     Special characters:
@@ -259,9 +259,10 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
         | space  | used to align multiple diagrams, does not advance time |
         +--------+--------------------------------------------------------+
 
-    In a group of marbles, the position of the initial `(` determines the
-    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
-    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
+    In a group of elements, the position of the initial `(` determines the
+    timestamp at which grouped elements will be emitted. E.g. `--(12,3,4)--`
+    will emit 12, 3, 4 at 2 * timespan and then advance virtual time
+    by 8 * timespan.
 
     Examples:
         >>> from_marbles("--1--(2,3)-4--|")
@@ -274,15 +275,15 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
         timespan: [Optional] duration of each character in second.
             If not specified, defaults to 0.1s.
 
-        lookup: [Optional] dict used to convert a marble into a specified
+        lookup: [Optional] dict used to convert an element into a specified
             value. If not specified, defaults to {}.
 
         error: [Optional] exception that will be use in place of the # symbol.
             If not specified, defaults to Exception('error').
 
         scheduler: [Optional] Scheduler to run the the input sequence
-            on. If not specified, defaults to the downstream scheduler,
-            else to NewThreadScheduler.
+            on. If not specified, defaults to the subscribe scheduler
+            if defined, else to NewThreadScheduler.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -290,12 +291,7 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
     """
 
     from .core.observable.marbles import from_marbles as _from_marbles
-    return _from_marbles(
-        string,
-        timespan=timespan,
-        lookup=lookup,
-        error=error,
-        scheduler=scheduler)
+    return _from_marbles(string, timespan, lookup=lookup, error=error, scheduler=scheduler)
 
 
 cold = from_marbles
@@ -346,13 +342,13 @@ def generate(initial_state, condition, iterate) -> Observable:
 
 
 def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRelativeTime = 0.0,
-        scheduler: typing.Scheduler = None, lookup = None, error: Exception = None) -> Observable:
+        scheduler: typing.Scheduler = None, lookup=None, error: Exception = None) -> Observable:
     """Convert a marble diagram string to a hot observable sequence, using
     an optional scheduler to enumerate the events.
 
     Each character in the string will advance time by timespan
     (exept for space). Characters that are not special (see the table below)
-    will be interpreted as a value to be emitted. numbers will be cast
+    will be interpreted as a value to be emitted. Numbers will be cast
     to int or float.
 
     Special characters:
@@ -363,18 +359,19 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
         +--------+--------------------------------------------------------+
         |  `|`   | on_completed()                                         |
         +--------+--------------------------------------------------------+
-        |  `(`   | open a group of marbles sharing the same timestamp     |
+        |  `(`   | open a group of elemets sharing the same timestamp     |
         +--------+--------------------------------------------------------+
-        |  `)`   | close a group of marbles                               |
+        |  `)`   | close a group of elements                              |
         +--------+--------------------------------------------------------+
         |  `,`   | separate elements in a group                           |
         +--------+--------------------------------------------------------+
         | space  | used to align multiple diagrams, does not advance time |
         +--------+--------------------------------------------------------+
 
-    In a group of marbles, the position of the initial `(` determines the
-    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
-    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
+    In a group of elements, the position of the initial `(` determines the
+    timestamp at which grouped elements will be emitted. E.g. `--(12,3,4)--`
+    will emit 12, 3, 4 at 2 * timespan and then advance virtual time
+    by 8 * timespan.
 
     Examples:
         >>> from_marbles("--1--(2,3)-4--|")
@@ -387,10 +384,10 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
         timespan: [Optional] duration of each character in second.
             If not specified, defaults to 0.1s.
 
-        duetime: [Optional] Absolute datetime or timedelta relative to
-        the calling time that defines when to start the emission of elements.
+        duetime: [Optional] Absolute datetime or timedelta from now that
+            determines when to start the emission of elements.
 
-        lookup: [Optional] dict used to convert a marble into a specified
+        lookup: [Optional] dict used to convert an element into a specified
             value. If not specified, defaults to {}.
 
         error: [Optional] exception that will be use in place of the # symbol.
@@ -405,13 +402,7 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
     """
 
     from .core.observable.marbles import hot as _hot
-    return _hot(
-        string,
-        timespan=timespan,
-        duetime=duetime,
-        lookup=lookup,
-        error=error,
-        scheduler=scheduler)
+    return _hot(string, timespan, duetime, lookup=lookup, error=error, scheduler=scheduler)
 
 
 def if_then(condition: Callable[[], bool], then_source: Observable,
@@ -695,11 +686,6 @@ def to_async(func: Callable, scheduler=None) -> Callable:
     """
     from .core.observable.toasync import _to_async
     return _to_async(func, scheduler)
-
-
-def to_marbles(scheduler: typing.Scheduler = None, timespan=0.1) -> str:
-    from .core.observable.marbles import to_marbles as _to_marbles
-    return _to_marbles(scheduler=scheduler, timespan=timespan)
 
 
 def using(resource_factory: Callable[[], typing.Disposable], observable_factory: Callable[[typing.Disposable], Observable]

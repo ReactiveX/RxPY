@@ -1,6 +1,6 @@
 import unittest
 
-from rx.testing import marbles
+from rx.testing.marbles import marbles_testing
 from rx.testing.reactivetest import ReactiveTest
 
 #from rx.concurrency import timeout_scheduler, new_thread_scheduler
@@ -46,147 +46,144 @@ from rx.testing.reactivetest import ReactiveTest
 class TestTestContext(unittest.TestCase):
 
     def test_start_with_cold_never(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("----")
-        "           012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("----")
+            "           012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = []
-        assert results == expected
+            results = start(create)
+            expected = []
+            assert results == expected
 
     def test_start_with_cold_empty(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("------|")
-        "           012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("------|")
+            "           012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = [ReactiveTest.on_completed(206)]
-        assert results == expected
+            results = start(create)
+            expected = [ReactiveTest.on_completed(206)]
+            assert results == expected
 
     def test_start_with_cold_normal(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("12--3-|")
-        "           012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("12--3-|")
+            "           012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = [
-            ReactiveTest.on_next(200.0, 12),
-            ReactiveTest.on_next(204.0, 3),
-            ReactiveTest.on_completed(206.0),
-            ]
-        assert results == expected
+            results = start(create)
+            expected = [
+                ReactiveTest.on_next(200.0, 12),
+                ReactiveTest.on_next(204.0, 3),
+                ReactiveTest.on_completed(206.0),
+                ]
+            assert results == expected
 
     def test_start_with_cold_no_create_function(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("12--3-|")
-        "           012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("12--3-|")
+            "           012345678901234567890"
 
-        results = start(obs)
-        expected = [
-            ReactiveTest.on_next(200.0, 12),
-            ReactiveTest.on_next(204.0, 3),
-            ReactiveTest.on_completed(206.0),
-            ]
-        assert results == expected
+            results = start(obs)
+            expected = [
+                ReactiveTest.on_next(200.0, 12),
+                ReactiveTest.on_next(204.0, 3),
+                ReactiveTest.on_completed(206.0),
+                ]
+            assert results == expected
 
     def test_start_with_hot_never(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = hot("------")
-        "          012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = hot("------")
+            "          012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = []
-        assert results == expected
+            results = start(create)
+            expected = []
+            assert results == expected
 
     def test_start_with_hot_empty(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = hot("---|")
-        "          012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = hot("---|")
+            "          012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = [ReactiveTest.on_completed(203.0), ]
-        assert results == expected
+            results = start(create)
+            expected = [ReactiveTest.on_completed(203.0), ]
+            assert results == expected
 
     def test_start_with_hot_normal(self):
-        start, cold, hot, exp = marbles.test_context()
-        obs = hot("-12--3-|")
-        "          012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = hot("-12--3-|")
+            "          012345678901234567890"
 
-        def create():
-            return obs
+            def create():
+                return obs
 
-        results = start(create)
-        expected = [
-            ReactiveTest.on_next(201.0, 12),
-            ReactiveTest.on_next(205.0, 3),
-            ReactiveTest.on_completed(207.0),
-            ]
-        assert results == expected
+            results = start(create)
+            expected = [
+                ReactiveTest.on_next(201.0, 12),
+                ReactiveTest.on_next(205.0, 3),
+                ReactiveTest.on_completed(207.0),
+                ]
+            assert results == expected
 
     def test_exp(self):
-        start, cold, hot, exp = marbles.test_context()
-        results = exp("12--3--4--5-|")
-        "              012345678901234567890"
+        with marbles_testing() as (start, cold, hot, exp):
+            results = exp("12--3--4--5-|")
+            "              012345678901234567890"
 
-        expected = [
-            ReactiveTest.on_next(200.0, 12),
-            ReactiveTest.on_next(204.0, 3),
-            ReactiveTest.on_next(207.0, 4),
-            ReactiveTest.on_next(210.0, 5),
-            ReactiveTest.on_completed(212.0),
-            ]
-        assert results == expected
+            expected = [
+                ReactiveTest.on_next(200.0, 12),
+                ReactiveTest.on_next(204.0, 3),
+                ReactiveTest.on_next(207.0, 4),
+                ReactiveTest.on_next(210.0, 5),
+                ReactiveTest.on_completed(212.0),
+                ]
+            assert results == expected
 
     def test_start_with_hot_and_exp(self):
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = hot("     --3--4--5-|")
+            expected = exp("--3--4--5-|")
+            "               012345678901234567890"
 
-        start, cold, hot, exp = marbles.test_context()
-        obs = hot("     --3--4--5-|")
-        expected = exp("--3--4--5-|")
-        "               012345678901234567890"
+            def create():
+                return obs
 
-        def create():
-            return obs
-
-        results = start(create)
-        assert results == expected
+            results = start(create)
+            assert results == expected
 
     def test_start_with_cold_and_exp(self):
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("     12--3--4--5-|")
+            expected = exp(" 12--3--4--5-|")
+            "                012345678901234567890"
 
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("     12--3--4--5-|")
-        expected = exp(" 12--3--4--5-|")
-        "                012345678901234567890"
+            def create():
+                return obs
 
-        def create():
-            return obs
-
-        results = start(create)
-        assert results == expected
+            results = start(create)
+            assert results == expected
 
     def test_start_with_cold_and_exp_group(self):
+        with marbles_testing() as (start, cold, hot, exp):
+            obs = cold("     12--(3,6.5)----(5,#)")
+            expected = exp(" 12--(3,6.5)----(5,#)")
+            "                012345678901234567890"
 
-        start, cold, hot, exp = marbles.test_context()
-        obs = cold("     12--(3,6.5)----(5,#)-e-|")
-        expected = exp(" 12--(3,6.5)----(5,#)    ")
-        "                012345678901234567890"
+            def create():
+                return obs
 
-        def create():
-            return obs
-
-        results = start(create)
-        assert results == expected
+            results = start(create)
+            assert results == expected

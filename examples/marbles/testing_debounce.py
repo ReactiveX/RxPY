@@ -1,5 +1,5 @@
 from rx import operators as ops
-from rx.testing import marbles
+from rx.testing.marbles import marbles_testing
 
 """
 Tests debounceTime from rxjs
@@ -7,24 +7,20 @@ https://github.com/ReactiveX/rxjs/blob/master/spec/operators/debounceTime-spec.t
 
 it should delay all element by the specified time
 """
+with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
 
-start, cold, hot, exp = marbles.test_context(timespan=1)
+    e1 = cold('-a--------b------c----|')
+    ex = exp( '------a--------b------(c,|)')
+    expected = ex
 
-e1 = hot('-a--------b------c----|')
-ex = exp('------a--------b------(c|)')
-expected = ex
+    def create():
+        return e1.pipe(
+            ops.debounce(5),
+            )
 
+    results = start(create)
+    assert results == expected
 
-def create():
-    return e1.pipe(
-        ops.debounce(5),
-        )
-
-
-results = start(create)
-assert results == expected
-
-print('\ndebounce: results vs expected')
+print('debounce: results vs expected')
 for r, e in zip(results, expected):
     print(r, e)
-

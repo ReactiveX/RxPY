@@ -1,18 +1,14 @@
-import time
 
 import rx
-from rx import concurrency as ccy
+from rx import operators as ops
 
-source0 = rx.cold('a-----d---1--------4-|', timespan=0.1)
-source1 = rx.cold('--b-c-------2---3-|   ', timespan=0.1)
+"""
+simple example that merges two cold observables.
+"""
 
-observable = rx.merge(source0, source1)
+source0 = rx.cold('a-----d---1--------4-|', timespan=0.01)
+source1 = rx.cold('--b-c-------2---3-|   ', timespan=0.01)
 
-observable.subscribe(
-    on_next=print,
-    on_error=lambda e: print('boom!! {}'.format(e)),
-    on_completed=lambda: print('good job!'),
-    scheduler=ccy.timeout_scheduler,
-    )
-
-time.sleep(3)
+observable = rx.merge(source0, source1).pipe(ops.to_iterable())
+elements = observable.run()
+print('received {}'.format(list(elements)))

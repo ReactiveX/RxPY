@@ -5,16 +5,15 @@ from datetime import datetime, timedelta
 
 from rx import Observable
 from rx.core import notification
-from rx.disposable import Disposable
-from rx.disposable import CompositeDisposable
+from rx.disposable import CompositeDisposable, Disposable
 from rx.concurrency import NewThreadScheduler
 from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
 
 
 new_thread_scheduler = NewThreadScheduler()
 
-# tokens will be search with pipe in the order below
-# group of elements: match any characters surrounding by ()
+# tokens will be searched in the order below using pipe
+# group of elements: match any characters surrounded by ()
 pattern_group = r"(\(.*?\))"
 # timespan: match one or multiple hyphens
 pattern_ticks = r"(-+)"
@@ -46,6 +45,7 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTi
         time_shift=duetime,
         lookup=lookup,
         error=error,
+        raise_stopped=True,
         )
 
     lock = threading.RLock()
@@ -87,6 +87,7 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTi
 
         # Don't make closures within a loop
         _scheduler.schedule_relative(timespan, action)
+
     return Observable(subscribe)
 
 
@@ -94,7 +95,7 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
                  error: Exception = None, scheduler: Scheduler = None) -> Observable:
 
     disp = CompositeDisposable()
-    messages = parse(string, timespan=timespan, lookup=lookup, error=error)
+    messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
 
     def schedule_msg(message, observer, scheduler):
         timespan, notification = message
@@ -108,73 +109,15 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
 
         for message in messages:
-
             # Don't make closures within a loop
             schedule_msg(message, observer, _scheduler)
+
         return disp
     return Observable(subscribe)
 
 
-def to_marbles(scheduler=None, timespan=0.1):
-    """Convert an observable sequence into a marble diagram string
-
-    Args:
-        scheduler: [Optional] The scheduler used to run the the input
-            sequence on.
-
-    Returns:
-        Observable stream.
-    """
-    def _to_marbles(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or new_thread_scheduler
-
-            result: List[str] = []
-            last = scheduler.now
-
-            def add_timespan():
-                nonlocal last
-
-                now = scheduler.now
-                diff = now - last
-                last = now
-                secs = scheduler.to_seconds(diff)
-                dashes = "-" * int((secs + timespan / 2.0) * (1.0 / timespan))
-                result.append(dashes)
-
-            def on_next(value):
-                add_timespan()
-                result.append(stringify(value))
-
-            def on_error(exception):
-                add_timespan()
-                result.append(stringify(exception))
-                observer.on_next("".join(n for n in result))
-                observer.on_completed()
-
-            def on_completed():
-                add_timespan()
-                result.append("|")
-                observer.on_next("".join(n for n in result))
-                observer.on_completed()
-
-            return source.subscribe_(on_next, on_error, on_completed)
-        return Observable(subscribe)
-    return _to_marbles
-
-
-def stringify(value):
-    """Utility for stringifying an event.
-    """
-    string = str(value)
-    if len(string) > 1:
-        string = "(%s)" % string
-
-    return string
-
-
 def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 0.0, lookup: Dict = None,
-          error: Exception = None) -> List[Tuple[RelativeTime, notification.Notification]]:
+          error: Exception = None, raise_stopped: bool = False) -> List[Tuple[RelativeTime, notification.Notification]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
@@ -190,18 +133,19 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
         +--------+--------------------------------------------------------+
         |  `|`   | on_completed()                                         |
         +--------+--------------------------------------------------------+
-        |  `(`   | open a group of marbles sharing the same timestamp     |
+        |  `(`   | open a group of elements sharing the same timestamp    |
         +--------+--------------------------------------------------------+
-        |  `)`   | close a group of marbles                               |
+        |  `)`   | close a group of elements                              |
         +--------+--------------------------------------------------------+
         |  `,`   | separate elements in a group                           |
         +--------+--------------------------------------------------------+
         | space  | used to align multiple diagrams, does not advance time |
         +--------+--------------------------------------------------------+
 
-    In a group of marbles, the position of the initial `(` determines the
-    timestamp at which grouped marbles will be emitted. E.g. `--(abc)--` will
-    emit a, b, c at 2 * timespan and then advance virtual time by 5 * timespan.
+    In a group of elements, the position of the initial `(` determines the
+    timestamp at which grouped elements will be emitted. E.g. `--(12,3,4)--`
+    will emit 12, 3, 4 at 2 * timespan and then advance virtual time
+    by 8 * timespan.
 
     Examples:
         >>> from_marbles("--1--(2,3)-4--|")
@@ -214,7 +158,7 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
         timespan: [Optional] duration of each character in second.
             If not specified, defaults to 0.1s.
 
-        lookup: [Optional] dict used to convert a marble into a specified
+        lookup: [Optional] dict used to convert an element into a specified
             value. If not specified, defaults to {}.
 
         time_shift: [Optional] time used to delay every elements.
@@ -222,6 +166,8 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
 
         error: [Optional] exception that will be use in place of the # symbol.
             If not specified, defaults to Exception('error').
+        raise_finished: [optional] raise ValueError if elements are
+            declared after on_completed or on_error symbol.
 
     Returns:
         A list of messages defined as a tuple of (timespan, notification).
@@ -258,19 +204,30 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
             value = lookup.get(value, value)
             return (time, notification.OnNext(value))
 
+    is_stopped = False
+    def check_stopped(element):
+        nonlocal is_stopped
+        if raise_stopped:
+            if is_stopped:
+                raise ValueError('Elements cannot be declared after a # or | symbol.')
+
+            if element in ('#', '|'):
+                is_stopped = True
+
+
     iframe = 0
     messages = []
+
     for results in tokens.findall(string):
         timestamp = iframe * timespan + time_shift
         group, ticks, comma_error, element = results
 
         if group:
             elements = group[1:-1].split(',')
+            for elm in elements:
+                check_stopped(elm)
             grp_messages = [map_element(timestamp, elm) for elm in elements if elm !='']
             messages.extend(grp_messages)
-            kinds = [m[1].kind for m in grp_messages]
-            if 'E' in kinds or 'C' in kinds:
-                break
             iframe += len(group)
 
         if ticks:
@@ -280,11 +237,9 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
             raise ValueError("Comma is only allowed in group of elements.")
 
         if element:
+            check_stopped(element)
             message = map_element(timestamp, element)
             messages.append(message)
-            kind = message[1].kind
-            if kind == 'E' or kind == 'C':
-                break
             iframe += len(element)
 
     return messages

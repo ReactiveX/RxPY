@@ -1,5 +1,7 @@
 from typing import List, Tuple, Union, Dict
 from collections import namedtuple
+from contextlib import contextmanager
+from warnings import warn
 
 import rx
 from rx.core import Observable
@@ -10,13 +12,14 @@ from rx.core.observable.marbles import parse
 
 new_thread_scheduler = NewThreadScheduler()
 
-TestContext = namedtuple('TestContext', 'start, cold, hot, exp')
+MarblesContext = namedtuple('MarblesContext', 'start, cold, hot, exp')
 
 
-def test_context(timespan=1):
+@contextmanager
+def marbles_testing(timespan=1.0):
     """
-    Initialize a :class:`TestScheduler` and return a namedtuple containing the
-    following functions that wrap its methods.
+    Initialize a :class:`rx.testing.TestScheduler` and return a namedtuple
+    containing the following functions that wrap its methods.
 
     :func:`cold()`:
     Parse a marbles string and return a cold observable
@@ -25,7 +28,7 @@ def test_context(timespan=1):
     Parse a marbles string and return a hot observable
 
     :func:`start()`:
-    Start the test scheduler and invoke the create function,
+    Start the test scheduler, invoke the create function,
     subscribe to the resulting sequence, dispose the subscription and
     return the resulting records
 
@@ -33,33 +36,48 @@ def test_context(timespan=1):
     Parse a marbles string and return a list of records
 
     Examples:
-        >>> start, cold, hot, exp = test_context()
-
-        >>> context = test_context()
-        >>> context.cold("--a--b--#", error=Exception("foo"))
-
-        >>> e0 = hot("a---^-b---c-|")
-        >>> ex = exp("    --b---c-|")
-        >>> results = start(e1)
-        >>> assert results.messages == ex
+        >>> with marbles_testing() as (start, cold, hot, exp):
+        ...     obs = hot("-a-----b---c-|")
+        ...     ex = exp( "-a-----b---c-|")
+        ...     results = start(obs)
+        ...     assert results == ex
 
     The underlying test scheduler is initialized with the following
     parameters:
-        - created time = 100
-        - subscribed = 200
-        - disposed = 1000
+        - created time = 100.0s
+        - subscribed = 200.0s
+        - disposed = 1000.0s
 
     **IMPORTANT**: regarding :func:`hot()`, a marble declared as the
     first character will be skipped by the test scheduler.
-    E.g. `hot("a--b--")` will only emit `b`.
+    E.g. hot("a--b--") will only emit b.
     """
 
     scheduler = TestScheduler()
-    created = 100
-    disposed = 1000
-    subscribed = 200
+    created = 100.0
+    disposed = 1000.0
+    subscribed = 200.0
+    start_called = False
+    outside_of_context = False
+
+    def check():
+        if outside_of_context:
+            warn('context functions should not be called outside of '
+                 'with statement.',
+                 UserWarning,
+                 stacklevel=3,
+                 )
+
+        if start_called:
+            warn('start() should only be called one time inside '
+                 'a with statement.',
+                 UserWarning,
+                 stacklevel=3,
+                 )
 
     def test_start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
+        nonlocal start_called
+        check()
 
         def default_create():
             return create
@@ -75,14 +93,10 @@ def test_context(timespan=1):
             subscribed=subscribed,
             disposed=disposed,
             )
+        start_called = True
         return mock_observer.messages
 
     def test_expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
-        if string.find('^') >= 0:
-            raise ValueError(
-                'Expected function does not support subscription symbol "^".'
-                'Got "{}"'.format(string))
-
         messages = parse(
             string,
             timespan=timespan,
@@ -92,13 +106,8 @@ def test_context(timespan=1):
             )
         return messages_to_records(messages)
 
-
     def test_cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
-        if string.find('^') >= 0:
-            raise ValueError(
-                'Cold observable does not support subscription symbol "^".'
-                'Got "{}"'.format(string))
-
+        check()
         return rx.from_marbles(
             string,
             timespan=timespan,
@@ -107,6 +116,7 @@ def test_context(timespan=1):
             )
 
     def test_hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+        check()
         hot_obs = rx.hot(
             string,
             timespan=timespan,
@@ -117,7 +127,10 @@ def test_context(timespan=1):
             )
         return hot_obs
 
-    return TestContext(test_start, test_cold, test_hot, test_expected)
+    try:
+        yield MarblesContext(test_start, test_cold, test_hot, test_expected)
+    finally:
+        outside_of_context = True
 
 
 def messages_to_records(messages: List[Tuple]) -> List[Recorded]:

@@ -127,32 +127,6 @@ class TestParse(unittest.TestCase):
                 ]
         assert results == expected
 
-    def test_parse_marble_with_error_skip_next_elements(self):
-        string = "-a-b-c--#--(de,#,|)-f-"
-        "         012345678901234567890"
-        ex = Exception('ex')
-        results = parse(string, error=ex)
-        expected = [
-                mess_on_next(1.0, 'a'),
-                mess_on_next(3.0, 'b'),
-                mess_on_next(5.0, 'c'),
-                mess_on_error(8.0, ex),
-                ]
-        assert results == expected
-
-    def test_parse_marble_with_on_completed_skip_next_elements(self):
-        string = "-a-b-c--|--(de,#,|)-f-"
-        "         012345678901234567890"
-        ex = Exception('ex')
-        results = parse(string, error=ex)
-        expected = [
-                mess_on_next(1.0, 'a'),
-                mess_on_next(3.0, 'b'),
-                mess_on_next(5.0, 'c'),
-                mess_on_completed(8.0),
-                ]
-        assert results == expected
-
     def test_parse_marble_with_space(self):
         string = " -a  b- c-  de |"
         "          01  23 45  67 8901234567890"
@@ -215,6 +189,30 @@ class TestParse(unittest.TestCase):
                 mess_on_completed(11.0 + offset),
                 ]
         assert results == expected
+
+    def test_parse_marble_raise_with_elements_after_error(self):
+        string = "-a-b-c--#-1-"
+        "         012345678901234567890"
+        with self.assertRaises(ValueError):
+            parse(string, raise_stopped=True)
+
+    def test_parse_marble_raise_with_elements_after_completed(self):
+        string = "-a-b-c--|-1-"
+        "         012345678901234567890"
+        with self.assertRaises(ValueError):
+            parse(string, raise_stopped=True)
+
+    def test_parse_marble_raise_with_elements_after_completed_group(self):
+        string = "-a-b-c--(|,1)-"
+        "         012345678901234567890"
+        with self.assertRaises(ValueError):
+            parse(string, raise_stopped=True)
+
+    def test_parse_marble_raise_with_elements_after_error_group(self):
+        string = "-a-b-c--(#,1)-"
+        "         012345678901234567890"
+        with self.assertRaises(ValueError):
+            parse(string, raise_stopped=True)
 
 
 class TestFromMarble(unittest.TestCase):

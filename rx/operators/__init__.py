@@ -2456,6 +2456,22 @@ def to_iterable() -> Callable[[Observable], Observable]:
     return _to_iterable()
 
 
+def to_marbles(timespan: typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None ) -> Callable[[Observable], Observable]:
+    """Convert an observable sequence into a marble diagram string.
+
+    Args:
+        timespan: [Optional] duration of each character in second.
+            If not specified, defaults to 0.1s.
+        scheduler: [Optional] The scheduler used to run the the input
+            sequence on.
+
+    Returns:
+        Observable stream.
+    """
+    from rx.core.operators.tomarbles import _to_marbles
+    return _to_marbles(scheduler=scheduler, timespan=timespan)
+
+
 def to_set() -> Callable[[Observable], Observable]:
     """Converts the observable sequence to a set.
 
