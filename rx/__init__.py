@@ -374,9 +374,9 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
     by 8 * timespan.
 
     Examples:
-        >>> from_marbles("--1--(2,3)-4--|")
-        >>> from_marbles("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
-        >>> from_marbles("a--b---#", error=ValueError("foo"))
+        >>> hot("--1--(2,3)-4--|")
+        >>> hot("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
+        >>> hot("a--b---#", error=ValueError("foo"))
 
     Args:
         string: String with marble diagram

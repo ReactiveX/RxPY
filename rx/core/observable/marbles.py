@@ -148,9 +148,9 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
     by 8 * timespan.
 
     Examples:
-        >>> from_marbles("--1--(2,3)-4--|")
-        >>> from_marbles("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
-        >>> from_marbles("a--b---#", error=ValueError("foo"))
+        >>> parse("--1--(2,3)-4--|")
+        >>> parse("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
+        >>> parse("a--b---#", error=ValueError("foo"))
 
     Args:
         string: String with marble diagram
@@ -166,6 +166,7 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
 
         error: [Optional] exception that will be use in place of the # symbol.
             If not specified, defaults to Exception('error').
+
         raise_finished: [optional] raise ValueError if elements are
             declared after on_completed or on_error symbol.
 
