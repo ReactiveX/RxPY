@@ -8,7 +8,7 @@ from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
 
-def _merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+def _merge(*sources, max_concurrent: int = None) -> Callable[[Observable], Observable]:
     def merge(source: Observable) -> Observable:
         """Merges an observable sequence of observable sequences into
         an observable sequence, limiting the number of concurrent
@@ -16,7 +16,7 @@ def _merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observab
         sequences into a single observable sequence.
 
         Examples:
-            >>> merged = merge(sources)
+            >>> res = merge(sources)
 
         Args:
             source: Source observable.
@@ -27,8 +27,8 @@ def _merge(*args, max_concurrent: int = None) -> Callable[[Observable], Observab
         """
 
         if max_concurrent is None:
-            sources = tuple([source]) + args
-            return rx.merge(*sources)
+            sources_ = tuple([source]) + sources
+            return rx.merge(*sources_)
 
         def subscribe(observer, scheduler=None):
             active_count = [0]

@@ -322,19 +322,19 @@ def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     return _interval(period, scheduler)
 
 
-def merge(*args: Observable) -> Observable:
+def merge(*sources: Observable) -> Observable:
     """Merges all the observable sequences into a single observable
     sequence.
 
-    1 - merged = rx.merge(xs, ys, zs)
-    2 - merged = rx.merge([xs, ys, zs])
+    Example:
+        >>> res = rx.merge(obs1, obs2, obs3)
 
     Returns:
         The observable sequence that merges the elements of the
         observable sequences.
     """
     from .core.observable.merge import _merge
-    return _merge(*args)
+    return _merge(*sources)
 
 
 def never() -> Observable:
