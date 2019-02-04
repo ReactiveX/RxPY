@@ -105,13 +105,94 @@ subscription function takes two parameters: observer and scheduler
 Removal Of List Of Observables
 -------------------------------
 
-merge, zip, combine_latest... take only observable arguments, no lists.
+The support of list of Observables as a parameter has been removed in the
+following operators: merge, zip, combine_latest. For example in RxPY v1 the
+merge operator could be called with a list:
+
+.. code:: python
+
+    from rx import Observable
+
+    obs1 = Observable.from_([1, 2, 3, 4])
+    obs2 = Observable.from_([5, 6, 7, 8])
+
+    res = Observable.merge([obs1, obs2])
+    res.subscribe(print)
+
+This is not possible anymore in rxPY v3. So Observables must be provided
+explicitely:
+
+.. code:: python
+
+    import rx, operator as op
+
+    obs1 = rx.from_([1, 2, 3, 4])
+    obs2 = rx.from_([5, 6, 7, 8])
+
+    res = rx.merge(obs1, obs2)
+    res.subscribe(print)
+
+If for any reason the Observables are only available as a list, then they can be
+unpacked:
+
+.. code:: python
+
+    import rx, operator as op
+
+    obs1 = rx.from_([1, 2, 3, 4])
+    obs2 = rx.from_([5, 6, 7, 8])
+
+    obs_list = [obs1, obs2]
+
+    res = rx.merge(*obs_list)
+    res.subscribe(print)
+
+
+
+Blocking Observable
+-------------------
+
+BlockingObservables have been removed from RxPY v3. In RxPY v1, blocking until
+an Observable completes was done the following way:
+
+.. code:: python
+
+    from rx import Observable
+
+    res = Observable.from_([1, 2, 3, 4]).to_blocking().last()
+    print(res)
+
+This is now done with the *run* operator:
+
+.. code:: python
+
+    import rx
+
+    res = rx.from_([1, 2, 3, 4]).run()
+    print(res)
+
+The *run* operator returns only the last value emitted by the source Observable.
+It is possible to use the previous blocking operators by using the standard
+operators before *run*. For example:
+
+* Get first item: obs.first().run()
+* Get all items: obs.to_list().run()
+
+
+BackPressure
+--------------
+
+Support for backpressure - and so ControllableObservable - has been removed in
+RxPY v3. Backpressure can be implemented in several ways, and many strategies
+can be adopted. So we consider that such features are beyond the scope of RxPY.
+You are encouraged to provide independent implementations as separate packages so
+that they can be shared by the community.
 
 Time Is In Seconds
 ------------------
 
 Operators that take time values as parameters now use seconds as a unit instead
-of milliseconds:
+of milliseconds. This RxPY v1 example:
 
 .. code:: python
 
