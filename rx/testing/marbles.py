@@ -1,156 +1,155 @@
-from typing import List
-import re
+from typing import List, Tuple, Union, Dict
+from collections import namedtuple
+from contextlib import contextmanager
+from warnings import warn
 
+import rx
 from rx.core import Observable
-from rx.disposable import CompositeDisposable
 from rx.concurrency import NewThreadScheduler
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core.typing import Callable
+from rx.testing import TestScheduler, Recorded, ReactiveTest
+from rx.core.observable.marbles import parse
 
 new_thread_scheduler = NewThreadScheduler()
 
-_pattern = r"\(?([a-zA-Z0-9]+)\)?|(-|[xX]|\|)"
-_tokens = re.compile(_pattern)
+MarblesContext = namedtuple('MarblesContext', 'start, cold, hot, exp')
 
-def from_marbles(string: str, timespan=0.1) -> Observable:
-    """Convert a marble diagram string to an observable sequence, using
-    an optional scheduler to enumerate the events.
 
-    Special characters:
-        - = Timespan of timespan seconds
-        x = on_error()
-        | = on_completed()
+@contextmanager
+def marbles_testing(timespan=1.0):
+    """
+    Initialize a :class:`rx.testing.TestScheduler` and return a namedtuple
+    containing the following functions that wrap its methods.
 
-    All other characters are treated as an on_next() event at the given
-    moment they are found on the string.
+    :func:`cold()`:
+    Parse a marbles string and return a cold observable
+
+    :func:`hot()`:
+    Parse a marbles string and return a hot observable
+
+    :func:`start()`:
+    Start the test scheduler, invoke the create function,
+    subscribe to the resulting sequence, dispose the subscription and
+    return the resulting records
+
+    :func:`exp()`:
+    Parse a marbles string and return a list of records
 
     Examples:
-        >>> res = rx.from_marbles("1-2-3-|")
-        >>> res = rx.from_marbles("1-(42)-3-|")
-        >>> res = rx.from_marbles("1-2-3-x", timeout_scheduler)
+        >>> with marbles_testing() as (start, cold, hot, exp):
+        ...     obs = hot("-a-----b---c-|")
+        ...     ex = exp( "-a-----b---c-|")
+        ...     results = start(obs)
+        ...     assert results == ex
 
-    Args:
-        string: String with marble diagram
-        scheduler: [Optional] Scheduler to run the the input sequence
-            on.
+    The underlying test scheduler is initialized with the following
+    parameters:
+        - created time = 100.0s
+        - subscribed = 200.0s
+        - disposed = 1000.0s
 
-    Returns:
-        The observable sequence whose elements are pulled from the
-        given marble diagram string.
+    **IMPORTANT**: regarding :func:`hot()`, a marble declared as the
+    first character will be skipped by the test scheduler.
+    E.g. hot("a--b--") will only emit b.
     """
 
-    disp = CompositeDisposable()
-    completed = [False]
-    messages = []
-    timedelta = [0]
+    scheduler = TestScheduler()
+    created = 100.0
+    disposed = 1000.0
+    subscribed = 200.0
+    start_called = False
+    outside_of_context = False
 
-    def handle_timespan(value):
-        timedelta[0] += timespan
+    def check():
+        if outside_of_context:
+            warn('context functions should not be called outside of '
+                 'with statement.',
+                 UserWarning,
+                 stacklevel=3,
+                 )
 
-    def handle_on_next(value):
-        try:
-            value = int(value)
-        except Exception:
-            pass
+        if start_called:
+            warn('start() should only be called one time inside '
+                 'a with statement.',
+                 UserWarning,
+                 stacklevel=3,
+                 )
 
-        if value in ('T', 'F'):
-            value = value == 'T'
-        messages.append((OnNext(value), timedelta[0]))
+    def test_start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
+        nonlocal start_called
+        check()
 
-    def handle_on_completed(value):
-        messages.append((OnCompleted(), timedelta[0]))
-        completed[0] = True
+        def default_create():
+            return create
 
-    def handle_on_error(value):
-        messages.append((OnError(value), timedelta[0]))
-        completed[0] = True
+        if isinstance(create, Observable):
+            create_function = default_create
+        else:
+            create_function = create
 
-    specials = {
-        '-': handle_timespan,
-        'x': handle_on_error,
-        'X': handle_on_error,
-        '|': handle_on_completed
-    }
+        mock_observer = scheduler.start(
+            create=create_function,
+            created=created,
+            subscribed=subscribed,
+            disposed=disposed,
+            )
+        start_called = True
+        return mock_observer.messages
 
-    for groups in _tokens.findall(string):
-        for token in groups:
-            if token:
-                func = specials.get(token, handle_on_next)
-                func(token)
+    def test_expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+        messages = parse(
+            string,
+            timespan=timespan,
+            time_shift=subscribed,
+            lookup=lookup,
+            error=error,
+            )
+        return messages_to_records(messages)
 
-    if not completed[0]:
-        messages.append((OnCompleted(), timedelta[0]))
+    def test_cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+        check()
+        return rx.from_marbles(
+            string,
+            timespan=timespan,
+            lookup=lookup,
+            error=error,
+            )
 
-    def schedule_msg(message, observer, scheduler):
-        notification, timespan = message
+    def test_hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+        check()
+        hot_obs = rx.hot(
+            string,
+            timespan=timespan,
+            duetime=subscribed,
+            lookup=lookup,
+            error=error,
+            scheduler=scheduler,
+            )
+        return hot_obs
 
-        def action(scheduler, state=None):
-            notification.accept(observer)
-
-        disp.add(scheduler.schedule_relative(timespan, action))
-
-    def subscribe(observer, scheduler):
-        scheduler = scheduler or new_thread_scheduler
-
-        for message in messages:
-            # Don't make closures within a loop
-            schedule_msg(message, observer, scheduler)
-        return disp
-    return Observable(subscribe)
+    try:
+        yield MarblesContext(test_start, test_cold, test_hot, test_expected)
+    finally:
+        outside_of_context = True
 
 
-def to_marbles(scheduler=None, timespan=0.1):
-    """Convert an observable sequence into a marble diagram string
-
-    Args:
-        scheduler: [Optional] The scheduler used to run the the input
-            sequence on.
-
-    Returns:
-        Observable stream.
+def messages_to_records(messages: List[Tuple]) -> List[Recorded]:
     """
-    def _to_marbles(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or new_thread_scheduler
-
-            result: List[str] = []
-            last = scheduler.now
-
-            def add_timespan():
-                nonlocal last
-
-                now = scheduler.now
-                diff = now - last
-                last = now
-                secs = scheduler.to_seconds(diff)
-                dashes = "-" * int((secs + timespan / 2.0) * (1.0 / timespan))
-                result.append(dashes)
-
-            def on_next(value):
-                add_timespan()
-                result.append(stringify(value))
-
-            def on_error(exception):
-                add_timespan()
-                result.append(stringify(exception))
-                observer.on_next("".join(n for n in result))
-                observer.on_completed()
-
-            def on_completed():
-                add_timespan()
-                result.append("|")
-                observer.on_next("".join(n for n in result))
-                observer.on_completed()
-
-            return source.subscribe_(on_next, on_error, on_completed)
-        return Observable(subscribe)
-    return _to_marbles
-
-
-def stringify(value):
-    """Utility for stringifying an event.
+    Helper function to convert messages returned by parse() to a list of
+    Recorded.
     """
-    string = str(value)
-    if len(string) > 1:
-        string = "(%s)" % string
+    records = []
 
-    return string
+    dispatcher = dict(
+        N=lambda t, n: ReactiveTest.on_next(t, n.value),
+        E=lambda t, n: ReactiveTest.on_error(t, n.exception),
+        C=lambda t, n: ReactiveTest.on_completed(t)
+        )
+
+    for message in messages:
+        time, notification = message
+        kind = notification.kind
+        record = dispatcher[kind](time, notification)
+        records.append(record)
+
+    return records
