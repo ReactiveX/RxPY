@@ -68,21 +68,20 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
     return Observable(subscribe)
 
 
-def combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def combine_latest(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
     Examples:
         >>> obs = rx.combine_latest(obs1, obs2, obs3)
-        >>> obs = rx.combine_latest([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
         elements of the sources into a tuple.
     """
     from .core.observable.combinelatest import _combine_latest
-    return _combine_latest(*args)
+    return _combine_latest(*sources)
 
 
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
