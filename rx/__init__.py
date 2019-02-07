@@ -8,7 +8,7 @@ from .core import Observable, abc, typing, pipe
 from . import disposable
 
 
-def amb(*args: Observable) -> Observable:
+def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -19,7 +19,7 @@ def amb(*args: Observable) -> Observable:
         sequences, whichever reacted first.
     """
     from .core.observable.amb import _amb
-    return _amb(*args)
+    return _amb(*sources)
 
 
 def case(mapper, sources, default_source=None) -> Observable:
