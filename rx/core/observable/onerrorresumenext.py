@@ -5,23 +5,19 @@ from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, Seria
 from rx.internal.utils import is_future
 
 
-def _on_error_resume_next(*args) -> Observable:
+def _on_error_resume_next(*sources: Observable) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
     Examples:
         >>> res = rx.on_error_resume_next(xs, ys, zs)
-        >>> res = rx.on_error_resume_next([xs, ys, zs])
 
     Returns:
         An observable sequence that concatenates the source sequences,
         even if a sequence terminates exceptionally.
     """
 
-    if args and isinstance(args[0], list):
-        sources = iter(args[0])
-    else:
-        sources = iter(args)
+    sources_ = iter(sources)
 
     def subscribe(observer, scheduler=None):
 
@@ -32,7 +28,7 @@ def _on_error_resume_next(*args) -> Observable:
 
         def action(scheduler, state=None):
             try:
-                source = next(sources)
+                source = next(sources_)
             except StopIteration:
                 observer.on_completed()
                 return

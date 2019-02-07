@@ -1254,7 +1254,7 @@ def observe_on(scheduler) -> Callable[[Observable], Observable]:
     from rx.core.operators.observeon import _observe_on
     return _observe_on(scheduler)
 
-def on_error_resume_next(second) -> Callable[[Observable], Observable]:
+def on_error_resume_next(second: Observable) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated normally
     or by an exception with the next observable sequence.
 
