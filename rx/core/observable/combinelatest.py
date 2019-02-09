@@ -4,28 +4,19 @@ from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def _combine_latest(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
     Examples:
         >>> obs = combine_latest(obs1, obs2, obs3)
-        >>> obs = combine_latest([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
         elements of the sources into a tuple.
     """
 
-    sources: List[Observable] = []
-
-    if isinstance(args[0], Iterable):
-        sources += list(args[0])
-    else:
-        sources += list(cast(Iterable[Observable], args))
-
-#    result_mapper = mapper
     parent = sources[0]
 
     def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None):

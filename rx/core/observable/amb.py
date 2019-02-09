@@ -4,7 +4,7 @@ from rx import operators as _
 from rx.core import Observable
 
 
-def _amb(*args: Observable) -> Observable:
+def _amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -16,15 +16,11 @@ def _amb(*args: Observable) -> Observable:
     """
 
     acc = never()
-    if isinstance(args[0], list):
-        items = args[0]
-    else:
-        items = list(args)
 
     def func(previous, current):
         return _.amb(previous)(current)
 
-    for item in items:
-        acc = func(acc, item)
+    for source in sources:
+        acc = func(acc, source)
 
     return acc

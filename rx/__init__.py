@@ -8,7 +8,7 @@ from .core import Observable, abc, typing, pipe
 from . import disposable
 
 
-def amb(*args: Observable) -> Observable:
+def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -19,7 +19,7 @@ def amb(*args: Observable) -> Observable:
         sequences, whichever reacted first.
     """
     from .core.observable.amb import _amb
-    return _amb(*args)
+    return _amb(*sources)
 
 
 def case(mapper, sources, default_source=None) -> Observable:
@@ -68,21 +68,20 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
     return Observable(subscribe)
 
 
-def combine_latest(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def combine_latest(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
     Examples:
         >>> obs = rx.combine_latest(obs1, obs2, obs3)
-        >>> obs = rx.combine_latest([obs1, obs2, obs3])
 
     Returns:
         An observable sequence containing the result of combining
         elements of the sources into a tuple.
     """
     from .core.observable.combinelatest import _combine_latest
-    return _combine_latest(*args)
+    return _combine_latest(*sources)
 
 
 def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
@@ -451,19 +450,19 @@ def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     return _interval(period, scheduler)
 
 
-def merge(*args: Observable) -> Observable:
+def merge(*sources: Observable) -> Observable:
     """Merges all the observable sequences into a single observable
     sequence.
 
-    1 - merged = rx.merge(xs, ys, zs)
-    2 - merged = rx.merge([xs, ys, zs])
+    Example:
+        >>> res = rx.merge(obs1, obs2, obs3)
 
     Returns:
         The observable sequence that merges the elements of the
         observable sequences.
     """
     from .core.observable.merge import _merge
-    return _merge(*args)
+    return _merge(*sources)
 
 
 def never() -> Observable:
@@ -491,20 +490,19 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
-def on_error_resume_next(*args) -> Observable:
+def on_error_resume_next(*sources: Observable) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
     Examples:
         >>> res = rx.on_error_resume_next(xs, ys, zs)
-        >>> res = rx.on_error_resume_next([xs, ys, zs])
 
     Returns:
         An observable sequence that concatenates the source sequences,
         even if a sequence terminates exceptionally.
     """
     from .core.observable.onerrorresumenext import _on_error_resume_next
-    return _on_error_resume_next(*args)
+    return _on_error_resume_next(*sources)
 
 
 def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
