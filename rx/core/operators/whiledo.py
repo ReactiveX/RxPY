@@ -21,5 +21,5 @@ def _while_do(condition: Callable[[Any], bool]) -> Callable[[Observable], Observ
             condition holds.
         """
         source = rx.from_future(source) if is_future(source) else source
-        return rx.concat(itertools.takewhile(condition, (source for x in infinite())))
+        return rx.concat_with_iterable(itertools.takewhile(condition, (source for x in infinite())))
     return while_do

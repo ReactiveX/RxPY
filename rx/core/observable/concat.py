@@ -1,4 +1,4 @@
-from typing import Iterable, Union, cast
+from typing import Iterable
 
 from rx.disposable import Disposable
 from rx.core import Observable
@@ -6,11 +6,9 @@ from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Seria
 from rx.concurrency import current_thread_scheduler
 
 
-def _concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
-    if args and isinstance(args[0], Iterable):
-        sources = iter(args[0])
-    else:
-        sources = iter(cast(Iterable, args))
+def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
+
+    sources_ = iter(sources)
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
@@ -28,7 +26,7 @@ def _concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
                 cancelable.disposable = scheduler.schedule(action)
 
             try:
-                current = next(sources)
+                current = next(sources_)
             except StopIteration:
                 observer.on_completed()
             except Exception as ex:  # pylint: disable=broad-except

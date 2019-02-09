@@ -31,5 +31,5 @@ def _repeat(repeat_count=None) -> Callable[[Observable], Observable]:
         else:
             gen = range(repeat_count)
 
-        return rx.defer(lambda _: rx.concat(source for _ in  gen))
+        return rx.defer(lambda _: rx.concat_with_iterable(source for _ in  gen))
     return repeat
