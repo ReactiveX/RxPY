@@ -42,8 +42,8 @@ def _catch(second: Observable = None, handler: Callable[[Exception, Observable],
         exception with the next observable sequence.
 
         Examples:
-            >>> catch(ys)
-            >>> catch(lambda ex, src: ys(ex))
+            >>> op = catch(ys)
+            >>> op = catch(lambda ex, src: ys(ex))
 
         Args:
             handler: Exception handler function that returns an
@@ -60,5 +60,5 @@ def _catch(second: Observable = None, handler: Callable[[Exception, Observable],
         if handler or not isinstance(second, typing.Observable):
             return catch_handler(source, handler or second)
 
-        return rx.catch([source, second])
+        return rx.catch(source, second)
     return catch

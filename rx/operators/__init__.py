@@ -181,8 +181,8 @@ def catch(second: Observable = None, handler: Callable[[Exception, Observable], 
     exception with the next observable sequence.
 
     Examples:
-        >>> catch(ys)
-        >>> catch(lambda ex: ys(ex))
+        >>> op = catch(ys)
+        >>> op = catch(lambda ex: ys(ex))
 
     Args:
         handler: Exception handler function that returns an observable
