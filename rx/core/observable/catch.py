@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable
 
 from rx.disposable import Disposable
 from rx.core import Observable
@@ -6,13 +6,17 @@ from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Seria
 from rx.concurrency import current_thread_scheduler
 
 
-def _catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
+def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
+
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
     Examples:
-        >>> res = catch(xs, ys, zs)
         >>> res = catch([xs, ys, zs])
+        >>> res = rx.catch(src for src in [xs, ys, zs])
+
+    Args:
+        sources: an Iterable of observables. Thus a generator is accepted.
 
     Returns:
         An observable sequence containing elements from consecutive
@@ -20,10 +24,7 @@ def _catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
         successfully.
     """
 
-    if isinstance(args[0], (list, Iterable)):
-        sources = iter(args[0])
-    else:
-        sources = iter(args)
+    sources_ = iter(sources)
 
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
@@ -42,7 +43,7 @@ def _catch(*args: Union[Iterable[Observable], Observable]) -> Observable:
                 return
 
             try:
-                current = next(sources)
+                current = next(sources_)
             except StopIteration:
                 if last_exception[0]:
                     observer.on_error(last_exception[0])
