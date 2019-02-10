@@ -219,20 +219,19 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
     return _combine_latest(*others)
 
 
-def concat(*args: Union[Observable, Iterable[Observable]]) -> Callable[[Observable], Observable]:
+def concat(*sources: Observable) -> Callable[[Observable], Observable]:
     """Concatenates all the observable sequences.
 
     Examples:
-        >>> res = concat(xs, ys, zs)
-        >>> res = concat([xs, ys, zs])
+        >>> op = concat(xs, ys, zs)
 
     Returns:
-        An operator function that takes an observable source and
+        An operator function that takes one or more observable sources and
         returns an observable sequence that contains the elements of
         each given sequence, in sequential order.
     """
     from rx.core.operators.concat import _concat
-    return _concat(*args)
+    return _concat(*sources)
 
 
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:

@@ -84,19 +84,36 @@ def combine_latest(*sources: Observable) -> Observable:
     return _combine_latest(*sources)
 
 
-def concat(*args: Union[Observable, Iterable[Observable]]) -> Observable:
+def concat(*sources: Observable) -> Observable:
     """Concatenates all the observable sequences.
 
     Examples:
         >>> res = rx.concat(xs, ys, zs)
-        >>> res = rx.concat([xs, ys, zs])
 
     Returns:
         An observable sequence that contains the elements of each given
         sequence, in sequential order.
     """
-    from .core.observable.concat import _concat
-    return _concat(*args)
+    from .core.observable.concat import _concat_with_iterable
+    return _concat_with_iterable(sources)
+
+
+def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
+    """Concatenates all the observable sequences.
+
+    Examples:
+        >>> res = rx.concat_with_iterable([xs, ys, zs])
+        >>> res = rx.concat_with_iterable(for src in [xs, ys, zs])
+
+    Args:
+        sources: an Iterable of observables. Thus a generator is accepted.
+
+    Returns:
+        An observable sequence that contains the elements of each given
+        sequence, in sequential order.
+    """
+    from .core.observable.concat import _concat_with_iterable
+    return _concat_with_iterable(sources)
 
 
 def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
@@ -150,7 +167,7 @@ def for_in(values, mapper) -> Observable:
         An observable sequence from the concatenated observable
         sequences.
     """
-    return concat(map(mapper, values))
+    return concat_with_iterable(map(mapper, values))
 
 
 def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
