@@ -239,8 +239,8 @@ def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     element with an optional equality comparer.
 
     Examples:
-        >>> res = contains(42)
-        >>> res = contains({ "value": 42 }, lambda x, y: x["value"] == y["value")
+        >>> op = contains(42)
+        >>> op = contains({ "value": 42 }, lambda x, y: x["value"] == y["value"])
 
     Args:
         value: The value to locate in the source sequence.
