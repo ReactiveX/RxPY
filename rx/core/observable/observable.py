@@ -51,8 +51,8 @@ class Observable(typing.Observable):
 
         Returns:
             self.concat(other)"""
-        from .concat import _concat
-        return _concat(self, other)
+        from rx import concat
+        return concat(self, other)
 
     def __getitem__(self, key):
         """Slices the given observable using Python slice notation. The
@@ -101,8 +101,8 @@ class Observable(typing.Observable):
         Returns:
             rx.concat(self, other)
         """
-        from .concat import _concat
-        return _concat(self, other)
+        from rx import concat
+        return concat(self, other)
 
     def subscribe(self,  # pylint: disable=too-many-arguments,arguments-differ
                   observer: Union[typing.Observer, typing.OnNext] = None,
