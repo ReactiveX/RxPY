@@ -7,7 +7,7 @@ from rx.concurrency.mainloopscheduler import TkinterScheduler
 tkinter = pytest.importorskip("tkinter")
 
 try:
-    root = tkinter.Tk()
+    root = tkinter.Tcl()
     display = True
 except Exception:
     display = False

@@ -4,8 +4,9 @@ from rx.disposable import Disposable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
-gevent = None
 log = logging.getLogger("Rx")
+
+gevent = None
 
 
 class GEventScheduler(SchedulerBase):
@@ -18,7 +19,6 @@ class GEventScheduler(SchedulerBase):
         # Lazy import gevent
         global gevent
         import gevent
-        import gevent.core
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
@@ -82,4 +82,4 @@ class GEventScheduler(SchedulerBase):
         """Represents a notion of time for this scheduler. Tasks being scheduled
         on a scheduler will adhere to the time denoted by this property."""
 
-        return self.to_datetime(gevent.core.time())
+        return self.to_datetime(gevent.get_hub().loop.now())

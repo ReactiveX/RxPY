@@ -80,7 +80,7 @@ class CurrentThreadScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state=None)
+        return self.schedule_relative(duetime - self.now, action, state=state)
 
     def _get_queue(self) -> PriorityQueue:
         ident = threading.current_thread().ident

@@ -24,6 +24,7 @@ class EventLetEventScheduler(SchedulerBase):
         import eventlet
         import eventlet.hubs
 
+
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
@@ -52,17 +53,15 @@ class EventLetEventScheduler(SchedulerBase):
             (best effort).
         """
 
-        scheduler = self
         seconds = self.to_seconds(duetime)
         if not seconds:
-            return scheduler.schedule(action, state)
+            return self.schedule(action, state)
 
         sad = SingleAssignmentDisposable()
 
         def interval():
             sad.disposable = self.invoke_action(action, state)
 
-        log.debug("timeout: %s", seconds)
         timer = [eventlet.spawn_after(seconds, interval)]
 
         def dispose():
@@ -92,4 +91,4 @@ class EventLetEventScheduler(SchedulerBase):
         scheduled on a scheduler will adhere to the time denoted by
         this property."""
 
-        return self.to_datetime(eventlet.hubs.hub.time.time())
+        return self.to_datetime(eventlet.hubs.get_hub().clock())
