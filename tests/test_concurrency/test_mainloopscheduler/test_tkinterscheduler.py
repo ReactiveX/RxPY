@@ -5,7 +5,7 @@ import pytest
 from rx.concurrency.mainloopscheduler import TkinterScheduler
 
 tkinter = pytest.importorskip("tkinter")
-import tkinter
+
 try:
     root = tkinter.Tcl()
     display = True
