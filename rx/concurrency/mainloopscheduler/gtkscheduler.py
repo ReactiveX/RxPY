@@ -1,5 +1,5 @@
 from rx.core import typing
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
+from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Disposable
 from rx.concurrency.schedulerbase import SchedulerBase
 
 
