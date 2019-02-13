@@ -2,17 +2,19 @@ import unittest
 from datetime import datetime, timedelta
 import pytest
 
+
+skip = False
 try:
-    from PyQt4 import QtCore
-    from PyQt4.QtGui import QApplication
+    from PyQt5 import QtCore
+    from PyQt5.QtWidgets import QApplication
 except ImportError:
     try:
-        from PyQt5 import QtCore
-        from PyQt5.QtWidgets import QApplication
+        from PyQt4 import QtCore
+        from PyQt4.QtGui import QApplication
     except ImportError:
         try:
-            from PySide import QtCore
-            from PySide.QtGui import QApplication
+            from PySide2 import QtCore
+            from PySide2.QtGui import QGuiApplication as QApplication
         except ImportError:
             skip = True
 
