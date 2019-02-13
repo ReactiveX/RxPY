@@ -1,15 +1,42 @@
-language: python
-python:
-  - "3.6"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      language: python
+      python: 3.6
+
+    - os: linux
+      dist: xenial
+      language: python
+      python: 3.7
+
+    - os: linux
+      dist: xenial
+      language: python
+      python: 3.8-dev
+
+    - os: osx
+      osx_image: xcode8.3
+      language: python
+      python: 3.7-dev
+
+    - os: windows
+      python: 3.7-dev
+      language: sh
+      before_install:
+        - choco install python3
+        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+
 install:
   - python setup.py install
-  - pip install coveralls
-  - pip install coverage
+  - pip install coveralls coverage
   - pip install pytest>=3.0.2 pytest-asyncio pytest-cov --upgrade
-  - pip install tornado
-# command to run tests, e.g. python setup.py test
+
 script:
   - coverage run --source=rx setup.py test
+
 after_success:
-  - coveralls
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == 3.6* ]];
+    then
+      coveralls;
+    fi
