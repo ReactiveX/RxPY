@@ -43,7 +43,7 @@ class NewThreadScheduler(SchedulerBase):
         """Schedules an action to be executed at duetime."""
 
         dt = SchedulerBase.to_datetime(duetime)
-        return self.schedule_relative(dt - self.now, action, state=None)
+        return self.schedule_relative(dt - self.now, action, state=state)
 
     def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
                           state: typing.TState = None) -> typing.Disposable:
