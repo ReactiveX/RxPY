@@ -71,7 +71,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler.schedule_relative(0.2, action)
 
             yield from asyncio.sleep(0.3, loop=loop)
-            diff = endtime-starttime
+            diff = endtime - starttime
             assert diff > 0.18
 
         loop.run_until_complete(go())
@@ -95,7 +95,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.3, loop=loop)
-            diff = endtime-starttime
+            diff = endtime - starttime
             assert diff > 0.18
 
         loop.run_until_complete(go())
@@ -111,11 +111,11 @@ class TestAsyncIOScheduler(unittest.TestCase):
             def action(scheduler, state):
                 nonlocal ran
                 ran = True
-            d = scheduler.schedule_relative(0.010, action)
+            d = scheduler.schedule_relative(0.05, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(not ran)
+            yield from asyncio.sleep(0.3, loop=loop)
+            assert not ran
 
         loop.run_until_complete(go())
 
@@ -132,12 +132,12 @@ class TestAsyncIOScheduler(unittest.TestCase):
                 ran = True
 
             def schedule():
-                d = scheduler.schedule_relative(0.010, action)
+                d = scheduler.schedule_relative(0.05, action)
                 d.dispose()
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.1, loop=loop)
-            assert(not ran)
+            yield from asyncio.sleep(0.3, loop=loop)
+            assert not ran
 
         loop.run_until_complete(go())
