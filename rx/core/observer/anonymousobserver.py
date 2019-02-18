@@ -23,15 +23,3 @@ class AnonymousObserver(Observer):
         import traceback
         traceback.print_stack()
         1/0  # TODO why not just raise error, if given?
-
-
-# TODO not used?
-class NoopObserver(Observer):
-    def _on_next_core(self, value):
-        pass
-
-    def _on_error_core(self, error):
-        pass
-
-    def _on_completed_core(self):
-        pass
