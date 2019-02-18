@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Any, Callable, Optional
 
 from .. import typing
 
@@ -9,7 +9,11 @@ class Observer(typing.Observer, typing.Disposable):
     OnCompleted are terminal messages.
     """
 
-    def __init__(self, on_next=None, on_error=None, on_completed=None):
+    def __init__(self,
+                 on_next: Optional[typing.OnNext] = None,
+                 on_error: Optional[typing.OnError] = None,
+                 on_completed: Optional[typing.OnCompleted] = None
+                 ) -> Any:
         self.is_stopped = False
         if on_next is not None:
             self._on_next_core = on_next
@@ -66,7 +70,7 @@ class Observer(typing.Observer, typing.Disposable):
 
         return False
 
-    def throw(self, error) -> None:
+    def throw(self, error: Exception) -> None:
         import traceback
         traceback.print_stack()
         if error:

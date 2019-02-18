@@ -2,6 +2,7 @@ from .scheduledobserver import ScheduledObserver
 
 
 class ObserveOnObserver(ScheduledObserver):
+
     def _on_next_core(self, value):
         super()._on_next_core(value)
         self.ensure_active()

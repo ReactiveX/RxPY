@@ -1,15 +1,14 @@
 import threading
 from typing import List, Any
 
-from rx.core import abc
-from rx.core.typing import Action
+from rx.core import typing
 from rx.disposable import SerialDisposable
 
 from .observer import Observer
 
 
 class ScheduledObserver(Observer):
-    def __init__(self, scheduler: abc.Scheduler, observer: abc.Observer) -> None:
+    def __init__(self, scheduler: typing.Scheduler, observer: typing.Observer) -> None:
         super().__init__()
 
         self.scheduler = scheduler
@@ -18,7 +17,7 @@ class ScheduledObserver(Observer):
         self.lock = threading.RLock()
         self.is_acquired = False
         self.has_faulted = False
-        self.queue: List[Action] = []
+        self.queue: List[typing.Action] = []
         self.disposable = SerialDisposable()
 
         # Note to self: list append is thread safe
@@ -50,7 +49,7 @@ class ScheduledObserver(Observer):
         if is_owner:
             self.disposable.disposable = self.scheduler.schedule(self.run)
 
-    def run(self, scheduler: abc.Scheduler, state: Any) -> None:
+    def run(self, scheduler: typing.Scheduler, state: typing.TState) -> None:
         parent = self
 
         with self.lock:
