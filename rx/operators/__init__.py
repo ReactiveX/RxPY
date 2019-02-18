@@ -180,6 +180,14 @@ def catch(second: Observable = None, handler: Callable[[Exception, Observable], 
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
+    .. marble::
+        :alt: catch
+
+        ---1---2---3---*
+                  a-7-8-|
+        [      catch(a)    ]
+        ---1---2---3---7-8-|
+
     Examples:
         >>> catch(ys)
         >>> catch(lambda ex: ys(ex))
@@ -1025,6 +1033,14 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """The map operator.
 
     Project each element of an observable sequence into a new form.
+
+    .. marble::
+        :alt: map
+
+        ---1---2---3---4--->
+        [   map(i: i*2)    ]
+        ---2---4---6---8--->
+
 
     Example:
         >>> map(lambda value: value * 10)
@@ -2509,6 +2525,15 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
 def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
+
+    .. marble::
+        :alt: window_with_count
+
+        ---a-b-c---d-e-f--->
+        [    window(3)     ]
+        --+-------+-------->
+                  +d-e-f-|
+          +a-b-c-|
 
     Examples:
         >>> window_with_count(10)
