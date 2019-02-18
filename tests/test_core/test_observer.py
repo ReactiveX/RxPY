@@ -1,9 +1,8 @@
-from rx.core import ObserverBase, AnonymousObserver
+from rx.core import Observer, AnonymousObserver
 from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
-from rx.internal.exceptions import CompletedException
 
 
-class MyObserver(ObserverBase):
+class MyObserver(Observer):
     def __init__(self):
         super().__init__()
         self.has_on_next = None

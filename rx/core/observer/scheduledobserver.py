@@ -5,10 +5,10 @@ from rx.core import abc
 from rx.core.typing import Action
 from rx.disposable import SerialDisposable
 
-from .observerbase import ObserverBase
+from .observer import Observer
 
 
-class ScheduledObserver(ObserverBase):
+class ScheduledObserver(Observer):
     def __init__(self, scheduler: abc.Scheduler, observer: abc.Observer) -> None:
         super().__init__()
 

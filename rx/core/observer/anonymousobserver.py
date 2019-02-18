@@ -1,8 +1,8 @@
 from rx.internal import noop, default_error
-from .observerbase import ObserverBase
+from .observer import Observer
 
 
-class AnonymousObserver(ObserverBase):
+class AnonymousObserver(Observer):
     def __init__(self, on_next=None, on_error=None, on_completed=None):
         super().__init__()
 
@@ -22,9 +22,11 @@ class AnonymousObserver(ObserverBase):
     def throw(self, error):
         import traceback
         traceback.print_stack()
-        1/0
+        1/0  # TODO why not just raise error, if given?
 
-class NoopObserver(ObserverBase):
+
+# TODO not used?
+class NoopObserver(Observer):
     def _on_next_core(self, value):
         pass
 

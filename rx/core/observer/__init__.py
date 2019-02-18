@@ -1,4 +1,4 @@
-from .observerbase import ObserverBase
+from .observer import Observer
 from .anonymousobserver import AnonymousObserver
 from .scheduledobserver import ScheduledObserver
 from .observeonobserver import ObserveOnObserver

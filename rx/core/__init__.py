@@ -5,4 +5,4 @@ from .observable import Observable, ConnectableObservable
 from .observable import GroupedObservable
 
 from .observer import AnonymousObserver
-from .observer import ObserverBase
+from .observer import Observer

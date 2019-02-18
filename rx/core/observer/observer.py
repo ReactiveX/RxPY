@@ -1,10 +1,10 @@
 from typing import Callable, Any
 from abc import abstractmethod
 
-from ..typing import Observer, Disposable
+from .. import typing
 
 
-class ObserverBase(Observer, Disposable):
+class Observer(typing.Observer, typing.Disposable):
     """Base class for implementations of the Observer class. This base
     class enforces the grammar of observers where OnError and
     OnCompleted are terminal messages.
@@ -71,7 +71,7 @@ class ObserverBase(Observer, Disposable):
             return notifier.accept(self)
         return func
 
-    def as_observer(self) -> 'ObserverBase':
+    def as_observer(self) -> 'Observer':
         """Hides the identity of an observer.
 
         Returns an observer that hides the identity of the specified
@@ -79,4 +79,3 @@ class ObserverBase(Observer, Disposable):
         """
         from .anonymousobserver import AnonymousObserver
         return AnonymousObserver(self.on_next, self.on_error, self.on_completed)
-
