@@ -1,4 +1,4 @@
-from rx.core import Observer, AnonymousObserver
+from rx.core import Observer
 from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
 
 
@@ -78,7 +78,7 @@ def test_create_on_next():
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(on_next)
+    res = Observer(on_next)
 
     res.on_next(42)
     assert(next[0])
@@ -94,7 +94,7 @@ def test_create_on_next_has_error():
         assert(42 == x)
         next[0] = True
 
-    res = AnonymousObserver(on_next)
+    res = Observer(on_next)
 
     res.on_next(42)
     assert(next[0])
@@ -121,7 +121,7 @@ def test_create_on_next_on_completed():
         completed[0] = True
         return completed[0]
 
-    res = AnonymousObserver(on_next, None, on_completed)
+    res = Observer(on_next, None, on_completed)
 
     res.on_next(42)
 
@@ -146,7 +146,7 @@ def test_create_on_next_close_has_error():
     def on_completed():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, None, on_completed)
+    res = Observer(on_next, None, on_completed)
 
     res.on_next(42)
     assert(next[0])
@@ -174,7 +174,7 @@ def test_create_on_next_on_error():
         assert(ex == e)
         error[0] = True
 
-    res = AnonymousObserver(on_next, on_error)
+    res = Observer(on_next, on_error)
 
     res.on_next(42)
 
@@ -198,7 +198,7 @@ def test_create_on_next_throw_hit_completed():
         assert(ex == e)
         error[0] = True
 
-    res = AnonymousObserver(on_next, on_error)
+    res = Observer(on_next, on_error)
 
     res.on_next(42)
     assert(next[0])
@@ -226,7 +226,7 @@ def test_create_on_next_throw_close1():
     def on_completed():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, on_error, on_completed)
+    res = Observer(on_next, on_error, on_completed)
 
     res.on_next(42)
 
@@ -257,7 +257,7 @@ def test_create_on_next_throw_close2():
     def on_completed():
         completed[0] = True
 
-    res = AnonymousObserver(on_next, on_error, on_completed)
+    res = Observer(on_next, on_error, on_completed)
 
     res.on_next(42)
 
@@ -277,7 +277,6 @@ def test_as_observer_hides():
 
     assert(res != obs)
     assert(not isinstance(res, obs.__class__))
-    assert(not isinstance(obs, res.__class__))
 
 
 def test_as_observer_forwards():

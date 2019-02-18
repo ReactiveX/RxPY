@@ -3,10 +3,10 @@ from typing import Any
 from rx.internal import noop, default_error
 from rx.disposable import SingleAssignmentDisposable
 
-from ..typing import Observer
+from .. import typing
 
 
-class AutoDetachObserver(Observer):
+class AutoDetachObserver(typing.Observer):
 
     def __init__(self, on_next=None, on_error=None, on_completed=None):
         self._on_next = on_next or noop
