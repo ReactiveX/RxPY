@@ -24,7 +24,8 @@ def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
 
             def on_next(value):
                 with parent.lock:
-                    if NO_VALUE not in values:
+                    # test identity instead of (possibly) equality
+                    if all([NO_VALUE is not value for value in values]):
                         result = (value,) + tuple(values)
                         observer.on_next(result)
 
