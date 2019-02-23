@@ -1,15 +1,11 @@
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 from rx.core import Observable
-
-
-class NoValue():
-    def __eq__(self, other):
-        return self is other
+from rx.internal.utils import NotSet
 
 
 def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
-    NO_VALUE = NoValue()
+    NO_VALUE = NotSet()
 
     def subscribe(observer, scheduler=None):
         def subscribe_all(parent, *children):
