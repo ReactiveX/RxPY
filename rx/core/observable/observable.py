@@ -209,7 +209,7 @@ class Observable(typing.Observable):
         return Disposable(auto_detach_observer.dispose)
 
 
-    def pipe(self, *operators: Callable[['ObservableBase'], 'ObservableBase']) -> 'ObservableBase':
+    def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
         """Compose multiple operators left to right.
 
         Composes zero or more operators into a functional composition.

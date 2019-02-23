@@ -1,14 +1,18 @@
-from typing import Any
+from typing import Any, Optional
 
 from rx.internal import noop, default_error
 from rx.disposable import SingleAssignmentDisposable
 
-from ..typing import Observer
+from .. import typing
 
 
-class AutoDetachObserver(Observer):
+class AutoDetachObserver(typing.Observer):
 
-    def __init__(self, on_next=None, on_error=None, on_completed=None):
+    def __init__(self,
+                 on_next: Optional[typing.OnNext] = None,
+                 on_error: Optional[typing.OnError] = None,
+                 on_completed: Optional[typing.OnCompleted] = None
+                 ) -> Any:
         self._on_next = on_next or noop
         self._on_error = on_error or default_error
         self._on_completed = on_completed or noop
@@ -46,7 +50,7 @@ class AutoDetachObserver(Observer):
         finally:
             self.dispose()
 
-    def set_disposable(self, value):
+    def set_disposable(self, value: typing.Disposable):
         self._subscription.disposable = value
 
     subscription = property(fset=set_disposable)

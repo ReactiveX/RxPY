@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from rx.concurrency import immediate_scheduler
 
-from .typing import Observer
-from .observer import AnonymousObserver
+from .. import typing
+from .observer import Observer
 from .observable import Observable
 
 
@@ -33,7 +33,7 @@ class Notification:
         Returns:
             Result produced by the observation."""
 
-        if isinstance(on_next, Observer):
+        if isinstance(on_next, typing.Observer):
             return self._accept_observer(on_next)
 
         return self._accept(on_next, on_error, on_completed)
@@ -161,4 +161,4 @@ def from_notifier(handler):
     def _on_completed():
         return handler(OnCompleted())
 
-    return AnonymousObserver(_on_next, _on_error, _on_completed)
+    return Observer(_on_next, _on_error, _on_completed)

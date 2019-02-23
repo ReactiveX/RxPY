@@ -1,5 +1,5 @@
 import rx
-from rx.core import Observable, AnonymousObserver
+from rx.core import Observable, Observer
 
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subjects import Subject
@@ -336,7 +336,7 @@ def test_subject_create():
     def on_completed():
         done = True
 
-    v = AnonymousObserver(on_next, on_error, on_completed)
+    v = Observer(on_next, on_error, on_completed)
 
     o = rx.return_value(42)
 

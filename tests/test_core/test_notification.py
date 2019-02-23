@@ -13,10 +13,10 @@ created = ReactiveTest.created
 
 def test_on_next_ctor_and_props():
     n = OnNext(42)
-    assert('N' == n.kind)
-    assert(n.has_value)
-    assert(42 == n.value)
-    assert(not hasattr(n, "exception"))
+    assert 'N' == n.kind
+    assert n.has_value
+    assert 42 == n.value
+    assert not hasattr(n, "exception")
 
 
 def test_on_next_equality():
@@ -24,20 +24,20 @@ def test_on_next_equality():
     n2 = OnNext(42)
     n3 = OnNext(24)
     n4 = OnCompleted()
-    assert(n1.equals(n1))
-    assert(n1.equals(n2))
-    assert(n2.equals(n1))
-    assert(not n1.equals(None))
-    assert(not n1.equals(n3))
-    assert(not n3.equals(n1))
-    assert(not n1.equals(n4))
-    assert(not n4.equals(n1))
+    assert n1.equals(n1)
+    assert n1.equals(n2)
+    assert n2.equals(n1)
+    assert not n1.equals(None)
+    assert not n1.equals(n3)
+    assert not n3.equals(n1)
+    assert not n1.equals(n4)
+    assert not n4.equals(n1)
 
 
 def test_on_next_tostring():
     n1 = OnNext(42)
-    assert("OnNext" in str(n1))
-    assert("42" in str(n1))
+    assert "OnNext" in str(n1)
+    assert "42" in str(n1)
 
 
 class CheckOnNextObserver(Observer):
@@ -63,7 +63,7 @@ def test_on_next_accept_observer():
     con = CheckOnNextObserver()
     n1 = OnNext(42)
     n1.accept(con)
-    assert(con.value == 42)
+    assert con.value == 42
 
 
 class AcceptObserver(Observer):
@@ -88,12 +88,12 @@ def test_on_next_accept_observer_with_result():
     def on_next(x):
         return "OK"
     def on_error(err):
-        assert(False)
+        assert False
     def on_completed():
-        assert(False)
+        assert False
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_on_next_accept_action():
@@ -103,12 +103,12 @@ def test_on_next_accept_action():
         obs[0] = True
         return obs[0]
     def on_error(err):
-        assert(False)
+        assert False
     def on_completed():
-        assert(False)
+        assert False
     n1.accept(on_next, on_error, on_completed)
 
-    assert(obs[0])
+    assert obs[0]
 
 
 def test_on_next_accept_action_with_result():
@@ -117,20 +117,20 @@ def test_on_next_accept_action_with_result():
     def on_next(x):
         return "OK"
     def on_error(err):
-        assert(False)
+        assert False
     def on_completed():
-        assert(False)
+        assert False
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_throw_ctor_and_props():
     e = 'e'
     n = OnError(e)
-    assert('E'== n.kind)
-    assert(not n.has_value)
-    assert(e == n.exception)
+    assert 'E'== n.kind
+    assert not n.has_value
+    assert e == n.exception
 
 
 def test_throw_equality():
@@ -140,21 +140,21 @@ def test_throw_equality():
     n2 = OnError(ex1)
     n3 = OnError(ex2)
     n4 = OnCompleted()
-    assert(n1.equals(n1))
-    assert(n1.equals(n2))
-    assert(n2.equals(n1))
-    assert(not n1.equals(None))
-    assert(not n1.equals(n3))
-    assert(not n3.equals(n1))
-    assert(not n1.equals(n4))
-    assert(not n4.equals(n1))
+    assert n1.equals(n1)
+    assert n1.equals(n2)
+    assert n2.equals(n1)
+    assert not n1.equals(None)
+    assert not n1.equals(n3)
+    assert not n3.equals(n1)
+    assert not n1.equals(n4)
+    assert not n4.equals(n1)
 
 
 def test_throw_tostring():
     ex = 'ex'
     n1 = OnError(ex)
-    assert("OnError" in str(n1))
-    assert("ex" in str(n1))
+    assert "OnError" in str(n1)
+    assert "ex" in str(n1)
 
 
 class CheckOnErrorObserver(Observer):
@@ -178,7 +178,7 @@ def test_throw_accept_observer():
     obs = CheckOnErrorObserver()
     n1 = OnError(ex)
     n1.accept(obs)
-    assert(ex == obs.error)
+    assert ex == obs.error
 
 
 def test_throw_accept_observer_with_result():
@@ -186,17 +186,17 @@ def test_throw_accept_observer_with_result():
     n1 = OnError(ex)
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(ex):
         return "OK"
 
     def on_completed():
-        assert(False)
+        assert False
         return None
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_throw_accept_action():
@@ -205,17 +205,17 @@ def test_throw_accept_action():
     n1 = OnError(ex)
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(ex):
         obs[0] = True
         return obs[0]
     def on_completed():
-        assert(False)
+        assert False
         return None
 
     n1.accept(on_next, on_error, on_completed)
-    assert(obs[0])
+    assert obs[0]
 
 
 def test_throw_accept_action_with_result():
@@ -223,40 +223,40 @@ def test_throw_accept_action_with_result():
     n1 = OnError(ex)
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(ex):
         return "OK"
     def on_completed():
-        assert(False)
+        assert False
         return None
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_close_ctor_and_props():
     n = OnCompleted()
-    assert('C' == n.kind)
-    assert(not n.has_value)
-    assert(not hasattr(n, "exception"))
+    assert 'C' == n.kind
+    assert not n.has_value
+    assert not hasattr(n, "exception")
 
 
 def test_close_equality():
     n1 = OnCompleted()
     n2 = OnCompleted()
     n3 = OnNext(2)
-    assert(n1.equals(n1))
-    assert(n1.equals(n2))
-    assert(n2.equals(n1))
-    assert(not n1.equals(None))
-    assert(not n1.equals(n3))
-    assert(not n3.equals(n1))
+    assert n1.equals(n1)
+    assert n1.equals(n2)
+    assert n2.equals(n1)
+    assert not n1.equals(None)
+    assert not n1.equals(n3)
+    assert not n3.equals(n1)
 
 
 def test_close_tostring():
     n1 = OnCompleted()
-    assert('OnCompleted' in str(n1))
+    assert 'OnCompleted' in str(n1)
 
 
 class CheckOnCompletedObserver(Observer):
@@ -279,23 +279,23 @@ def test_close_accept_observer():
     obs = CheckOnCompletedObserver()
     n1 = OnCompleted()
     n1.accept(obs)
-    assert(obs.completed)
+    assert obs.completed
 
 
 def test_close_accept_observer_with_result():
     n1 = OnCompleted()
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(err):
-        assert(False)
+        assert False
         return None
     def on_completed():
         return "OK"
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_close_accept_action():
@@ -303,33 +303,33 @@ def test_close_accept_action():
     n1 = OnCompleted()
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(ex):
-        assert(False)
+        assert False
         return None
     def on_completed():
         obs[0] = True
         return obs[0]
 
     n1.accept(on_next, on_error, on_completed)
-    assert(obs[0])
+    assert obs[0]
 
 
 def test_close_accept_action_with_result():
     n1 = OnCompleted()
 
     def on_next(x):
-        assert(False)
+        assert False
         return None
     def on_error(ex):
-        assert(False)
+        assert False
         return None
     def on_completed():
         return "OK"
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert('OK' == res)
+    assert 'OK' == res
 
 
 def test_to_observable_empty():

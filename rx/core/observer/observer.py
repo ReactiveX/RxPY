@@ -1,26 +1,34 @@
-from typing import Callable, Any
-from abc import abstractmethod
+from typing import Any, Callable, Optional
 
-from ..typing import Observer, Disposable
+from .. import typing
 
 
-class ObserverBase(Observer, Disposable):
+class Observer(typing.Observer, typing.Disposable):
     """Base class for implementations of the Observer class. This base
     class enforces the grammar of observers where OnError and
     OnCompleted are terminal messages.
     """
 
-    def __init__(self):
+    def __init__(self,
+                 on_next: Optional[typing.OnNext] = None,
+                 on_error: Optional[typing.OnError] = None,
+                 on_completed: Optional[typing.OnCompleted] = None
+                 ) -> Any:
         self.is_stopped = False
+        if on_next is not None:
+            self._on_next_core = on_next
+        if on_error is not None:
+            self._on_error_core = on_error
+        if on_completed is not None:
+            self._on_completed_core = on_completed
 
     def on_next(self, value: Any) -> None:
         """Notify the observer of a new element in the sequence."""
         if not self.is_stopped:
             self._on_next_core(value)
 
-    @abstractmethod
     def _on_next_core(self, value: Any) -> None:
-        return NotImplemented
+        pass
 
     def on_error(self, error: Exception) -> None:
         """Notify the observer that an exception has occurred.
@@ -33,9 +41,11 @@ class ObserverBase(Observer, Disposable):
             self.is_stopped = True
             self._on_error_core(error)
 
-    @abstractmethod
     def _on_error_core(self, error: Exception) -> None:
-        return NotImplemented
+        if isinstance(error, BaseException):
+            raise error
+        else:
+            raise Exception(error)
 
     def on_completed(self) -> None:
         """Notifies the observer of the end of the sequence."""
@@ -44,9 +54,8 @@ class ObserverBase(Observer, Disposable):
             self.is_stopped = True
             self._on_completed_core()
 
-    @abstractmethod
     def _on_completed_core(self) -> None:
-        return NotImplemented
+        pass
 
     def dispose(self) -> None:
         """Disposes the observer, causing it to transition to the
@@ -61,6 +70,13 @@ class ObserverBase(Observer, Disposable):
 
         return False
 
+    def throw(self, error: Exception) -> None:
+        import traceback
+        traceback.print_stack()
+        if error:
+            raise error
+        1 / 0  # Raise division by zero
+
     def to_notifier(self) -> Callable:
         """Creates a notification callback from an observer.
 
@@ -71,12 +87,10 @@ class ObserverBase(Observer, Disposable):
             return notifier.accept(self)
         return func
 
-    def as_observer(self) -> 'ObserverBase':
+    def as_observer(self) -> 'Observer':
         """Hides the identity of an observer.
 
         Returns an observer that hides the identity of the specified
         observer.
         """
-        from .anonymousobserver import AnonymousObserver
-        return AnonymousObserver(self.on_next, self.on_error, self.on_completed)
-
+        return Observer(self.on_next, self.on_error, self.on_completed)
