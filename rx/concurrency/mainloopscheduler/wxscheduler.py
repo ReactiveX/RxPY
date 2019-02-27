@@ -50,11 +50,11 @@ class WxScheduler(SchedulerBase):
             else:
                 sad.disposable = action(scheduler, state)
 
-        log.debug("timeout: %s", msecs)
-
         msecs = int(self.to_seconds(time)*1000.0)
         if msecs == 0:
             msecs = 1  # wx.Timer doesn't support zero.
+
+        log.debug("timeout: %s", msecs)
 
         timer = self._timer_class(interval)
         timer.Start(
