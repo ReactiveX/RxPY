@@ -39,6 +39,7 @@ def main():
     def on_next(info):
         label, (x, y), i = info
         container.move(label, x + i*12 + 15, y)
+        label.show()
 
     def handle_label(label, i):
         delayer = ops.delay(i*0.100)
@@ -52,7 +53,7 @@ def main():
     def make_label(char):
         label = Gtk.Label(label=char)
         container.put(label, 0, 0)
-        label.show()
+        label.hide()
         return label
 
     mapper = ops.map(make_label)
