@@ -1,6 +1,6 @@
+from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency import GtkScheduler
-import sys
+from rx.concurrency.mainloopscheduler import GtkScheduler
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -24,16 +24,18 @@ class Window(Gtk.Window):
 
 def main():
     scheduler = GtkScheduler()
+    scrolled_window = Gtk.ScrolledWindow()
 
     window = Window()
     window.connect("delete-event", Gtk.main_quit)
 
     container = Gtk.Fixed()
-    window.add(container)
 
+    scrolled_window.add(container)
+    window.add(scrolled_window)
     text = 'TIME FLIES LIKE AN ARROW'
 
-    labels = [Gtk.Label(char) for char in text]
+    labels = [Gtk.Label(label=char) for char in text]
     for label in labels:
         container.put(label, 0, 0)
 
@@ -43,7 +45,9 @@ def main():
             x, y = pos
             container.move(label, x + i*12 + 15, y)
 
-        window.mousemove.delay(i*100, scheduler=scheduler).subscribe(on_next)
+        window.mousemove.pipe(
+            ops.delay(i*0.100, scheduler=scheduler),
+            ).subscribe(on_next)
 
     for i, label in enumerate(labels):
         handle_label(i, label)

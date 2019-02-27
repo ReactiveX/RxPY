@@ -1,5 +1,6 @@
+from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency import WxScheduler
+from rx.concurrency.mainloopscheduler import WxScheduler
 
 import wx
 
@@ -37,7 +38,9 @@ def main():
             label.MoveXY(x + i*12 + 15, y)
             label.Show()
 
-        frame.mousemove.delay(i*100, scheduler=scheduler).subscribe(on_next)
+        frame.mousemove.pipe(
+            ops.delay(i*0.100, scheduler=scheduler),
+            ).subscribe(on_next)
 
     for i, label in enumerate(labels):
         handle_label(i, label)
