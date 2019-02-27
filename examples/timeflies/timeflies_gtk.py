@@ -1,3 +1,4 @@
+import rx
 from rx import operators as ops
 from rx.subjects import Subject
 from rx.concurrency.mainloopscheduler import GtkScheduler
@@ -35,22 +36,32 @@ def main():
     window.add(scrolled_window)
     text = 'TIME FLIES LIKE AN ARROW'
 
-    labels = [Gtk.Label(label=char) for char in text]
-    for label in labels:
+    def on_next(info):
+        label, (x, y), i = info
+        container.move(label, x + i*12 + 15, y)
+
+    def handle_label(label, i):
+        delayer = ops.delay(i*0.100)
+        mapper = ops.map(lambda xy: (label, xy, i))
+
+        return window.mousemove.pipe(
+            delayer,
+            mapper,
+        )
+
+    def make_label(char):
+        label = Gtk.Label(label=char)
         container.put(label, 0, 0)
+        label.show()
+        return label
 
-    def handle_label(i, label):
+    mapper = ops.map(make_label)
+    labeler = ops.flat_map_indexed(handle_label)
 
-        def on_next(pos):
-            x, y = pos
-            container.move(label, x + i*12 + 15, y)
-
-        window.mousemove.pipe(
-            ops.delay(i*0.100, scheduler=scheduler),
-            ).subscribe(on_next)
-
-    for i, label in enumerate(labels):
-        handle_label(i, label)
+    rx.from_(text).pipe(
+        mapper,
+        labeler,
+    ).subscribe(on_next, on_error=print, scheduler=scheduler)
 
     window.show_all()
 
