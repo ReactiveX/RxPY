@@ -1,3 +1,4 @@
+import rx
 from rx import operators as ops
 from rx.subjects import Subject
 from rx.concurrency.mainloopscheduler import WxScheduler
@@ -29,22 +30,33 @@ def main():
     frame.Show()
 
     text = 'TIME FLIES LIKE AN ARROW'
-    labels = [wx.StaticText(frame, label=char) for char in text]
 
-    def handle_label(i, label):
+    def on_next(info):
+        label, (x, y), i = info
+        label.Move(x + i*12 + 15, y)
+        label.Show()
 
-        def on_next(pos):
-            x, y = pos
-            label.MoveXY(x + i*12 + 15, y)
-            label.Show()
+    def handle_label(label, i):
+        delayer = ops.delay(i * 0.100)
+        mapper = ops.map(lambda xy: (label, xy, i))
 
-        frame.mousemove.pipe(
-            ops.delay(i*0.100, scheduler=scheduler),
-            ).subscribe(on_next)
+        return frame.mousemove.pipe(
+            delayer,
+            mapper,
+            )
 
-    for i, label in enumerate(labels):
-        handle_label(i, label)
+    def make_label(char):
+        label = wx.StaticText(frame, label=char)
         label.Hide()
+        return label
+
+    mapper = ops.map(make_label)
+    labeler = ops.flat_map_indexed(handle_label)
+
+    rx.from_(text).pipe(
+        mapper,
+        labeler,
+    ).subscribe(on_next, on_error=print, scheduler=scheduler)
 
     frame.Bind(wx.EVT_CLOSE, lambda e: (scheduler.cancel_all(), e.Skip()))
     app.MainLoop()
