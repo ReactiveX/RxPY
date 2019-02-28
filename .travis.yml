@@ -6,10 +6,14 @@ matrix:
       python: 3.6
       # Coverage for the baseline 3.6 build: include some optional packages
       before_script:
-        - pip install eventlet gevent pyyaml tornado twisted
+        - pip3 install eventlet gevent pyyaml tornado twisted
         # pycairo / pygobject need native libraries
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
-        - pip install pycairo pygobject
+        - pip3 install pycairo pygobject
+      script:
+        - coverage run --source=rx setup.py test
+      after_success:
+        - coveralls
 
     - os: linux
       dist: xenial
@@ -22,27 +26,23 @@ matrix:
       python: 3.8-dev
 
     - os: osx
-      osx_image: xcode8.3
-      language: python
-      python: 3.7-dev
+      osx_image: xcode10.1
+      language: sh
+      python: 3.7
 
     - os: windows
-      python: 3.7-dev
       language: sh
+      python: 3.7
       before_install:
         - choco install python3
-        - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+        - ln -s "/c/Python37/python.exe" "/c/Python37/python3.exe"
+        - export PATH="/c/Python37:/c/Python37/Scripts/:$PATH"
 
 install:
-  - python setup.py install
-  - pip install coveralls coverage
-  - pip install pytest>=3.0.2 pytest-asyncio pytest-cov --upgrade
+  - python3 setup.py install
+  - pip3 install coveralls coverage
+  - pip3 install pytest>=3.0.2 pytest-asyncio pytest-cov --upgrade
 
 script:
-  - coverage run --source=rx setup.py test
+  - python3 setup.py test
 
-after_success:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == 3.6* ]];
-    then
-      coveralls;
-    fi
