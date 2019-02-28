@@ -13,12 +13,8 @@ except ImportError:
         from PySide2 import QtCore
         from PySide2.QtWidgets import QApplication, QLabel, QWidget
     except ImportError:
-        try:
-            from PyQt4 import QtCore
-            from PyQt4.QtGui import QWidget, QLabel, QApplication
-        except ImportError:
-            from PySide import QtCore
-            from PySide.QtGui import QWidget, QLabel, QApplication
+        from PyQt4 import QtCore
+        from PyQt4.QtGui import QWidget, QLabel, QApplication
 
 
 class Window(QWidget):

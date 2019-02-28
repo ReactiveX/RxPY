@@ -75,8 +75,8 @@ class QtScheduler(SchedulerBase):
             (best effort).
         """
 
-        duetime = self.to_datetime(duetime)
-        return self._qtimer_schedule(duetime, action, state)
+        duetime = self.to_datetime(duetime) - self.now
+        return self.schedule_relative(duetime, action, state)
 
     def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
                           state: typing.TState = None):
