@@ -14,6 +14,13 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Determines whether all elements of an observable sequence satisfy
     a condition.
 
+    .. marble::
+        :alt: all
+
+        --1--2--3--4--5-|
+        [      all(i: i<10)    ]
+        ----------------true-|
+
     Example:
         >>> op = all(lambda value: value.length > 3)
 
@@ -32,6 +39,15 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
 
 def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     """Propagates the observable sequence that reacts first.
+
+    .. marble::
+        :alt: amb
+
+        ---8--6--9-----------|
+        --1--2--3---5--------|
+        ----------10-20-30---|
+        [        amb()       ]
+        --1--2--3---5--------|
 
     Example:
         >>> op = amb(ys)
@@ -64,6 +80,13 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
     are in the sequence or obtained by invoking a transform function on
     each element of the input sequence if present.
 
+    .. marble::
+        :alt: average
+
+        ---1--2--3--4----|
+        [     average()      ]
+        -----------------2.5-|
+
     Examples:
         >>> op = average()
         >>> op = average(lambda x: x.value)
@@ -84,6 +107,13 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
     """Projects each element of an observable sequence into zero or
     more buffers.
 
+    .. marble::
+        :alt: buffer
+
+        ----1-2-3-4-5-6------|
+        [      buffer()      ]
+        --------1,2,3-4,5,6--|
+
     Args:
         buffer_openings: Observable sequence whose elements denote the
             creation of windows.
@@ -103,6 +133,13 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
 def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
+
+    .. marble::
+        :alt: buffer_with_count
+
+        ----1-2-3-4-5-6------|
+        [buffer_with_count(3)]
+        --------1,2,3-4,5,6--|
 
     Examples:
         >>> res = buffer_with_count(10)(xs)
@@ -126,6 +163,13 @@ def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTi
                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
+
+    .. marble::
+        :alt: buffer_with_time
+
+        ---1-2-3-4-5-6-----|
+        [buffer_with_time()]
+        -------1,2,3-4,5,6-|
 
     Examples:
         # non-overlapping segments of 1 second
@@ -154,6 +198,13 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     """Projects each element of an observable sequence into a buffer
     that is completed when either it's full or a given amount of time
     has elapsed.
+
+    .. marble::
+        :alt: buffer_with_time_or_count
+
+        --1-2-3-4-5-6------|
+        [     buffer()     ]
+        ------1,2,3-4,5,6--|
 
     Examples:
         # 5s or 50 items in an array
@@ -214,6 +265,14 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
+    .. marble::
+        :alt: combine_latest
+
+        ---a-----b--c------|
+        --1---2--------3---|
+        [ combine_latest() ]
+        ---a1-a2-b2-c2-c3--|
+
     Examples:
         >>> obs = combine_latest(other)
         >>> obs = combine_latest(obs1, obs2, obs3)
@@ -230,6 +289,14 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
 def concat(*sources: Observable) -> Callable[[Observable], Observable]:
     """Concatenates all the observable sequences.
 
+    .. marble::
+        :alt: concat
+
+        ---1--2--3--|
+        --6--8--|
+        [     concat()     ]
+        ---1--2--3----6--8-|
+
     Examples:
         >>> op = concat(xs, ys, zs)
 
@@ -245,6 +312,13 @@ def concat(*sources: Observable) -> Callable[[Observable], Observable]:
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
+
+    .. marble::
+        :alt: contains
+
+        --1--2--3--4--|
+        [    contains(3)   ]
+        --------------true-|
 
     Examples:
         >>> op = contains(42)
@@ -269,6 +343,13 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     represents how many elements in the specified observable sequence
     satisfy a condition if provided, else the count of items.
 
+    .. marble::
+        :alt: count
+
+        --1--2--3--4--|
+        [  count(i: i>2)   ]
+        --------------2-|
+
     Examples:
         >>> op = count()
         >>> op = count(lambda x: x > 3)
@@ -291,6 +372,13 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
 def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
+
+    .. marble::
+        :alt: debounce
+
+        --1--2-3-4--5------|
+        [    debounce()    ]
+        ----1------4---5---|
 
     Example:
         >>> res = debounce(5.0) # 5 seconds
@@ -315,6 +403,13 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     """Returns the elements of the specified sequence or the specified
     value in a singleton sequence if the sequence is empty.
 
+    .. marble::
+        :alt: default_if_empty
+
+        ----------|
+        [default_if_empty(42)]
+        ----------42-|
+
     Examples:
         >>> res = obs = default_if_empty()
         >>> obs = default_if_empty(False)
@@ -338,6 +433,13 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
     """Time shifts the observable sequence by delaying the
     subscription.
 
+    .. marble::
+        :alt: delay_subscription
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
+
     Example:
         >>> res = delay_subscription(5.0) # 5s
 
@@ -357,6 +459,13 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
 def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence based on a subscription
     delay and a delay mapper function for each element.
+
+    .. marble::
+        :alt: delay_with_mapper
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
 
     Examples:
         # with mapper only
@@ -394,6 +503,13 @@ def dematerialize() -> Callable[[Observable], Observable]:
 
 def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """The delay operator.
+
+    .. marble::
+        :alt: delay
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
 
     Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
