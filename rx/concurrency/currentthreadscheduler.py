@@ -61,18 +61,19 @@ class CurrentThreadScheduler(SchedulerBase):
         dt = self.now + SchedulerBase.to_timedelta(SchedulerBase.normalize(duetime))
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
-        queue: PriorityQueue[ScheduledItem[typing.TState]] = self.queue
-        if queue is None:
-            queue = PriorityQueue()
-            queue.enqueue(si)
+        with self.lock:
+            queue: PriorityQueue[ScheduledItem[typing.TState]] = self.queue
+            if queue is None:
+                queue = PriorityQueue()
+                queue.enqueue(si)
 
-            self.queue = queue
-            try:
-                Trampoline.run(queue)
-            finally:
-                self.queue = None
-        else:
-            queue.enqueue(si)
+                self.queue = queue
+                try:
+                    Trampoline.run(queue)
+                finally:
+                    self.queue = None
+            else:
+                queue.enqueue(si)
 
         return si.disposable
 
@@ -105,7 +106,8 @@ class CurrentThreadScheduler(SchedulerBase):
         False; otherwise, if the trampoline is not active, then it
         returns True.
         """
-        return self.queue is None
+        with self.lock:
+            return self.queue is None
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler."""
