@@ -16,9 +16,9 @@ log = logging.getLogger('Rx')
 
 class Trampoline(object):
     @classmethod
-    def run(cls, queue: PriorityQueue) -> None:
+    def run(cls, queue: PriorityQueue[ScheduledItem[typing.TState]]) -> None:
         while queue:
-            item = queue.dequeue()
+            item: ScheduledItem = queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - item.scheduler.now
                 while diff > timedelta(0):
@@ -42,8 +42,9 @@ class CurrentThreadScheduler(SchedulerBase):
         """Creates a scheduler that schedules work as soon as possible
         on the current thread."""
 
-        self.queues: Dict[int, PriorityQueue] = dict()
         self.lock = threading.RLock()
+        self.queues: Dict[int, PriorityQueue[[ScheduledItem[typing.TState]]]] = dict()
+        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = None
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
@@ -60,7 +61,7 @@ class CurrentThreadScheduler(SchedulerBase):
         dt = self.now + SchedulerBase.to_timedelta(SchedulerBase.normalize(duetime))
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
-        queue = self.queue
+        queue: PriorityQueue[ScheduledItem[typing.TState]] = self.queue
         if queue is None:
             queue = PriorityQueue()
             queue.enqueue(si)
@@ -82,13 +83,13 @@ class CurrentThreadScheduler(SchedulerBase):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=state)
 
-    def _get_queue(self) -> PriorityQueue:
+    def _get_queue(self) -> PriorityQueue[ScheduledItem[typing.TState]]:
         ident = threading.current_thread().ident
 
         with self.lock:
             return self.queues.get(ident)
 
-    def _set_queue(self, queue: PriorityQueue):
+    def _set_queue(self, queue: PriorityQueue[ScheduledItem[typing.TState]]):
         ident = threading.current_thread().ident
 
         with self.lock:
@@ -113,5 +114,6 @@ class CurrentThreadScheduler(SchedulerBase):
             return self.schedule(action)
 
         return action(self, None)
+
 
 current_thread_scheduler = CurrentThreadScheduler()

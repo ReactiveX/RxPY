@@ -1,13 +1,15 @@
 import heapq
-from typing import List, Any
+from typing import Generic, List
 from threading import RLock
 
+from rx.core.typing import T1
 
-class PriorityQueue:
+
+class PriorityQueue(Generic[T1]):
     """Priority queue for scheduling"""
 
     def __init__(self) -> None:
-        self.items: List[Any] = []
+        self.items: List[T1] = []
         self.count = 0  # Monotonic increasing for sort stability
 
         self.lock = RLock()
@@ -17,25 +19,25 @@ class PriorityQueue:
 
         return len(self.items)
 
-    def peek(self) -> Any:
+    def peek(self) -> T1:
         """Returns first item in queue without removing it"""
         return self.items[0][0]
 
-    def dequeue(self) -> Any:
+    def dequeue(self) -> T1:
         """Returns and removes item with lowest priority from queue"""
 
         with self.lock:
             item = heapq.heappop(self.items)[0]
         return item
 
-    def enqueue(self, item: Any) -> None:
+    def enqueue(self, item: T1) -> None:
         """Adds item to queue"""
 
         with self.lock:
             heapq.heappush(self.items, (item, self.count))
             self.count += 1
 
-    def remove(self, item: Any) -> bool:
+    def remove(self, item: T1) -> bool:
         """Remove given item from queue"""
 
         with self.lock:
