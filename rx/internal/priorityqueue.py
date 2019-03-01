@@ -47,3 +47,8 @@ class PriorityQueue(Generic[T1]):
                 return True
 
         return False
+
+    def clear(self):
+        """Remove all items from the queue."""
+        self.items = []
+        self.count = PriorityQueue.MIN_COUNT
