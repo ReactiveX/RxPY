@@ -2,8 +2,6 @@ import heapq
 from typing import List, Any
 from threading import RLock
 
-from rx.internal.exceptions import InvalidOperationException
-
 
 class PriorityQueue:
     """Priority queue for scheduling"""
@@ -21,10 +19,7 @@ class PriorityQueue:
 
     def peek(self) -> Any:
         """Returns first item in queue without removing it"""
-        try:
-            return self.items[0][0]
-        except IndexError:
-            raise InvalidOperationException("Queue is empty")
+        return self.items[0][0]
 
     def dequeue(self) -> Any:
         """Returns and removes item with lowest priority from queue"""
