@@ -28,7 +28,7 @@ class VirtualTimeScheduler(SchedulerBase):
         self.clock = initial_clock
 
         self.is_enabled = False
-        self.queue = PriorityQueue(1024)
+        self.queue = PriorityQueue()
 
         super().__init__()
 
