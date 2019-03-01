@@ -26,14 +26,6 @@ class PriorityQueue:
         except IndexError:
             raise InvalidOperationException("Queue is empty")
 
-    def remove_at(self, index: int) -> Any:
-        """Removes item at given index"""
-
-        with self.lock:
-            item = self.items.pop(index)[0]
-            heapq.heapify(self.items)
-        return item
-
     def dequeue(self) -> Any:
         """Returns and removes item with lowest priority from queue"""
 

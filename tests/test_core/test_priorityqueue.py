@@ -131,19 +131,3 @@ class TestPriorityQueue(unittest.TestCase):
         assert p.peek() == 41
         p.enqueue(43)
         assert p.peek() == 41
-
-    def test_priorityqueue_remove_at(self):
-        """Remove item at index"""
-
-        p = PriorityQueue()
-
-        self.assertRaises(IndexError, p.remove_at, 42)
-        p.enqueue(42)
-        p.enqueue(41)
-        p.enqueue(43)
-
-        assert p.remove_at(2) == 43
-        assert p.remove_at(1) == 42
-        assert p.remove_at(0) == 41
-
-        self.assertRaises(IndexError, p.remove_at, 0)
