@@ -1,7 +1,6 @@
 import unittest
 
 from datetime import datetime, timedelta
-from time import sleep
 import threading
 from rx.concurrency import EventLoopScheduler
 
@@ -18,8 +17,8 @@ class TestEventLoopScheduler(unittest.TestCase):
         gate = threading.Semaphore(0)
 
         def action(scheduler, state):
-            gate.release()
             ran[0] = True
+            gate.release()
 
         scheduler.schedule(action)
         gate.acquire()
@@ -31,8 +30,8 @@ class TestEventLoopScheduler(unittest.TestCase):
         gate = threading.Semaphore(0)
 
         def action(scheduler, state):
-            gate.release()
             thread_id[0] = threading.current_thread().ident
+            gate.release()
 
         scheduler.schedule(action)
         gate.acquire()
@@ -46,8 +45,8 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler.schedule(lambda s, t: result.append(1))
 
         def action(scheduler, state):
-            gate.release()
             result.append(2)
+            gate.release()
 
         scheduler.schedule(action)
         gate.acquire()
@@ -64,7 +63,6 @@ class TestEventLoopScheduler(unittest.TestCase):
             gate.release()
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
-
         gate.acquire()
         diff = endtime[0]-starttime
         assert(diff > timedelta(milliseconds=180))
