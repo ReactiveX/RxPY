@@ -11,9 +11,7 @@ matrix:
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
         - pip3 install pycairo pygobject
       script:
-        - coverage run --source=rx setup.py test
-      after_success:
-        - coveralls
+        - coverage run --source=rx setup.py test && coveralls
 
     - os: linux
       dist: xenial
@@ -46,3 +44,5 @@ install:
 script:
   - python3 setup.py test
 
+after_success:
+  - cp ./.travis/bench.sh ./_bench && ./_bench master
