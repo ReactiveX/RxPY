@@ -90,9 +90,7 @@ def do(observer: Observer) -> Callable[[Observable], Observable]:
         applied.
     """
 
-    def partial(source: Observable) -> Observable:
-        return source.do_action(observer.on_next, observer.on_error, observer.on_completed)
-    return partial
+    return _do_action(observer.on_next, observer.on_error, observer.on_completed)
 
 
 def do_after_next(source, after_next):
