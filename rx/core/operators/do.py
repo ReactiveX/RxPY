@@ -67,7 +67,7 @@ def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, o
 
                     observer.on_completed()
 
-            return source.subscribe_(_on_next, _on_error, _on_completed)
+            return source.subscribe_(_on_next, _on_error, _on_completed, scheduler)
         return Observable(subscribe)
     return do_action
 
@@ -90,9 +90,7 @@ def do(observer: Observer) -> Callable[[Observable], Observable]:
         applied.
     """
 
-    def partial(source: Observable) -> Observable:
-        return source.do_action(observer.on_next, observer.on_error, observer.on_completed)
-    return partial
+    return _do_action(observer.on_next, observer.on_error, observer.on_completed)
 
 
 def do_after_next(source, after_next):
