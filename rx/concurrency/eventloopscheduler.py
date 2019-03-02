@@ -1,7 +1,7 @@
 import logging
 import threading
-from datetime import datetime
-from typing import Any, List, Optional
+from collections import deque
+from typing import Any, Deque, Optional
 
 from rx.disposable import Disposable
 from rx.core import typing
@@ -22,58 +22,45 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
     def __init__(self, thread_factory: Optional[typing.StartableFactory] = None,
                  exit_if_empty: bool = False) -> None:
         super(EventLoopScheduler, self).__init__()
-        self.is_disposed = False
+        self._is_disposed = False
 
-        self.lock = threading.RLock()
-        self.thread_factory = thread_factory or default_thread_factory
-        self.thread: Optional[threading.Thread] = None
-        self.timer: Optional[threading.Timer] = None
-        self.condition = threading.Condition(self.lock)
-        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
-        self.ready_list: List[ScheduledItem] = []
-        self.next_item = None
+        self._thread_factory = thread_factory or default_thread_factory
+        self._thread: Optional[threading.Thread] = None
+        self._condition = threading.Condition(threading.Lock())
+        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._ready_list: Deque[ScheduledItem] = deque()
 
-        self.exit_if_empty = exit_if_empty
+        self._exit_if_empty = exit_if_empty
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
-        if self.is_disposed:
-            raise DisposedException()
-
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, self.now)
-
-        with self.condition:
-            self.ready_list.append(si)
-            self.condition.notify()  # signal that a new item is available
-            self.ensure_thread()
-
-        return Disposable(si.cancel)
+        return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
-        dt: datetime = self.now + self.to_timedelta(duetime)
-        return self.schedule_absolute(dt, action, state)
+        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        return self.schedule_absolute(self.now + duetime, action, state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
-        if self.is_disposed:
+        if self._is_disposed:
             raise DisposedException()
 
         dt = self.to_datetime(duetime)
-        si: ScheduledItem[typing.TState]= ScheduledItem(self, state, action, dt)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
-        with self.condition:
-            if dt < self.now:
-                self.ready_list.append(si)
+        with self._condition:
+            if dt <= self.now:
+                self._ready_list.append(si)
             else:
-                self.queue.enqueue(si)
-            self.condition.notify()  # signal that a new item is available
-            self.ensure_thread()
+                self._queue.enqueue(si)
+            self._condition.notify()  # signal that a new item is available
+            self._ensure_thread()
 
         return Disposable(si.cancel)
 
@@ -81,105 +68,107 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
                          ) -> typing.Disposable:
         """Schedule a periodic piece of work."""
 
-        disposed: List[bool] = []
+        if self._is_disposed:
+            raise DisposedException()
 
-        s = [state]
+        disposed: bool = False
+        s = state
 
-        def tick(scheduler, state):
+        def invoke_periodic(scheduler, state):
             if disposed:
                 return
 
-            self.schedule_relative(period, tick)
-            new_state = action(s[0])
-            if new_state is not None:
-                s[0] = new_state
+            if period:
+                self.schedule_relative(period, invoke_periodic)
 
-        self.schedule_relative(period, tick)
+            nonlocal s
+            new_state = action(s)
+            if new_state is not None:
+                s = new_state
+
+        self.schedule_relative(period, invoke_periodic)
 
         def dispose():
-            disposed.append(True)
+            nonlocal disposed
+            disposed = True
 
         return Disposable(dispose)
 
-    def ensure_thread(self) -> None:
+    def _ensure_thread(self) -> None:
         """Ensures there is an event loop thread running. Should be
         called under the gate."""
 
-        if not self.thread:
-            thread = self.thread_factory(self.run)
-            self.thread = thread
+        if not self._thread:
+            thread = self._thread_factory(self.run)
+            self._thread = thread
             thread.start()
 
     def run(self) -> None:
         """Event loop scheduled on the designated event loop thread.
-        The loop is suspended/resumed using the event which gets set by
-        calls to Schedule, the next item timer, or calls to dispose."""
+        The loop is suspended/resumed using the condition which gets notified
+        by calls to Schedule or calls to dispose."""
+
+        ready: Deque[ScheduledItem] = deque()
 
         while True:
-            ready: List[ScheduledItem[typing.TState]] = []
-            item: ScheduledItem[typing.TState] = None
 
-            with self.condition:
+            with self._condition:
 
-                # The event could have been set by a call to dispose. This
-                # takes priority over anything else. We quit the loop
+                # The notification could be because of a call to dispose. This
+                # takes precedence over everything else: We'll exit the loop
                 # immediately. Subsequent calls to Schedule won't ever create a
                 # new thread.
-                if self.is_disposed:
+                if self._is_disposed:
                     return
 
-                while self.queue and self.queue.peek().duetime <= self.now:
-                    item = self.queue.dequeue()
-                    self.ready_list.append(item)
+                # Sort the ready_list (from recent calls for immediate schedule)
+                # and the due subset of previously queued items.
+                time = self.now
+                while self._queue:
+                    due = self._queue.peek().duetime
+                    if due > time:
+                        break
+                    while self._ready_list and due > self._ready_list[0].duetime:
+                        ready.append(self._ready_list.popleft())
+                    ready.append(self._queue.dequeue())
+                while self._ready_list:
+                    ready.append(self._ready_list.popleft())
 
-                if self.queue:
-                    item = self.queue.peek()
-                    if self.next_item is None or item != self.next_item:
-                        self.next_item = item
-                        due = item.duetime - self.now
-                        seconds = due.total_seconds()
-                        log.debug("timeout: %s", seconds)
-
-                        self.timer = threading.Timer(seconds, self.tick, args=[item])
-                        self.timer.setDaemon(True)
-                        self.timer.start()
-
-                if self.ready_list:
-                    ready = self.ready_list[:]
-                    self.ready_list = []
-                else:
-                    self.condition.wait()
-
-            for item in ready:
+            # Execute the gathered actions
+            while ready:
+                item = ready.popleft()
                 if not item.is_cancelled():
                     item.invoke()
 
-            if self.exit_if_empty:
-                with self.condition:
-                    if not self.ready_list and not self.queue:
-                        self.thread = None
-                        return
+            # Wait for next cycle, or if we're done let's exit if so configured
+            with self._condition:
+
+                if self._ready_list:
+                    continue
+
+                elif self._queue:
+                    due = self._queue.peek().duetime - self.now
+                    seconds = due.total_seconds()
+                    if seconds > 0:
+                        log.debug("timeout: %s", seconds)
+                        self._condition.wait(seconds)
+
+                elif self._exit_if_empty:
+                    self._thread = None
+                    return
+
+                else:
+                    self._condition.wait()
 
     def dispose(self) -> None:
         """Ends the thread associated with this scheduler. All
         remaining work in the scheduler queue is abandoned.
         """
 
-        with self.condition:
-            if self.timer:
-                self.timer.cancel()
-
-            if not self.is_disposed:
-                self.is_disposed = True
-
-    def tick(self, item) -> None:
-        with self.condition:
-
-            if not self.is_disposed:
-                if self.queue.remove(item):
-                    self.ready_list.append(item)
-
-            self.condition.notify()  # signal that a new item is available
+        with self._condition:
+            if not self._is_disposed:
+                self._is_disposed = True
+                self._condition.notify()
 
 
 event_loop_scheduler = EventLoopScheduler()
