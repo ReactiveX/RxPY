@@ -94,6 +94,11 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
 
         return Disposable(dispose)
 
+    def _has_thread(self) -> bool:
+        """Checks if there is an event loop thread running."""
+        with self._condition:
+            return not self._is_disposed and self._thread is not None
+
     def _ensure_thread(self) -> None:
         """Ensures there is an event loop thread running. Should be
         called under the gate."""
