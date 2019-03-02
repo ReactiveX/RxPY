@@ -5,11 +5,12 @@ from typing import Any, List, Optional
 
 from rx.disposable import Disposable
 from rx.core import typing
-from rx.concurrency import ScheduledItem
+from rx.internal.concurrency import default_thread_factory
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
 from .schedulerbase import SchedulerBase
+from .scheduleditem import ScheduledItem
 
 log = logging.getLogger('Rx')
 
@@ -18,17 +19,13 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
     """Creates an object that schedules units of work on a designated
     thread."""
 
-    def __init__(self, thread_factory=None, exit_if_empty=False) -> None:
+    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None,
+                 exit_if_empty: bool = False) -> None:
         super(EventLoopScheduler, self).__init__()
         self.is_disposed = False
 
-        def default_factory(target):
-            t = threading.Thread(target=target)
-            t.setDaemon(True)
-            return t
-
         self.lock = threading.RLock()
-        self.thread_factory = thread_factory or default_factory
+        self.thread_factory = thread_factory or default_thread_factory
         self.thread: Optional[threading.Thread] = None
         self.timer: Optional[threading.Timer] = None
         self.condition = threading.Condition(self.lock)

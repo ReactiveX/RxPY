@@ -1,12 +1,13 @@
 import time
 import logging
-import threading
 from typing import List
 
 from rx.disposable import Disposable
 from rx.core import typing
-from .schedulerbase import SchedulerBase
+from rx.internal.concurrency import default_thread_factory
+
 from .eventloopscheduler import EventLoopScheduler
+from .schedulerbase import SchedulerBase
 
 log = logging.getLogger('Rx')
 
@@ -15,15 +16,9 @@ class NewThreadScheduler(SchedulerBase):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
-    def __init__(self, thread_factory=None) -> None:
+    def __init__(self, thread_factory: typing.StartableFactory = None) -> None:
         super(NewThreadScheduler, self).__init__()
-
-        def default_factory(target, args=None) -> threading.Thread:
-            t = threading.Thread(target=target, args=args or [])
-            t.setDaemon(True)
-            return t
-
-        self.thread_factory = thread_factory or default_factory
+        self.thread_factory = thread_factory or default_thread_factory
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
