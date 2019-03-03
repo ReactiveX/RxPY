@@ -2,19 +2,16 @@
 import time
 import logging
 import threading
-from datetime import timedelta
 from weakref import WeakKeyDictionary
 from typing import MutableMapping
 
 from rx.core import typing
 from rx.internal import PriorityQueue
 
-from .schedulerbase import SchedulerBase
+from .schedulerbase import SchedulerBase, DELTA_ZERO
 from .scheduleditem import ScheduledItem
 
 log = logging.getLogger('Rx')
-
-DELTA_ZERO = timedelta(0)
 
 
 class Trampoline(object):

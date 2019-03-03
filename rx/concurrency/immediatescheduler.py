@@ -1,10 +1,9 @@
-from datetime import timedelta
 from typing import Any
 
 from rx.core import typing
 from rx.internal.exceptions import WouldBlockException
 
-from .schedulerbase import SchedulerBase
+from .schedulerbase import SchedulerBase, DELTA_ZERO
 
 
 class ImmediateScheduler(SchedulerBase):
@@ -18,7 +17,7 @@ class ImmediateScheduler(SchedulerBase):
         """Schedules an action to be executed after duetime."""
 
         duetime = self.to_timedelta(duetime)
-        if duetime > timedelta(0):
+        if duetime > DELTA_ZERO:
             raise WouldBlockException()
 
         return self.invoke_action(action, state)

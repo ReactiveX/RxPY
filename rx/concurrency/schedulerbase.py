@@ -7,6 +7,10 @@ from rx.disposable import Disposable, MultipleAssignmentDisposable
 from rx.internal.basic import default_now
 
 
+DELTA_ZERO = timedelta(0)
+UTC_ZERO = datetime.utcfromtimestamp(0)
+
+
 class SchedulerBase(typing.Scheduler):
     """Provides a set of static properties to access commonly used
     schedulers.
@@ -75,7 +79,7 @@ class SchedulerBase(typing.Scheduler):
         """Converts time value to seconds"""
 
         if isinstance(timespan, datetime):
-            timespan = timespan - datetime.utcfromtimestamp(0)
+            timespan = timespan - UTC_ZERO
             timespan = timespan.total_seconds()
         elif isinstance(timespan, timedelta):
             timespan = timespan.total_seconds()
@@ -87,7 +91,7 @@ class SchedulerBase(typing.Scheduler):
         """Converts time value to datetime"""
 
         if isinstance(duetime, timedelta):
-            duetime = datetime.utcfromtimestamp(0) + duetime
+            duetime = UTC_ZERO + duetime
         elif not isinstance(duetime, datetime):
             duetime = datetime.utcfromtimestamp(duetime)
 
@@ -98,7 +102,7 @@ class SchedulerBase(typing.Scheduler):
         """Converts time value to timedelta"""
 
         if isinstance(timespan, datetime):
-            timespan = timespan - datetime.utcfromtimestamp(0)
+            timespan = timespan - UTC_ZERO
         elif not isinstance(timespan, timedelta):
             timespan = timedelta(seconds=timespan)
 
@@ -117,9 +121,8 @@ class SchedulerBase(typing.Scheduler):
         """
 
         if isinstance(timespan, timedelta):
-            nospan = timedelta(0)
-            if not timespan or timespan < nospan:
-                return nospan
+            if not timespan or timespan < DELTA_ZERO:
+                return DELTA_ZERO
 
         elif isinstance(timespan, float):
             if not timespan or timespan < 0.0:

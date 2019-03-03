@@ -1,4 +1,4 @@
-from datetime import datetime
+from .schedulerbase import UTC_ZERO
 from .virtualtimescheduler import VirtualTimeScheduler
 
 
@@ -18,7 +18,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
         def compare_datetimes(a, b):
             return (a > b) - (a < b)
 
-        clock = initial_clock or datetime.utcfromtimestamp(0)
+        clock = initial_clock or UTC_ZERO
         comparer = comparer or compare_datetimes
 
         super(HistoricalScheduler, self).__init__(clock)
