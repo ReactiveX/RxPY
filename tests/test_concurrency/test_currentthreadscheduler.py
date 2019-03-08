@@ -6,6 +6,11 @@ from rx.concurrency import CurrentThreadScheduler
 
 class TestCurrentThreadScheduler(unittest.TestCase):
 
+    def test_currentthread_singleton(self):
+        scheduler1 = CurrentThreadScheduler()
+        scheduler2 = CurrentThreadScheduler()
+        assert scheduler1 is scheduler2
+
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
         res = scheduler.now - datetime.utcnow()
