@@ -2251,7 +2251,6 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
         [   skip_until()   ]
         ----------3--4-----|
 
-
     Args:
         other: The observable sequence that triggers propagation of
             elements of the source sequence.
@@ -2272,6 +2271,13 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: t
     specified start time.
     Errors produced by the source sequence are always forwarded to the
     result sequence, even if the error occurs before the start time.
+
+    .. marble::
+        :alt: skip_until
+
+        ------1--2--3--4-------|
+        [skip_until_with_time()]
+        ------------3--4-------|
 
     Examples:
         >>> res = skip_until_with_time(datetime)
@@ -2298,6 +2304,13 @@ def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable
     condition is true and then returns the remaining elements. The
     element's index is used in the logic of the predicate function.
 
+    .. marble::
+        :alt: skip_while
+
+        ----1--2--3--4-----|
+        [skip_while(i: i<3)]
+        ----------3--4-----|
+
     Example:
         >>> skip_while(lambda value: value < 10)
 
@@ -2322,6 +2335,13 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     elements. The element's index is used in the logic of the predicate
     function.
 
+    .. marble::
+        :alt: skip_while_indexed
+
+        ----1--2--3--4-----|
+        [skip_while(i: i<3)]
+        ----------3--4-----|
+
     Example:
         >>> skip_while(lambda value, index: value < 10 or index < 10)
 
@@ -2344,6 +2364,13 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
                   ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
+
+    .. marble::
+        :alt: skip_with_time
+
+        ----1--2--3--4-----|
+        [ skip_with_time() ]
+        ----------3--4-----|
 
     Args:
         >>> res = skip_with_time(5.0)
@@ -2376,14 +2403,12 @@ def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Obser
     Slices the given observable. It is basically a wrapper around the
     operators skip(), skip_last(), take(), take_last() and filter().
 
-    This marble diagram helps you remember how slices works with
-    streams. Positive numbers is relative to the start of the events,
-    while negative numbers are relative to the end (close) of the
-    stream.
+    .. marble::
+        :alt: slice
 
-     r---e---a---c---t---i---v---e---|
-     0   1   2   3   4   5   6   7   8
-    -8  -7  -6  -5  -4  -3  -2  -1   0
+        ----1--2--3--4-----|
+        [   slice(1, 2)    ]
+        -------2--3--------|
 
     Examples:
         >>> result = source.slice(1, 10)
@@ -2408,6 +2433,13 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
     Determines whether some element of an observable sequence
     satisfies a condition if present, else if some items are in the
     sequence.
+
+    .. marble::
+        :alt: some
+
+        ----1--2--3--4-----|
+        [   some(i: i>3)   ]
+        -------------True--|
 
     Examples:
         >>> result = source.some()
@@ -2439,6 +2471,13 @@ def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     Use instead of `map()` when the the arguments to the mapper is
     grouped as tuples and the mapper function takes multiple arguments.
 
+    .. marble::
+        :alt: startmap
+
+        -----1,2---3,4-----|
+        [   starmap(add)   ]
+        -----3-----7-------|
+
     Example:
         >>> starmap(lambda x, y: x + y)
 
@@ -2461,6 +2500,13 @@ def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
+
+    .. marble::
+        :alt: start_with
+
+        -----1--2--3--4----|
+        [  start_with(7,8) ]
+        -7-8-1--2--3--4----|
 
     Example:
         >>> start_with(1, 2, 3)
@@ -2504,6 +2550,13 @@ def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     input sequence, else if not specified computes the sum on each item
     in the sequence.
 
+    .. marble::
+        :alt: sum
+
+        -----1--2--3--4-|
+        [       sum()      ]
+        ----------------10-|
+
     Examples:
         >>> res = sum()
         >>> res = sum(lambda x: x.value)
@@ -2528,6 +2581,15 @@ def switch_latest() -> Callable[[Observable], Observable]:
     observable sequence producing values only from the most recent
     observable sequence.
 
+    .. marble::
+        :alt: switch_latest
+
+        -+------+----------|
+                +--a--b--c-|
+         +--1--2--3--4--|
+        [ switch_latest()  ]
+        ----1--2---a--b--c-|
+
     Returns:
         A partially applied operator function that takes an observable
         source and returns the observable sequence that at any point in
@@ -2541,6 +2603,13 @@ def switch_latest() -> Callable[[Observable], Observable]:
 def take(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the start
     of an observable sequence.
+
+    .. marble::
+        :alt: take
+
+        -----1--2--3--4----|
+        [    take(2)       ]
+        -----1--2-|
 
     Example:
         >>> op = take(5)
@@ -2560,6 +2629,13 @@ def take(count: int) -> Callable[[Observable], Observable]:
 def take_last(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the end
     of an observable sequence.
+
+    .. marble::
+        :alt: take_last
+
+        -1--2--3--4-|
+        [  take_last(2)    ]
+        ------------3--4-|
 
     Example:
         >>> res = take_last(5)
@@ -2588,6 +2664,13 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
     Returns an array with the specified number of contiguous elements
     from the end of an observable sequence.
 
+    .. marble::
+        :alt: take_last_buffer
+
+        -----1--2--3--4-|
+        [take_last_buffer(2)]
+        ----------------3,4-|
+
     Example:
         >>> res = source.take_last(5)
 
@@ -2613,6 +2696,13 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
 def take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Returns elements within the specified duration from the end of
     the observable source sequence.
+
+    .. marble::
+        :alt: take_last_with_time
+
+        -----1--2--3--4-|
+        [take_last_with_time(3)]
+        ----------------4-|
 
     Example:
         >>> res = take_last_with_time(5.0)
@@ -2641,6 +2731,14 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
+    .. marble::
+        :alt: take_until
+
+        -----1--2--3--4----|
+        -------------a-|
+        [   take_until(2)  ]
+        -----1--2--3-------|
+
     Args:
         other: Observable sequence that terminates propagation of
             elements of the source sequence.
@@ -2659,6 +2757,13 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typ
                          ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration until the specified
     end time, using the specified scheduler to run timers.
+
+    .. marble::
+        :alt: take_until_with_time
+
+        -----1--2--3--4--------|
+        [take_until_with_time()]
+        -----1--2--3-----------|
 
     Examples:
         >>> res = take_until_with_time(dt, [optional scheduler])
@@ -2685,6 +2790,13 @@ def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observ
     specified condition is true. The element's index is used in the
     logic of the predicate function.
 
+    .. marble::
+        :alt: take_while
+
+        -----1--2--3--4----|
+        [take_while(i: i<3)]
+        -----1--2----------|
+
     Example:
         >>> take_while(lambda value: value < 10)
 
@@ -2708,8 +2820,15 @@ def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observ
     specified condition is true. The element's index is used in the
     logic of the predicate function.
 
+    .. marble::
+        :alt: take_while_indexed
+
+        -----1--2--3--4----|
+        [take_while(i: i<3)]
+        -----1--2----------|
+
     Example:
-        >>> take_while(lambda value, index: value < 10 or index < 10)
+        >>> take_while_indexed(lambda value, index: value < 10 or index < 10)
 
     Args:
         predicate: A function to test each element for a condition; the
@@ -2729,6 +2848,13 @@ def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
                   ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
+
+    .. marble::
+        :alt: take_with_time
+
+        -----1--2--3--4----|
+        [ take_whith_time()]
+        -----1--2----------|
 
     Example:
         >>> res = take_with_time(5.0)
@@ -2817,6 +2943,14 @@ def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: t
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
+    .. marble::
+        :alt: timeout
+
+        -1--2--------3--4--|
+           o-6--7-|
+        [   timeout(3,o)      ]
+        -1--2---6--7----------|
+
     Examples:
         >>> res = timeout(5.0)
         >>> res = timeout(datetime(), return_value(42))
@@ -2844,9 +2978,10 @@ def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
-        res = timeout_with_mapper(rx.timer(500))
-        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
-        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
+    Examples:
+        >>> res = timeout_with_mapper(rx.timer(500))
+        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
+        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
 
     Args:
         first_timeout: [Optional] Observable sequence that represents
@@ -2871,6 +3006,14 @@ def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], 
     """Records the time interval between consecutive values in an
     observable sequence.
 
+    .. marble::
+        :alt: time_interval
+
+        --1--2-----3---4--|
+        [ time_interval()  ]
+        -----2-----5---5---|
+
+    Examples:
         >>> res = time_interval()
 
     Return:
@@ -2980,6 +3123,15 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """Projects each element of an observable sequence into zero or
     more windows.
 
+    .. marble::
+        :alt: window
+
+        ----1-2-3-4-5-6------|
+        [      window()      ]
+        ----+-----+----------|
+                  +-4-5-6-|
+            +-1-2-3-|
+
     Args:
         window_openings: Observable sequence whose elements denote the
             creation of windows.
@@ -3004,11 +3156,11 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     .. marble::
         :alt: window_with_count
 
-        ---a-b-c---d-e-f--->
+        ---1-2-3---4-5-6--->
         [    window(3)     ]
         --+-------+-------->
-                  +d-e-f-|
-          +a-b-c-|
+                  +4-5-6-|
+          +1-2-3-|
 
     Examples:
         >>> window_with_count(10)
@@ -3047,6 +3199,14 @@ def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
+    .. marble::
+        :alt: with_latest_from
+
+        ---1---2---3----4-|
+        --a-----b----c-d----|
+        [with_latest_from() ]
+        ---1,a-2,a-3,b--4,d-|
+
     Examples:
         >>> op = with_latest_from(obs1)
         >>> op = with_latest_from([obs1, obs2, obs3])
@@ -3065,6 +3225,15 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
     index.
+
+    .. marble::
+        :alt: zip
+
+        --1--2---3-----4---|
+        -a----b----c-d-----|
+        [       zip()      ]
+        --1,a-2,b--3,c-4,d-|
+
 
     Example:
         >>> res = zip(obs1, obs2)
@@ -3086,6 +3255,13 @@ def zip_with_iterable(second):
     observable sequence by creating a tuple whenever all of
     the observable sequences have produced an element at a
     corresponding index.
+
+    .. marble::
+        :alt: zip_with_iterable
+
+        --1---2----3---4---|
+        [   zip(a,b,c,b)   ]
+        --1,a-2,b--3,c-4,d-|
 
     Example
         >>> res = zip([1,2,3])
