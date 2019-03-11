@@ -18,9 +18,9 @@ query operator functions in Python*
 RxPY v3.0 Alpha
 ----------------
 
-This branch is work-in-progress.
+**This branch is work-in-progress.**
 
-**FOR V 1.X PLEASE GO TO `STABLE BRANCH <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_**
+FOR V 1.X PLEASE GO TO `STABLE BRANCH <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_.
 
 RxPY v3.x runs on `Python <http://www.python.org/>`_ 3.6 or above. To install
 RxPY:
@@ -76,8 +76,6 @@ The gracious folks at `PySlackers <https://pyslackers.com/>`_ have given us a ho
 in the `#rxpy <https://pythondev.slack.com/messages/rxpy>`_ Slack channel. Please
 join us there for questions, conversations, and all things related to RxPy.
 
-`<https://pyslackers.com/>`_
-
 To join, navigate the page above to receive an email invite. After signing up,
 join us in the #rxpy channel.
 
@@ -88,7 +86,7 @@ Differences from .NET and RxJS
 ------------------------------
 
 RxPY is a fairly complete implementation of
-`Rx <http://msdn.microsoft.com/en-us/data/gg577609.aspx>`_ v2.2 with more than
+`Rx <http://reactivex.io/>`_ with more than
 `134 query operators <http://reactivex.io/documentation/operators.html>`_, and
 over `1100 passing unit-tests <https://coveralls.io/github/dbrattli/RxPY>`_. RxPY
 is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in
@@ -112,6 +110,6 @@ need to be written with an `_` in Python:
     group = source.group_by(lambda i: i % 3)
 
 With RxPY you should use `named keyword arguments
-<https://docs.python.org/2/glossary.html>`_ instead of positional arguments when
+<https://docs.python.org/3/glossary.html>`_ instead of positional arguments when
 an operator has multiple optional arguments. RxPY will not try to detect which
 arguments you are giving to the operator (or not).
