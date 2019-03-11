@@ -5,14 +5,14 @@ except ImportError:
     use_setuptools()
     from setuptools import setup
 
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
+
 setup(
     name='Rx',
     version='3.0.0-alpha2',
     description='Reactive Extensions (Rx) for Python',
-    long_description=(
-        "is a library for composing asynchronous and "
-        "event-based programs using observable collections and LINQ-style "
-        "query operators in Python."),
+    long_description=readme,
     author='Dag Brattli',
     author_email='dag@brattli.net',
     license='Apache License',
