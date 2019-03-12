@@ -1,8 +1,12 @@
 import logging
 
-from rx.disposable import Disposable
-from rx.concurrency.schedulerbase import SchedulerBase
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
+from typing import Optional
+
+from rx.core import typing
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+
+from ..schedulerbase import SchedulerBase
+
 
 log = logging.getLogger("Rx")
 
@@ -10,20 +14,37 @@ log = logging.getLogger("Rx")
 class TwistedScheduler(SchedulerBase):
     """A scheduler that schedules work via the Twisted reactor mainloop."""
 
-    def __init__(self, reactor):
+    def __init__(self, reactor) -> None:
         self.reactor = reactor
 
-    def schedule(self, action, state=None):
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
 
-        return self.schedule_relative(0, action, state)
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
-    def schedule_relative(self, duetime, action, state=None):
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
+        return self.schedule_relative(0.0, action, state=state)
+
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
         Returns:
             The disposable object used to cancel the scheduled action
@@ -32,13 +53,12 @@ class TwistedScheduler(SchedulerBase):
 
         from twisted.internet.task import deferLater
 
-        scheduler = self
         seconds = self.to_seconds(duetime)
 
         sad = SingleAssignmentDisposable()
 
         def interval():
-            sad.disposable = action(scheduler, state)
+            sad.disposable = action(self, state)
 
         log.debug("timeout: %s", seconds)
         handle = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
@@ -49,12 +69,17 @@ class TwistedScheduler(SchedulerBase):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
-            duetime: {datetime} Absolute time after which to execute the action.
+            duetime: Absolute time after which to execute the action.
             action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
         Returns:
             The disposable object used to cancel the scheduled action
@@ -62,7 +87,7 @@ class TwistedScheduler(SchedulerBase):
         """
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
+        return self.schedule_relative(duetime - self.now, action, state=state)
 
     @property
     def now(self):

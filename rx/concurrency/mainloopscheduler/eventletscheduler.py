@@ -1,13 +1,16 @@
 import logging
-from typing import Any
-from datetime import datetime
 
-from rx.disposable import Disposable
+from datetime import datetime
+from typing import Optional
+
 from rx.core import typing
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.schedulerbase import SchedulerBase
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+
+from ..schedulerbase import SchedulerBase
+
 
 log = logging.getLogger("Rx")
+
 
 eventlet = None
 
@@ -24,29 +27,44 @@ class EventLetEventScheduler(SchedulerBase):
         import eventlet
         import eventlet.hubs
 
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
-        """Schedules an action to be executed."""
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         sad = SingleAssignmentDisposable()
 
         def interval():
-            sad.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state=state)
 
-        timer = [eventlet.spawn(interval)]
+        timer = eventlet.spawn(interval)
 
         def dispose():
-            timer[0].kill()
+            timer.kill()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
         Returns:
             The disposable object used to cancel the scheduled action
@@ -55,40 +73,45 @@ class EventLetEventScheduler(SchedulerBase):
 
         seconds = self.to_seconds(duetime)
         if not seconds:
-            return self.schedule(action, state)
+            return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()
 
         def interval():
-            sad.disposable = self.invoke_action(action, state)
+            sad.disposable = self.invoke_action(action, state=state)
 
-        timer = [eventlet.spawn_after(seconds, interval)]
+        timer = eventlet.spawn_after(seconds, interval)
 
         def dispose():
-            # nonlocal timer
-            timer[0].kill()
+            timer.kill()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
             duetime: Absolute time after which to execute the action.
             action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
         Returns:
             The disposable object used to cancel the scheduled action
-            (best effort)."""
+            (best effort).
+        """
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
+        return self.schedule_relative(duetime - self.now, action, state=state)
 
     @property
     def now(self) -> datetime:
         """Represents a notion of time for this scheduler. Tasks being
-        scheduled on a scheduler will adhere to the time denoted by
-        this property."""
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+        """
 
         return self.to_datetime(eventlet.hubs.get_hub().clock())

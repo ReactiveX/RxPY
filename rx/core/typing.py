@@ -40,7 +40,7 @@ class Disposable(abc.Disposable):
 
 ScheduledAction = Callable[['Scheduler', TState], Optional[Disposable]]
 ScheduledPeriodicAction = Callable[[TState], TState]
-
+ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction]
 
 class Scheduler(abc.Scheduler):
     __slots__ = ()

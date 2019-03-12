@@ -20,7 +20,7 @@ class ScheduledItem(Generic[typing.TState]):  # pylint: disable=unsubscriptable-
         self.disposable = SingleAssignmentDisposable()
 
     def invoke(self) -> None:
-        ret = self.scheduler.invoke_action(self.action, self.state)
+        ret = self.scheduler.invoke_action(self.action, state=self.state)
         self.disposable.disposable = ret
 
     def cancel(self) -> None:
