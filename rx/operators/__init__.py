@@ -14,6 +14,13 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Determines whether all elements of an observable sequence satisfy
     a condition.
 
+    .. marble::
+        :alt: all
+
+        --1--2--3--4--5-|
+        [      all(i: i<10)    ]
+        ----------------true-|
+
     Example:
         >>> op = all(lambda value: value.length > 3)
 
@@ -32,6 +39,15 @@ def all(predicate: Predicate) -> Callable[[Observable], Observable]:
 
 def amb(right_source: Observable) -> Callable[[Observable], Observable]:
     """Propagates the observable sequence that reacts first.
+
+    .. marble::
+        :alt: amb
+
+        ---8--6--9-----------|
+        --1--2--3---5--------|
+        ----------10-20-30---|
+        [        amb()       ]
+        --1--2--3---5--------|
 
     Example:
         >>> op = amb(ys)
@@ -64,6 +80,13 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
     are in the sequence or obtained by invoking a transform function on
     each element of the input sequence if present.
 
+    .. marble::
+        :alt: average
+
+        ---1--2--3--4----|
+        [     average()      ]
+        -----------------2.5-|
+
     Examples:
         >>> op = average()
         >>> op = average(lambda x: x.value)
@@ -84,6 +107,13 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
     """Projects each element of an observable sequence into zero or
     more buffers.
 
+    .. marble::
+        :alt: buffer
+
+        ----1-2-3-4-5-6------|
+        [      buffer()      ]
+        --------1,2,3-4,5,6--|
+
     Args:
         buffer_openings: Observable sequence whose elements denote the
             creation of windows.
@@ -103,6 +133,13 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
 def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
+
+    .. marble::
+        :alt: buffer_with_count
+
+        ----1-2-3-4-5-6------|
+        [buffer_with_count(3)]
+        --------1,2,3-4,5,6--|
 
     Examples:
         >>> res = buffer_with_count(10)(xs)
@@ -126,6 +163,13 @@ def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTi
                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
+
+    .. marble::
+        :alt: buffer_with_time
+
+        ---1-2-3-4-5-6-----|
+        [buffer_with_time()]
+        -------1,2,3-4,5,6-|
 
     Examples:
         # non-overlapping segments of 1 second
@@ -154,6 +198,13 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     """Projects each element of an observable sequence into a buffer
     that is completed when either it's full or a given amount of time
     has elapsed.
+
+    .. marble::
+        :alt: buffer_with_time_or_count
+
+        --1-2-3-4-5-6------|
+        [     buffer()     ]
+        ------1,2,3-4,5,6--|
 
     Examples:
         # 5s or 50 items in an array
@@ -214,6 +265,14 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
 
+    .. marble::
+        :alt: combine_latest
+
+        ---a-----b--c------|
+        --1---2--------3---|
+        [ combine_latest() ]
+        ---a1-a2-b2-c2-c3--|
+
     Examples:
         >>> obs = combine_latest(other)
         >>> obs = combine_latest(obs1, obs2, obs3)
@@ -230,6 +289,14 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
 def concat(*sources: Observable) -> Callable[[Observable], Observable]:
     """Concatenates all the observable sequences.
 
+    .. marble::
+        :alt: concat
+
+        ---1--2--3--|
+        --6--8--|
+        [     concat()     ]
+        ---1--2--3----6--8-|
+
     Examples:
         >>> op = concat(xs, ys, zs)
 
@@ -245,6 +312,13 @@ def concat(*sources: Observable) -> Callable[[Observable], Observable]:
 def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
+
+    .. marble::
+        :alt: contains
+
+        --1--2--3--4--|
+        [    contains(3)   ]
+        --------------true-|
 
     Examples:
         >>> op = contains(42)
@@ -269,6 +343,13 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     represents how many elements in the specified observable sequence
     satisfy a condition if provided, else the count of items.
 
+    .. marble::
+        :alt: count
+
+        --1--2--3--4--|
+        [  count(i: i>2)   ]
+        --------------2-|
+
     Examples:
         >>> op = count()
         >>> op = count(lambda x: x > 3)
@@ -291,6 +372,13 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
 def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
+
+    .. marble::
+        :alt: debounce
+
+        --1--2-3-4--5------|
+        [    debounce()    ]
+        ----1------4---5---|
 
     Example:
         >>> res = debounce(5.0) # 5 seconds
@@ -315,6 +403,13 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     """Returns the elements of the specified sequence or the specified
     value in a singleton sequence if the sequence is empty.
 
+    .. marble::
+        :alt: default_if_empty
+
+        ----------|
+        [default_if_empty(42)]
+        ----------42-|
+
     Examples:
         >>> res = obs = default_if_empty()
         >>> obs = default_if_empty(False)
@@ -338,6 +433,13 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
     """Time shifts the observable sequence by delaying the
     subscription.
 
+    .. marble::
+        :alt: delay_subscription
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
+
     Example:
         >>> res = delay_subscription(5.0) # 5s
 
@@ -357,6 +459,13 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing
 def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence based on a subscription
     delay and a delay mapper function for each element.
+
+    .. marble::
+        :alt: delay_with_mapper
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
 
     Examples:
         # with mapper only
@@ -395,6 +504,13 @@ def dematerialize() -> Callable[[Observable], Observable]:
 def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """The delay operator.
 
+    .. marble::
+        :alt: delay
+
+        ----1--2--3--4-----|
+        [     delay()      ]
+        --------1--2--3--4-|
+
     Time shifts the observable sequence by duetime. The relative time
     intervals between the values are preserved.
 
@@ -423,6 +539,14 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
     this operator should be considered carefully due to the maintenance
     of an internal lookup structure which can grow large.
 
+    .. marble::
+        :alt: distinct
+
+        -0-1-2-1-3-4-2-0---|
+        [    distinct()    ]
+        -0-1-2---3-4-------|
+
+
     Examples:
         >>> res = obs = xs.distinct()
         >>> obs = xs.distinct(lambda x: x.id)
@@ -446,6 +570,14 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
 def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
+
+    .. marble::
+        :alt: distinct_until_changed
+
+        -0-1-1-2-3-1-2-2-3-|
+        [    distinct()    ]
+        -0-1---2-3-1-2---3-|
+
 
     Examples:
         >>> op = distinct_until_changed();
@@ -475,6 +607,14 @@ def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
     logging, etc. of query behavior by intercepting the message stream
     to run arbitrary actions for messages on the pipeline.
 
+    .. marble::
+        :alt: do
+
+        ----1---2---3---4---|
+        [    do(i: foo())   ]
+        ----1---2---3---4---|
+
+
     >>> do(observer)
 
     Args:
@@ -496,6 +636,13 @@ def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on
     observable sequence. This method can be used for debugging,
     logging, etc. of query behavior by intercepting the message stream
     to run arbitrary actions for messages on the pipeline.
+
+    .. marble::
+        :alt: do_action
+
+        ----1---2---3---4---|
+        [do_action(i: foo())]
+        ----1---2---3---4---|
 
     Examples:
         >>> do_action(send)
@@ -523,6 +670,14 @@ def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observa
     """Repeats source as long as condition holds emulating a do while
     loop.
 
+    .. marble::
+        :alt: do_while
+
+        --1--2--|
+        [    do_while()     ]
+        --1--2--1--2--1--2--|
+
+
     Args:
         condition: The condition which determines if the source will be
             repeated.
@@ -537,6 +692,13 @@ def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observa
 
 def element_at(index: int) -> Callable[[Observable], Observable]:
     """Returns the element at a specified index in a sequence.
+
+    .. marble::
+        :alt: element_at
+
+        ----1---2---3---4---|
+        [   element_at(2)   ]
+        ------------3-|
 
     Example:
         >>> res = source.element_at(5)
@@ -556,6 +718,13 @@ def element_at(index: int) -> Callable[[Observable], Observable]:
 def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Observable], Observable]:
     """Returns the element at a specified index in a sequence or a
     default value if the index is out of range.
+
+    .. marble::
+        :alt: element_at_or_default
+
+        --1---2---3---4-|
+        [  element_at(6, a) ]
+        ----------------a-|
 
     Example:
         >>> res = source.element_at_or_default(5)
@@ -580,6 +749,17 @@ def exclusive() -> Callable[[Observable], Observable]:
     """Performs a exclusive waiting for the first to finish before
     subscribing to another observable. Observables that come in between
     subscriptions will be dropped on the floor.
+
+    .. marble::
+        :alt: exclusive
+
+        -+---+-----+-------|
+                   +-7-8-9-|
+             +-4-5-6-|
+         +-1-2-3-|
+        [   exclusive()    ]
+        ---1-2-3-----7-8-9-|
+
 
     Returns:
         An exclusive observable with only the results that
@@ -609,6 +789,13 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
 
+    .. marble::
+        :alt: filter
+
+        ----1---2---3---4---|
+        [   filter(i: i>2)  ]
+        ------------3---4---|
+
     Example:
         >>> op = filter(lambda value: value < 10)
 
@@ -628,6 +815,13 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
 def filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
+
+    .. marble::
+        :alt: filter_indexed
+
+        ----1---2---3---4---|
+        [ filter(i,id: id>2)]
+        ----------------4---|
 
     Example:
         >>> op = filter_indexed(lambda value, index: (value + index) < 10)
@@ -650,8 +844,16 @@ def finally_action(action: Callable) -> Callable[[Observable], Observable]:
     """Invokes a specified action after the source observable sequence
     terminates gracefully or exceptionally.
 
+    .. marble::
+        :alt: finally_action
+
+        --1--2--3--4--|
+                  a-6-7-|
+        [finally_action(a)]
+        --1--2--3--4--6-7-|
+
     Example:
-        res = finally(lambda: print('sequence ended')
+        res = finally_action(lambda: print('sequence ended')
 
     Args:
         action: Action to invoke after the source observable sequence
@@ -670,6 +872,13 @@ def find(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns the first occurrence within
     the entire Observable sequence.
+
+    .. marble::
+        :alt: find
+
+        --1--2--3--4--3--2--|
+        [       find(3)     ]
+        --------3-|
 
     Args:
         predicate: The predicate that defines the conditions of the
@@ -691,6 +900,13 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
     zero-based index of the first occurrence within the entire
     Observable sequence.
 
+    .. marble::
+        :alt: find_index
+
+        --1--2--3--4--3--2--|
+        [   find_index(3)   ]
+        --------2-|
+
     Args:
         predicate: The predicate that defines the conditions of the
             element to search for.
@@ -709,6 +925,14 @@ def first(predicate=None) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
+
+    .. marble::
+        :alt: first
+
+        ---1---2---3---4----|
+        [   first(i: i>1)   ]
+        -------2-|
+
 
     Examples:
         >>> res = res = first()
@@ -732,6 +956,13 @@ def first_or_default(predicate: Predicate = None, default_value: Any = None) -> 
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.
+
+    .. marble::
+        :alt: first_or_default
+
+        --1--2--3--4-|
+        [first(i: i>10, 42)]
+        -------------42-|
 
     Examples:
         >>> res = first_or_default()
@@ -757,6 +988,14 @@ def first_or_default(predicate: Predicate = None, default_value: Any = None) -> 
 
 def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     """The flat_map operator.
+
+    .. marble::
+        :alt: flat_map
+
+        --1-2-3-|
+        [ flat_map(range)  ]
+        --0-0-1-0-1-2-|
+
 
     One of the Following:
     Projects each element of an observable sequence to an observable
@@ -796,6 +1035,13 @@ def flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observab
     Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
     observable sequence.
+
+    .. marble::
+        :alt: flat_map_indexed
+
+        --1-2-3-|
+        [ flat_map(range)  ]
+        --0-0-1-0-1-2-|
 
     Example:
         >>> source.flat_map_indexed(lambda x, i: Observable.range(0, x))
@@ -852,6 +1098,15 @@ def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observab
     specified key mapper function and comparer and selects the
     resulting elements by using a specified function.
 
+    .. marble::
+        :alt: group_by
+
+        --1--2--a--3--b--c-|
+        [    group_by()    ]
+        -+-----+-----------|
+               +a-----b--c-|
+         +1--2-----3-------|
+
     Examples:
         >>> group_by(lambda x: x.id)
         >>> group_by(lambda x: x.id, lambda x: x.name)
@@ -880,6 +1135,15 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
     same key value as a reclaimed group occurs, the group will be
     reborn with a new lifetime request.
 
+    .. marble::
+        :alt: group_by_until
+
+        --1--2--a--3--b--c-|
+        [    group_by()    ]
+        -+-----+-----------|
+               +a-----b--c-|
+         +1--2-----3-------|
+
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never())
@@ -906,6 +1170,14 @@ def group_join(right, left_duration_mapper, right_duration_mapper,
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
+    .. marble::
+        :alt: group_join
+
+        -1---2----3---4---->
+        --a--------b-----c->
+        [   group_join()   ]
+        --a1-a2----b3-b4-c4|
+
     Args:
         right: The right observable sequence to join elements for.
         left_duration_mapper: A function to select the duration
@@ -930,6 +1202,13 @@ def ignore_elements() -> Observable:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
+    .. marble::
+        :alt: ignore_elements
+
+        ---1---2---3---4---|
+        [ ignore_elements()]
+        -------------------|
+
     Returns:
         An operator function that takes an observable source and
         returns an empty observable sequence that signals termination,
@@ -941,6 +1220,14 @@ def ignore_elements() -> Observable:
 
 def is_empty() -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence is empty.
+
+    .. marble::
+        :alt: is_empty
+
+        -------|
+        [    is_empty()    ]
+        -------True-|
+
 
     Returns:
         An operator function that takes an observable source and
@@ -954,6 +1241,14 @@ def is_empty() -> Callable[[Observable], Observable]:
 def join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations.
+
+    .. marble::
+        :alt: join
+
+        -1---2----3---4---->
+        --a--------b-----c->
+        [       join()     ]
+        --a1-a2----b3-b4-c4|
 
     Args:
         right: The right observable sequence to join elements for.
@@ -980,6 +1275,13 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     Returns the last element of an observable sequence that satisfies
     the condition in the predicate if specified, else the last element.
 
+    .. marble::
+        :alt: last
+
+        ---1--2--3--4-|
+        [      last()      ]
+        ------------4-|
+
     Examples:
         >>> op = last()
         >>> op = last(lambda x: x > 3)
@@ -1004,6 +1306,14 @@ def last_or_default(predicate=None, default_value=None) -> Callable[[Observable]
     Returns the last element of an observable sequence that satisfies
     the condition in the predicate, or a default value if no such
     element exists.
+
+    .. marble::
+        :alt: last
+
+        ---1--2--3--4-|
+        [last_or_default(8)]
+        --------------8-|
+
 
     Examples:
         >>> res = last_or_default()
@@ -1060,6 +1370,13 @@ def map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], 
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
+    .. marble::
+        :alt: map_indexed
+
+        ---1---2---3---4--->
+        [  map(i,id: i*2)  ]
+        ---2---4---6---8--->
+
     Example:
         >>> ret = map_indexed(lambda value, index: value * value + index)
 
@@ -1095,6 +1412,13 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
+    .. marble::
+        :alt: max
+
+        ---1--2--3--4-|
+        [      max()       ]
+        --------------4-|
+
     Examples:
         >>> op = max()
         >>> op = max(lambda x, y:  x.value - y.value)
@@ -1115,6 +1439,13 @@ def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
 
     Returns the elements in an observable sequence with the maximum
     key value according to the specified comparer.
+
+    .. marble::
+        :alt: max_by
+
+        ---1--2--3--4-|
+        [     max_by()     ]
+        --------------4-|
 
     Examples:
         >>> res = max_by(lambda x: x.value)
@@ -1138,6 +1469,14 @@ def merge(*sources, max_concurrent: int = None) -> Callable[[Observable], Observ
     observable sequence, limiting the number of concurrent
     subscriptions to inner sequences. Or merges two observable
     sequences into a single observable sequence.
+
+    .. marble::
+        :alt: merge
+
+        ---1---2---3---4-|
+        -a---b---c---d--|
+        [     merge()      ]
+        -a-1-b-2-c-3-d-4-|
 
     Examples:
         >>> op = merge(max_concurrent=1)
@@ -1163,6 +1502,14 @@ def merge_all() -> Callable[[Observable], Observable]:
     Merges an observable sequence of observable sequences into an
     observable sequence.
 
+    .. marble::
+        :alt: merge_all
+
+        ---1---2---3---4-|
+        -a---b---c---d--|
+        [   merge_all()    ]
+        -a-1-b-2-c-3-d-4-|
+
     Returns:
         A partially applied operator function that takes an observable
         source and returns the observable sequence that merges the
@@ -1177,6 +1524,13 @@ def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
 
     Returns the minimum element in an observable sequence according to
     the optional comparer else a default greater than less than check.
+
+    .. marble::
+        :alt: min
+
+        ---1--2--3--4-|
+        [      min()       ]
+        --------------1-|
 
     Examples:
         >>> res = source.min()
@@ -1199,6 +1553,13 @@ def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
 
     Returns the elements in an observable sequence with the minimum key
     value according to the specified comparer.
+
+    .. marble::
+        :alt: min_by
+
+        ---1--2--3--4-|
+        [     min_by()     ]
+        --------------1-|
 
     Examples:
         >>> res = min_by(lambda x: x.value)
@@ -1273,6 +1634,14 @@ def on_error_resume_next(second: Observable) -> Callable[[Observable], Observabl
     """Continues an observable sequence that is terminated normally
     or by an exception with the next observable sequence.
 
+    .. marble::
+        :alt: on_error
+
+        ---1--2--3--4-*
+             e-a--b-|
+        [   on_error(e)    ]
+        -1--2--3--4-a--b-|
+
     Keyword arguments:
     second -- Second observable sequence used to produce results
         after the first sequence terminates.
@@ -1313,6 +1682,14 @@ def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
     observer. Both also propagate all error observations arising from
     the source and each completes when the source completes.
 
+    .. marble::
+        :alt: partition
+
+        ---1--2--3--4--|
+        [ partition(even)  ]
+        ---1-----3-----|
+        ------2-----4--|
+
     Args:
         predicate: The function to determine which output Observable
         will trigger a particular observation.
@@ -1337,6 +1714,14 @@ def partition_indexed(predicate_indexed: PredicateIndexed) -> Callable[[Observab
     returns false. The predicate is executed once for each subscribed
     observer. Both also propagate all error observations arising from
     the source and each completes when the source completes.
+
+    .. marble::
+        :alt: partition_indexed
+
+        ---1--2--3--4--|
+        [ partition(even)  ]
+        ---1-----3-----|
+        ------2-----4--|
 
     Args:
         predicate: The function to determine which output Observable
@@ -1461,6 +1846,13 @@ def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callab
     For aggregation behavior with incremental intermediate results,
     see `scan`.
 
+    .. marble::
+        :alt: reduce
+
+        ---1--2--3--4--|
+        [reduce(acc,i: acc+i)]
+        ---------------10-|
+
     Examples:
         >>> res = reduce(lambda acc, x: acc + x)
         >>> res = reduce(lambda acc, x: acc + x, 0)
@@ -1492,6 +1884,14 @@ def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
     """Repeats the observable sequence a specified number of times.
     If the repeat count is not specified, the sequence repeats
     indefinitely.
+
+    .. marble::
+        :alt: repeat
+
+        -1--2-|
+        [    repeat(3)     ]
+        -1--2--1--2--1--2-|
+
 
     Examples:
         >>> repeated = repeat()
@@ -1572,6 +1972,13 @@ def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
 def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
 
+    .. marble::
+        :alt: sample
+
+        ---1-2-3-4------|
+        [     sample(4)    ]
+        ----1---3---4---|
+
     Examples:
         >>> res = sample(sample_observable) # Sampler tick sequence
         >>> res = sample(5.0) # 5 seconds
@@ -1596,6 +2003,13 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable
     as the initial accumulator value. For aggregation behavior with no
     intermediate results, see `aggregate()` or `Observable()`.
 
+    .. marble::
+        :alt: scan
+
+        ----1--2--3--4-----|
+        [scan(acc,i: acc+i)]
+        ----1--3--6--10----|
+
     Examples:
         >>> scanned = source.scan(lambda acc, x: acc + x)
         >>> scanned = source.scan(lambda acc, x: acc + x, 0)
@@ -1618,6 +2032,14 @@ def sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = No
                    ) -> Callable[[Observable], Observable]:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.
+
+    .. marble::
+        :alt: scan
+
+        -1--2--3--4----|
+        ----1--2--3--4-|
+        [ sequence_equal() ]
+        ---------------True|
 
     Examples:
         >>> res = sequence_equal([1,2,3])
@@ -1666,6 +2088,13 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     the condition in the optional predicate, and reports an exception
     if there is not exactly one element in the observable sequence.
 
+    .. marble::
+        :alt: single
+
+        ----1--2--3--4-----|
+        [     single(3)    ]
+        ----------3--------|
+
     Example:
         >>> res = single()
         >>> res = single(lambda x: x == 42)
@@ -1689,6 +2118,13 @@ def single_or_default(predicate: Predicate = None, default_value: Any = None) ->
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
     the observable sequence.
+
+    .. marble::
+        :alt: single_or_default
+
+        ----1--2--3--4--|
+        [    single(8,42)  ]
+        ----------------42-|
 
     Examples:
         >>> res = single_or_default()
@@ -1723,6 +2159,14 @@ def skip(count: int) -> Callable[[Observable], Observable]:
     Bypasses a specified number of elements in an observable sequence
     and then returns the remaining elements.
 
+    .. marble::
+        :alt: skip
+
+        ----1--2--3--4-----|
+        [     skip(2)      ]
+        ----------3--4-----|
+
+
     Args:
         count: The number of elements to skip before returning the
             remaining elements.
@@ -1738,6 +2182,14 @@ def skip(count: int) -> Callable[[Observable], Observable]:
 
 def skip_last(count: int) -> Observable:
     """The skip_last operator.
+
+    .. marble::
+        :alt: skip_last
+
+        ----1--2--3--4-----|
+        [   skip_last(1)   ]
+        -------1--2--3-----|
+
 
     Bypasses a specified number of elements at the end of an observable
     sequence.
@@ -1791,6 +2243,14 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
 
+    .. marble::
+        :alt: skip_until
+
+        ----1--2--3--4-----|
+        ---------1---------|
+        [   skip_until()   ]
+        ----------3--4-----|
+
     Args:
         other: The observable sequence that triggers propagation of
             elements of the source sequence.
@@ -1811,6 +2271,13 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: t
     specified start time.
     Errors produced by the source sequence are always forwarded to the
     result sequence, even if the error occurs before the start time.
+
+    .. marble::
+        :alt: skip_until
+
+        ------1--2--3--4-------|
+        [skip_until_with_time()]
+        ------------3--4-------|
 
     Examples:
         >>> res = skip_until_with_time(datetime)
@@ -1837,6 +2304,13 @@ def skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable
     condition is true and then returns the remaining elements. The
     element's index is used in the logic of the predicate function.
 
+    .. marble::
+        :alt: skip_while
+
+        ----1--2--3--4-----|
+        [skip_while(i: i<3)]
+        ----------3--4-----|
+
     Example:
         >>> skip_while(lambda value: value < 10)
 
@@ -1861,6 +2335,13 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     elements. The element's index is used in the logic of the predicate
     function.
 
+    .. marble::
+        :alt: skip_while_indexed
+
+        ----1--2--3--4-----|
+        [skip_while(i: i<3)]
+        ----------3--4-----|
+
     Example:
         >>> skip_while(lambda value, index: value < 10 or index < 10)
 
@@ -1883,6 +2364,13 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
                   ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
+
+    .. marble::
+        :alt: skip_with_time
+
+        ----1--2--3--4-----|
+        [ skip_with_time() ]
+        ----------3--4-----|
 
     Args:
         >>> res = skip_with_time(5.0)
@@ -1915,14 +2403,12 @@ def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Obser
     Slices the given observable. It is basically a wrapper around the
     operators skip(), skip_last(), take(), take_last() and filter().
 
-    This marble diagram helps you remember how slices works with
-    streams. Positive numbers is relative to the start of the events,
-    while negative numbers are relative to the end (close) of the
-    stream.
+    .. marble::
+        :alt: slice
 
-     r---e---a---c---t---i---v---e---|
-     0   1   2   3   4   5   6   7   8
-    -8  -7  -6  -5  -4  -3  -2  -1   0
+        ----1--2--3--4-----|
+        [   slice(1, 2)    ]
+        -------2--3--------|
 
     Examples:
         >>> result = source.slice(1, 10)
@@ -1947,6 +2433,13 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
     Determines whether some element of an observable sequence
     satisfies a condition if present, else if some items are in the
     sequence.
+
+    .. marble::
+        :alt: some
+
+        ----1--2--3--4-----|
+        [   some(i: i>3)   ]
+        -------------True--|
 
     Examples:
         >>> result = source.some()
@@ -1978,6 +2471,13 @@ def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     Use instead of `map()` when the the arguments to the mapper is
     grouped as tuples and the mapper function takes multiple arguments.
 
+    .. marble::
+        :alt: startmap
+
+        -----1,2---3,4-----|
+        [   starmap(add)   ]
+        -----3-----7-------|
+
     Example:
         >>> starmap(lambda x, y: x + y)
 
@@ -2000,6 +2500,13 @@ def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:
     """Prepends a sequence of values to an observable sequence.
+
+    .. marble::
+        :alt: start_with
+
+        -----1--2--3--4----|
+        [  start_with(7,8) ]
+        -7-8-1--2--3--4----|
 
     Example:
         >>> start_with(1, 2, 3)
@@ -2043,6 +2550,13 @@ def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
     input sequence, else if not specified computes the sum on each item
     in the sequence.
 
+    .. marble::
+        :alt: sum
+
+        -----1--2--3--4-|
+        [       sum()      ]
+        ----------------10-|
+
     Examples:
         >>> res = sum()
         >>> res = sum(lambda x: x.value)
@@ -2067,6 +2581,15 @@ def switch_latest() -> Callable[[Observable], Observable]:
     observable sequence producing values only from the most recent
     observable sequence.
 
+    .. marble::
+        :alt: switch_latest
+
+        -+------+----------|
+                +--a--b--c-|
+         +--1--2--3--4--|
+        [ switch_latest()  ]
+        ----1--2---a--b--c-|
+
     Returns:
         A partially applied operator function that takes an observable
         source and returns the observable sequence that at any point in
@@ -2080,6 +2603,13 @@ def switch_latest() -> Callable[[Observable], Observable]:
 def take(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the start
     of an observable sequence.
+
+    .. marble::
+        :alt: take
+
+        -----1--2--3--4----|
+        [    take(2)       ]
+        -----1--2-|
 
     Example:
         >>> op = take(5)
@@ -2099,6 +2629,13 @@ def take(count: int) -> Callable[[Observable], Observable]:
 def take_last(count: int) -> Callable[[Observable], Observable]:
     """Returns a specified number of contiguous elements from the end
     of an observable sequence.
+
+    .. marble::
+        :alt: take_last
+
+        -1--2--3--4-|
+        [  take_last(2)    ]
+        ------------3--4-|
 
     Example:
         >>> res = take_last(5)
@@ -2127,6 +2664,13 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
     Returns an array with the specified number of contiguous elements
     from the end of an observable sequence.
 
+    .. marble::
+        :alt: take_last_buffer
+
+        -----1--2--3--4-|
+        [take_last_buffer(2)]
+        ----------------3,4-|
+
     Example:
         >>> res = source.take_last(5)
 
@@ -2152,6 +2696,13 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
 def take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
     """Returns elements within the specified duration from the end of
     the observable source sequence.
+
+    .. marble::
+        :alt: take_last_with_time
+
+        -----1--2--3--4-|
+        [take_last_with_time(3)]
+        ----------------4-|
 
     Example:
         >>> res = take_last_with_time(5.0)
@@ -2180,6 +2731,14 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
+    .. marble::
+        :alt: take_until
+
+        -----1--2--3--4----|
+        -------------a-|
+        [   take_until(2)  ]
+        -----1--2--3-------|
+
     Args:
         other: Observable sequence that terminates propagation of
             elements of the source sequence.
@@ -2198,6 +2757,13 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typ
                          ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration until the specified
     end time, using the specified scheduler to run timers.
+
+    .. marble::
+        :alt: take_until_with_time
+
+        -----1--2--3--4--------|
+        [take_until_with_time()]
+        -----1--2--3-----------|
 
     Examples:
         >>> res = take_until_with_time(dt, [optional scheduler])
@@ -2224,6 +2790,13 @@ def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observ
     specified condition is true. The element's index is used in the
     logic of the predicate function.
 
+    .. marble::
+        :alt: take_while
+
+        -----1--2--3--4----|
+        [take_while(i: i<3)]
+        -----1--2----------|
+
     Example:
         >>> take_while(lambda value: value < 10)
 
@@ -2247,8 +2820,15 @@ def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observ
     specified condition is true. The element's index is used in the
     logic of the predicate function.
 
+    .. marble::
+        :alt: take_while_indexed
+
+        -----1--2--3--4----|
+        [take_while(i: i<3)]
+        -----1--2----------|
+
     Example:
-        >>> take_while(lambda value, index: value < 10 or index < 10)
+        >>> take_while_indexed(lambda value, index: value < 10 or index < 10)
 
     Args:
         predicate: A function to test each element for a condition; the
@@ -2268,6 +2848,13 @@ def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
                   ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
+
+    .. marble::
+        :alt: take_with_time
+
+        -----1--2--3--4----|
+        [ take_whith_time()]
+        -----1--2----------|
 
     Example:
         >>> res = take_with_time(5.0)
@@ -2356,6 +2943,14 @@ def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: t
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
+    .. marble::
+        :alt: timeout
+
+        -1--2--------3--4--|
+           o-6--7-|
+        [   timeout(3,o)      ]
+        -1--2---6--7----------|
+
     Examples:
         >>> res = timeout(5.0)
         >>> res = timeout(datetime(), return_value(42))
@@ -2383,9 +2978,10 @@ def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
-        res = timeout_with_mapper(rx.timer(500))
-        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
-        res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
+    Examples:
+        >>> res = timeout_with_mapper(rx.timer(500))
+        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
+        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
 
     Args:
         first_timeout: [Optional] Observable sequence that represents
@@ -2410,6 +3006,14 @@ def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], 
     """Records the time interval between consecutive values in an
     observable sequence.
 
+    .. marble::
+        :alt: time_interval
+
+        --1--2-----3---4--|
+        [ time_interval()  ]
+        -----2-----5---5---|
+
+    Examples:
         >>> res = time_interval()
 
     Return:
@@ -2519,6 +3123,15 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     """Projects each element of an observable sequence into zero or
     more windows.
 
+    .. marble::
+        :alt: window
+
+        ----1-2-3-4-5-6------|
+        [      window()      ]
+        ----+-----+----------|
+                  +-4-5-6-|
+            +-1-2-3-|
+
     Args:
         window_openings: Observable sequence whose elements denote the
             creation of windows.
@@ -2543,11 +3156,11 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     .. marble::
         :alt: window_with_count
 
-        ---a-b-c---d-e-f--->
+        ---1-2-3---4-5-6--->
         [    window(3)     ]
         --+-------+-------->
-                  +d-e-f-|
-          +a-b-c-|
+                  +4-5-6-|
+          +1-2-3-|
 
     Examples:
         >>> window_with_count(10)
@@ -2586,6 +3199,14 @@ def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]
     observable sequence produces an element. The observables can be
     passed either as seperate arguments or as a list.
 
+    .. marble::
+        :alt: with_latest_from
+
+        ---1---2---3----4-|
+        --a-----b----c-d----|
+        [with_latest_from() ]
+        ---1,a-2,a-3,b--4,d-|
+
     Examples:
         >>> op = with_latest_from(obs1)
         >>> op = with_latest_from([obs1, obs2, obs3])
@@ -2604,6 +3225,15 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
     index.
+
+    .. marble::
+        :alt: zip
+
+        --1--2---3-----4---|
+        -a----b----c-d-----|
+        [       zip()      ]
+        --1,a-2,b--3,c-4,d-|
+
 
     Example:
         >>> res = zip(obs1, obs2)
@@ -2625,6 +3255,13 @@ def zip_with_iterable(second):
     observable sequence by creating a tuple whenever all of
     the observable sequences have produced an element at a
     corresponding index.
+
+    .. marble::
+        :alt: zip_with_iterable
+
+        --1---2----3---4---|
+        [   zip(a,b,c,b)   ]
+        --1,a-2,b--3,c-4,d-|
 
     Example
         >>> res = zip([1,2,3])
