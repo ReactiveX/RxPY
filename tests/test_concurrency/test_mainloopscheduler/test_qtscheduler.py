@@ -9,17 +9,17 @@ try:
     from PyQt5.QtWidgets import QApplication
 except ImportError:
     try:
-        from PyQt4 import QtCore
-        from PyQt4.QtGui import QApplication
+        from PySide2 import QtCore
+        from PySide2.QtGui import QGuiApplication as QApplication
     except ImportError:
         try:
-            from PySide2 import QtCore
-            from PySide2.QtGui import QGuiApplication as QApplication
+            from PyQt4 import QtCore
+            from PyQt4.QtGui import QApplication
         except ImportError:
             skip = True
 
-
-from rx.concurrency.mainloopscheduler import QtScheduler
+if not skip:
+    from rx.concurrency.mainloopscheduler import QtScheduler
 
 app = None  # Prevent garbage collection
 
@@ -44,35 +44,59 @@ class TestQtScheduler(unittest.TestCase):
         app = make_app()
 
         scheduler = QtScheduler(QtCore)
-        ran = [False]
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
         scheduler.schedule(action)
 
         def done():
             app.quit()
-            assert ran[0]
+            assert ran
 
         QtCore.QTimer.singleShot(50, done)
         app.exec_()
 
-    def test_qt_schedule_action_due(self):
+    def test_qt_schedule_action_due_relative(self):
         app = make_app()
 
         scheduler = QtScheduler(QtCore)
         starttime = datetime.utcnow()
-        endtime = [None]
+        endtime = None
 
         def action(scheduler, state):
-            endtime[0] = datetime.utcnow()
+            nonlocal endtime
+            endtime = datetime.utcnow()
 
         scheduler.schedule_relative(0.2, action)
 
         def done():
             app.quit()
-            assert endtime[0]
-            diff = endtime[0] - starttime
+            assert endtime
+            diff = endtime - starttime
+            assert diff > timedelta(milliseconds=180)
+
+        QtCore.QTimer.singleShot(300, done)
+        app.exec_()
+
+    def test_qt_schedule_action_due_absolute(self):
+        app = make_app()
+
+        scheduler = QtScheduler(QtCore)
+        starttime = datetime.utcnow()
+        endtime = None
+
+        def action(scheduler, state):
+            nonlocal endtime
+            endtime = datetime.utcnow()
+
+        scheduler.schedule_absolute(starttime + timedelta(seconds=0.2), action)
+
+        def done():
+            app.quit()
+            assert endtime
+            diff = endtime - starttime
             assert diff > timedelta(milliseconds=180)
 
         QtCore.QTimer.singleShot(300, done)
@@ -81,17 +105,18 @@ class TestQtScheduler(unittest.TestCase):
     def test_qt_schedule_action_cancel(self):
         app = make_app()
 
-        ran = [False]
+        ran = False
         scheduler = QtScheduler(QtCore)
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
         d = scheduler.schedule_relative(0.1, action)
         d.dispose()
 
         def done():
             app.quit()
-            assert not ran[0]
+            assert not ran
 
         QtCore.QTimer.singleShot(300, done)
         app.exec_()
@@ -101,18 +126,19 @@ class TestQtScheduler(unittest.TestCase):
 
         scheduler = QtScheduler(QtCore)
         period = 0.050
-        counter = [3]
+        counter = 3
 
         def action(state):
+            nonlocal counter
             if state:
-                counter[0] -= 1
+                counter -= 1
                 return state - 1
 
-        scheduler.schedule_periodic(period, action, counter[0])
+        scheduler.schedule_periodic(period, action, counter)
 
         def done():
             app.quit()
-            assert counter[0] == 0
+            assert counter == 0
 
         QtCore.QTimer.singleShot(300, done)
         app.exec_()
