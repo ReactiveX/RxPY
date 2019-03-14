@@ -105,7 +105,7 @@ class QtScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
-        msecs = int(self.to_seconds(period)) * 1000
+        msecs = int(self.to_seconds(period) * 1000.0)
         sad = SingleAssignmentDisposable()
 
         periodic_state = state
