@@ -32,21 +32,50 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
 
         self._exit_if_empty = exit_if_empty
 
-    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         return self.schedule_absolute(self.now, action, state=state)
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed after duetime."""
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed after duetime.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed at duetime."""
+    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        """
 
         if self._is_disposed:
             raise DisposedException()
@@ -64,9 +93,23 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
 
         return Disposable(si.cancel)
 
-    def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction, state: Any = None
-                         ) -> typing.Disposable:
-        """Schedule a periodic piece of work."""
+    def schedule_periodic(self,
+                          period: typing.RelativeTime,
+                          action: typing.ScheduledPeriodicAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules a periodic piece of work.
+
+        Args:
+            period: Period in seconds or timedelta for running the
+                work periodically.
+            action: Action to be executed.
+            state: [Optional] Initial state passed to the action upon
+                the first iteration.
+
+        Returns:
+            The disposable object used to cancel the scheduled
+            recurring action (best effort)."""
 
         if self._is_disposed:
             raise DisposedException()
