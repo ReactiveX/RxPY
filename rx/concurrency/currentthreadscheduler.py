@@ -2,7 +2,6 @@
 import time
 import logging
 import threading
-from typing import Dict
 
 from rx.core import typing
 from rx.internal import PriorityQueue
@@ -18,17 +17,16 @@ class Trampoline(object):
     @classmethod
     def run(cls, queue: PriorityQueue[ScheduledItem[typing.TState]]) -> None:
         while queue:
-            item: ScheduledItem = queue.dequeue()
-            if not item.is_cancelled():
+            item: ScheduledItem = queue.peek()
+            if item.is_cancelled():
+                queue.dequeue()
+            else:
                 diff = item.duetime - item.scheduler.now
-                while diff > DELTA_ZERO:
-                    seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
-                    log.warning("Do not schedule blocking work!")
-                    time.sleep(seconds)
-                    diff = item.duetime - item.scheduler.now
-
-                if not item.is_cancelled():
+                if diff <= DELTA_ZERO:
                     item.invoke()
+                    queue.dequeue()
+                else:
+                    time.sleep(diff.total_seconds())
 
 
 class CurrentThreadScheduler(SchedulerBase):
@@ -38,65 +36,53 @@ class CurrentThreadScheduler(SchedulerBase):
     waiting.
     """
 
+    class _Local(threading.local):
+        __slots__ = 'idle', 'queue'
+
+        def __init__(self):
+            self.idle: bool = True
+            self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+
     def __init__(self) -> None:
         """Creates a scheduler that schedules work as soon as possible
         on the current thread."""
 
-        self.lock = threading.RLock()
-        self.queues: Dict[int, PriorityQueue[[ScheduledItem[typing.TState]]]] = dict()
-        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = None
+        self._local = CurrentThreadScheduler._Local()
 
     def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
-        #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
-        return self.schedule_relative(DELTA_ZERO, action, state)
+        return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed after duetime."""
 
-        duetime = self.to_timedelta(duetime)
-
-        dt = self.now + SchedulerBase.to_timedelta(SchedulerBase.normalize(duetime))
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
-
-        with self.lock:
-            queue: PriorityQueue[ScheduledItem[typing.TState]] = self.queue
-            if queue is None:
-                queue = PriorityQueue()
-                queue.enqueue(si)
-
-                self.queue = queue
-                try:
-                    Trampoline.run(queue)
-                finally:
-                    self.queue = None
-            else:
-                queue.enqueue(si)
-
-        return si.disposable
+        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
         """Schedules an action to be executed at duetime."""
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state=state)
 
-    def _get_queue(self) -> PriorityQueue[ScheduledItem[typing.TState]]:
-        ident = threading.current_thread().ident
+        if duetime > self.now:
+            log.warning("Do not schedule blocking work!")
 
-        with self.lock:
-            return self.queues.get(ident)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
 
-    def _set_queue(self, queue: PriorityQueue[ScheduledItem[typing.TState]]):
-        ident = threading.current_thread().ident
+        local: CurrentThreadScheduler._Local = self._local
+        local.queue.enqueue(si)
+        if local.idle:
+            local.idle = False
+            try:
+                Trampoline.run(local.queue)
+            finally:
+                local.idle = True
+                local.queue.clear()
 
-        with self.lock:
-            self.queues[ident] = queue
-
-    queue = property(_get_queue, _set_queue)
+        return si.disposable
 
     def schedule_required(self) -> bool:
         """Test if scheduling is required.
@@ -106,8 +92,7 @@ class CurrentThreadScheduler(SchedulerBase):
         False; otherwise, if the trampoline is not active, then it
         returns True.
         """
-        with self.lock:
-            return self.queue is None
+        return self._local.idle
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler."""
