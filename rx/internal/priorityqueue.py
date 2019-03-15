@@ -8,7 +8,7 @@ from rx.internal.exceptions import InvalidOperationException
 class PriorityQueue:
     """Priority queue for scheduling"""
 
-    def __init__(self, capacity=None) -> None:
+    def __init__(self) -> None:
         self.items: List[Any] = []
         self.count = 0  # Monotonic increasing for sort stability
 

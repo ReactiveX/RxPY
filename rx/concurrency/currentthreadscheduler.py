@@ -62,7 +62,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
         queue = self.queue
         if queue is None:
-            queue = PriorityQueue(4)
+            queue = PriorityQueue()
             queue.enqueue(si)
 
             self.queue = queue
