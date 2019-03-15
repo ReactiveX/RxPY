@@ -28,7 +28,7 @@ class VirtualTimeScheduler(SchedulerBase):
         self.clock = initial_clock
 
         self.is_enabled = False
-        self.queue = PriorityQueue()
+        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
         super().__init__()
 
@@ -78,7 +78,7 @@ class VirtualTimeScheduler(SchedulerBase):
 
         spinning = 0
         while self.is_enabled:
-            item = self.get_next()
+            item: ScheduledItem[typing.TState] = self.get_next()
             if not item:
                 break
 
@@ -169,7 +169,7 @@ class VirtualTimeScheduler(SchedulerBase):
         """Returns the next scheduled item to be executed."""
 
         while self.queue:
-            item = self.queue.dequeue()
+            item: ScheduledItem[typing.TState] = self.queue.dequeue()
             if not item.is_cancelled():
                 return item
 

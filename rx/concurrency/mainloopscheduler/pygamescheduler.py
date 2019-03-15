@@ -24,7 +24,7 @@ class PyGameScheduler(SchedulerBase):
         self.timer = None
         self.event_id = event_id or pygame.USEREVENT
 
-        self.queue = PriorityQueue()
+        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
@@ -34,7 +34,7 @@ class PyGameScheduler(SchedulerBase):
 
     def run(self) -> None:
         while self.queue:
-            item = self.queue.peek()
+            item: ScheduledItem[typing.TState] = self.queue.peek()
             diff = item.duetime - self.now
 
             if diff > timedelta(0):

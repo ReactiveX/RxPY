@@ -32,7 +32,7 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
         self.thread: Optional[threading.Thread] = None
         self.timer: Optional[threading.Timer] = None
         self.condition = threading.Condition(self.lock)
-        self.queue = PriorityQueue()
+        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
         self.ready_list: List[ScheduledItem] = []
         self.next_item = None
 
@@ -119,7 +119,8 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
         calls to Schedule, the next item timer, or calls to dispose."""
 
         while True:
-            ready: List[ScheduledItem] = []
+            ready: List[ScheduledItem[typing.TState]] = []
+            item: ScheduledItem[typing.TState] = None
 
             with self.condition:
 
@@ -135,14 +136,14 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
                     self.ready_list.append(item)
 
                 if self.queue:
-                    _next = self.queue.peek()
-                    if self.next_item is None or _next != self.next_item:
-                        self.next_item = _next
-                        due = _next.duetime - self.now
+                    item = self.queue.peek()
+                    if self.next_item is None or item != self.next_item:
+                        self.next_item = item
+                        due = item.duetime - self.now
                         seconds = due.total_seconds()
                         log.debug("timeout: %s", seconds)
 
-                        self.timer = threading.Timer(seconds, self.tick, args=[_next])
+                        self.timer = threading.Timer(seconds, self.tick, args=[item])
                         self.timer.setDaemon(True)
                         self.timer.start()
 
@@ -182,5 +183,6 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
                     self.ready_list.append(item)
 
             self.condition.notify()  # signal that a new item is available
+
 
 event_loop_scheduler = EventLoopScheduler()
