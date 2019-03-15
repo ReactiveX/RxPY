@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, List
+from typing import Optional
 import threading
 
 from rx.internal import PriorityQueue
@@ -27,20 +27,32 @@ class PyGameScheduler(SchedulerBase):
         self._lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
-    def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         log.debug("PyGameScheduler.schedule(state=%s)", state)
         return self.schedule_absolute(self.now, action, state)
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
-
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
-
+            state: [Optional] state to be given to the action function.
         Returns:
             The disposable object used to cancel the scheduled action
             (best effort).
@@ -49,17 +61,17 @@ class PyGameScheduler(SchedulerBase):
         duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
+    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
             duetime: Absolute time after which to execute the action.
             action: Action to be executed.
-
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort)."""
+            state: [Optional] state to be given to the action function.
+        """
 
         duetime = self.to_datetime(duetime)
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
