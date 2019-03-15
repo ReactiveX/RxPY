@@ -4,15 +4,15 @@ from rx.disposable import Disposable
 from rx.core import Observable, typing
 from rx.concurrency import VirtualTimeScheduler
 
-from .subscription import Subscription
 from .recorded import Recorded
+from .subscription import Subscription
 
 
 class HotObservable(Observable):
     def __init__(self, scheduler: VirtualTimeScheduler, messages: List[Recorded]) -> None:
         super().__init__()
 
-        self.scheduler = scheduler
+        self.scheduler: VirtualTimeScheduler = scheduler
         self.messages = messages
         self.subscriptions: List[Subscription] = []
         self.observers: List[typing.Observer] = []
@@ -35,13 +35,13 @@ class HotObservable(Observable):
 
     def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
         self.observers.append(observer)
-        self.subscriptions.append(Subscription(self.scheduler.clock))
+        self.subscriptions.append(Subscription(self.scheduler._clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
             self.observers.remove(observer)
             start = self.subscriptions[index].subscribe
-            end = self.scheduler.clock
+            end = self.scheduler._clock
             self.subscriptions[index] = Subscription(start, end)
 
         return Disposable(dispose_action)

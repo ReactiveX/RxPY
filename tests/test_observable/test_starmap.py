@@ -109,7 +109,7 @@ class TestSelect(unittest.TestCase):
 
         def mapper(x, y):
             invoked[0] += 1
-            if scheduler.clock > 250:
+            if scheduler._clock > 250:
                 d.dispose()
             return x + y
 

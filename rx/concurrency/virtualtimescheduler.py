@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 import threading
-from typing import Any, Optional
+from typing import Any
 
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 from rx.core import typing
@@ -27,11 +27,10 @@ class VirtualTimeScheduler(SchedulerBase):
             comparer: Comparer to determine causality of events based
                 on absolute time.
         """
-        self.clock = initial_clock
-
-        self.is_enabled = False
-        self.lock = threading.RLock()
-        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._clock = initial_clock
+        self._is_enabled = False
+        self._lock = threading.Lock()
+        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
         super().__init__()
 
@@ -39,12 +38,12 @@ class VirtualTimeScheduler(SchedulerBase):
     def now(self) -> datetime:
         """Gets the schedulers absolute time clock value as datetime offset."""
 
-        return self.to_datetime(self.clock)
+        return self.to_datetime(self._clock)
 
     def schedule(self, action, state=None):
         """Schedules an action to be executed."""
 
-        return self.schedule_absolute(self.clock, action, state)
+        return self.schedule_absolute(self._clock, action, state=state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None):
         """Schedules an action to be executed at duetime.
@@ -60,85 +59,95 @@ class VirtualTimeScheduler(SchedulerBase):
             (best effort)
         """
 
-        runat = self.add(self.clock, self.to_seconds(duetime))
-        return self.schedule_absolute(duetime=runat, action=action, state=state)
+        duetime = self.add(self._clock, self.to_seconds(duetime))
+        return self.schedule_absolute(duetime, action, state=state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None):
         """Schedules an action to be executed at duetime."""
 
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
-        with self.lock:
-            self.queue.enqueue(si)
+        with self._lock:
+            self._queue.enqueue(si)
         return si.disposable
 
     def start(self) -> None:
         """Starts the virtual time scheduler."""
 
-        if self.is_enabled:
-            return
-
-        self.is_enabled = True
+        with self._lock:
+            if self._is_enabled:
+                return
+            self._is_enabled = True
 
         spinning = 0
-        while self.is_enabled:
-            item: ScheduledItem[typing.TState] = self.get_next()
-            if not item:
-                break
+        while True:
+            with self._lock:
+                if not self._is_enabled or not self._queue:
+                    break
 
-            if item.duetime > self.clock:
-                self.clock = item.duetime
-                spinning = 0
+                item: ScheduledItem[typing.TState] = self._queue.dequeue()
 
-            if spinning > MAX_SPINNING:
-                self.clock += 1.0
-                spinning = 0
+                if item.duetime > self._clock:
+                    self._clock = item.duetime
+                    spinning = 0
 
-            item.invoke()
+                elif spinning > MAX_SPINNING:
+                    self._clock += 1.0
+                    spinning = 0
+
+            if not item.is_cancelled():
+                item.invoke()
             spinning += 1
 
-        self.is_enabled = False
+        self.stop()
 
     def stop(self) -> None:
         """Stops the virtual time scheduler."""
 
-        self.is_enabled = False
+        with self._lock:
+            self._is_enabled = False
 
     def advance_to(self, time: float) -> None:
-        """Advances the schedulers clock to the specified time,
+        """Advances the schedulers clock to the specified absolute time,
         running all work til that point.
 
         Args:
             time: Absolute time to advance the schedulers clock to.
         """
-        with self.lock:
-            if self.clock > time:
+
+        with self._lock:
+            if self._clock > time:
                 raise ArgumentOutOfRangeException()
 
-            if self.clock == time:
+            if self._clock == time:
                 return
 
-            if self.is_enabled:
+            if self._is_enabled:
                 return
 
-            self.is_enabled = True
+            self._is_enabled = True
 
-            while self.is_enabled:
-                item = self.get_next()
-                if not item:
+        while True:
+            with self._lock:
+                if not self._is_enabled or not self._queue:
                     break
+
+                item: ScheduledItem[typing.TState] = self._queue.peek()
 
                 if item.duetime > time:
-                    self.queue.enqueue(item)
                     break
 
-                if item.duetime > self.clock:
-                    self.clock = item.duetime
+                if item.duetime > self._clock:
+                    self._clock = item.duetime
 
+                self._queue.dequeue()
+
+            if not item.is_cancelled():
                 item.invoke()
 
-            self.is_enabled = False
-            self.clock = time
+        with self._lock:
+            self._is_enabled = False
+            self._clock = time
 
     def advance_by(self, time: float) -> None:
         """Advances the schedulers clock by the specified relative time,
@@ -150,10 +159,7 @@ class VirtualTimeScheduler(SchedulerBase):
 
         log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
-        dt = self.add(self.clock, time)
-        if self.clock > dt:
-            raise ArgumentOutOfRangeException()
-        self.advance_to(dt)
+        self.advance_to(self.add(self._clock, time))
 
     def sleep(self, time: float) -> None:
         """Advances the schedulers clock by the specified relative time.
@@ -162,23 +168,13 @@ class VirtualTimeScheduler(SchedulerBase):
             time: Relative time to advance the schedulers clock by.
         """
 
-        dt = self.add(self.clock, time)
+        dt = self.add(self._clock, time)
 
-        if self.clock > dt:
+        if self._clock > dt:
             raise ArgumentOutOfRangeException()
 
-        self.clock = dt
-
-    def get_next(self) -> Optional[ScheduledItem]:
-        """Returns the next scheduled item to be executed."""
-
-        with self.lock:
-            while self.queue:
-                item: ScheduledItem[typing.TState] = self.queue.dequeue()
-                if not item.is_cancelled():
-                    return item
-
-        return None
+        with self._lock:
+            self._clock = dt
 
     @staticmethod
     def add(absolute, relative):
