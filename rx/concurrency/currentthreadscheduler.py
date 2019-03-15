@@ -3,10 +3,10 @@ import time
 import logging
 import threading
 from typing import Dict
-from datetime import timedelta
 
 from rx.core import typing
 from rx.internal import PriorityQueue
+from rx.internal.constants import DELTA_ZERO
 
 from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
@@ -21,7 +21,7 @@ class Trampoline(object):
             item: ScheduledItem = queue.dequeue()
             if not item.is_cancelled():
                 diff = item.duetime - item.scheduler.now
-                while diff > timedelta(0):
+                while diff > DELTA_ZERO:
                     seconds = diff.seconds + diff.microseconds / 1E6 + diff.days * 86400
                     log.warning("Do not schedule blocking work!")
                     time.sleep(seconds)
@@ -50,7 +50,7 @@ class CurrentThreadScheduler(SchedulerBase):
         """Schedules an action to be executed."""
 
         #log.debug("CurrentThreadScheduler.schedule(state=%s)", state)
-        return self.schedule_relative(timedelta(0), action, state)
+        return self.schedule_relative(DELTA_ZERO, action, state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:

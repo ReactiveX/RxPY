@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from rx import operators as ops
 from rx.core import Observable, typing
+from rx.internal.constants import DELTA_ZERO
 from rx.disposable import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.concurrency import timeout_scheduler
 
@@ -75,7 +76,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                             if queue:
                                 should_continue = True
                                 diff = queue[0].timestamp - scheduler.now
-                                zero = timedelta(0) if isinstance(diff, timedelta) else 0
+                                zero = DELTA_ZERO if isinstance(diff, timedelta) else 0
                                 recurse_duetime = max(zero, diff)
                             else:
                                 active[0] = False

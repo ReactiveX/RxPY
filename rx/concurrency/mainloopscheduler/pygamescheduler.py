@@ -1,9 +1,10 @@
 import logging
-from datetime import timedelta, datetime
+from datetime import datetime
 from typing import Any
 import threading
 
 from rx.internal import PriorityQueue
+from rx.internal.constants import DELTA_ZERO
 from rx.core import typing
 from rx.concurrency import ScheduledItem
 from rx.concurrency.schedulerbase import SchedulerBase
@@ -83,7 +84,7 @@ class PyGameScheduler(SchedulerBase):
                 item: ScheduledItem[typing.TState] = self.queue.peek()
                 diff = item.duetime - self.now
 
-                if diff > timedelta(0):
+                if diff > DELTA_ZERO:
                     break
 
                 item = self.queue.dequeue()
