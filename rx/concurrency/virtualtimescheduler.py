@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import logging
 from datetime import datetime
 import threading
@@ -119,10 +120,7 @@ class VirtualTimeScheduler(SchedulerBase):
             if self._clock > time:
                 raise ArgumentOutOfRangeException()
 
-            if self._clock == time:
-                return
-
-            if self._is_enabled:
+            if self._clock == time or self._is_enabled:
                 return
 
             self._is_enabled = True
@@ -177,5 +175,6 @@ class VirtualTimeScheduler(SchedulerBase):
             self._clock = dt
 
     @staticmethod
+    @abstractmethod
     def add(absolute, relative):
         raise NotImplementedError

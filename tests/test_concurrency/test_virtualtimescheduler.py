@@ -1,33 +1,15 @@
 import unittest
 from datetime import datetime, timedelta
 from rx.concurrency import VirtualTimeScheduler
+from rx.internal import ArgumentOutOfRangeException
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
     def __init__(self):
-        super(VirtualSchedulerTestScheduler, self).__init__()
-
-    @staticmethod
-    def comparer(a, b):
-        if a > b:
-            return 1
-
-        if a < b:
-            return -1
-
-        return 0
+        super().__init__()
 
     def add(self, absolute, relative):
-        if not absolute:
-            absolute = ''
-
         return absolute + relative
-
-    def to_datetime_offset(self, absolute):
-        if not absolute:
-            absolute = ''
-
-        return datetime.utcfromtimestamp(len(absolute))
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
@@ -59,3 +41,16 @@ class TestVirtualTimeScheduler(unittest.TestCase):
             assert(False)
         except Exception as e:
             self.assertEqual(str(e), ex)
+
+    def test_virtual_schedule_advance_clock_error(self):
+        scheduler = VirtualSchedulerTestScheduler()
+
+        try:
+            scheduler.sleep(-1)
+        except Exception as e:
+            assert isinstance(e, ArgumentOutOfRangeException)
+
+        try:
+            scheduler.advance_to(scheduler._clock - 1)
+        except Exception as e:
+            assert isinstance(e, ArgumentOutOfRangeException)
