@@ -2,6 +2,8 @@
 import time
 import logging
 import threading
+from weakref import WeakKeyDictionary
+from typing import MutableMapping
 
 from rx.core import typing
 from rx.internal import PriorityQueue
@@ -36,12 +38,24 @@ class CurrentThreadScheduler(SchedulerBase):
     waiting.
     """
 
+    _global: MutableMapping[threading.Thread, 'CurrentThreadScheduler'] = WeakKeyDictionary()
+
     class _Local(threading.local):
         __slots__ = 'idle', 'queue'
 
         def __init__(self):
             self.idle: bool = True
             self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+
+    def __new__(cls) -> 'CurrentThreadScheduler':
+        """Ensure that each thread has at most a single instance."""
+
+        thread = threading.current_thread()
+        self: 'CurrentThreadScheduler' = CurrentThreadScheduler._global.get(thread)
+        if not self:
+            self = super().__new__(cls)
+            CurrentThreadScheduler._global[thread] = self
+        return self
 
     def __init__(self) -> None:
         """Creates a scheduler that schedules work as soon as possible

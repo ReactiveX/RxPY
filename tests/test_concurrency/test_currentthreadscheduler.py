@@ -1,10 +1,30 @@
 import unittest
 from datetime import datetime, timedelta
+import threading
 
 from rx.concurrency import CurrentThreadScheduler
 
 
 class TestCurrentThreadScheduler(unittest.TestCase):
+
+    def test_currentthread_singleton(self):
+        scheduler = [CurrentThreadScheduler(), CurrentThreadScheduler()]
+        assert scheduler[0] is scheduler[1]
+
+        gate = [threading.Semaphore(0), threading.Semaphore(0)]
+        scheduler = [None, None]
+
+        def run(idx):
+            scheduler[idx] = CurrentThreadScheduler()
+            gate[idx].release()
+
+        for idx in (0, 1):
+            threading.Thread(target=run, args=(idx,)).start()
+            gate[idx].acquire()
+
+        assert scheduler[0] is not None
+        assert scheduler[1] is not None
+        assert scheduler[0] is not scheduler[1]
 
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
