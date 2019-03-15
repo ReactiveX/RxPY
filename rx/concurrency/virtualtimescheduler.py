@@ -2,7 +2,7 @@ from abc import abstractmethod
 import logging
 from datetime import datetime
 import threading
-from typing import Any
+from typing import Optional
 
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 from rx.core import typing
@@ -21,12 +21,10 @@ class VirtualTimeScheduler(SchedulerBase):
 
     def __init__(self, initial_clock=0.0) -> None:
         """Creates a new virtual time scheduler with the specified
-        initial clock value and absolute time comparer.
+        initial clock value.
 
         Args:
             initial_clock: Initial value for the clock.
-            comparer: Comparer to determine causality of events based
-                on absolute time.
         """
         self._clock = initial_clock
         self._is_enabled = False
@@ -41,31 +39,50 @@ class VirtualTimeScheduler(SchedulerBase):
 
         return self.to_datetime(self._clock)
 
-    def schedule(self, action, state=None):
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         return self.schedule_absolute(self._clock, action, state=state)
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction, state: Any = None):
-        """Schedules an action to be executed at duetime.
-
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed after duetime.
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
-            state: [Optional] State passed to the action to be
-                executed.
-
+            state: [Optional] state to be given to the action function.
         Returns:
             The disposable object used to cancel the scheduled action
-            (best effort)
+            (best effort).
         """
 
         duetime = self.add(self._clock, self.to_seconds(duetime))
         return self.schedule_absolute(duetime, action, state=state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: typing.TState = None):
-        """Schedules an action to be executed at duetime."""
+    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        """
 
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
         with self._lock:
