@@ -1,4 +1,5 @@
 import heapq
+from sys import maxsize
 from typing import Generic, List
 
 from rx.core.typing import T1
@@ -7,9 +8,11 @@ from rx.core.typing import T1
 class PriorityQueue(Generic[T1]):
     """Priority queue for scheduling. Note that methods aren't thread-safe."""
 
+    MIN_COUNT = ~maxsize
+
     def __init__(self) -> None:
         self.items: List[T1] = []
-        self.count = 0  # Monotonic increasing for sort stability
+        self.count = PriorityQueue.MIN_COUNT  # Monotonic increasing for sort stability
 
     def __len__(self):
         """Returns length of queue"""
@@ -23,7 +26,10 @@ class PriorityQueue(Generic[T1]):
     def dequeue(self) -> T1:
         """Returns and removes item with lowest priority from queue"""
 
-        return heapq.heappop(self.items)[0]
+        item: T1 = heapq.heappop(self.items)[0]
+        if not self.items:
+            self.count = PriorityQueue.MIN_COUNT
+        return item
 
     def enqueue(self, item: T1) -> None:
         """Adds item to queue"""

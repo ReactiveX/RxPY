@@ -33,6 +33,10 @@ class TestItem():
 
 
 class TestPriorityQueue(unittest.TestCase):
+
+    def test_priorityqueue_count(self):
+        assert PriorityQueue.MIN_COUNT < 0
+
     def test_priorityqueue_empty(self):
         """Must be empty on construction"""
 
