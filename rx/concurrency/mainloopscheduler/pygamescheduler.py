@@ -1,6 +1,7 @@
 import logging
-from typing import Any
 from datetime import timedelta, datetime
+from typing import Any
+import threading
 
 from rx.internal import PriorityQueue
 from rx.core import typing
@@ -12,7 +13,8 @@ log = logging.getLogger("Rx")
 
 
 class PyGameScheduler(SchedulerBase):
-    """A scheduler that schedules works for PyGame.
+    """A scheduler that schedules works for PyGame. Note that this class expects
+    the caller to invoke run() repeatedly.
 
     http://www.pygame.org/docs/ref/time.html
     http://www.pygame.org/docs/ref/event.html"""
@@ -22,8 +24,8 @@ class PyGameScheduler(SchedulerBase):
         import pygame
 
         self.timer = None
-        self.event_id = event_id or pygame.USEREVENT
-
+        self.event_id = event_id or pygame.USEREVENT  # TODO not used?
+        self.lock = threading.RLock()
         self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
@@ -31,18 +33,6 @@ class PyGameScheduler(SchedulerBase):
 
         log.debug("PyGameScheduler.schedule(state=%s)", state)
         return self.schedule_relative(0, action, state)
-
-    def run(self) -> None:
-        while self.queue:
-            item: ScheduledItem[typing.TState] = self.queue.peek()
-            diff = item.duetime - self.now
-
-            if diff > timedelta(0):
-                break
-
-            item = self.queue.dequeue()
-            if not item.is_cancelled():
-                item.invoke()
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -60,7 +50,8 @@ class PyGameScheduler(SchedulerBase):
         dt = self.now + self.to_timedelta(duetime)
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
 
-        self.queue.enqueue(si)
+        with self.lock:
+            self.queue.enqueue(si)
 
         return si.disposable
 
@@ -85,3 +76,16 @@ class PyGameScheduler(SchedulerBase):
         this property."""
 
         return datetime.utcnow()
+
+    def run(self) -> None:
+        with self.lock:
+            while self.queue:
+                item: ScheduledItem[typing.TState] = self.queue.peek()
+                diff = item.duetime - self.now
+
+                if diff > timedelta(0):
+                    break
+
+                item = self.queue.dequeue()
+                if not item.is_cancelled():
+                    item.invoke()
