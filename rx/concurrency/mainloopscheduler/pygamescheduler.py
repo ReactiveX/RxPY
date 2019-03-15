@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, List
 import threading
 
 from rx.internal import PriorityQueue
@@ -20,20 +20,18 @@ class PyGameScheduler(SchedulerBase):
     http://www.pygame.org/docs/ref/time.html
     http://www.pygame.org/docs/ref/event.html"""
 
-    def __init__(self, event_id=None):
+    def __init__(self):
         global pygame
         import pygame
 
-        self.timer = None
-        self.event_id = event_id or pygame.USEREVENT  # TODO not used?
-        self.lock = threading.RLock()
-        self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._lock = threading.Lock()
+        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
     def schedule(self, action: typing.ScheduledAction, state: Any = None) -> typing.Disposable:
         """Schedules an action to be executed."""
 
         log.debug("PyGameScheduler.schedule(state=%s)", state)
-        return self.schedule_relative(0, action, state)
+        return self.schedule_absolute(self.now, action, state)
 
     def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -48,13 +46,8 @@ class PyGameScheduler(SchedulerBase):
             (best effort).
         """
 
-        dt = self.now + self.to_timedelta(duetime)
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
-
-        with self.lock:
-            self.queue.enqueue(si)
-
-        return si.disposable
+        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -68,7 +61,13 @@ class PyGameScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled action
             (best effort)."""
 
-        return self.schedule_relative(duetime - self.now, action, state)
+        duetime = self.to_datetime(duetime)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
+
+        with self._lock:
+            self._queue.enqueue(si)
+
+        return si.disposable
 
     @property
     def now(self) -> datetime:
@@ -79,14 +78,15 @@ class PyGameScheduler(SchedulerBase):
         return datetime.utcnow()
 
     def run(self) -> None:
-        with self.lock:
-            while self.queue:
-                item: ScheduledItem[typing.TState] = self.queue.peek()
+        while self._queue:
+            with self._lock:
+                item: ScheduledItem[typing.TState] = self._queue.peek()
                 diff = item.duetime - self.now
 
                 if diff > DELTA_ZERO:
                     break
 
-                item = self.queue.dequeue()
-                if not item.is_cancelled():
-                    item.invoke()
+                item = self._queue.dequeue()
+
+            if not item.is_cancelled():
+                item.invoke()
