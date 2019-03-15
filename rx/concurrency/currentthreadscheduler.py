@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 from weakref import WeakKeyDictionary
-from typing import MutableMapping
+from typing import MutableMapping, Optional
 
 from rx.core import typing
 from rx.internal import PriorityQueue
@@ -32,10 +32,9 @@ class Trampoline(object):
 
 
 class CurrentThreadScheduler(SchedulerBase):
-    """Represents an object that schedules units of work on the current
-    thread. You never want to schedule timeouts using the
-    CurrentThreadScheduler since it will block the current thread while
-    waiting.
+    """Represents an object that schedules units of work on the current thread.
+    You never want to schedule timeouts using the CurrentThreadScheduler since
+    that will block the current thread while waiting.
     """
 
     _global: MutableMapping[threading.Thread, 'CurrentThreadScheduler'] = WeakKeyDictionary()
@@ -63,21 +62,50 @@ class CurrentThreadScheduler(SchedulerBase):
 
         self._local = CurrentThreadScheduler._Local()
 
-    def schedule(self, action: typing.ScheduledAction, state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         return self.schedule_absolute(self.now, action, state=state)
 
-    def schedule_relative(self, duetime: typing.RelativeTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed after duetime."""
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed after duetime.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
-                          state: typing.TState = None) -> typing.Disposable:
-        """Schedules an action to be executed at duetime."""
+    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+        """
 
         duetime = self.to_datetime(duetime)
 
