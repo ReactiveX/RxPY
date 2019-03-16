@@ -11,9 +11,7 @@ matrix:
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
         - pip3 install pycairo pygobject
       script:
-        - coverage run --source=rx setup.py test
-      after_success:
-        - coveralls
+        - coverage run --source=rx setup.py test && coveralls
 
     - os: linux
       dist: xenial
@@ -46,3 +44,8 @@ install:
 script:
   - python3 setup.py test
 
+after_success:
+  # Run a crude benchmark (unit tests minus concurrency) a couple of times.
+  # Need to make a copy of the script first, because on Windows it disappears
+  # whilst switching git branches.
+  - cp ./.travis/bench.sh bench.sh && ./bench.sh
