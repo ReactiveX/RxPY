@@ -6,7 +6,7 @@ matrix:
       python: 3.6
       # Coverage for the baseline 3.6 build: include some optional packages
       before_script:
-        - pip3 install eventlet gevent pyyaml tornado twisted
+        - pip3 install eventlet gevent tornado twisted
         # pycairo / pygobject need native libraries
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
         - pip3 install pycairo pygobject

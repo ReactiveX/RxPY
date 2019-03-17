@@ -5,8 +5,8 @@ The Reactive Extensions for Python (RxPY)
 .. image:: https://img.shields.io/travis/ReactiveX/RxPY.svg
         :target: https://travis-ci.org/ReactiveX/RxPY
 
-.. image:: https://img.shields.io/coveralls/dbrattli/RxPY.svg
-        :target: https://coveralls.io/r/dbrattli/RxPY
+.. image:: https://img.shields.io/coveralls/ReactiveX/RxPY.svg
+        :target: https://coveralls.io/github/ReactiveX/RxPY
 
 .. image:: https://img.shields.io/pypi/v/rx.svg
         :target: https://pypi.python.org/pypi/Rx
