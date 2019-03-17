@@ -1,6 +1,6 @@
 import time
 import logging
-from typing import List
+from typing import List, Optional
 
 from rx.disposable import Disposable
 from rx.core import typing
@@ -16,7 +16,7 @@ class NewThreadScheduler(SchedulerBase):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
-    def __init__(self, thread_factory: typing.StartableFactory = None) -> None:
+    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None) -> None:
         super(NewThreadScheduler, self).__init__()
         self.thread_factory = thread_factory or default_thread_factory
 
