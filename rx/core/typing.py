@@ -37,7 +37,7 @@ class Disposable(abc.Disposable):
         raise NotImplementedError
 
 
-ScheduledAction = Callable[['Scheduler', TState], Optional[Disposable]]
+ScheduledAction = Callable[[Scheduler, TState], Optional[Disposable]]
 ScheduledPeriodicAction = Callable[[TState], TState]
 
 

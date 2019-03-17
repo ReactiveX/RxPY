@@ -625,6 +625,7 @@ def start(func, scheduler=None) -> Observable:
         The function is called immediately, not during the subscription
         of the resulting sequence. Multiple subscriptions to the
         resulting sequence can observe the function's result.
+
     Returns:
         An observable sequence exposing the function's result value,
         or an exception.

@@ -1643,12 +1643,14 @@ def on_error_resume_next(second: Observable) -> Callable[[Observable], Observabl
         -1--2--3--4-a--b-|
 
     Keyword arguments:
-    second -- Second observable sequence used to produce results
-        after the first sequence terminates.
+        second: Second observable sequence used to produce results
+            after the first sequence terminates.
 
-    Returns an observable sequence that concatenates the first and
-    second sequence, even if the first sequence terminates
-    exceptionally.
+
+    Returns:
+        An observable sequence that concatenates the first and
+        second sequence, even if the first sequence terminates
+        exceptionally.
     """
 
     from rx.core.operators.onerrorresumenext import _on_error_resume_next
@@ -2082,7 +2084,7 @@ def share() -> Callable[[Observable], Observable]:
 
 
 def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
-    """The `single`operator.
+    """The single operator.
 
     Returns the only element of an observable sequence that satisfies
     the condition in the optional predicate, and reports an exception
@@ -2385,7 +2387,7 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
     result sequence, even if the error occurs before the duration.
 
     Args:
-    duration: Duration for skipping elements from the start of the
+        duration: Duration for skipping elements from the start of the
         sequence.
 
     Returns:
