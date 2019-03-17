@@ -17,7 +17,7 @@ class ColdObservable(Observable):
         self.subscriptions: List[Subscription] = []
 
     def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
-        self.subscriptions.append(Subscription(self.scheduler._clock))
+        self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
         disp = CompositeDisposable()
 

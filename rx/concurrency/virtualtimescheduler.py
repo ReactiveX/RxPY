@@ -33,6 +33,12 @@ class VirtualTimeScheduler(SchedulerBase):
 
         super().__init__()
 
+    def _get_clock(self):
+        with self._lock:
+            return self._clock
+
+    clock = property(fget=_get_clock)
+
     @property
     def now(self) -> datetime:
         """Gets the schedulers absolute time clock value as datetime offset."""
@@ -97,7 +103,8 @@ class VirtualTimeScheduler(SchedulerBase):
                 return
             self._is_enabled = True
 
-        spinning = 0
+        spinning: int = 0
+
         while True:
             with self._lock:
                 if not self._is_enabled or not self._queue:

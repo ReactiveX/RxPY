@@ -41,7 +41,7 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler._clock), on_completed(200))
+                        on_next(100, scheduler.clock), on_completed(200))
                 return xs[0]
             return rx.using(create_resources, create_observable)
 
@@ -72,7 +72,7 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler._clock), on_completed(200))
+                        on_next(100, scheduler.clock), on_completed(200))
                 return xs[0]
             return rx.using(create_resource, create_observable)
 
@@ -104,7 +104,7 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler._clock), on_error(200, ex))
+                        on_next(100, scheduler.clock), on_error(200, ex))
                 return xs[0]
             return rx.using(create_resource, create_observable)
         results = scheduler.start(create)
@@ -134,8 +134,8 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler._clock),
-                        on_next(1000, scheduler._clock + 1))
+                        on_next(100, scheduler.clock),
+                        on_next(1000, scheduler.clock + 1))
                 return xs[0]
             return rx.using(create_resource, create_observable)
         results = scheduler.start(create)

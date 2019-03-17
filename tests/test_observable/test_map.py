@@ -62,7 +62,7 @@ class TestSelect(unittest.TestCase):
         def projection(x, *args, **kw):
             invoked[0] += 1
 
-            if scheduler._clock > 400:
+            if scheduler.clock > 400:
                 d.dispose()
             return x
 
@@ -251,7 +251,7 @@ class TestSelect(unittest.TestCase):
 
         def projection(x, index):
             invoked[0] += 1
-            if scheduler._clock > 400:
+            if scheduler.clock > 400:
                 d.dispose()
 
             return x + index * 10

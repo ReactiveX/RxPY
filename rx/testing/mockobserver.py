@@ -14,10 +14,10 @@ class MockObserver(Observer):
         self.messages: List[Recorded] = []
 
     def on_next(self, value: Any) -> None:
-        self.messages.append(Recorded(self.scheduler._clock, OnNext(value)))
+        self.messages.append(Recorded(self.scheduler.clock, OnNext(value)))
 
     def on_error(self, error: Exception) -> None:
-        self.messages.append(Recorded(self.scheduler._clock, OnError(error)))
+        self.messages.append(Recorded(self.scheduler.clock, OnError(error)))
 
     def on_completed(self) -> None:
-        self.messages.append(Recorded(self.scheduler._clock, OnCompleted()))
+        self.messages.append(Recorded(self.scheduler.clock, OnCompleted()))

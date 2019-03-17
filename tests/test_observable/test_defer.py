@@ -31,7 +31,7 @@ class TestDefer(unittest.TestCase):
             def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                    on_next(100, scheduler._clock),
+                    on_next(100, scheduler.clock),
                     on_completed(200)
                 )
                 return xs[0]
@@ -52,7 +52,7 @@ class TestDefer(unittest.TestCase):
             def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler._clock), on_error(200, ex))
+                        on_next(100, scheduler.clock), on_error(200, ex))
                 return xs[0]
             return rx.defer(defer)
 
@@ -71,7 +71,7 @@ class TestDefer(unittest.TestCase):
             def defer(scheduler):
                 invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                    on_next(100, scheduler._clock),
+                    on_next(100, scheduler.clock),
                     on_next(200, invoked[0]),
                     on_next(1100, 1000))
                 return xs[0]
