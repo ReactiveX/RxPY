@@ -5,10 +5,7 @@ from .currentthreadscheduler import CurrentThreadScheduler, current_thread_sched
 from .virtualtimescheduler import VirtualTimeScheduler
 from .timeoutscheduler import TimeoutScheduler, timeout_scheduler
 from .newthreadscheduler import NewThreadScheduler
-try:
-    from .threadpoolscheduler import ThreadPoolScheduler
-except ImportError:
-    pass
+from .threadpoolscheduler import ThreadPoolScheduler
 from .eventloopscheduler import EventLoopScheduler
 from .historicalscheduler import HistoricalScheduler
 from .catchscheduler import CatchScheduler

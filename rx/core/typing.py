@@ -1,6 +1,7 @@
 from abc import abstractmethod
-from typing import Generic, TypeVar, Callable, Any, Union, Optional
+from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
 from datetime import datetime, timedelta
+from threading import Thread
 
 from . import abc
 
@@ -60,6 +61,11 @@ class Scheduler(abc.Scheduler):
     @abstractmethod
     def schedule_absolute(self, duetime: AbsoluteTime, action: ScheduledAction, state: TState = None) -> Disposable:
         return NotImplemented
+
+
+Startable = Union[abc.Startable, Thread]
+StartableTarget = Callable[..., None]
+StartableFactory = Callable[[StartableTarget, Optional[Tuple]], Startable]
 
 
 class Observer(Generic[T_in], abc.Observer):

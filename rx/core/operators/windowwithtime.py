@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
+from rx.internal.constants import DELTA_ZERO
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subjects import Subject
@@ -25,7 +26,7 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeT
             timer_d = SerialDisposable()
             next_shift = [timeshift]
             next_span = [timespan]
-            total_time = [timedelta(0)]
+            total_time = [DELTA_ZERO]
             q = []
 
             group_disposable = CompositeDisposable(timer_d)

@@ -1,10 +1,9 @@
 from threading import Timer
-from datetime import timedelta
 
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, Disposable
 
-from .schedulerbase import SchedulerBase
+from .schedulerbase import SchedulerBase, DELTA_ZERO
 
 
 class TimeoutScheduler(SchedulerBase):
@@ -31,7 +30,7 @@ class TimeoutScheduler(SchedulerBase):
 
         scheduler = self
         timespan = self.to_timedelta(duetime)
-        if timespan == timedelta(0):
+        if timespan == DELTA_ZERO:
             return scheduler.schedule(action, state)
 
         sad = SingleAssignmentDisposable()

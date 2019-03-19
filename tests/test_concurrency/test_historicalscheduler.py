@@ -51,19 +51,19 @@ class TestHistoricalScheduler(unittest.TestCase):
     def test_ctor(self):
         s = HistoricalScheduler()
         self.assertEqual(datetime.utcfromtimestamp(0), s.clock)
-        self.assertEqual(False, s.is_enabled)
+        self.assertEqual(False, s._is_enabled)
 
     def test_start_stop(self):
         s = HistoricalScheduler()
         list = []
 
-        s.schedule_absolute(time(0), lambda sc,st: list.append(Timestamped(1, s.now)))
-        s.schedule_absolute(time(1), lambda sc,st: list.append(Timestamped(2, s.now)))
-        s.schedule_absolute(time(2), lambda sc,st: s.stop())
-        s.schedule_absolute(time(3), lambda sc,st: list.append(Timestamped(3, s.now)))
-        s.schedule_absolute(time(4), lambda sc,st: s.stop())
-        s.schedule_absolute(time(5), lambda sc,st: s.start())
-        s.schedule_absolute(time(6), lambda sc,st: list.append(Timestamped(4, s.now)))
+        s.schedule_absolute(time(0), lambda sc, st: list.append(Timestamped(1, s.now)))
+        s.schedule_absolute(time(1), lambda sc, st: list.append(Timestamped(2, s.now)))
+        s.schedule_absolute(time(2), lambda sc, st: s.stop())
+        s.schedule_absolute(time(3), lambda sc, st: list.append(Timestamped(3, s.now)))
+        s.schedule_absolute(time(4), lambda sc, st: s.stop())
+        s.schedule_absolute(time(5), lambda sc, st: s.start())
+        s.schedule_absolute(time(6), lambda sc, st: list.append(Timestamped(4, s.now)))
 
         s.start()
 
@@ -283,20 +283,20 @@ class TestHistoricalScheduler(unittest.TestCase):
     def test_is_enabled(self):
         s = HistoricalScheduler()
 
-        self.assertEqual(False, s.is_enabled)
+        self.assertEqual(False, s._is_enabled)
 
         def action(scheduler, state):
-            self.assertEqual(True, s.is_enabled)
+            self.assertEqual(True, s._is_enabled)
             s.stop()
-            self.assertEqual(False, s.is_enabled)
+            self.assertEqual(False, s._is_enabled)
 
         s.schedule(action)
 
-        self.assertEqual(False, s.is_enabled)
+        self.assertEqual(False, s._is_enabled)
 
         s.start()
 
-        self.assertEqual(False, s.is_enabled)
+        self.assertEqual(False, s._is_enabled)
 
     def test_sleep1(self):
         now = datetime(year=1983, month=2, day=11, hour=12)

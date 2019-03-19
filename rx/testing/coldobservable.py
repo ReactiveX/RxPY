@@ -2,21 +2,22 @@ from typing import List
 
 from rx.disposable import Disposable, CompositeDisposable
 from rx.core import Observable, typing
+from rx.concurrency import VirtualTimeScheduler
 
 from .subscription import Subscription
 
 
+
 class ColdObservable(Observable):
-    def __init__(self, scheduler, messages) -> None:
+    def __init__(self, scheduler: VirtualTimeScheduler, messages) -> None:
         super().__init__()
 
-        self.scheduler = scheduler
+        self.scheduler: VirtualTimeScheduler = scheduler
         self.messages = messages
         self.subscriptions: List[Subscription] = []
 
     def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
-        clock = self.scheduler.to_seconds(self.scheduler.now)
-        self.subscriptions.append(Subscription(clock))
+        self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
         disp = CompositeDisposable()
 

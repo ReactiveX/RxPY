@@ -1,7 +1,6 @@
 import unittest
 
 from rx.internal import PriorityQueue
-from rx.internal.exceptions import InvalidOperationException
 
 
 class TestItem():
@@ -34,6 +33,10 @@ class TestItem():
 
 
 class TestPriorityQueue(unittest.TestCase):
+
+    def test_priorityqueue_count(self):
+        assert PriorityQueue.MIN_COUNT < 0
+
     def test_priorityqueue_empty(self):
         """Must be empty on construction"""
 
@@ -124,26 +127,10 @@ class TestPriorityQueue(unittest.TestCase):
 
         p = PriorityQueue()
 
-        self.assertRaises(InvalidOperationException, p.peek)
+        self.assertRaises(IndexError, p.peek)
         p.enqueue(42)
         assert p.peek() == 42
         p.enqueue(41)
         assert p.peek() == 41
         p.enqueue(43)
         assert p.peek() == 41
-
-    def test_priorityqueue_remove_at(self):
-        """Remove item at index"""
-
-        p = PriorityQueue()
-
-        self.assertRaises(IndexError, p.remove_at, 42)
-        p.enqueue(42)
-        p.enqueue(41)
-        p.enqueue(43)
-
-        assert p.remove_at(2) == 43
-        assert p.remove_at(1) == 42
-        assert p.remove_at(0) == 41
-
-        self.assertRaises(IndexError, p.remove_at, 0)

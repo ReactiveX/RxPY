@@ -1,12 +1,13 @@
 from concurrent.futures import ThreadPoolExecutor
 
+from rx.core.abc import Startable
 from .newthreadscheduler import NewThreadScheduler
 
 
 class ThreadPoolScheduler(NewThreadScheduler):
     """A scheduler that schedules work via the thread pool."""
 
-    class ThreadPoolThread:
+    class ThreadPoolThread(Startable):
         """Wraps a concurrent future as a thread."""
 
         def __init__(self, executor, run):
@@ -23,7 +24,7 @@ class ThreadPoolScheduler(NewThreadScheduler):
     def __init__(self, max_workers=None):
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
-        def thread_factory(target, *args):
+        def thread_factory(target):
             return self.ThreadPoolThread(self.executor, target)
 
         super().__init__(thread_factory)

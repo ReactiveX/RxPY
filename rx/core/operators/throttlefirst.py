@@ -20,7 +20,7 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Sche
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or timeout_scheduler
 
-            duration = _scheduler.to_timedelta(+window_duration or 0.0)
+            duration = _scheduler.to_timedelta(window_duration or 0.0)
             if duration <= _scheduler.to_timedelta(0):
                 raise ValueError('window_duration cannot be less or equal zero.')
             last_on_next = [0]

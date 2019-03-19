@@ -1,61 +1,54 @@
 import heapq
-from typing import List, Any
-from threading import RLock
+from sys import maxsize
+from typing import Generic, List
 
-from rx.internal.exceptions import InvalidOperationException
+from rx.core.typing import T1
 
 
-class PriorityQueue:
-    """Priority queue for scheduling"""
+class PriorityQueue(Generic[T1]):
+    """Priority queue for scheduling. Note that methods aren't thread-safe."""
 
-    def __init__(self, capacity=None) -> None:
-        self.items: List[Any] = []
-        self.count = 0  # Monotonic increasing for sort stability
+    MIN_COUNT = ~maxsize
 
-        self.lock = RLock()
+    def __init__(self) -> None:
+        self.items: List[T1] = []
+        self.count = PriorityQueue.MIN_COUNT  # Monotonic increasing for sort stability
 
     def __len__(self):
         """Returns length of queue"""
 
         return len(self.items)
 
-    def peek(self) -> Any:
+    def peek(self) -> T1:
         """Returns first item in queue without removing it"""
-        try:
-            return self.items[0][0]
-        except IndexError:
-            raise InvalidOperationException("Queue is empty")
+        return self.items[0][0]
 
-    def remove_at(self, index: int) -> Any:
-        """Removes item at given index"""
-
-        with self.lock:
-            item = self.items.pop(index)[0]
-            heapq.heapify(self.items)
-        return item
-
-    def dequeue(self) -> Any:
+    def dequeue(self) -> T1:
         """Returns and removes item with lowest priority from queue"""
 
-        with self.lock:
-            item = heapq.heappop(self.items)[0]
+        item: T1 = heapq.heappop(self.items)[0]
+        if not self.items:
+            self.count = PriorityQueue.MIN_COUNT
         return item
 
-    def enqueue(self, item: Any) -> None:
+    def enqueue(self, item: T1) -> None:
         """Adds item to queue"""
 
-        with self.lock:
-            heapq.heappush(self.items, (item, self.count))
-            self.count += 1
+        heapq.heappush(self.items, (item, self.count))
+        self.count += 1
 
-    def remove(self, item: Any) -> bool:
+    def remove(self, item: T1) -> bool:
         """Remove given item from queue"""
 
-        with self.lock:
-            for index, _item in enumerate(self.items):
-                if _item[0] == item:
-                    self.items.pop(index)
-                    heapq.heapify(self.items)
-                    return True
+        for index, _item in enumerate(self.items):
+            if _item[0] == item:
+                self.items.pop(index)
+                heapq.heapify(self.items)
+                return True
 
         return False
+
+    def clear(self):
+        """Remove all items from the queue."""
+        self.items = []
+        self.count = PriorityQueue.MIN_COUNT
