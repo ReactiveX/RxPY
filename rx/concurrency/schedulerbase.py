@@ -70,7 +70,7 @@ class SchedulerBase(typing.Scheduler):
         """Schedules an action to be executed at duetime.
 
         Args:
-            duetime: Absolute time after which to execute the action.
+            duetime: Absolute time at which to execute the action.
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
 
@@ -123,14 +123,13 @@ class SchedulerBase(typing.Scheduler):
         disp = MultipleAssignmentDisposable()
 
         def invoke_periodic(scheduler: typing.Scheduler, _: typing.TState) -> Optional[Disposable]:
-            nonlocal state
-
             if disp.is_disposed:
                 return None
 
             if period:
-                disp.disposable = self.schedule_relative(period, invoke_periodic, None)
+                disp.disposable = scheduler.schedule_relative(period, invoke_periodic, None)
 
+            nonlocal state
             try:
                 new_state = action(state)
             except Exception:

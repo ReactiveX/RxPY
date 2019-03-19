@@ -1,9 +1,8 @@
-# Current Thread Scheduler
-import time
 import logging
 import threading
-from weakref import WeakKeyDictionary
+import time
 from typing import MutableMapping, Optional
+from weakref import WeakKeyDictionary
 
 from rx.core import typing
 from rx.internal import PriorityQueue
@@ -11,6 +10,7 @@ from rx.internal.constants import DELTA_ZERO
 
 from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
+
 
 log = logging.getLogger('Rx')
 
@@ -31,6 +31,16 @@ class Trampoline(object):
                     time.sleep(diff.total_seconds())
 
 
+class _Local(threading.local):
+    __slots__ = 'idle', 'queue'
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.idle: bool = True
+        self.queue: PriorityQueue[
+            ScheduledItem[typing.TState]] = PriorityQueue()
+
+
 class CurrentThreadScheduler(SchedulerBase):
     """Represents an object that schedules units of work on the current thread.
     You never want to schedule timeouts using the CurrentThreadScheduler since
@@ -38,13 +48,6 @@ class CurrentThreadScheduler(SchedulerBase):
     """
 
     _global: MutableMapping[threading.Thread, 'CurrentThreadScheduler'] = WeakKeyDictionary()
-
-    class _Local(threading.local):
-        __slots__ = 'idle', 'queue'
-
-        def __init__(self):
-            self.idle: bool = True
-            self.queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 
     def __new__(cls) -> 'CurrentThreadScheduler':
         """Ensure that each thread has at most a single instance."""
@@ -60,16 +63,19 @@ class CurrentThreadScheduler(SchedulerBase):
         """Creates a scheduler that schedules work as soon as possible
         on the current thread."""
 
-        self._local = CurrentThreadScheduler._Local()
+        super().__init__()
+        self._local = _Local()
 
     def schedule(self,
                  action: typing.ScheduledAction,
                  state: Optional[typing.TState] = None
                  ) -> typing.Disposable:
         """Schedules an action to be executed.
+
         Args:
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
         Returns:
             The disposable object used to cancel the scheduled action
             (best effort).
@@ -83,10 +89,12 @@ class CurrentThreadScheduler(SchedulerBase):
                           state: Optional[typing.TState] = None
                           ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
+
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
         Returns:
             The disposable object used to cancel the scheduled action
             (best effort).
@@ -95,16 +103,21 @@ class CurrentThreadScheduler(SchedulerBase):
         duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
                           action: typing.ScheduledAction,
                           state: Optional[typing.TState] = None
                           ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
-            duetime: Absolute time after which to execute the action.
+            duetime: Absolute time at which to execute the action.
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
         """
 
         duetime = self.to_datetime(duetime)
@@ -114,7 +127,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
 
-        local: CurrentThreadScheduler._Local = self._local
+        local: _Local = self._local
         local.queue.enqueue(si)
         if local.idle:
             local.idle = False

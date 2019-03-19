@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .schedulerbase import UTC_ZERO
 from .virtualtimescheduler import VirtualTimeScheduler
 
@@ -6,31 +8,38 @@ class HistoricalScheduler(VirtualTimeScheduler):
     """Provides a virtual time scheduler that uses datetime for absolute time
     and timedelta for relative time."""
 
-    def __init__(self, initial_clock=None):
+    def __init__(self, initial_clock: datetime = None) -> None:
         """Creates a new historical scheduler with the specified initial clock
         value.
 
-        Keyword arguments:
-        initial_clock -- {Number} Initial value for the clock.
+        Args:
+            initial_clock: Initial value for the clock.
         """
 
         super().__init__(initial_clock or UTC_ZERO)
 
     @property
-    def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled
-        on a scheduler will adhere to the time denoted by this property."""
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+
+        Returns:
+             The scheduler's current time, as a datetime instance.
+        """
 
         return self._clock
 
     @staticmethod
-    def add(absolute, relative):
+    def add(absolute, relative) -> datetime:
         """Adds a relative time value to an absolute time value.
 
-        Keyword arguments:
-        absolute -- {datetime} Absolute virtual time value.
-        relative -- {timedelta} Relative virtual time value to add.
+        Args:
+            absolute: Absolute virtual time value.
+            relative: Relative virtual time value to add.
 
-        Returns resulting absolute virtual time sum value."""
+        Returns:
+            The resulting absolute virtual time sum value.
+        """
 
         return absolute + relative

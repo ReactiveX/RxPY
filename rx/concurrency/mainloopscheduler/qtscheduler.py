@@ -109,11 +109,9 @@ class QtScheduler(SchedulerBase):
         msecs = int(self.to_seconds(period) * 1000.0)
         sad = SingleAssignmentDisposable()
 
-        periodic_state = state
-
         def interval() -> None:
-            nonlocal periodic_state
-            periodic_state = action(periodic_state)
+            nonlocal state
+            state = action(state)
 
         log.debug("periodic timeout: %sms", msecs)
 
