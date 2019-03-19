@@ -1,12 +1,15 @@
-from datetime import datetime, timedelta
-import threading
-import os
-import unittest
 import pytest
+import unittest
+
+import os
+import threading
+from datetime import timedelta
 
 from rx.concurrency.mainloopscheduler import GtkScheduler
+from rx.internal.basic import default_now
 
-gi = pytest.importorskip("gi")
+
+gi = pytest.importorskip('gi')
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gtk
 
@@ -15,16 +18,16 @@ from gi.repository import GLib, Gtk
 # prevents QtScheduler test from failing with message
 #   Gtk-ERROR **: GTK+ 2.x symbols detected.
 #   Using GTK+ 2.x and GTK+ 3 in the same process is not supported
-if "GNOME_DESKTOP_SESSION_ID" in os.environ:
-    del os.environ["GNOME_DESKTOP_SESSION_ID"]
+if 'GNOME_DESKTOP_SESSION_ID' in os.environ:
+    del os.environ['GNOME_DESKTOP_SESSION_ID']
 
 
 class TestGtkScheduler(unittest.TestCase):
 
     def test_gtk_schedule_now(self):
         scheduler = GtkScheduler()
-        res = scheduler.now - datetime.utcnow()
-        assert(res < timedelta(seconds=1))
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
 
     def test_gtk_schedule_action(self):
         scheduler = GtkScheduler()
@@ -34,11 +37,13 @@ class TestGtkScheduler(unittest.TestCase):
         def action(scheduler, state):
             nonlocal ran
             ran = True
+
         scheduler.schedule(action)
 
         def done(data):
             Gtk.main_quit()
             gate.release()
+            return False
 
         GLib.timeout_add(50, done, None)
         Gtk.main()
@@ -49,18 +54,19 @@ class TestGtkScheduler(unittest.TestCase):
     def test_gtk_schedule_action_relative(self):
         scheduler = GtkScheduler()
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
 
         scheduler.schedule_relative(0.1, action)
 
         def done(data):
             Gtk.main_quit()
             gate.release()
+            return False
 
         GLib.timeout_add(200, done, None)
         Gtk.main()
@@ -73,12 +79,12 @@ class TestGtkScheduler(unittest.TestCase):
     def test_gtk_schedule_action_absolute(self):
         scheduler = GtkScheduler()
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
 
         due = scheduler.now + timedelta(milliseconds=100)
         scheduler.schedule_absolute(due, action)
@@ -86,6 +92,7 @@ class TestGtkScheduler(unittest.TestCase):
         def done(data):
             Gtk.main_quit()
             gate.release()
+            return False
 
         GLib.timeout_add(200, done, None)
         Gtk.main()
@@ -110,6 +117,7 @@ class TestGtkScheduler(unittest.TestCase):
         def done(data):
             Gtk.main_quit()
             gate.release()
+            return False
 
         GLib.timeout_add(200, done, None)
         Gtk.main()
@@ -134,6 +142,7 @@ class TestGtkScheduler(unittest.TestCase):
         def done(data):
             Gtk.main_quit()
             gate.release()
+            return False
 
         GLib.timeout_add(300, done, None)
         Gtk.main()

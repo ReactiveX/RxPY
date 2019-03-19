@@ -1,6 +1,7 @@
-import unittest
-from datetime import datetime, timedelta
 import pytest
+import unittest
+
+from datetime import datetime, timedelta
 
 tornado = pytest.importorskip("tornado")
 from tornado import ioloop
@@ -14,24 +15,26 @@ class TestIOLoopScheduler(unittest.TestCase):
         loop = ioloop.IOLoop.instance()
 
         scheduler = IOLoopScheduler(loop)
-        res = scheduler.now - datetime.now()
-        assert(res < timedelta(seconds=1))
+        diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
+        assert abs(diff) < timedelta(milliseconds=1)
 
     def test_ioloop_schedule_action(self):
         loop = ioloop.IOLoop.instance()
 
         scheduler = IOLoopScheduler(loop)
-        ran = [False]
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
+
         scheduler.schedule(action)
 
         def done():
-            assert ran[0] is True
+            assert ran is True
             loop.stop()
-        loop.call_later(0.1, done)
 
+        loop.call_later(0.1, done)
         loop.start()
 
     def test_ioloop_schedule_action_due(self):
@@ -39,35 +42,39 @@ class TestIOLoopScheduler(unittest.TestCase):
 
         scheduler = IOLoopScheduler(loop)
         starttime = loop.time()
-        endtime = [None]
+        endtime = None
 
         def action(scheduler, state):
-            endtime[0] = loop.time()
+            nonlocal endtime
+            endtime = loop.time()
 
         scheduler.schedule_relative(0.2, action)
 
         def done():
-            diff = endtime[0]-starttime
+            assert endtime is not None
+            diff = endtime - starttime
             assert diff > 0.18
             loop.stop()
-        loop.call_later(0.3, done)
 
+        loop.call_later(0.3, done)
         loop.start()
 
     def test_ioloop_schedule_action_cancel(self):
         loop = ioloop.IOLoop.instance()
 
-        ran = [False]
+        ran = False
         scheduler = IOLoopScheduler(loop)
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
+
         d = scheduler.schedule_relative(0.01, action)
         d.dispose()
 
         def done():
-            assert not ran[0]
+            assert ran is False
             loop.stop()
-        loop.call_later(0.1, done)
 
+        loop.call_later(0.1, done)
         loop.start()

@@ -1,7 +1,8 @@
-import unittest
-import threading
-from datetime import datetime, timedelta
 import pytest
+import unittest
+
+import threading
+from datetime import timedelta
 
 
 skip = False
@@ -21,6 +22,8 @@ except ImportError:
 
 if not skip:
     from rx.concurrency.mainloopscheduler import QtScheduler
+    from rx.internal.basic import default_now
+
 
 app = None  # Prevent garbage collection
 
@@ -38,8 +41,8 @@ class TestQtScheduler(unittest.TestCase):
 
     def test_qt_schedule_now(self):
         scheduler = QtScheduler(QtCore)
-        res = scheduler.now - datetime.utcnow()
-        assert res < timedelta(seconds=1)
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
 
     def test_qt_schedule_action(self):
         app = make_app()
@@ -62,19 +65,19 @@ class TestQtScheduler(unittest.TestCase):
         app.exec_()
 
         gate.acquire()
-        assert ran
+        assert ran is True
 
     def test_qt_schedule_action_due_relative(self):
         app = make_app()
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
 
         scheduler.schedule_relative(0.2, action)
 
@@ -86,7 +89,7 @@ class TestQtScheduler(unittest.TestCase):
         app.exec_()
 
         gate.acquire()
-        assert endtime
+        assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
@@ -95,12 +98,12 @@ class TestQtScheduler(unittest.TestCase):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
 
         scheduler.schedule_absolute(starttime + timedelta(seconds=0.2), action)
 
@@ -112,7 +115,7 @@ class TestQtScheduler(unittest.TestCase):
         app.exec_()
 
         gate.acquire()
-        assert endtime
+        assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
@@ -138,7 +141,7 @@ class TestQtScheduler(unittest.TestCase):
         app.exec_()
 
         gate.acquire()
-        assert not ran
+        assert ran is False
 
     def test_qt_schedule_action_periodic(self):
         app = make_app()
