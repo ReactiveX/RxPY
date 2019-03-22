@@ -1,18 +1,21 @@
+import pytest
 import unittest
 
-from datetime import datetime, timedelta
 import threading
+from datetime import timedelta
 from time import sleep
+
 from rx.concurrency import EventLoopScheduler
 from rx.internal import DisposedException
+from rx.internal.basic import default_now
 
 
 class TestEventLoopScheduler(unittest.TestCase):
+
     def test_event_loop_now(self):
         scheduler = EventLoopScheduler()
-        res = scheduler.now - datetime.utcnow()
-
-        assert res < timedelta(microseconds=1000)
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
 
     def test_event_loop_schedule_action(self):
         scheduler = EventLoopScheduler(exit_if_empty=True)
@@ -86,7 +89,6 @@ class TestEventLoopScheduler(unittest.TestCase):
             result.append(1)
             scheduler.schedule(action2)
             scheduler.schedule_relative(0.10, action3)
-            sleep(0.10)
 
         def action2(scheduler, state):
             result.append(2)
@@ -104,12 +106,12 @@ class TestEventLoopScheduler(unittest.TestCase):
     def test_event_loop_schedule_action_relative_due(self):
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
             gate.release()
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
@@ -121,12 +123,12 @@ class TestEventLoopScheduler(unittest.TestCase):
     def test_event_loop_schedule_action_absolute_due(self):
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
-        starttime = datetime.utcnow()
+        starttime = default_now()
         endtime = None
 
         def action(scheduler, state):
             nonlocal endtime
-            endtime = datetime.utcnow()
+            endtime = default_now()
             gate.release()
 
         scheduler.schedule_absolute(scheduler.now, action)
@@ -159,6 +161,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         assert counter == 0
         assert scheduler._has_thread() is True
         scheduler.schedule(dispose)
+
         gate.acquire()
         assert scheduler._has_thread() is True
         sleep(period)
@@ -177,15 +180,11 @@ class TestEventLoopScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        exc = None
-        try:
+        with pytest.raises(DisposedException):
             scheduler.schedule(action)
-        except Exception as e:
-            exc = e
-        finally:
-            assert isinstance(exc, DisposedException)
-            assert ran is False
-            assert scheduler._has_thread() is False
+
+        assert ran is False
+        assert scheduler._has_thread() is False
 
     def test_eventloop_schedule_absolute_dispose(self):
         scheduler = EventLoopScheduler(exit_if_empty=False)
@@ -198,15 +197,11 @@ class TestEventLoopScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        exc = None
-        try:
+        with pytest.raises(DisposedException):
             scheduler.schedule_absolute(scheduler.now, action)
-        except Exception as e:
-            exc = e
-        finally:
-            assert isinstance(exc, DisposedException)
-            assert ran is False
-            assert scheduler._has_thread() is False
+
+        assert ran is False
+        assert scheduler._has_thread() is False
 
     def test_eventloop_schedule_periodic_dispose(self):
         scheduler = EventLoopScheduler(exit_if_empty=False)
@@ -219,12 +214,8 @@ class TestEventLoopScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        exc = None
-        try:
+        with pytest.raises(DisposedException):
             scheduler.schedule_periodic(0.1, scheduler.now, action)
-        except Exception as e:
-            exc = e
-        finally:
-            assert isinstance(exc, DisposedException)
-            assert ran is False
-            assert scheduler._has_thread() is False
+
+        assert ran is False
+        assert scheduler._has_thread() is False
