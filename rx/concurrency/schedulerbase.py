@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -11,6 +12,73 @@ class SchedulerBase(typing.Scheduler):
     """Provides a set of static properties to access commonly used
     schedulers.
     """
+
+    @property
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+
+        Returns:
+             The scheduler's current time, as a datetime instance.
+         """
+
+        return default_now()
+
+    @abstractmethod
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+        return NotImplemented
+
+    @abstractmethod
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed after duetime.
+
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+        return NotImplemented
+
+    @abstractmethod
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+        return NotImplemented
 
     def invoke_action(self,
                       action: typing.ScheduledAction,
@@ -76,17 +144,6 @@ class SchedulerBase(typing.Scheduler):
 
         disp.disposable = self.schedule_relative(period, invoke_periodic, None)
         return disp
-
-    @property
-    def now(self) -> datetime:
-        """Returns the current time.
-
-        Represents a notion of time for this scheduler. Tasks being
-        scheduled on a scheduler will adhere to the time denoted by
-        this property.
-        """
-
-        return default_now()
 
     @classmethod
     def to_seconds(cls, value: typing.AbsoluteOrRelativeTime) -> float:
