@@ -2,6 +2,7 @@ import pytest
 import unittest
 
 from datetime import datetime, timedelta
+from time import sleep
 
 from rx.concurrency.mainloopscheduler import EventLetEventScheduler
 
@@ -18,6 +19,13 @@ class TestEventLetEventScheduler(unittest.TestCase):
         hub = eventlet.hubs.get_hub()
         diff = scheduler.now - datetime.utcfromtimestamp(hub.clock())
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_eventlet_schedule_now_units(self):
+        scheduler = EventLetEventScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_eventlet_schedule_action(self):
         scheduler = EventLetEventScheduler()

@@ -3,6 +3,7 @@ import unittest
 
 import threading
 from datetime import timedelta
+from time import sleep
 
 from rx.concurrency import CurrentThreadScheduler
 from rx.internal.basic import default_now
@@ -33,6 +34,13 @@ class TestCurrentThreadScheduler(unittest.TestCase):
         scheduler = CurrentThreadScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_currentthread_now_units(self):
+        scheduler = CurrentThreadScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_currentthread_schedule(self):
         scheduler = CurrentThreadScheduler()

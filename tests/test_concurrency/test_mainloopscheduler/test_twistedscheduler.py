@@ -1,6 +1,7 @@
 import pytest
 
 from datetime import datetime, timedelta
+from time import sleep
 
 twisted = pytest.importorskip("twisted")
 
@@ -16,6 +17,13 @@ class TestTwistedScheduler(unittest.TestCase):
         scheduler = TwistedScheduler(reactor)
         diff = scheduler.now - datetime.utcfromtimestamp(float(reactor.seconds()))
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_qt_schedule_now_units(self):
+        scheduler = TwistedScheduler(reactor)
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     @defer.inlineCallbacks
     def test_twisted_schedule_action(self):

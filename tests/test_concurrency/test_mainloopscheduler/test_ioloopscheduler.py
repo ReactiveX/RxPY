@@ -2,6 +2,7 @@ import pytest
 import unittest
 
 from datetime import datetime, timedelta
+from time import sleep
 
 tornado = pytest.importorskip("tornado")
 from tornado import ioloop
@@ -13,10 +14,17 @@ class TestIOLoopScheduler(unittest.TestCase):
 
     def test_ioloop_schedule_now(self):
         loop = ioloop.IOLoop.instance()
-
         scheduler = IOLoopScheduler(loop)
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_ioloop_schedule_now_units(self):
+        loop = ioloop.IOLoop.instance()
+        scheduler = IOLoopScheduler(loop)
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_ioloop_schedule_action(self):
         loop = ioloop.IOLoop.instance()

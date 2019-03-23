@@ -18,6 +18,13 @@ class TestThreadPoolScheduler(unittest.TestCase):
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
+    def test_threadpool_now_units(self):
+        scheduler = ThreadPoolScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+
     def test_schedule_action(self):
         ident = threading.current_thread().ident
         evt = threading.Event()

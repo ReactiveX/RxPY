@@ -14,6 +14,13 @@ class TestTimeoutScheduler(unittest.TestCase):
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
+    def test_threadpool_now_units(self):
+        scheduler = TimeoutScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+
     def test_timeout_schedule_action(self):
         scheduler = TimeoutScheduler()
         ran = False

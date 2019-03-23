@@ -2,6 +2,7 @@ import pytest
 import unittest
 
 from datetime import timedelta
+from time import sleep
 
 from rx.concurrency.mainloopscheduler import TkinterScheduler
 from rx.internal.basic import default_now
@@ -16,7 +17,6 @@ except Exception:
     display = False
 
 
-
 @pytest.mark.skipif("display == False")
 class TestTkinterScheduler(unittest.TestCase):
 
@@ -24,6 +24,13 @@ class TestTkinterScheduler(unittest.TestCase):
         scheduler = TkinterScheduler(root)
         res = scheduler.now - default_now()
         assert abs(res) < timedelta(milliseconds=1)
+
+    def test_qt_schedule_now_units(self):
+        scheduler = TkinterScheduler(root)
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_tkinter_schedule_action(self):
         scheduler = TkinterScheduler(root)

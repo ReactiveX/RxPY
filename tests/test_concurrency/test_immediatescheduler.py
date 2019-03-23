@@ -1,6 +1,7 @@
 import unittest
 
 from datetime import timedelta
+from time import sleep
 
 from rx.disposable import Disposable
 from rx.concurrency import ImmediateScheduler
@@ -14,6 +15,13 @@ class TestImmediateScheduler(unittest.TestCase):
         scheduler = ImmediateScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_immediate_now_units(self):
+        scheduler = ImmediateScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_immediate_scheduleaction(self):
         scheduler = ImmediateScheduler()

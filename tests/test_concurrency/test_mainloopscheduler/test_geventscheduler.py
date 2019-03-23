@@ -17,6 +17,13 @@ class TestGEventScheduler(unittest.TestCase):
         diff = scheduler.now - datetime.utcfromtimestamp(hub.loop.now())
         assert abs(diff) < timedelta(milliseconds=1)
 
+    def test_gevent_schedule_now_units(self):
+        scheduler = GEventScheduler()
+        diff = scheduler.now
+        gevent.sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+
     def test_gevent_schedule_action(self):
         scheduler = GEventScheduler()
         ran = False

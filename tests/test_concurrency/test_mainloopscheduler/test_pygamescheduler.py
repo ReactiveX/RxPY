@@ -18,6 +18,13 @@ class TestPyGameScheduler(unittest.TestCase):
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
+    def test_pygame_schedule_now_units(self):
+        scheduler = PyGameScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+
     def test_pygame_schedule_action(self):
         scheduler = PyGameScheduler()
         ran = False

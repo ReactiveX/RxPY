@@ -15,6 +15,14 @@ class TestAsyncIOScheduler(unittest.TestCase):
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
         assert abs(diff) < timedelta(milliseconds=1)
 
+    def test_asyncio_schedule_now_units(self):
+        loop = asyncio.get_event_loop()
+        scheduler = AsyncIOScheduler(loop)
+        diff = scheduler.now
+        yield from asyncio.sleep(0.1, loop=loop)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+
     def test_asyncio_schedule_action(self):
         loop = asyncio.get_event_loop()
 

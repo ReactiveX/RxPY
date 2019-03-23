@@ -4,6 +4,7 @@ import unittest
 import os
 import threading
 from datetime import timedelta
+from time import sleep
 
 from rx.concurrency.mainloopscheduler import GtkScheduler
 from rx.internal.basic import default_now
@@ -28,6 +29,13 @@ class TestGtkScheduler(unittest.TestCase):
         scheduler = GtkScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_gtk_schedule_now_units(self):
+        scheduler = GtkScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_gtk_schedule_action(self):
         scheduler = GtkScheduler()
