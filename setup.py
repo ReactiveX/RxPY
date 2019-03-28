@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 try:
     from setuptools import setup
 except ImportError:
@@ -5,19 +7,34 @@ except ImportError:
     use_setuptools()
     from setuptools import setup
 
+from configparser import ConfigParser
+
+
+# General project metadata is stored in project.cfg
+with open('project.cfg') as project_file:
+    config = ConfigParser()
+    config.read_file(project_file)
+    project_meta = dict(config.items('project'))
+
+
+# Populate the long_description field from README.rst
 with open('README.rst') as readme_file:
-    readme = readme_file.read()
+    project_meta['long_description'] = readme_file.read()
+
 
 setup(
-    name='Rx',
-    version='3.0.0-alpha2',
-    description='Reactive Extensions (Rx) for Python',
-    long_description=readme,
-    author='Dag Brattli',
-    author_email='dag@brattli.net',
-    license='Apache License',
-    url='http://reactivex.io',
-    download_url='https://github.com/ReactiveX/RxPY',
+    **{key: project_meta[key] for key in (
+        'name',
+        'version',
+        'description',
+        'long_description',
+        'author',
+        'author_email',
+        'license',
+        'url',
+        'download_url'
+    )},
+
     zip_safe=True,
     python_requires='>=3.6.0',
 
@@ -29,9 +46,10 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest', "pytest-asyncio"],
@@ -43,5 +61,5 @@ setup(
               'rx.operators', 'rx.disposable', 'rx.subjects',
               'rx.testing'],
     package_dir={'rx': 'rx'},
-    include_package_data=True,
+    include_package_data=True
 )

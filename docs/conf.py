@@ -11,23 +11,36 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
+import re
 import sys
 import guzzle_sphinx_theme
-sys.path.insert(0, os.path.abspath('../'))
+from configparser import ConfigParser
+
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, root)
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'RxPY'
-copyright = '2018, Dag Brattli'
-author = 'Dag Brattli'
+# General project metadata is stored in project.cfg
+with open(os.path.join(root, 'project.cfg')) as project_file:
+    config = ConfigParser()
+    config.read_file(project_file)
+    project_meta = dict(config.items('project'))
 
-# The short X.Y version
-version = '3.0'
+project = project_meta['project']
+author = project_meta['author']
+copyright = project_meta['copyright']
+description = project_meta['description']
+url = project_meta['url']
+title = project + ' Documentation'
+
 # The full version, including alpha/beta/rc tags
-release = '3.0.0-alpha1'
+release = project_meta['version']
+# The short X.Y.Z version
+version = re.sub('[^0-9.].*$', '', release)
 
 
 # -- General configuration ---------------------------------------------------
@@ -82,8 +95,8 @@ pygments_style = 'sphinx'
 html_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'
 html_theme_path = guzzle_sphinx_theme.html_theme_path()
 html_theme = 'guzzle_sphinx_theme'
-html_title = "RxPY Documentation"
-html_short_title = "RxPY 3.0"
+html_title = title
+html_short_title = project + ' ' + version
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -91,7 +104,7 @@ html_short_title = "RxPY 3.0"
 #
 # html_theme_options = {}
 html_theme_options = {
-    "projectlink": "https://github.com/ReactiveX/RxPY",
+    'projectlink': url,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -116,7 +129,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'RxPYdoc'
+htmlhelp_basename = project + 'doc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -143,8 +156,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'RxPY.tex', 'RxPY Documentation',
-     'Dag Brattli', 'manual'),
+    (master_doc, project + '.tex', title, author, 'manual')
 ]
 
 
@@ -153,8 +165,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'rxpy', 'RxPY Documentation',
-     [author], 1)
+    (master_doc, project.lower(), title, [author], 1)
 ]
 
 
@@ -164,9 +175,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'RxPY', 'RxPY Documentation',
-     author, 'RxPY', 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, project, title, author, project, description, 'Miscellaneous')
 ]
 
 
