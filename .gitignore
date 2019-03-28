@@ -28,6 +28,7 @@ pip-log.txt
 .tox
 nosetests.xml
 coverage.xml
+htmlcov
 .mypy_cache
 .pytest_cache
 
