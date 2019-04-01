@@ -69,8 +69,8 @@ class TestEventLoopScheduler(unittest.TestCase):
             result.append(3)
             gate.release()
 
-        scheduler.schedule_relative(0.10, action)
-        scheduler.schedule_relative(0.05, lambda s, t: result.append(2))
+        scheduler.schedule_relative(0.2, action)
+        scheduler.schedule_relative(0.1, lambda s, t: result.append(2))
         scheduler.schedule(lambda s, t: result.append(1))
 
         gate.acquire()
