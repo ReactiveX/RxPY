@@ -56,7 +56,7 @@ Learning RxPY
 --------------
 
 Read the `documentation
-<https://github.com/ReactiveX/RxPY/tree/master/doc/get_started.rst>`_ to learn
+<https://github.com/ReactiveX/RxPY/blob/master/docs/get_started.rst>`_ to learn
 the principles of RxPY and get the complete reference of the available
 operators.
 
