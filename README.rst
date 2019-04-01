@@ -10,9 +10,9 @@ The Reactive Extensions for Python (RxPY)
 
 .. image:: https://img.shields.io/pypi/v/rx.svg
         :target: https://pypi.python.org/pypi/Rx
-        
-.. image:: https://readthedocs.org/projects/rxpy/badge/?version=latest
-        :target: https://rxpy.readthedocs.io/en/latest/?badge=latest
+
+.. image:: https://img.shields.io/readthedocs/rxpy.svg
+        :target: https://readthedocs.org/projects/rxpy/builds/
         :alt: Documentation Status
 
 
