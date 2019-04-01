@@ -56,15 +56,15 @@ Learning RxPY
 --------------
 
 Read the `documentation
-<https://github.com/ReactiveX/RxPY/blob/master/docs/get_started.rst>`_ to learn
+<https://rxpy.readthedocs.io/en/latest/>`_ to learn
 the principles of RxPY and get the complete reference of the available
 operators.
 
 I you need to migrate code from RxPY v1.x, read the `migration
-<https://github.com/ReactiveX/RxPY/blob/master/doc/migration.rst>`_ section.
+<https://rxpy.readthedocs.io/en/latest/migration.html>`_ section.
 
 There is also a list of third party documentation available `here
-<https://github.com/ReactiveX/RxPY/blob/master/doc/additional_readings.rst>`_.
+<https://rxpy.readthedocs.io/en/latest/additional_readings.html>`_.
 
 
 Community
