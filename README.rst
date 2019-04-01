@@ -10,6 +10,10 @@ The Reactive Extensions for Python (RxPY)
 
 .. image:: https://img.shields.io/pypi/v/rx.svg
         :target: https://pypi.python.org/pypi/Rx
+        
+.. image:: https://readthedocs.org/projects/rxpy/badge/?version=latest
+        :target: https://rxpy.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 
 *A library for composing asynchronous and event-based programs using observable collections and
