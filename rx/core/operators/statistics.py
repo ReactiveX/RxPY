@@ -1,4 +1,4 @@
-from rx.core import ObservableBase, Observable
+from rx.core import Observable
 import math
 
 
@@ -14,14 +14,14 @@ def determine_median(sorted_list):
         return float(median_1 + median_2) / 2.0
 
 
-def median(source: ObservableBase) -> ObservableBase:
+def median(source: Observable) -> Observable:
     """
     Calculates the statistical median on numerical emissions. The sequence must be finite.
     """
     return source.to_sorted_list().map(lambda l: determine_median(l))
 
 
-def mode(source: ObservableBase) -> ObservableBase:
+def mode(source: Observable) -> Observable:
     """
     Returns the most frequently emitted value (or "values" if they have the same number of occurrences).
     The sequence must be finite.
@@ -33,7 +33,7 @@ def mode(source: ObservableBase) -> ObservableBase:
         .map(lambda t: t[0])
 
 
-def variance(source: ObservableBase) -> ObservableBase:
+def variance(source: Observable) -> Observable:
     """
     Returns the statistical variance of the numerical emissions.
     The sequence must be finite.
@@ -47,7 +47,7 @@ def variance(source: ObservableBase) -> ObservableBase:
     return Observable.zip(squared_values.sum(), squared_values.count(), lambda sum, ct: sum / (ct - 1))
 
 
-def standard_deviation(source: ObservableBase) -> ObservableBase:
+def standard_deviation(source: Observable) -> Observable:
     """
     Returns the standard deviation of the numerical emissions:
     The sequence must be finite.
