@@ -38,10 +38,6 @@ class Disposable(abc.Disposable):
         raise NotImplementedError
 
 
-ScheduledAction = Callable[['Scheduler', TState], Optional[Disposable]]
-ScheduledPeriodicAction = Callable[[TState], TState]
-
-
 class Scheduler(abc.Scheduler):
     __slots__ = ()
 
@@ -51,17 +47,21 @@ class Scheduler(abc.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule(self, action: ScheduledAction, state: TState = None) -> Disposable:
+    def schedule(self, action: 'ScheduledAction', state: TState = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self, duetime: RelativeTime, action: ScheduledAction, state: TState = None) -> Disposable:
+    def schedule_relative(self, duetime: RelativeTime, action: 'ScheduledAction', state: TState = None) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self, duetime: AbsoluteTime, action: ScheduledAction, state: TState = None) -> Disposable:
+    def schedule_absolute(self, duetime: AbsoluteTime, action: 'ScheduledAction', state: TState = None) -> Disposable:
         return NotImplemented
 
+
+ScheduledAction = Callable[[Scheduler, Optional[TState]], Optional[Disposable]]
+ScheduledPeriodicAction = Callable[[Optional[TState]], TState]
+ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction]
 
 Startable = Union[abc.Startable, Thread]
 StartableTarget = Callable[..., None]
