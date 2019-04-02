@@ -100,7 +100,16 @@ unpacks the tuple to args:
 Scheduler Parameter In Create Operator
 ---------------------------------------
 
-subscription function takes two parameters: observer and scheduler
+The subscription function provided to the :func:`create <rx.create>` operator
+now takes two parameters: An observer and a scheduler. The scheduler parameter
+is new: If a scheduler has been set in the call to subscribe, then this
+scheduler is passed to the subscription function. Otherwise this parameter is
+set to None.
+
+One can use or ignore this parameter. This new scheduler parameter allows the
+create operator to use the default scheduler provided in the subscribe call.
+So scheduling item emissions with relative or absolute duetime is now possible.
+
 
 Removal Of List Of Observables
 -------------------------------
