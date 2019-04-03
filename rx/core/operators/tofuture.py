@@ -2,6 +2,7 @@ from typing import Callable
 from asyncio import Future
 
 from rx.core import Observable
+from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
 def _to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
@@ -10,6 +11,10 @@ def _to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable
 
     def to_future(source: Observable) -> Future:
         """Converts an existing observable sequence to a Future.
+
+        If the observable emits a single item, then this item is set as the
+        result of the future. If the observable emits a sequence of items, then
+        the last emitted item is set as the result of the future.
 
         Example:
             future = rx.return_value(42).pipe(ops.to_future(asyncio.Future))
@@ -21,17 +26,23 @@ def _to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable
             A future with the last value from the observable sequence.
         """
 
-        has_value = []
+        has_value = False
+        last_value = None
 
         def on_next(value):
-            has_value.append(value)
+            nonlocal last_value
+            nonlocal has_value
+            last_value = value
+            has_value = True
 
         def on_error(err):
             future.set_exception(err)
 
         def on_completed():
             if has_value:
-                future.set_result(has_value.pop())
+                future.set_result(last_value)
+            else:
+                future.set_exception(SequenceContainsNoElementsError())
 
         source.subscribe_(on_next, on_error, on_completed)
 
