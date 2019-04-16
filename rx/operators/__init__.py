@@ -178,13 +178,14 @@ def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTi
         >>> res = buffer_with_time(1.0, 0.5)
 
     Args:
-        timespan: Length of each buffer (specified as an integer denoting
-            milliseconds).
-        timeshift: [Optional] Interval between creation of consecutive
-            buffers (specified as an integer denoting milliseconds), or an
-            optional scheduler parameter. If not specified, the time shift
-            corresponds to the timespan parameter, resulting in non-overlapping
-            adjacent buffers.
+        timespan: Length of each buffer (specified as a float denoting seconds
+            or an instance of timedelta).
+        timeshift: [Optional] Interval between creation of consecutive buffers
+            (specified as a float denoting seconds or an instance of timedelta).
+            If not specified, the timeshift will be the same as the timespan
+            argument, resulting in non-overlapping adjacent buffers.
+        scheduler:  [Optional] Scheduler to run the timer on. If not specified,
+             the timeout scheduler is used
 
     Returns:
         An operator function that takes an observable source and
@@ -215,7 +216,7 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     Args:
         timespan: Maximum time length of a buffer.
         count: Maximum element count of a buffer.
-        scheduler: [Optional] Scheduler to run bufferin timers on. If
+        scheduler: [Optional] Scheduler to run buffering timers on. If
             not specified, the timeout scheduler is used.
 
     Returns:
@@ -385,7 +386,7 @@ def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -
 
     Args:
         duetime: Duration of the throttle period for each value
-            (specified as an integer denoting milliseconds).
+            (specified as a float denoting seconds or an instance of timedelta).
         scheduler: Scheduler to debounce values on.
 
     Returns:
@@ -519,9 +520,8 @@ def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> C
         >>> res = delay(5.0)
 
     Args:
-        duetime: Relative time specified as an integer denoting
-            milliseconds or datetime.timedelta by which to shift the
-            observable sequence.
+        duetime: Relative time, specified as a float denoting seconds or an
+            instance of timedelta, by which to shift the observable sequence.
         scheduler: [Optional] Scheduler to run the delay timers on.
             If not specified, the timeout scheduler is used.
 
@@ -1925,9 +1925,9 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
 
     Examples:
         >>> res = replay(buffer_size=3)
-        >>> res = replay(buffer_size=3, window=500)
-        >>> res = replay(None, 3, 500)
-        >>> res = replay(lambda x: x.take(6).repeat(), 3, 500)
+        >>> res = replay(buffer_size=3, window=0.5)
+        >>> res = replay(None, 3, 0.5)
+        >>> res = replay(lambda x: x.take(6).repeat(), 3, 0.5)
 
     Args:
         mapper: [Optional] Selector function which can use the
@@ -1986,8 +1986,8 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
         >>> res = sample(5.0) # 5 seconds
 
     Args:
-        interval: Interval at which to sample (specified as an integer
-            denoting milliseconds).
+        interval: Interval at which to sample (specified as a float denoting
+            seconds or an instance of timedelta).
 
     Returns:
         An operator function that takes an observable source and
@@ -2066,7 +2066,7 @@ def sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = No
 
 
 def share() -> Callable[[Observable], Observable]:
-    """Share a single subscription among multple observers.
+    """Share a single subscription among multiple observers.
 
     This is an alias for a composed publish() and ref_count().
 
@@ -2282,7 +2282,7 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: t
         ------------3--4-------|
 
     Examples:
-        >>> res = skip_until_with_time(datetime)
+        >>> res = skip_until_with_time(datetime())
         >>> res = skip_until_with_time(5.0)
 
     Args:
@@ -2959,9 +2959,9 @@ def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: t
         >>> res = timeout(5.0, return_value(42))
 
     Args:
-        duetime: Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) when a
-            timeout occurs.
+        duetime: Absolute (specified as a datetime object) or relative time
+            (specified as a float denoting seconds or an instance of timedetla)
+            when a timeout occurs.
         other: Sequence to return in case of a timeout. If not
             specified, a timeout error throwing sequence will be used.
         scheduler:
@@ -2981,9 +2981,9 @@ def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=
     observable sequence if a timeout is signaled.
 
     Examples:
-        >>> res = timeout_with_mapper(rx.timer(500))
-        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200))
-        >>> res = timeout_with_mapper(rx.timer(500), lambda x: rx.timer(200)), rx.return_value(42))
+        >>> res = timeout_with_mapper(rx.timer(0.5))
+        >>> res = timeout_with_mapper(rx.timer(0.5), lambda x: rx.timer(0.2))
+        >>> res = timeout_with_mapper(rx.timer(0.5), lambda x: rx.timer(0.2)), rx.return_value(42))
 
     Args:
         first_timeout: [Optional] Observable sequence that represents
