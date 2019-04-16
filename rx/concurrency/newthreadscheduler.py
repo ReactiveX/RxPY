@@ -1,6 +1,6 @@
-import time
 import logging
-from typing import List, Optional
+import threading
+from typing import Optional
 
 from rx.disposable import Disposable
 from rx.core import typing
@@ -44,26 +44,27 @@ class NewThreadScheduler(SchedulerBase):
                           state: typing.TState = None) -> typing.Disposable:
         """Schedule a periodic piece of work."""
 
-        secs = self.to_seconds(period)
-        disposed: List[bool] = []
+        secs: float = self.to_seconds(period)
+        disposed: threading.Event = threading.Event()
 
-        s = [state]
+        s = state
 
         def run() -> None:
             while True:
-                time.sleep(secs)
-                if disposed:
+                disposed.wait(secs)
+                if disposed.is_set():
                     return
 
-                new_state = action(s[0])
+                nonlocal s
+                new_state = action(s)
                 if new_state is not None:
-                    s[0] = new_state
+                    s = new_state
 
         thread = self.thread_factory(run)
         thread.start()
 
-        def dispose():
-            disposed.append(True)
+        def dispose() -> None:
+            disposed.set()
 
         return Disposable(dispose)
 
