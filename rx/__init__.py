@@ -337,7 +337,7 @@ def generate_with_relative_time(initial_state, condition, iterate, time_mapper) 
     initial state until the condition fails.
 
     Example:
-        res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 500)
+        res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
 
     Args:
         initial_state: Initial state.
@@ -345,8 +345,8 @@ def generate_with_relative_time(initial_state, condition, iterate, time_mapper) 
             false).
         iterate: Iteration step function.
         time_mapper: Time mapper function to control the speed of
-            values being produced each iteration, returning integer
-            values denoting milliseconds.
+            values being produced each iteration, returning relative times, i.e.
+            either floats denoting seconds or instances of timedelta.
 
     Returns:
         The generated sequence.
@@ -471,11 +471,11 @@ def interval(period, scheduler: typing.Scheduler = None) -> Observable:
     period.
 
     Example:
-        >>> res = rx.interval(1000)
+        >>> res = rx.interval(1.0)
 
     Args:
-        period: Period for producing the values in the resulting
-            sequence (specified as an integer denoting milliseconds).
+        period: Period for producing the values in the resulting sequence
+            (specified as a float denoting seconds or an instance of timedelta).
         scheduler:  Scheduler to run the interval on. If not specified,
             the timeout scheduler is used.
 
@@ -677,19 +677,18 @@ def timer(duetime: typing.AbsoluteOrRelativeTime, period: typing.RelativeTime = 
 
     Examples:
         >>> res = rx.timer(datetime(...))
-        >>> res = rx.timer(datetime(...), 1000)
+        >>> res = rx.timer(datetime(...), 0.1)
         >>> res = rx.timer(5.0)
-        >>> res = rx.timer(5.0, 1.00)
+        >>> res = rx.timer(5.0, 1.0)
 
     Args:
-        duetime: Absolute (specified as a datetime object) or relative
-            time (specified as an integer denoting milliseconds) at
-            which to produce the first value.
-        period: [Optional] Period to produce subsequent values
-            (specified as an integer denoting milliseconds), or the
-            scheduler to run the timer on. If not specified, the
-            resulting timer is not recurring.
-        scheduler:  Scheduler to run the timer on. If not specified,
+        duetime: Absolute (specified as a datetime object) or relative time
+            (specified as a float denoting seconds or an instance of timedelta)
+            at which to produce the first value.
+        period: [Optional] Period to produce subsequent values (specified as a
+            float denoting seconds or an instance of timedelta).
+            If not specified, the resulting timer is not recurring.
+        scheduler:  [Optional] Scheduler to run the timer on. If not specified,
             the timeout scheduler is used.
 
     Returns:

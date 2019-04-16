@@ -8,7 +8,7 @@ def _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
     initial state until the condition fails.
 
     Example:
-        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 500)
+        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
 
     Args:
         initial_state: Initial state.
@@ -16,8 +16,8 @@ def _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
             false).
         iterate: Iteration step function.
         time_mapper: Time mapper function to control the speed of
-            values being produced each iteration, returning integer
-            values denoting milliseconds.
+            values being produced each iteration, returning relative times, i.e.
+            either floats denoting seconds or instances of timedelta.
 
     Returns:
         The generated sequence.
