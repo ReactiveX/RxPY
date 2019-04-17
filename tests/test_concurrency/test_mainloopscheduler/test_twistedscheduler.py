@@ -20,52 +20,59 @@ class TestTwistedScheduler(unittest.TestCase):
     @defer.inlineCallbacks
     def test_twisted_schedule_action(self):
         scheduler = TwistedScheduler(reactor)
-        ran = [False]
+        promise = defer.Deferred()
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
-        scheduler.schedule(action)
+            nonlocal ran
+            ran = True
 
-        promise = defer.Deferred()
         def done():
-            assert(ran[0] is True)
-            promise.callback("Done")
+            promise.callback('Done')
+
+        scheduler.schedule(action)
         reactor.callLater(0.1, done)
+
         yield promise
+        assert ran is True
 
     @defer.inlineCallbacks
     def test_twisted_schedule_action_due(self):
         scheduler = TwistedScheduler(reactor)
+        promise = defer.Deferred()
         starttime = reactor.seconds()
-        endtime = [None]
+        endtime = None
 
         def action(scheduler, state):
-            endtime[0] = reactor.seconds()
+            nonlocal endtime
+            endtime = reactor.seconds()
+
+        def done():
+            promise.callback('Done')
 
         scheduler.schedule_relative(0.2, action)
-
-        promise = defer.Deferred()
-        def done():
-            diff = endtime[0]-starttime
-            assert(diff > 0.18)
-            promise.callback("Done")
         reactor.callLater(0.3, done)
+
         yield promise
+        diff = endtime - starttime
+        assert diff > 0.18
 
     @defer.inlineCallbacks
     def test_twisted_schedule_action_cancel(self):
-        ran = [False]
         scheduler = TwistedScheduler(reactor)
+        promise = defer.Deferred()
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
+
+        def done():
+            promise.callback('Done')
+
         d = scheduler.schedule_relative(0.01, action)
         d.dispose()
 
-        promise = defer.Deferred()
-        def done():
-            assert(not ran[0])
-            promise.callback("Done")
         reactor.callLater(0.1, done)
-
         yield promise
+        assert ran is False
