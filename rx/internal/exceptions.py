@@ -29,8 +29,3 @@ class CompletedException(Exception):
 class WouldBlockException(Exception):
     def __init__(self, msg=None):
         super(WouldBlockException, self).__init__(msg or "Would block")
-
-
-class InvalidOperationException(Exception):
-    def __init__(self, msg=None):
-        super(InvalidOperationException, self).__init__(msg or "Invalid operation")

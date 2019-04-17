@@ -6,10 +6,6 @@ from rx.disposable import SingleAssignmentDisposable
 from .schedulerbase import SchedulerBase
 
 
-def default_sub_comparer(x, y):
-    return 0 if x == y else 1 if x > y else -1
-
-
 class ScheduledItem(Generic[typing.TState]):  # pylint: disable=unsubscriptable-object
     def __init__(self, scheduler: SchedulerBase, state: Optional[typing.TState], action: typing.ScheduledAction,
                  duetime: typing.AbsoluteTime):
