@@ -57,7 +57,7 @@ class GtkScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
-        return self._gtk_schedule(duetime, action, state)
+        return self._gtk_schedule(duetime, action, state=state)
 
     def schedule_absolute(self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction,
                           state: typing.TState = None) -> typing.Disposable:
@@ -73,7 +73,7 @@ class GtkScheduler(SchedulerBase):
         """
 
         duetime = self.to_datetime(duetime)
-        return self._gtk_schedule(duetime, action, state)
+        return self._gtk_schedule(duetime - self.now, action, state=state)
 
     def schedule_periodic(self, period: typing.RelativeTime, action: typing.ScheduledPeriodicAction,
                           state: typing.TState = None):
