@@ -245,7 +245,7 @@ def from_future(future: _Future) -> Observable:
     return _from_future(future)
 
 
-def from_iterable(iterable: Iterable) -> Observable:
+def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
     """Converts an iterable to an observable sequence.
 
     Example:
@@ -260,7 +260,7 @@ def from_iterable(iterable: Iterable) -> Observable:
         given iterable sequence.
     """
     from .core.observable.fromiterable import from_iterable as from_iterable_
-    return from_iterable_(iterable)
+    return from_iterable_(iterable, scheduler)
 
 
 from_ = from_iterable
