@@ -2,6 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
+from rx.concurrency import ImmediateScheduler
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -75,3 +76,21 @@ class TestObserveOn(unittest.TestCase):
 
         assert results.messages == []
         assert xs.subscriptions == [subscribe(200, 1000)]
+
+    def test_observe_on_forward_subscribe_scheduler(self):
+        scheduler = ImmediateScheduler()
+        expected_subscribe_scheduler = ImmediateScheduler()
+
+        actual_subscribe_scheduler = None
+
+        def subscribe(observer, scheduler):
+            nonlocal actual_subscribe_scheduler
+            actual_subscribe_scheduler = scheduler
+            observer.on_completed()
+
+        xs = rx.create(subscribe)
+
+        xs.pipe(ops.observe_on(scheduler)).subscribe(
+            scheduler=expected_subscribe_scheduler)
+
+        assert expected_subscribe_scheduler == actual_subscribe_scheduler
