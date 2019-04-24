@@ -22,8 +22,9 @@ def _observe_on(scheduler) -> Callable[[Observable], Observable]:
             Returns the source sequence whose observations happen on
             the specified scheduler.
         """
-        def subscribe(observer, _=None):
-            return source.subscribe(ObserveOnObserver(scheduler, observer))
+        def subscribe(observer, subscribe_scheduler=None):
+            return source.subscribe(ObserveOnObserver(scheduler, observer),
+                                    scheduler=subscribe_scheduler)
 
         return Observable(subscribe)
     return observe_on
