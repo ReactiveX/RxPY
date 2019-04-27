@@ -561,7 +561,7 @@ def range(start: int, stop: int = None, step: int = None, scheduler: typing.Sche
         integral numbers.
     """
     from .core.observable.range import _range
-    return _range(start, stop, step)
+    return _range(start, stop, step, scheduler)
 
 
 def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
