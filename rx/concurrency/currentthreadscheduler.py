@@ -47,6 +47,7 @@ class CurrentThreadScheduler(SchedulerBase):
     that will block the current thread while waiting.
     """
 
+    _local = _Local()
     _global: MutableMapping[threading.Thread, 'CurrentThreadScheduler'] = WeakKeyDictionary()
 
     def __new__(cls) -> 'CurrentThreadScheduler':
@@ -62,9 +63,7 @@ class CurrentThreadScheduler(SchedulerBase):
     def __init__(self) -> None:
         """Creates a scheduler that schedules work as soon as possible
         on the current thread."""
-
         super().__init__()
-        self._local = _Local()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -127,7 +126,7 @@ class CurrentThreadScheduler(SchedulerBase):
 
         si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
 
-        local: _Local = self._local
+        local: _Local = CurrentThreadScheduler._local
         local.queue.enqueue(si)
         if local.idle:
             local.idle = False
@@ -147,7 +146,7 @@ class CurrentThreadScheduler(SchedulerBase):
         False; otherwise, if the trampoline is not active, then it
         returns True.
         """
-        return self._local.idle
+        return CurrentThreadScheduler._local.idle
 
     def ensure_trampoline(self, action):
         """Method for testing the CurrentThreadScheduler."""
