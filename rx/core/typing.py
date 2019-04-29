@@ -79,7 +79,7 @@ class Scheduler(abc.Scheduler):
 
 
 ScheduledAction = Callable[[Scheduler, Optional[TState]], Optional[Disposable]]
-ScheduledPeriodicAction = Callable[[Optional[TState]], TState]
+ScheduledPeriodicAction = Callable[[Optional[TState]], Optional[TState]]
 ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction]
 
 Startable = Union[abc.Startable, Thread]

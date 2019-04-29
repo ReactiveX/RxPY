@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from rx.core import typing
 from .schedulerbase import UTC_ZERO
 from .virtualtimescheduler import VirtualTimeScheduler
 
@@ -31,7 +32,9 @@ class HistoricalScheduler(VirtualTimeScheduler):
         return self._clock
 
     @staticmethod
-    def add(absolute, relative) -> datetime:
+    def add(absolute: typing.AbsoluteTime,
+            relative: typing.RelativeTime
+            ) -> typing.AbsoluteTime:
         """Adds a relative time value to an absolute time value.
 
         Args:

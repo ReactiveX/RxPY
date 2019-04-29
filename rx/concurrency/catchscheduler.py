@@ -97,7 +97,7 @@ class CatchScheduler(SchedulerBase):
             (best effort).
         """
 
-        self._wrap(action)
+        action = self._wrap(action)
         return self._scheduler.schedule_absolute(duetime, action, state=state)
 
     def schedule_periodic(self,

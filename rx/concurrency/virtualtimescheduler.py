@@ -215,5 +215,16 @@ class VirtualTimeScheduler(SchedulerBase):
 
     @staticmethod
     @abstractmethod
-    def add(absolute, relative):
+    def add(absolute: typing.AbsoluteTime,
+            relative: typing.RelativeTime
+            ) -> typing.AbsoluteTime:
+        """Adds a relative time value to an absolute time value.
+
+        Args:
+            absolute: Absolute virtual time value.
+            relative: Relative virtual time value to add.
+
+        Returns:
+            The resulting absolute virtual time sum value.
+        """
         raise NotImplementedError

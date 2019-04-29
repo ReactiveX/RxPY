@@ -47,12 +47,11 @@ class WxScheduler(SchedulerBase):
         scheduler = self
 
         sad = SingleAssignmentDisposable()
-        periodic_state = state
 
         def interval() -> None:
+            nonlocal state
             if periodic:
-                nonlocal periodic_state
-                periodic_state = action(periodic_state)
+                state = action(state)
             else:
                 sad.disposable = action(scheduler, state)
 

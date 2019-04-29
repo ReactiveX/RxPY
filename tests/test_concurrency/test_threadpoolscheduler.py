@@ -75,14 +75,14 @@ class TestThreadPoolScheduler(unittest.TestCase):
 
     def test_schedule_action_cancel(self):
         nt = thread_pool_scheduler
-        set = False
+        ran = False
 
         def action(scheduler, state):
-            nonlocal set
-            set = True
+            nonlocal ran
+            ran = True
 
         d = nt.schedule_relative(0.05, action)
         d.dispose()
 
         sleep(0.1)
-        assert set is False
+        assert ran is False
