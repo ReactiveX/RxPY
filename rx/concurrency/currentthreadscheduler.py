@@ -45,6 +45,15 @@ class CurrentThreadScheduler(SchedulerBase):
     """Represents an object that schedules units of work on the current thread.
     You never want to schedule timeouts using the CurrentThreadScheduler since
     that will block the current thread while waiting.
+
+    Please note, there will be at most a single instance per thread -- calls to
+    the constructor will just return the same instance if one already exists.
+
+    Conversely, if you pass an instance to another thread, it will effectively
+    behave as a separate scheduler, with its own queue. In particular, this
+    implies that you can't make assumptions about the execution order of items
+    that were scheduled by different threads -- even if they were submitted to
+    what superficially appears to be a single scheduler instance.
     """
 
     _local = _Local()
