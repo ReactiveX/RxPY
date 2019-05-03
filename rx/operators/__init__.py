@@ -2825,9 +2825,9 @@ def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observ
     .. marble::
         :alt: take_while_indexed
 
-        -----1--2--3--4----|
-        [take_while(i: i<3)]
-        -----1--2----------|
+        --------1------2------3------4-------|
+        [take_while_indexed(v, i: v<4 or i<3)]
+        --------1------2---------------------|
 
     Example:
         >>> take_while_indexed(lambda value, index: value < 10 or index < 10)
