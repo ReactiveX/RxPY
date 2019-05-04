@@ -15,11 +15,7 @@ except ImportError:
         from PySide2 import QtCore
         from PySide2.QtGui import QGuiApplication as QApplication
     except ImportError:
-        try:
-            from PyQt4 import QtCore
-            from PyQt4.QtGui import QApplication
-        except ImportError:
-            skip = True
+        skip = True
 
 if not skip:
     from rx.concurrency.mainloopscheduler import QtScheduler
