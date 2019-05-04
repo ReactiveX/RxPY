@@ -123,16 +123,15 @@ class CatchScheduler(SchedulerBase):
 
         def periodic_action(periodic_state) -> Optional[typing.TState]:
             nonlocal failed
-            if failed:
-                return None
-            try:
-                return action(periodic_state)
-            except Exception as ex:
-                failed = True
-                if not self._handler(ex):
-                    raise Exception(ex)
-                d.dispose()
-                return None
+            if not failed:
+                try:
+                    return action(periodic_state)
+                except Exception as ex:
+                    failed = True
+                    if not self._handler(ex):
+                        raise
+                    d.dispose()
+                    return None
 
         d.disposable = self._scheduler.schedule_periodic(period, periodic_action, state=state)
         return d
@@ -150,7 +149,7 @@ class CatchScheduler(SchedulerBase):
                 return action(parent._get_recursive_wrapper(self), state)
             except Exception as ex:
                 if not parent._handler(ex):
-                    raise Exception(ex)
+                    raise
                 return Disposable()
 
         return wrapped_action
