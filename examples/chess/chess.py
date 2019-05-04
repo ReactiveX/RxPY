@@ -1,4 +1,5 @@
 import sys
+from os.path import dirname, join
 
 import pygame
 
@@ -14,7 +15,7 @@ from rx.concurrency.mainloopscheduler import PyGameScheduler
 def main():
     pygame.init()
 
-    size = width, height = 500, 500
+    size = 500, 500
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Rx for Python rocks")
 
@@ -27,16 +28,18 @@ def main():
 
     mousemove = Subject()
 
-    files = [
-        "chess_tower.png",
-        "chess_bishop.png",
-        "chess_horse.png",
-        "chess_king.png",
-        "chess_queen.png",
-        "chess_horse.png",
-        "chess_bishop.png",
-        "chess_tower.png"
-        ]
+    color = "white"
+    base = dirname(__file__)
+    files = [join(base, img % color) for img in [
+        "chess_rook_%s.png",
+        "chess_knight_%s.png",
+        "chess_bishop_%s.png",
+        "chess_king_%s.png",
+        "chess_queen_%s.png",
+        "chess_bishop_%s.png",
+        "chess_knight_%s.png",
+        "chess_rook_%s.png"
+    ]]
     images = [pygame.image.load(image).convert_alpha() for image in files]
 
     old = [None] * len(images)
@@ -48,7 +51,7 @@ def main():
 
         def on_next(ev):
             imagerect.top = ev[1]
-            imagerect.left = ev[0] + i * 30
+            imagerect.left = ev[0] + i * 32
 
             if old[i]:
                 erase.append(old[i])
