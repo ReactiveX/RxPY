@@ -1,3 +1,4 @@
+import pytest
 import unittest
 
 from datetime import timedelta
@@ -7,6 +8,7 @@ from rx.disposable import Disposable
 from rx.concurrency import ImmediateScheduler
 from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO
+from rx.internal.exceptions import WouldBlockException
 
 
 class TestImmediateScheduler(unittest.TestCase):
@@ -43,10 +45,21 @@ class TestImmediateScheduler(unittest.TestCase):
         def action(scheduler, state=None):
             raise MyException()
 
-        try:
+        with pytest.raises(MyException):
             return scheduler.schedule(action)
-        except MyException:
-            assert True
+
+    def test_immediate_schedule_action_due_error(self):
+        scheduler = ImmediateScheduler()
+        ran = False
+
+        def action(scheduler, state=None):
+            nonlocal ran
+            ran = True
+
+        with pytest.raises(WouldBlockException):
+            scheduler.schedule_relative(0.1, action)
+
+        assert ran is False
 
     def test_immediate_simple1(self):
         scheduler = ImmediateScheduler()
