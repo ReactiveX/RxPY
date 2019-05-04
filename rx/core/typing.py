@@ -47,15 +47,34 @@ class Scheduler(abc.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule(self, action: 'ScheduledAction', state: TState = None) -> Disposable:
+    def schedule(self,
+                 action: 'ScheduledAction',
+                 state: Optional[TState] = None
+                 ) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self, duetime: RelativeTime, action: 'ScheduledAction', state: TState = None) -> Disposable:
+    def schedule_relative(self,
+                          duetime: RelativeTime,
+                          action: 'ScheduledAction',
+                          state: Optional[TState] = None
+                          ) -> Disposable:
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self, duetime: AbsoluteTime, action: 'ScheduledAction', state: TState = None) -> Disposable:
+    def schedule_absolute(self,
+                          duetime: AbsoluteTime,
+                          action: 'ScheduledAction',
+                          state: Optional[TState] = None
+                          ) -> Disposable:
+        return NotImplemented
+
+    @abstractmethod
+    def schedule_periodic(self,
+                          period: RelativeTime,
+                          action: 'ScheduledPeriodicAction',
+                          state: Optional[TState] = None
+                          ) -> Disposable:
         return NotImplemented
 
 

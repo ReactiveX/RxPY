@@ -20,3 +20,6 @@ class Scheduler(ABC):
     @abstractmethod
     def schedule_absolute(self, duetime, action, state=None):
         return NotImplemented
+
+    def schedule_periodic(self, period, action, state=None):
+        return NotImplemented
