@@ -3,7 +3,7 @@ matrix:
     - os: linux
       dist: xenial
       language: python
-      python: 3.6
+      python: '3.6'
       # Coverage for the baseline 3.6 build: include some optional packages
       before_script:
         # install some packages to ensure all of the optional tests are covered
@@ -22,21 +22,21 @@ matrix:
     - os: linux
       dist: xenial
       language: python
-      python: 3.7
+      python: '3.7'
 
     - os: linux
       dist: xenial
       language: python
-      python: 3.8-dev
+      python: '3.8-dev'
 
     - os: osx
       osx_image: xcode10.1
       language: sh
-      python: 3.7
+      python: '3.7'
 
     - os: windows
       language: sh
-      python: 3.7
+      python: '3.7'
       before_install:
         - choco install python3
         - ln -s "/c/Python37/python.exe" "/c/Python37/python3.exe"
