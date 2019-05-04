@@ -1,57 +1,161 @@
-from rx.disposable import Disposable
-from rx.disposable import SingleAssignmentDisposable
+from datetime import datetime
+from typing import Callable, Optional
+
+from rx.core import typing
+from rx.disposable import Disposable, SingleAssignmentDisposable
 
 from .schedulerbase import SchedulerBase
 
 
 class CatchScheduler(SchedulerBase):
-    def __init__(self, scheduler, handler):
-        """Create new CatchScheduler.
 
-        Returns a scheduler that wraps the original scheduler, adding
-        exception handling for scheduled actions.
+    def __init__(self,
+                 scheduler: typing.Scheduler,
+                 handler: Callable[[Exception], bool]
+                 ) -> None:
+        """Wraps a scheduler, passed as constructor argument, adding exception
+        handling for scheduled actions. The handler should return True to
+        indicate it handled the exception successfully. Falsy return values will
+        be taken to indicate that the exception should be escalated (raised by
+        this scheduler).
+
+        Args:
+            scheduler: The scheduler to be wrapped.
+            handler: Callable to handle exceptions raised by wrapped scheduler.
         """
-        self._scheduler = scheduler
-        self._handler = handler
-        self._recursive_original = None
-        self._recursive_wrapper = None
 
-        super(CatchScheduler, self).__init__()
+        super().__init__()
+        self._scheduler: typing.Scheduler = scheduler
+        self._handler: Callable[[Exception], bool] = handler
+        self._recursive_original: typing.Scheduler = None
+        self._recursive_wrapper: 'CatchScheduler' = None
 
-    def local_now(self):
+    @property
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+
+        Returns:
+             The scheduler's current time, as a datetime instance.
+        """
+
         return self._scheduler.now
 
-    def schedule_now(self, state, action):
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
 
-        return self._scheduler.scheduleWithState(state, self._wrap(action))
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
-    def schedule_relative(self, duetime, action, state=None):
-        """Schedules an action to be executed after duetime."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
-        return self._scheduler.schedule_relative(duetime, self._wrap(action), state=state)
+        action = self._wrap(action)
+        return self._scheduler.schedule(action, state=state)
 
-    def schedule_absolute(self, duetime, action, state=None):
-        """Schedules an action to be executed at duetime."""
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed after duetime.
 
-        return self._scheduler.schedule_absolute(duetime, self._wrap(action), state=state)
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
-    def _clone(self, scheduler):
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
+        action = self._wrap(action)
+        return self._scheduler.schedule_relative(duetime, action, state=state)
+
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time at which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
+        action = self._wrap(action)
+        return self._scheduler.schedule_absolute(duetime, action, state=state)
+
+    def schedule_periodic(self,
+                          period: typing.RelativeTime,
+                          action: typing.ScheduledPeriodicAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
+        """Schedules a periodic piece of work.
+
+        Args:
+            period: Period in seconds or timedelta for running the
+                work periodically.
+            action: Action to be executed.
+            state: [Optional] Initial state passed to the action upon
+                the first iteration.
+
+        Returns:
+            The disposable object used to cancel the scheduled
+            recurring action (best effort).
+        """
+        d = SingleAssignmentDisposable()
+        failed = False
+
+        def periodic_action(periodic_state) -> Optional[typing.TState]:
+            nonlocal failed
+            if failed:
+                return None
+            try:
+                return action(periodic_state)
+            except Exception as ex:
+                failed = True
+                if not self._handler(ex):
+                    raise Exception(ex)
+                d.dispose()
+                return None
+
+        d.disposable = self._scheduler.schedule_periodic(period, periodic_action, state=state)
+        return d
+
+    def _clone(self, scheduler: typing.Scheduler) -> 'CatchScheduler':
         return CatchScheduler(scheduler, self._handler)
 
-    def _wrap(self, action):
+    def _wrap(self, action: typing.ScheduledAction) -> typing.ScheduledAction:
         parent = self
 
-        def wrapped_action(self, state):
+        def wrapped_action(self,
+                           state: Optional[typing.TState]
+                           ) -> Optional[typing.Disposable]:
             try:
                 return action(parent._get_recursive_wrapper(self), state)
             except Exception as ex:
                 if not parent._handler(ex):
                     raise Exception(ex)
                 return Disposable()
+
         return wrapped_action
 
-    def _get_recursive_wrapper(self, scheduler):
+    def _get_recursive_wrapper(self, scheduler) -> 'CatchScheduler':
         if self._recursive_original != scheduler:
             self._recursive_original = scheduler
             wrapper = self._clone(scheduler)
@@ -60,22 +164,3 @@ class CatchScheduler(SchedulerBase):
             self._recursive_wrapper = wrapper
 
         return self._recursive_wrapper
-
-    def schedule_periodic(self, period, action, state=None):
-        d = SingleAssignmentDisposable()
-        failed = [False]
-
-        def periodic_action(periodic_state):
-            if failed[0]:
-                return None
-            try:
-                return action(periodic_state)
-            except Exception as ex:
-                failed[0] = True
-                if not self._handler(ex):
-                    raise Exception(ex)
-                d.dispose()
-                return None
-
-        d.disposable = self._scheduler.schedule_periodic(periodic_action, period, state)
-        return d

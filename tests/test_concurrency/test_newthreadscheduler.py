@@ -1,50 +1,100 @@
 import unittest
+import threading
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from time import sleep
+
 from rx.concurrency import NewThreadScheduler
+from rx.internal.basic import default_now
 
 
 class TestNewThreadScheduler(unittest.TestCase):
+
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
-        res = scheduler.now - datetime.utcnow()
-        assert res < timedelta(microseconds=1000)
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_new_thread_now_units(self):
+        scheduler = NewThreadScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_new_thread_schedule_action(self):
         scheduler = NewThreadScheduler()
-        ran = [False]
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
 
         scheduler.schedule(action)
 
         sleep(0.1)
-        assert (ran[0] is True)
+        assert ran is True
 
     def test_new_thread_schedule_action_due(self):
         scheduler = NewThreadScheduler()
-        starttime = datetime.utcnow()
-        endtime = [None]
+        starttime = default_now()
+        endtime = None
 
         def action(scheduler, state):
-            endtime[0] = datetime.utcnow()
+            nonlocal endtime
+            endtime = default_now()
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
 
         sleep(0.3)
-        diff = endtime[0]-starttime
-        assert(diff > timedelta(milliseconds=180))
+        assert endtime is not None
+        diff = endtime - starttime
+        assert diff > timedelta(milliseconds=180)
 
     def test_new_thread_schedule_action_cancel(self):
-        ran = [False]
+        ran = False
         scheduler = NewThreadScheduler()
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
+
         d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
         d.dispose()
 
         sleep(0.1)
-        assert (not ran[0])
+        assert ran is False
+
+    def test_new_thread_schedule_periodic(self):
+        scheduler = NewThreadScheduler()
+        gate = threading.Semaphore(0)
+        period = 0.05
+        counter = 3
+
+        def action(state):
+            nonlocal counter
+            if state:
+                counter -= 1
+                return state - 1
+            if counter == 0:
+                gate.release()
+
+        scheduler.schedule_periodic(period, action, counter)
+        gate.acquire()
+        assert counter == 0
+
+    def test_new_thread_schedule_periodic_cancel(self):
+        scheduler = NewThreadScheduler()
+        period = 0.05
+        counter = 3
+
+        def action(state):
+            nonlocal counter
+            if state:
+                counter -= 1
+                return state - 1
+
+        disp = scheduler.schedule_periodic(period, action, counter)
+        sleep(0.10)
+        disp.dispose()
+        assert 0 < counter < 3

@@ -1,56 +1,73 @@
+import pytest
 import unittest
-from datetime import datetime, timedelta
+
 from rx.concurrency import VirtualTimeScheduler
 from rx.internal import ArgumentOutOfRangeException
+from rx.internal.constants import DELTA_ZERO, UTC_ZERO
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
-    def __init__(self):
-        super().__init__()
 
     def add(self, absolute, relative):
         return absolute + relative
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
-    def test_virtual_now(self):
-        res = VirtualSchedulerTestScheduler().now - datetime.utcfromtimestamp(0)
-        assert(res < timedelta(1000))
+
+    def test_virtual_now_noarg(self):
+        scheduler = VirtualSchedulerTestScheduler()
+        assert scheduler.clock == 0.0
+        assert scheduler.now == UTC_ZERO
+
+    def test_virtual_now_float(self):
+        scheduler = VirtualSchedulerTestScheduler(0.0)
+        assert scheduler.clock == 0.0
+        assert scheduler.now == UTC_ZERO
+
+    def test_virtual_now_timedelta(self):
+        scheduler = VirtualSchedulerTestScheduler(DELTA_ZERO)
+        assert scheduler.clock == DELTA_ZERO
+        assert scheduler.now == UTC_ZERO
+
+    def test_virtual_now_datetime(self):
+        scheduler = VirtualSchedulerTestScheduler(UTC_ZERO)
+        assert scheduler.clock == UTC_ZERO
+        assert scheduler.now == UTC_ZERO
 
     def test_virtual_schedule_action(self):
-        ran = [False]
         scheduler = VirtualSchedulerTestScheduler()
+        ran = False
 
         def action(scheduler, state):
-            ran[0] = True
+            nonlocal ran
+            ran = True
+
         scheduler.schedule(action)
 
         scheduler.start()
-        assert(ran[0])
+        assert ran is True
 
     def test_virtual_schedule_action_error(self):
-        ex = 'ex'
-        try:
-            scheduler = VirtualSchedulerTestScheduler()
+        scheduler = VirtualSchedulerTestScheduler()
 
-            def action(scheduler, state):
-                raise Exception(ex)
+        class MyException(Exception):
+            pass
 
+        def action(scheduler, state):
+            raise MyException()
+
+        with pytest.raises(MyException):
             scheduler.schedule(action)
             scheduler.start()
-            assert(False)
-        except Exception as e:
-            self.assertEqual(str(e), ex)
+
+    def test_virtual_schedule_sleep_error(self):
+        scheduler = VirtualSchedulerTestScheduler()
+
+        with pytest.raises(ArgumentOutOfRangeException):
+            scheduler.sleep(-1)
 
     def test_virtual_schedule_advance_clock_error(self):
         scheduler = VirtualSchedulerTestScheduler()
 
-        try:
-            scheduler.sleep(-1)
-        except Exception as e:
-            assert isinstance(e, ArgumentOutOfRangeException)
-
-        try:
+        with pytest.raises(ArgumentOutOfRangeException):
             scheduler.advance_to(scheduler._clock - 1)
-        except Exception as e:
-            assert isinstance(e, ArgumentOutOfRangeException)

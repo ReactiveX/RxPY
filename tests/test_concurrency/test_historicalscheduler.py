@@ -1,21 +1,23 @@
 import unittest
+
 from datetime import datetime, timedelta
 
 from rx.concurrency import HistoricalScheduler
+from rx.internal.constants import UTC_ZERO
 
 
 def assert_equals(first, second):
     if len(first) != len(second):
         print("len(%d) != len(%d)" % (len(first), len(second)))
-        assert(False)
+        assert False
 
     for i in range(len(first)):
         f = first[i]
         s = second[i]
         if hasattr(f, "assert_equals") and hasattr(s, "assert_equals"):
-            assert(f.assert_equals(s))
+            assert f.assert_equals(s)
         else:
-            assert(f == s)
+            assert f == s
 
 
 def time(days):
@@ -29,6 +31,7 @@ def from_days(days):
 
 
 class Timestamped(object):
+
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
@@ -50,7 +53,7 @@ class TestHistoricalScheduler(unittest.TestCase):
 
     def test_ctor(self):
         s = HistoricalScheduler()
-        self.assertEqual(datetime.utcfromtimestamp(0), s.clock)
+        self.assertEqual(UTC_ZERO, s.clock)
         self.assertEqual(False, s._is_enabled)
 
     def test_start_stop(self):
@@ -118,7 +121,7 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         list = []
 
-        d = s.schedule_absolute(time(2), lambda a,b: list.append(Timestamped(2, s.now)))
+        d = s.schedule_absolute(time(2), lambda a, b: list.append(Timestamped(2, s.now)))
 
         def action(scheduler, state):
             list.append(Timestamped(0, s.now))
@@ -137,11 +140,11 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         list = []
 
-        s.schedule_absolute(time(0), lambda a,b: list.append(Timestamped(0, s.now)) )
-        s.schedule_absolute(time(1), lambda a,b: list.append(Timestamped(1, s.now)) )
-        s.schedule_absolute(time(2), lambda a,b: list.append(Timestamped(2, s.now)) )
-        s.schedule_absolute(time(10), lambda a,b: list.append(Timestamped(10, s.now)) )
-        s.schedule_absolute(time(11), lambda a,b: list.append(Timestamped(11, s.now)) )
+        s.schedule_absolute(time(0), lambda a, b: list.append(Timestamped(0, s.now)))
+        s.schedule_absolute(time(1), lambda a, b: list.append(Timestamped(1, s.now)))
+        s.schedule_absolute(time(2), lambda a, b: list.append(Timestamped(2, s.now)))
+        s.schedule_absolute(time(10), lambda a, b: list.append(Timestamped(10, s.now)))
+        s.schedule_absolute(time(11), lambda a, b: list.append(Timestamped(11, s.now)))
 
         s.advance_to(time(8))
 
@@ -165,8 +168,8 @@ class TestHistoricalScheduler(unittest.TestCase):
             Timestamped(2, time(2))
         ])
 
-        s.schedule_absolute(time(7), lambda a, b: list.append(Timestamped(7, s.now)) )
-        s.schedule_absolute(time(8), lambda a, b: list.append(Timestamped(8, s.now)) )
+        s.schedule_absolute(time(7), lambda a, b: list.append(Timestamped(7, s.now)))
+        s.schedule_absolute(time(8), lambda a, b: list.append(Timestamped(8, s.now)))
 
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)

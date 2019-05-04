@@ -1,10 +1,16 @@
 import logging
 
-from rx.disposable import Disposable
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
-from rx.concurrency.schedulerbase import SchedulerBase
+from datetime import datetime
+from typing import Optional
+
+from rx.core import typing
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+
+from ..schedulerbase import SchedulerBase
+
 
 log = logging.getLogger("Rx")
+
 
 gevent = None
 
@@ -15,71 +21,100 @@ class GEventScheduler(SchedulerBase):
     http://www.gevent.org/
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        super().__init__()
         # Lazy import gevent
         global gevent
         import gevent
 
-    def schedule(self, action, state=None):
-        """Schedules an action to be executed."""
+    def schedule(self,
+                 action: typing.ScheduledAction,
+                 state: Optional[typing.TState] = None
+                 ) -> typing.Disposable:
+        """Schedules an action to be executed.
+
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         sad = SingleAssignmentDisposable()
 
-        def interval():
-            sad.disposable = self.invoke_action(action, state)
+        def interval() -> None:
+            sad.disposable = self.invoke_action(action, state=state)
 
-        timer = [gevent.spawn(interval)]
+        timer = gevent.spawn(interval)
 
-        def dispose():
-            timer[0].kill()
+        def dispose() -> None:
+            timer.kill()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_relative(self, duetime, action, state=None):
+    def schedule_relative(self,
+                          duetime: typing.RelativeTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
 
-        Keyword arguments:
-        duetime -- {timedelta} Relative time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
-        scheduler = self
         seconds = self.to_seconds(duetime)
         if not seconds:
-            return scheduler.schedule(action, state)
+            return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()
 
-        def interval():
-            sad.disposable = action(scheduler, state)
+        def interval() -> None:
+            sad.disposable = self.invoke_action(action, state=state)
 
         log.debug("timeout: %s", seconds)
-        timer = [gevent.spawn_later(seconds, interval)]
+        timer = gevent.spawn_later(seconds, interval)
 
-        def dispose():
-            # nonlocal timer
-            timer[0].kill()
+        def dispose() -> None:
+            timer.kill()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self, duetime, action, state=None):
+    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+                          action: typing.ScheduledAction,
+                          state: Optional[typing.TState] = None
+                          ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
-        Keyword arguments:
-        duetime -- {datetime} Absolute time after which to execute the action.
-        action -- {Function} Action to be executed.
+        Args:
+            duetime: Absolute time at which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
 
-        Returns {Disposable} The disposable object used to cancel the scheduled
-        action (best effort)."""
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
 
         duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
+        return self.schedule_relative(duetime - self.now, action, state=state)
 
     @property
-    def now(self):
-        """Represents a notion of time for this scheduler. Tasks being scheduled
-        on a scheduler will adhere to the time denoted by this property."""
+    def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+
+        Returns:
+             The scheduler's current time, as a datetime instance.
+        """
 
         return self.to_datetime(gevent.get_hub().loop.now())

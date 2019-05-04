@@ -1,8 +1,12 @@
+import pytest
 import unittest
-from datetime import datetime, timedelta
+
 import threading
+from datetime import timedelta
+from time import sleep
 
 from rx.concurrency import CurrentThreadScheduler
+from rx.internal.basic import default_now
 
 
 class TestCurrentThreadScheduler(unittest.TestCase):
@@ -28,8 +32,15 @@ class TestCurrentThreadScheduler(unittest.TestCase):
 
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
-        res = scheduler.now - datetime.utcnow()
-        assert res < timedelta(milliseconds=1000)
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_currentthread_now_units(self):
+        scheduler = CurrentThreadScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_currentthread_schedule(self):
         scheduler = CurrentThreadScheduler()
@@ -65,13 +76,8 @@ class TestCurrentThreadScheduler(unittest.TestCase):
         def action(scheduler, state=None):
             raise MyException()
 
-        exc = None
-        try:
+        with pytest.raises(MyException):
             scheduler.schedule(action)
-        except Exception as e:
-            exc = e
-        finally:
-            assert isinstance(exc, MyException)
 
     def test_currentthread_schedule_nested(self):
         scheduler = CurrentThreadScheduler()

@@ -1,6 +1,7 @@
+import unittest
+
 import asyncio
 import threading
-import unittest
 from datetime import datetime, timedelta
 
 from rx.concurrency.mainloopscheduler import AsyncIOScheduler
@@ -11,9 +12,16 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
-        res = scheduler.now - datetime.now()
+        diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
+        assert abs(diff) < timedelta(milliseconds=1)
 
-        assert res < timedelta(seconds=1)
+    def test_asyncio_schedule_now_units(self):
+        loop = asyncio.get_event_loop()
+        scheduler = AsyncIOScheduler(loop)
+        diff = scheduler.now
+        yield from asyncio.sleep(0.1, loop=loop)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_asyncio_schedule_action(self):
         loop = asyncio.get_event_loop()
@@ -26,6 +34,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             def action(scheduler, state):
                 nonlocal ran
                 ran = True
+
             scheduler.schedule(action)
 
             yield from asyncio.sleep(0.1, loop=loop)
@@ -71,6 +80,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler.schedule_relative(0.2, action)
 
             yield from asyncio.sleep(0.3, loop=loop)
+            assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
 
@@ -95,6 +105,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.3, loop=loop)
+            assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
 
@@ -111,11 +122,12 @@ class TestAsyncIOScheduler(unittest.TestCase):
             def action(scheduler, state):
                 nonlocal ran
                 ran = True
+
             d = scheduler.schedule_relative(0.05, action)
             d.dispose()
 
             yield from asyncio.sleep(0.3, loop=loop)
-            assert not ran
+            assert ran is False
 
         loop.run_until_complete(go())
 
@@ -138,6 +150,6 @@ class TestAsyncIOScheduler(unittest.TestCase):
             threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.3, loop=loop)
-            assert not ran
+            assert ran is False
 
         loop.run_until_complete(go())

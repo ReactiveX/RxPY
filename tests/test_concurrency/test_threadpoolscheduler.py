@@ -1,18 +1,29 @@
-import time
 import unittest
 
-from datetime import datetime, timedelta
 import threading
+from datetime import timedelta
+from time import sleep
+
 from rx.concurrency import ThreadPoolScheduler
+from rx.internal.basic import default_now
+
 
 thread_pool_scheduler = ThreadPoolScheduler()
 
 
 class TestThreadPoolScheduler(unittest.TestCase):
+
     def test_threadpool_now(self):
         scheduler = ThreadPoolScheduler()
-        res = scheduler.now - datetime.utcnow()
-        assert(res < timedelta(microseconds=1000))
+        diff = scheduler.now - default_now()
+        assert abs(diff) < timedelta(milliseconds=1)
+
+    def test_threadpool_now_units(self):
+        scheduler = ThreadPoolScheduler()
+        diff = scheduler.now
+        sleep(0.1)
+        diff = scheduler.now - diff
+        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_schedule_action(self):
         ident = threading.current_thread().ident
@@ -20,7 +31,7 @@ class TestThreadPoolScheduler(unittest.TestCase):
         nt = thread_pool_scheduler
 
         def action(scheduler, state):
-            assert(ident != threading.current_thread().ident)
+            assert ident != threading.current_thread().ident
             evt.set()
 
         nt.schedule(action)
@@ -32,7 +43,7 @@ class TestThreadPoolScheduler(unittest.TestCase):
         nt = thread_pool_scheduler
 
         def action(scheduler, state):
-            assert(ident != threading.current_thread().ident)
+            assert ident != threading.current_thread().ident
             evt.set()
 
         nt.schedule_relative(timedelta(milliseconds=200), action)
@@ -44,10 +55,10 @@ class TestThreadPoolScheduler(unittest.TestCase):
         nt = thread_pool_scheduler
 
         def action(scheduler, state):
-            assert(ident != threading.current_thread().ident)
+            assert ident != threading.current_thread().ident
             evt.set()
 
-        nt.schedule_relative(0.2, action)
+        nt.schedule_relative(0.1, action)
         evt.wait()
 
     def test_schedule_action_absolute(self):
@@ -56,22 +67,22 @@ class TestThreadPoolScheduler(unittest.TestCase):
         nt = thread_pool_scheduler
 
         def action(scheduler, state):
-            assert(ident != threading.current_thread().ident)
+            assert ident != threading.current_thread().ident
             evt.set()
 
-        nt.schedule_absolute(datetime.utcnow()+timedelta(milliseconds=100), action)
+        nt.schedule_absolute(default_now() + timedelta(milliseconds=100), action)
         evt.wait()
 
     def test_schedule_action_cancel(self):
         nt = thread_pool_scheduler
-        set = []
+        ran = False
 
         def action(scheduler, state):
-            set.append(True)
-            assert(False)
+            nonlocal ran
+            ran = True
 
-        d = nt.schedule_relative(0.1, action)
+        d = nt.schedule_relative(0.05, action)
         d.dispose()
 
-        time.sleep(0.1)
-        assert(not len(set))
+        sleep(0.1)
+        assert ran is False

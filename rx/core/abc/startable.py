@@ -6,5 +6,5 @@ class Startable(ABC):
     __slots__ = ()
 
     @abstractmethod
-    def start(self):
+    def start(self) -> None:
         raise NotImplementedError

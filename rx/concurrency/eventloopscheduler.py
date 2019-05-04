@@ -1,10 +1,10 @@
 import logging
 import threading
 from collections import deque
-from typing import Any, Deque, Optional
+from typing import Deque, Optional
 
-from rx.disposable import Disposable
 from rx.core import typing
+from rx.disposable import Disposable
 from rx.internal.concurrency import default_thread_factory
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
@@ -12,16 +12,18 @@ from rx.internal.priorityqueue import PriorityQueue
 from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
 
+
 log = logging.getLogger('Rx')
 
 
 class EventLoopScheduler(SchedulerBase, typing.Disposable):
-    """Creates an object that schedules units of work on a designated
-    thread."""
+    """Creates an object that schedules units of work on a designated thread."""
 
-    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None,
-                 exit_if_empty: bool = False) -> None:
-        super(EventLoopScheduler, self).__init__()
+    def __init__(self,
+                 thread_factory: Optional[typing.StartableFactory] = None,
+                 exit_if_empty: bool = False
+                 ) -> None:
+        super().__init__()
         self._is_disposed = False
 
         self._thread_factory = thread_factory or default_thread_factory
@@ -37,9 +39,11 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
                  state: Optional[typing.TState] = None
                  ) -> typing.Disposable:
         """Schedules an action to be executed.
+
         Args:
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
         Returns:
             The disposable object used to cancel the scheduled action
             (best effort).
@@ -53,10 +57,12 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
                           state: Optional[typing.TState] = None
                           ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
+
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
         Returns:
             The disposable object used to cancel the scheduled action
             (best effort).
@@ -65,16 +71,21 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
         duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime,
+    def schedule_absolute(self,
+                          duetime: typing.AbsoluteTime,
                           action: typing.ScheduledAction,
                           state: Optional[typing.TState] = None
                           ) -> typing.Disposable:
         """Schedules an action to be executed at duetime.
 
         Args:
-            duetime: Absolute time after which to execute the action.
+            duetime: Absolute time at which to execute the action.
             action: Action to be executed.
             state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
         """
 
         if self._is_disposed:
@@ -109,25 +120,25 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
 
         Returns:
             The disposable object used to cancel the scheduled
-            recurring action (best effort)."""
+            recurring action (best effort).
+        """
 
         if self._is_disposed:
             raise DisposedException()
 
         disposed: bool = False
-        s = state
 
-        def invoke_periodic(scheduler, state):
+        def invoke_periodic(scheduler, _):
             if disposed:
                 return
 
             if period:
-                self.schedule_relative(period, invoke_periodic)
+                scheduler.schedule_relative(period, invoke_periodic)
 
-            nonlocal s
-            new_state = action(s)
+            nonlocal state
+            new_state = action(state)
             if new_state is not None:
-                s = new_state
+                state = new_state
 
         self.schedule_relative(period, invoke_periodic)
 

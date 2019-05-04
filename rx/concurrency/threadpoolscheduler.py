@@ -1,6 +1,9 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Optional
 
 from rx.core.abc import Startable
+from rx.core import typing
+
 from .newthreadscheduler import NewThreadScheduler
 
 
@@ -10,21 +13,23 @@ class ThreadPoolScheduler(NewThreadScheduler):
     class ThreadPoolThread(Startable):
         """Wraps a concurrent future as a thread."""
 
-        def __init__(self, executor, run):
-            self.run = run
-            self.future = None
-            self.executor = executor
+        def __init__(self,
+                     executor: ThreadPoolExecutor,
+                     target: typing.StartableTarget):
+            self.executor: ThreadPoolExecutor = executor
+            self.target: typing.StartableTarget = target
+            self.future: Optional[Future] = None
 
-        def start(self):
-            self.future = self.executor.submit(self.run)
+        def start(self) -> None:
+            self.future = self.executor.submit(self.target)
 
-        def cancel(self):
+        def cancel(self) -> None:
             self.future.cancel()
 
-    def __init__(self, max_workers=None):
-        self.executor = ThreadPoolExecutor(max_workers=max_workers)
+    def __init__(self, max_workers: Optional[int] = None) -> None:
+        self.executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)
 
-        def thread_factory(target):
+        def thread_factory(target: typing.StartableTarget):
             return self.ThreadPoolThread(self.executor, target)
 
         super().__init__(thread_factory)
