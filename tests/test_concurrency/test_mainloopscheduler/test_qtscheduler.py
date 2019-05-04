@@ -9,11 +9,9 @@ from time import sleep
 skip = False
 try:
     from PyQt5 import QtCore
-    from PyQt5.QtWidgets import QApplication
 except ImportError:
     try:
         from PySide2 import QtCore
-        from PySide2.QtGui import QGuiApplication as QApplication
     except ImportError:
         skip = True
 
@@ -27,9 +25,9 @@ app = None  # Prevent garbage collection
 
 def make_app():
     global app
-    app = QApplication.instance()
+    app = QtCore.QCoreApplication.instance()
     if app is None:
-        app = QApplication([])
+        app = QtCore.QCoreApplication([])
     return app
 
 
