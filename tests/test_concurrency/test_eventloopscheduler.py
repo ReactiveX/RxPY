@@ -79,8 +79,8 @@ class TestEventLoopScheduler(unittest.TestCase):
             result.append(3)
             gate.release()
 
-        scheduler.schedule_relative(0.2, action)
-        scheduler.schedule_relative(0.1, lambda s, t: result.append(2))
+        scheduler.schedule_relative(0.4, action)
+        scheduler.schedule_relative(0.2, lambda s, t: result.append(2))
         scheduler.schedule(lambda s, t: result.append(1))
 
         gate.acquire()
@@ -94,8 +94,8 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         def action(scheduler, state):
             result.append(1)
+            scheduler.schedule_relative(0.2, action3)
             scheduler.schedule(action2)
-            scheduler.schedule_relative(0.10, action3)
 
         def action2(scheduler, state):
             result.append(2)
@@ -210,7 +210,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         assert ran is False
         assert scheduler._has_thread() is False
 
-    def test_eventloop_schedule_periodic_dispose(self):
+    def test_eventloop_schedule_periodic_dispose_error(self):
         scheduler = EventLoopScheduler(exit_if_empty=False)
 
         scheduler.dispose()
@@ -222,7 +222,7 @@ class TestEventLoopScheduler(unittest.TestCase):
             ran = True
 
         with pytest.raises(DisposedException):
-            scheduler.schedule_periodic(0.1, scheduler.now, action)
+            scheduler.schedule_periodic(0.1, action)
 
         assert ran is False
         assert scheduler._has_thread() is False

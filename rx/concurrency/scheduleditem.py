@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generic, Optional
 
 from rx.core import typing
@@ -12,12 +13,12 @@ class ScheduledItem(Generic[typing.TState]):  # pylint: disable=unsubscriptable-
                  scheduler: SchedulerBase,
                  state: Optional[typing.TState],
                  action: typing.ScheduledAction,
-                 duetime: typing.AbsoluteTime
+                 duetime: datetime
                  ) -> None:
         self.scheduler: SchedulerBase = scheduler
         self.state: Optional[typing.TState] = state
         self.action: typing.ScheduledAction = action
-        self.duetime: typing.AbsoluteTime = duetime
+        self.duetime: datetime = duetime
         self.disposable: SingleAssignmentDisposable = SingleAssignmentDisposable()
 
     def invoke(self) -> None:

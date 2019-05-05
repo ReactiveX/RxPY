@@ -52,7 +52,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', "pytest-asyncio"],
+    tests_require=['pytest', 'pytest-asyncio', 'coverage'],
 
     packages=['rx', 'rx.internal', 'rx.core', 'rx.core.abc',
               'rx.core.operators', 'rx.core.observable',

@@ -21,7 +21,7 @@ class WxScheduler(SchedulerBase):
         class Timer(wx.Timer):
 
             def __init__(self, callback) -> None:
-                super(Timer, self).__init__()
+                super().__init__()
                 self.callback = callback
 
             def Notify(self):
@@ -56,10 +56,8 @@ class WxScheduler(SchedulerBase):
                 sad.disposable = action(scheduler, state)
 
         msecs = int(self.to_seconds(time) * 1000.0)
-        if msecs == 0:
-            msecs = 1  # wx.Timer doesn't support zero.
 
-        log.debug("timeout: %s", msecs)
+        log.debug("timeout wx: %s", msecs)
 
         timer = self._timer_class(interval)
         timer.Start(
@@ -127,7 +125,7 @@ class WxScheduler(SchedulerBase):
         """
 
         duetime = self.to_datetime(duetime)
-        return self._wxtimer_schedule(duetime, action, state=state)
+        return self._wxtimer_schedule(duetime - self.now, action, state=state)
 
     def schedule_periodic(self,
                           period: typing.RelativeTime,
