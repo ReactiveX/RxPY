@@ -91,8 +91,8 @@ Differences from .NET and RxJS
 
 RxPY is a fairly complete implementation of
 `Rx <http://reactivex.io/>`_ with more than
-`134 query operators <http://reactivex.io/documentation/operators.html>`_, and
-over `1100 passing unit-tests <https://coveralls.io/github/dbrattli/RxPY>`_. RxPY
+`120 operators <https://rxpy.readthedocs.io/en/latest/operators.html>`_, and
+over `1300 passing unit-tests <https://coveralls.io/github/ReactiveX/RxPY>`_. RxPY
 is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in
 terms of threading and blocking operators.
 
