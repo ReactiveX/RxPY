@@ -1,51 +1,64 @@
 matrix:
   include:
-    - os: linux
+
+    - name: "Python 3.6 on Linux"
+      python: "3.6"
+      os: linux
       dist: xenial
       language: python
-      python: '3.6'
-      # Coverage for the baseline 3.6 build: include some optional packages
-      before_script:
-        # install some packages to ensure all of the optional tests are covered
-        - pip3 install eventlet gevent pygame pyqt5 pyside2 tornado twisted
-        # pycairo / pygobject need native libraries
+
+    - name: "Python 3.7 on Linux"
+      python: "3.7"
+      os: linux
+      dist: xenial
+      language: python
+
+    - name: "Python 3.8-dev on Linux"
+      python: "3.8-dev"
+      os: linux
+      dist: xenial
+      language: python
+
+    - name: "Python 3.7 on Linux, with optional dependencies and benchmark"
+      python: "3.7"
+      os: linux
+      dist: xenial
+      language: python
+      install:
+        # Native libraries for pycairo / pygobject
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
-        - pip3 install pycairo pygobject
-        # wxpython needs native libraries
-        - sudo apt-get install -y freeglut3 freeglut3-dev libgtk-3-dev
-          libgstreamer-plugins-base1.0-0 libgstreamer-plugins-base1.0-dev
-          libgstreamer1.0-0 libgstreamer1.0-dev libsdl2-dev
-        - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxPython
+        # Pre-built wheel for wxpython
+        - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxpython
+        # Install the various optional packages
+        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted
+        # Coverage will be reported for the Python 3.7 Linux build
+        - pip3 install coveralls
       script:
         - coverage run --source=rx setup.py test && coveralls
 
-    - os: linux
-      dist: xenial
-      language: python
-      python: '3.7'
-
-    - os: linux
-      dist: xenial
-      language: python
-      python: '3.8-dev'
-
-    - os: osx
-      osx_image: xcode10.1
+    - name: "Python 3.7 on MacOS, with optional dependencies and benchmark"
+      python: "3.7"
+      os: osx
+      osx_image: xcode10.2
       language: sh
-      python: '3.7'
+      install:
+        # Native libraries for pycairo / pygobject
+        - brew install pygobject3 gtk+3
+        # Install the various optional packages
+        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted wxpython
 
-    - os: windows
+    - name: "Python 3.7 on Windows, with optional dependencies and benchmark"
+      python: "3.7"
+      os: windows
       language: sh
-      python: '3.7'
-      before_install:
+      install:
+        # Get Python 3.7 from choco
         - choco install python3
         - ln -s "/c/Python37/python.exe" "/c/Python37/python3.exe"
-        - export PATH="/c/Python37:/c/Python37/Scripts/:$PATH"
-
-install:
-  - python3 setup.py install
-  - pip3 install coveralls coverage
-  - pip3 install pytest>=3.0.2 pytest-asyncio pytest-cov --upgrade
+        - export PATH="/c/Python37/:/c/Python37/Scripts/:$PATH"
+        # Install the various optional packages
+        - pip3 install eventlet gevent pygame pyqt5 pyside2 tornado twisted wxpython
+        # TODO install pycairo and pygobject somehow?
 
 script:
   - python3 setup.py test
@@ -54,4 +67,6 @@ after_success:
   # Run a crude benchmark (unit tests minus concurrency) a couple of times.
   # Need to make a copy of the script first, because on Windows it disappears
   # whilst switching git branches.
-  - cp ./.travis/bench.sh bench.sh && ./bench.sh
+  - if [[ $TRAVIS_JOB_NAME == *benchmark ]]; then
+      cp ./.travis/bench.sh bench.sh && ./bench.sh;
+    fi
