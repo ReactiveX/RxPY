@@ -68,5 +68,6 @@ after_success:
   # Need to make a copy of the script first, because on Windows it disappears
   # whilst switching git branches.
   - if [[ $TRAVIS_JOB_NAME == *benchmark ]]; then
+      pip3 install pytest>=4.4.1 pytest-asyncio>=0.10.0;
       cp ./.travis/bench.sh bench.sh && ./bench.sh;
     fi
