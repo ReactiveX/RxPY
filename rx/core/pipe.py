@@ -1,9 +1,70 @@
-from typing import Callable
+from typing import Callable, Any, TypeVar, overload
 from functools import reduce
-from .observable import Observable
+
+A = TypeVar('A')
+B = TypeVar('B')
+C = TypeVar('C')
+D = TypeVar('D')
+E = TypeVar('E')
+F = TypeVar('F')
+G = TypeVar('G')
 
 
-def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable], Observable]:
+@overload
+def pipe() -> Callable[[A], A]:
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B]) -> Callable[[A], B]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B], op2: Callable[[B], C]) -> Callable[[A], C]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B],
+         op2: Callable[[B], C],
+         op3: Callable[[C], D]
+         ) -> Callable[[A], D]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B],
+         op2: Callable[[B], C],
+         op3: Callable[[C], D],
+         op4: Callable[[D], E]
+         ) -> Callable[[A], E]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B],
+         op2: Callable[[B], C],
+         op3: Callable[[C], D],
+         op4: Callable[[D], E],
+         op5: Callable[[E], F]
+         ) -> Callable[[A], F]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+@overload
+def pipe(op1: Callable[[A], B],
+         op2: Callable[[B], C],
+         op3: Callable[[C], D],
+         op4: Callable[[D], E],
+         op5: Callable[[E], F],
+         op6: Callable[[F], G]
+         ) -> Callable[[A], G]:  # pylint: disable=function-redefined
+    ...  # pylint: disable=pointless-statement
+
+
+# pylint: disable=function-redefined
+def pipe(*operators: Callable[[Any], Any]) -> Callable[[Any], Any]:  # type: ignore
     """Compose multiple operators left to right.
 
     Composes zero or more operators into a functional composition. The
@@ -21,6 +82,6 @@ def pipe(*operators: Callable[[Observable], Observable]) -> Callable[[Observable
         The composed observable.
     """
 
-    def compose(source: Observable) -> Observable:
+    def compose(source: Any) -> Any:
         return reduce(lambda obs, op: op(obs), operators, source)
     return compose
