@@ -13,7 +13,7 @@ class Observer(typing.Observer, typing.Disposable):
                  on_next: Optional[typing.OnNext] = None,
                  on_error: Optional[typing.OnError] = None,
                  on_completed: Optional[typing.OnCompleted] = None
-                 ) -> Any:
+                 ) -> None:
         self.is_stopped = False
         if on_next is not None:
             self._on_next_core = on_next

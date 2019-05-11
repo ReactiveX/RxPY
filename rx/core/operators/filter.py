@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx.core import Observable
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Disposable
@@ -22,7 +22,7 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
             A filtered observable sequence.
         """
 
-        def subscribe(observer: Observer, scheduler: Scheduler) -> Disposable:
+        def subscribe(observer: Observer, scheduler: Optional[Scheduler]) -> Disposable:
             def on_next(value):
                 try:
                     should_run = predicate(value)
@@ -38,7 +38,7 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     return filter
 
 
-def _filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+def _filter_indexed(predicate_indexed: Optional[PredicateIndexed] = None) -> Callable[[Observable], Observable]:
     def filter_indexed(source: Observable) -> Observable:
         """Partially applied indexed filter operator.
 
@@ -55,7 +55,7 @@ def _filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Obs
             A filtered observable sequence.
         """
 
-        def subscribe(observer: Observer, scheduler: Scheduler):
+        def subscribe(observer: Observer, scheduler: Optional[Scheduler]):
             count = 0
 
             def on_next(value):

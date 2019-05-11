@@ -339,7 +339,7 @@ def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     return _contains(value, comparer)
 
 
-def count(predicate=None) -> Callable[[Observable], Observable]:
+def count(predicate: Optional[typing.Predicate] = None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that
     represents how many elements in the specified observable sequence
     satisfy a condition if provided, else the count of items.
@@ -370,7 +370,9 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return _count(predicate)
 
 
-def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def debounce(duetime: typing.RelativeTime,
+             scheduler: Optional[typing.Scheduler] = None
+             ) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -429,7 +431,7 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
                       ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
@@ -502,7 +504,9 @@ def dematerialize() -> Callable[[Observable], Observable]:
     return _dematerialize()
 
 
-def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def delay(duetime: typing.RelativeTime,
+          scheduler: Optional[typing.Scheduler] = None
+          ) -> Callable[[Observable], Observable]:
     """The delay operator.
 
     .. marble::
@@ -629,7 +633,9 @@ def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
     return do_(observer)
 
 
-def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
+def do_action(on_next: Optional[typing.OnNext] = None,
+              on_error: Optional[typing.OnError] = None,
+              on_completed: Optional[typing.OnCompleted] = None
               ) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence
     and invokes an action on graceful or exceptional termination of the
@@ -812,7 +818,7 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     return _filter(predicate)
 
 
-def filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+def filter_indexed(predicate_indexed: Optional[PredicateIndexed] = None) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
 
@@ -952,7 +958,9 @@ def first(predicate=None) -> Callable[[Observable], Observable]:
     return _first(predicate)
 
 
-def first_or_default(predicate: Predicate = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+def first_or_default(predicate: Optional[Predicate] = None,
+                     default_value: Any = None
+                     ) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.
@@ -986,7 +994,7 @@ def first_or_default(predicate: Predicate = None, default_value: Any = None) -> 
     return _first_or_default(predicate, default_value)
 
 
-def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def flat_map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The flat_map operator.
 
     .. marble::
@@ -1028,7 +1036,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _flat_map(mapper)
 
 
-def flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def flat_map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
     """The `flat_map_indexed` operator.
 
     One of the Following:

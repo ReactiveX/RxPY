@@ -1,11 +1,13 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.core.typing import Observer, Disposable
 from rx.disposable import CompositeDisposable
 
 
-def _do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
+def _do_action(on_next: Optional[typing.OnNext] = None,
+               on_error: Optional[typing.OnError] = None,
+               on_completed: Optional[typing.OnCompleted] = None
                ) -> Callable[[Observable], Observable]:
     def do_action(source: Observable) -> Observable:
         """Invokes an action for each element in the observable
@@ -140,7 +142,8 @@ def do_on_dispose(source: Observable, on_dispose):
     """
 
     class OnDispose(Disposable):
-        def dispose(self):
+
+        def dispose(self) -> None:
             on_dispose()
 
     def subscribe(observer, scheduler=None):
@@ -231,7 +234,7 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
         def __init__(self, was_invoked):
             self.was_invoked = was_invoked
 
-        def dispose(self):
+        def dispose(self) -> None:
             if not self.was_invoked[0]:
                 finally_action()
                 self.was_invoked[0] = True

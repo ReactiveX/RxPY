@@ -1,11 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 
 from rx import operators as ops
 
 
-def _count(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def _count(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
 
     if predicate:
         filtering = ops.filter(predicate)
