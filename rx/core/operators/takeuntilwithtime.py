@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from datetime import datetime
 
 from rx.core import Observable, typing
@@ -6,7 +6,7 @@ from rx.disposable import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
                           ) -> Callable[[Observable], Observable]:
     def take_until_with_time(source: Observable) -> Observable:
         """Takes elements for the specified duration until the specified end

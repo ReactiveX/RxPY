@@ -5,8 +5,6 @@ from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
 
-from . import disposable
-
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
@@ -466,7 +464,7 @@ def if_then(condition: Callable[[], bool], then_source: Observable,
     return _if_then(condition, then_source, else_source)
 
 
-def interval(period, scheduler: typing.Scheduler = None) -> Observable:
+def interval(period, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
@@ -541,7 +539,11 @@ def on_error_resume_next(*sources: Observable) -> Observable:
     return _on_error_resume_next(*sources)
 
 
-def range(start: int, stop: int = None, step: int = None, scheduler: typing.Scheduler = None) -> Observable:
+def range(start: int,
+          stop: Optional[int] = None,
+          step: Optional[int] = None,
+          scheduler: Optional[typing.Scheduler] = None
+          ) -> Observable:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -564,7 +566,7 @@ def range(start: int, stop: int = None, step: int = None, scheduler: typing.Sche
     return _range(start, stop, step, scheduler)
 
 
-def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
+def return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -587,7 +589,7 @@ def return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
 just = return_value
 
 
-def repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
+def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Observable:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 
@@ -650,7 +652,7 @@ def start_async(function_async) -> Observable:
     return _start_async(function_async)
 
 
-def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observable:
+def throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError
     message.
@@ -670,8 +672,8 @@ def throw(exception: Exception, scheduler: typing.Scheduler = None) -> Observabl
     return _throw(exception, scheduler)
 
 
-def timer(duetime: typing.AbsoluteOrRelativeTime, period: typing.RelativeTime = None,
-          scheduler: typing.Scheduler = None) -> Observable:
+def timer(duetime: typing.AbsoluteOrRelativeTime, period: Optional[typing.RelativeTime] = None,
+          scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that produces a value after
     duetime has elapsed and then after each period.
 
@@ -722,8 +724,9 @@ def to_async(func: Callable, scheduler=None) -> Callable:
     return _to_async(func, scheduler)
 
 
-def using(resource_factory: Callable[[], typing.Disposable], observable_factory: Callable[[typing.Disposable], Observable]
-         ) -> Observable:
+def using(resource_factory: Callable[[], typing.Disposable],
+          observable_factory: Callable[[typing.Disposable], Observable]
+          ) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.

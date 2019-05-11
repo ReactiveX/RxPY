@@ -1,5 +1,5 @@
 import collections
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import from_, from_future, operators as ops
 from rx.core import Observable
@@ -23,7 +23,7 @@ def _flat_map_internal(source, mapper=None, mapper_indexed=None):
     )
 
 
-def _flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def _flat_map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     def flat_map(source: Observable) -> Observable:
         """One of the Following:
         Projects each element of an observable sequence to an observable
@@ -52,7 +52,7 @@ def _flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return flat_map
 
 
-def _flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def _flat_map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
     def flat_map_indexed(source: Observable) -> Observable:
         """One of the Following:
         Projects each element of an observable sequence to an observable

@@ -21,7 +21,7 @@ class SerialDisposable(Disposable):
     def get_disposable(self) -> Optional[Disposable]:
         return self.current
 
-    def set_disposable(self, value) -> None:
+    def set_disposable(self, value: typing.Disposable) -> None:
         """If the SerialDisposable has already been disposed, assignment
         to this property causes immediate disposal of the given
         disposable object. Assigning this property disposes the previous

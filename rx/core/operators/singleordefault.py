@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rx import operators as ops
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate, Any
@@ -29,7 +31,7 @@ def _single_or_default_async(has_default: bool = False, default_value: Any = Non
     return single_or_default_async
 
 
-def _single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
+def _single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in the

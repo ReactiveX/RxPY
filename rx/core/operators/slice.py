@@ -1,10 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable
 
+
 # pylint: disable=redefined-builtin
-def _slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
+def _slice(start: Optional[int] = None, stop: Optional[int] = None, step: int = 1) -> Callable[[Observable], Observable]:
     has_start = start is not None
     has_stop = stop is not None
     has_step = step is not None

@@ -1,10 +1,10 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def _throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                    ) -> Callable[[Observable], Observable]:
     def throttle_first(source: Observable) -> Observable:
         """Returns an observable that emits only the first item emitted

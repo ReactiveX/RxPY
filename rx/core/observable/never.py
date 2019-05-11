@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rx.disposable import Disposable
 from rx.core import Observable, typing
 
@@ -10,7 +12,7 @@ def _never() -> Observable:
         An observable sequence whose observers will never get called.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
         return Disposable()
 
     return Observable(subscribe)

@@ -1,4 +1,4 @@
-from typing import Callable, NamedTuple, Any
+from typing import Callable, NamedTuple, Any, Optional
 from datetime import timedelta
 
 
@@ -11,7 +11,7 @@ class TimeInterval(NamedTuple):
     interval: timedelta
 
 
-def _time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     def time_interval(source: Observable) -> Observable:
         """Records the time interval between consecutive values in an
         observable sequence.

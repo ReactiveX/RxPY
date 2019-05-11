@@ -1,3 +1,4 @@
+from typing import Any
 import threading
 
 from rx.disposable import Disposable
@@ -56,7 +57,7 @@ class BehaviorSubject(Observable, Observer):
 
         return Disposable()
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
         os = None
@@ -71,7 +72,7 @@ class BehaviorSubject(Observable, Observer):
             for o in os:
                 o.on_completed()
 
-    def on_error(self, error):
+    def on_error(self, error: Exception) -> None:
         """Notifie all subscribed observers with the exception."""
         os = None
         with self.lock:
@@ -86,7 +87,7 @@ class BehaviorSubject(Observable, Observer):
             for o in os:
                 o.on_error(error)
 
-    def on_next(self, value):
+    def on_next(self, value: Any) -> None:
         """Notifie all subscribed observers with the value."""
         os = None
         with self.lock:
@@ -98,7 +99,7 @@ class BehaviorSubject(Observable, Observer):
             for o in os:
                 o.on_next(value)
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Release all resources.
 
         Releases all resources used by the current instance of the

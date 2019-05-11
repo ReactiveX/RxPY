@@ -1,9 +1,10 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def _take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
+                         ) -> Callable[[Observable], Observable]:
     def take_last_with_time(source: Observable) -> Observable:
         """Returns elements within the specified duration from the end
         of the observable source sequence.

@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from datetime import timedelta
 
 from rx.core import Observable, typing
@@ -8,8 +8,8 @@ from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCo
 from rx.subjects import Subject
 
 
-def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, scheduler: typing.Scheduler = None
-                              ) -> Callable[[Observable], Observable]:
+def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, scheduler: Optional[typing.Scheduler] = None
+                               ) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or timeout_scheduler

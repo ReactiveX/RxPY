@@ -3,6 +3,7 @@ from typing import Callable
 from rx import operators as ops
 from rx.core import Observable
 
+
 def _some(predicate=None) -> Callable[[Observable], Observable]:
     def some(source: Observable) -> Observable:
         """Partially applied operator.

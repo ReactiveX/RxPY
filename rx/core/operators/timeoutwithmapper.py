@@ -5,7 +5,8 @@ from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
-def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None) -> Callable[[Observable], Observable]:
+def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None
+                         ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 

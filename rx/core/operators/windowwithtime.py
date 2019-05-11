@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from datetime import timedelta
 
 from rx.core import Observable, typing
@@ -9,8 +9,8 @@ from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCo
 from rx.subjects import Subject
 
 
-def _window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
-                      scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
+                      scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     if timeshift is None:
         timeshift = timespan
 

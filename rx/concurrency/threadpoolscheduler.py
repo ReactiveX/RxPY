@@ -24,7 +24,8 @@ class ThreadPoolScheduler(NewThreadScheduler):
             self.future = self.executor.submit(self.target)
 
         def cancel(self) -> None:
-            self.future.cancel()
+            if self.future:
+                self.future.cancel()
 
     def __init__(self, max_workers: Optional[int] = None) -> None:
         self.executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)

@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Union, Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, ConnectableObservable, typing
@@ -6,7 +6,10 @@ from rx.core.typing import Scheduler, Mapper
 from rx.subjects import ReplaySubject
 
 
-def _replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None, scheduler: Scheduler = None
+def _replay(mapper: Optional[Mapper] = None,
+            buffer_size: Optional[int] = None,
+            window: Optional[typing.RelativeTime] = None,
+            scheduler: Optional[Scheduler] = None
             ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single

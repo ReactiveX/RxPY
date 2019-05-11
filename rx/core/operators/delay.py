@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from datetime import datetime, timedelta
 
 from rx import operators as ops
@@ -15,7 +15,7 @@ class Timestamp(object):
 
 
 def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
-                              scheduler: typing.Scheduler = None) -> Observable:
+                              scheduler: Optional[typing.Scheduler] = None) -> Observable:
 
     def subscribe(observer, scheduler_=None):
         nonlocal duetime
@@ -99,7 +99,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
     return Observable(subscribe)
 
 
-def _delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _delay(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     def delay(source: Observable) -> Observable:
         """Time shifts the observable sequence.
 

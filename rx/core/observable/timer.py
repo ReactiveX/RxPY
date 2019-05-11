@@ -1,11 +1,12 @@
 from datetime import datetime
+from typing import Optional
 
 from rx.concurrency import timeout_scheduler
 from rx.core import Observable, typing
 from rx.disposable import MultipleAssignmentDisposable
 
 
-def observable_timer_date(duetime, scheduler: typing.Scheduler = None):
+def observable_timer_date(duetime, scheduler: Optional[typing.Scheduler] = None):
     def subscribe(observer, scheduler_=None):
         _scheduler = scheduler or scheduler_
 
@@ -17,7 +18,7 @@ def observable_timer_date(duetime, scheduler: typing.Scheduler = None):
     return Observable(subscribe)
 
 
-def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Scheduler = None) -> Observable:
+def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer, scheduler_=None):
         _scheduler = scheduler or scheduler_ or timeout_scheduler
         nonlocal duetime
@@ -45,7 +46,7 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: typing.Sched
     return Observable(subscribe)
 
 
-def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Observable:
+def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer, scheduler_=None):
         _scheduler = scheduler or scheduler_ or timeout_scheduler
         d = _scheduler.normalize(duetime)
@@ -58,8 +59,10 @@ def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: typing.Sc
     return Observable(subscribe)
 
 
-def observable_timer_timespan_and_period(duetime: typing.RelativeTime, period: typing.RelativeTime,
-                                         scheduler: typing.Scheduler = None) -> Observable:
+def observable_timer_timespan_and_period(duetime: typing.RelativeTime,
+                                         period: typing.RelativeTime,
+                                         scheduler: Optional[typing.Scheduler] = None
+                                         ) -> Observable:
     if duetime == period:
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or timeout_scheduler
@@ -73,8 +76,10 @@ def observable_timer_timespan_and_period(duetime: typing.RelativeTime, period: t
     return observable_timer_duetime_and_period(duetime, period, scheduler)
 
 
-def _timer(duetime: typing.AbsoluteOrRelativeTime, period: typing.RelativeTime = None,
-           scheduler: typing.Scheduler = None) -> Observable:
+def _timer(duetime: typing.AbsoluteOrRelativeTime,
+           period: Optional[typing.RelativeTime] = None,
+           scheduler: Optional[typing.Scheduler] = None
+           ) -> Observable:
     if isinstance(duetime, datetime):
         if period is None:
             return observable_timer_date(duetime, scheduler)

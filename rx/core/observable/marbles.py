@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import re
 import threading
 from datetime import datetime, timedelta
@@ -32,7 +32,7 @@ tokens = re.compile(pattern)
 
 
 def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTime = 0.0,
-        lookup: Dict = None, error: Exception = None, scheduler: Scheduler = None) -> Observable:
+        lookup: Dict = None, error: Optional[Exception] = None, scheduler: Optional[Scheduler] = None) -> Observable:
 
     _scheduler = scheduler or new_thread_scheduler
 
@@ -92,7 +92,7 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTi
 
 
 def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
-                 error: Exception = None, scheduler: Scheduler = None) -> Observable:
+                 error: Optional[Exception] = None, scheduler: Optional[Scheduler] = None) -> Observable:
 
     disp = CompositeDisposable()
     messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
@@ -117,7 +117,7 @@ def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
 
 
 def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 0.0, lookup: Dict = None,
-          error: Exception = None, raise_stopped: bool = False) -> List[Tuple[RelativeTime, notification.Notification]]:
+          error: Optional[Exception] = None, raise_stopped: bool = False) -> List[Tuple[RelativeTime, notification.Notification]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
@@ -206,6 +206,7 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
             return (time, notification.OnNext(value))
 
     is_stopped = False
+
     def check_stopped(element):
         nonlocal is_stopped
         if raise_stopped:
@@ -214,7 +215,6 @@ def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 
 
             if element in ('#', '|'):
                 is_stopped = True
-
 
     iframe = 0
     messages = []

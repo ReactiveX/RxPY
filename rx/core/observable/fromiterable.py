@@ -1,11 +1,11 @@
-from typing import Iterable, Any
+from typing import Iterable, Any, Optional
 
 from rx.core import Observable, typing
 from rx.concurrency import current_thread_scheduler
 from rx.disposable import CompositeDisposable, Disposable
 
 
-def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
+def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Converts an iterable to an observable sequence.
 
     Example:
@@ -20,7 +20,7 @@ def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Obs
         given iterable sequence.
     """
 
-    def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
         _scheduler = scheduler or scheduler_ or current_thread_scheduler
         iterator = iter(iterable)
         disposed = False

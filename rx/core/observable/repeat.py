@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Any, Optional
 
 import rx
 from rx import operators as ops
 from rx.core import Observable
 
 
-def _repeat_value(value: Any = None, repeat_count: int = None) -> Observable:
+def _repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Observable:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 

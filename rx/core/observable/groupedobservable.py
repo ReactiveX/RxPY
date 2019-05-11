@@ -2,6 +2,7 @@ from rx.disposable import CompositeDisposable
 
 from .observable import Observable
 
+
 class GroupedObservable(Observable):
     def __init__(self, key, underlying_observable, merged_disposable=None):
         super().__init__()

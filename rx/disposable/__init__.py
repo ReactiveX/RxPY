@@ -1,5 +1,3 @@
-from rx.core import typing
-
 from .disposable import Disposable
 from .booleandisposable import BooleanDisposable
 from .compositedisposable import CompositeDisposable

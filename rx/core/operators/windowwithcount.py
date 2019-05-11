@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 import logging
 
 from rx.core import Observable
@@ -10,7 +10,7 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def _window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 

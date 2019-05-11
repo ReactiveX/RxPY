@@ -1,11 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 
 
-def _single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def _single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that satisfies the
     condition in the optional predicate, and reports an exception if there
     is not exactly one element in the observable sequence.
