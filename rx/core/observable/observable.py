@@ -271,7 +271,7 @@ class Observable(typing.Observable):
              op4: Callable[[C], D],
              op5: Callable[[D], E],
              op6: Callable[[E], F],
-             op7: Callable[[F], G]) -> G:  # pylint: disable=function-redefined, no-self-use
+             op7: Callable[[E], G]) -> G:  # pylint: disable=function-redefined, no-self-use
         ...  # pylint: disable=pointless-statement
 
     # pylint: disable=function-redefined
