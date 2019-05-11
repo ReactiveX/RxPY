@@ -145,7 +145,6 @@ class Observable(typing.Observable):
 
         return self.subscribe_(on_next, on_error, on_completed, scheduler)
 
-
     def subscribe_(self,
                    on_next: Optional[typing.OnNext] = None,
                    on_error: Optional[typing.OnError] = None,
@@ -208,7 +207,6 @@ class Observable(typing.Observable):
         # Hide the identity of the auto detach observer
         return Disposable(auto_detach_observer.dispose)
 
-
     def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
         """Compose multiple operators left to right.
 
@@ -226,7 +224,6 @@ class Observable(typing.Observable):
         """
         from ..pipe import pipe
         return pipe(*operators)(self)
-
 
     def run(self) -> Any:
         """Run source synchronously.
