@@ -5,8 +5,6 @@ from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
 
-from . import disposable
-
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
