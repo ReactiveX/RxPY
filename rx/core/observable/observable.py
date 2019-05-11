@@ -217,61 +217,61 @@ class Observable(typing.Observable):
 
     @overload
     def pipe(self) -> 'Observable':  # pylint: disable=no-self-use
-        ...  # pylint: disable=pointless-statement
+        ... # pylint: disable=pointless-statement
 
     @overload
     def pipe(self, op1: Callable[['Observable'], A]) -> A:  # pylint: disable=function-redefined, no-self-use
-        ...  # pylint: disable=pointless-statement
+        ... # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
-             op2: Callable[[A], B]) -> B:
-        ...  # pylint: disable=pointless-statement
+             op2: Callable[[A], B]) -> B:  # pylint: disable=function-redefined, no-self-use
+        ... # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
-             op3: Callable[[B], C]) -> C:
-        ...  # pylint: disable=pointless-statement
+             op3: Callable[[B], C]) -> C:  # pylint: disable=function-redefined, no-self-use
+        ... # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
-             op4: Callable[[C], D]) -> D:
+             op4: Callable[[C], D]) -> D:  # pylint: disable=function-redefined, no-self-use
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
              op4: Callable[[C], D],
-             op5: Callable[[D], E]) -> E:
+             op5: Callable[[D], E]) -> E:  # pylint: disable=function-redefined, no-self-use
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
              op4: Callable[[C], D],
              op5: Callable[[D], E],
-             op6: Callable[[E], F]) -> F:
+             op6: Callable[[E], F]) -> F:  # pylint: disable=function-redefined, no-self-use
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined,too-many-arguments,no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
              op4: Callable[[C], D],
              op5: Callable[[D], E],
              op6: Callable[[E], F],
-             op7: Callable[[F], G]) -> G:
+             op7: Callable[[F], G]) -> G:  # pylint: disable=function-redefined, no-self-use
         ...  # pylint: disable=pointless-statement
 
     # pylint: disable=function-redefined

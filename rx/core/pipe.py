@@ -26,40 +26,40 @@ def pipe(op1: Callable[[A], B], op2: Callable[[B], C]) -> Callable[[A], C]:  # p
 
 
 @overload
-def pipe(op1: Callable[[A], B],  # pylint: disable=function-redefined
+def pipe(op1: Callable[[A], B],
          op2: Callable[[B], C],
          op3: Callable[[C], D]
-         ) -> Callable[[A], D]:
+         ) -> Callable[[A], D]:  # pylint: disable=function-redefined
     ...  # pylint: disable=pointless-statement
 
 
 @overload
-def pipe(op1: Callable[[A], B],  # pylint: disable=function-redefined
+def pipe(op1: Callable[[A], B],
          op2: Callable[[B], C],
          op3: Callable[[C], D],
          op4: Callable[[D], E]
-         ) -> Callable[[A], E]:
+         ) -> Callable[[A], E]:  # pylint: disable=function-redefined
     ...  # pylint: disable=pointless-statement
 
 
 @overload
-def pipe(op1: Callable[[A], B],  # pylint: disable=function-redefined
+def pipe(op1: Callable[[A], B],
          op2: Callable[[B], C],
          op3: Callable[[C], D],
          op4: Callable[[D], E],
          op5: Callable[[E], F]
-         ) -> Callable[[A], F]:
+         ) -> Callable[[A], F]:  # pylint: disable=function-redefined
     ...  # pylint: disable=pointless-statement
 
 
 @overload
-def pipe(op1: Callable[[A], B],  # pylint: disable=function-redefined,too-many-arguments
+def pipe(op1: Callable[[A], B],
          op2: Callable[[B], C],
          op3: Callable[[C], D],
          op4: Callable[[D], E],
          op5: Callable[[E], F],
          op6: Callable[[F], G]
-         ) -> Callable[[A], G]:
+         ) -> Callable[[A], G]:  # pylint: disable=function-redefined
     ...  # pylint: disable=pointless-statement
 
 
