@@ -75,3 +75,6 @@ _build
 
 # Mac OS
 .DS_Store
+
+# Type checkers
+.pyre

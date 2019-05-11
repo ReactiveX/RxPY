@@ -54,6 +54,7 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest>=4.4.1', 'pytest-asyncio>=0.10.0', 'coverage>=4.5.3'],
 
+    package_data={'rx': ['py.typed']},
     packages=['rx', 'rx.internal', 'rx.core', 'rx.core.abc',
               'rx.core.operators', 'rx.core.observable',
               'rx.core.observer', 'rx.core.operators.connectable',
