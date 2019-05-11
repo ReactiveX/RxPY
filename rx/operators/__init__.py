@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Callable, Union, Any, Iterable, List, cast
+from typing import Callable, Union, Any, Iterable, List, Optional, cast
 from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
@@ -130,7 +130,7 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
     return _buffer(buffer_openings, buffer_closing_mapper)
 
 
-def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -159,8 +159,8 @@ def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _buffer_with_count(count, skip)
 
 
-def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
-                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def buffer_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -339,7 +339,7 @@ def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
     return _contains(value, comparer)
 
 
-def count(predicate=None) -> Callable[[Observable], Observable]:
+def count(predicate: Optional[typing.Predicate] = None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence containing a value that
     represents how many elements in the specified observable sequence
     satisfy a condition if provided, else the count of items.
@@ -370,7 +370,9 @@ def count(predicate=None) -> Callable[[Observable], Observable]:
     return _count(predicate)
 
 
-def debounce(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def debounce(duetime: typing.RelativeTime,
+             scheduler: Optional[typing.Scheduler] = None
+             ) -> Callable[[Observable], Observable]:
     """Ignores values from an observable sequence which are followed by
     another value before duetime.
 
@@ -429,7 +431,7 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
                       ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
@@ -502,7 +504,9 @@ def dematerialize() -> Callable[[Observable], Observable]:
     return _dematerialize()
 
 
-def delay(duetime: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def delay(duetime: typing.RelativeTime,
+          scheduler: Optional[typing.Scheduler] = None
+          ) -> Callable[[Observable], Observable]:
     """The delay operator.
 
     .. marble::
@@ -629,7 +633,9 @@ def do(observer: typing.Observer) -> Callable[[Observable], Observable]:
     return do_(observer)
 
 
-def do_action(on_next: typing.OnNext = None, on_error: typing.OnError = None, on_completed: typing.OnCompleted = None
+def do_action(on_next: Optional[typing.OnNext] = None,
+              on_error: Optional[typing.OnError] = None,
+              on_completed: Optional[typing.OnCompleted] = None
               ) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence
     and invokes an action on graceful or exceptional termination of the
@@ -812,7 +818,7 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     return _filter(predicate)
 
 
-def filter_indexed(predicate_indexed: PredicateIndexed = None) -> Callable[[Observable], Observable]:
+def filter_indexed(predicate_indexed: Optional[PredicateIndexed] = None) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
     predicate by incorporating the element's index.
 
@@ -952,7 +958,9 @@ def first(predicate=None) -> Callable[[Observable], Observable]:
     return _first(predicate)
 
 
-def first_or_default(predicate: Predicate = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+def first_or_default(predicate: Optional[Predicate] = None,
+                     default_value: Any = None
+                     ) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.
@@ -986,7 +994,7 @@ def first_or_default(predicate: Predicate = None, default_value: Any = None) -> 
     return _first_or_default(predicate, default_value)
 
 
-def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def flat_map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The flat_map operator.
 
     .. marble::
@@ -1028,7 +1036,7 @@ def flat_map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _flat_map(mapper)
 
 
-def flat_map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def flat_map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
     """The `flat_map_indexed` operator.
 
     One of the Following:
@@ -2115,7 +2123,7 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _single(predicate)
 
 
-def single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
+def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
@@ -3151,7 +3159,7 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     return _window(window_openings, window_closing_mapper)
 
 
-def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
@@ -3181,14 +3189,14 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
-                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
     return _window_with_time(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
-                              scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+                              scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
     return _window_with_time_or_count(timespan, count, scheduler)
 

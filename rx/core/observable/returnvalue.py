@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from rx.core import typing
 from rx.core import Observable
@@ -6,7 +6,7 @@ from rx.concurrency import current_thread_scheduler
 from rx.core.abc.scheduler import Scheduler
 
 
-def _return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
+def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -23,7 +23,7 @@ def _return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
         element.
     """
 
-    def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
         _scheduler = scheduler or scheduler_ or current_thread_scheduler
 
         def action(scheduler: typing.Scheduler, state: Any = None):
@@ -34,7 +34,7 @@ def _return_value(value: Any, scheduler: typing.Scheduler = None) -> Observable:
     return Observable(subscribe)
 
 
-def _from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
+def _from_callable(supplier: Callable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
         _scheduler = scheduler or scheduler_ or current_thread_scheduler
 

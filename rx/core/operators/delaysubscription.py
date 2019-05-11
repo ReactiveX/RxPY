@@ -1,13 +1,13 @@
-from datetime import datetime
-from typing import Union, Callable
+from typing import Callable, Optional
 
 import rx
 from rx import operators as ops
 from rx.core import Observable, typing
 
 
-def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
-                       ) -> Callable[[Observable], Observable]:
+def _delay_subscription(duetime: typing.AbsoluteOrRelativeTime,
+                        scheduler: Optional[typing.Scheduler] = None
+                        ) -> Callable[[Observable], Observable]:
     def delay_subscription(source: Observable) -> Observable:
         """Time shifts the observable sequence by delaying the subscription.
 

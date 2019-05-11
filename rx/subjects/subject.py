@@ -26,11 +26,11 @@ class Subject(Observable, Observer):
 
         self.lock = threading.RLock()
 
-    def check_disposed(self):
+    def check_disposed(self) -> None:
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> typing.Disposable:
+    def _subscribe_core(self, observer: Observer, scheduler: Optional[Scheduler] = None) -> typing.Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -104,5 +104,5 @@ class Subject(Observable, Observer):
             self.observers = []
 
     @classmethod
-    def create(cls, observer, observable):
+    def create(cls, observer, observable) -> AnonymousSubject:
         return AnonymousSubject(observer, observable)

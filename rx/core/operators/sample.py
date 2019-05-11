@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
 from rx.core import Observable, typing
@@ -33,7 +33,7 @@ def sample_observable(source, sampler):
     return Observable(subscribe)
 
 
-def _sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _sample(interval=None, sampler=None, scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     def sample(source: Observable) -> Observable:
         """Samples the observable sequence at each interval.
 

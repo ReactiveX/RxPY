@@ -15,7 +15,7 @@ class Observable(typing.Observable):
     Represents a push-style collection and contains all operators as
     methods to allow classic Rx chaining of operators."""
 
-    def __init__(self, subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable] = None) -> None:
+    def __init__(self, subscribe: Optional[Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]] = None) -> None:
         """Creates an observable sequence object from the specified
         subscription function.
 
@@ -105,12 +105,12 @@ class Observable(typing.Observable):
         return concat(self, other)
 
     def subscribe(self,  # pylint: disable=too-many-arguments,arguments-differ
-                  observer: Union[typing.Observer, typing.OnNext] = None,
-                  on_error: typing.OnError = None,
-                  on_completed: typing.OnCompleted = None,
-                  on_next: typing.OnNext = None,
+                  observer: Optional[Union[typing.Observer, typing.OnNext]] = None,
+                  on_error: Optional[typing.OnError] = None,
+                  on_completed: Optional[typing.OnCompleted] = None,
+                  on_next: Optional[typing.OnNext] = None,
                   *,
-                  scheduler: typing.Scheduler = None,
+                  scheduler: Optional[typing.Scheduler] = None,
                   ) -> typing.Disposable:
         """Subscribe an observer to the observable sequence.
 
@@ -145,13 +145,12 @@ class Observable(typing.Observable):
 
         return self.subscribe_(on_next, on_error, on_completed, scheduler)
 
-
     def subscribe_(self,
-                   on_next: typing.OnNext = None,
-                   on_error: typing.OnError = None,
-                   on_completed: typing.OnCompleted = None,
-                   scheduler: typing.Scheduler = None
-                  ) -> typing.Disposable:
+                   on_next: Optional[typing.OnNext] = None,
+                   on_error: Optional[typing.OnError] = None,
+                   on_completed: Optional[typing.OnCompleted] = None,
+                   scheduler: Optional[typing.Scheduler] = None
+                   ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.
 
         Examples:
@@ -208,7 +207,6 @@ class Observable(typing.Observable):
         # Hide the identity of the auto detach observer
         return Disposable(auto_detach_observer.dispose)
 
-
     def pipe(self, *operators: Callable[['Observable'], 'Observable']) -> 'Observable':
         """Compose multiple operators left to right.
 
@@ -226,7 +224,6 @@ class Observable(typing.Observable):
         """
         from ..pipe import pipe
         return pipe(*operators)(self)
-
 
     def run(self) -> Any:
         """Run source synchronously.

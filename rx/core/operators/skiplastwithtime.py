@@ -1,11 +1,10 @@
-from typing import Union, Callable
-from datetime import timedelta
+from typing import Union, Callable, Optional
 
 from rx.core import Observable, typing
 from rx.concurrency import timeout_scheduler
 
 
-def _skip_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def _skip_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                         ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the end of the
     observable source sequence.

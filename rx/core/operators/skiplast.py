@@ -1,7 +1,8 @@
+from typing import Callable
 from rx.core import Observable
 
 
-def _skip_last(count: int) -> Observable:
+def _skip_last(count: int) -> Callable[[Observable], Observable]:
     def skip_last(source: Observable) -> Observable:
         """Bypasses a specified number of elements at the end of an
         observable sequence.

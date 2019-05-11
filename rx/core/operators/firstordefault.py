@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -25,7 +25,9 @@ def _first_or_default_async(has_default=False, default_value=None):
     return first_or_default_async
 
 
-def _first_or_default(predicate: Predicate = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+def _first_or_default(predicate: Optional[Predicate] = None,
+                      default_value: Any = None
+                      ) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.

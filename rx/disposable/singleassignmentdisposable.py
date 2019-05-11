@@ -43,7 +43,7 @@ class SingleAssignmentDisposable(Disposable):
 
     disposable = property(get_disposable, set_disposable)
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Sets the status to disposed"""
         old = None
 

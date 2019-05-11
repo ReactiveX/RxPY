@@ -12,7 +12,7 @@ class AutoDetachObserver(typing.Observer):
                  on_next: Optional[typing.OnNext] = None,
                  on_error: Optional[typing.OnError] = None,
                  on_completed: Optional[typing.OnCompleted] = None
-                 ) -> Any:
+                 ) -> None:
         self._on_next = on_next or noop
         self._on_error = on_error or default_error
         self._on_completed = on_completed or noop
