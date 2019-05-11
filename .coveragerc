@@ -7,5 +7,6 @@ exclude_lines =
     pragma: no cover
     return NotImplemented
     raise NotImplementedError
+    ...
 [xml]
 output = coverage.xml
