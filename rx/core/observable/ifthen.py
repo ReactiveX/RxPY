@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
 from rx.core import abc
@@ -7,7 +7,7 @@ from rx.internal.utils import is_future
 
 
 def _if_then(condition: Callable[[], bool], then_source: Observable,
-             else_source: Observable = None) -> Observable:
+             else_source: Optional[Observable] = None) -> Observable:
     """Determines whether an observable collection contains values.
 
     Example:

@@ -1,4 +1,4 @@
-from typing import Callable, NamedTuple, Any
+from typing import Callable, NamedTuple, Any, Optional
 from datetime import datetime
 
 from rx import defer
@@ -11,7 +11,7 @@ class Timestamp(NamedTuple):
     timestamp: datetime
 
 
-def _timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def _timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     def timestamp(source: Observable) -> Observable:
         """Records the timestamp for each value in an observable sequence.
 

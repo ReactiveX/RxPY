@@ -1,3 +1,4 @@
+from typing import Optional
 from threading import RLock
 
 from rx.internal import noop
@@ -7,7 +8,7 @@ from rx.core import typing
 class Disposable(typing.Disposable):
     """Main disposable class"""
 
-    def __init__(self, action: typing.Action = None) -> None:
+    def __init__(self, action: Optional[typing.Action] = None) -> None:
         """Creates a disposable object that invokes the specified
         action when disposed.
 

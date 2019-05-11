@@ -11,18 +11,18 @@ class RefCountDisposable(typing.Disposable):
 
     class InnerDisposable(typing.Disposable):
 
-        def __init__(self, parent):
+        def __init__(self, parent) -> None:
             self.parent = parent
             self.is_disposed = False
             self.lock = RLock()
 
-        def dispose(self):
+        def dispose(self) -> None:
             with self.lock:
                 parent = self.parent
                 self.parent = None
             parent.release()
 
-    def __init__(self, disposable):
+    def __init__(self, disposable) -> None:
         """Initializes a new instance of the RefCountDisposable class with the
         specified disposable."""
 
@@ -34,7 +34,7 @@ class RefCountDisposable(typing.Disposable):
 
         super().__init__()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Disposes the underlying disposable only when all dependent
         disposable have been disposed."""
 
@@ -52,7 +52,7 @@ class RefCountDisposable(typing.Disposable):
         if underlying_disposable is not None:
             underlying_disposable.dispose()
 
-    def release(self):
+    def release(self) -> None:
         if self.is_disposed:
             return
 
@@ -67,7 +67,7 @@ class RefCountDisposable(typing.Disposable):
             self.underlying_disposable.dispose()
 
     @property
-    def disposable(self):
+    def disposable(self) -> typing.Disposable:
         """Returns a dependent disposable that when disposed decreases the
         refcount on the underlying disposable."""
 

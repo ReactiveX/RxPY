@@ -1,11 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
 from rx.core import Observable
 from rx.internal.utils import infinite
 
 
-def _retry(retry_count: int = None) -> Callable[[Observable], Observable]:
+def _retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is
     not specified, it retries indefinitely.

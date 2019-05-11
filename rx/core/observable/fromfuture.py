@@ -1,4 +1,5 @@
 from asyncio.futures import Future
+from typing import Optional
 
 from rx.disposable import Disposable
 from rx.core import typing
@@ -18,7 +19,7 @@ def _from_future(future: Future) -> Observable:
         and failure.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
         def done(future):
             try:
                 value = future.result()

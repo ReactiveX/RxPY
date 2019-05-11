@@ -8,7 +8,7 @@ from rx.internal import default_comparer
 
 
 def _sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = None
-                   ) -> Callable[[Observable], Observable]:
+                    ) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
     if isinstance(second, collections.abc.Iterable):
         second = rx.from_iterable(second)

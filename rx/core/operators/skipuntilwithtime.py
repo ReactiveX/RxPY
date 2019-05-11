@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 from rx.concurrency import timeout_scheduler
 
 
-def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
-                         ) -> Callable[[Observable], Observable]:
+def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
+                          ) -> Callable[[Observable], Observable]:
     def skip_until_with_time(source: Observable) -> Observable:
         """Skips elements from the observable source sequence until the
         specified start time.

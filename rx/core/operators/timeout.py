@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, Callable
+from typing import Union, Callable, Optional
 
 from rx import from_future, throw
 from rx.core import Observable, typing
@@ -8,7 +8,7 @@ from rx.concurrency import timeout_scheduler
 from rx.internal.utils import is_future
 
 
-def _timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
+def _timeout(duetime: typing.AbsoluteTime, other: Optional[Observable] = None, scheduler: Optional[typing.Scheduler] = None
              ) -> Callable[[Observable], Observable]:
 
     other = other or throw(Exception("Timeout"))

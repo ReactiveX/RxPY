@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Callable, Union, Any, Iterable, List, cast
+from typing import Callable, Union, Any, Iterable, List, Optional, cast
 from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
@@ -130,7 +130,7 @@ def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observ
     return _buffer(buffer_openings, buffer_closing_mapper)
 
 
-def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -159,8 +159,8 @@ def buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _buffer_with_count(count, skip)
 
 
-def buffer_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
-                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def buffer_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -2115,7 +2115,7 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _single(predicate)
 
 
-def single_or_default(predicate: Predicate = None, default_value: Any = None) -> Observable:
+def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
@@ -3151,7 +3151,7 @@ def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observ
     return _window(window_openings, window_closing_mapper)
 
 
-def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
@@ -3181,14 +3181,14 @@ def window_with_count(count: int, skip: int = None) -> Callable[[Observable], Ob
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan: typing.RelativeTime, timeshift: typing.RelativeTime = None,
-                     scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
     return _window_with_time(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
-                              scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+                              scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
     return _window_with_time_or_count(timespan, count, scheduler)
 

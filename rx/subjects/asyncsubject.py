@@ -1,4 +1,5 @@
 import threading
+from typing import Any
 
 from rx.disposable import Disposable
 from rx.core import Observable
@@ -13,7 +14,7 @@ class AsyncSubject(Observable, Observer):
     before the close notification, or the error received through
     on_error, is sent to all subscribed observers."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Creates a subject that can only receive one value and that value is
         cached for all future observations."""
 
@@ -28,7 +29,7 @@ class AsyncSubject(Observable, Observer):
 
         self.lock = threading.RLock()
 
-    def check_disposed(self):
+    def check_disposed(self) -> None:
         if self.is_disposed:
             raise DisposedException()
 
@@ -53,7 +54,7 @@ class AsyncSubject(Observable, Observer):
 
         return Disposable()
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         value = None
         os = None
         hv = None
@@ -77,7 +78,7 @@ class AsyncSubject(Observable, Observer):
                 for o in os:
                     o.on_completed()
 
-    def on_error(self, error):
+    def on_error(self, error: Exception) -> None:
         os = None
 
         with self.lock:
@@ -92,14 +93,14 @@ class AsyncSubject(Observable, Observer):
             for o in os:
                 o.on_error(error)
 
-    def on_next(self, value):
+    def on_next(self, value: Any) -> None:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 self.value = value
                 self.has_value = True
 
-    def dispose(self):
+    def dispose(self) -> None:
         with self.lock:
             self.is_disposed = True
             self.observers = None

@@ -22,7 +22,6 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
 
     other = rx.from_future(other) if is_future(other) else other
 
-
     def skip_until(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             is_open = [False]

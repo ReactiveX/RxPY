@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.core import Observable
@@ -12,7 +12,7 @@ class AnonymousSubject(Observable, Observer):
         self.observer = observer
         self.observable = observable
 
-    def _subscribe_core(self, observer: Observer, scheduler: Scheduler = None) -> typing.Disposable:
+    def _subscribe_core(self, observer: Observer, scheduler: Optional[Scheduler] = None) -> typing.Disposable:
         return self.observable.subscribe(observer, scheduler=scheduler)
 
     def on_next(self, value: Any) -> None:
