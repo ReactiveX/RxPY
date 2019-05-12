@@ -1,5 +1,6 @@
-Dag Brattli <dag@brattli.net>
+RxPY v3 team
 
-Matthew Podwysocki <matthewp@microsoft.com>
-Bart de Smet <bartde@microsoft.com>
-Erik Meijer <emeijer@microsoft.com>
+Dag Brattli @dbrattli
+Erik Kemperman, @erikkemperman
+Jérémie Fache, @jcafhe
+Romain Picard, @MainRo
