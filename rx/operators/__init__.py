@@ -1206,7 +1206,7 @@ def group_join(right, left_duration_mapper, right_duration_mapper,
     return _group_join(right, left_duration_mapper, right_duration_mapper)
 
 
-def ignore_elements() -> Observable:
+def ignore_elements() -> Callable[[Observable], Observable]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
