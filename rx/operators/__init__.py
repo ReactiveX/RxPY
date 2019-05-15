@@ -3260,7 +3260,7 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     return _zip(*args)
 
 
-def zip_with_iterable(second):
+def zip_with_iterable(second: Iterable) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequence and list into one
     observable sequence by creating a tuple whenever all of
     the observable sequences have produced an element at a

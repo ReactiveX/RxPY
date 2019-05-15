@@ -24,7 +24,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
         return rx.zip(source, *args)
     return zip
 
-def _zip_with_iterable(seq: Iterable):
+def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
     def zip_with_iterable(source: Observable) -> Observable:
         """Merges the specified observable sequence and list into one
         observable sequence by creating a tuple whenever all of
