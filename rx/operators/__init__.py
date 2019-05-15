@@ -2158,7 +2158,7 @@ def single_or_default(predicate: Optional[Predicate] = None, default_value: Any 
     return _single_or_default(predicate, default_value)
 
 
-def single_or_default_async(has_default: bool = False, default_value: Any = None):
+def single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.singleordefault import _single_or_default_async
     return _single_or_default_async(has_default, default_value)
 
