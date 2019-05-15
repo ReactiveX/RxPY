@@ -2190,7 +2190,7 @@ def skip(count: int) -> Callable[[Observable], Observable]:
     return _skip(count)
 
 
-def skip_last(count: int) -> Observable:
+def skip_last(count: int) -> Callable[[Observable], Observable]:
     """The skip_last operator.
 
     .. marble::
