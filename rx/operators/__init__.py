@@ -1781,7 +1781,7 @@ def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
     return _pluck_attr(prop)
 
 
-def publish(mapper=None) -> ConnectableObservable:
+def publish(mapper=None) -> Callable[[Observable], ConnectableObservable]:
     """The `publish` operator.
 
     Returns an observable sequence that is the result of invoking the
