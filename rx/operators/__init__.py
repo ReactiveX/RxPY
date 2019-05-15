@@ -2123,7 +2123,7 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _single(predicate)
 
 
-def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
+def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
