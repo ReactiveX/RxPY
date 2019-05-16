@@ -1,11 +1,12 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, ConnectableObservable, pipe
+from rx.core.typing import Mapper
 from rx.subjects import Subject
 
 
-def _publish(mapper=None) -> ConnectableObservable:
+def _publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], ConnectableObservable]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a

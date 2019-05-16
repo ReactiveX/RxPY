@@ -1,8 +1,10 @@
+from typing import Callable
+
 from rx.core import Observable
 from rx.internal import noop
 
 
-def _ignore_elements() -> Observable:
+def _ignore_elements() -> Callable[[Observable], Observable]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 

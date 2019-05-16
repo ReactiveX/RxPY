@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Callable
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -6,7 +6,7 @@ from rx.core.typing import Predicate, Any
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
-def _single_or_default_async(has_default: bool = False, default_value: Any = None):
+def _single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
     def single_or_default_async(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
             value = [default_value]
@@ -31,7 +31,7 @@ def _single_or_default_async(has_default: bool = False, default_value: Any = Non
     return single_or_default_async
 
 
-def _single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
+def _single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in the

@@ -1206,7 +1206,7 @@ def group_join(right, left_duration_mapper, right_duration_mapper,
     return _group_join(right, left_duration_mapper, right_duration_mapper)
 
 
-def ignore_elements() -> Observable:
+def ignore_elements() -> Callable[[Observable], Observable]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
@@ -1781,7 +1781,7 @@ def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
     return _pluck_attr(prop)
 
 
-def publish(mapper=None) -> ConnectableObservable:
+def publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], ConnectableObservable]:
     """The `publish` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -2123,7 +2123,7 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _single(predicate)
 
 
-def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Observable:
+def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
@@ -2158,7 +2158,7 @@ def single_or_default(predicate: Optional[Predicate] = None, default_value: Any 
     return _single_or_default(predicate, default_value)
 
 
-def single_or_default_async(has_default: bool = False, default_value: Any = None):
+def single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
     from rx.core.operators.singleordefault import _single_or_default_async
     return _single_or_default_async(has_default, default_value)
 
@@ -2190,7 +2190,7 @@ def skip(count: int) -> Callable[[Observable], Observable]:
     return _skip(count)
 
 
-def skip_last(count: int) -> Observable:
+def skip_last(count: int) -> Callable[[Observable], Observable]:
     """The skip_last operator.
 
     .. marble::
@@ -3260,7 +3260,7 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
     return _zip(*args)
 
 
-def zip_with_iterable(second):
+def zip_with_iterable(second: Iterable) -> Callable[[Observable], Observable]:
     """Merges the specified observable sequence and list into one
     observable sequence by creating a tuple whenever all of
     the observable sequences have produced an element at a
