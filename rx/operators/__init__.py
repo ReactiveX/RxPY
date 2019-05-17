@@ -1324,7 +1324,9 @@ def last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observ
     return _last(predicate)
 
 
-def last_or_default(predicate=None, default_value=None) -> Callable[[Observable], Observable]:
+def last_or_default(predicate: Optional[Predicate] = None,
+                    default_value: Any = None
+                    ) -> Callable[[Observable], Observable]:
     """The last_or_default operator.
 
     Returns the last element of an observable sequence that satisfies

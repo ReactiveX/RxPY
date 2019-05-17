@@ -1,10 +1,16 @@
-from typing import Callable
+from typing import Callable, Any, Optional
 
 from rx.core import Observable
+from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx import operators as ops
 
-def last_or_default_async(source, has_default=False, default_value=None):
+
+def last_or_default_async(source: Observable,
+                          has_default: bool = False,
+                          default_value: Any = None
+                          ) -> Callable[[Observable], Observable]:
+
     def subscribe(observer, scheduler=None):
         value = [default_value]
         seen_value = [False]
@@ -24,7 +30,10 @@ def last_or_default_async(source, has_default=False, default_value=None):
     return Observable(subscribe)
 
 
-def _last_or_default(predicate=None, default_value=None) -> Callable[[Observable], Observable]:
+def _last_or_default(predicate: Optional[Predicate] = None,
+                     default_value: Any = None
+                     ) -> Callable[[Observable], Observable]:
+
     def last_or_default(source: Observable) -> Observable:
         """Return last or default element.
 
