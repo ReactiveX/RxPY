@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
-from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
+from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer
 from rx.subjects import Subject
 
 
@@ -539,7 +539,9 @@ def delay(duetime: typing.RelativeTime,
     return _delay(duetime, scheduler)
 
 
-def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def distinct(key_mapper: Optional[Mapper] = None,
+             comparer: Optional[Comparer] = None
+             ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of
     this operator should be considered carefully due to the maintenance

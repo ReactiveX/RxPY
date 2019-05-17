@@ -1,6 +1,8 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx.core import Observable
+from rx.core.typing import Mapper, Comparer
 from rx.internal.basic import default_comparer
+
 
 def array_index_of_comparer(array, item, comparer):
     for i, a in enumerate(array):
@@ -21,7 +23,9 @@ class HashSet:
         return ret_value
 
 
-def _distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def _distinct(key_mapper: Optional[Mapper] = None,
+              comparer: Optional[Comparer] = None
+              ) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
 
     def distinct(source: Observable) -> Observable:
