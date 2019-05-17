@@ -575,7 +575,9 @@ def distinct(key_mapper: Optional[Mapper] = None,
     return _distinct(key_mapper, comparer)
 
 
-def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def distinct_until_changed(key_mapper: Optional[Mapper] = None,
+                           comparer: Optional[Comparer] = None
+                           ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
 
