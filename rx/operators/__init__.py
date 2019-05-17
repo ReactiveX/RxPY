@@ -1259,7 +1259,10 @@ def is_empty() -> Callable[[Observable], Observable]:
     return _is_empty()
 
 
-def join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observable], Observable]:
+def join(right: Observable,
+         left_duration_mapper: Callable[[Any], Observable],
+         right_duration_mapper: Callable[[Any], Observable]
+         ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations.
 
