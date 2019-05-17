@@ -1,19 +1,20 @@
-from typing import Callable
+from typing import Callable, Optional, Sequence, Any
 
 from rx import operators as ops
 from rx.core import Observable, pipe
+from rx.core.typing import Comparer
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
-def first_only(x):
+def first_only(x: Sequence) -> Any:
     if not x:
         raise SequenceContainsNoElementsError()
 
     return x[0]
 
 
-def _min(comparer: Callable = None) -> Callable[[Observable], Observable]:
+def _min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """The `min` operator.
 
     Returns the minimum element in an observable sequence according to

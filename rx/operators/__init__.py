@@ -1550,7 +1550,7 @@ def merge_all() -> Callable[[Observable], Observable]:
     return _merge_all()
 
 
-def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
+def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """The `min` operator.
 
     Returns the minimum element in an observable sequence according to
@@ -1579,7 +1579,9 @@ def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
     return _min(comparer)
 
 
-def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+def min_by(key_mapper: Mapper,
+           comparer: Optional[Comparer] = None
+           ) -> Callable[[Observable], Observable]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
