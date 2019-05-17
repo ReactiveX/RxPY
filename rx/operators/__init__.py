@@ -1493,7 +1493,9 @@ def max_by(key_mapper: Mapper,
     return _max_by(key_mapper, comparer)
 
 
-def merge(*sources, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+def merge(*sources: Observable,
+          max_concurrent: Optional[int] = None
+          ) -> Callable[[Observable], Observable]:
     """Merges an observable sequence of observable sequences into an
     observable sequence, limiting the number of concurrent
     subscriptions to inner sequences. Or merges two observable

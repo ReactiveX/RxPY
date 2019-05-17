@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
 from rx import from_future
@@ -8,7 +8,10 @@ from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
 
-def _merge(*sources, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+def _merge(*sources: Observable,
+           max_concurrent: Optional[int] = None
+           ) -> Callable[[Observable], Observable]:
+
     def merge(source: Observable) -> Observable:
         """Merges an observable sequence of observable sequences into
         an observable sequence, limiting the number of concurrent
