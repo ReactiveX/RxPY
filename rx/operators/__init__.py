@@ -73,7 +73,7 @@ def as_observable() -> Callable[[Observable], Observable]:
     return _as_observable()
 
 
-def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
+def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The average operator.
 
     Computes the average of an observable sequence of values that
@@ -92,7 +92,7 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
         >>> op = average(lambda x: x.value)
 
     Args:
-        key_mapper: A transform function to apply to each element.
+        key_mapper: [Optional] A transform function to apply to each element.
 
     Returns:
         An operator function that takes an observable source and
