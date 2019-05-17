@@ -1363,7 +1363,7 @@ def last_or_default(predicate: Optional[Predicate] = None,
     return  _last_or_default(predicate, default_value)
 
 
-def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The map operator.
 
     Project each element of an observable sequence into a new form.
@@ -1392,7 +1392,7 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _map(mapper)
 
 
-def map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
