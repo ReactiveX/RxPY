@@ -310,7 +310,9 @@ def concat(*sources: Observable) -> Callable[[Observable], Observable]:
     return _concat(*sources)
 
 
-def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
+def contains(value: Any,
+             comparer: Optional[typing.Comparer] = None
+             ) -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
 
