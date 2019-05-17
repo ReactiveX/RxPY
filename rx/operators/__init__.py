@@ -1107,7 +1107,9 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     return _flat_map_latest(mapper)
 
 
-def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observable]:
+def group_by(key_mapper: Mapper,
+             element_mapper: Optional[Mapper] = None
+             ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the
     resulting elements by using a specified function.
@@ -1124,7 +1126,6 @@ def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observab
     Examples:
         >>> group_by(lambda x: x.id)
         >>> group_by(lambda x: x.id, lambda x: x.name)
-        >>> group_by(lambda x: x.id, lambda x: x.name, lambda x: str(x))
 
     Keyword arguments:
         key_mapper: A function to extract the key for each element.
