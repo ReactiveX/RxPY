@@ -1434,7 +1434,7 @@ def materialize() -> Callable[[Observable], Observable]:
     return _materialize()
 
 
-def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:
+def max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
@@ -1460,7 +1460,10 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
     from rx.core.operators.max import _max
     return _max(comparer)
 
-def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+
+def max_by(key_mapper: Mapper,
+           comparer: Optional[Comparer] = None
+           ) -> Callable[[Observable], Observable]:
     """The max_by operator.
 
     Returns the elements in an observable sequence with the maximum
