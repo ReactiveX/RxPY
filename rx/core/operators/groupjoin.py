@@ -1,5 +1,5 @@
 import logging
-from typing import Callable
+from typing import Callable, Any
 from collections import OrderedDict
 
 from rx import operators as ops
@@ -11,7 +11,9 @@ from rx.subjects import Subject
 log = logging.getLogger("Rx")
 
 
-def _group_join(right, left_duration_mapper, right_duration_mapper
+def _group_join(right: Observable,
+                left_duration_mapper: Callable[[Any], Observable],
+                right_duration_mapper: Callable[[Any], Observable],
                ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
