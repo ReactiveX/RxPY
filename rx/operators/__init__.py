@@ -1293,7 +1293,7 @@ def join(right: Observable,
     return _join(right, left_duration_mapper, right_duration_mapper)
 
 
-def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The last operator.
 
     Returns the last element of an observable sequence that satisfies
