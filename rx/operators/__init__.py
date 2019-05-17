@@ -933,7 +933,7 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
     return _find_value(predicate, True)
 
 
-def first(predicate=None) -> Callable[[Observable], Observable]:
+def first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
