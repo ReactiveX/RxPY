@@ -1,12 +1,12 @@
 import sys
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
 from rx.core import Observable
 from rx.internal.utils import infinite
 
 
-def _repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+def _repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     if repeat_count is None:
         repeat_count = sys.maxsize
 

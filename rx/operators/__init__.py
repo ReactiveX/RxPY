@@ -1917,7 +1917,7 @@ def ref_count() -> Callable[[ConnectableObservable], Observable]:
     return _ref_count()
 
 
-def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+def repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Repeats the observable sequence a specified number of times.
     If the repeat count is not specified, the sequence repeats
     indefinitely.
