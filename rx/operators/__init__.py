@@ -1646,7 +1646,7 @@ def multicast(subject: Optional[typing.Subject] = None,
     return _multicast(subject, subject_factory, mapper)
 
 
-def observe_on(scheduler) -> Callable[[Observable], Observable]:
+def observe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observable]:
     """Wraps the source sequence in order to run its observer callbacks
     on the specified scheduler.
 
