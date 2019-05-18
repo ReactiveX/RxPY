@@ -1,12 +1,12 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
-from asyncio.futures import Future as _Future
-from typing import Iterable, Callable, Any, Optional, Union
-
 import os
 import sys
 import re
 from configparser import ConfigParser
+
+from asyncio.futures import Future as _Future
+from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
 
