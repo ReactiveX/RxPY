@@ -3,8 +3,19 @@
 from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
+import os
+import re
+from configparser import ConfigParser
+
 from .core import Observable, abc, typing, pipe
 
+with open(os.path.join(root, 'project.cfg')) as project_file:
+    config = ConfigParser()
+    config.read_file(project_file)
+    project_meta = dict(config.items('project'))
+
+__release__ = project_meta['version']
+__version__ = re.sub('[^0-9.].*$', '', __release__)
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
