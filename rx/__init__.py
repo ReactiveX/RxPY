@@ -4,10 +4,14 @@ from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
 import os
+import sys
 import re
 from configparser import ConfigParser
 
 from .core import Observable, abc, typing, pipe
+
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, root)
 
 with open(os.path.join(root, 'project.cfg')) as project_file:
     config = ConfigParser()
