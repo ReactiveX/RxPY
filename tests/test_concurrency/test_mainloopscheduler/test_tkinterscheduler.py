@@ -25,7 +25,7 @@ class TestTkinterScheduler(unittest.TestCase):
         res = scheduler.now - default_now()
         assert abs(res) < timedelta(milliseconds=1)
 
-    def test_qt_schedule_now_units(self):
+    def test_tkinter_schedule_now_units(self):
         scheduler = TkinterScheduler(root)
         diff = scheduler.now
         sleep(0.1)

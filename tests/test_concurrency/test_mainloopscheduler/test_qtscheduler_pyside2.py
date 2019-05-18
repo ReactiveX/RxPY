@@ -5,16 +5,12 @@ import threading
 from datetime import timedelta
 from time import sleep
 
+pytest.importorskip('PySide2')
 
-skip = False
-try:
-    from PySide2 import QtCore
-except ImportError:
-    skip = True
+from PySide2 import QtCore
 
-if not skip:
-    from rx.concurrency.mainloopscheduler import QtScheduler
-    from rx.internal.basic import default_now
+from rx.concurrency.mainloopscheduler import QtScheduler
+from rx.internal.basic import default_now
 
 
 app = None  # Prevent garbage collection
@@ -28,7 +24,6 @@ def make_app():
     return app
 
 
-@pytest.mark.skipif("skip == True")
 class TestQtScheduler(unittest.TestCase):
 
     def test_pyside2_schedule_now(self):

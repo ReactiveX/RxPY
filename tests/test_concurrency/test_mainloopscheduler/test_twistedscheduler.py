@@ -18,7 +18,7 @@ class TestTwistedScheduler(unittest.TestCase):
         diff = scheduler.now - datetime.utcfromtimestamp(float(reactor.seconds()))
         assert abs(diff) < timedelta(milliseconds=1)
 
-    def test_qt_schedule_now_units(self):
+    def test_twisted_schedule_now_units(self):
         scheduler = TwistedScheduler(reactor)
         diff = scheduler.now
         sleep(0.1)
