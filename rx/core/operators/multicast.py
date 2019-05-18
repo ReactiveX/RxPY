@@ -1,12 +1,14 @@
-from typing import Union, Callable
+from typing import Union, Callable, Optional
 
 from rx.core import Observable, ConnectableObservable
-from rx.core.typing import Subject, Mapper
+from rx.core.typing import Subject, Mapper, Scheduler
 from rx.disposable import CompositeDisposable
 
 
-def _multicast(subject: Subject = None, subject_factory: Callable[[], Subject] = None,
-               mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def _multicast(subject: Optional[Subject] = None,
+               subject_factory: Optional[Callable[[Optional[Scheduler]], Subject]] = None,
+               mapper: Optional[Callable[[ConnectableObservable], Observable]] = None
+               ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
