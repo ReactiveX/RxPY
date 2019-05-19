@@ -28,7 +28,7 @@ sys.path.insert(0, root)
 with open(os.path.join(root, '.bumpversion.cfg')) as project_file:
     config = ConfigParser()
     config.read_file(project_file)
-    project_meta = dict(config.items('project'))
+    project_meta = dict(config.items('bumpversion'))
 
 project = project_meta['project']
 author = project_meta['author']

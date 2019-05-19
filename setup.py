@@ -14,7 +14,7 @@ from configparser import ConfigParser
 with open('.bumpversion.cfg') as project_file:
     config = ConfigParser()
     config.read_file(project_file)
-    project_meta = dict(config.items('project'))
+    project_meta = dict(config.items('bumpversion'))
 
 
 # Populate the long_description field from README.rst
