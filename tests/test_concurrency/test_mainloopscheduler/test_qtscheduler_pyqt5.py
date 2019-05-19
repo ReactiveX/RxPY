@@ -6,7 +6,6 @@ import pytest
 pytest.importorskip('PyQt5', reason='skipping QtScheduler with PyQt5')
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication
 
 from rx.concurrency.mainloopscheduler import QtScheduler
 from rx.internal.basic import default_now
@@ -15,7 +14,7 @@ from rx.internal.basic import default_now
 @pytest.fixture(scope="module")
 def app():
     # share qt application among all tests
-    app = QApplication([])
+    app = QtCore.QCoreApplication([])
     yield app
     # teardown
 
