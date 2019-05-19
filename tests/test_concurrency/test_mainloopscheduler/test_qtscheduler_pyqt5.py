@@ -1,10 +1,9 @@
-import unittest
 import threading
 from datetime import timedelta
 from time import sleep
 import pytest
 
-pytest.importorskip('PyQt5')
+pytest.importorskip('PyQt5', reason='skipping QtScheduler with PyQt5')
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
@@ -13,18 +12,15 @@ from rx.concurrency.mainloopscheduler import QtScheduler
 from rx.internal.basic import default_now
 
 
-app = None  # Prevent garbage collection
+@pytest.fixture(scope="module")
+def app():
+    # share qt application among all tests
+    app = QApplication([])
+    yield app
+    # teardown
 
 
-def make_app():
-    global app
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication([])
-    return app
-
-
-class TestQtSchedulerPyQt5(unittest.TestCase):
+class TestQtSchedulerPyQt5:
 
     def test_pyqt5_schedule_now(self):
         scheduler = QtScheduler(QtCore)
@@ -38,8 +34,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
-    def test_pyqt5_schedule_action(self):
-        app = make_app()
+    def test_pyqt5_schedule_action(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -61,8 +56,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         gate.acquire()
         assert ran is True
 
-    def test_pyqt5_schedule_action_due_relative(self):
-        app = make_app()
+    def test_pyqt5_schedule_action_due_relative(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -87,8 +81,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pyqt5_schedule_action_due_absolute(self):
-        app = make_app()
+    def test_pyqt5_schedule_action_due_absolute(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -113,8 +106,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pyqt5_schedule_action_cancel(self):
-        app = make_app()
+    def test_pyqt5_schedule_action_cancel(self, app):
 
         ran = False
         scheduler = QtScheduler(QtCore)
@@ -137,8 +129,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         gate.acquire()
         assert ran is False
 
-    def test_pyqt5_schedule_action_periodic(self):
-        app = make_app()
+    def test_pyqt5_schedule_action_periodic(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -163,8 +154,7 @@ class TestQtSchedulerPyQt5(unittest.TestCase):
         gate.acquire()
         assert counter == 0
 
-    def test_pyqt5_schedule_periodic_cancel(self):
-        app = make_app()
+    def test_pyqt5_schedule_periodic_cancel(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
