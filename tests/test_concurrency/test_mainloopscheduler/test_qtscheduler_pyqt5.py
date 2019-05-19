@@ -1,11 +1,10 @@
+import pytest
+
 import threading
 from datetime import timedelta
 from time import sleep
-import pytest
 
-pytest.importorskip('PyQt5', reason='skipping QtScheduler with PyQt5')
-
-from PyQt5 import QtCore
+QtCore = pytest.importorskip('PyQt5.QtCore')
 
 from rx.concurrency.mainloopscheduler import QtScheduler
 from rx.internal.basic import default_now
