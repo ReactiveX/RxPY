@@ -25,7 +25,7 @@ with open('README.rst') as readme_file:
 setup(
     **{key: project_meta[key] for key in (
         'name',
-        'version',
+        'current_version',
         'description',
         'long_description',
         'author',
