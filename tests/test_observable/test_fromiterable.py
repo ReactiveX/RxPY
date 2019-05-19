@@ -58,6 +58,10 @@ class TestFromIterable(unittest.TestCase):
         results = scheduler.start(lambda: rx.concat(obs, obs))
 
         assert results.messages == [
-                on_next(200, 1), on_next(200, 2), on_next(200, 3),
-                on_next(200, 1), on_next(200, 2), on_next(200, 3),
-                on_completed(200)]
+            on_next(200, 1), on_next(200, 2), on_next(200, 3),
+            on_next(200, 1), on_next(200, 2), on_next(200, 3),
+            on_completed(200)]
+
+    def test_observer_throws(self):
+        with self.assertRaises(RxException):
+            rx.from_iterable([1, 2, 3]).subscribe(lambda x: _raise('ex'))

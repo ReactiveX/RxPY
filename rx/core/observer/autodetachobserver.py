@@ -23,12 +23,7 @@ class AutoDetachObserver(typing.Observer):
     def on_next(self, value: Any) -> None:
         if self.is_stopped:
             return
-
-        try:
-            self._on_next(value)
-        except Exception:
-            self.dispose()
-            raise
+        self._on_next(value)
 
     def on_error(self, error) -> None:
         if self.is_stopped:
