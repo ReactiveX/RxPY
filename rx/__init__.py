@@ -1,25 +1,11 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
-import os
-import sys
-import re
-from configparser import ConfigParser
-
 from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
 
-root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, root)
-
-with open(os.path.join(root, 'project.cfg')) as project_file:
-    config = ConfigParser()
-    config.read_file(project_file)
-    project_meta = dict(config.items('project'))
-
-__release__ = project_meta['version']
-__version__ = re.sub('[^0-9.].*$', '', __release__)
+__version__ = "3.0.0-beta1"
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.

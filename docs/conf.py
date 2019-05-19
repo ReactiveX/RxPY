@@ -24,8 +24,8 @@ sys.path.insert(0, root)
 
 # -- Project information -----------------------------------------------------
 
-# General project metadata is stored in project.cfg
-with open(os.path.join(root, 'project.cfg')) as project_file:
+# General project metadata is stored in .bumpversion.cfg
+with open(os.path.join(root, '.bumpversion.cfg')) as project_file:
     config = ConfigParser()
     config.read_file(project_file)
     project_meta = dict(config.items('project'))
@@ -38,7 +38,7 @@ url = project_meta['url']
 title = project + ' Documentation'
 
 # The full version, including alpha/beta/rc tags
-release = project_meta['version']
+release = project_meta['current_version']
 # The short X.Y.Z version
 version = re.sub('[^0-9.].*$', '', release)
 
