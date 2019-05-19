@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 
 from rx.internal.basic import identity
 from rx.internal.utils import infinite
@@ -9,7 +9,7 @@ from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Schedule
 
 
 # pylint: disable=redefined-builtin
-def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def _map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
 
     _mapper = mapper or identity
 
@@ -45,7 +45,8 @@ def _map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return map
 
 
-def _map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def _map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
+
     def _identity(value: Any, index: int) -> Any:
         return value
 

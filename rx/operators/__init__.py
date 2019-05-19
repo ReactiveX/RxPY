@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
-from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed
+from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer
 from rx.subjects import Subject
 
 
@@ -73,7 +73,7 @@ def as_observable() -> Callable[[Observable], Observable]:
     return _as_observable()
 
 
-def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], Observable]:
+def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The average operator.
 
     Computes the average of an observable sequence of values that
@@ -92,7 +92,7 @@ def average(key_mapper: Callable[[Any], Any] = None) -> Callable[[Observable], O
         >>> op = average(lambda x: x.value)
 
     Args:
-        key_mapper: A transform function to apply to each element.
+        key_mapper: [Optional] A transform function to apply to each element.
 
     Returns:
         An operator function that takes an observable source and
@@ -310,7 +310,9 @@ def concat(*sources: Observable) -> Callable[[Observable], Observable]:
     return _concat(*sources)
 
 
-def contains(value: Any, comparer=None) -> Callable[[Observable], Observable]:
+def contains(value: Any,
+             comparer: Optional[typing.Comparer] = None
+             ) -> Callable[[Observable], Observable]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
 
@@ -537,7 +539,9 @@ def delay(duetime: typing.RelativeTime,
     return _delay(duetime, scheduler)
 
 
-def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def distinct(key_mapper: Optional[Mapper] = None,
+             comparer: Optional[Comparer] = None
+             ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of
     this operator should be considered carefully due to the maintenance
@@ -571,7 +575,9 @@ def distinct(key_mapper=None, comparer=None) -> Callable[[Observable], Observabl
     return _distinct(key_mapper, comparer)
 
 
-def distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def distinct_until_changed(key_mapper: Optional[Mapper] = None,
+                           comparer: Optional[Comparer] = None
+                           ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     contiguous elements according to the key_mapper and the comparer.
 
@@ -927,7 +933,7 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
     return _find_value(predicate, True)
 
 
-def first(predicate=None) -> Callable[[Observable], Observable]:
+def first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
@@ -1101,7 +1107,9 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     return _flat_map_latest(mapper)
 
 
-def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observable]:
+def group_by(key_mapper: Mapper,
+             element_mapper: Optional[Mapper] = None
+             ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the
     resulting elements by using a specified function.
@@ -1118,7 +1126,6 @@ def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observab
     Examples:
         >>> group_by(lambda x: x.id)
         >>> group_by(lambda x: x.id, lambda x: x.name)
-        >>> group_by(lambda x: x.id, lambda x: x.name, lambda x: str(x))
 
     Keyword arguments:
         key_mapper: A function to extract the key for each element.
@@ -1135,7 +1142,10 @@ def group_by(key_mapper, element_mapper=None) -> Callable[[Observable], Observab
     return _group_by(key_mapper, element_mapper)
 
 
-def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], Observable]:
+def group_by_until(key_mapper: Mapper,
+                   element_mapper: Optional[Mapper],
+                   duration_mapper: Callable[[GroupedObservable], Observable],
+                   ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it
@@ -1154,11 +1164,12 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
 
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
-        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never())
-        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never(), lambda x: str(x))
+        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never())
 
     Args:
         key_mapper: A function to extract the key for each element.
+        element_mapper: A function to map each source element to an element in
+            an observable group.
         duration_mapper: A function to signal the expiration of a group.
 
     Returns:
@@ -1173,7 +1184,9 @@ def group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Obs
     return _group_by_until(key_mapper, element_mapper, duration_mapper)
 
 
-def group_join(right, left_duration_mapper, right_duration_mapper,
+def group_join(right: Observable,
+               left_duration_mapper: Callable[[Any], Observable],
+               right_duration_mapper: Callable[[Any], Observable]
                ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
@@ -1246,7 +1259,10 @@ def is_empty() -> Callable[[Observable], Observable]:
     return _is_empty()
 
 
-def join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observable], Observable]:
+def join(right: Observable,
+         left_duration_mapper: Callable[[Any], Observable],
+         right_duration_mapper: Callable[[Any], Observable]
+         ) -> Callable[[Observable], Observable]:
     """Correlates the elements of two sequences based on overlapping
     durations.
 
@@ -1277,7 +1293,7 @@ def join(right, left_duration_mapper, right_duration_mapper) -> Callable[[Observ
     return _join(right, left_duration_mapper, right_duration_mapper)
 
 
-def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The last operator.
 
     Returns the last element of an observable sequence that satisfies
@@ -1308,7 +1324,9 @@ def last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _last(predicate)
 
 
-def last_or_default(predicate=None, default_value=None) -> Callable[[Observable], Observable]:
+def last_or_default(predicate: Optional[Predicate] = None,
+                    default_value: Any = None
+                    ) -> Callable[[Observable], Observable]:
     """The last_or_default operator.
 
     Returns the last element of an observable sequence that satisfies
@@ -1345,7 +1363,7 @@ def last_or_default(predicate=None, default_value=None) -> Callable[[Observable]
     return  _last_or_default(predicate, default_value)
 
 
-def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The map operator.
 
     Project each element of an observable sequence into a new form.
@@ -1374,7 +1392,7 @@ def map(mapper: Mapper = None) -> Callable[[Observable], Observable]:
     return _map(mapper)
 
 
-def map_indexed(mapper_indexed: MapperIndexed = None) -> Callable[[Observable], Observable]:
+def map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
 
@@ -1416,7 +1434,7 @@ def materialize() -> Callable[[Observable], Observable]:
     return _materialize()
 
 
-def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observable]:
+def max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
@@ -1442,7 +1460,10 @@ def max(comparer: Callable[[Any], bool] = None) -> Callable[[Observable], Observ
     from rx.core.operators.max import _max
     return _max(comparer)
 
-def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+
+def max_by(key_mapper: Mapper,
+           comparer: Optional[Comparer] = None
+           ) -> Callable[[Observable], Observable]:
     """The max_by operator.
 
     Returns the elements in an observable sequence with the maximum
@@ -1472,7 +1493,9 @@ def max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     return _max_by(key_mapper, comparer)
 
 
-def merge(*sources, max_concurrent: int = None) -> Callable[[Observable], Observable]:
+def merge(*sources: Observable,
+          max_concurrent: Optional[int] = None
+          ) -> Callable[[Observable], Observable]:
     """Merges an observable sequence of observable sequences into an
     observable sequence, limiting the number of concurrent
     subscriptions to inner sequences. Or merges two observable
@@ -1527,7 +1550,7 @@ def merge_all() -> Callable[[Observable], Observable]:
     return _merge_all()
 
 
-def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
+def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """The `min` operator.
 
     Returns the minimum element in an observable sequence according to
@@ -1556,7 +1579,9 @@ def min(comparer: Callable = None) -> Callable[[Observable], Observable]:
     return _min(comparer)
 
 
-def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+def min_by(key_mapper: Mapper,
+           comparer: Optional[Comparer] = None
+           ) -> Callable[[Observable], Observable]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -1586,8 +1611,10 @@ def min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
     return _min_by(key_mapper, comparer)
 
 
-def multicast(subject: typing.Subject = None, subject_factory: Callable[[], typing.Subject] = None,
-              mapper: Mapper = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def multicast(subject: Optional[typing.Subject] = None,
+              subject_factory: Optional[Callable[[Optional[typing.Scheduler]], typing.Subject]] = None,
+              mapper: Optional[Callable[[ConnectableObservable], Observable]]  = None
+              ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
@@ -1619,7 +1646,7 @@ def multicast(subject: typing.Subject = None, subject_factory: Callable[[], typi
     return _multicast(subject, subject_factory, mapper)
 
 
-def observe_on(scheduler) -> Callable[[Observable], Observable]:
+def observe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observable]:
     """Wraps the source sequence in order to run its observer callbacks
     on the specified scheduler.
 
@@ -1890,7 +1917,7 @@ def ref_count() -> Callable[[ConnectableObservable], Observable]:
     return _ref_count()
 
 
-def repeat(repeat_count=None) -> Callable[[Observable], Observable]:
+def repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Repeats the observable sequence a specified number of times.
     If the repeat count is not specified, the sequence repeats
     indefinitely.

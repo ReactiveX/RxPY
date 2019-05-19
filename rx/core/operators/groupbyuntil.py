@@ -1,14 +1,18 @@
-from typing import Callable
+from typing import Callable, Optional
 from collections import OrderedDict
 
 from rx import operators as ops
 from rx.core import Observable, GroupedObservable
+from rx.core.typing import Mapper
 from rx.subjects import Subject
 from rx.disposable import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import identity
 
 
-def _group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Observable], Observable]:
+def _group_by_until(key_mapper: Mapper,
+                    element_mapper: Optional[Mapper],
+                    duration_mapper: Callable[[GroupedObservable], Observable]
+                    ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -18,8 +22,7 @@ def _group_by_until(key_mapper, element_mapper, duration_mapper) -> Callable[[Ob
 
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
-        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never())
-        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda: rx.never(), lambda x: str(x))
+        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda grp: rx.never())
 
     Args:
         key_mapper: A function to extract the key for each element.

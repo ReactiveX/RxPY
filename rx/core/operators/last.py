@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx import operators
 from rx.core import Observable
 from rx.core.typing import Predicate
@@ -6,7 +6,7 @@ from rx.core.typing import Predicate
 from .lastordefault import last_or_default_async
 
 
-def _last(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def _last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     def last(source: Observable) -> Observable:
         """Partially applied last operator.
 

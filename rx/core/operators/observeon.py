@@ -1,10 +1,11 @@
 from typing import Callable
 
 from rx.core import Observable
+from rx.core.typing import Scheduler
 from rx.core.observer import ObserveOnObserver
 
 
-def _observe_on(scheduler) -> Callable[[Observable], Observable]:
+def _observe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
     def observe_on(source: Observable) -> Observable:
         """Wraps the source sequence in order to run its observer
         callbacks on the specified scheduler.

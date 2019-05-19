@@ -1,9 +1,15 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx.core import Observable
+from rx.core.typing import Mapper, Comparer
 from rx.internal.basic import default_sub_comparer
 
-def extrema_by(source, key_mapper, comparer):
+
+def extrema_by(source: Observable,
+               key_mapper: Mapper,
+               comparer: Comparer
+               ) -> Observable:
+
     def subscribe(observer, scheduler=None):
         has_value = [False]
         last_key = [None]
@@ -43,7 +49,9 @@ def extrema_by(source, key_mapper, comparer):
     return Observable(subscribe)
 
 
-def _min_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+def _min_by(key_mapper: Mapper,
+            comparer: Optional[Comparer] = None
+            ) -> Callable[[Observable], Observable]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key

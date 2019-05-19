@@ -1,7 +1,8 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators
 from rx.core import Observable
+from rx.core.typing import Mapper
 
 
 class AverageValue(object):
@@ -10,7 +11,7 @@ class AverageValue(object):
         self.count = count
 
 
-def _average(key_mapper=None) -> Callable[[Observable], Observable]:
+def _average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     def average(source: Observable) -> Observable:
         """Partially applied average operator.
 

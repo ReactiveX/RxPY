@@ -1,11 +1,15 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx.core import Observable
+from rx.core.typing import Mapper, Comparer
 from rx.internal.basic import default_sub_comparer
 
 from .minby import extrema_by
 
 
-def _max_by(key_mapper, comparer=None) -> Callable[[Observable], Observable]:
+def _max_by(key_mapper: Mapper,
+            comparer: Optional[Comparer] = None
+            ) -> Callable[[Observable], Observable]:
+
     comparer = comparer or default_sub_comparer
 
     def max_by(source: Observable) -> Observable:

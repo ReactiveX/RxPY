@@ -1,9 +1,13 @@
-from typing import Callable
+from typing import Callable, Optional
 from rx.core import Observable
+from rx.core.typing import Mapper, Comparer
 from rx.internal.basic import identity, default_comparer
 
 
-def _distinct_until_changed(key_mapper=None, comparer=None) -> Callable[[Observable], Observable]:
+def _distinct_until_changed(
+        key_mapper: Optional[Mapper] = None,
+        comparer: Optional[Comparer] = None
+        ) -> Callable[[Observable], Observable]:
 
     key_mapper = key_mapper or identity
     comparer = comparer or default_comparer
