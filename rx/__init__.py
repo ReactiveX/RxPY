@@ -5,7 +5,7 @@ from typing import Iterable, Callable, Any, Optional, Union
 
 from .core import Observable, abc, typing, pipe
 
-__version__ = "3.0.0-beta1"
+__version__ = "3.0.0-beta2"
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.

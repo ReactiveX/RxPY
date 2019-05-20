@@ -34,7 +34,7 @@ setup(
         'url',
         'download_url'
     )},
-
+    version=project_meta.get("current_version"),
     zip_safe=True,
     python_requires='>=3.6.0',
 
