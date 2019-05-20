@@ -10,11 +10,11 @@ except ImportError:
 from configparser import ConfigParser
 
 
-# General project metadata is stored in project.cfg
-with open('project.cfg') as project_file:
+# General project metadata is stored in .bumpversion.cfg
+with open('.bumpversion.cfg') as project_file:
     config = ConfigParser()
     config.read_file(project_file)
-    project_meta = dict(config.items('project'))
+    project_meta = dict(config.items('bumpversion'))
 
 
 # Populate the long_description field from README.rst
@@ -25,7 +25,7 @@ with open('README.rst') as readme_file:
 setup(
     **{key: project_meta[key] for key in (
         'name',
-        'version',
+        'current_version',
         'description',
         'long_description',
         'author',
