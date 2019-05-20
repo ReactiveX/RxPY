@@ -7,7 +7,7 @@ RxPY v3.x runs on `Python <http://www.python.org/>`__ 3. To install RxPY:
 
 .. code:: python
 
-    pip3 install rx
+    pip3 install --pre rx
 
 For Python 2.x you need to use version 1.6
 
