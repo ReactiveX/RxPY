@@ -2036,7 +2036,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
     return _sample(interval, sampler)
 
 
-def scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The scan operator.
 
     Applies an accumulator function over an observable sequence and
