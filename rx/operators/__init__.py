@@ -2306,7 +2306,8 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
-def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime,
+                         scheduler: Optional[typing.Scheduler] = None
                         ) -> Callable[[Observable], Observable]:
     """Skips elements from the observable source sequence until the
     specified start time.
