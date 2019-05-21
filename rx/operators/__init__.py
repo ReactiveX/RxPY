@@ -2402,7 +2402,7 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     return _skip_while_indexed(predicate)
 
 
-def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
