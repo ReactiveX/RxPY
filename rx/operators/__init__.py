@@ -2830,7 +2830,7 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
     return _take_until_with_time(end_time, scheduler=scheduler)
 
 
-def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+def take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -2860,7 +2860,7 @@ def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observ
     return _take_while(predicate)
 
 
-def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
+def take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.

@@ -1,9 +1,9 @@
 from typing import Any, Callable
 
 from rx.core import Observable
+from rx.core.typing import Predicate, PredicateIndexed
 
-
-def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+def _take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
     def take_while(source: Observable) -> Observable:
         """Returns elements from an observable sequence as long as a
         specified condition is true. The element's index is used in the
@@ -47,7 +47,7 @@ def _take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Obser
     return take_while
 
 
-def _take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
+def _take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Observable]:
     def take_while_indexed(source: Observable) -> Observable:
         """Returns elements from an observable sequence as long as a
         specified condition is true. The element's index is used in the
