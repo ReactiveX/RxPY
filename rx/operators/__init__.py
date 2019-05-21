@@ -2069,7 +2069,7 @@ def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable],
     return _scan(accumulator, seed)
 
 
-def sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = None
+def sequence_equal(second: Observable, comparer: Optional[Comparer] = None
                    ) -> Callable[[Observable], Observable]:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.

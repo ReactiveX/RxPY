@@ -1,13 +1,14 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 import collections
 
 import rx
 from rx.core import Observable
+from rx.core.typing import Comparer
 from rx.disposable import CompositeDisposable
 from rx.internal import default_comparer
 
 
-def _sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = None
+def _sequence_equal(second: Observable, comparer: Optional[Comparer] = None
                     ) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
     if isinstance(second, collections.abc.Iterable):
