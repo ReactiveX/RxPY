@@ -2469,7 +2469,7 @@ def slice(start: Optional[int] = None, stop: Optional[int] = None, step: int = 1
     return _slice(start, stop, step)
 
 
-def some(predicate=None) -> Callable[[Observable], Observable]:
+def some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The some operator.
 
     Determines whether some element of an observable sequence
