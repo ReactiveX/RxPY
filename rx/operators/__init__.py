@@ -2797,7 +2797,8 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     return _take_until(other)
 
 
-def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
+                         scheduler: Optional[typing.Scheduler] = None
                          ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration until the specified
     end time, using the specified scheduler to run timers.
