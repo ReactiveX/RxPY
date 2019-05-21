@@ -2439,7 +2439,7 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sch
     return _skip_with_time(duration, scheduler=scheduler)
 
 
-def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
+def slice(start: Optional[int] = None, stop: Optional[int] = None, step: int = 1) -> Callable[[Observable], Observable]:
     """The slice operator.
 
     Slices the given observable. It is basically a wrapper around the
