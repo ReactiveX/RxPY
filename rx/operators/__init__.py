@@ -2889,7 +2889,7 @@ def take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Ob
     return _take_while_indexed(predicate)
 
 
-def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
