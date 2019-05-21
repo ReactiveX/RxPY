@@ -2700,7 +2700,7 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     return _take_last(count)
 
 
-def take_last_buffer(count) -> Callable[[Observable], Observable]:
+def take_last_buffer(count: int) -> Callable[[Observable], Observable]:
     """The `take_last_buffer` operator.
 
     Returns an array with the specified number of contiguous elements
