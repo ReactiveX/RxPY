@@ -2502,7 +2502,7 @@ def some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observ
 
 
 
-def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def starmap(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The starmap operator.
 
     Unpack arguments grouped as tuple elements of an observable
