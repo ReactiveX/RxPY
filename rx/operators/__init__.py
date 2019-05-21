@@ -1989,7 +1989,7 @@ def replay(mapper: Optional[Mapper] = None,
     return _replay(mapper, buffer_size, window, scheduler=scheduler)
 
 
-def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
+def retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is
     not specified, it retries indefinitely.
