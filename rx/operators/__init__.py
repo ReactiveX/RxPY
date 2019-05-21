@@ -1838,7 +1838,7 @@ def publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], Connectab
     return _publish(mapper)
 
 
-def publish_value(initial_value: Any, mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def publish_value(initial_value: Any, mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that is the result of invoking
     the mapper on a connectable observable sequence that shares a
     single subscription to the underlying sequence and starts with
