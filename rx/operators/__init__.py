@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
-from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer
+from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer, Accumulator
 from rx.subjects import Subject
 
 
@@ -1872,7 +1872,7 @@ def publish_value(initial_value: Any, mapper: Optional[Mapper] = None) -> Callab
     return _publish_value(initial_value, mapper)
 
 
-def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+def reduce(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The reduce operator.
 
     Applies an accumulator function over an observable sequence,

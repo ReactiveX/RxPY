@@ -3,9 +3,9 @@ from typing import Any, Callable
 from rx import operators as ops
 from rx.internal.utils import NotSet
 from rx.core import Observable, pipe
+from rx.core.typing import Accumulator
 
-
-def _reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+def _reduce(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
