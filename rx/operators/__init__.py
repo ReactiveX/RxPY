@@ -1946,8 +1946,11 @@ def repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observa
     return _repeat(repeat_count)
 
 
-def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None,
-           scheduler: typing.Scheduler = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def replay(mapper: Optional[Mapper] = None,
+           buffer_size: Optional[int] = None,
+           window: Optional[typing.RelativeTime] = None,
+           scheduler: Optional[typing.Scheduler] = None
+           ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """The `replay` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -1974,6 +1977,7 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
         buffer_size: [Optional] Maximum element count of the replay
             buffer.
         window: [Optional] Maximum time length of the replay buffer.
+        scheduler: [Optional] Scheduler the observers are invoked on.
 
     Returns:
         An operator function that takes an observable source and
