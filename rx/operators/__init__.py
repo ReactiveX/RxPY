@@ -2122,7 +2122,7 @@ def share() -> Callable[[Observable], Observable]:
     return _share()
 
 
-def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The single operator.
 
     Returns the only element of an observable sequence that satisfies
