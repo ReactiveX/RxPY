@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from rx.core import Observable
 from rx.core.typing import Scheduler, RelativeTime
@@ -7,7 +7,7 @@ from rx.concurrency import NewThreadScheduler
 new_thread_scheduler = NewThreadScheduler()
 
 
-def _to_marbles(scheduler: Scheduler = None, timespan: RelativeTime = 0.1):
+def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 0.1):
 
     def to_marbles(source: Observable) -> Observable:
         """Convert an observable sequence into a marble diagram string.

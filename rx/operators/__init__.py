@@ -3124,7 +3124,9 @@ def to_iterable() -> Callable[[Observable], Observable]:
     return _to_iterable()
 
 
-def to_marbles(timespan: typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None ) -> Callable[[Observable], Observable]:
+def to_marbles(timespan: typing.RelativeTime = 0.1,
+               scheduler: Optional[typing.Scheduler] = None
+               ) -> Callable[[Observable], Observable]:
     """Convert an observable sequence into a marble diagram string.
 
     Args:
