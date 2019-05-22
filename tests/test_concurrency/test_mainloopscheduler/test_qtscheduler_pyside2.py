@@ -1,35 +1,24 @@
 import pytest
-import unittest
 
 import threading
 from datetime import timedelta
 from time import sleep
 
+QtCore = pytest.importorskip('PySide2.QtCore')
 
-skip = False
-try:
-    from PySide2 import QtCore
-except ImportError:
-    skip = True
-
-if not skip:
-    from rx.concurrency.mainloopscheduler import QtScheduler
-    from rx.internal.basic import default_now
+from rx.concurrency.mainloopscheduler import QtScheduler
+from rx.internal.basic import default_now
 
 
-app = None  # Prevent garbage collection
+@pytest.fixture(scope="module")
+def app():
+    # share qt application among all tests
+    app = QtCore.QCoreApplication([])
+    yield app
+    # teardown
 
 
-def make_app():
-    global app
-    app = QtCore.QCoreApplication.instance()
-    if app is None:
-        app = QtCore.QCoreApplication([])
-    return app
-
-
-@pytest.mark.skipif("skip == True")
-class TestQtScheduler(unittest.TestCase):
+class TestQtSchedulerPySide2():
 
     def test_pyside2_schedule_now(self):
         scheduler = QtScheduler(QtCore)
@@ -43,8 +32,7 @@ class TestQtScheduler(unittest.TestCase):
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
-    def test_pyside2_schedule_action(self):
-        app = make_app()
+    def test_pyside2_schedule_action(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -66,8 +54,7 @@ class TestQtScheduler(unittest.TestCase):
         gate.acquire()
         assert ran is True
 
-    def test_pyside2_schedule_action_due_relative(self):
-        app = make_app()
+    def test_pyside2_schedule_action_due_relative(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -92,8 +79,7 @@ class TestQtScheduler(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pyside2_schedule_action_due_absolute(self):
-        app = make_app()
+    def test_pyside2_schedule_action_due_absolute(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -118,8 +104,7 @@ class TestQtScheduler(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pyside2_schedule_action_cancel(self):
-        app = make_app()
+    def test_pyside2_schedule_action_cancel(self, app):
 
         ran = False
         scheduler = QtScheduler(QtCore)
@@ -142,8 +127,7 @@ class TestQtScheduler(unittest.TestCase):
         gate.acquire()
         assert ran is False
 
-    def test_pyside2_schedule_action_periodic(self):
-        app = make_app()
+    def test_pyside2_schedule_action_periodic(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -168,8 +152,7 @@ class TestQtScheduler(unittest.TestCase):
         gate.acquire()
         assert counter == 0
 
-    def test_pyside2_schedule_periodic_cancel(self):
-        app = make_app()
+    def test_pyside2_schedule_periodic_cancel(self, app):
 
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
