@@ -3075,7 +3075,7 @@ def time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Obs
     return _time_interval(scheduler=scheduler)
 
 
-def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None
+def to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None
            ) -> Callable[[Observable], Observable]:
     """Converts the observable sequence to a Map if it exists.
 
