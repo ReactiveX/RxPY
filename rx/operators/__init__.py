@@ -159,8 +159,10 @@ def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obser
     return _buffer_with_count(count, skip)
 
 
-def buffer_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
-                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def buffer_with_time(timespan: typing.RelativeTime,
+                     timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -227,7 +229,8 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     return _buffer_with_time_or_count(timespan, count, scheduler)
 
 
-def catch(second: Observable = None, handler: Callable[[Exception, Observable], Observable] = None
+def catch(second: Observable = None,
+          handler: Callable[[Exception, Observable], Observable] = None
           ) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -433,7 +436,8 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime,
+                       scheduler: Optional[typing.Scheduler] = None
                       ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
@@ -461,7 +465,9 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Option
     return _delay_subscription(duetime, scheduler=scheduler)
 
 
-def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
+def delay_with_mapper(subscription_delay=None,
+                      delay_duration_mapper=None
+                      ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence based on a subscription
     delay and a delay mapper function for each element.
 
@@ -678,7 +684,7 @@ def do_action(on_next: Optional[typing.OnNext] = None,
     return _do_action(on_next, on_error, on_completed)
 
 
-def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+def do_while(condition: Predicate) -> Callable[[Observable], Observable]:
     """Repeats source as long as condition holds emulating a do while
     loop.
 
@@ -2154,7 +2160,9 @@ def single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obse
     return _single(predicate)
 
 
-def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+def single_or_default(predicate: Optional[Predicate] = None,
+                      default_value: Any = None
+                      ) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
@@ -2189,7 +2197,9 @@ def single_or_default(predicate: Optional[Predicate] = None, default_value: Any 
     return _single_or_default(predicate, default_value)
 
 
-def single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
+def single_or_default_async(has_default: bool = False,
+                            default_value: Any = None
+                            ) -> Callable[[Observable], Observable]:
     from rx.core.operators.singleordefault import _single_or_default_async
     return _single_or_default_async(has_default, default_value)
 
@@ -2439,7 +2449,10 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sch
     return _skip_with_time(duration, scheduler=scheduler)
 
 
-def slice(start: Optional[int] = None, stop: Optional[int] = None, step: int = 1) -> Callable[[Observable], Observable]:
+def slice(start: Optional[int] = None,
+          stop: Optional[int] = None,
+          step: int = 1
+          ) -> Callable[[Observable], Observable]:
     """The slice operator.
 
     Slices the given observable. It is basically a wrapper around the
