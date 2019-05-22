@@ -3095,7 +3095,7 @@ def to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None
     return _to_dict(key_mapper, element_mapper)
 
 
-def to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
+def to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[Observable], Future]:
     """Converts an existing observable sequence to a Future.
 
     Example:
