@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -27,7 +27,7 @@ def _buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Obser
     )
 
 
-def _buffer_with_count(count: int, skip: int = None) -> Callable[[Observable], Observable]:
+def _buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
