@@ -3052,7 +3052,7 @@ def timeout_with_mapper(first_timeout: Optional[Observable] = None,
     return _timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
 
 
-def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """Records the time interval between consecutive values in an
     observable sequence.
 
