@@ -3170,7 +3170,7 @@ def to_set() -> Callable[[Observable], Observable]:
     return _to_set()
 
 
-def while_do(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     """Repeats source as long as condition holds emulating a while
     loop.
 

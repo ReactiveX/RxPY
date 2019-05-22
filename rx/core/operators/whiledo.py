@@ -3,11 +3,11 @@ import itertools
 
 import rx
 from rx.core import Observable
-
+from rx.core.typing import Predicate
 from rx.internal.utils import is_future, infinite
 
 
-def _while_do(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+def _while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     def while_do(source: Observable) -> Observable:
         """Repeats source as long as condition holds emulating a while
         loop.
