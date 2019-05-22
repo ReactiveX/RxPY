@@ -3231,14 +3231,17 @@ def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obser
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
-                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: typing.RelativeTime,
+                     timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
     return _window_with_time(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
-                              scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+                              scheduler: Optional[typing.Scheduler] = None
+                              ) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
     return _window_with_time_or_count(timespan, count, scheduler)
 
