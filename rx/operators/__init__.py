@@ -2984,7 +2984,9 @@ def timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observa
     return _timestamp(scheduler=scheduler)
 
 
-def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
+def timeout(duetime: typing.AbsoluteTime,
+            other: Optional[Observable] = None,
+            scheduler: Optional[typing.Scheduler] = None
             ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
