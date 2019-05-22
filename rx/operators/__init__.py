@@ -3021,8 +3021,10 @@ def timeout(duetime: typing.AbsoluteTime,
     return _timeout(duetime, other, scheduler)
 
 
-def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None
-                       ) -> Callable[[Observable], Observable]:
+def timeout_with_mapper(first_timeout: Optional[Observable] = None,
+                        timeout_duration_mapper: Optional[Callable[[Any], Observable]] = None,
+                        other: Optional[Observable] = None
+                        ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
