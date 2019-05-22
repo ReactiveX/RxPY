@@ -33,18 +33,19 @@ implemented as functions:
 
 .. code:: python
 
-    from rx import of, operators as op
+    import rx
+    from rx import operators as ops
 
-    of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
-            op.map(lambda s: len(s)),
-            op.filter(lambda i: i >= 5)
-        ).subscribe_(lambda value: print("Received {0}".format(value)))
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        ops.map(lambda s: len(s)),
+        ops.filter(lambda i: i >= 5)
+    ).subscribe(lambda value: print("Received {0}".format(value)))
 
 The fact that operators are functions means that adding new operators is now
 very easy. Instead of wrapping custom operators with the *let* operator, they can
 be directly used in a pipe chain.
 
-Removal Of The Result Mapper 
+Removal Of The Result Mapper
 -----------------------------
 
 The mapper function is removed in operators that combine the values of several
@@ -69,15 +70,16 @@ the source Observables:
 
 .. code:: python
 
-    from rx import of, operators as op
+    import rx
+    from rx import operators as ops
     import operator
 
-    a = of(1, 2, 3, 4)
-    b = of(2, 2, 4, 4)
+    a = rx.of(1, 2, 3, 4)
+    b = rx.of(2, 2, 4, 4)
 
     a.pipe(
-        op.zip(b), # returns a tuple with the items of a and b
-        op.map(lambda z: operator.mul(z[0], z[1]))
+        ops.zip(b), # returns a tuple with the items of a and b
+        ops.map(lambda z: operator.mul(z[0], z[1]))
     ).subscribe(print)
 
 Dealing with the tuple unpacking is made easier with the starmap operator that
@@ -85,15 +87,16 @@ unpacks the tuple to args:
 
 .. code:: python
 
-    from rx import of, operators as op
+    import rx
+    from rx import operators as ops
     import operator
 
-    a = of(1, 2, 3, 4)
-    b = of(2, 2, 4, 4)
+    a = rx.of(1, 2, 3, 4)
+    b = rx.of(2, 2, 4, 4)
 
     a.pipe(
-        op.zip(b),
-        op.starmap(operator.mul)
+        ops.zip(b),
+        ops.starmap(operator.mul)
     ).subscribe(print)
 
 
@@ -146,7 +149,8 @@ unpacked:
 
 .. code:: python
 
-    import rx, operator as op
+    import rx
+    from rx import operators as ops
 
     obs1 = rx.from_([1, 2, 3, 4])
     obs2 = rx.from_([5, 6, 7, 8])
@@ -184,8 +188,8 @@ The *run* operator returns only the last value emitted by the source Observable.
 It is possible to use the previous blocking operators by using the standard
 operators before *run*. For example:
 
-* Get first item: obs.first().run()
-* Get all items: obs.to_list().run()
+* Get first item: obs.pipe(ops.first()).run()
+* Get all items: obs.pipe(ops.to_list()).run()
 
 
 BackPressure
@@ -205,10 +209,10 @@ of milliseconds. This RxPY v1 example:
 
 .. code:: python
 
-    obs.debounce(500)
+    ops.debounce(500)
 
 is now written as:
 
 .. code:: python
 
-    obs.debounce(0.5)
+    ops.debounce(0.5)

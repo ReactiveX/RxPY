@@ -19,7 +19,7 @@ The Reactive Extensions for Python (RxPY)
 *A library for composing asynchronous and event-based programs using observable collections and
 query operator functions in Python*
 
-RxPY v3.0 Alpha
+RxPY v3.0 Beta
 ----------------
 
 **This branch is work-in-progress.**
@@ -45,15 +45,16 @@ parameterize concurrency in data/event streams using Schedulers.
 
 .. code:: python
 
-    from rx import of, operators as op
+    import rx
+    from rx import operators as ops
 
-    source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+    source = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
     composed = source.pipe(
-        op.map(lambda s: len(s)),
-        op.filter(lambda i: i >= 5)
+        ops.map(lambda s: len(s)),
+        ops.filter(lambda i: i >= 5)
     )
-    composed.subscribe_(lambda value: print("Received {0}".format(value)))
+    composed.subscribe(lambda value: print("Received {0}".format(value)))
 
 
 Learning RxPY
@@ -111,7 +112,7 @@ need to be written with an `_` in Python:
 
 .. code:: python
 
-    group = source.group_by(lambda i: i % 3)
+    group = source.pipe(ops.group_by(lambda i: i % 3))
 
 With RxPY you should use `named keyword arguments
 <https://docs.python.org/3/glossary.html>`_ instead of positional arguments when

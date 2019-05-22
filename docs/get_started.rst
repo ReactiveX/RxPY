@@ -52,7 +52,7 @@ Let's consider the following example:
 An Observable is created with create. On subscription, the *push_five_strings*
 function is called. This function emits five items. The three callbacks provided
 to the *subscribe* function simply print the received items and completion
-states. Note that the use of lambdas simplify the code in this basic example. 
+states. Note that the use of lambdas simplify the code in this basic example.
 
 Output:
 
@@ -93,7 +93,7 @@ and error are ignored:
 
     source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-    source.subscribe_(lambda value: print("Received {0}".format(value)))
+    source.subscribe(lambda value: print("Received {0}".format(value)))
 
 Output:
 
@@ -125,7 +125,7 @@ yield two separate Observables built off each other.
         op.map(lambda s: len(s)),
         op.filter(lambda i: i >= 5)
     )
-    composed.subscribe_(lambda value: print("Received {0}".format(value)))
+    composed.subscribe(lambda value: print("Received {0}".format(value)))
 
 Output:
 
@@ -148,7 +148,7 @@ operations. That way your code is readable and tells a story much more easily.
     of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         op.map(lambda s: len(s)),
         op.filter(lambda i: i >= 5)
-    ).subscribe_(lambda value: print("Received {0}".format(value)))
+    ).subscribe(lambda value: print("Received {0}".format(value)))
 
 Custom operator
 ---------------
@@ -161,17 +161,18 @@ other operators, then the implementation is straightforward, thanks to the
 
 .. code:: python
 
-    from rx import of, pipe, operators as op
+    import rx
+    from rx import operators as ops
 
     def length_more_than_5():
         return pipe(
-            op.map(lambda s: len(s)),
-            op.filter(lambda i: i >= 5),
+            ops.map(lambda s: len(s)),
+            ops.filter(lambda i: i >= 5),
         )
 
-    of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         length_more_than_5()
-    ).subscribe_(lambda value: print("Received {0}".format(value)))
+    ).subscribe(lambda value: print("Received {0}".format(value)))
 
 In this example, the *pipe* and *filter* operators are grouped in a new
 *length_more_then_5* operator.
@@ -182,7 +183,7 @@ emissions:
 
  .. code:: python
 
-    from rx import of, pipe, create
+    import rx
 
     def lowercase():
         def _lowercase(source):
@@ -191,16 +192,16 @@ emissions:
                     observer.on_next(value.lower())
 
                 return source.subscribe(
-                    on_next, 
-                    observer.on_error, 
-                    observer.on_completed, 
+                    on_next,
+                    observer.on_error,
+                    observer.on_completed,
                     scheduler)
-            return create(subscribe)
+            return rx.create(subscribe)
         return _lowercase
 
-    of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
             lowercase()
-        ).subscribe_(lambda value: print("Received {0}".format(value)))
+         ).subscribe(lambda value: print("Received {0}".format(value)))
 
 In this example, the *lowsercase* operator converts all received items to
 lowercase. The structure of the *_lowercase* function is a very common way to
@@ -282,7 +283,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
         .map(lambda s: intense_calculation(s)) \
         .subscribe_on(pool_scheduler) \
-        .subscribe_(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
+        .subscribe(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
                     on_error=lambda e: print(e),
                     on_completed=lambda: print("PROCESS 1 done!"))
 
@@ -290,7 +291,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     Observable.range(1, 10) \
         .map(lambda s: intense_calculation(s)) \
         .subscribe_on(pool_scheduler) \
-        .subscribe_(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
+        .subscribe(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
                     on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
 
     # Create Process 3, which is infinite
@@ -298,7 +299,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
         .map(lambda i: i * 100) \
         .observe_on(pool_scheduler) \
         .map(lambda s: intense_calculation(s)) \
-        .subscribe_(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
+        .subscribe(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
                     on_error=lambda e: print(e))
 
     input("Press any key to exit\n")
