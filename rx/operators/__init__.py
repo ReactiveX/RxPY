@@ -2923,7 +2923,8 @@ def take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sch
     return _take_with_time(duration, scheduler=scheduler)
 
 
-def throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def throttle_first(window_duration: typing.RelativeTime,
+                   scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Returns an Observable that emits only the first item emitted by
     the source Observable during sequential time windows of a specified
@@ -2963,7 +2964,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
     return _throttle_with_mapper(throttle_duration_mapper)
 
 
-def timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """The timestamp operator.
 
     Records the timestamp for each value in an observable sequence.
