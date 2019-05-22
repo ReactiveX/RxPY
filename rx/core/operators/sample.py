@@ -5,7 +5,7 @@ from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 
 
-def sample_observable(source, sampler):
+def sample_observable(source: Observable, sampler: Observable) -> Observable:
     def subscribe(observer, scheduler=None):
         at_end = [None]
         has_value = [None]
@@ -33,7 +33,11 @@ def sample_observable(source, sampler):
     return Observable(subscribe)
 
 
-def _sample(interval=None, sampler=None, scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def _sample(interval: Optional[typing.RelativeTime] = None,
+            sampler: Optional[Observable] = None,
+            scheduler: Optional[typing.Scheduler] = None
+            ) -> Callable[[Observable], Observable]:
+
     def sample(source: Observable) -> Observable:
         """Samples the observable sequence at each interval.
 

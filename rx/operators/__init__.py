@@ -2016,7 +2016,10 @@ def retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observabl
     return _retry(retry_count)
 
 
-def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def sample(interval: Optional[typing.RelativeTime] = None,
+           sampler: Optional[Observable] = None,
+           scheduler: Optional[typing.Scheduler] = None
+           ) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
 
     .. marble::
@@ -2027,7 +2030,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
         ----1---3---4---|
 
     Examples:
-        >>> res = sample(sample_observable) # Sampler tick sequence
+        >>> res = sample(None, sample_observable) # Sampler tick sequence
         >>> res = sample(5.0) # 5 seconds
 
     Args:
