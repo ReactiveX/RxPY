@@ -3189,22 +3189,22 @@ def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
 
 @overload
 def window(window_closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]: # pylint: disable=function-redefined
-    ... # pylint: disable=pointless-statement
+    ...  # pylint: disable=pointless-statement
 
 
 @overload
 def window(window_openings: Observable) -> Callable[[Observable], Observable]: # pylint: disable=function-redefined
-    ... # pylint: disable=pointless-statement
+    ...  # pylint: disable=pointless-statement
 
 
 @overload
 def window(window_openings: Observable, window_closing_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]: # pylint: disable=function-redefined
-    ... # pylint: disable=pointless-statement
+    ...  # pylint: disable=pointless-statement
 
 
 def window(window_openings: Union[None, Observable, Callable[[], Observable]] = None,
            window_closing_mapper: Optional[Callable[[Any], Observable]] = None
-           ) -> Callable[[Observable], Observable]: # pylint: disable=function-redefined
+           ) -> Callable[[Observable], Observable]:  # pylint: disable=function-redefined
     """Projects each element of an observable sequence into zero or
     more windows.
 
