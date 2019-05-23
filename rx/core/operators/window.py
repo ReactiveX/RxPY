@@ -1,5 +1,5 @@
 import logging
-from typing import Callable
+from typing import Callable, Any, Optional, Union
 
 from rx import empty
 from rx.core import Observable, typing
@@ -12,7 +12,9 @@ from rx import operators as ops
 log = logging.getLogger("Rx")
 
 
-def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
+def _window(window_openings: Union[None, Observable, Callable[[], Observable]] = None,
+            window_closing_mapper: Optional[Callable[[Any], Observable]] = None
+            ) -> Callable[[Observable], Observable]:
     # Make it possible to call window with a single unnamed parameter
     if not isinstance(window_openings, typing.Observable) and callable(window_openings):
         window_closing_mapper = window_openings
@@ -39,7 +41,10 @@ def _window(window_openings=None, window_closing_mapper=None) -> Callable[[Obser
     return window
 
 
-def observable_window_with_openings(self, window_openings, window_closing_mapper):
+def observable_window_with_openings(source: Observable,
+                                    window_openings: Observable,
+                                    window_closing_mapper: Callable[[Any], Observable]
+                                    ) -> Observable:
 
     def mapper(args):
         _, window = args
@@ -47,15 +52,17 @@ def observable_window_with_openings(self, window_openings, window_closing_mapper
 
     return window_openings.pipe(
         ops.group_join(
-            self,
+            source,
             window_closing_mapper,
             lambda _: empty(),
             ),
         ops.map(mapper),
         )
 
-def observable_window_with_boundaries(self, window_boundaries):
-    source = self
+
+def observable_window_with_boundaries(source: Observable,
+                                      window_boundaries: Observable
+                                      ) -> Observable:
 
     def subscribe(observer, scheduler=None):
         window = [Subject()]
@@ -87,8 +94,9 @@ def observable_window_with_boundaries(self, window_boundaries):
     return Observable(subscribe)
 
 
-def observable_window_with_closing_mapper(self, window_closing_mapper):
-    source = self
+def observable_window_with_closing_mapper(source: Observable,
+                                          window_closing_mapper: Callable[[], Observable]
+                                          ) -> Observable:
 
     def subscribe(observer, scheduler=None):
         m = SerialDisposable()

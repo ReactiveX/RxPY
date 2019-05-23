@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Callable, Union, Any, Iterable, List, Optional, cast
+from typing import Callable, Union, Any, Iterable, List, Optional, cast, overload
 from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
@@ -3187,18 +3187,62 @@ def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     return _while_do(condition)
 
 
-def window(window_openings=None, window_closing_mapper=None) -> Callable[[Observable], Observable]:
+@overload
+def window(window_closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
+    ...
+
+
+@overload
+def window(window_openings: Observable) -> Callable[[Observable], Observable]:
+    ...
+
+
+@overload
+def window(window_openings: Observable, window_closing_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
+    ...
+
+
+def window(window_openings: Union[None, Observable, Callable[[], Observable]] = None,
+            window_closing_mapper: Optional[Callable[[Any], Observable]] = None
+            ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
     .. marble::
         :alt: window
 
-        ----1-2-3-4-5-6------|
-        [      window()      ]
-        ----+-----+----------|
-                  +-4-5-6-|
-            +-1-2-3-|
+        ---a-----b-----c--------|
+        ----1--2--3--4--5--6--7-|
+        [ window(open)          ]
+        ---+-----+-----+--------|
+                       +5--6--7-|
+                 +3--4-|
+           +1--2-|
+
+    .. marble::
+        :alt: window
+
+         -----c|
+              ------c|
+                    ------c|
+        -----1--2--3--4--5-|
+        [ window(close)    ]
+        -+----+-----+-----|
+                    +4--5-|
+              +-2--3|
+         +---1|
+
+    .. marble::
+        :alt: window
+
+        ---a-----------b------------|
+           ---d--|
+                       --------e-|
+        ----1--2--3--4--5--6--7--8--|
+        [ window(open, close)       ]
+        ---+-----------+------------|
+                       +5--6--7|
+           +1-|
 
     Args:
         window_openings: Observable sequence whose elements denote the
