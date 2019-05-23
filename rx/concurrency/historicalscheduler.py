@@ -45,4 +45,4 @@ class HistoricalScheduler(VirtualTimeScheduler):
             The resulting absolute virtual time sum value.
         """
 
-        return absolute + relative
+        return absolute + HistoricalScheduler.to_timedelta(relative)

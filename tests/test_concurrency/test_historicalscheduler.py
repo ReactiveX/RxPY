@@ -324,3 +324,39 @@ class TestHistoricalScheduler(unittest.TestCase):
         s.advance_to(s.now + timedelta(5 * 6000))
 
         self.assertEqual(2, n[0])
+    
+    def test_schedule_relative_with_timedelta(self):
+        s = HistoricalScheduler()
+        n = 0
+
+        def action(scheduler, state):
+            nonlocal n
+            n += 1
+        
+        s.schedule_relative(timedelta(2), action)
+
+        s.advance_by(timedelta(1))
+
+        self.assertEqual(n, 0)
+
+        s.advance_by(timedelta(1))
+
+        self.assertEqual(n, 1)
+
+    def test_schedule_relative_with_float(self):
+        s = HistoricalScheduler()
+        n = 0
+
+        def action(scheduler, state):
+            nonlocal n
+            n += 1
+        
+        s.schedule_relative(1.0, action)
+
+        s.advance_by(0.5)
+
+        self.assertEqual(n, 0)
+
+        s.advance_by(0.5)
+
+        self.assertEqual(n, 1)
