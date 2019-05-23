@@ -3219,6 +3219,9 @@ def window(window_openings: Union[None, Observable, Callable[[], Observable]] = 
                  +3--4-|
            +1--2-|
 
+    >>> res = window(rx.interval(1.0))
+
+
     .. marble::
         :alt: window
 
@@ -3232,6 +3235,9 @@ def window(window_openings: Union[None, Observable, Callable[[], Observable]] = 
               +-2--3|
          +---1|
 
+    >>> res = window(lambda: rx.timer(0.5))
+
+
     .. marble::
         :alt: window
 
@@ -3243,6 +3249,8 @@ def window(window_openings: Union[None, Observable, Callable[[], Observable]] = 
         ---+-----------+------------|
                        +5--6--7|
            +1-|
+
+    >>> res = window(rx.interval(0.5), lambda i: rx.timer(i))
 
     Args:
         window_openings: Observable sequence whose elements denote the
