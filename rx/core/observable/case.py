@@ -1,9 +1,15 @@
+from typing import Optional, Mapping, Callable, Hashable
+
 from rx import empty, defer, from_future
 from rx.core import Observable
 from rx.internal.utils import is_future
 
 
-def _case(mapper, sources, default_source=None) -> Observable:
+def _case(mapper: Callable[[], Hashable],
+          sources: Mapping[Hashable, Observable],
+          default_source: Optional[Observable] = None
+          ) -> Observable:
+
     default_source = default_source or empty()
 
     def factory(_) -> Observable:

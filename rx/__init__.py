@@ -1,11 +1,12 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio.futures import Future as _Future
-from typing import Iterable, Callable, Any, Optional, Union
+from typing import Iterable, Callable, Any, Optional, Union, Mapping, Hashable
 
 from .core import Observable, abc, typing, pipe
 
 __version__ = "3.0.0-beta4"
+
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
@@ -21,7 +22,10 @@ def amb(*sources: Observable) -> Observable:
     return _amb(*sources)
 
 
-def case(mapper, sources, default_source=None) -> Observable:
+def case(mapper: Callable[[], Hashable],
+         sources: Mapping[Hashable, Observable],
+         default_source: Optional[Observable] = None
+         ) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
     Examples:
