@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio.futures import Future as _Future
-from typing import Iterable, Callable, Any, Optional, Union, Mapping, Hashable
+from typing import Iterable, Callable, Any, Optional, Union, Mapping, Sequence
 
 from .core import Observable, typing, pipe
 from .core.typing import Mapper
@@ -23,14 +23,15 @@ def amb(*sources: Observable) -> Observable:
     return _amb(*sources)
 
 
-def case(mapper: Callable[[], Hashable],
-         sources: Mapping[Hashable, Observable],
-         default_source: Optional[Observable] = None
+def case(mapper: Callable[[], Any],
+         sources: Union[Sequence, Mapping],
+         default_source: Optional[Union[Observable, _Future]] = None
          ) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
     Examples:
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 })
+        >>> res = rx.case(mapper, [obs1, obs2])
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 }, obs0)
 
     Args:
