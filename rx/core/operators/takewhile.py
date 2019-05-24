@@ -3,7 +3,8 @@ from typing import Any, Callable
 from rx.core import Observable
 from rx.core.typing import Predicate, PredicateIndexed
 
-def _take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
+
+def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Observable], Observable]:
     def take_while(source: Observable) -> Observable:
         """Returns elements from an observable sequence as long as a
         specified condition is true. The element's index is used in the
@@ -40,6 +41,8 @@ def _take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
                 if running:
                     observer.on_next(value)
                 else:
+                    if inclusive:
+                        observer.on_next(value)
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
@@ -47,7 +50,7 @@ def _take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
     return take_while
 
 
-def _take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Observable]:
+def _take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) -> Callable[[Observable], Observable]:
     def take_while_indexed(source: Observable) -> Observable:
         """Returns elements from an observable sequence as long as a
         specified condition is true. The element's index is used in the
@@ -87,6 +90,8 @@ def _take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], O
                 if running:
                     observer.on_next(value)
                 else:
+                    if inclusive:
+                        observer.on_next(value)
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
