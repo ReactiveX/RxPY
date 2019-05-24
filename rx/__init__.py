@@ -250,7 +250,7 @@ def from_future(future: _Future) -> Observable:
     return _from_future(future)
 
 
-def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
+def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Converts an iterable to an observable sequence.
 
     Example:
