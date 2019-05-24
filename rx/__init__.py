@@ -157,7 +157,7 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
     return _defer(observable_factory)
 
 
-def empty(scheduler: typing.Scheduler = None) -> Observable:
+def empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an empty observable sequence.
 
     Example:
