@@ -623,7 +623,7 @@ def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Obser
     return _repeat_value(value, repeat_count)
 
 
-def start(func, scheduler=None) -> Observable:
+def start(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 

@@ -1,8 +1,10 @@
+from typing import Optional, Callable
+
 from rx import to_async
 from rx.core import Observable
+from rx.core.typing import Scheduler
 
-
-def _start(func, scheduler=None) -> Observable:
+def _start(func: Callable, scheduler: Optional[Scheduler] = None) -> Observable:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 
