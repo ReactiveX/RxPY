@@ -714,7 +714,7 @@ def timer(duetime: typing.AbsoluteOrRelativeTime, period: Optional[typing.Relati
     return _timer(duetime, period, scheduler)
 
 
-def to_async(func: Callable, scheduler=None) -> Callable:
+def to_async(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified
