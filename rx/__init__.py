@@ -449,8 +449,10 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
     return _hot(string, timespan, duetime, lookup=lookup, error=error, scheduler=scheduler)
 
 
-def if_then(condition: Callable[[], bool], then_source: Observable,
-            else_source: Observable = None) -> Observable:
+def if_then(condition: Callable[[], bool],
+            then_source: Union[Observable, _Future],
+            else_source: Union[None, Observable, _Future] = None
+            ) -> Observable:
     """Determines whether an observable collection contains values.
 
     Examples:
