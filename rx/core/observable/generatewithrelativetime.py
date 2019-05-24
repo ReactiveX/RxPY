@@ -1,9 +1,16 @@
+from typing import Any, Callable
+
 from rx.core import Observable
+from rx.core.typing import Predicate, Mapper, RelativeTime
 from rx.scheduler import timeout_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
-def _generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
+def _generate_with_relative_time(initial_state: Any,
+                                 condition: Predicate,
+                                 iterate: Mapper,
+                                 time_mapper: Callable[[Any], RelativeTime]
+                                 ) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 

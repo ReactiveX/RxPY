@@ -4,7 +4,7 @@ from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union, Mapping, Sequence
 
 from .core import Observable, typing, pipe
-from .core.typing import Mapper
+from .core.typing import Mapper, Predicate
 
 __version__ = "3.0.0-beta4"
 
@@ -337,7 +337,11 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
 cold = from_marbles
 
 
-def generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
+def generate_with_relative_time(initial_state: Any,
+                                condition: Predicate,
+                                iterate: Mapper,
+                                time_mapper: Callable[[Any], typing.RelativeTime]
+                                ) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
