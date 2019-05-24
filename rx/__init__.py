@@ -649,7 +649,7 @@ def start(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Obser
     return _start(func, scheduler)
 
 
-def start_async(function_async) -> Observable:
+def start_async(function_async: Callable[[], _Future]) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
