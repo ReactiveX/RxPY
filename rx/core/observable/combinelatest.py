@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Union, List, cast
+from typing import Optional
 
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -19,7 +19,10 @@ def _combine_latest(*sources: Observable) -> Observable:
 
     parent = sources[0]
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None):
+    def subscribe(observer: typing.Observer,
+                  scheduler: Optional[typing.Scheduler] = None
+                  ) -> CompositeDisposable:
+
         n = len(sources)
         has_value = [False] * n
         has_value_all = [False]

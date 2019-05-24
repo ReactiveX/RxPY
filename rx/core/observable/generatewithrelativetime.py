@@ -61,7 +61,7 @@ def _generate_with_relative_time(initial_state: Any,
                     result = state
                     time = time_mapper(state)
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
                 return
 

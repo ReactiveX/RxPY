@@ -19,11 +19,14 @@ def _from_future(future: Future) -> Observable:
         and failure.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer,
+                  scheduler: Optional[typing.Scheduler] = None
+                  ) -> typing.Disposable:
+
         def done(future):
             try:
                 value = future.result()
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
             else:
                 observer.on_next(value)
