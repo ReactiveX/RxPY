@@ -193,7 +193,7 @@ def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
     return concat_with_iterable(map(mapper, values))
 
 
-def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
+def from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that contains a single element
     generate from a supplier, using the specified scheduler to send out
     observer messages.

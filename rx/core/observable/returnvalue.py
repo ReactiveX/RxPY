@@ -34,7 +34,7 @@ def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> O
     return Observable(subscribe)
 
 
-def _from_callable(supplier: Callable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
+def _from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
         _scheduler = scheduler or scheduler_ or current_thread_scheduler
 
