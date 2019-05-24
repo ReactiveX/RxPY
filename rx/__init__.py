@@ -4,6 +4,7 @@ from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union, Mapping, Hashable
 
 from .core import Observable, typing, pipe
+from .core.typing import Mapper
 
 __version__ = "3.0.0-beta4"
 
@@ -173,7 +174,7 @@ def empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
     return _empty(scheduler)
 
 
-def for_in(values, mapper) -> Observable:
+def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
