@@ -364,7 +364,7 @@ def generate_with_relative_time(initial_state: Any,
     return _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
 
-def generate(initial_state, condition, iterate) -> Observable:
+def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Observable:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.

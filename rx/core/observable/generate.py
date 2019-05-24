@@ -1,9 +1,16 @@
+from typing import Any
+
 from rx.core import Observable
+from rx.core.typing import Mapper, Predicate
 from rx.scheduler import current_thread_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
-def _generate(initial_state, condition, iterate) -> Observable:
+def _generate(initial_state: Any,
+              condition: Predicate,
+              iterate: Mapper
+              ) -> Observable:
+
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
         first = [True]
