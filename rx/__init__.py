@@ -3,7 +3,7 @@
 from asyncio.futures import Future as _Future
 from typing import Iterable, Callable, Any, Optional, Union, Mapping, Hashable
 
-from .core import Observable, abc, typing, pipe
+from .core import Observable, typing, pipe
 
 __version__ = "3.0.0-beta4"
 
@@ -138,7 +138,7 @@ def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
     return _concat_with_iterable(sources)
 
 
-def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
+def defer(observable_factory: Callable[[typing.Scheduler], Observable]) -> Observable:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
 
