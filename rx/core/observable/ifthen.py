@@ -1,4 +1,4 @@
-from typing import Callable, Union, cast
+from typing import Callable, Union
 from asyncio import Future
 
 import rx
@@ -34,8 +34,8 @@ def _if_then(condition: Callable[[], bool],
 
     else_source = else_source or rx.empty()
 
-    then_source = rx.from_future(cast(Future, then_source)) if is_future(then_source) else then_source
-    else_source = rx.from_future(cast(Future, else_source)) if is_future(else_source) else else_source
+    then_source = rx.from_future(then_source) if is_future(then_source) else then_source
+    else_source = rx.from_future(else_source) if is_future(else_source) else else_source
 
     def factory(_: Scheduler):
         return then_source if condition() else else_source
