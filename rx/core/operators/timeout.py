@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, Callable, Optional
+from typing import Callable, Optional
 
 from rx import from_future, throw
 from rx.core import Observable, typing

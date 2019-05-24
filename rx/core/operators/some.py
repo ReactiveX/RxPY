@@ -1,10 +1,10 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable
+from rx.core.typing import Predicate
 
-
-def _some(predicate=None) -> Callable[[Observable], Observable]:
+def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     def some(source: Observable) -> Observable:
         """Partially applied operator.
 

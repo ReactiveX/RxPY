@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 
 from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
-from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer
+from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer, Accumulator
 from rx.subjects import Subject
 
 
@@ -159,8 +159,10 @@ def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obser
     return _buffer_with_count(count, skip)
 
 
-def buffer_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
-                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def buffer_with_time(timespan: typing.RelativeTime,
+                     timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -227,7 +229,8 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     return _buffer_with_time_or_count(timespan, count, scheduler)
 
 
-def catch(second: Observable = None, handler: Callable[[Exception, Observable], Observable] = None
+def catch(second: Observable = None,
+          handler: Callable[[Exception, Observable], Observable] = None
           ) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -433,7 +436,8 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
     return _default_if_empty(default_value)
 
 
-def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
+def delay_subscription(duetime: typing.AbsoluteOrRelativeTime,
+                       scheduler: Optional[typing.Scheduler] = None
                       ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence by delaying the
     subscription.
@@ -461,7 +465,9 @@ def delay_subscription(duetime: typing.AbsoluteOrRelativeTime, scheduler: Option
     return _delay_subscription(duetime, scheduler=scheduler)
 
 
-def delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
+def delay_with_mapper(subscription_delay=None,
+                      delay_duration_mapper=None
+                      ) -> Callable[[Observable], Observable]:
     """Time shifts the observable sequence based on a subscription
     delay and a delay mapper function for each element.
 
@@ -678,7 +684,7 @@ def do_action(on_next: Optional[typing.OnNext] = None,
     return _do_action(on_next, on_error, on_completed)
 
 
-def do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+def do_while(condition: Predicate) -> Callable[[Observable], Observable]:
     """Repeats source as long as condition holds emulating a do while
     loop.
 
@@ -1838,7 +1844,7 @@ def publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], Connectab
     return _publish(mapper)
 
 
-def publish_value(initial_value: Any, mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def publish_value(initial_value: Any, mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that is the result of invoking
     the mapper on a connectable observable sequence that shares a
     single subscription to the underlying sequence and starts with
@@ -1872,7 +1878,7 @@ def publish_value(initial_value: Any, mapper: Mapper = None) -> Callable[[Observ
     return _publish_value(initial_value, mapper)
 
 
-def reduce(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+def reduce(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The reduce operator.
 
     Applies an accumulator function over an observable sequence,
@@ -1946,8 +1952,11 @@ def repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observa
     return _repeat(repeat_count)
 
 
-def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.RelativeTime = None,
-           scheduler: typing.Scheduler = None) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def replay(mapper: Optional[Mapper] = None,
+           buffer_size: Optional[int] = None,
+           window: Optional[typing.RelativeTime] = None,
+           scheduler: Optional[typing.Scheduler] = None
+           ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """The `replay` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -1974,6 +1983,7 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
         buffer_size: [Optional] Maximum element count of the replay
             buffer.
         window: [Optional] Maximum time length of the replay buffer.
+        scheduler: [Optional] Scheduler the observers are invoked on.
 
     Returns:
         An operator function that takes an observable source and
@@ -1985,7 +1995,7 @@ def replay(mapper: Mapper = None, buffer_size: int = None, window: typing.Relati
     return _replay(mapper, buffer_size, window, scheduler=scheduler)
 
 
-def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
+def retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observable]:
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is
     not specified, it retries indefinitely.
@@ -2006,7 +2016,10 @@ def retry(retry_count: int = None) -> Callable[[Observable], Observable]:
     return _retry(retry_count)
 
 
-def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def sample(interval: Optional[typing.RelativeTime] = None,
+           sampler: Optional[Observable] = None,
+           scheduler: Optional[typing.Scheduler] = None
+           ) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
 
     .. marble::
@@ -2017,7 +2030,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
         ----1---3---4---|
 
     Examples:
-        >>> res = sample(sample_observable) # Sampler tick sequence
+        >>> res = sample(None, sample_observable) # Sampler tick sequence
         >>> res = sample(5.0) # 5 seconds
 
     Args:
@@ -2032,7 +2045,7 @@ def sample(interval=None, sampler=None, scheduler: typing.Scheduler = None) -> C
     return _sample(interval, sampler)
 
 
-def scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable[[Observable], Observable]:
+def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """The scan operator.
 
     Applies an accumulator function over an observable sequence and
@@ -2065,7 +2078,7 @@ def scan(accumulator: Callable[[Any, Any], Any], seed: Any = NotSet) -> Callable
     return _scan(accumulator, seed)
 
 
-def sequence_equal(second: Observable, comparer: Callable[[Any, Any], bool] = None
+def sequence_equal(second: Observable, comparer: Optional[Comparer] = None
                    ) -> Callable[[Observable], Observable]:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.
@@ -2118,7 +2131,7 @@ def share() -> Callable[[Observable], Observable]:
     return _share()
 
 
-def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
+def single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The single operator.
 
     Returns the only element of an observable sequence that satisfies
@@ -2150,7 +2163,9 @@ def single(predicate: Predicate = None) -> Callable[[Observable], Observable]:
     return _single(predicate)
 
 
-def single_or_default(predicate: Optional[Predicate] = None, default_value: Any = None) -> Callable[[Observable], Observable]:
+def single_or_default(predicate: Optional[Predicate] = None,
+                      default_value: Any = None
+                      ) -> Callable[[Observable], Observable]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in
@@ -2185,7 +2200,9 @@ def single_or_default(predicate: Optional[Predicate] = None, default_value: Any 
     return _single_or_default(predicate, default_value)
 
 
-def single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
+def single_or_default_async(has_default: bool = False,
+                            default_value: Any = None
+                            ) -> Callable[[Observable], Observable]:
     from rx.core.operators.singleordefault import _single_or_default_async
     return _single_or_default_async(has_default, default_value)
 
@@ -2302,7 +2319,8 @@ def skip_until(other: Observable) -> Callable[[Observable], Observable]:
     return _skip_until(other)
 
 
-def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime,
+                         scheduler: Optional[typing.Scheduler] = None
                         ) -> Callable[[Observable], Observable]:
     """Skips elements from the observable source sequence until the
     specified start time.
@@ -2397,7 +2415,7 @@ def skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observab
     return _skip_while_indexed(predicate)
 
 
-def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Skips elements for the specified duration from the start of the
     observable source sequence.
@@ -2434,7 +2452,10 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
     return _skip_with_time(duration, scheduler=scheduler)
 
 
-def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Observable], Observable]:
+def slice(start: Optional[int] = None,
+          stop: Optional[int] = None,
+          step: int = 1
+          ) -> Callable[[Observable], Observable]:
     """The slice operator.
 
     Slices the given observable. It is basically a wrapper around the
@@ -2464,7 +2485,7 @@ def slice(start: int = None, stop: int = None, step: int = 1) -> Callable[[Obser
     return _slice(start, stop, step)
 
 
-def some(predicate=None) -> Callable[[Observable], Observable]:
+def some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     """The some operator.
 
     Determines whether some element of an observable sequence
@@ -2497,7 +2518,7 @@ def some(predicate=None) -> Callable[[Observable], Observable]:
 
 
 
-def starmap(mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def starmap(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The starmap operator.
 
     Unpack arguments grouped as tuple elements of an observable
@@ -2581,7 +2602,7 @@ def subscribe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observab
     return _subscribe_on(scheduler)
 
 
-def sum(key_mapper: Mapper = None) -> Callable[[Observable], Observable]:
+def sum(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the
     input sequence, else if not specified computes the sum on each item
@@ -2695,7 +2716,7 @@ def take_last(count: int) -> Callable[[Observable], Observable]:
     return _take_last(count)
 
 
-def take_last_buffer(count) -> Callable[[Observable], Observable]:
+def take_last_buffer(count: int) -> Callable[[Observable], Observable]:
     """The `take_last_buffer` operator.
 
     Returns an array with the specified number of contiguous elements
@@ -2730,7 +2751,9 @@ def take_last_buffer(count) -> Callable[[Observable], Observable]:
     return _take_last_buffer(count)
 
 
-def take_last_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def take_last_with_time(duration: typing.RelativeTime,
+                        scheduler: Optional[typing.Scheduler] = None
+                        ) -> Callable[[Observable], Observable]:
     """Returns elements within the specified duration from the end of
     the observable source sequence.
 
@@ -2790,7 +2813,8 @@ def take_until(other: Observable) -> Callable[[Observable], Observable]:
     return _take_until(other)
 
 
-def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typing.Scheduler = None
+def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
+                         scheduler: Optional[typing.Scheduler] = None
                          ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration until the specified
     end time, using the specified scheduler to run timers.
@@ -2822,7 +2846,7 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: typ
     return _take_until_with_time(end_time, scheduler=scheduler)
 
 
-def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observable]:
+def take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -2852,7 +2876,7 @@ def take_while(predicate: Callable[[Any], Any]) -> Callable[[Observable], Observ
     return _take_while(predicate)
 
 
-def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observable], Observable]:
+def take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -2881,7 +2905,7 @@ def take_while_indexed(predicate: Callable[[Any, int], Any]) -> Callable[[Observ
     return _take_while_indexed(predicate)
 
 
-def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
@@ -2915,7 +2939,8 @@ def take_with_time(duration: typing.RelativeTime, scheduler: typing.Scheduler = 
     return _take_with_time(duration, scheduler=scheduler)
 
 
-def throttle_first(window_duration: typing.RelativeTime, scheduler: typing.Scheduler = None
+def throttle_first(window_duration: typing.RelativeTime,
+                   scheduler: Optional[typing.Scheduler] = None
                   ) -> Callable[[Observable], Observable]:
     """Returns an Observable that emits only the first item emitted by
     the source Observable during sequential time windows of a specified
@@ -2955,7 +2980,7 @@ def throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) 
     return _throttle_with_mapper(throttle_duration_mapper)
 
 
-def timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """The timestamp operator.
 
     Records the timestamp for each value in an observable sequence.
@@ -2975,7 +3000,9 @@ def timestamp(scheduler: typing.Scheduler = None) -> Callable[[Observable], Obse
     return _timestamp(scheduler=scheduler)
 
 
-def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: typing.Scheduler = None
+def timeout(duetime: typing.AbsoluteTime,
+            other: Optional[Observable] = None,
+            scheduler: Optional[typing.Scheduler] = None
             ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
@@ -3010,8 +3037,10 @@ def timeout(duetime: typing.AbsoluteTime, other: Observable = None, scheduler: t
     return _timeout(duetime, other, scheduler)
 
 
-def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None
-                       ) -> Callable[[Observable], Observable]:
+def timeout_with_mapper(first_timeout: Optional[Observable] = None,
+                        timeout_duration_mapper: Optional[Callable[[Any], Observable]] = None,
+                        other: Optional[Observable] = None
+                        ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
@@ -3039,7 +3068,7 @@ def timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=
     return _timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
 
 
-def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], Observable]:
+def time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
     """Records the time interval between consecutive values in an
     observable sequence.
 
@@ -3062,7 +3091,7 @@ def time_interval(scheduler: typing.Scheduler = None) -> Callable[[Observable], 
     return _time_interval(scheduler=scheduler)
 
 
-def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], Any] = None
+def to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None
            ) -> Callable[[Observable], Observable]:
     """Converts the observable sequence to a Map if it exists.
 
@@ -3082,7 +3111,7 @@ def to_dict(key_mapper: Callable[[Any], Any], element_mapper: Callable[[Any], An
     return _to_dict(key_mapper, element_mapper)
 
 
-def to_future(future_ctor: Callable[[], Future] = None) -> Callable[[Observable], Future]:
+def to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[Observable], Future]:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -3111,7 +3140,9 @@ def to_iterable() -> Callable[[Observable], Observable]:
     return _to_iterable()
 
 
-def to_marbles(timespan: typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None ) -> Callable[[Observable], Observable]:
+def to_marbles(timespan: typing.RelativeTime = 0.1,
+               scheduler: Optional[typing.Scheduler] = None
+               ) -> Callable[[Observable], Observable]:
     """Convert an observable sequence into a marble diagram string.
 
     Args:
@@ -3139,7 +3170,7 @@ def to_set() -> Callable[[Observable], Observable]:
     return _to_set()
 
 
-def while_do(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     """Repeats source as long as condition holds emulating a while
     loop.
 
@@ -3216,14 +3247,17 @@ def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obser
     return _window_with_count(count, skip)
 
 
-def window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
-                     scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def window_with_time(timespan: typing.RelativeTime,
+                     timeshift: Optional[typing.RelativeTime] = None,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtime import _window_with_time
     return _window_with_time(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(timespan: typing.RelativeTime, count: int,
-                              scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+                              scheduler: Optional[typing.Scheduler] = None
+                              ) -> Callable[[Observable], Observable]:
     from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
     return _window_with_time_or_count(timespan, count, scheduler)
 

@@ -1,11 +1,11 @@
 from typing import Callable, Any, Optional
 
-from rx.core import typing
-from rx.core import Observable
+from rx.core import typing, Observable
+from rx.core.typing import Mapper
 
 
-def _to_dict(key_mapper: Callable[[Any], Any],
-             element_mapper: Optional[Callable[[Any], Any]] = None
+def _to_dict(key_mapper: Mapper,
+             element_mapper: Optional[Mapper] = None
              ) -> Callable[[Observable], Observable]:
     def to_dict(source: Observable) -> Observable:
         """Converts the observable sequence to a Map if it exists.

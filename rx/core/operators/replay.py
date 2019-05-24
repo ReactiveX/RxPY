@@ -34,6 +34,7 @@ def _replay(mapper: Optional[Mapper] = None,
         buffer_size: [Optional] Maximum element count of the replay
             buffer.
         window: [Optional] Maximum time length of the replay buffer.
+        scheduler: [Optional] Scheduler the observers are invoked on.
 
     Returns:
         An observable sequence that contains the elements of a

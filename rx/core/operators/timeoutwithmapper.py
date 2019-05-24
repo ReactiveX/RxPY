@@ -1,11 +1,13 @@
-from typing import Callable
+from typing import Callable, Optional, Any
 
 import rx
 from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
-def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other=None
+def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
+                         timeout_duration_mapper: Optional[Callable[[Any], Observable]] = None,
+                         other: Optional[Observable] = None
                          ) -> Callable[[Observable], Observable]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
@@ -43,7 +45,7 @@ def _timeout_with_mapper(first_timeout=None, timeout_duration_mapper=None, other
             switched = False
             _id = [0]
 
-            def set_timer(timeout):
+            def set_timer(timeout: Observable) -> None:
                 my_id = _id[0]
 
                 def timer_wins():
