@@ -214,7 +214,7 @@ def from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Schedu
     return _from_callable(supplier, scheduler)
 
 
-def from_callback(func: Callable, mapper: typing.Mapper = None) -> Callable[[], Observable]:
+def from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[], Observable]:
     """Converts a callback function to an observable sequence.
 
     Args:
