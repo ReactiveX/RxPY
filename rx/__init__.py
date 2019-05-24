@@ -477,7 +477,7 @@ def if_then(condition: Callable[[], bool],
     return _if_then(condition, then_source, else_source)
 
 
-def interval(period, scheduler: Optional[typing.Scheduler] = None) -> Observable:
+def interval(period: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
