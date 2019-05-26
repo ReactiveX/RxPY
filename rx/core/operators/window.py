@@ -86,7 +86,7 @@ def _window_with_boundaries(window_boundaries: Observable
 
 
 def _window_with_closing_mapper(window_closing_mapper: Callable[[], Observable]
-                                ) -> Observable:
+                                ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
