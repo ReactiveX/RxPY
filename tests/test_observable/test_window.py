@@ -15,7 +15,7 @@ created = ReactiveTest.created
 
 class TestWindow(unittest.TestCase):
 
-    def test_window_closings_basic(self):
+    def test_window_when_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
                 on_next(90, 1), on_next(180, 2), on_next(250, 3),
@@ -34,7 +34,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_closing_mapper(closing),
+                    ops.window_when(closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -46,7 +46,7 @@ class TestWindow(unittest.TestCase):
                 on_next(470, "1 9"), on_next(550, "2 10"), on_completed(590)]
         assert xs.subscriptions == [subscribe(200, 590)]
 
-    def test_window_closings_dispose(self):
+    def test_window_when_dispose(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
                 on_next(90, 1), on_next(180, 2), on_next(250, 3),
@@ -65,7 +65,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_closing_mapper(closing),
+                    ops.window_when(closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -77,7 +77,7 @@ class TestWindow(unittest.TestCase):
                 on_next(340, "1 6")]
         assert xs.subscriptions == [subscribe(200, 400)]
 
-    def test_window_closings_error(self):
+    def test_window_when_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -97,7 +97,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_closing_mapper(closing),
+                    ops.window_when(closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -110,7 +110,7 @@ class TestWindow(unittest.TestCase):
                 on_next(470, "1 9"), on_next(550, "2 10"), on_error(590, ex)]
         assert xs.subscriptions == [subscribe(200, 590)]
 
-    def test_window_closings_on_error(self):
+    def test_window_when_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -127,7 +127,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_closing_mapper(closing),
+                    ops.window_when(closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -137,7 +137,7 @@ class TestWindow(unittest.TestCase):
         assert results.messages == [on_error(200, ex)]
         assert xs.subscriptions == [subscribe(200, 200)]
 
-    def test_window_closings_window_close_error(self):
+    def test_window_when_window_close_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -154,7 +154,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_closing_mapper(closing),
+                    ops.window_when(closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -164,7 +164,7 @@ class TestWindow(unittest.TestCase):
         assert results.messages == [on_error(200, ex)]
         assert xs.subscriptions == [subscribe(200, 200)]
 
-    def test_window_opening_closings_basic(self):
+    def test_window_toggle_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
                 on_next(90, 1), on_next(180, 2), on_next(250, 3),
@@ -182,7 +182,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_openings(ys, closing),
+                    ops.window_toggle(ys, closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -195,7 +195,7 @@ class TestWindow(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 590)]
         assert ys.subscriptions == [subscribe(200, 900)]
 
-    def test_window_opening_closings_on_error(self):
+    def test_window_toggle_on_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -214,7 +214,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_openings(ys, closing),
+                    ops.window_toggle(ys, closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -225,7 +225,7 @@ class TestWindow(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 255)]
         assert ys.subscriptions == [subscribe(200, 255)]
 
-    def test_window_opening_closings_dispose(self):
+    def test_window_toggle_dispose(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
                 on_next(90, 1), on_next(180, 2), on_next(250, 3),
@@ -243,7 +243,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_openings(ys, closing),
+                    ops.window_toggle(ys, closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -255,7 +255,7 @@ class TestWindow(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
-    def test_window_opening_closings_data_error(self):
+    def test_window_toggle_data_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -273,7 +273,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_openings(ys, closing),
+                    ops.window_toggle(ys, closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -285,7 +285,7 @@ class TestWindow(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
-    def test_window_opening_closings_window_error(self):
+    def test_window_toggle_window_error(self):
         ex = 'ex'
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -304,7 +304,7 @@ class TestWindow(unittest.TestCase):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
 
             return xs.pipe(
-                    ops.window_with_openings(ys, closing),
+                    ops.window_toggle(ys, closing),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -316,7 +316,7 @@ class TestWindow(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 415)]
         assert ys.subscriptions == [subscribe(200, 415)]
 
-    def test_window_boundaries_simple(self):
+    def test_window_simple(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
@@ -346,7 +346,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
-                    ops.window_with_boundaries(ys),
+                    ops.window(ys),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -369,7 +369,7 @@ class TestWindow(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 590)]
 
-    def test_window_boundaries_close_boundaries(self):
+    def test_window_close_boundaries(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
@@ -397,7 +397,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
-                    ops.window_with_boundaries(ys),
+                    ops.window(ys),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -417,7 +417,7 @@ class TestWindow(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 400)]
 
-    def test_window_boundaries_throwSource(self):
+    def test_window_throwSource(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -443,7 +443,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
-                    ops.window_with_boundaries(ys),
+                    ops.window(ys),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )
@@ -463,7 +463,7 @@ class TestWindow(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 400)]
 
-    def test_window_boundaries_throw_boundaries(self):
+    def test_window_throw_boundaries(self):
         ex = 'ex'
         scheduler = TestScheduler()
 
@@ -492,7 +492,7 @@ class TestWindow(unittest.TestCase):
             def mapper(w, i):
                 return w.pipe(ops.map(lambda x: str(i) + ' ' + str(x)))
             return xs.pipe(
-                    ops.window_with_boundaries(ys),
+                    ops.window(ys),
                     ops.map_indexed(mapper),
                     ops.merge_all(),
                     )

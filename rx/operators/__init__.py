@@ -3187,8 +3187,39 @@ def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     return _while_do(condition)
 
 
-def window_with_closing_mapper(closing_mapper: Callable[[], Observable]
-                               ) -> Callable[[Observable], Observable]:
+def window(boundaries: Observable) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more windows.
+
+    .. marble::
+        :alt: window
+
+        ---a-----b-----c--------|
+        ----1--2--3--4--5--6--7-|
+        [ window(open)          ]
+        +--+-----+-----+--------|
+                       +5--6--7-|
+                 +3--4-|
+           +1--2-|
+        +--|
+
+    Examples:
+        >>> res = window(rx.interval(1.0))
+
+    Args:
+        boundaries: Observable sequence whose elements denote the
+            creation and completion of non-overlapping windows.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of windows.
+
+    """
+    from rx.core.operators.window import _window
+    return _window(boundaries)
+
+
+def window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -3219,46 +3250,13 @@ def window_with_closing_mapper(closing_mapper: Callable[[], Observable]
         An operator function that takes an observable source and
         returns an observable sequence of windows.
     """
-    from rx.core.operators.window import _window_with_closing_mapper
-    return _window_with_closing_mapper(closing_mapper)
+    from rx.core.operators.window import _window_when
+    return _window_when(closing_mapper)
 
 
-def window_with_boundaries(boundaries: Observable,
-                           ) -> Callable[[Observable], Observable]:
-    """Projects each element of an observable sequence into zero or
-    more windows.
-
-    .. marble::
-        :alt: window
-
-        ---a-----b-----c--------|
-        ----1--2--3--4--5--6--7-|
-        [ window(open)          ]
-        +--+-----+-----+--------|
-                       +5--6--7-|
-                 +3--4-|
-           +1--2-|
-        +--|
-
-    Examples:
-        >>> res = window(rx.interval(1.0))
-
-    Args:
-        boundaries: Observable sequence whose elements denote the
-            creation and completion of non-overlapping windows.
-
-    Returns:
-        An operator function that takes an observable source and
-        returns an observable sequence of windows.
-
-    """
-    from rx.core.operators.window import _window_with_boundaries
-    return _window_with_boundaries(boundaries)
-
-
-def window_with_openings(openings: Observable,
-                         closing_mapper: Callable[[Any], Observable]
-                         ) -> Callable[[Observable], Observable]:
+def window_toggle(openings: Observable,
+                  closing_mapper: Callable[[Any], Observable]
+                  ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -3287,8 +3285,8 @@ def window_with_openings(openings: Observable,
         An operator function that takes an observable source and
         returns an observable sequence of windows.
     """
-    from rx.core.operators.window import _window_with_openings
-    return _window_with_openings(openings, closing_mapper)
+    from rx.core.operators.window import _window_toggle
+    return _window_toggle(openings, closing_mapper)
 
 
 def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:

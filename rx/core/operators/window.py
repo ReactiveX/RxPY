@@ -12,9 +12,9 @@ from rx import operators as ops
 log = logging.getLogger("Rx")
 
 
-def _window_with_openings(window_openings: Observable,
-                          window_closing_mapper: Callable[[Any], Observable]
-                          ) -> Callable[[Observable], Observable]:
+def _window_toggle(openings: Observable,
+                   closing_mapper: Callable[[Any], Observable]
+                   ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -24,25 +24,24 @@ def _window_with_openings(window_openings: Observable,
     Returns:
         An observable sequence of windows.
     """
-    def window_with_openings(source: Observable) -> Observable:
+    def window_toggle(source: Observable) -> Observable:
 
         def mapper(args):
             _, window = args
             return window
 
-        return window_openings.pipe(
+        return openings.pipe(
             ops.group_join(
                 source,
-                window_closing_mapper,
+                closing_mapper,
                 lambda _: empty(),
                 ),
             ops.map(mapper),
             )
-    return window_with_openings
+    return window_toggle
 
 
-def _window_with_boundaries(window_boundaries: Observable
-                            ) -> Callable[[Observable], Observable]:
+def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -52,41 +51,40 @@ def _window_with_boundaries(window_boundaries: Observable
     Returns:
         An observable sequence of windows.
     """
-    def window_with_boundaries(source: Observable) -> Observable:
+    def window(source: Observable) -> Observable:
 
         def subscribe(observer, scheduler=None):
-            window = [Subject()]
+            window_subject = [Subject()]
             d = CompositeDisposable()
             r = RefCountDisposable(d)
 
-            observer.on_next(add_ref(window[0], r))
+            observer.on_next(add_ref(window_subject[0], r))
 
             def on_next_window(x):
-                window[0].on_next(x)
+                window_subject[0].on_next(x)
 
             def on_error(err):
-                window[0].on_error(err)
+                window_subject[0].on_error(err)
                 observer.on_error(err)
 
             def on_completed():
-                window[0].on_completed()
+                window_subject[0].on_completed()
                 observer.on_completed()
 
             d.add(source.subscribe_(on_next_window, on_error, on_completed, scheduler))
 
             def on_next_observer(w):
-                window[0].on_completed()
-                window[0] = Subject()
-                observer.on_next(add_ref(window[0], r))
+                window_subject[0].on_completed()
+                window_subject[0] = Subject()
+                observer.on_next(add_ref(window_subject[0], r))
 
-            d.add(window_boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
+            d.add(boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
             return r
         return Observable(subscribe)
-    return window_with_boundaries
+    return window
 
 
-def _window_with_closing_mapper(window_closing_mapper: Callable[[], Observable]
-                                ) -> Callable[[Observable], Observable]:
+def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -96,7 +94,7 @@ def _window_with_closing_mapper(window_closing_mapper: Callable[[], Observable]
     Returns:
         An observable sequence of windows.
     """
-    def window_with_closing_mapper(source: Observable) -> Observable:
+    def window_when(source: Observable) -> Observable:
 
         def subscribe(observer, scheduler=None):
             m = SerialDisposable()
@@ -121,7 +119,7 @@ def _window_with_closing_mapper(window_closing_mapper: Callable[[], Observable]
 
             def create_window_on_completed():
                 try:
-                    window_close = window_closing_mapper()
+                    window_close = closing_mapper()
                 except Exception as exception:
                     observer.on_error(exception)
                     return
@@ -139,4 +137,4 @@ def _window_with_closing_mapper(window_closing_mapper: Callable[[], Observable]
             create_window_on_completed()
             return r
         return Observable(subscribe)
-    return window_with_closing_mapper
+    return window_when
