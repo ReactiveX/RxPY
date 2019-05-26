@@ -21,8 +21,17 @@ def _buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Obser
         observable sequence of windows.
     """
 
+    # fix to be compliant with window operators
+    if callable(buffer_openings):
+        window_op = ops.window_when(buffer_openings)
+    else:
+        if buffer_closing_mapper:
+            window_op = ops.window_toggle(buffer_openings, buffer_closing_mapper)
+        else:
+            window_op = ops.window(buffer_openings)
+
     return pipe(
-        ops.window(buffer_openings, buffer_closing_mapper),
+        window_op,
         ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
     )
 
