@@ -2846,7 +2846,7 @@ def take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
     return _take_until_with_time(end_time, scheduler=scheduler)
 
 
-def take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
+def take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -2862,9 +2862,10 @@ def take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
         >>> take_while(lambda value: value < 10)
 
     Args:
-        predicate: A function to test each element for a condition; the
-            second parameter of the function represents the index of
-            the source element.
+        predicate: A function to test each element for a condition.
+        inclusive: [Optional]  When set to True the value that caused
+            the predicate function to return False will also be emitted.
+            If not specified, defaults to False.
 
     Returns:
         An operator function that takes an observable source and
@@ -2873,10 +2874,10 @@ def take_while(predicate: Predicate) -> Callable[[Observable], Observable]:
         test no longer passes.
     """
     from rx.core.operators.takewhile import _take_while
-    return _take_while(predicate)
+    return _take_while(predicate, inclusive)
 
 
-def take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Observable]:
+def take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) -> Callable[[Observable], Observable]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -2893,16 +2894,19 @@ def take_while_indexed(predicate: PredicateIndexed) -> Callable[[Observable], Ob
 
     Args:
         predicate: A function to test each element for a condition; the
-        second parameter of the function represents the index of the
-        source element.
+            second parameter of the function represents the index of the
+            source element.
+        inclusive: [Optional]  When set to True the value that caused
+            the predicate function to return False will also be emitted.
+            If not specified, defaults to False.
 
     Returns:
         An observable sequence that contains the elements from the
-    input sequence that occur before the element at which the test no
-    longer passes.
+        input sequence that occur before the element at which the test no
+        longer passes.
     """
     from rx.core.operators.takewhile import _take_while_indexed
-    return _take_while_indexed(predicate)
+    return _take_while_indexed(predicate, inclusive)
 
 
 def take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
