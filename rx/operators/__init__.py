@@ -3187,28 +3187,44 @@ def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     return _while_do(condition)
 
 
-@overload
-def window(window_closing_mapper: Callable[[], Observable]  # pylint: disable=function-redefined
-           ) -> Callable[[Observable], Observable]:
-    ...  # pylint: disable=pointless-statement
+def window_with_closing_mapper(closing_mapper: Callable[[], Observable]
+                               ) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more windows.
+
+    .. marble::
+        :alt: window
+
+        ------c|
+              ------c|
+                    ------c|
+        ----1--2--3--4--5-|
+        [ window(close)   ]
+        +-----+-----+-----+|
+                    +4--5-|
+              +2--3-|
+        +---1|
+
+    Examples:
+        >>> res = window(lambda: rx.timer(0.5))
+
+    Args:
+        window_closing_mapper: A function invoked to define
+            the closing of each produced window. It defines the
+            boundaries of the produced windows (a window is started
+            when the previous one is closed, resulting in
+            non-overlapping windows).
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of windows.
+    """
+    from rx.core.operators.window import _window_with_closing_mapper
+    return _window_with_closing_mapper(closing_mapper)
 
 
-@overload
-def window(window_openings: Observable  # pylint: disable=function-redefined
-           ) -> Callable[[Observable], Observable]:
-    ...  # pylint: disable=pointless-statement
-
-
-@overload
-def window(window_openings: Observable,  # pylint: disable=function-redefined
-           window_closing_mapper: Callable[[Any], Observable]
-           ) -> Callable[[Observable], Observable]:
-    ...  # pylint: disable=pointless-statement
-
-
-def window(window_openings: Union[None, Observable, Callable[[], Observable]] = None,  # pylint: disable=function-redefined
-           window_closing_mapper: Optional[Callable[[Any], Observable]] = None
-           ) -> Callable[[Observable], Observable]:
+def window_with_boundaries(boundaries: Observable,
+                           ) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -3218,29 +3234,33 @@ def window(window_openings: Union[None, Observable, Callable[[], Observable]] = 
         ---a-----b-----c--------|
         ----1--2--3--4--5--6--7-|
         [ window(open)          ]
-        ---+-----+-----+--------|
+        +--+-----+-----+--------|
                        +5--6--7-|
                  +3--4-|
            +1--2-|
+        +--|
 
-    >>> res = window(rx.interval(1.0))
+    Examples:
+        >>> res = window(rx.interval(1.0))
+
+    Args:
+        boundaries: Observable sequence whose elements denote the
+            creation and completion of non-overlapping windows.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence of windows.
+
+    """
+    from rx.core.operators.window import _window_with_boundaries
+    return _window_with_boundaries(boundaries)
 
 
-    .. marble::
-        :alt: window
-
-         -----c|
-              ------c|
-                    ------c|
-        -----1--2--3--4--5-|
-        [ window(close)    ]
-        -+----+-----+-----|
-                    +4--5-|
-              +-2--3|
-         +---1|
-
-    >>> res = window(lambda: rx.timer(0.5))
-
+def window_with_openings(openings: Observable,
+                         closing_mapper: Callable[[Any], Observable]
+                         ) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more windows.
 
     .. marble::
         :alt: window
@@ -3259,18 +3279,16 @@ def window(window_openings: Union[None, Observable, Callable[[], Observable]] = 
     Args:
         window_openings: Observable sequence whose elements denote the
             creation of windows.
-        window_closing_mapper: [Optional] A function invoked to define
-            the closing of each produced window. It defines the
-            boundaries of the produced windows (a window is started
-            when the previous one is closed, resulting in
-            non-overlapping windows).
+        window_closing_mapper: A function invoked to define
+            the closing of each produced window. Elements from Observable
+            that initiated the current window is provided as argument.
 
     Returns:
         An operator function that takes an observable source and
         returns an observable sequence of windows.
     """
-    from rx.core.operators.window import _window
-    return _window(window_openings, window_closing_mapper)
+    from rx.core.operators.window import _window_with_openings
+    return _window_with_openings(openings, closing_mapper)
 
 
 def window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
