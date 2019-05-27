@@ -18,7 +18,7 @@ items to an Observer. You can use a :func:`create()
 <rx.create>` factory and pass it functions that handle items:
 
 * The *on_next* function is called each time the Observable emits an item.
-* The *on_completed* function is called when the Observale completes.
+* The *on_completed* function is called when the Observable completes.
 * The *on_error* function is called when an error occurs on the Observable.
 
 You do not have to specify all three events types. You can pick and choose which
@@ -203,7 +203,7 @@ emissions:
             lowercase()
          ).subscribe(lambda value: print("Received {0}".format(value)))
 
-In this example, the *lowsercase* operator converts all received items to
+In this example, the *lowercase* operator converts all received items to
 lowercase. The structure of the *_lowercase* function is a very common way to
 implement custom operators: It takes a source Observable as input, and returns a
 custom Observable. The source observable is subscribed only when the output
