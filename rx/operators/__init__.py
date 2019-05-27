@@ -3234,13 +3234,13 @@ def window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observabl
         +-----+-----+-----+|
                     +4--5-|
               +2--3-|
-        +---1|
+        +----1|
 
     Examples:
         >>> res = window(lambda: rx.timer(0.5))
 
     Args:
-        window_closing_mapper: A function invoked to define
+        closing_mapper: A function invoked to define
             the closing of each produced window. It defines the
             boundaries of the produced windows (a window is started
             when the previous one is closed, resulting in
@@ -3275,11 +3275,11 @@ def window_toggle(openings: Observable,
     >>> res = window(rx.interval(0.5), lambda i: rx.timer(i))
 
     Args:
-        window_openings: Observable sequence whose elements denote the
+        openings: Observable sequence whose elements denote the
             creation of windows.
-        window_closing_mapper: A function invoked to define
-            the closing of each produced window. Elements from Observable
-            that initiated the current window is provided as argument.
+        closing_mapper: A function invoked to define the closing of each
+            produced window. Value from openings Observable that initiated
+            the associated window is provided as argument to the function.
 
     Returns:
         An operator function that takes an observable source and
