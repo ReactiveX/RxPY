@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 
 import rx
 from rx.core import Observable, typing
@@ -35,7 +35,7 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
     return Observable(subscribe)
 
 
-def _catch(second: Observable = None, handler: Callable[[Exception, Observable], Observable] = None
+def _catch(handler: Union[Observable, Callable[[Exception, Observable], Observable]]
           ) -> Callable[[Observable], Observable]:
     def catch(source: Observable) -> Observable:
         """Continues an observable sequence that is terminated by an
@@ -46,19 +46,21 @@ def _catch(second: Observable = None, handler: Callable[[Exception, Observable],
             >>> op = catch(lambda ex, src: ys(ex))
 
         Args:
-            handler: Exception handler function that returns an
-                observable sequence  given the error and source observable
-                that occurred in the first sequence.
-            second: Second observable sequence used to produce
-                results when an error occurred in the first sequence.
+            handler: Second observable sequence used to produce
+                results when an error occurred in the first sequence, or an
+                exception handler function that returns an observable sequence
+                given the error and source observable that occurred in the
+                first sequence.
 
         Returns:
             An observable sequence containing the first sequence's
             elements, followed by the elements of the handler sequence
             in case an exception occurred.
         """
-        if handler or not isinstance(second, typing.Observable):
-            return catch_handler(source, handler or second)
-
-        return rx.catch(source, second)
+        if callable(handler):
+            return catch_handler(source, handler)
+        elif isinstance(handler, typing.Observable):
+            return rx.catch(source, handler)
+        else:
+            raise TypeError('catch operator takes whether an Observable or a callable handler as argument.')
     return catch
