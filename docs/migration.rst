@@ -110,8 +110,8 @@ scheduler is passed to the subscription function. Otherwise this parameter is
 set to None.
 
 One can use or ignore this parameter. This new scheduler parameter allows the
-create operator to use the default scheduler provided in the subscribe call.
-So scheduling item emissions with relative or absolute duetime is now possible.
+create operator to use the default scheduler provided in the subscribe call. So
+scheduling item emissions with relative or absolute due-time is now possible.
 
 
 Removal Of List Of Observables
@@ -131,8 +131,8 @@ merge operator could be called with a list:
     res = Observable.merge([obs1, obs2])
     res.subscribe(print)
 
-This is not possible anymore in rxPY v3. So Observables must be provided
-explicitely:
+This is not possible anymore in RxPY v3. So Observables must be provided
+explicitly:
 
 .. code:: python
 
@@ -192,11 +192,11 @@ operators before *run*. For example:
 * Get all items: obs.pipe(ops.to_list()).run()
 
 
-BackPressure
+Back-Pressure
 --------------
 
-Support for backpressure - and so ControllableObservable - has been removed in
-RxPY v3. Backpressure can be implemented in several ways, and many strategies
+Support for back-pressure - and so ControllableObservable - has been removed in
+RxPY v3. Back-pressure can be implemented in several ways, and many strategies
 can be adopted. So we consider that such features are beyond the scope of RxPY.
 You are encouraged to provide independent implementations as separate packages so
 that they can be shared by the community.
