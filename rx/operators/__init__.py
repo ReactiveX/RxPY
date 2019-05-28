@@ -2015,8 +2015,7 @@ def retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observabl
     return _retry(retry_count)
 
 
-def sample(interval: Optional[typing.RelativeTime] = None,
-           sampler: Optional[Observable] = None,
+def sample(sampler: Union[typing.RelativeTime, Observable],
            scheduler: Optional[typing.Scheduler] = None
            ) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
@@ -2029,11 +2028,12 @@ def sample(interval: Optional[typing.RelativeTime] = None,
         ----1---3---4---|
 
     Examples:
-        >>> res = sample(None, sample_observable) # Sampler tick sequence
+        >>> res = sample(sample_observable) # Sampler tick sequence
         >>> res = sample(5.0) # 5 seconds
 
     Args:
-        interval: Interval at which to sample (specified as a float denoting
+        sampler: Observable used to sample the source observable **or** time
+            interval at which to sample (specified as a float denoting
             seconds or an instance of timedelta).
 
     Returns:
@@ -2041,7 +2041,7 @@ def sample(interval: Optional[typing.RelativeTime] = None,
         returns a sampled observable sequence.
     """
     from rx.core.operators.sample import _sample
-    return _sample(interval, sampler)
+    return _sample(sampler)
 
 
 def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:

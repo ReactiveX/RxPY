@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import rx
 from rx.core import Observable, typing
@@ -33,8 +33,7 @@ def sample_observable(source: Observable, sampler: Observable) -> Observable:
     return Observable(subscribe)
 
 
-def _sample(interval: Optional[typing.RelativeTime] = None,
-            sampler: Optional[Observable] = None,
+def _sample(sampler: Union[typing.RelativeTime, Observable],
             scheduler: Optional[typing.Scheduler] = None
             ) -> Callable[[Observable], Observable]:
 
@@ -51,8 +50,9 @@ def _sample(interval: Optional[typing.RelativeTime] = None,
             Sampled observable sequence.
         """
 
-        if interval is None:
-            return sample_observable(source, sampler)
+        if isinstance(sampler, typing.Observable):
+            return sample_observable(sampler)
+        else:
+            return sample_observable(source, rx.interval(sampler, scheduler=scheduler))
 
-        return sample_observable(source, rx.interval(interval, scheduler=scheduler))
     return sample
