@@ -57,7 +57,7 @@ class TimeoutScheduler(SchedulerBase):
         """
 
         scheduler = self
-        timespan = self.to_timedelta(duetime)
+        timespan = SchedulerBase.normalize(self.to_timedelta(duetime))
         if timespan == DELTA_ZERO:
             return scheduler.schedule(action, state)
 

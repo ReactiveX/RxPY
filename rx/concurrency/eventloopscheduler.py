@@ -126,27 +126,7 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
         if self._is_disposed:
             raise DisposedException()
 
-        disposed: bool = False
-
-        def invoke_periodic(scheduler, _):
-            if disposed:
-                return
-
-            if period:
-                scheduler.schedule_relative(period, invoke_periodic)
-
-            nonlocal state
-            new_state = action(state)
-            if new_state is not None:
-                state = new_state
-
-        self.schedule_relative(period, invoke_periodic)
-
-        def dispose():
-            nonlocal disposed
-            disposed = True
-
-        return Disposable(dispose)
+        return super().schedule_periodic(period, action, state=state)
 
     def _has_thread(self) -> bool:
         """Checks if there is an event loop thread running."""

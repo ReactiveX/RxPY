@@ -55,11 +55,11 @@ class TkinterScheduler(SchedulerBase):
         def invoke_action() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        msecs = int(self.to_seconds(duetime) * 1000.0)
-        alarm = self.master.after(msecs, invoke_action)
+        msecs = max(0, int(self.to_seconds(duetime) * 1000.0))
+        timer = self.master.after(msecs, invoke_action)
 
         def dispose() -> None:
-            self.master.after_cancel(alarm)
+            self.master.after_cancel(timer)
 
         return CompositeDisposable(sad, Disposable(dispose))
 

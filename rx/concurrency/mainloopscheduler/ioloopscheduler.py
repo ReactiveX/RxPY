@@ -71,7 +71,7 @@ class IOLoopScheduler(SchedulerBase):
         """
 
         seconds = self.to_seconds(duetime)
-        if not seconds:
+        if seconds <= 0.0:
             return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()
@@ -80,10 +80,10 @@ class IOLoopScheduler(SchedulerBase):
             sad.disposable = self.invoke_action(action, state=state)
 
         log.debug("timeout: %s", seconds)
-        handle = self.loop.call_later(seconds, interval)
+        timer = self.loop.call_later(seconds, interval)
 
         def dispose() -> None:
-            self.loop.remove_timeout(handle)
+            self.loop.remove_timeout(timer)
 
         return CompositeDisposable(sad, Disposable(dispose))
 

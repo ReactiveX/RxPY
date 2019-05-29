@@ -55,7 +55,7 @@ class WxScheduler(SchedulerBase):
             else:
                 sad.disposable = action(scheduler, state)
 
-        msecs = int(self.to_seconds(time) * 1000.0)
+        msecs = max(1, int(self.to_seconds(time) * 1000.0))  # Must be non-zero
 
         log.debug("timeout wx: %s", msecs)
 

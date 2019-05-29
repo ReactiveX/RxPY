@@ -98,21 +98,23 @@ class NewThreadScheduler(SchedulerBase):
             recurring action (best effort).
         """
 
-        secs: float = self.to_seconds(period)
+        seconds: float = self.to_seconds(period)
+        timeout: float = seconds
         disposed: threading.Event = threading.Event()
 
-        s = state
-
         def run() -> None:
+            nonlocal state, timeout
             while True:
-                disposed.wait(secs)
+                if timeout > 0.0:
+                    disposed.wait(timeout)
                 if disposed.is_set():
                     return
 
-                nonlocal s
-                new_state = action(s)
-                if new_state is not None:
-                    s = new_state
+                time: typing.AbsoluteOrRelativeTime = self.now
+
+                state = action(state)
+
+                timeout = seconds - (self.now - time).total_seconds()
 
         thread = self.thread_factory(run)
         thread.start()

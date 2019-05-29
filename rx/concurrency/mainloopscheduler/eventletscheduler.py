@@ -73,7 +73,7 @@ class EventLetEventScheduler(SchedulerBase):
         """
 
         seconds = self.to_seconds(duetime)
-        if not seconds:
+        if seconds <= 0.0:
             return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()

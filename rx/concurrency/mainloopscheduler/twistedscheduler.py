@@ -55,7 +55,7 @@ class TwistedScheduler(SchedulerBase):
 
         from twisted.internet.task import deferLater
 
-        seconds = self.to_seconds(duetime)
+        seconds = max(0.0, self.to_seconds(duetime))
 
         sad = SingleAssignmentDisposable()
 
@@ -63,11 +63,11 @@ class TwistedScheduler(SchedulerBase):
             sad.disposable = action(self, state)
 
         log.debug("timeout: %s", seconds)
-        handle = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
+        timer = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
 
         def dispose() -> None:
-            if not handle.called:
-                handle.cancel()
+            if not timer.called:
+                timer.cancel()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
