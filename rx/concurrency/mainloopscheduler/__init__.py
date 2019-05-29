@@ -1,4 +1,5 @@
 from .asyncioscheduler import AsyncIOScheduler
+from .asynciothreadsafescheduler import AsyncIOThreadSafeScheduler
 from .ioloopscheduler import IOLoopScheduler
 from .geventscheduler import GEventScheduler
 from .gtkscheduler import GtkScheduler

@@ -1,26 +1,25 @@
 import logging
 import asyncio
 
-from datetime import datetime
+from concurrent.futures import Future
 from typing import Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from .asyncioscheduler import AsyncIOScheduler
 
 
 log = logging.getLogger("Rx")
 
 
-class AsyncIOScheduler(SchedulerBase):
-    """A scheduler that schedules work via the asyncio mainloop. This class
-    does not use the asyncio threadsafe methods, if you need those please use
-    the AsyncIOThreadSafeScheduler class."""
+class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
+    """A scheduler that schedules work via the asyncio mainloop. This is a
+    subclass of AsyncIOScheduler which uses the threadsafe asyncio methods.
+    """
 
     def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
-        super().__init__()
-        self._loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
+        super().__init__(loop=loop)
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -41,10 +40,17 @@ class AsyncIOScheduler(SchedulerBase):
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        handle = self._loop.call_soon(interval)
+        handle = self._loop.call_soon_threadsafe(interval)
 
         def dispose() -> None:
-            handle.cancel()
+            future = Future()
+
+            def cancel_handle() -> None:
+                handle.cancel()
+                future.set_result(0)
+
+            self._loop.call_soon_threadsafe(cancel_handle)
+            future.result()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
@@ -66,17 +72,35 @@ class AsyncIOScheduler(SchedulerBase):
         """
         seconds = self.to_seconds(duetime)
         if seconds <= 0:
-            return self.schedule(action, state)
+            return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()
 
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        handle = self._loop.call_later(seconds, interval)
+        # the operations on the list used here are atomic, so there is no
+        # need to protect its access with a lock
+        handle = []
+
+        def stage2() -> None:
+            handle.append(self._loop.call_later(seconds, interval))
+
+        handle.append(self._loop.call_soon_threadsafe(stage2))
 
         def dispose() -> None:
-            handle.cancel()
+            future = Future()
+
+            def cancel_handle() -> None:
+                try:
+                    handle.pop().cancel()
+                    handle.pop().cancel()
+                except Exception:
+                    pass
+                future.set_result(0)
+
+            self._loop.call_soon_threadsafe(cancel_handle)
+            future.result()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
@@ -99,15 +123,3 @@ class AsyncIOScheduler(SchedulerBase):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=state)
-
-    @property
-    def now(self) -> datetime:
-        """Represents a notion of time for this scheduler. Tasks being
-        scheduled on a scheduler will adhere to the time denoted by this
-        property.
-
-        Returns:
-             The scheduler's current time, as a datetime instance.
-        """
-
-        return self.to_datetime(self._loop.time())
