@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime, timedelta
 from time import sleep
 
-from rx.concurrency.mainloopscheduler import EventLetEventScheduler
+from rx.concurrency.mainloopscheduler import EventletScheduler
 
 
 eventlet = pytest.importorskip("eventlet")
@@ -12,23 +12,23 @@ if eventlet:
     import eventlet.hubs
 
 
-class TestEventLetEventScheduler(unittest.TestCase):
+class TestEventletScheduler(unittest.TestCase):
 
     def test_eventlet_schedule_now(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         hub = eventlet.hubs.get_hub()
         diff = scheduler.now - datetime.utcfromtimestamp(hub.clock())
         assert abs(diff) < timedelta(milliseconds=1)
 
     def test_eventlet_schedule_now_units(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         diff = scheduler.now
         sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_eventlet_schedule_action(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         ran = False
 
         def action(scheduler, state):
@@ -41,7 +41,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
         assert ran is True
 
     def test_eventlet_schedule_action_due(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         starttime = datetime.now()
         endtime = None
 
@@ -57,7 +57,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
         assert diff > timedelta(seconds=0.18)
 
     def test_eventlet_schedule_action_cancel(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         ran = False
 
         def action(scheduler, state):
@@ -71,7 +71,7 @@ class TestEventLetEventScheduler(unittest.TestCase):
         assert ran is False
 
     def test_eventlet_schedule_action_periodic(self):
-        scheduler = EventLetEventScheduler()
+        scheduler = EventletScheduler()
         period = 0.05
         counter = 3
 
@@ -83,4 +83,3 @@ class TestEventLetEventScheduler(unittest.TestCase):
         scheduler.schedule_periodic(period, action)
         eventlet.sleep(0.3)
         assert counter == 0
-
