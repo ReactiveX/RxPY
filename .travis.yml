@@ -2,28 +2,45 @@ matrix:
   include:
 
     - name: "Python 3.6 on Linux"
-      python: "3.6"
       os: linux
       dist: xenial
       language: python
+      python: 3.6
+      service:
+        - xvfb
+      script:
+        - xvfb-run -a python3 setup.py test
+
 
     - name: "Python 3.7 on Linux"
-      python: "3.7"
       os: linux
       dist: xenial
       language: python
+      python: 3.7
+      service:
+        - xvfb
+      script:
+        - xvfb-run -a python3 setup.py test
+
 
     - name: "Python 3.8-dev on Linux"
-      python: "3.8-dev"
       os: linux
       dist: xenial
       language: python
+      python: 3.8-dev
+      service:
+        - xvfb
+      script:
+        - xvfb-run -a python3 setup.py test
+
 
     - name: "Python 3.7 on Linux, with optional dependencies and benchmark"
-      python: "3.7"
       os: linux
       dist: xenial
       language: python
+      python: 3.7
+      service:
+        - xvfb
       install:
         # Native libraries for pycairo / pygobject
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
@@ -34,14 +51,14 @@ matrix:
         # Coverage will be reported for the Python 3.7 Linux build
         - pip3 install coveralls
       script:
-        - coverage run --source=rx setup.py test && coveralls
+        - xvfb-run -a coverage run --source=rx setup.py test && coveralls
 
 # Disable MacOS build temporarily, it's failing often on timing assertions
 #    - name: "Python 3.7 on MacOS, with optional dependencies and benchmark"
-#      python: "3.7"
 #      os: osx
 #      osx_image: xcode10.2
 #      language: sh
+#      python: 3.7
 #      install:
 #        # Native libraries for pycairo / pygobject
 #        - brew install pygobject3 gtk+3
@@ -49,9 +66,9 @@ matrix:
 #        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted wxpython
 
     - name: "Python 3.7 on Windows, with optional dependencies and benchmark"
-      python: "3.7"
       os: windows
       language: sh
+      python: 3.7
       install:
         # Get Python 3.7 from choco
         - choco install python3
