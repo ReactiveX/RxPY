@@ -118,23 +118,23 @@ class CatchScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled
             recurring action (best effort).
         """
-        d = SingleAssignmentDisposable()
-        failed = False
+        disp: SingleAssignmentDisposable = SingleAssignmentDisposable()
+        failed: bool = False
 
-        def periodic_action(periodic_state) -> Optional[typing.TState]:
+        def periodic(state: typing.TState) -> Optional[typing.TState]:
             nonlocal failed
             if not failed:
                 try:
-                    return action(periodic_state)
+                    return action(state)
                 except Exception as ex:
                     failed = True
                     if not self._handler(ex):
                         raise
-                    d.dispose()
+                    disp.dispose()
                     return None
 
-        d.disposable = self._scheduler.schedule_periodic(period, periodic_action, state=state)
-        return d
+        disp.disposable = self._scheduler.schedule_periodic(period, periodic, state=state)
+        return disp
 
     def _clone(self, scheduler: typing.Scheduler) -> 'CatchScheduler':
         return CatchScheduler(scheduler, self._handler)

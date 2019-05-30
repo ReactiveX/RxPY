@@ -51,7 +51,7 @@ class QtScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
-        msecs = int(self.to_seconds(duetime) * 1000.0)
+        msecs = max(0, int(self.to_seconds(duetime) * 1000.0))
         sad = SingleAssignmentDisposable()
         is_disposed = False
 
@@ -106,7 +106,7 @@ class QtScheduler(SchedulerBase):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
-        msecs = int(self.to_seconds(period) * 1000.0)
+        msecs = max(0, int(self.to_seconds(period) * 1000.0))
         sad = SingleAssignmentDisposable()
 
         def interval() -> None:

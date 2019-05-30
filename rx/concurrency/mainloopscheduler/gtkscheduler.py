@@ -23,20 +23,19 @@ class GtkScheduler(SchedulerBase):
         # don't like each other there
         from gi.repository import GLib
 
-        msecs = int(self.to_seconds(time) * 1000.0)
+        msecs = max(0, int(self.to_seconds(time) * 1000.0))
 
         sad = SingleAssignmentDisposable()
 
-        periodic_state = state
         stopped = False
 
         def timer_handler(_) -> bool:
             if stopped:
                 return False
 
+            nonlocal state
             if periodic:
-                nonlocal periodic_state
-                periodic_state = action(periodic_state)
+                state = action(state)
             else:
                 sad.disposable = self.invoke_action(action, state=state)
 

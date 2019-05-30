@@ -43,7 +43,7 @@ class ImmediateScheduler(SchedulerBase):
             (best effort).
         """
 
-        duetime = self.to_timedelta(duetime)
+        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
         if duetime > DELTA_ZERO:
             raise WouldBlockException()
 

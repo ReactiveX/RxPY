@@ -120,28 +120,27 @@ class SchedulerBase(typing.Scheduler):
             recurring action (best effort).
         """
 
-        disp = MultipleAssignmentDisposable()
+        disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
+        seconds: float = self.to_seconds(period)
 
-        def invoke_periodic(scheduler: typing.Scheduler, _: typing.TState) -> Optional[Disposable]:
+        def periodic(scheduler: typing.Scheduler, state: typing.TState) -> Optional[Disposable]:
             if disp.is_disposed:
                 return None
 
-            if period:
-                disp.disposable = scheduler.schedule_relative(period, invoke_periodic, None)
+            time: typing.AbsoluteOrRelativeTime = scheduler.now
 
-            nonlocal state
             try:
-                new_state = action(state)
+                state = action(state)
             except Exception:
                 disp.dispose()
                 raise
 
-            if state is not None:
-                state = new_state
+            time = seconds - (scheduler.now - time).total_seconds()
+            disp.disposable = scheduler.schedule_relative(time, periodic, state=state)
 
             return None
 
-        disp.disposable = self.schedule_relative(period, invoke_periodic, None)
+        disp.disposable = self.schedule_relative(period, periodic, state=state)
         return disp
 
     @classmethod

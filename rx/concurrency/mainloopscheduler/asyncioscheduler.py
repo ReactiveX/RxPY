@@ -110,7 +110,7 @@ class AsyncIOScheduler(SchedulerBase):
                            state: Optional[typing.TState] = None
                            ) -> typing.Disposable:
         seconds = self.to_seconds(duetime)
-        if seconds == 0:
+        if seconds <= 0:
             return self.schedule(action, state)
 
         sad = SingleAssignmentDisposable()
@@ -131,7 +131,7 @@ class AsyncIOScheduler(SchedulerBase):
                                       state: Optional[typing.TState] = None
                                       ) -> typing.Disposable:
         seconds = self.to_seconds(duetime)
-        if seconds == 0:
+        if seconds <= 0:
             return self.schedule(action, state=state)
 
         sad = SingleAssignmentDisposable()

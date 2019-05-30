@@ -84,15 +84,3 @@ class TestEventLetEventScheduler(unittest.TestCase):
         eventlet.sleep(0.3)
         assert counter == 0
 
-    def test_eventlet_schedule_action_periodic_now(self):
-        scheduler = EventLetEventScheduler()
-        period = 0
-        counter = 3
-
-        def action(state):
-            nonlocal counter
-            counter -= 1
-
-        scheduler.schedule_periodic(period, action)
-        eventlet.sleep(0.3)
-        assert counter == 2
