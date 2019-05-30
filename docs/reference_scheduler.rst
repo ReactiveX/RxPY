@@ -12,4 +12,4 @@ Schedulers
     :members: AsyncIOScheduler, IOLoopScheduler, GEventScheduler,
                 GtkScheduler, TwistedScheduler, TkinterScheduler,
                 PyGameScheduler, QtScheduler, WxScheduler,
-                EventLetEventScheduler
+                EventletScheduler

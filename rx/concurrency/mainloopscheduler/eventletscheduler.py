@@ -15,7 +15,7 @@ log = logging.getLogger("Rx")
 eventlet = None
 
 
-class EventLetEventScheduler(SchedulerBase):
+class EventletScheduler(SchedulerBase):
     """A scheduler that schedules work via the eventlet event loop.
 
     http://eventlet.net/
