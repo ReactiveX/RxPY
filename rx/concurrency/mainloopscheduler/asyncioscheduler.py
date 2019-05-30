@@ -7,13 +7,13 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..scheduler import Scheduler
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger("Rx")
 
 
-class AsyncIOScheduler(Scheduler):
+class AsyncIOScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the asyncio mainloop. This class
     does not use the asyncio threadsafe methods, if you need those please use
     the AsyncIOThreadSafeScheduler class."""

@@ -10,13 +10,13 @@ from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
 from .scheduleditem import ScheduledItem
-from .scheduler import Scheduler
+from .periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger('Rx')
 
 
-class EventLoopScheduler(Scheduler, typing.Disposable):
+class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
     """Creates an object that schedules units of work on a designated thread."""
 
     def __init__(self,
@@ -68,7 +68,7 @@ class EventLoopScheduler(Scheduler, typing.Disposable):
             (best effort).
         """
 
-        duetime = Scheduler.normalize(self.to_timedelta(duetime))
+        duetime = self.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
     def schedule_absolute(self,
@@ -165,10 +165,10 @@ class EventLoopScheduler(Scheduler, typing.Disposable):
                 time = self.now
                 while self._queue:
                     due = self._queue.peek().duetime
-                    if due > time:
-                        break
                     while self._ready_list and due > self._ready_list[0].duetime:
                         ready.append(self._ready_list.popleft())
+                    if due > time:
+                        break
                     ready.append(self._queue.dequeue())
                 while self._ready_list:
                     ready.append(self._ready_list.popleft())

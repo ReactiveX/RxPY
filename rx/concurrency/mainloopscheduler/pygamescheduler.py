@@ -8,14 +8,14 @@ from rx.internal import PriorityQueue
 from rx.internal.constants import DELTA_ZERO
 
 from ..scheduleditem import ScheduledItem
-from ..scheduler import Scheduler
+from ..periodicscheduler import PeriodicScheduler
 
 
 pygame = None
 log = logging.getLogger("Rx")
 
 
-class PyGameScheduler(Scheduler):
+class PyGameScheduler(PeriodicScheduler):
     """A scheduler that schedules works for PyGame.
 
     Note that this class expects the caller to invoke run() repeatedly.
@@ -65,7 +65,7 @@ class PyGameScheduler(Scheduler):
             (best effort).
         """
 
-        duetime = Scheduler.normalize(self.to_timedelta(duetime))
+        duetime = self.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,

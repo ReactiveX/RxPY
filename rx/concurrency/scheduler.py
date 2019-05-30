@@ -10,7 +10,8 @@ from rx.internal.constants import DELTA_ZERO, UTC_ZERO
 
 class Scheduler(typing.Scheduler):
     """Base class for the various scheduler implementations in this package as
-    well as the mainloop sub-package.
+    well as the mainloop sub-package. This does not include an implementation
+    of schedule_periodic, refer to PeriodicScheduler.
     """
 
     @property
@@ -100,48 +101,6 @@ class Scheduler(typing.Scheduler):
             return ret
 
         return Disposable()
-
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
-        """Schedules a periodic piece of work.
-
-        Args:
-            period: Period in seconds or timedelta for running the
-                work periodically.
-            action: Action to be executed.
-            state: [Optional] Initial state passed to the action upon
-                the first iteration.
-
-        Returns:
-            The disposable object used to cancel the scheduled
-            recurring action (best effort).
-        """
-
-        disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
-        seconds: float = self.to_seconds(period)
-
-        def periodic(scheduler: typing.Scheduler, state: typing.TState) -> Optional[Disposable]:
-            if disp.is_disposed:
-                return None
-
-            time: typing.AbsoluteOrRelativeTime = scheduler.now
-
-            try:
-                state = action(state)
-            except Exception:
-                disp.dispose()
-                raise
-
-            time = seconds - (scheduler.now - time).total_seconds()
-            disp.disposable = scheduler.schedule_relative(time, periodic, state=state)
-
-            return None
-
-        disp.disposable = self.schedule_relative(period, periodic, state=state)
-        return disp
 
     @classmethod
     def to_seconds(cls, value: typing.AbsoluteOrRelativeTime) -> float:

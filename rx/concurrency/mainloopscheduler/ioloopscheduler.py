@@ -5,13 +5,13 @@ from typing import Any, Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..scheduler import Scheduler
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger("Rx")
 
 
-class IOLoopScheduler(Scheduler):
+class IOLoopScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the Tornado I/O main event loop.
 
     Note, as of Tornado 6, this is just a wrapper around the asyncio loop.

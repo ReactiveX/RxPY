@@ -3,10 +3,10 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..scheduler import Scheduler
+from ..periodicscheduler import PeriodicScheduler
 
 
-class TkinterScheduler(Scheduler):
+class TkinterScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the Tkinter main event loop.
 
     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html

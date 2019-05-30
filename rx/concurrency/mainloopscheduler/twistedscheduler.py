@@ -6,13 +6,13 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..scheduler import Scheduler
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger("Rx")
 
 
-class TwistedScheduler(Scheduler):
+class TwistedScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the Twisted reactor mainloop."""
 
     def __init__(self, reactor) -> None:

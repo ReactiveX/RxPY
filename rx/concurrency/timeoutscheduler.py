@@ -5,10 +5,10 @@ from rx.core import typing
 from rx.internal.constants import DELTA_ZERO
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from .scheduler import Scheduler
+from .periodicscheduler import PeriodicScheduler
 
 
-class TimeoutScheduler(Scheduler):
+class TimeoutScheduler(PeriodicScheduler):
     """A scheduler that schedules work via a timed callback."""
 
     def schedule(self,
@@ -57,10 +57,9 @@ class TimeoutScheduler(Scheduler):
             (best effort).
         """
 
-        scheduler = self
-        timespan = Scheduler.normalize(self.to_timedelta(duetime))
+        timespan = self.normalize(self.to_timedelta(duetime))
         if timespan == DELTA_ZERO:
-            return scheduler.schedule(action, state)
+            return self.schedule(action, state)
 
         sad = SingleAssignmentDisposable()
 
