@@ -4,12 +4,12 @@ Schedulers
 ===========
 
 .. automodule:: rx.concurrency
-    :members: ImmediateScheduler, CurrentThreadScheduler, VirtualTimeScheduler,
-                TimeoutScheduler, NewThreadScheduler, ThreadPoolScheduler,
-                EventLoopScheduler, HistoricalScheduler, CatchScheduler
+    :members: CatchScheduler, CurrentThreadScheduler, EventLoopScheduler,
+                HistoricalScheduler, ImmediateScheduler, NewThreadScheduler,
+                ThreadPoolScheduler, TimeoutScheduler, VirtualTimeScheduler
 
 .. automodule:: rx.concurrency.mainloopscheduler
-    :members: AsyncIOScheduler, IOLoopScheduler, GEventScheduler,
-                GtkScheduler, TwistedScheduler, TkinterScheduler,
-                PyGameScheduler, QtScheduler, WxScheduler,
-                EventletScheduler
+    :members: AsyncIOScheduler, AsyncIOThreadSafeScheduler, EventletScheduler,
+                GEventScheduler, GtkScheduler, IOLoopScheduler,
+                PyGameScheduler, QtScheduler, TkinterScheduler
+                TwistedScheduler, WxScheduler
