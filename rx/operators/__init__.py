@@ -103,31 +103,95 @@ def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Obser
     return _average(key_mapper)
 
 
-def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
+def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more buffers.
 
     .. marble::
         :alt: buffer
 
-        ----1-2-3-4-5-6------|
-        [      buffer()      ]
-        --------1,2,3-4,5,6--|
+        ---a-----b-----c--------|
+        --1--2--3--4--5--6--7---|
+        [       buffer()        ]
+        ---1-----2,3---4,5------|
+
+    Examples:
+        >>> res = window(rx.interval(1.0))
 
     Args:
-        buffer_openings: Observable sequence whose elements denote the
-            creation of windows.
-        buffer_closing_mapper: [optional] A function invoked to define
-            the closing of each produced window. If a closing mapper
-            function is specified for the first parameter, this
-            parameter is ignored.
+        boundaries: Observable sequence whose elements denote the
+            creation and completion of buffers.
 
     Returns:
-        A function that takes an observable source and retuerns an
-        observable sequence of windows.
+        A function that takes an observable source and returns an
+        observable sequence of buffers.
     """
     from rx.core.operators.buffer import _buffer
-    return _buffer(buffer_openings, buffer_closing_mapper)
+    return _buffer(boundaries)
+
+
+def buffer_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    .. marble::
+        :alt: buffer_when
+
+        -----c--|
+                -----c--|
+                        -----c--|
+        ---1--2--3--4--5--6-----|
+        [      buffer_when      ]
+        +-------1-------3,4----6|
+
+    Examples:
+        >>> res = buffer_when(lambda: rx.timer(0.5))
+
+    Args:
+        closing_mapper: A function invoked to define
+            the closing of each produced buffer. A buffer is started
+            when the previous one is closed, resulting in
+            non-overlapping buffers.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer_when
+    return _buffer_when(closing_mapper)
+
+
+def buffer_toggle(openings: Observable,
+                  closing_mapper: Callable[[Any], Observable]
+                  ) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    .. marble::
+        :alt: buffer_toggle
+
+        ---a-----------b--------------|
+           ---d--|
+                       --------e|
+        ----1--2--3--4--5--6--7--8----|
+        [ buffer_toggle()             ]
+        ---------1--------------5,6,7-|
+
+    >>> res = window(rx.interval(0.5), lambda i: rx.timer(i))
+
+    Args:
+        openings: Observable sequence whose elements denote the
+            creation of buffers.
+        closing_mapper: A function invoked to define the closing of each
+            produced window. Value from openings Observable that initiated
+            the associated buffer is provided as argument to the function.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer_toggle
+    return _buffer_toggle(openings, closing_mapper)
 
 
 def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
