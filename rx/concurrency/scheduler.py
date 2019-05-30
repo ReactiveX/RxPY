@@ -164,27 +164,3 @@ class Scheduler(typing.Scheduler):
             value = timedelta(seconds=value)
 
         return value
-
-    @classmethod
-    def normalize(cls, value: typing.RelativeTime) -> typing.RelativeTime:
-        """Normalizes the specified time value to a non-negative value. This
-        method handles only relative values, given as either timedelta or float,
-        and will return the normalized value as that same type.
-
-        Args:
-            value: The time value to normalize.
-
-        Returns:
-            The specified timespan value if it is zero or positive;
-            otherwise, 0.0
-        """
-
-        if isinstance(value, timedelta):
-            if not value or value < DELTA_ZERO:
-                return DELTA_ZERO
-
-        elif isinstance(value, float):
-            if not value or value < 0.0:
-                return 0.0
-
-        return value

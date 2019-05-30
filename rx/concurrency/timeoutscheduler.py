@@ -2,7 +2,6 @@ from threading import Timer
 from typing import Optional
 
 from rx.core import typing
-from rx.internal.constants import DELTA_ZERO
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
 from .periodicscheduler import PeriodicScheduler
@@ -57,8 +56,8 @@ class TimeoutScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        timespan = self.normalize(self.to_timedelta(duetime))
-        if timespan == DELTA_ZERO:
+        seconds = self.to_seconds(duetime)
+        if seconds <= 0.0:
             return self.schedule(action, state)
 
         sad = SingleAssignmentDisposable()
@@ -66,7 +65,6 @@ class TimeoutScheduler(PeriodicScheduler):
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state)
 
-        seconds = timespan.total_seconds()
         timer = Timer(seconds, interval)
         timer.setDaemon(True)
         timer.start()

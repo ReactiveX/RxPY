@@ -65,7 +65,7 @@ class PyGameScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        duetime = self.normalize(self.to_timedelta(duetime))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,

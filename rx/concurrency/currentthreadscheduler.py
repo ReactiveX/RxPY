@@ -108,7 +108,7 @@ class CurrentThreadScheduler(Scheduler):
             (best effort).
         """
 
-        duetime = Scheduler.normalize(self.to_timedelta(duetime))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,

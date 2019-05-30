@@ -6,6 +6,7 @@ from typing import Deque, Optional
 from rx.core import typing
 from rx.disposable import Disposable
 from rx.internal.concurrency import default_thread_factory
+from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
@@ -68,7 +69,7 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
             (best effort).
         """
 
-        duetime = self.normalize(self.to_timedelta(duetime))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
     def schedule_absolute(self,

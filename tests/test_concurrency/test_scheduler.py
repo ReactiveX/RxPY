@@ -30,22 +30,3 @@ class TestScheduler(unittest.TestCase):
         assert val == DELTA_ZERO
         val = Scheduler.to_timedelta(UTC_ZERO)
         assert val == DELTA_ZERO
-
-    def test_base_normalize_float(self):
-        val = Scheduler.normalize(-1.0)
-        assert val == 0.0
-        val = Scheduler.normalize(0.0)
-        assert val == 0.0
-        val = Scheduler.normalize(1.0)
-        assert val == 1.0
-
-    def test_base_normalize_delta(self):
-        DELTA_ONE = timedelta(seconds=1.0)
-        val = Scheduler.normalize(-DELTA_ONE)
-        assert val == DELTA_ZERO
-        val = Scheduler.normalize(DELTA_ZERO)
-        assert val == DELTA_ZERO
-        val = Scheduler.normalize(DELTA_ONE)
-        assert val == DELTA_ONE
-
-
