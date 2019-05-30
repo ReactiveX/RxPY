@@ -30,6 +30,7 @@ class Observable(typing.Observable):
         Args:
             subscribe: Subscribe method implementation.
         """
+
         self.lock = threading.RLock()
         self._subscribe = subscribe
 
