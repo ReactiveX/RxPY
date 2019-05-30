@@ -26,13 +26,13 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typ
         if not isinstance(duetime, datetime):
             duetime = _scheduler.now + _scheduler.to_timedelta(duetime)
 
-        p = _scheduler.normalize(period)
+        p = max(0.0, _scheduler.to_seconds(period))
         mad = MultipleAssignmentDisposable()
         dt = [duetime]
         count = [0]
 
         def action(scheduler, state):
-            if p > 0:
+            if p > 0.0:
                 now = scheduler.now
                 dt[0] = dt[0] + scheduler.to_timedelta(p)
                 if dt[0] <= now:
@@ -49,12 +49,14 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typ
 def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer, scheduler_=None):
         _scheduler = scheduler or scheduler_ or timeout_scheduler
-        d = _scheduler.normalize(duetime)
+        d = _scheduler.to_seconds(duetime)
 
         def action(scheduler, state):
             observer.on_next(0)
             observer.on_completed()
 
+        if d <= 0.0:
+            return _scheduler.schedule(action)
         return _scheduler.schedule_relative(d, action)
     return Observable(subscribe)
 

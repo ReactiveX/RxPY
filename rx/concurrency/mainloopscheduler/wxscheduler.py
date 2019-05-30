@@ -4,13 +4,13 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger("Rx")
 
 
-class WxScheduler(SchedulerBase):
+class WxScheduler(PeriodicScheduler):
     """A scheduler for a wxPython event loop."""
 
     def __init__(self, wx) -> None:

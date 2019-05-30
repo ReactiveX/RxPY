@@ -4,18 +4,18 @@ from typing import Generic, Optional
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 
 
 class ScheduledItem(Generic[typing.TState]):  # pylint: disable=unsubscriptable-object
 
     def __init__(self,
-                 scheduler: SchedulerBase,
+                 scheduler: Scheduler,
                  state: Optional[typing.TState],
                  action: typing.ScheduledAction,
                  duetime: datetime
                  ) -> None:
-        self.scheduler: SchedulerBase = scheduler
+        self.scheduler: Scheduler = scheduler
         self.state: Optional[typing.TState] = state
         self.action: typing.ScheduledAction = action
         self.duetime: datetime = duetime

@@ -5,11 +5,11 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import Disposable
 from rx.internal.basic import default_now
-from rx.concurrency.schedulerbase import SchedulerBase
 from rx.concurrency.scheduleditem import ScheduledItem
+from rx.concurrency.scheduler import Scheduler
 
 
-class ScheduledItemTestScheduler(SchedulerBase):
+class ScheduledItemTestScheduler(Scheduler):
 
     def __init__(self):
         super()

@@ -1,21 +1,21 @@
 import logging
 import threading
 
-from datetime import datetime
 from typing import Optional
 
-from rx.internal import PriorityQueue
 from rx.core import typing
+from rx.internal import PriorityQueue
+from rx.internal.constants import DELTA_ZERO
 
 from ..scheduleditem import ScheduledItem
-from ..schedulerbase import SchedulerBase, DELTA_ZERO
+from ..periodicscheduler import PeriodicScheduler
 
 
 pygame = None
 log = logging.getLogger("Rx")
 
 
-class PyGameScheduler(SchedulerBase):
+class PyGameScheduler(PeriodicScheduler):
     """A scheduler that schedules works for PyGame.
 
     Note that this class expects the caller to invoke run() repeatedly.
@@ -65,7 +65,7 @@ class PyGameScheduler(SchedulerBase):
             (best effort).
         """
 
-        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,

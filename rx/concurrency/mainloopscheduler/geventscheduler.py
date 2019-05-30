@@ -6,7 +6,7 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger("Rx")
@@ -15,7 +15,7 @@ log = logging.getLogger("Rx")
 gevent = None
 
 
-class GEventScheduler(SchedulerBase):
+class GEventScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the GEvent event loop.
 
     http://www.gevent.org/

@@ -3,10 +3,10 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from ..periodicscheduler import PeriodicScheduler
 
 
-class GtkScheduler(SchedulerBase):
+class GtkScheduler(PeriodicScheduler):
     """ A scheduler that schedules work via the GLib main loop
     used in GTK+ applications.
 

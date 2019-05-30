@@ -4,10 +4,10 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from .schedulerbase import SchedulerBase, DELTA_ZERO
+from .periodicscheduler import PeriodicScheduler
 
 
-class TimeoutScheduler(SchedulerBase):
+class TimeoutScheduler(PeriodicScheduler):
     """A scheduler that schedules work via a timed callback."""
 
     def schedule(self,
@@ -56,17 +56,15 @@ class TimeoutScheduler(SchedulerBase):
             (best effort).
         """
 
-        scheduler = self
-        timespan = SchedulerBase.normalize(self.to_timedelta(duetime))
-        if timespan == DELTA_ZERO:
-            return scheduler.schedule(action, state)
+        seconds = self.to_seconds(duetime)
+        if seconds <= 0.0:
+            return self.schedule(action, state)
 
         sad = SingleAssignmentDisposable()
 
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state)
 
-        seconds = timespan.total_seconds()
         timer = Timer(seconds, interval)
         timer.setDaemon(True)
         timer.start()

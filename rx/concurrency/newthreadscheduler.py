@@ -7,13 +7,13 @@ from rx.disposable import Disposable
 from rx.internal.concurrency import default_thread_factory
 
 from .eventloopscheduler import EventLoopScheduler
-from .schedulerbase import SchedulerBase
+from .periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger('Rx')
 
 
-class NewThreadScheduler(SchedulerBase):
+class NewThreadScheduler(PeriodicScheduler):
     """Creates an object that schedules each unit of work on a separate thread.
     """
 
@@ -76,7 +76,7 @@ class NewThreadScheduler(SchedulerBase):
             (best effort).
         """
 
-        dt = SchedulerBase.to_datetime(duetime)
+        dt = self.to_datetime(duetime)
         return self.schedule_relative(dt - self.now, action, state=state)
 
     def schedule_periodic(self,

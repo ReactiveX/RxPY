@@ -8,9 +8,10 @@ from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO, UTC_ZERO
 
 
-class SchedulerBase(typing.Scheduler):
-    """Provides a set of static properties to access commonly used
-    schedulers.
+class Scheduler(typing.Scheduler):
+    """Base class for the various scheduler implementations in this package as
+    well as the mainloop sub-package. This does not include an implementation
+    of schedule_periodic, refer to PeriodicScheduler.
     """
 
     @property
@@ -101,48 +102,6 @@ class SchedulerBase(typing.Scheduler):
 
         return Disposable()
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
-        """Schedules a periodic piece of work.
-
-        Args:
-            period: Period in seconds or timedelta for running the
-                work periodically.
-            action: Action to be executed.
-            state: [Optional] Initial state passed to the action upon
-                the first iteration.
-
-        Returns:
-            The disposable object used to cancel the scheduled
-            recurring action (best effort).
-        """
-
-        disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
-        seconds: float = self.to_seconds(period)
-
-        def periodic(scheduler: typing.Scheduler, state: typing.TState) -> Optional[Disposable]:
-            if disp.is_disposed:
-                return None
-
-            time: typing.AbsoluteOrRelativeTime = scheduler.now
-
-            try:
-                state = action(state)
-            except Exception:
-                disp.dispose()
-                raise
-
-            time = seconds - (scheduler.now - time).total_seconds()
-            disp.disposable = scheduler.schedule_relative(time, periodic, state=state)
-
-            return None
-
-        disp.disposable = self.schedule_relative(period, periodic, state=state)
-        return disp
-
     @classmethod
     def to_seconds(cls, value: typing.AbsoluteOrRelativeTime) -> float:
         """Converts time value to seconds. This method handles both absolute
@@ -203,29 +162,5 @@ class SchedulerBase(typing.Scheduler):
             value = value - UTC_ZERO
         elif not isinstance(value, timedelta):
             value = timedelta(seconds=value)
-
-        return value
-
-    @classmethod
-    def normalize(cls, value: typing.RelativeTime) -> typing.RelativeTime:
-        """Normalizes the specified time value to a non-negative value. This
-        method handles only relative values, given as either timedelta or float,
-        and will return the normalized value as that same type.
-
-        Args:
-            value: The time value to normalize.
-
-        Returns:
-            The specified timespan value if it is zero or positive;
-            otherwise, 0.0
-        """
-
-        if isinstance(value, timedelta):
-            if not value or value < DELTA_ZERO:
-                return DELTA_ZERO
-
-        elif isinstance(value, float):
-            if not value or value < 0.0:
-                return 0.0
 
         return value

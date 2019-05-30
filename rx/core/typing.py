@@ -70,6 +70,10 @@ class Scheduler(abc.Scheduler):
                           ) -> Disposable:
         return NotImplemented
 
+
+class PeriodicScheduler(abc.PeriodicScheduler):
+    __slots__ = ()
+
     @abstractmethod
     def schedule_periodic(self,
                           period: RelativeTime,

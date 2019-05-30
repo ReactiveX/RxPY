@@ -5,13 +5,13 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from ..periodicscheduler import PeriodicScheduler
 
 
 log = logging.getLogger(__name__)
 
 
-class QtScheduler(SchedulerBase):
+class QtScheduler(PeriodicScheduler):
     """A scheduler for a PyQt4/PyQt5/PySide event loop."""
 
     def __init__(self, qtcore):

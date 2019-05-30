@@ -8,7 +8,7 @@ from rx.core import typing
 from rx.internal import PriorityQueue
 from rx.internal.constants import DELTA_ZERO
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
 
 
@@ -41,7 +41,7 @@ class _Local(threading.local):
             ScheduledItem[typing.TState]] = PriorityQueue()
 
 
-class CurrentThreadScheduler(SchedulerBase):
+class CurrentThreadScheduler(Scheduler):
     """Represents an object that schedules units of work on the current thread.
     You never want to schedule timeouts using the CurrentThreadScheduler since
     that will block the current thread while waiting.
@@ -108,7 +108,7 @@ class CurrentThreadScheduler(SchedulerBase):
             (best effort).
         """
 
-        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,
