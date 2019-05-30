@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Optional
+from typing import List, Tuple, Optional, Mapping, Union, Any
 import re
 import threading
 from datetime import datetime, timedelta
@@ -31,8 +31,13 @@ pattern = r'|'.join([
 tokens = re.compile(pattern)
 
 
-def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTime = 0.0,
-        lookup: Dict = None, error: Optional[Exception] = None, scheduler: Optional[Scheduler] = None) -> Observable:
+def hot(string: str,
+        timespan: RelativeTime = 0.1,
+        duetime: AbsoluteOrRelativeTime = 0.0,
+        lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
+        error: Optional[Exception] = None,
+        scheduler: Optional[Scheduler] = None
+        ) -> Observable:
 
     _scheduler = scheduler or new_thread_scheduler
 
@@ -93,7 +98,7 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTi
 
 def from_marbles(string: str,
                  timespan: RelativeTime = 0.1,
-                 lookup: Dict = None,
+                 lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
                  error: Optional[Exception] = None,
                  scheduler: Optional[Scheduler] = None
                  ) -> Observable:
@@ -120,8 +125,13 @@ def from_marbles(string: str,
     return Observable(subscribe)
 
 
-def parse(string: str, timespan: RelativeTime = 1.0, time_shift: RelativeTime = 0.0, lookup: Dict = None,
-          error: Optional[Exception] = None, raise_stopped: bool = False) -> List[Tuple[RelativeTime, notification.Notification]]:
+def parse(string: str,
+          timespan: RelativeTime = 1.0,
+          time_shift: RelativeTime = 0.0,
+          lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
+          error: Optional[Exception] = None,
+          raise_stopped: bool = False
+          ) -> List[Tuple[RelativeTime, notification.Notification]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
