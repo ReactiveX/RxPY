@@ -7,8 +7,10 @@ make publish() re-subscribe the cold-observable and it would start
 looping forever.
 """
 
+import time
+
 import rx
-from rx.testing import stringify  # noqa
+from rx import operators as ops
 
 
 def failing(x):
@@ -19,10 +21,16 @@ def failing(x):
 
 
 def main():
-    xs = rx.Observable.from_string("1-2-3-4-5-6-7-9-|").publish()
-    xs.map(failing).retry().subscribe(print)
+    xs = rx.from_marbles("1-2-3-4-5-6-7-9-|").pipe(ops.publish())
+    xs.pipe(
+        ops.map(failing),
+        ops.retry()
+    ).subscribe(print)
 
     xs.connect()  # Must connect. Cannot use ref_count() with publish()
+
+    time.sleep(5)
+
 
 if __name__ == '__main__':
     main()

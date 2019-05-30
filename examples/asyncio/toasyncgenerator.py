@@ -1,59 +1,61 @@
+import asyncio
+from asyncio import Future
+
 import rx
-asyncio = rx.config['asyncio']
-
-from rx.concurrency import AsyncIOScheduler
+from rx import operators as ops
+from rx.concurrency.mainloopscheduler import AsyncIOScheduler
 from rx.core import Observable
-from rx.internal import extensionmethod
 
 
-@extensionmethod(ObservableBase)
-def to_async_generator(self, future_ctor=None, sentinel=None):
-    future_ctor = future_ctor or rx.config.get("Future")
-    if not future_ctor:
-        raise Exception('Future type not provided nor in rx.config.Future')
-
+def to_async_generator(sentinel=None):
     loop = asyncio.get_event_loop()
-    future = [future_ctor()]
+    future = Future()
     notifications = []
 
-    def feeder():
-        if not len(notifications) or future[0].done():
-            return
+    def _to_async_generator(source: Observable):
 
-        notification = notifications.pop(0)
+        def feeder():
+            nonlocal future
 
-        if notification.kind == "E":
-            future[0].set_exception(notification.exception)
-        elif notification.kind == "C":
-            future[0].set_exception(StopIteration(sentinel))
-        else:
-            future[0].set_result(notification.value)
+            if not notifications or future.done():
+                return
 
-    def on_next(value):
-        """Takes on_next values and appends them to the notification queue"""
+            notification = notifications.pop(0)
 
-        notifications.append(value)
-        loop.call_soon(feeder)
+            if notification.kind == "E":
+                future.set_exception(notification.exception)
+            elif notification.kind == "C":
+                future.set_result(sentinel)
+            else:
+                future.set_result(notification.value)
 
-    self.materialize().subscribe(on_next)
+        def on_next(value):
+            """Takes on_next values and appends them to the notification queue"""
 
-    @asyncio.coroutine
-    def gen():
-        """Generator producing futures"""
+            notifications.append(value)
+            loop.call_soon(feeder)
 
-        loop.call_soon(feeder)
-        future[0] = future_ctor()
+        source.pipe(ops.materialize()).subscribe(on_next)
 
-        return future[0]
-    return gen
+        @asyncio.coroutine
+        def gen():
+            """Generator producing futures"""
+            nonlocal future
+
+            loop.call_soon(feeder)
+            future = Future()
+
+            return future
+        return gen
+    return _to_async_generator
 
 
 @asyncio.coroutine
 def go():
     scheduler = AsyncIOScheduler()
 
-    xs = Observable.from_([x for x in range(10)], scheduler=scheduler)
-    gen = xs.to_async_generator()
+    xs = rx.from_([x for x in range(10)], scheduler=scheduler)
+    gen = xs.pipe(to_async_generator())
 
     # Wish we could write something like:
     # ys = (x for x in yield from gen())
