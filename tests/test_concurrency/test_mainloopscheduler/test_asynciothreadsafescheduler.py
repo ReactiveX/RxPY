@@ -1,52 +1,56 @@
 import unittest
 
 import asyncio
+import threading
 from datetime import datetime, timedelta
 
-from rx.concurrency.mainloopscheduler import AsyncIOScheduler
+from rx.concurrency.mainloopscheduler import AsyncIOThreadSafeScheduler
 
 
-class TestAsyncIOScheduler(unittest.TestCase):
+class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
-    def test_asyncio_schedule_now(self):
+    def test_asyncio_threadsafe_schedule_now(self):
         loop = asyncio.get_event_loop()
-        scheduler = AsyncIOScheduler(loop)
+        scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
         assert abs(diff) < timedelta(milliseconds=1)
 
-    def test_asyncio_schedule_now_units(self):
+    def test_asyncio_threadsafe_schedule_now_units(self):
         loop = asyncio.get_event_loop()
-        scheduler = AsyncIOScheduler(loop)
+        scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now
         yield from asyncio.sleep(0.1, loop=loop)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
-    def test_asyncio_schedule_action(self):
+    def test_asyncio_threadsafe_schedule_action(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
         def go():
-            scheduler = AsyncIOScheduler(loop)
+            scheduler = AsyncIOThreadSafeScheduler(loop)
             ran = False
 
             def action(scheduler, state):
                 nonlocal ran
                 ran = True
 
-            scheduler.schedule(action)
+            def schedule():
+                scheduler.schedule(action)
+
+            threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.1, loop=loop)
             assert ran is True
 
         loop.run_until_complete(go())
 
-    def test_asyncio_schedule_action_due(self):
+    def test_asyncio_threadsafe_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
         def go():
-            scheduler = AsyncIOScheduler(loop)
+            scheduler = AsyncIOThreadSafeScheduler(loop)
             starttime = loop.time()
             endtime = None
 
@@ -54,7 +58,10 @@ class TestAsyncIOScheduler(unittest.TestCase):
                 nonlocal endtime
                 endtime = loop.time()
 
-            scheduler.schedule_relative(0.2, action)
+            def schedule():
+                scheduler.schedule_relative(0.2, action)
+
+            threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.3, loop=loop)
             assert endtime is not None
@@ -63,20 +70,23 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
         loop.run_until_complete(go())
 
-    def test_asyncio_schedule_action_cancel(self):
+    def test_asyncio_threadsafe_schedule_action_cancel(self):
         loop = asyncio.get_event_loop()
 
         @asyncio.coroutine
         def go():
             ran = False
-            scheduler = AsyncIOScheduler(loop)
+            scheduler = AsyncIOThreadSafeScheduler(loop)
 
             def action(scheduler, state):
                 nonlocal ran
                 ran = True
 
-            d = scheduler.schedule_relative(0.05, action)
-            d.dispose()
+            def schedule():
+                d = scheduler.schedule_relative(0.05, action)
+                d.dispose()
+
+            threading.Thread(target=schedule).start()
 
             yield from asyncio.sleep(0.3, loop=loop)
             assert ran is False
