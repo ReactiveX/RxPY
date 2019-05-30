@@ -116,7 +116,7 @@ def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
         ---1-----2,3---4,5------|
 
     Examples:
-        >>> res = window(rx.interval(1.0))
+        >>> res = buffer(rx.interval(1.0))
 
     Args:
         boundaries: Observable sequence whose elements denote the
@@ -137,21 +137,21 @@ def buffer_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observabl
     .. marble::
         :alt: buffer_when
 
-        -----c--|
-                -----c--|
-                        -----c--|
-        ---1--2--3--4--5--6-----|
-        [      buffer_when      ]
-        +-------1-------3,4----6|
+        --------c-|
+                --------c-|
+                        --------c-|
+        ---1--2--3--4--5--6-------|
+        [      buffer_when()      ]
+        +-------1,2-----3,4,5---6-|
 
     Examples:
         >>> res = buffer_when(lambda: rx.timer(0.5))
 
     Args:
-        closing_mapper: A function invoked to define
-            the closing of each produced buffer. A buffer is started
-            when the previous one is closed, resulting in
-            non-overlapping buffers.
+        closing_mapper: A function invoked to define the closing of each
+            produced buffer. A buffer is started when the previous one is
+            closed, resulting in non-overlapping buffers. The buffer is closed
+            when one item is emmited or when the observable completes.
 
     Returns:
         A function that takes an observable source and returns an
@@ -172,19 +172,21 @@ def buffer_toggle(openings: Observable,
 
         ---a-----------b--------------|
            ---d--|
-                       --------e|
+                       --------e--|
         ----1--2--3--4--5--6--7--8----|
         [ buffer_toggle()             ]
-        ---------1--------------5,6,7-|
+        ------1----------------5,6,7--|
 
-    >>> res = window(rx.interval(0.5), lambda i: rx.timer(i))
+    >>> res = buffer_toggle(rx.interval(0.5), lambda i: rx.timer(i))
 
     Args:
         openings: Observable sequence whose elements denote the
             creation of buffers.
         closing_mapper: A function invoked to define the closing of each
-            produced window. Value from openings Observable that initiated
-            the associated buffer is provided as argument to the function.
+            produced buffer. Value from openings Observable that initiated
+            the associated buffer is provided as argument to the function. The
+            buffer is closed when one item is emmited or when the observable
+            completes.
 
     Returns:
         A function that takes an observable source and returns an
