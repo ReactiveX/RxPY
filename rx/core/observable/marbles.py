@@ -91,26 +91,30 @@ def hot(string: str, timespan: RelativeTime = 0.1, duetime: AbsoluteOrRelativeTi
     return Observable(subscribe)
 
 
-def from_marbles(string: str, timespan: RelativeTime = 0.1, lookup: Dict = None,
-                 error: Optional[Exception] = None, scheduler: Optional[Scheduler] = None) -> Observable:
+def from_marbles(string: str,
+                 timespan: RelativeTime = 0.1,
+                 lookup: Dict = None,
+                 error: Optional[Exception] = None,
+                 scheduler: Optional[Scheduler] = None
+                 ) -> Observable:
 
-    disp = CompositeDisposable()
     messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
-
-    def schedule_msg(message, observer, scheduler):
-        timespan, notification = message
-
-        def action(scheduler, state=None):
-            notification.accept(observer)
-
-        disp.add(scheduler.schedule_relative(timespan, action))
 
     def subscribe(observer, scheduler_):
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
+        disp = CompositeDisposable()
+
+        def schedule_msg(message):
+            duetime, notification = message
+
+            def action(*_, **__):
+                notification.accept(observer)
+
+            disp.add(_scheduler.schedule_relative(duetime, action))
 
         for message in messages:
             # Don't make closures within a loop
-            schedule_msg(message, observer, _scheduler)
+            schedule_msg(message)
 
         return disp
     return Observable(subscribe)
