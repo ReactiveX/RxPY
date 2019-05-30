@@ -6,7 +6,7 @@ from typing import Optional
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from ..schedulerbase import SchedulerBase
+from ..scheduler import Scheduler
 
 
 log = logging.getLogger("Rx")
@@ -15,7 +15,7 @@ log = logging.getLogger("Rx")
 eventlet = None
 
 
-class EventLetEventScheduler(SchedulerBase):
+class EventLetEventScheduler(Scheduler):
     """A scheduler that schedules work via the eventlet event loop.
 
     http://eventlet.net/

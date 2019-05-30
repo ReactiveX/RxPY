@@ -7,7 +7,7 @@ from typing import Optional
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 from rx.core import typing
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
 
 log = logging.getLogger("Rx")
@@ -15,7 +15,7 @@ log = logging.getLogger("Rx")
 MAX_SPINNING = 100
 
 
-class VirtualTimeScheduler(SchedulerBase):
+class VirtualTimeScheduler(Scheduler):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 

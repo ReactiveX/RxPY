@@ -4,10 +4,10 @@ from typing import Callable, Optional
 from rx.core import typing
 from rx.disposable import Disposable, SingleAssignmentDisposable
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 
 
-class CatchScheduler(SchedulerBase):
+class CatchScheduler(Scheduler):
 
     def __init__(self,
                  scheduler: typing.Scheduler,

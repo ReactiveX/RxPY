@@ -2,12 +2,13 @@ from threading import Timer
 from typing import Optional
 
 from rx.core import typing
+from rx.internal.constants import DELTA_ZERO
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
-from .schedulerbase import SchedulerBase, DELTA_ZERO
+from .scheduler import Scheduler
 
 
-class TimeoutScheduler(SchedulerBase):
+class TimeoutScheduler(Scheduler):
     """A scheduler that schedules work via a timed callback."""
 
     def schedule(self,
@@ -57,7 +58,7 @@ class TimeoutScheduler(SchedulerBase):
         """
 
         scheduler = self
-        timespan = SchedulerBase.normalize(self.to_timedelta(duetime))
+        timespan = Scheduler.normalize(self.to_timedelta(duetime))
         if timespan == DELTA_ZERO:
             return scheduler.schedule(action, state)
 

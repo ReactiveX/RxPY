@@ -8,9 +8,9 @@ from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO, UTC_ZERO
 
 
-class SchedulerBase(typing.Scheduler):
-    """Provides a set of static properties to access commonly used
-    schedulers.
+class Scheduler(typing.Scheduler):
+    """Base class for the various scheduler implementations in this package as
+    well as the mainloop sub-package.
     """
 
     @property

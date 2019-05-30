@@ -4,10 +4,10 @@ from rx.core import typing
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import WouldBlockException
 
-from .schedulerbase import SchedulerBase
+from .scheduler import Scheduler
 
 
-class ImmediateScheduler(SchedulerBase):
+class ImmediateScheduler(Scheduler):
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -43,7 +43,7 @@ class ImmediateScheduler(SchedulerBase):
             (best effort).
         """
 
-        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        duetime = Scheduler.normalize(self.to_timedelta(duetime))
         if duetime > DELTA_ZERO:
             raise WouldBlockException()
 

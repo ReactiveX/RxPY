@@ -9,14 +9,14 @@ from rx.internal.concurrency import default_thread_factory
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
-from .schedulerbase import SchedulerBase
 from .scheduleditem import ScheduledItem
+from .scheduler import Scheduler
 
 
 log = logging.getLogger('Rx')
 
 
-class EventLoopScheduler(SchedulerBase, typing.Disposable):
+class EventLoopScheduler(Scheduler, typing.Disposable):
     """Creates an object that schedules units of work on a designated thread."""
 
     def __init__(self,
@@ -68,7 +68,7 @@ class EventLoopScheduler(SchedulerBase, typing.Disposable):
             (best effort).
         """
 
-        duetime = SchedulerBase.normalize(self.to_timedelta(duetime))
+        duetime = Scheduler.normalize(self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
     def schedule_absolute(self,
