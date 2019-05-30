@@ -2,6 +2,7 @@ import unittest
 
 from rx import operators as ops
 from rx.testing import TestScheduler, ReactiveTest
+from rx.testing.marbles import marbles_testing
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,7 +15,7 @@ created = ReactiveTest.created
 
 class TestBuffer(unittest.TestCase):
 
-    def test_buffer_boundaries_simple(self):
+    def test_buffer_simple(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
@@ -60,7 +61,7 @@ class TestBuffer(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 590)]
 
-    def test_buffer_boundaries_closeboundaries(self):
+    def test_buffer_closeboundaries(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
@@ -102,7 +103,7 @@ class TestBuffer(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 400)]
 
-    def test_buffer_boundaries_throwsource(self):
+    def test_buffer_throwsource(self):
         ex = 'ex'
 
         scheduler = TestScheduler()
@@ -142,7 +143,7 @@ class TestBuffer(unittest.TestCase):
         assert ys.subscriptions == [
             subscribe(200, 400)]
 
-    def test_buffer_boundaries_throwboundaries(self):
+    def test_buffer_throwboundaries(self):
         ex = 'ex'
 
         scheduler = TestScheduler()
@@ -183,3 +184,218 @@ class TestBuffer(unittest.TestCase):
 
         assert ys.subscriptions == [
             subscribe(200, 400)]
+
+    def test_when_closing_with_empty_observable(self):
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            def closing_mapper():
+                return cold('-----|')
+
+            lookup = {'a': [1, 2], 'b': [3], 'c': [4, 5], 'd': [6], 'e': [7]}
+            #               -----|
+            #                    -----|
+            #                         -----|
+            #                              -----|
+            #                                   -----|
+            source = hot('  -1--2---3--4--5--6---7--|')
+            expected = exp('-----a----b----c----d---(e,|)', lookup=lookup)
+            #               012345678901234567890123456789
+            #               0         1         2
+            obs = source.pipe(ops.buffer_when(closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_when_closing_only_on_first_item(self):
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            def closing_mapper():
+                return cold('-----1--2--3--4--|')
+
+            lookup = {'a': [1, 2], 'b': [3], 'c': [4, 5], 'd': [6], 'e': [7]}
+            #               -----1--2--3--4--|
+            #                    -----1--2--3--4--|
+            #                         -----1--2--3--4--|
+            #                              -----1--2--3--4--|
+            source = hot('  -1--2---3--4--5--6---7--|')
+            expected = exp('-----a----b----c----d---(e,|)', lookup=lookup)
+            #               012345678901234567890123456789
+            #               0         1         2
+            obs = source.pipe(ops.buffer_when(closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_when_source_on_error(self):
+        class TestException(Exception):
+            pass
+
+        ex = TestException('test exception')
+
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            def closing_mapper():
+                return cold('-----1|')
+
+            lookup = {'a': [1, 2], 'b': [3], 'c': [4, 5], 'd': [6], 'e': [7]}
+            #               -----1|
+            #                    -----1|
+            #                         -----1|
+            #                              -----1|
+            #                                   -----1|
+            source = hot('  -1--2---3--4--5--#', error=ex)
+            expected = exp('-----a----b----c-#', lookup=lookup, error=ex)
+            #               012345678901234567890123456789
+            #               0         1         2
+
+            obs = source.pipe(ops.buffer_when(closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_when_closing_on_error(self):
+        class TestException(Exception):
+            pass
+
+        ex = TestException('test exception')
+
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            def closing_mapper():
+                return cold('-----#', error=ex)
+
+            #               -----#
+            source = hot('  -1--2---3--4--5--6---7--|')
+            expected = exp('-----#', error=ex)
+            #               012345678901234567890123456789
+            #               0         1         2
+            obs = source.pipe(ops.buffer_when(closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_toggle_closing_with_empty_observable(self):
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            lookup = {'a': [2, 3], 'b': [5], 'c': [7], 'd': [8, 9]}
+
+            openings = hot('---a-------b------c---d-------|')
+            a = cold('         ------|')
+            b = cold('                 ----|')
+            c = cold('                        ---|')
+            d = cold('                            -----|')
+            source = hot('  -1--2--3--4--5--6---7--8--9---|')
+            expected = exp('---------a-----b-----c-----d--|', lookup=lookup)
+            #               012345678901234567890123456789
+            #               0         1         2
+            closings = {'a': a, 'b': b, 'c': c, 'd': d}
+
+            def closing_mapper(key):
+                return closings[key]
+
+            obs = source.pipe(ops.buffer_toggle(openings, closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_toggle_closing_with_only_first_item(self):
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            lookup = {'a': [2, 3], 'b': [5], 'c': [7], 'd': [8, 9]}
+
+            openings = hot('---a-------b------c---d-------|')
+            a = cold('         ------1-2-|')
+            b = cold('                 ----1-2-|')
+            c = cold('                        ---1-2-|')
+            d = cold('                            -----1-2|')
+            source = hot('  -1--2--3--4--5--6---7--8--9---|')
+            expected = exp('---------a-----b-----c-----d--|', lookup=lookup)
+            #               012345678901234567890123456789
+            #               0         1         2
+            closings = {'a': a, 'b': b, 'c': c, 'd': d}
+
+            def closing_mapper(key):
+                return closings[key]
+
+            obs = source.pipe(ops.buffer_toggle(openings, closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_toggle_source_on_error(self):
+        class TestException(Exception):
+            pass
+
+        ex = TestException('test exception')
+
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            lookup = {'a': [2, 3], 'b': [5], 'c': [7], 'd': [8, 9]}
+
+            openings = hot('---a-------b------c---d-------|')
+            a = cold('         ------1-2-|')
+            b = cold('                 ----1-2-|')
+            c = cold('                        ---1-2-|')
+            d = cold('                            -----1-2|')
+            source = hot('  -1--2--3--4--5--6--#', error=ex)
+            expected = exp('---------a-----b---#', lookup=lookup, error=ex)
+            #               012345678901234567890123456789
+            #               0         1         2
+            closings = {'a': a, 'b': b, 'c': c, 'd': d}
+
+            def closing_mapper(key):
+                return closings[key]
+
+            obs = source.pipe(ops.buffer_toggle(openings, closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_toggle_openings_on_error(self):
+        class TestException(Exception):
+            pass
+
+        ex = TestException('test exception')
+
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            lookup = {'a': [2, 3], 'b': [5], 'c': [7], 'd': [8, 9]}
+
+            openings = hot('---a-------b-----#', error=ex)
+            a = cold('         ------1|')
+            b = cold('                 ----1|')
+            c = cold('                        ---1|')
+            d = cold('                            -----1|')
+            source = hot('  -1--2--3--4--5--6---7--8--9---|')
+            expected = exp('---------a-----b-#', lookup=lookup, error=ex)
+            #               012345678901234567890123456789
+            #               0         1         2
+            closings = {'a': a, 'b': b, 'c': c, 'd': d}
+
+            def closing_mapper(key):
+                return closings[key]
+
+            obs = source.pipe(ops.buffer_toggle(openings, closing_mapper))
+            results = start(obs)
+            assert results == expected
+
+    def test_toggle_closing_mapper_on_error(self):
+        class TestException(Exception):
+            pass
+
+        ex = TestException('test exception')
+
+        with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
+
+            lookup = {'a': [2, 3], 'b': [5], 'c': [7], 'd': [8, 9]}
+
+            openings = hot('---a-------b------c---d-------|')
+            a = cold('         ------1|')
+            b = cold('                 ---#', error=ex)
+            c = cold('                        ---1|')
+            d = cold('                            -----1|')
+            source = hot('  -1--2--3--4--5--6---7--8--9---|')
+            expected = exp('---------a----#', lookup=lookup, error=ex)
+            #               012345678901234567890123456789
+            #               0         1         2
+            closings = {'a': a, 'b': b, 'c': c, 'd': d}
+
+            def closing_mapper(key):
+                return closings[key]
+
+            obs = source.pipe(ops.buffer_toggle(openings, closing_mapper))
+            results = start(obs)
+            assert results == expected
