@@ -361,6 +361,39 @@ class TestFromMarble(unittest.TestCase):
                 ]
         assert results == expected
 
+    def test_from_marbles_reuse(self):
+        string = "a--b---c--|"
+        "         012345678901234567890"
+        obs = rx.from_marbles(string)
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+            ReactiveTest.on_next(200.0, 'a'),
+            ReactiveTest.on_next(200.3, 'b'),
+            ReactiveTest.on_next(200.7, 'c'),
+            ReactiveTest.on_completed(201.0),
+            ]
+        assert results == expected
+
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+            ReactiveTest.on_next(200.0, 'a'),
+            ReactiveTest.on_next(200.3, 'b'),
+            ReactiveTest.on_next(200.7, 'c'),
+            ReactiveTest.on_completed(201.0),
+            ]
+        assert results == expected
+
+        scheduler = TestScheduler()
+        results = scheduler.start(self.create_factory(obs)).messages
+        expected = [
+            ReactiveTest.on_next(200.0, 'a'),
+            ReactiveTest.on_next(200.3, 'b'),
+            ReactiveTest.on_next(200.7, 'c'),
+            ReactiveTest.on_completed(201.0),
+            ]
+        assert results == expected
 
 class TestHot(unittest.TestCase):
     def create_factory(self, observable):
