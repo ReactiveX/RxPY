@@ -1,61 +1,65 @@
+import asyncio
+from asyncio import Future
+
 import rx
-
-from rx.concurrency import AsyncIOScheduler
-from rx.core import Observable
-from rx.internal import extensionmethod
-
-asyncio = rx.config['asyncio']
-future_ctor = rx.config.get("Future") or asyncio.Future
+from rx import operators as ops
+from rx import Observable
+from rx.concurrency.mainloopscheduler import AsyncIOScheduler
 
 
-@extensionmethod(ObservableBase)
-async def __aiter__(self):
-    source = self
+def to_async_iterable():
+    def _to_async_iterable(source: Observable):
+        class AIterable:
+            def __aiter__(self):
 
-    class AIterator:
-        def __init__(self):
-            self.notifications = []
-            self.future = future_ctor()
+                class AIterator:
+                    def __init__(self):
+                        self.notifications = []
+                        self.future = Future()
 
-            source.materialize().subscribe(self.on_next)
+                        source.pipe(ops.materialize()).subscribe(self.on_next)
 
-        def feeder(self):
-            if not self.notifications or self.future.done():
-                return
+                    def feeder(self):
+                        if not self.notifications or self.future.done():
+                            return
 
-            notification = self.notifications.pop(0)
-            dispatch = {
-                'N': lambda: self.future.set_result(notification.value),
-                'E': lambda: self.future.set_exception(notification.exception),
-                'C': lambda: self.future.set_exception(StopAsyncIteration)
-            }
+                        notification = self.notifications.pop(0)
+                        dispatch = {
+                            'N': lambda: self.future.set_result(notification.value),
+                            'E': lambda: self.future.set_exception(notification.exception),
+                            'C': lambda: self.future.set_exception(StopAsyncIteration)
+                        }
 
-            dispatch[notification.kind]()
+                        dispatch[notification.kind]()
 
-        def on_next(self, notification):
-            self.notifications.append(notification)
-            self.feeder()
+                    def on_next(self, notification):
+                        self.notifications.append(notification)
+                        self.feeder()
 
-        async def __anext__(self):
-            self.feeder()
+                    async def __anext__(self):
+                        self.feeder()
 
-            value = await self.future
-            self.future = future_ctor()
-            return value
+                        value = await self.future
+                        self.future = Future()
+                        return value
 
-    return AIterator()
+                return AIterator()
+        return AIterable()
+    return _to_async_iterable
 
 
 async def go():
     scheduler = AsyncIOScheduler()
 
-    async for x in Observable.range(0, 10, scheduler=scheduler):
+    ai = rx.range(0, 10, scheduler=scheduler).pipe(to_async_iterable())
+    async for x in ai:
         print("got %s" % x)
 
 
 def main():
     loop = asyncio.get_event_loop()
     loop.run_until_complete(go())
+
 
 if __name__ == '__main__':
     main()
