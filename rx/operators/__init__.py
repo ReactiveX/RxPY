@@ -174,7 +174,7 @@ def buffer_toggle(openings: Observable,
            ---d--|
                        --------e--|
         ----1--2--3--4--5--6--7--8----|
-        [ buffer_toggle()             ]
+        [       buffer_toggle()       ]
         ------1----------------5,6,7--|
 
     >>> res = buffer_toggle(rx.interval(0.5), lambda i: rx.timer(i))
@@ -303,8 +303,8 @@ def catch(handler: Union[Observable, Callable[[Exception, Observable], Observabl
     .. marble::
         :alt: catch
 
-        ---1---2---3---*
-                  a-7-8-|
+        ---1---2---3-*
+                     a-7-8-|
         [      catch(a)    ]
         ---1---2---3---7-8-|
 
@@ -2090,7 +2090,7 @@ def sample(sampler: Union[typing.RelativeTime, Observable],
         :alt: sample
 
         ---1-2-3-4------|
-        [     sample(4) ]
+        [   sample(4)   ]
         ----1---3---4---|
 
     Examples:
