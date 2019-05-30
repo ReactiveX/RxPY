@@ -51,7 +51,7 @@ def _sample(sampler: Union[typing.RelativeTime, Observable],
         """
 
         if isinstance(sampler, typing.Observable):
-            return sample_observable(sampler)
+            return sample_observable(source, sampler)
         else:
             return sample_observable(source, rx.interval(sampler, scheduler=scheduler))
 

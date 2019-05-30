@@ -2090,7 +2090,7 @@ def sample(sampler: Union[typing.RelativeTime, Observable],
         :alt: sample
 
         ---1-2-3-4------|
-        [     sample(4)    ]
+        [     sample(4) ]
         ----1---3---4---|
 
     Examples:
@@ -2101,13 +2101,14 @@ def sample(sampler: Union[typing.RelativeTime, Observable],
         sampler: Observable used to sample the source observable **or** time
             interval at which to sample (specified as a float denoting
             seconds or an instance of timedelta).
+        scheduler: Scheduler to use only when a time interval is given.
 
     Returns:
         An operator function that takes an observable source and
         returns a sampled observable sequence.
     """
     from rx.core.operators.sample import _sample
-    return _sample(sampler)
+    return _sample(sampler, scheduler)
 
 
 def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
