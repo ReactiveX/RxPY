@@ -103,31 +103,97 @@ def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Obser
     return _average(key_mapper)
 
 
-def buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
+def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
     """Projects each element of an observable sequence into zero or
     more buffers.
 
     .. marble::
         :alt: buffer
 
-        ----1-2-3-4-5-6------|
-        [      buffer()      ]
-        --------1,2,3-4,5,6--|
+        ---a-----b-----c--------|
+        --1--2--3--4--5--6--7---|
+        [       buffer()        ]
+        ---1-----2,3---4,5------|
+
+    Examples:
+        >>> res = buffer(rx.interval(1.0))
 
     Args:
-        buffer_openings: Observable sequence whose elements denote the
-            creation of windows.
-        buffer_closing_mapper: [optional] A function invoked to define
-            the closing of each produced window. If a closing mapper
-            function is specified for the first parameter, this
-            parameter is ignored.
+        boundaries: Observable sequence whose elements denote the
+            creation and completion of buffers.
 
     Returns:
-        A function that takes an observable source and retuerns an
-        observable sequence of windows.
+        A function that takes an observable source and returns an
+        observable sequence of buffers.
     """
     from rx.core.operators.buffer import _buffer
-    return _buffer(buffer_openings, buffer_closing_mapper)
+    return _buffer(boundaries)
+
+
+def buffer_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    .. marble::
+        :alt: buffer_when
+
+        --------c-|
+                --------c-|
+                        --------c-|
+        ---1--2--3--4--5--6-------|
+        [      buffer_when()      ]
+        +-------1,2-----3,4,5---6-|
+
+    Examples:
+        >>> res = buffer_when(lambda: rx.timer(0.5))
+
+    Args:
+        closing_mapper: A function invoked to define the closing of each
+            produced buffer. A buffer is started when the previous one is
+            closed, resulting in non-overlapping buffers. The buffer is closed
+            when one item is emmited or when the observable completes.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer_when
+    return _buffer_when(closing_mapper)
+
+
+def buffer_toggle(openings: Observable,
+                  closing_mapper: Callable[[Any], Observable]
+                  ) -> Callable[[Observable], Observable]:
+    """Projects each element of an observable sequence into zero or
+    more buffers.
+
+    .. marble::
+        :alt: buffer_toggle
+
+        ---a-----------b--------------|
+           ---d--|
+                       --------e--|
+        ----1--2--3--4--5--6--7--8----|
+        [       buffer_toggle()       ]
+        ------1----------------5,6,7--|
+
+    >>> res = buffer_toggle(rx.interval(0.5), lambda i: rx.timer(i))
+
+    Args:
+        openings: Observable sequence whose elements denote the
+            creation of buffers.
+        closing_mapper: A function invoked to define the closing of each
+            produced buffer. Value from openings Observable that initiated
+            the associated buffer is provided as argument to the function. The
+            buffer is closed when one item is emmited or when the observable
+            completes.
+
+    Returns:
+        A function that takes an observable source and returns an
+        observable sequence of windows.
+    """
+    from rx.core.operators.buffer import _buffer_toggle
+    return _buffer_toggle(openings, closing_mapper)
 
 
 def buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
@@ -229,8 +295,7 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
     return _buffer_with_time_or_count(timespan, count, scheduler)
 
 
-def catch(second: Observable = None,
-          handler: Callable[[Exception, Observable], Observable] = None
+def catch(handler: Union[Observable, Callable[[Exception, Observable], Observable]]
           ) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -238,8 +303,8 @@ def catch(second: Observable = None,
     .. marble::
         :alt: catch
 
-        ---1---2---3---*
-                  a-7-8-|
+        ---1---2---3-*
+                     a-7-8-|
         [      catch(a)    ]
         ---1---2---3---7-8-|
 
@@ -248,11 +313,11 @@ def catch(second: Observable = None,
         >>> op = catch(lambda ex: ys(ex))
 
     Args:
-        handler: Exception handler function that returns an observable
-            sequence given the error that occurred in the first
-            sequence.
-        second: Second observable sequence used to produce results
-            when an error occurred in the first sequence.
+        handler: Second observable sequence used to produce
+            results when an error occurred in the first sequence, or an
+            exception handler function that returns an observable sequence
+            given the error and source observable that occurred in the
+            first sequence.
 
     Returns:
         A function taking an observable source and returns an
@@ -261,7 +326,7 @@ def catch(second: Observable = None,
         exception occurred.
     """
     from rx.core.operators.catch import _catch
-    return _catch(second, handler)
+    return _catch(handler)
 
 
 def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
@@ -2016,8 +2081,7 @@ def retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observabl
     return _retry(retry_count)
 
 
-def sample(interval: Optional[typing.RelativeTime] = None,
-           sampler: Optional[Observable] = None,
+def sample(sampler: Union[typing.RelativeTime, Observable],
            scheduler: Optional[typing.Scheduler] = None
            ) -> Callable[[Observable], Observable]:
     """Samples the observable sequence at each interval.
@@ -2026,23 +2090,25 @@ def sample(interval: Optional[typing.RelativeTime] = None,
         :alt: sample
 
         ---1-2-3-4------|
-        [     sample(4)    ]
+        [   sample(4)   ]
         ----1---3---4---|
 
     Examples:
-        >>> res = sample(None, sample_observable) # Sampler tick sequence
+        >>> res = sample(sample_observable) # Sampler tick sequence
         >>> res = sample(5.0) # 5 seconds
 
     Args:
-        interval: Interval at which to sample (specified as a float denoting
+        sampler: Observable used to sample the source observable **or** time
+            interval at which to sample (specified as a float denoting
             seconds or an instance of timedelta).
+        scheduler: Scheduler to use only when a time interval is given.
 
     Returns:
         An operator function that takes an observable source and
         returns a sampled observable sequence.
     """
     from rx.core.operators.sample import _sample
-    return _sample(interval, sampler)
+    return _sample(sampler, scheduler)
 
 
 def scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:

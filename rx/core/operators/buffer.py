@@ -1,39 +1,30 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 from rx import operators as ops
 from rx.core import Observable, pipe
 
 
-def _buffer(buffer_openings=None, buffer_closing_mapper=None) -> Callable[[Observable], Observable]:
-    """Projects each element of an observable sequence into zero or more
-    buffers.
-
-    Args:
-        buffer_openings -- Observable sequence whose elements denote the
-            creation of windows.
-        buffer_closing_mapper -- [optional] A function invoked to define
-            the closing of each produced window. If a closing mapper
-            function is specified for the first parameter, this parameter is
-            ignored.
-
-    Returns:
-        A function that takes an observable source and retuerns an
-        observable sequence of windows.
-    """
-
-    # fix to be compliant with window operators
-    if callable(buffer_openings):
-        window_op = ops.window_when(buffer_openings)
-    else:
-        if buffer_closing_mapper:
-            window_op = ops.window_toggle(buffer_openings, buffer_closing_mapper)
-        else:
-            window_op = ops.window(buffer_openings)
-
+def _buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
     return pipe(
-        window_op,
+        ops.window(boundaries),
         ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
-    )
+        )
+
+
+def _buffer_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observable], Observable]:
+    return pipe(
+        ops.window_when(closing_mapper),
+        ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
+        )
+
+
+def _buffer_toggle(openings: Observable,
+                   closing_mapper: Callable[[Any], Observable]
+                   ) -> Callable[[Observable], Observable]:
+    return pipe(
+        ops.window_toggle(openings, closing_mapper),
+        ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
+        )
 
 
 def _buffer_with_count(count: int, skip: Optional[int] = None) -> Callable[[Observable], Observable]:
