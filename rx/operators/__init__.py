@@ -3135,6 +3135,8 @@ def to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[O
 def to_iterable() -> Callable[[Observable], Observable]:
     """Creates an iterable from an observable sequence.
 
+    There is also an alias called ``to_list``.
+
     Returns:
         An operator function that takes an obserable source and
         returns an observable sequence containing a single element with
@@ -3143,6 +3145,7 @@ def to_iterable() -> Callable[[Observable], Observable]:
     from rx.core.operators.toiterable import _to_iterable
     return _to_iterable()
 
+to_list = to_iterable
 
 def to_marbles(timespan: typing.RelativeTime = 0.1,
                scheduler: Optional[typing.Scheduler] = None

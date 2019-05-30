@@ -20,7 +20,7 @@ def _to_iterable() -> Callable[[Observable], Observable]:
                 queue.append(item)
 
             def on_completed():
-                observer.on_next(iter(queue))
+                observer.on_next(queue)
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
