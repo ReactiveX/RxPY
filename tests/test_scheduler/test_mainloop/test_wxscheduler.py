@@ -3,9 +3,8 @@ from time import sleep
 import unittest
 import pytest
 
-from rx.scheduler.mainloopscheduler import WxScheduler
+from rx.scheduler.mainloop import WxScheduler
 from rx.internal.basic import default_now
-from rx.internal.constants import DELTA_ZERO
 
 wx = pytest.importorskip('wx')
 

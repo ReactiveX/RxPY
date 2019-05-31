@@ -9,6 +9,7 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 import json, requests
 import rx
+from rx.scheduler.eventloop import GEventScheduler
 
 class WikiFinder:
     tmpl = 'http://en.wikipedia.org/w/api.php'
@@ -28,7 +29,7 @@ class WikiFinder:
 
 
 app, PORT = Bottle(), 8081
-scheduler = rx.scheduler.GEventScheduler()
+scheduler = GEventScheduler()
 
 
 @app.route('/ws')

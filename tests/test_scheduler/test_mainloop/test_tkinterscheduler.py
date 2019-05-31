@@ -4,7 +4,7 @@ import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloopscheduler import TkinterScheduler
+from rx.scheduler.mainloop import TkinterScheduler
 from rx.internal.basic import default_now
 
 

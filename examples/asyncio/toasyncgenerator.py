@@ -3,7 +3,7 @@ from asyncio import Future
 
 import rx
 from rx import operators as ops
-from rx.scheduler.mainloopscheduler import AsyncIOScheduler
+from rx.scheduler.eventloop import AsyncIOScheduler
 from rx.core import Observable
 
 

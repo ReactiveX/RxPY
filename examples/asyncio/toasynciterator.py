@@ -4,7 +4,7 @@ from asyncio import Future
 import rx
 from rx import operators as ops
 from rx import Observable
-from rx.scheduler.mainloopscheduler import AsyncIOScheduler
+from rx.scheduler.eventloop import AsyncIOScheduler
 
 
 def to_async_iterable():

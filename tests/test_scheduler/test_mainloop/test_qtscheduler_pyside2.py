@@ -6,7 +6,7 @@ from time import sleep
 
 QtCore = pytest.importorskip('PySide2.QtCore')
 
-from rx.scheduler.mainloopscheduler import QtScheduler
+from rx.scheduler.mainloop import QtScheduler
 from rx.internal.basic import default_now
 
 

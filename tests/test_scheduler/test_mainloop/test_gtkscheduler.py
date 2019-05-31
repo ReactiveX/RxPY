@@ -6,7 +6,7 @@ import threading
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloopscheduler import GtkScheduler
+from rx.scheduler.mainloop import GtkScheduler
 from rx.internal.basic import default_now
 
 
