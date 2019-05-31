@@ -1,12 +1,14 @@
 from typing import Any, Optional
 
-from rx.core import typing
-from rx.core import Observable
+from rx.core import typing, Observable
 from rx.scheduler import immediate_scheduler
 
 
 def _empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
-    def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
+    def subscribe(observer: typing.Observer,
+                  scheduler_: Optional[typing.Scheduler] = None
+                  ) -> typing.Disposable:
+
         _scheduler = scheduler or scheduler_ or immediate_scheduler
 
         def action(_: typing.Scheduler, __: Any) -> None:

@@ -1,28 +1,38 @@
+from typing import Any
+
 from rx.core import Observable
+from rx.core.typing import Mapper, Predicate
 from rx.scheduler import current_thread_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
-def _generate(initial_state, condition, iterate) -> Observable:
+def _generate(initial_state: Any,
+              condition: Predicate,
+              iterate: Mapper
+              ) -> Observable:
+
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or current_thread_scheduler
-        first = [True]
-        state = [initial_state]
+        first = True
+        state = initial_state
         mad = MultipleAssignmentDisposable()
 
         def action(scheduler, state1=None):
+            nonlocal first
+            nonlocal state
+
             has_result = False
             result = None
 
             try:
-                if first[0]:
-                    first[0] = False
+                if first:
+                    first = False
                 else:
-                    state[0] = iterate(state[0])
+                    state = iterate(state)
 
-                has_result = condition(state[0])
+                has_result = condition(state)
                 if has_result:
-                    result = state[0]
+                    result = state
 
             except Exception as exception:  # pylint: disable=broad-except
                 observer.on_error(exception)

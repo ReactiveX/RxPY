@@ -1,11 +1,13 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio.futures import Future as _Future
-from typing import Iterable, Callable, Any, Optional, Union
+from typing import Iterable, Callable, Any, Optional, Union, Mapping, Sequence
 
-from .core import Observable, abc, typing, pipe
+from .core import Observable, typing, pipe
+from .core.typing import Mapper, Predicate
 
 __version__ = "3.0.0-beta4"
+
 
 def amb(*sources: Observable) -> Observable:
     """Propagates the observable sequence that reacts first.
@@ -21,7 +23,10 @@ def amb(*sources: Observable) -> Observable:
     return _amb(*sources)
 
 
-def case(mapper, sources, default_source=None) -> Observable:
+def case(mapper: Callable[[], Any],
+         sources: Mapping,
+         default_source: Optional[Union[Observable, _Future]] = None
+         ) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
     Examples:
@@ -134,7 +139,7 @@ def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
     return _concat_with_iterable(sources)
 
 
-def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observable:
+def defer(observable_factory: Callable[[typing.Scheduler], Union[Observable, _Future]]) -> Observable:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
 
@@ -153,7 +158,7 @@ def defer(observable_factory: Callable[[abc.Scheduler], Observable]) -> Observab
     return _defer(observable_factory)
 
 
-def empty(scheduler: typing.Scheduler = None) -> Observable:
+def empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an empty observable sequence.
 
     Example:
@@ -169,7 +174,7 @@ def empty(scheduler: typing.Scheduler = None) -> Observable:
     return _empty(scheduler)
 
 
-def for_in(values, mapper) -> Observable:
+def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
@@ -188,7 +193,7 @@ def for_in(values, mapper) -> Observable:
     return concat_with_iterable(map(mapper, values))
 
 
-def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Observable:
+def from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that contains a single element
     generate from a supplier, using the specified scheduler to send out
     observer messages.
@@ -209,7 +214,7 @@ def from_callable(supplier: Callable, scheduler: typing.Scheduler = None) -> Obs
     return _from_callable(supplier, scheduler)
 
 
-def from_callback(func: Callable, mapper: typing.Mapper = None) -> Callable[[], Observable]:
+def from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[], Observable]:
     """Converts a callback function to an observable sequence.
 
     Args:
@@ -244,7 +249,7 @@ def from_future(future: _Future) -> Observable:
     return _from_future(future)
 
 
-def from_iterable(iterable: Iterable, scheduler: typing.Scheduler = None) -> Observable:
+def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Converts an iterable to an observable sequence.
 
     Example:
@@ -266,8 +271,12 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None,
-                 lookup = None, error: Exception = None) -> Observable:
+def from_marbles(string: str,
+                 timespan: typing.RelativeTime = 0.1,
+                 scheduler: Optional[typing.Scheduler] = None,
+                 lookup: Optional[Mapping] = None,
+                 error: Optional[Exception] = None
+                 ) -> Observable:
     """Convert a marble diagram string to a cold observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -331,7 +340,11 @@ def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: ty
 cold = from_marbles
 
 
-def generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
+def generate_with_relative_time(initial_state: Any,
+                                condition: Predicate,
+                                iterate: Mapper,
+                                time_mapper: Callable[[Any], typing.RelativeTime]
+                                ) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
@@ -354,7 +367,7 @@ def generate_with_relative_time(initial_state, condition, iterate, time_mapper) 
     return _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
 
-def generate(initial_state, condition, iterate) -> Observable:
+def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Observable:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
@@ -375,8 +388,13 @@ def generate(initial_state, condition, iterate) -> Observable:
     return _generate(initial_state, condition, iterate)
 
 
-def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRelativeTime = 0.0,
-        scheduler: typing.Scheduler = None, lookup=None, error: Exception = None) -> Observable:
+def hot(string: str,
+        timespan: typing.RelativeTime=0.1,
+        duetime:typing.AbsoluteOrRelativeTime = 0.0,
+        scheduler: Optional[typing.Scheduler] = None,
+        lookup: Optional[Mapping] = None,
+        error: Optional[Exception] = None
+        ) -> Observable:
     """Convert a marble diagram string to a hot observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -439,8 +457,10 @@ def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRela
     return _hot(string, timespan, duetime, lookup=lookup, error=error, scheduler=scheduler)
 
 
-def if_then(condition: Callable[[], bool], then_source: Observable,
-            else_source: Observable = None) -> Observable:
+def if_then(condition: Callable[[], bool],
+            then_source: Union[Observable, _Future],
+            else_source: Union[None, Observable, _Future] = None
+            ) -> Observable:
     """Determines whether an observable collection contains values.
 
     Examples:
@@ -465,7 +485,7 @@ def if_then(condition: Callable[[], bool], then_source: Observable,
     return _if_then(condition, then_source, else_source)
 
 
-def interval(period, scheduler: Optional[typing.Scheduler] = None) -> Observable:
+def interval(period: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that produces a value after each
     period.
 
@@ -525,7 +545,7 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
-def on_error_resume_next(*sources: Observable) -> Observable:
+def on_error_resume_next(*sources: Union[Observable, _Future]) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
@@ -611,7 +631,7 @@ def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Obser
     return _repeat_value(value, repeat_count)
 
 
-def start(func, scheduler=None) -> Observable:
+def start(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 
@@ -637,7 +657,7 @@ def start(func, scheduler=None) -> Observable:
     return _start(func, scheduler)
 
 
-def start_async(function_async) -> Observable:
+def start_async(function_async: Callable[[], _Future]) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
@@ -702,7 +722,7 @@ def timer(duetime: typing.AbsoluteOrRelativeTime, period: Optional[typing.Relati
     return _timer(duetime, period, scheduler)
 
 
-def to_async(func: Callable, scheduler=None) -> Callable:
+def to_async(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified

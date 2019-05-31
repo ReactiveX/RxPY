@@ -7,7 +7,8 @@ from rx.disposable import CompositeDisposable, Disposable
 
 
 def _using(resource_factory: Callable[[], typing.Disposable],
-           observable_factory: Callable[[typing.Disposable], Observable]) -> Observable:
+           observable_factory: Callable[[typing.Disposable], Observable]
+           ) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
@@ -34,7 +35,7 @@ def _using(resource_factory: Callable[[], typing.Disposable],
                 disp = resource
 
             source = observable_factory(resource)
-        except Exception as exception:
+        except Exception as exception:  # pylint: disable=broad-except
             d = rx.throw(exception).subscribe(observer, scheduler=scheduler)
             return CompositeDisposable(d, disp)
 

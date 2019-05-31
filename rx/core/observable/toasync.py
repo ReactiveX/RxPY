@@ -1,12 +1,15 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable
+from rx.core.typing import Scheduler
 from rx.scheduler import timeout_scheduler
 from rx.subjects import AsyncSubject
 
 
-def _to_async(func: Callable, scheduler=None) -> Callable:
+def _to_async(func: Callable,
+              scheduler: Optional[Scheduler] = None
+              ) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified
@@ -26,7 +29,7 @@ def _to_async(func: Callable, scheduler=None) -> Callable:
         Aynchronous function.
     """
 
-    scheduler = scheduler or timeout_scheduler
+    _scheduler = scheduler or timeout_scheduler
 
     def wrapper(*args) -> Observable:
         subject = AsyncSubject()
@@ -34,13 +37,13 @@ def _to_async(func: Callable, scheduler=None) -> Callable:
         def action(scheduler, state):
             try:
                 result = func(*args)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-except
                 subject.on_error(ex)
                 return
 
             subject.on_next(result)
             subject.on_completed()
 
-        scheduler.schedule(action)
+        _scheduler.schedule(action)
         return subject.pipe(ops.as_observable())
     return wrapper

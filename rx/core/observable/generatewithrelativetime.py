@@ -1,9 +1,16 @@
+from typing import Any, Callable
+
 from rx.core import Observable
+from rx.core.typing import Predicate, Mapper, RelativeTime
 from rx.scheduler import timeout_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
-def _generate_with_relative_time(initial_state, condition, iterate, time_mapper) -> Observable:
+def _generate_with_relative_time(initial_state: Any,
+                                 condition: Predicate,
+                                 iterate: Mapper,
+                                 time_mapper: Callable[[Any], RelativeTime]
+                                 ) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
@@ -26,33 +33,40 @@ def _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or timeout_scheduler
         mad = MultipleAssignmentDisposable()
-        state = [initial_state]
-        has_result = [False]
-        result = [None]
-        first = [True]
-        time = [None]
+        state = initial_state
+        has_result = False
+        result = None
+        first = True
+        time = None
 
         def action(scheduler, _):
-            if has_result[0]:
-                observer.on_next(result[0])
+            nonlocal state
+            nonlocal has_result
+            nonlocal result
+            nonlocal first
+            nonlocal time
+
+            if has_result:
+                observer.on_next(result)
 
             try:
-                if first[0]:
-                    first[0] = False
+                if first:
+                    first = False
                 else:
-                    state[0] = iterate(state[0])
+                    state = iterate(state)
 
-                has_result[0] = condition(state[0])
-                if has_result[0]:
-                    result[0] = state[0]
-                    time[0] = time_mapper(state[0])
+                has_result = condition(state)
 
-            except Exception as e:
+                if has_result:
+                    result = state
+                    time = time_mapper(state)
+
+            except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
                 return
 
-            if has_result[0]:
-                mad.disposable = scheduler.schedule_relative(time[0], action)
+            if has_result:
+                mad.disposable = scheduler.schedule_relative(time, action)
             else:
                 observer.on_completed()
 

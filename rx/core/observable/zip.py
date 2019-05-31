@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from rx import from_future
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -24,9 +26,9 @@ def _zip(*args: Observable) -> Observable:
 
     sources = list(args)
 
-    def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None):
+    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None):
         n = len(sources)
-        queues = [[] for _ in range(n)]
+        queues : List[List] = [[] for _ in range(n)]
         is_done = [False] * n
 
         def next(i):
