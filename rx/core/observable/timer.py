@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 from rx.core import Observable, typing
 from rx.disposable import MultipleAssignmentDisposable
 

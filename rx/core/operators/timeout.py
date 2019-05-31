@@ -4,7 +4,7 @@ from typing import Callable, Optional
 from rx import from_future, throw
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 from rx.internal.utils import is_future
 
 

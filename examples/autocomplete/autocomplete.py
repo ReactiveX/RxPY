@@ -17,7 +17,7 @@ from tornado import ioloop
 
 from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency.mainloopscheduler import IOLoopScheduler
+from rx.scheduler.mainloopscheduler import IOLoopScheduler
 
 scheduler = IOLoopScheduler()
 

@@ -4,7 +4,7 @@ import threading
 from datetime import timedelta
 from time import sleep
 
-from rx.concurrency import ThreadPoolScheduler
+from rx.scheduler import ThreadPoolScheduler
 from rx.internal.basic import default_now
 
 

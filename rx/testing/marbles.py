@@ -5,7 +5,7 @@ from warnings import warn
 
 import rx
 from rx.core import Observable
-from rx.concurrency import NewThreadScheduler
+from rx.scheduler import NewThreadScheduler
 from rx.core.typing import Callable
 from rx.testing import TestScheduler, Recorded, ReactiveTest
 from rx.core.observable.marbles import parse

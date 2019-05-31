@@ -3,7 +3,7 @@
 Schedulers
 ===========
 
-.. automodule:: rx.concurrency
+.. automodule:: rx.scheduler
     :members: CatchScheduler, CurrentThreadScheduler, EventLoopScheduler,
                 HistoricalScheduler, ImmediateScheduler, NewThreadScheduler,
                 ThreadPoolScheduler, TimeoutScheduler, VirtualTimeScheduler

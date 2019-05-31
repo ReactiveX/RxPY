@@ -1,7 +1,7 @@
 from typing import Union, Callable, Optional
 
 from rx.core import Observable, typing
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 
 def _skip_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None

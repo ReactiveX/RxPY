@@ -2,7 +2,7 @@ import threading
 from typing import Any, Optional
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
-from rx.concurrency import NewThreadScheduler
+from rx.scheduler import NewThreadScheduler
 from .observable import Observable
 
 

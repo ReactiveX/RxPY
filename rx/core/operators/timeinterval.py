@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from rx import operators as ops
 from rx.core import Observable, typing
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 class TimeInterval(NamedTuple):
     value: Any

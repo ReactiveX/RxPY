@@ -5,7 +5,7 @@ from datetime import timedelta
 from time import sleep
 
 from rx.disposable import Disposable
-from rx.concurrency import ImmediateScheduler
+from rx.scheduler import ImmediateScheduler
 from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import WouldBlockException

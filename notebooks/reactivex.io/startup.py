@@ -107,7 +107,7 @@ def cur_thread():
     #return '%s of %s' % (_cur(), threads)
     return _cur()
 
-from rx.concurrency import new_thread_scheduler, timeout_scheduler
+from rx.scheduler import new_thread_scheduler, timeout_scheduler
 from rx.subjects import Subject
 from rx.testing import marbles, dump
 def marble_stream(s):

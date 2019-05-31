@@ -4,7 +4,7 @@ import asyncio
 import threading
 from datetime import datetime, timedelta
 
-from rx.concurrency.mainloopscheduler import AsyncIOThreadSafeScheduler
+from rx.scheduler.mainloopscheduler import AsyncIOThreadSafeScheduler
 
 
 class TestAsyncIOThreadSafeScheduler(unittest.TestCase):

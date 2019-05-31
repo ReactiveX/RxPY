@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime, timedelta
 from time import sleep
 
-from rx.concurrency.mainloopscheduler import EventletScheduler
+from rx.scheduler.mainloopscheduler import EventletScheduler
 
 
 eventlet = pytest.importorskip("eventlet")

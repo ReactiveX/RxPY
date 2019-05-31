@@ -28,7 +28,7 @@ class WikiFinder:
 
 
 app, PORT = Bottle(), 8081
-scheduler = rx.concurrency.GEventScheduler()
+scheduler = rx.scheduler.GEventScheduler()
 
 
 @app.route('/ws')

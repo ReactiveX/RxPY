@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script runs a subset of unit tests (minus concurrency, which does too
+# This script runs a subset of unit tests (minus test_scheduler, which does too
 # many hard sleeps to be a useful benchmark) a couple of times, averaging the
 # durations as parsed from pytest output.
 #
@@ -20,7 +20,7 @@
 # So if you kill the script before it's done, you may end up in the wrong branch
 # and/or you may find your work is stashed!
 
-testargs="--cache-clear --ignore=tests/test_concurrency"
+testargs="--cache-clear --ignore=tests/test_scheduler"
 defref="master"
 rounds=5
 

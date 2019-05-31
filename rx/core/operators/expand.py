@@ -3,7 +3,7 @@ from typing import Callable
 from rx.core import Observable
 from rx.core.typing import Mapper
 from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
-from rx.concurrency import immediate_scheduler
+from rx.scheduler import immediate_scheduler
 
 
 def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:

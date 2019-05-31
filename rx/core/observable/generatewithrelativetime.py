@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 

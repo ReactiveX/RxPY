@@ -1,5 +1,5 @@
 import rx
-from rx.concurrency import current_thread_scheduler
+from rx.scheduler import current_thread_scheduler
 from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future

@@ -4,7 +4,7 @@ import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.concurrency.mainloopscheduler import PyGameScheduler
+from rx.scheduler.mainloopscheduler import PyGameScheduler
 from rx.internal.basic import default_now
 
 

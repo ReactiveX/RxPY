@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 
 def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None

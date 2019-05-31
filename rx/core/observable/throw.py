@@ -3,7 +3,7 @@ from typing import Any, Optional
 from rx.core import typing
 from rx.core import Observable
 
-from rx.concurrency import immediate_scheduler
+from rx.scheduler import immediate_scheduler
 
 
 def _throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) -> Observable:

@@ -3,7 +3,7 @@ from time import sleep
 import unittest
 import pytest
 
-from rx.concurrency.mainloopscheduler import WxScheduler
+from rx.scheduler.mainloopscheduler import WxScheduler
 from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO
 

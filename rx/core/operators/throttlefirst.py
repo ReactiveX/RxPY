@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from rx.core import Observable, typing
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 
 def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
