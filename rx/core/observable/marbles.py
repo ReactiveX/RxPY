@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional, Mapping, Union, Any
+from typing import List, Tuple, Optional, Mapping
 import re
 import threading
 from datetime import datetime, timedelta
@@ -34,7 +34,7 @@ tokens = re.compile(pattern)
 def hot(string: str,
         timespan: RelativeTime = 0.1,
         duetime: AbsoluteOrRelativeTime = 0.0,
-        lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
+        lookup: Optional[Mapping] = None,
         error: Optional[Exception] = None,
         scheduler: Optional[Scheduler] = None
         ) -> Observable:
@@ -98,7 +98,7 @@ def hot(string: str,
 
 def from_marbles(string: str,
                  timespan: RelativeTime = 0.1,
-                 lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
+                 lookup: Optional[Mapping] = None,
                  error: Optional[Exception] = None,
                  scheduler: Optional[Scheduler] = None
                  ) -> Observable:
@@ -128,7 +128,7 @@ def from_marbles(string: str,
 def parse(string: str,
           timespan: RelativeTime = 1.0,
           time_shift: RelativeTime = 0.0,
-          lookup: Optional[Mapping[Union[int, float, str], Any]] = None,
+          lookup: Optional[Mapping] = None,
           error: Optional[Exception] = None,
           raise_stopped: bool = False
           ) -> List[Tuple[RelativeTime, notification.Notification]]:

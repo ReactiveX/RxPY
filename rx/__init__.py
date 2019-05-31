@@ -272,8 +272,12 @@ from_ = from_iterable
 from_list = from_iterable
 
 
-def from_marbles(string: str, timespan: typing.RelativeTime = 0.1, scheduler: typing.Scheduler = None,
-                 lookup = None, error: Exception = None) -> Observable:
+def from_marbles(string: str,
+                 timespan: typing.RelativeTime = 0.1,
+                 scheduler: Optional[typing.Scheduler] = None,
+                 lookup: Optional[Mapping] = None,
+                 error: Optional[Exception] = None
+                 ) -> Observable:
     """Convert a marble diagram string to a cold observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -385,8 +389,13 @@ def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Obser
     return _generate(initial_state, condition, iterate)
 
 
-def hot(string, timespan: typing.RelativeTime=0.1, duetime:typing.AbsoluteOrRelativeTime = 0.0,
-        scheduler: typing.Scheduler = None, lookup=None, error: Exception = None) -> Observable:
+def hot(string: str,
+        timespan: typing.RelativeTime=0.1,
+        duetime:typing.AbsoluteOrRelativeTime = 0.0,
+        scheduler: Optional[typing.Scheduler] = None,
+        lookup: Optional[Mapping] = None,
+        error: Optional[Exception] = None
+        ) -> Observable:
     """Convert a marble diagram string to a hot observable sequence, using
     an optional scheduler to enumerate the events.
 
