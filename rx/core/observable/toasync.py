@@ -29,7 +29,7 @@ def _to_async(func: Callable,
         Aynchronous function.
     """
 
-    scheduler = scheduler or timeout_scheduler
+    _scheduler = scheduler or timeout_scheduler
 
     def wrapper(*args) -> Observable:
         subject = AsyncSubject()
@@ -44,6 +44,6 @@ def _to_async(func: Callable,
             subject.on_next(result)
             subject.on_completed()
 
-        scheduler.schedule(action)
+        _scheduler.schedule(action)
         return subject.pipe(ops.as_observable())
     return wrapper
