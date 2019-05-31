@@ -24,7 +24,7 @@ def amb(*sources: Observable) -> Observable:
 
 
 def case(mapper: Callable[[], Any],
-         sources: Union[Sequence, Mapping],
+         sources: Mapping,
          default_source: Optional[Union[Observable, _Future]] = None
          ) -> Observable:
     """Uses mapper to determine which source in sources to use.

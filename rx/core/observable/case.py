@@ -1,4 +1,4 @@
-from typing import Optional, Union, Mapping, Callable, Sequence, Any
+from typing import Optional, Union, Mapping, Callable, Any
 from asyncio import Future
 
 from rx import empty, defer, from_future
@@ -7,7 +7,7 @@ from rx.internal.utils import is_future
 
 
 def _case(mapper: Callable[[], Any],
-          sources: Union[Sequence, Mapping],
+          sources: Mapping,
           default_source: Optional[Union[Observable, Future]] = None
           ) -> Observable:
 
