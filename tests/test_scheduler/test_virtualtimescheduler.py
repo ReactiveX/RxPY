@@ -1,7 +1,7 @@
 import pytest
 import unittest
 
-from rx.concurrency import VirtualTimeScheduler
+from rx.scheduler import VirtualTimeScheduler
 from rx.internal import ArgumentOutOfRangeException
 from rx.internal.constants import DELTA_ZERO, UTC_ZERO
 

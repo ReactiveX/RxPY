@@ -3,7 +3,7 @@ import threading
 from typing import Any, Callable, Optional, Union, TypeVar, cast, overload
 
 from rx.disposable import Disposable
-from rx.concurrency import current_thread_scheduler
+from rx.scheduler import current_thread_scheduler
 
 from ..observer import AutoDetachObserver
 from .. import typing, abc

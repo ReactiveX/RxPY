@@ -230,7 +230,7 @@ To achieve concurrency, you use two operators: :func:`subscribe_on()
 <rx.operators.subscribe_on>` and :func:`observe_on() <rx.operators.observe_on>`.
 Both need a :ref:`Scheduler <reference_scheduler>` which provides a thread for
 each subscription to do work (see section on Schedulers below). The
-:class:`ThreadPoolScheduler <rx.concurrency.ThreadPoolScheduler>` is a good
+:class:`ThreadPoolScheduler <rx.scheduler.ThreadPoolScheduler>` is a good
 choice to create a pool of reusable worker threads.
 
 .. attention::
@@ -267,7 +267,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     from threading import current_thread
 
     from rx import Observable
-    from rx.concurrency import ThreadPoolScheduler
+    from rx.scheduler import ThreadPoolScheduler
 
 
     def intense_calculation(value):

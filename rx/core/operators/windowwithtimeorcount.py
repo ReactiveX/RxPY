@@ -2,7 +2,7 @@ from typing import Callable, Union, Optional
 from datetime import timedelta
 
 from rx.core import Observable, typing
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subjects import Subject

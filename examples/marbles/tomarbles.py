@@ -1,5 +1,5 @@
 import rx
-from rx import concurrency as ccy
+from rx import scheduler as ccy
 from rx import operators as ops
 
 source0 = rx.cold('a-----d---1--------4-|', timespan=0.1)

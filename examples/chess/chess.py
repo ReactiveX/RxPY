@@ -5,7 +5,7 @@ import pygame
 
 from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency.mainloopscheduler import PyGameScheduler
+from rx.scheduler.mainloop import PyGameScheduler
 
 
 #FORMAT = '%(asctime)-15s %(threadName)s %(message)s'

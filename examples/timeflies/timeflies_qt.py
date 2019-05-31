@@ -3,7 +3,7 @@ import sys
 import rx
 from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency.mainloopscheduler import QtScheduler
+from rx.scheduler.mainloop import QtScheduler
 
 try:
     from PyQt5 import QtCore

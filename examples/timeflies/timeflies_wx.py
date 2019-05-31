@@ -1,7 +1,7 @@
 import rx
 from rx import operators as ops
 from rx.subjects import Subject
-from rx.concurrency.mainloopscheduler import WxScheduler
+from rx.scheduler.mainloop import WxScheduler
 
 import wx
 

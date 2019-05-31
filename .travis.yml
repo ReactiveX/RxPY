@@ -65,7 +65,7 @@ script:
   - python3 setup.py test
 
 after_success:
-  # Run a crude benchmark (unit tests minus concurrency) a couple of times.
+  # Run a crude benchmark (unit tests minus test_scheduler) a couple of times.
   # Need to make a copy of the script first, because on Windows it disappears
   # whilst switching git branches.
   - if [[ $TRAVIS_JOB_NAME == *benchmark ]]; then

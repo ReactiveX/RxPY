@@ -5,7 +5,7 @@ from rx import operators as ops
 from rx.core import Observable, typing
 from rx.internal.constants import DELTA_ZERO
 from rx.disposable import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 
 class Timestamp(object):

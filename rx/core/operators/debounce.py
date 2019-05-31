@@ -4,7 +4,7 @@ from datetime import timedelta
 from rx.core.typing import Disposable
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 
 
 def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:

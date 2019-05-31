@@ -2,7 +2,7 @@ from typing import Any, List
 
 from rx.core.typing import Observer
 from rx.core.notification import OnNext, OnError, OnCompleted
-from rx.concurrency import VirtualTimeScheduler
+from rx.scheduler import VirtualTimeScheduler
 
 from .recorded import Recorded
 

@@ -1,5 +1,5 @@
 from rx.core import Observable
-from rx.concurrency import current_thread_scheduler
+from rx.scheduler import current_thread_scheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 

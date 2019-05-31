@@ -3,7 +3,7 @@ from typing import Callable, Any
 import rx
 from rx.disposable import Disposable
 from rx.core import Observable, typing
-from rx.concurrency import VirtualTimeScheduler
+from rx.scheduler import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
 from .hotobservable import HotObservable

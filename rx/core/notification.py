@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from rx.concurrency import immediate_scheduler
+from rx.scheduler import immediate_scheduler
 
 from .. import typing
 from .observer import Observer

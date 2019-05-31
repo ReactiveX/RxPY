@@ -5,7 +5,7 @@ import threading
 from datetime import timedelta
 from time import sleep
 
-from rx.concurrency import EventLoopScheduler
+from rx.scheduler import EventLoopScheduler
 from rx.internal import DisposedException
 from rx.internal.basic import default_now
 

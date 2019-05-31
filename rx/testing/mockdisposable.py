@@ -1,4 +1,4 @@
-from rx.concurrency import VirtualTimeScheduler
+from rx.scheduler import VirtualTimeScheduler
 
 
 class MockDisposable:

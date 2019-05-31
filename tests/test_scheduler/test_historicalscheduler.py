@@ -2,7 +2,7 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from rx.concurrency import HistoricalScheduler
+from rx.scheduler import HistoricalScheduler
 from rx.internal.constants import UTC_ZERO
 
 

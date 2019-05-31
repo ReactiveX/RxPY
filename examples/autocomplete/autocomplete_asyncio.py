@@ -18,7 +18,7 @@ from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.websocket import WebSocketHandler
 
 from rx import operators as ops
-from rx.concurrency.mainloopscheduler import AsyncIOScheduler
+from rx.scheduler.eventloop import AsyncIOScheduler
 from rx.subjects import Subject
 
 

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from rx import defer
 from rx.core import Observable, typing
-from rx.concurrency import timeout_scheduler
+from rx.scheduler import timeout_scheduler
 from rx import operators
 
 class Timestamp(NamedTuple):

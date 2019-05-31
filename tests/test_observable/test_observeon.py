@@ -2,7 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.concurrency import ImmediateScheduler
+from rx.scheduler import ImmediateScheduler
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next

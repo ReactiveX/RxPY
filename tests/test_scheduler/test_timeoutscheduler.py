@@ -3,7 +3,7 @@ import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.concurrency import TimeoutScheduler
+from rx.scheduler import TimeoutScheduler
 from rx.internal.basic import default_now
 
 

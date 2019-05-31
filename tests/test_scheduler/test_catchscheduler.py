@@ -1,7 +1,7 @@
 import unittest
 from datetime import timedelta
 
-from rx.concurrency import CatchScheduler, VirtualTimeScheduler
+from rx.scheduler import CatchScheduler, VirtualTimeScheduler
 
 
 class MyException(Exception):

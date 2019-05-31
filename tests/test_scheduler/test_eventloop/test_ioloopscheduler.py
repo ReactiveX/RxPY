@@ -7,7 +7,7 @@ from time import sleep
 tornado = pytest.importorskip("tornado")
 from tornado import ioloop
 
-from rx.concurrency.mainloopscheduler import IOLoopScheduler
+from rx.scheduler.eventloop import IOLoopScheduler
 
 
 class TestIOLoopScheduler(unittest.TestCase):

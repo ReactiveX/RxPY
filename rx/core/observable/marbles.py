@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from rx import Observable
 from rx.core import notification
 from rx.disposable import CompositeDisposable, Disposable
-from rx.concurrency import NewThreadScheduler
+from rx.scheduler import NewThreadScheduler
 from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
 
 

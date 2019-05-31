@@ -3,7 +3,7 @@ from typing import Iterable
 from rx.disposable import Disposable
 from rx.core import Observable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.concurrency import current_thread_scheduler
+from rx.scheduler import current_thread_scheduler
 
 
 def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:

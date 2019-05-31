@@ -2,7 +2,7 @@ import unittest
 from datetime import timedelta
 
 from rx.internal.constants import DELTA_ZERO, UTC_ZERO
-from rx.concurrency.scheduler import Scheduler
+from rx.scheduler.scheduler import Scheduler
 
 
 class TestScheduler(unittest.TestCase):

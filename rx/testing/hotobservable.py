@@ -2,7 +2,7 @@ from typing import List
 
 from rx.disposable import Disposable
 from rx.core import Observable, typing
-from rx.concurrency import VirtualTimeScheduler
+from rx.scheduler import VirtualTimeScheduler
 
 from .recorded import Recorded
 from .subscription import Subscription
