@@ -1,3 +1,6 @@
+from typing import Union
+from asyncio import Future
+
 import rx
 from rx.scheduler import current_thread_scheduler
 from rx.core import Observable
@@ -5,7 +8,7 @@ from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, Seria
 from rx.internal.utils import is_future
 
 
-def _on_error_resume_next(*sources: Observable) -> Observable:
+def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 

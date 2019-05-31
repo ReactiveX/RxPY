@@ -140,7 +140,7 @@ def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
     return _concat_with_iterable(sources)
 
 
-def defer(observable_factory: Callable[[typing.Scheduler], Observable]) -> Observable:
+def defer(observable_factory: Callable[[typing.Scheduler], Union[Observable, _Future]]) -> Observable:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
 
@@ -546,7 +546,7 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
-def on_error_resume_next(*sources: Observable) -> Observable:
+def on_error_resume_next(*sources: Union[Observable, _Future]) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
