@@ -31,7 +31,6 @@ def case(mapper: Callable[[], Any],
 
     Examples:
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 })
-        >>> res = rx.case(mapper, [obs1, obs2])
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 }, obs0)
 
     Args:
