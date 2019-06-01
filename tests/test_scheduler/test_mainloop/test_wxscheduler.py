@@ -9,6 +9,12 @@ from rx.internal.basic import default_now
 wx = pytest.importorskip('wx')
 
 
+def make_app():
+    app = wx.App()
+    wx.Frame(None)  # We need this for some reason, or the loop won't run
+    return app
+
+
 class AppExit(wx.Timer):
 
     def __init__(self, app) -> None:
@@ -34,7 +40,7 @@ class TestWxScheduler(unittest.TestCase):
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_wx_schedule_action(self):
-        app = wx.AppConsole()
+        app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
         ran = False
@@ -51,7 +57,7 @@ class TestWxScheduler(unittest.TestCase):
         assert ran is True
 
     def test_wx_schedule_action_relative(self):
-        app = wx.AppConsole()
+        app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
         starttime = default_now()
@@ -71,7 +77,7 @@ class TestWxScheduler(unittest.TestCase):
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_wx_schedule_action_absolute(self):
-        app = wx.AppConsole()
+        app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
         starttime = default_now()
@@ -92,7 +98,7 @@ class TestWxScheduler(unittest.TestCase):
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_wx_schedule_action_cancel(self):
-        app = wx.AppConsole()
+        app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
         ran = False
@@ -110,7 +116,7 @@ class TestWxScheduler(unittest.TestCase):
         assert ran is False
 
     def test_wx_schedule_action_periodic(self):
-        app = wx.AppConsole()
+        app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
         period = 0.05

@@ -11,7 +11,8 @@ from rx.internal.basic import default_now
 tkinter = pytest.importorskip("tkinter")
 
 try:
-    root = tkinter.Tcl()
+    root = tkinter.Tk()
+    root.withdraw() # Don't actually draw anything
     display = True
 except Exception:
     display = False

@@ -1,6 +1,6 @@
 import logging
 
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -12,11 +12,17 @@ log = logging.getLogger(__name__)
 
 
 class QtScheduler(PeriodicScheduler):
-    """A scheduler for a PyQt4/PyQt5/PySide event loop."""
+    """A scheduler for a PyQt5/PySide2 event loop."""
 
-    def __init__(self, qtcore):
+    def __init__(self, qtcore: Any):
+        """Create a new QtScheduler.
+
+        Args:
+            qtcore: The QtCore instance to use; typically you would get this by
+                either import PyQt5.QtCore or import PySide2.QtCore
+        """
         super().__init__()
-        self.qtcore = qtcore
+        self._qtcore = qtcore
         self._periodic_timers = set()
 
     def schedule(self,
@@ -62,7 +68,7 @@ class QtScheduler(PeriodicScheduler):
         log.debug("relative timeout: %sms", msecs)
 
         # Use static method, let Qt C++ handle QTimer lifetime
-        self.qtcore.QTimer.singleShot(msecs, invoke_action)
+        self._qtcore.QTimer.singleShot(msecs, invoke_action)
 
         def dispose() -> None:
             nonlocal is_disposed
@@ -115,8 +121,8 @@ class QtScheduler(PeriodicScheduler):
 
         log.debug("periodic timeout: %sms", msecs)
 
-        timer = self.qtcore.QTimer()
-        timer.setSingleShot(False)
+        timer = self._qtcore.QTimer()
+        timer.setSingleShot(not period)
         timer.timeout.connect(interval)
         timer.setInterval(msecs)
         self._periodic_timers.add(timer)

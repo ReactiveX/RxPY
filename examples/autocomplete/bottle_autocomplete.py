@@ -29,7 +29,7 @@ class WikiFinder:
 
 
 app, PORT = Bottle(), 8081
-scheduler = GEventScheduler()
+scheduler = GEventScheduler(gevent)
 
 
 @app.route('/ws')

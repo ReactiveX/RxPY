@@ -18,8 +18,15 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
     subclass of AsyncIOScheduler which uses the threadsafe asyncio methods.
     """
 
-    def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
-        super().__init__(loop=loop)
+    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
+        """Create a new AsyncIOThreadSafeScheduler.
+
+        Args:
+            loop: Instance of asyncio event loop to use; typically, you would
+                get this by asyncio.get_event_loop()
+        """
+
+        super().__init__(loop)
 
     def schedule(self,
                  action: typing.ScheduledAction,

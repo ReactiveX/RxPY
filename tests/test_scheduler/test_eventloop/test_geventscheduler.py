@@ -12,20 +12,20 @@ gevent = pytest.importorskip("gevent")
 class TestGEventScheduler(unittest.TestCase):
 
     def test_gevent_schedule_now(self):
-        scheduler = GEventScheduler()
+        scheduler = GEventScheduler(gevent)
         hub = gevent.get_hub()
         diff = scheduler.now - datetime.utcfromtimestamp(hub.loop.now())
         assert abs(diff) < timedelta(milliseconds=1)
 
     def test_gevent_schedule_now_units(self):
-        scheduler = GEventScheduler()
+        scheduler = GEventScheduler(gevent)
         diff = scheduler.now
         gevent.sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_gevent_schedule_action(self):
-        scheduler = GEventScheduler()
+        scheduler = GEventScheduler(gevent)
         ran = False
 
         def action(scheduler, state):
@@ -38,7 +38,7 @@ class TestGEventScheduler(unittest.TestCase):
         assert ran is True
 
     def test_gevent_schedule_action_due(self):
-        scheduler = GEventScheduler()
+        scheduler = GEventScheduler(gevent)
         starttime = datetime.now()
         endtime = None
 
@@ -54,7 +54,7 @@ class TestGEventScheduler(unittest.TestCase):
         assert diff > timedelta(seconds=0.18)
 
     def test_gevent_schedule_action_cancel(self):
-        scheduler = GEventScheduler()
+        scheduler = GEventScheduler(gevent)
         ran = False
 
         def action(scheduler, state):

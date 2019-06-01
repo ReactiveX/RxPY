@@ -18,10 +18,16 @@ class IOLoopScheduler(PeriodicScheduler):
 
     http://tornado.readthedocs.org/en/latest/ioloop.html"""
 
-    def __init__(self, loop: Optional[Any] = None) -> None:
+    def __init__(self, loop: Any) -> None:
+        """Create a new IOLoopScheduler.
+
+        Args:
+            loop: The ioloop to use; typically, you would get this by
+                tornado import ioloop; ioloop.IOLoop.current()
+        """
+
         super().__init__()
-        from tornado import ioloop
-        self.loop: ioloop.IOLoop = loop or ioloop.IOLoop.current()
+        self._loop = loop
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -45,7 +51,7 @@ class IOLoopScheduler(PeriodicScheduler):
             if not disposed:
                 sad.disposable = self.invoke_action(action, state=state)
 
-        self.loop.add_callback(interval)
+        self._loop.add_callback(interval)
 
         def dispose() -> None:
             nonlocal disposed
@@ -80,10 +86,12 @@ class IOLoopScheduler(PeriodicScheduler):
             sad.disposable = self.invoke_action(action, state=state)
 
         log.debug("timeout: %s", seconds)
-        timer = self.loop.call_later(seconds, interval)
+        timer = self._loop.call_later(seconds, interval)
 
         def dispose() -> None:
-            self.loop.remove_timeout(timer)
+            self._loop.remove_timeout(timer)
+            self.\
+                _loop.remove_timeout(timer)
 
         return CompositeDisposable(sad, Disposable(dispose))
 
@@ -117,4 +125,4 @@ class IOLoopScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(self.loop.time())
+        return self.to_datetime(self._loop.time())

@@ -1,7 +1,7 @@
 import logging
 import threading
 
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.internal import PriorityQueue
@@ -11,7 +11,6 @@ from ..scheduleditem import ScheduledItem
 from ..periodicscheduler import PeriodicScheduler
 
 
-pygame = None
 log = logging.getLogger("Rx")
 
 
@@ -23,11 +22,16 @@ class PyGameScheduler(PeriodicScheduler):
     http://www.pygame.org/docs/ref/time.html
     http://www.pygame.org/docs/ref/event.html"""
 
-    def __init__(self):
-        super().__init__()
-        global pygame
-        import pygame
+    def __init__(self, pygame: Any):
+        """Create a new PyGameScheduler.
 
+        Args:
+            pygame: The PyGame module to use; typically, you would get this by
+                import pygame
+        """
+
+        super().__init__()
+        self._pygame = pygame  # TODO not used, refactor to actually use pygame?
         self._lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
 

@@ -14,19 +14,19 @@ pygame = pytest.importorskip("pygame")
 class TestPyGameScheduler(unittest.TestCase):
 
     def test_pygame_schedule_now(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
     def test_pygame_schedule_now_units(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         diff = scheduler.now
         sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_pygame_schedule_action(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         ran = False
 
         def action(scheduler, state):
@@ -39,7 +39,7 @@ class TestPyGameScheduler(unittest.TestCase):
         assert ran is True
 
     def test_pygame_schedule_action_due_relative(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         starttime = default_now()
         endtime = None
 
@@ -61,7 +61,7 @@ class TestPyGameScheduler(unittest.TestCase):
         assert diff > timedelta(milliseconds=180)
 
     def test_pygame_schedule_action_due_absolute(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         starttime = default_now()
         endtime = None
 
@@ -83,7 +83,7 @@ class TestPyGameScheduler(unittest.TestCase):
         assert diff > timedelta(milliseconds=180)
 
     def test_pygame_schedule_action_cancel(self):
-        scheduler = PyGameScheduler()
+        scheduler = PyGameScheduler(pygame)
         ran = False
 
         def action(scheduler, state):

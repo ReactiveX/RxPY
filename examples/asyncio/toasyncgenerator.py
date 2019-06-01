@@ -51,8 +51,8 @@ def to_async_generator(sentinel=None):
 
 
 @asyncio.coroutine
-def go():
-    scheduler = AsyncIOScheduler()
+def go(loop):
+    scheduler = AsyncIOScheduler(loop)
 
     xs = rx.from_([x for x in range(10)], scheduler=scheduler)
     gen = xs.pipe(to_async_generator())
@@ -68,7 +68,8 @@ def go():
 
 def main():
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(go())
+    loop.run_until_complete(go(loop))
+
 
 if __name__ == '__main__':
     main()
