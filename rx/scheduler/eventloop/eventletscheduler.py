@@ -1,7 +1,7 @@
 import logging
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -12,21 +12,22 @@ from ..periodicscheduler import PeriodicScheduler
 log = logging.getLogger("Rx")
 
 
-eventlet = None
-
-
 class EventletScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the eventlet event loop.
 
     http://eventlet.net/
     """
 
-    def __init__(self) -> None:
+    def __init__(self, eventlet: Any) -> None:
+        """Create a new EventletScheduler.
+
+        Args:
+            eventlet: The eventlet module to use; typically, you would get this
+                by import eventlet
+        """
+
         super().__init__()
-        # Lazy import
-        global eventlet
-        import eventlet
-        import eventlet.hubs
+        self._eventlet = eventlet
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -48,7 +49,7 @@ class EventletScheduler(PeriodicScheduler):
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        timer = eventlet.spawn(interval)
+        timer = self._eventlet.spawn(interval)
 
         def dispose() -> None:
             timer.kill()
@@ -81,7 +82,7 @@ class EventletScheduler(PeriodicScheduler):
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        timer = eventlet.spawn_after(seconds, interval)
+        timer = self._eventlet.spawn_after(seconds, interval)
 
         def dispose() -> None:
             timer.kill()
@@ -118,4 +119,4 @@ class EventletScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(eventlet.hubs.get_hub().clock())
+        return self.to_datetime(self._eventlet.hubs.get_hub().clock())

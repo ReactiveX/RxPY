@@ -5,7 +5,7 @@ from rx.scheduler.mainloop import GtkScheduler
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import GLib, Gtk, Gdk
 
 
 class Window(Gtk.Window):
@@ -24,7 +24,7 @@ class Window(Gtk.Window):
 
 
 def main():
-    scheduler = GtkScheduler()
+    scheduler = GtkScheduler(GLib)
     scrolled_window = Gtk.ScrolledWindow()
 
     window = Window()

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -12,9 +12,16 @@ class TkinterScheduler(PeriodicScheduler):
     http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/universal.html
     http://effbot.org/tkinterbook/widget.htm"""
 
-    def __init__(self, master) -> None:
+    def __init__(self, root: Any) -> None:
+        """Create a new TkinterScheduler.
+
+        Args:
+            root: The Tk instance to use; typically, you would get this by
+                import tkinter; tkinter.Tk()
+        """
+
         super().__init__()
-        self.master = master
+        self._root = root
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -56,10 +63,10 @@ class TkinterScheduler(PeriodicScheduler):
             sad.disposable = self.invoke_action(action, state=state)
 
         msecs = max(0, int(self.to_seconds(duetime) * 1000.0))
-        timer = self.master.after(msecs, invoke_action)
+        timer = self._root.after(msecs, invoke_action)
 
         def dispose() -> None:
-            self.master.after_cancel(timer)
+            self._root.after_cancel(timer)
 
         return CompositeDisposable(sad, Disposable(dispose))
 

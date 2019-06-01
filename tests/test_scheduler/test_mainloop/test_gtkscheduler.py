@@ -26,19 +26,19 @@ if 'GNOME_DESKTOP_SESSION_ID' in os.environ:
 class TestGtkScheduler(unittest.TestCase):
 
     def test_gtk_schedule_now(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
     def test_gtk_schedule_now_units(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         diff = scheduler.now
         sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_gtk_schedule_action(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         gate = threading.Semaphore(0)
         ran = False
 
@@ -60,7 +60,7 @@ class TestGtkScheduler(unittest.TestCase):
         assert ran is True
 
     def test_gtk_schedule_action_relative(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         gate = threading.Semaphore(0)
         starttime = default_now()
         endtime = None
@@ -85,7 +85,7 @@ class TestGtkScheduler(unittest.TestCase):
         assert diff > timedelta(milliseconds=80)
 
     def test_gtk_schedule_action_absolute(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         gate = threading.Semaphore(0)
         starttime = default_now()
         endtime = None
@@ -112,7 +112,7 @@ class TestGtkScheduler(unittest.TestCase):
 
     def test_gtk_schedule_action_cancel(self):
         ran = False
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         gate = threading.Semaphore(0)
 
         def action(scheduler, state):
@@ -134,7 +134,7 @@ class TestGtkScheduler(unittest.TestCase):
         assert ran is False
 
     def test_gtk_schedule_action_periodic(self):
-        scheduler = GtkScheduler()
+        scheduler = GtkScheduler(GLib)
         gate = threading.Semaphore(0)
         period = 0.05
         counter = 3

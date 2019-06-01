@@ -1,7 +1,7 @@
 import logging
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -12,20 +12,22 @@ from ..periodicscheduler import PeriodicScheduler
 log = logging.getLogger("Rx")
 
 
-gevent = None
-
-
 class GEventScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the GEvent event loop.
 
     http://www.gevent.org/
     """
 
-    def __init__(self) -> None:
+    def __init__(self, gevent: Any) -> None:
+        """Create a new GEventScheduler.
+
+        Args:
+            gevent: The gevent module to use; typically ,you would get this by
+                import gevent
+        """
+
         super().__init__()
-        # Lazy import gevent
-        global gevent
-        import gevent
+        self._gevent = gevent
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -47,7 +49,7 @@ class GEventScheduler(PeriodicScheduler):
         def interval() -> None:
             sad.disposable = self.invoke_action(action, state=state)
 
-        timer = gevent.spawn(interval)
+        timer = self._gevent.spawn(interval)
 
         def dispose() -> None:
             timer.kill()
@@ -81,7 +83,7 @@ class GEventScheduler(PeriodicScheduler):
             sad.disposable = self.invoke_action(action, state=state)
 
         log.debug("timeout: %s", seconds)
-        timer = gevent.spawn_later(seconds, interval)
+        timer = self._gevent.spawn_later(seconds, interval)
 
         def dispose() -> None:
             timer.kill()
@@ -117,4 +119,4 @@ class GEventScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(gevent.get_hub().loop.now())
+        return self.to_datetime(self._gevent.get_hub().loop.now())

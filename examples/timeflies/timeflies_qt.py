@@ -6,14 +6,14 @@ from rx.subjects import Subject
 from rx.scheduler.mainloop import QtScheduler
 
 try:
-    from PyQt5 import QtCore
-    from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+    from PySide2 import QtCore
+    from PySide2.QtWidgets import QApplication, QLabel, QWidget
 except ImportError:
     try:
-        from PySide2 import QtCore
-        from PySide2.QtWidgets import QApplication, QLabel, QWidget
+        from PyQt5 import QtCore
+        from PyQt5.QtWidgets import QApplication, QWidget, QLabel
     except ImportError:
-        raise ImportError('Please ensure either PyQT5 or PySide2 is available!')
+        raise ImportError('Please ensure either PySide2 or PyQt5 is available!')
 
 
 class Window(QWidget):

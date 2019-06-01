@@ -18,9 +18,15 @@ class AsyncIOScheduler(PeriodicScheduler):
     does not use the asyncio threadsafe methods, if you need those please use
     the AsyncIOThreadSafeScheduler class."""
 
-    def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
+        """Create a new AsyncIOScheduler.
+
+        Args:
+            loop: Instance of asyncio event loop to use; typically, you would
+                get this by asyncio.get_event_loop()
+        """
         super().__init__()
-        self._loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
+        self._loop: asyncio.AbstractEventLoop = loop
 
     def schedule(self,
                  action: typing.ScheduledAction,

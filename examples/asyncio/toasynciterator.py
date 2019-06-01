@@ -48,8 +48,8 @@ def to_async_iterable():
     return _to_async_iterable
 
 
-async def go():
-    scheduler = AsyncIOScheduler()
+async def go(loop):
+    scheduler = AsyncIOScheduler(loop)
 
     ai = rx.range(0, 10, scheduler=scheduler).pipe(to_async_iterable())
     async for x in ai:
@@ -58,7 +58,7 @@ async def go():
 
 def main():
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(go())
+    loop.run_until_complete(go(loop))
 
 
 if __name__ == '__main__':

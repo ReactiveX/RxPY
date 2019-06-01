@@ -1,5 +1,6 @@
 import logging
-from typing import Optional
+
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -13,12 +14,19 @@ log = logging.getLogger("Rx")
 class WxScheduler(PeriodicScheduler):
     """A scheduler for a wxPython event loop."""
 
-    def __init__(self, wx) -> None:
+    def __init__(self, wx: Any) -> None:
+        """Create a new WxScheduler.
+
+        Args:
+            wx: The wx module to use; typically, you would get this by
+                import wx
+        """
+
         super().__init__()
-        self.wx = wx
+        self._wx = wx
         self._timers = set()
 
-        class Timer(wx.Timer):
+        class Timer(self._wx.Timer):
 
             def __init__(self, callback) -> None:
                 super().__init__()
@@ -62,7 +70,7 @@ class WxScheduler(PeriodicScheduler):
         timer = self._timer_class(interval)
         timer.Start(
             msecs,
-            self.wx.TIMER_CONTINUOUS if periodic else self.wx.TIMER_ONE_SHOT
+            self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT
         )
         self._timers.add(timer)
 

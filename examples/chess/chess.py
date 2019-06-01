@@ -24,7 +24,7 @@ def main():
     background.fill(black)             # fill the background black
     background = background.convert()  # prepare for faster blitting
 
-    scheduler = PyGameScheduler()
+    scheduler = PyGameScheduler(pygame)
 
     mousemove = Subject()
 

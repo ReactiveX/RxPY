@@ -42,7 +42,7 @@ def search_wikipedia(term):
 
 class WSHandler(WebSocketHandler):
     def open(self):
-        scheduler = AsyncIOScheduler()
+        scheduler = AsyncIOScheduler(asyncio.get_event_loop())
 
         print("WebSocket opened")
 

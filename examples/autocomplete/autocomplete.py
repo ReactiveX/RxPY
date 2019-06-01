@@ -19,7 +19,7 @@ from rx import operators as ops
 from rx.subjects import Subject
 from rx.scheduler.eventloop import IOLoopScheduler
 
-scheduler = IOLoopScheduler()
+scheduler = IOLoopScheduler(ioloop.IOLoop.current())
 
 
 def search_wikipedia(term):

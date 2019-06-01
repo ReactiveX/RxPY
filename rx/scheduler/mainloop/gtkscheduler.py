@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -13,15 +13,23 @@ class GtkScheduler(PeriodicScheduler):
     See https://wiki.gnome.org/Projects/PyGObject
     """
 
+    def __init__(self, glib: Any) -> None:
+        """Create a new GtkScheduler.
+
+        Args:
+            glib: The GLib module to use; typically, you would get this by
+                import gi; gi.require_version('Gtk', '3.0'); from gi.repository import GLib
+        """
+
+        super().__init__()
+        self._glib = glib
+
     def _gtk_schedule(self,
                       time: typing.AbsoluteOrRelativeTime,
                       action: typing.ScheduledSingleOrPeriodicAction,
                       state: Optional[typing.TState] = None,
                       periodic: bool = False
                       ) -> typing.Disposable:
-        # Do not import GLib into global scope because Qt and GLib
-        # don't like each other there
-        from gi.repository import GLib
 
         msecs = max(0, int(self.to_seconds(time) * 1000.0))
 
@@ -41,7 +49,7 @@ class GtkScheduler(PeriodicScheduler):
 
             return periodic
 
-        GLib.timeout_add(msecs, timer_handler, None)
+        self._glib.timeout_add(msecs, timer_handler, None)
 
         def dispose() -> None:
             nonlocal stopped

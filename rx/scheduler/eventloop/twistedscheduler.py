@@ -1,7 +1,7 @@
 import logging
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -15,9 +15,16 @@ log = logging.getLogger("Rx")
 class TwistedScheduler(PeriodicScheduler):
     """A scheduler that schedules work via the Twisted reactor mainloop."""
 
-    def __init__(self, reactor) -> None:
+    def __init__(self, reactor: Any) -> None:
+        """Create a new TwistedScheduler.
+
+        Args:
+            reactor: The reactor to use; typically, you would get this
+                by from twisted.internet import reactor
+        """
+
         super().__init__()
-        self.reactor = reactor
+        self._reactor = reactor
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -63,7 +70,7 @@ class TwistedScheduler(PeriodicScheduler):
             sad.disposable = action(self, state)
 
         log.debug("timeout: %s", seconds)
-        timer = deferLater(self.reactor, seconds, interval).addErrback(lambda _: None)
+        timer = deferLater(self._reactor, seconds, interval).addErrback(lambda _: None)
 
         def dispose() -> None:
             if not timer.called:
@@ -101,4 +108,4 @@ class TwistedScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(float(self.reactor.seconds()))
+        return self.to_datetime(float(self._reactor.seconds()))
