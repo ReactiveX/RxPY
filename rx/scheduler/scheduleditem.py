@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Generic, Optional
+from typing import Generic, Optional, Any
 
 from rx.core import typing
 from rx.disposable import SingleAssignmentDisposable
@@ -40,5 +40,8 @@ class ScheduledItem(Generic[typing.TState]):  # pylint: disable=unsubscriptable-
     def __gt__(self, other: 'ScheduledItem') -> bool:
         return self.duetime > other.duetime
 
-    def __eq__(self, other: 'ScheduledItem') -> bool:
-        return self.duetime == other.duetime
+    def __eq__(self, other: Any) -> bool:
+        try:
+            return self.duetime == other.duetime
+        except AttributeError:
+            return NotImplemented
