@@ -1,6 +1,7 @@
 from typing import Any, Callable, Optional
 
 from .. import typing
+from rx.internal import noop, default_error
 
 
 class Observer(typing.Observer, typing.Disposable):
@@ -9,34 +10,15 @@ class Observer(typing.Observer, typing.Disposable):
     OnCompleted are terminal messages.
     """
 
-    @staticmethod
-    def default_on_next(value: Any) -> None:
-        """Default `on_next()` function. Does nothing."""
-        pass
-
-    @staticmethod
-    def default_on_error(error: Exception) -> None:
-        """Default `on_error()` function. Raises the given exception."""
-        if isinstance(error, BaseException):
-            raise error
-        else:
-            raise Exception(error)
-
-    @staticmethod
-    def default_on_completed() -> None:
-        """Default `on_completed()` function. Does nothing."""
-        pass
-
     def __init__(self,
                  on_next: Optional[typing.OnNext] = None,
                  on_error: Optional[typing.OnError] = None,
                  on_completed: Optional[typing.OnCompleted] = None
                  ) -> None:
-
         self.is_stopped = False
-        self._handler_on_next = on_next or Observer.default_on_next
-        self._handler_on_error = on_error or Observer.default_on_error
-        self._handler_on_completed = on_completed or Observer.default_on_completed
+        self._handler_on_next = on_next or noop
+        self._handler_on_error = on_error or default_error
+        self._handler_on_completed = on_completed or noop
 
     def on_next(self, value: Any) -> None:
         """Notify the observer of a new element in the sequence."""
