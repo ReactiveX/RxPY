@@ -223,11 +223,11 @@ class Observable(typing.Observable):
         The operators are composed to right. A composition of zero
         operators gives back the original source.
 
-        source.pipe() == source
-        source.pipe(f) == f(source)
-        source.pipe(g, f) == f(g(source))
-        source.pipe(h, g, f) == f(g(h(source)))
-        ...
+        Examples:
+            >>> source.pipe() == source
+            >>> source.pipe(f) == f(source)
+            >>> source.pipe(g, f) == f(g(source))
+            >>> source.pipe(h, g, f) == f(g(h(source)))
 
         Returns the composed observable.
         """

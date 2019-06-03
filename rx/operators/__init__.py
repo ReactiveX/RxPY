@@ -240,9 +240,9 @@ def buffer_with_time(timespan: typing.RelativeTime,
         -------1,2,3-4,5,6-|
 
     Examples:
-        # non-overlapping segments of 1 second
+        >>> # non-overlapping segments of 1 second
         >>> res = buffer_with_time(1.0)
-        # segments of 1 second with time shift 0.5 seconds
+        >>> # segments of 1 second with time shift 0.5 seconds
         >>> res = buffer_with_time(1.0, 0.5)
 
     Args:
@@ -276,9 +276,9 @@ def buffer_with_time_or_count(timespan, count, scheduler=None) -> Callable[[Obse
         ------1,2,3-4,5,6--|
 
     Examples:
-        # 5s or 50 items in an array
+        >>> # 5s or 50 items in an array
         >>> res = source.buffer_with_time_or_count(5.0, 50)
-        # 5s or 50 items in an array
+        >>> # 5s or 50 items in an array
         >>> res = source.buffer_with_time_or_count(5.0, 50, Scheduler.timeout)
 
     Args:
@@ -544,9 +544,9 @@ def delay_with_mapper(subscription_delay=None,
         --------1--2--3--4-|
 
     Examples:
-        # with mapper only
+        >>> # with mapper only
         >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5.0))
-        # with delay and mapper
+        >>> # with delay and mapper
         >>> res = source.delay_with_mapper(rx.timer(2.0), lambda x: rx.timer(x))
 
     Args:
@@ -814,8 +814,8 @@ def element_at_or_default(index: int, default_value: Any = None) -> Callable[[Ob
         >>> res = source.element_at_or_default(5, 0)
 
     Args:
-        index -- The zero-based index of the element to retrieve.
-        default_value -- [Optional] The default value if the index is
+        index: The zero-based index of the element to retrieve.
+        default_value: [Optional] The default value if the index is
             outside the bounds of the source sequence.
 
     Returns:
@@ -884,7 +884,7 @@ def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
 
     Args:
         predicate: A function to test each source element for a
-        condition.
+            condition.
 
     Returns:
         An operator function that takes an observable source and
@@ -936,7 +936,7 @@ def finally_action(action: Callable) -> Callable[[Observable], Observable]:
         --1--2--3--4--6-7-|
 
     Example:
-        res = finally_action(lambda: print('sequence ended')
+        >>> res = finally_action(lambda: print('sequence ended')
 
     Args:
         action: Action to invoke after the source observable sequence
