@@ -495,7 +495,7 @@ def hot(string: str,
           -2-3-|
 
     Each character in the string will advance time by timespan
-    (exept for space). Characters that are not special (see the table below)
+    (except for space). Characters that are not special (see the table below)
     will be interpreted as a value to be emitted. Numbers will be cast
     to int or float.
 
@@ -916,7 +916,7 @@ def to_async(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Ca
             specified, defaults to Scheduler.timeout.
 
     Returns:
-        Aynchronous function.
+        Asynchronous function.
     """
     from .core.observable.toasync import _to_async
     return _to_async(func, scheduler)
@@ -949,7 +949,7 @@ def with_latest_from(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple only when the first
     observable sequence produces an element. The observables can be
-    passed either as seperate arguments or as a list.
+    passed either as separate arguments or as a list.
 
     .. marble::
         :alt: with_latest_from

@@ -151,7 +151,7 @@ def buffer_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observabl
         closing_mapper: A function invoked to define the closing of each
             produced buffer. A buffer is started when the previous one is
             closed, resulting in non-overlapping buffers. The buffer is closed
-            when one item is emmited or when the observable completes.
+            when one item is emitted or when the observable completes.
 
     Returns:
         A function that takes an observable source and returns an
@@ -185,7 +185,7 @@ def buffer_toggle(openings: Observable,
         closing_mapper: A function invoked to define the closing of each
             produced buffer. Value from openings Observable that initiated
             the associated buffer is provided as argument to the function. The
-            buffer is closed when one item is emmited or when the observable
+            buffer is closed when one item is emitted or when the observable
             completes.
 
     Returns:
@@ -1062,7 +1062,7 @@ def first_or_default(predicate: Optional[Predicate] = None,
             exists.  If not specified, defaults to None.
 
     Returns:
-        A function that takes an observable source and reutrn an
+        A function that takes an observable source and returns an
         observable sequence containing the first element in the
         observable sequence that satisfies the condition in the
         predicate, or a default value if no such element exists.
@@ -1643,7 +1643,7 @@ def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observabl
 
     Returns:
         An operator function that takes an observable source and
-        reuturns an observable sequence containing a single element
+        returns an observable sequence containing a single element
         with the minimum element in the source sequence.
     """
     from rx.core.operators.min import _min
@@ -1735,6 +1735,7 @@ def observe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observable
     """
     from rx.core.operators.observeon import _observe_on
     return _observe_on(scheduler)
+
 
 def on_error_resume_next(second: Observable) -> Callable[[Observable], Observable]:
     """Continues an observable sequence that is terminated normally
@@ -1934,7 +1935,7 @@ def publish_value(initial_value: Any, mapper: Optional[Mapper] = None) -> Callab
             subscription on.
 
     Returns:
-        An operator function that takes an obserable source and returns
+        An operator function that takes an observable source and returns
         an observable sequence that contains the elements of a
         sequence produced by multicasting the source sequence within a
         mapper function.
@@ -2410,7 +2411,7 @@ def skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime,
             `datetime.utcnow()`, no elements will be skipped.
 
     Returns:
-        An operator function that takes an obserable source and
+        An operator function that takes an observable source and
         returns an observable sequence with the elements skipped
         until the specified start time.
     """
@@ -2574,7 +2575,7 @@ def some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observ
 
     Returns:
         An operator function that takes an observable source and
-        returnsobservable sequence containing a single element
+        returns an observable sequence containing a single element
         determining whether some elements in the source sequence
         pass the test in the specified predicate if given, else if some
         items are in the sequence.
@@ -2984,7 +2985,7 @@ def take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sch
         :alt: take_with_time
 
         -----1--2--3--4----|
-        [ take_whith_time()]
+        [ take_with_time() ]
         -----1--2----------|
 
     Example:
@@ -3191,7 +3192,7 @@ def to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[O
         future_ctor: [Optional] The constructor of the future.
 
     Returns:
-        An operator function that takes an obserable source and returns
+        An operator function that takes an observable source and returns
         a future with the last value from the observable sequence.
     """
     from rx.core.operators.tofuture import _to_future
@@ -3211,7 +3212,9 @@ def to_iterable() -> Callable[[Observable], Observable]:
     from rx.core.operators.toiterable import _to_iterable
     return _to_iterable()
 
+
 to_list = to_iterable
+
 
 def to_marbles(timespan: typing.RelativeTime = 0.1,
                scheduler: Optional[typing.Scheduler] = None
@@ -3413,7 +3416,7 @@ def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]
     Merges the specified observable sequences into one observable
     sequence by creating a tuple only when the first
     observable sequence produces an element. The observables can be
-    passed either as seperate arguments or as a list.
+    passed either as separate arguments or as a list.
 
     .. marble::
         :alt: with_latest_from
