@@ -6,7 +6,6 @@ from rx.core.typing import Observer, Scheduler
 from rx.core import Observable, typing
 from rx.internal import DisposedException
 
-from .anonymoussubject import AnonymousSubject
 from .innersubscription import InnerSubscription
 
 
@@ -102,7 +101,3 @@ class Subject(Observable, Observer):
         with self.lock:
             self.is_disposed = True
             self.observers = []
-
-    @classmethod
-    def create(cls, observer, observable) -> AnonymousSubject:
-        return AnonymousSubject(observer, observable)

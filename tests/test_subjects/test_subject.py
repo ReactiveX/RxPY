@@ -320,39 +320,3 @@ def test_canceled():
     assert results1.messages == []
     assert results2.messages == [on_completed(630)]
     assert results3.messages == [on_completed(900)]
-
-
-def test_subject_create():
-    _x = [None]
-    _ex = [None]
-    done = False
-
-    def on_next(x):
-        _x[0] = x
-
-    def on_error(ex):
-        _ex[0] = ex
-
-    def on_completed():
-        done = True
-
-    v = Observer(on_next, on_error, on_completed)
-
-    o = rx.return_value(42)
-
-    s = Subject.create(v, o)
-
-    def on_next2(x):
-        _x[0] = x
-    s.subscribe(on_next2)
-
-    assert(42 == _x[0])
-    s.on_next(21)
-
-    e = 'ex'
-    s.on_error(e)
-
-    assert(e == _ex[0])
-
-    s.on_completed()
-    assert(not done)
