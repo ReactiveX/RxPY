@@ -1,5 +1,5 @@
 import threading
-from typing import Any
+from typing import Any, List, Optional
 
 from rx.disposable import Disposable
 from rx.core import Observable
@@ -24,8 +24,8 @@ class AsyncSubject(Observable, Observer):
         self.is_stopped = False
         self.value = None
         self.has_value = False
-        self.observers = []
-        self.exception = None
+        self.observers: List[Observer] = []
+        self.exception: Optional[Exception] = None
 
         self.lock = threading.RLock()
 
@@ -33,7 +33,7 @@ class AsyncSubject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: Observer, scheduler=None):
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -103,6 +103,6 @@ class AsyncSubject(Observable, Observer):
     def dispose(self) -> None:
         with self.lock:
             self.is_disposed = True
-            self.observers = None
+            self.observers = []
             self.exception = None
             self.value = None

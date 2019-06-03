@@ -1,6 +1,7 @@
 from typing import Any, Callable, Optional
 
 from .. import typing
+from rx.internal import noop, default_error
 
 
 class Observer(typing.Observer, typing.Disposable):
@@ -15,12 +16,9 @@ class Observer(typing.Observer, typing.Disposable):
                  on_completed: Optional[typing.OnCompleted] = None
                  ) -> None:
         self.is_stopped = False
-        if on_next is not None:
-            self._on_next_core = on_next
-        if on_error is not None:
-            self._on_error_core = on_error
-        if on_completed is not None:
-            self._on_completed_core = on_completed
+        self._handler_on_next = on_next or noop
+        self._handler_on_error = on_error or default_error
+        self._handler_on_completed = on_completed or noop
 
     def on_next(self, value: Any) -> None:
         """Notify the observer of a new element in the sequence."""
@@ -28,7 +26,10 @@ class Observer(typing.Observer, typing.Disposable):
             self._on_next_core(value)
 
     def _on_next_core(self, value: Any) -> None:
-        pass
+        """For Subclassing purpose. This method is called by `on_next()`
+        method until the observer is stopped.
+        """
+        self._handler_on_next(value)
 
     def on_error(self, error: Exception) -> None:
         """Notify the observer that an exception has occurred.
@@ -42,10 +43,10 @@ class Observer(typing.Observer, typing.Disposable):
             self._on_error_core(error)
 
     def _on_error_core(self, error: Exception) -> None:
-        if isinstance(error, BaseException):
-            raise error
-        else:
-            raise Exception(error)
+        """For Subclassing purpose. This method is called by `on_error()`
+        method until the observer is stopped.
+        """
+        self._handler_on_error(error)
 
     def on_completed(self) -> None:
         """Notifies the observer of the end of the sequence."""
@@ -55,7 +56,10 @@ class Observer(typing.Observer, typing.Disposable):
             self._on_completed_core()
 
     def _on_completed_core(self) -> None:
-        pass
+        """For Subclassing purpose. This method is called by `on_completed()`
+        method until the observer is stopped.
+        """
+        self._handler_on_completed()
 
     def dispose(self) -> None:
         """Disposes the observer, causing it to transition to the
