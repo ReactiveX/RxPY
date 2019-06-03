@@ -3,7 +3,7 @@ from typing import Union, Callable, Optional
 from rx import operators as ops
 from rx.core import Observable, ConnectableObservable, typing
 from rx.core.typing import Scheduler, Mapper
-from rx.subjects import ReplaySubject
+from rx.subject import ReplaySubject
 
 
 def _replay(mapper: Optional[Mapper] = None,

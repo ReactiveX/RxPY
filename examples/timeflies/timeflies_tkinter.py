@@ -2,7 +2,7 @@ from tkinter import Tk, Label, Frame
 
 import rx
 from rx import operators as ops
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.scheduler.mainloop import TkinterScheduler
 
 

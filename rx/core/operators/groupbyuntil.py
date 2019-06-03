@@ -4,7 +4,7 @@ from collections import OrderedDict
 from rx import operators as ops
 from rx.core import Observable, GroupedObservable
 from rx.core.typing import Mapper
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.disposable import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.basic import identity
 

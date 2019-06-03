@@ -4,7 +4,7 @@ from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Scheduler
 from rx.scheduler import timeout_scheduler
-from rx.subjects import AsyncSubject
+from rx.subject import AsyncSubject
 
 
 def _to_async(func: Callable,

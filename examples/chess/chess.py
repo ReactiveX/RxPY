@@ -4,7 +4,7 @@ from os.path import dirname, join
 import pygame
 
 from rx import operators as ops
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.scheduler.mainloop import PyGameScheduler
 
 

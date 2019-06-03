@@ -6,7 +6,7 @@ from rx.core import Observable
 from rx.internal import noop
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx import operators as ops
 
 log = logging.getLogger("Rx")

@@ -3,7 +3,7 @@ from typing import Callable, Optional
 from rx import operators as ops
 from rx.core import Observable, ConnectableObservable, pipe
 from rx.core.typing import Mapper
-from rx.subjects import Subject
+from rx.subject import Subject
 
 
 def _publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], ConnectableObservable]:

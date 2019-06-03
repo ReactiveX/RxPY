@@ -2,7 +2,7 @@ from typing import Any, Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable
-from rx.subjects import BehaviorSubject
+from rx.subject import BehaviorSubject
 from rx.core.typing import Mapper
 
 

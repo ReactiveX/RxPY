@@ -5,7 +5,7 @@ from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Observer
 from rx.testing import TestScheduler, ReactiveTest
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.core import ConnectableObservable
 
 on_next = ReactiveTest.on_next
