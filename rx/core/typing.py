@@ -148,5 +148,5 @@ class Subject(Generic[T_in, T_out], abc.Subject):
         raise NotImplementedError
 
     @abstractmethod
-    def subscribe(self, observer: Observer[T_out] = None, scheduler: Scheduler = None) -> Disposable:
+    def subscribe(self, observer: Observer[T_out] = None, *, scheduler: Scheduler = None) -> Disposable:
         raise NotImplementedError
