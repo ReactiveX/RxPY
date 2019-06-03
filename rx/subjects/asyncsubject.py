@@ -1,15 +1,13 @@
-import threading
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from rx.disposable import Disposable
-from rx.core import Observable
-from rx.core.typing import Observer
-from rx.internal import DisposedException
+from rx.core import typing
 
+from .subject import Subject
 from .innersubscription import InnerSubscription
 
 
-class AsyncSubject(Observable, Observer):
+class AsyncSubject(Subject):
     """Represents the result of an asynchronous operation. The last value
     before the close notification, or the error received through
     on_error, is sent to all subscribed observers."""
@@ -18,22 +16,15 @@ class AsyncSubject(Observable, Observer):
         """Creates a subject that can only receive one value and that value is
         cached for all future observations."""
 
-        super(AsyncSubject, self).__init__()
+        super().__init__()
 
-        self.is_disposed = False
-        self.is_stopped = False
         self.value = None
         self.has_value = False
-        self.observers: List[Observer] = []
-        self.exception: Optional[Exception] = None
 
-        self.lock = threading.RLock()
-
-    def check_disposed(self) -> None:
-        if self.is_disposed:
-            raise DisposedException()
-
-    def _subscribe_core(self, observer: Observer, scheduler=None):
+    def _subscribe_core(self,
+                        observer: typing.Observer,
+                        scheduler: Optional[typing.Scheduler] = None
+                        ) -> typing.Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -41,68 +32,62 @@ class AsyncSubject(Observable, Observer):
                 return InnerSubscription(self, observer)
 
             ex = self.exception
-            hv = self.has_value
-            v = self.value
+            has_value = self.has_value
+            value = self.value
 
         if ex:
             observer.on_error(ex)
-        elif hv:
-            observer.on_next(v)
+        elif has_value:
+            observer.on_next(value)
             observer.on_completed()
         else:
             observer.on_completed()
 
         return Disposable()
 
-    def on_completed(self) -> None:
-        value = None
-        os = None
-        hv = None
-
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-                self.observers = []
-
-                self.is_stopped = True
-                value = self.value
-                hv = self.has_value
-
-        if os:
-            if hv:
-                for o in os:
-                    o.on_next(value)
-                    o.on_completed()
-            else:
-                for o in os:
-                    o.on_completed()
-
-    def on_error(self, error: Exception) -> None:
-        os = None
-
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                self.exception = error
-
-        if os:
-            for o in os:
-                o.on_error(error)
-
     def on_next(self, value: Any) -> None:
+        """Remember the value. Upon completion, the most recently received value
+        will be passed on to all subscribed observers.
+
+        Args:
+            value: The value to remember until completion
+        """
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 self.value = value
                 self.has_value = True
 
-    def dispose(self) -> None:
+    def on_completed(self) -> None:
+        """Notifies all subscribed observers of the end of the sequence. The
+        most recently received value, if any, will now be passed on to all
+        subscribed observers."""
+
+        value = None
+        has_value = None
+        observers = None
+
         with self.lock:
-            self.is_disposed = True
-            self.observers = []
-            self.exception = None
+            self.check_disposed()
+            if not self.is_stopped:
+                observers = self.observers[:]
+                self.observers = []
+                self.is_stopped = True
+                value = self.value
+                has_value = self.has_value
+
+        if observers:
+            if has_value:
+                for observer in observers:
+                    observer.on_next(value)
+                    observer.on_completed()
+            else:
+                for observer in observers:
+                    observer.on_completed()
+
+    def dispose(self) -> None:
+        """Unsubscribe all observers and release resources."""
+
+        with self.lock:
             self.value = None
+            super().dispose()

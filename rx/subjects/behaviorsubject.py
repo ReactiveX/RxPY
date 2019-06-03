@@ -1,21 +1,18 @@
 from typing import Any
-import threading
 
 from rx.disposable import Disposable
-from rx.core import Observable
-from rx.core.typing import Observer
-from rx.internal import DisposedException
 
+from .subject import Subject
 from .innersubscription import InnerSubscription
 
 
-class BehaviorSubject(Observable, Observer):
+class BehaviorSubject(Subject):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.
     """
 
-    def __init__(self, value):
+    def __init__(self, value) -> None:
         """Initializes a new instance of the BehaviorSubject class which
         creates a subject that caches its last value and starts with the
         specified value.
@@ -25,19 +22,9 @@ class BehaviorSubject(Observable, Observer):
             value has been received by the subject yet.
         """
 
-        super(BehaviorSubject, self).__init__()
+        super().__init__()
 
         self.value = value
-        self.observers = []
-        self.is_disposed = False
-        self.is_stopped = False
-        self.exception = None
-
-        self.lock = threading.RLock()
-
-    def check_disposed(self):
-        if self.is_disposed:
-            raise DisposedException()
 
     def _subscribe_core(self, observer, scheduler=None):
         ex = None
@@ -57,47 +44,18 @@ class BehaviorSubject(Observable, Observer):
 
         return Disposable()
 
-    def on_completed(self) -> None:
-        """Notifies all subscribed observers of the end of the sequence."""
-
-        os = None
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-
-        if os:
-            for o in os:
-                o.on_completed()
-
-    def on_error(self, error: Exception) -> None:
-        """Notifie all subscribed observers with the exception."""
-        os = None
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                self.exception = error
-
-        if os:
-            for o in os:
-                o.on_error(error)
-
     def on_next(self, value: Any) -> None:
-        """Notifie all subscribed observers with the value."""
-        os = None
+        """Notifies all subscribed observers with the value."""
+        observers = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
-                os = self.observers[:]
+                observers = self.observers[:]
                 self.value = value
-        if os:
-            for o in os:
-                o.on_next(value)
+
+        if observers is not None:
+            for observer in observers:
+                observer.on_next(value)
 
     def dispose(self) -> None:
         """Release all resources.
@@ -105,8 +63,7 @@ class BehaviorSubject(Observable, Observer):
         Releases all resources used by the current instance of the
         ReplaySubject class and unsubscribe all observers.
         """
+
         with self.lock:
-            self.is_disposed = True
-            self.observers = None
             self.value = None
-            self.exception = None
+            super().dispose()

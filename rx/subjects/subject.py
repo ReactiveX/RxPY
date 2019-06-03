@@ -2,14 +2,13 @@ import threading
 from typing import Any, List, Optional
 
 from rx.disposable import Disposable
-from rx.core.typing import Observer, Scheduler
-from rx.core import Observable, typing
+from rx.core import Observable, Observer, typing
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
 
 
-class Subject(Observable, Observer):
+class Subject(Observable, Observer, typing.Subject):
     """Represents an object that is both an observable sequence as well
     as an observer. Each notification is broadcasted to all subscribed
     observers.
@@ -20,7 +19,7 @@ class Subject(Observable, Observer):
 
         self.is_disposed = False
         self.is_stopped = False
-        self.observers: List[Observer] = []
+        self.observers: List[typing.Observer] = []
         self.exception: Optional[Exception] = None
 
         self.lock = threading.RLock()
@@ -29,23 +28,40 @@ class Subject(Observable, Observer):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self, observer: Observer, scheduler: Optional[Scheduler] = None) -> typing.Disposable:
+    def _subscribe_core(self,
+                        observer: typing.Observer,
+                        scheduler: Optional[typing.Scheduler] = None
+                        ) -> typing.Disposable:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
                 self.observers.append(observer)
                 return InnerSubscription(self, observer)
 
-            if self.exception:
+            if self.exception is not None:
                 observer.on_error(self.exception)
-                return Disposable()
-
-            observer.on_completed()
+            else:
+                observer.on_completed()
             return Disposable()
 
+    def on_next(self, value: Any) -> None:
+        """Notifies all subscribed observers with the value.
+
+        Args:
+            value: The value to send to all subscribed observers.
+        """
+        observers = None
+        with self.lock:
+            self.check_disposed()
+            if not self.is_stopped:
+                observers = self.observers[:]
+
+        if observers is not None:
+            for observer in observers:
+                observer.on_next(value)
+
     def on_completed(self) -> None:
-        """Notifies all subscribed observers of the end of the
-        sequence."""
+        """Notifies all subscribed observers of the end of the sequence."""
 
         observers = None
         with self.lock:
@@ -55,7 +71,7 @@ class Subject(Observable, Observer):
                 self.observers = []
                 self.is_stopped = True
 
-        if observers:
+        if observers is not None:
             for observer in observers:
                 observer.on_completed()
 
@@ -66,34 +82,18 @@ class Subject(Observable, Observer):
             error: The exception to send to all subscribed observers.
         """
 
-        os = None
+        observers = None
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
-                os = self.observers[:]
+                observers = self.observers[:]
                 self.observers = []
                 self.is_stopped = True
                 self.exception = error
 
-        if os:
-            for observer in os:
+        if observers is not None:
+            for observer in observers:
                 observer.on_error(error)
-
-    def on_next(self, value: Any) -> None:
-        """Notifies all subscribed observers with the value.
-
-        Args:
-            value: The value to send to all subscribed observers.
-        """
-        os = None
-        with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                os = self.observers[:]
-
-        if os:
-            for observer in os:
-                observer.on_next(value)
 
     def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""
@@ -101,3 +101,4 @@ class Subject(Observable, Observer):
         with self.lock:
             self.is_disposed = True
             self.observers = []
+            self.exception = None
