@@ -164,6 +164,7 @@ def test_finite():
     assert results2.messages == [on_next(630, 7), on_completed(630)]
     assert results3.messages == [on_next(900, 7), on_completed(900)]
 
+
 def test_error():
     subject = [None]
     subscription = [None]
@@ -300,6 +301,7 @@ def test_canceled():
     assert results2.messages == [on_completed(630)]
     assert results3.messages == [on_completed(900)]
 
+
 def test_subject_disposed():
     subject = [None]
     subscription1 = [None]
@@ -387,6 +389,7 @@ def test_subject_disposed():
     assert results1.messages == []
     assert results2.messages == []
     assert results3.messages == []
+
 
 if __name__ == '__main__':
     unittest.main()

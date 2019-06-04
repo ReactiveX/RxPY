@@ -280,6 +280,7 @@ def test_error():
     assert results3.messages == [
         on_error(900, ex)]
 
+
 def test_canceled():
     scheduler = TestScheduler()
 
@@ -351,6 +352,7 @@ def test_canceled():
 
     assert results3.messages == [
         on_completed(900)]
+
 
 def test_subject_disposed():
     scheduler = TestScheduler()

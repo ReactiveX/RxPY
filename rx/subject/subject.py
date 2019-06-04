@@ -18,7 +18,6 @@ class Subject(Observable, Observer, typing.Subject):
         super().__init__()
 
         self.is_disposed = False
-        self.is_stopped = False
         self.observers: List[typing.Observer] = []
         self.exception: Optional[Exception] = None
 
@@ -50,30 +49,17 @@ class Subject(Observable, Observer, typing.Subject):
         Args:
             value: The value to send to all subscribed observers.
         """
-        observers = None
+
         with self.lock:
             self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
+        super().on_next(value)
 
-        if observers is not None:
-            for observer in observers:
-                observer.on_next(value)
-
-    def on_completed(self) -> None:
-        """Notifies all subscribed observers of the end of the sequence."""
-
-        observers = None
+    def _on_next_core(self, value: Any) -> None:
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
+            observers = self.observers.copy()
 
-        if observers is not None:
-            for observer in observers:
-                observer.on_completed()
+        for observer in observers:
+            observer.on_next(value)
 
     def on_error(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception.
@@ -82,18 +68,33 @@ class Subject(Observable, Observer, typing.Subject):
             error: The exception to send to all subscribed observers.
         """
 
-        observers = None
         with self.lock:
             self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                self.exception = error
+        super().on_error(error)
 
-        if observers is not None:
-            for observer in observers:
-                observer.on_error(error)
+    def _on_error_core(self, error: Exception) -> None:
+        with self.lock:
+            observers = self.observers.copy()
+            self.observers.clear()
+            self.exception = error
+
+        for observer in observers:
+            observer.on_error(error)
+
+    def on_completed(self) -> None:
+        """Notifies all subscribed observers of the end of the sequence."""
+
+        with self.lock:
+            self.check_disposed()
+        super().on_completed()
+
+    def _on_completed_core(self) -> None:
+        with self.lock:
+            observers = self.observers.copy()
+            self.observers.clear()
+
+        for observer in observers:
+            observer.on_completed()
 
     def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""
@@ -102,3 +103,4 @@ class Subject(Observable, Observer, typing.Subject):
             self.is_disposed = True
             self.observers = []
             self.exception = None
+            super().dispose()

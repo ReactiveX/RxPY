@@ -45,7 +45,7 @@ class AsyncSubject(Subject):
 
         return Disposable()
 
-    def on_next(self, value: Any) -> None:
+    def _on_next_core(self, value: Any) -> None:
         """Remember the value. Upon completion, the most recently received value
         will be passed on to all subscribed observers.
 
@@ -53,37 +53,27 @@ class AsyncSubject(Subject):
             value: The value to remember until completion
         """
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                self.value = value
-                self.has_value = True
+            self.value = value
+            self.has_value = True
 
-    def on_completed(self) -> None:
+    def _on_completed_core(self) -> None:
         """Notifies all subscribed observers of the end of the sequence. The
         most recently received value, if any, will now be passed on to all
         subscribed observers."""
 
-        value = None
-        has_value = None
-        observers = None
-
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                value = self.value
-                has_value = self.has_value
+            observers = self.observers.copy()
+            self.observers.clear()
+            value = self.value
+            has_value = self.has_value
 
-        if observers:
-            if has_value:
-                for observer in observers:
-                    observer.on_next(value)
-                    observer.on_completed()
-            else:
-                for observer in observers:
-                    observer.on_completed()
+        if has_value:
+            for observer in observers:
+                observer.on_next(value)
+                observer.on_completed()
+        else:
+            for observer in observers:
+                observer.on_completed()
 
     def dispose(self) -> None:
         """Unsubscribe all observers and release resources."""

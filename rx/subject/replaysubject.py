@@ -84,69 +84,52 @@ class ReplaySubject(Subject):
         while self.queue and (now - self.queue[0].interval) > self.window:
             self.queue.pop(0)
 
-    def on_next(self, value: Any) -> None:
+    def _on_next_core(self, value: Any) -> None:
         """Notifies all subscribed observers with the value."""
 
-        observers = None
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                now = self.scheduler.now
-                self.queue.append(QueueItem(interval=now, value=value))
-                self._trim(now)
+            observers = self.observers.copy()
+            now = self.scheduler.now
+            self.queue.append(QueueItem(interval=now, value=value))
+            self._trim(now)
 
-                for observer in observers:
-                    observer.on_next(value)
+        for observer in observers:
+            observer.on_next(value)
 
-        if observers is not None:
-            for observer in observers:
-                cast(ScheduledObserver, observer).ensure_active()
+        for observer in observers:
+            cast(ScheduledObserver, observer).ensure_active()
 
-    def on_error(self, error: Exception) -> None:
+    def _on_error_core(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception."""
 
-        observers = None
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                self.exception = error
-                now = self.scheduler.now
-                self._trim(now)
+            observers = self.observers.copy()
+            self.observers.clear()
+            self.exception = error
+            now = self.scheduler.now
+            self._trim(now)
 
-                for observer in observers:
-                    observer.on_error(error)
+        for observer in observers:
+            observer.on_error(error)
+            cast(ScheduledObserver, observer).ensure_active()
 
-        if observers is not None:
-            for observer in observers:
-                cast(ScheduledObserver, observer).ensure_active()
-
-    def on_completed(self) -> None:
+    def _on_completed_core(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
 
-        observers = None
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.observers = []
-                self.is_stopped = True
-                now = self.scheduler.now
-                self._trim(now)
-                for observer in observers:
-                    observer.on_completed()
+            observers = self.observers.copy()
+            self.observers.clear()
+            now = self.scheduler.now
+            self._trim(now)
 
-        if observers is not None:
-            for observer in observers:
-                cast(ScheduledObserver, observer).ensure_active()
+        for observer in observers:
+            observer.on_completed()
+            cast(ScheduledObserver, observer).ensure_active()
 
     def dispose(self) -> None:
         """Releases all resources used by the current instance of the
         ReplaySubject class and unsubscribe all observers."""
 
         with self.lock:
-            self.queue = []
+            self.queue.clear()
             super().dispose()

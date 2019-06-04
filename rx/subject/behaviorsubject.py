@@ -27,8 +27,6 @@ class BehaviorSubject(Subject):
         self.value = value
 
     def _subscribe_core(self, observer, scheduler=None):
-        ex = None
-
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -44,18 +42,14 @@ class BehaviorSubject(Subject):
 
         return Disposable()
 
-    def on_next(self, value: Any) -> None:
+    def _on_next_core(self, value: Any) -> None:
         """Notifies all subscribed observers with the value."""
-        observers = None
         with self.lock:
-            self.check_disposed()
-            if not self.is_stopped:
-                observers = self.observers[:]
-                self.value = value
+            observers = self.observers.copy()
+            self.value = value
 
-        if observers is not None:
-            for observer in observers:
-                observer.on_next(value)
+        for observer in observers:
+            observer.on_next(value)
 
     def dispose(self) -> None:
         """Release all resources.

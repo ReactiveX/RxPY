@@ -1,6 +1,3 @@
-import rx
-from rx.core import Observable, Observer
-
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subject import Subject
 
@@ -16,9 +13,11 @@ created = ReactiveTest.created
 class RxException(Exception):
     pass
 
+
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
+
 
 def test_infinite():
     subscription = [None]

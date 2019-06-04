@@ -201,6 +201,7 @@ def test_infinite2():
         on_next(900, 10),
         on_next(940, 11)]
 
+
 def test_finite():
     scheduler = TestScheduler()
 
@@ -444,6 +445,7 @@ def test_canceled():
 
     assert results3.messages == [
         on_completed(900)]
+
 
 def test_subject_disposed():
     scheduler = TestScheduler()
