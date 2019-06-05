@@ -67,6 +67,39 @@ autodoc_default_options = {
     'exclude-members': '__dict__,__weakref__'
 }
 
+
+# Hack to get crosslinks working where things are available (and referred to) by
+# several paths. E.g. we export rx.Observable but that's not its fully qualified
+# name, and this causes the automatically generated links to fail for the
+# argument / return types of functions (e.g. as defined in rx/__init__.py).
+#
+# It looks as though the intention of sphinx_autodoc_typehints is to include
+# support for something like this in a future version:
+#
+# https://github.com/agronholm/sphinx-autodoc-typehints/issues/38
+
+import sphinx_autodoc_typehints
+
+qualname_overrides = {
+    'rx.core.observable.observable.Observable': 'rx.Observable'
+}
+
+_format_annotation = sphinx_autodoc_typehints.format_annotation
+
+
+def format_annotation(annotation):
+    if isinstance(annotation, type):
+        full_name = f'{annotation.__module__}.{annotation.__qualname__}'
+        override = qualname_overrides.get(full_name)
+        if override is not None:
+            return f':py:class:`~{override}`'
+    return _format_annotation(annotation)
+
+sphinx_autodoc_typehints.format_annotation = format_annotation
+
+# End hack.
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
