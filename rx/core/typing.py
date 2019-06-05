@@ -278,3 +278,6 @@ class Subject(Generic[T_in, T_out], abc.Subject):
         """Notifies the observer of the end of the sequence."""
 
         raise NotImplementedError
+
+
+Subscribable = Callable[[Observer, Optional[Scheduler]], Disposable]
