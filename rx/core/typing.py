@@ -30,21 +30,35 @@ AbsoluteOrRelativeTime = Union[datetime, timedelta, float]
 
 
 class Disposable(abc.Disposable):
-    """Abstract disposable class"""
+    """Disposable abstract base class."""
 
     __slots__ = ()
 
     @abstractmethod
     def dispose(self) -> None:
+        """Dispose the object: stop whatever we're doing and release all of the
+        resources we might be using.
+        """
+
         raise NotImplementedError
 
 
 class Scheduler(abc.Scheduler):
+    """Scheduler abstract base class."""
+
     __slots__ = ()
 
     @property
     @abstractmethod
     def now(self) -> datetime:
+        """Represents a notion of time for this scheduler. Tasks being
+        scheduled on a scheduler will adhere to the time denoted by this
+        property.
+
+        Returns:
+             The scheduler's current time, as a datetime instance.
+        """
+
         return NotImplemented
 
     @abstractmethod
@@ -52,6 +66,17 @@ class Scheduler(abc.Scheduler):
                  action: 'ScheduledAction',
                  state: Optional[TState] = None
                  ) -> Disposable:
+        """Schedules an action to be executed.
+
+        Args:
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
         return NotImplemented
 
     @abstractmethod
@@ -60,6 +85,18 @@ class Scheduler(abc.Scheduler):
                           action: 'ScheduledAction',
                           state: Optional[TState] = None
                           ) -> Disposable:
+        """Schedules an action to be executed after duetime.
+
+        Args:
+            duetime: Relative time after which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
         return NotImplemented
 
     @abstractmethod
@@ -68,10 +105,24 @@ class Scheduler(abc.Scheduler):
                           action: 'ScheduledAction',
                           state: Optional[TState] = None
                           ) -> Disposable:
+        """Schedules an action to be executed at duetime.
+
+        Args:
+            duetime: Absolute time at which to execute the action.
+            action: Action to be executed.
+            state: [Optional] state to be given to the action function.
+
+        Returns:
+            The disposable object used to cancel the scheduled action
+            (best effort).
+        """
+
         return NotImplemented
 
 
 class PeriodicScheduler(abc.PeriodicScheduler):
+    """PeriodicScheduler abstract base class."""
+
     __slots__ = ()
 
     @abstractmethod
@@ -80,6 +131,20 @@ class PeriodicScheduler(abc.PeriodicScheduler):
                           action: 'ScheduledPeriodicAction',
                           state: Optional[TState] = None
                           ) -> Disposable:
+        """Schedules a periodic piece of work.
+
+        Args:
+            period: Period in seconds or timedelta for running the
+                work periodically.
+            action: Action to be executed.
+            state: [Optional] Initial state passed to the action upon
+                the first iteration.
+
+        Returns:
+            The disposable object used to cancel the scheduled
+            recurring action (best effort).
+        """
+
         return NotImplemented
 
 
@@ -87,66 +152,129 @@ ScheduledAction = Callable[[Scheduler, Optional[TState]], Optional[Disposable]]
 ScheduledPeriodicAction = Callable[[Optional[TState]], Optional[TState]]
 ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction]
 
+
 Startable = Union[abc.Startable, Thread]
 StartableTarget = Callable[..., None]
 StartableFactory = Callable[[StartableTarget, Optional[Tuple]], Startable]
 
 
 class Observer(Generic[T_in], abc.Observer):
-    """ Observer abstract base class
+    """Observer abstract base class
 
     An Observer is the entity that receives all emissions of a subscribed
     Observable.
     """
+
     __slots__ = ()
 
     @abstractmethod
     def on_next(self, value: T_in) -> None:
-        """Notify the observer of a new element in the sequence.
+        """Notifies the observer of a new element in the sequence.
 
         Args:
             value: The received element.
         """
+
         raise NotImplementedError
 
     @abstractmethod
     def on_error(self, error: Exception) -> None:
-        """Notify the observer that an exception has occurred.
+        """Notifies the observer that an exception has occurred.
 
         Args:
             error: The error that has occurred.
         """
+
         raise NotImplementedError
 
     @abstractmethod
     def on_completed(self) -> None:
         """Notifies the observer of the end of the sequence."""
+
         raise NotImplementedError
 
 
 class Observable(Generic[T_out], abc.Observable):
+    """Observable abstract base class.
+
+    Represents a push-style collection."""
+
     __slots__ = ()
 
     @abstractmethod
-    def subscribe(self, observer: Observer[T_out] = None, *, scheduler: Scheduler = None) -> Disposable:
+    def subscribe(self,
+                  observer: Observer[T_out] = None,
+                  *,
+                  scheduler: Scheduler = None
+                  ) -> Disposable:
+        """Subscribe an observer to the observable sequence.
+
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications.
+            scheduler: [Optional] The default scheduler to use for this
+                subscription.
+
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
+        """
+
         raise NotImplementedError
 
 
 class Subject(Generic[T_in, T_out], abc.Subject):
+    """Subject abstract base class.
+
+    Represents an object that is both an observable sequence as well
+    as an observer.
+    """
+
     __slots__ = ()
 
     @abstractmethod
+    def subscribe(self,
+                  observer: Observer[T_out] = None,
+                  *,
+                  scheduler: Scheduler = None
+                  ) -> Disposable:
+        """Subscribe an observer to the observable sequence.
+
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications.
+            scheduler: [Optional] The default scheduler to use for this
+                subscription.
+
+        Returns:
+            Disposable object representing an observer's subscription
+            to the observable sequence.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
     def on_next(self, value: T_in) -> None:
+        """Notifies the observer of a new element in the sequence.
+
+        Args:
+            value: The received element.
+        """
+
         raise NotImplementedError
 
     @abstractmethod
     def on_error(self, error: Exception) -> None:
+        """Notifies the observer that an exception has occurred.
+
+        Args:
+            error: The error that has occurred.
+        """
+
         raise NotImplementedError
 
     @abstractmethod
     def on_completed(self) -> None:
-        raise NotImplementedError
+        """Notifies the observer of the end of the sequence."""
 
-    @abstractmethod
-    def subscribe(self, observer: Observer[T_out] = None, *, scheduler: Scheduler = None) -> Disposable:
         raise NotImplementedError
