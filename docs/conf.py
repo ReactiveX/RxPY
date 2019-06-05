@@ -60,6 +60,13 @@ extensions = [
     'sphinxcontrib_dooble',
 ]
 
+# Include a separate entry for special methods, like __init__, where provided.
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'special-members': True,
+    'exclude-members': '__dict__,__weakref__'
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
