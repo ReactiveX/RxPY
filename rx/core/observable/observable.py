@@ -41,95 +41,6 @@ class Observable(typing.Observable):
                         ) -> typing.Disposable:
         return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
 
-    def __await__(self) -> Any:
-        """Awaits the given observable.
-
-        Returns:
-            The last item of the observable sequence.
-        """
-        from ..operators.tofuture import _to_future
-        return iter(self.pipe(_to_future()))
-
-    def __add__(self, other) -> 'Observable':
-        """Pythonic version of :func:`concat <rx.concat>`.
-
-        Example:
-            >>> zs = xs + ys
-
-        Args:
-            other: The second observable sequence in the concatenation.
-
-        Returns:
-            Concatenated observable sequence.
-        """
-        from rx import concat
-        return concat(self, other)
-
-    def __getitem__(self, key) -> 'Observable':
-        """
-        Pythonic version of :func:`slice <rx.operators.slice>`.
-
-        Slices the given observable using Python slice notation. The arguments
-        to slice are `start`, `stop` and `step` given within brackets `[]` and
-        separated by the colons `:`.
-
-        It is basically a wrapper around the operators
-        :func:`skip <rx.operators.skip>`,
-        :func:`skip_last <rx.operators.skip_last>`,
-        :func:`take <rx.operators.take>`,
-        :func:`take_last <rx.operators.take_last>` and
-        :func:`filter <rx.operators.filter>`.
-
-        The following diagram helps you remember how slices works with streams.
-        Positive numbers are relative to the start of the events, while negative
-        numbers are relative to the end (close) of the stream.
-
-        .. code::
-
-            r---e---a---c---t---i---v---e---!
-            0   1   2   3   4   5   6   7   8
-           -8  -7  -6  -5  -4  -3  -2  -1   0
-
-        Examples:
-            >>> result = source[1:10]
-            >>> result = source[1:-2]
-            >>> result = source[1:-1:2]
-
-        Args:
-            key: Slice object
-
-        Returns:
-            Sliced observable sequence.
-
-        Raises:
-            TypeError: If key is not of type :code:`int` or :code:`slice`
-        """
-
-        if isinstance(key, slice):
-            start, stop, step = key.start, key.stop, key.step
-        elif isinstance(key, int):
-            start, stop, step = key, key + 1, 1
-        else:
-            raise TypeError('Invalid argument type.')
-
-        from ..operators.slice import _slice
-        return _slice(start, stop, step)(self)
-
-    def __iadd__(self, other) -> 'Observable':
-        """Pythonic use of :func:`concat <rx.concat>`.
-
-        Example:
-            >>> xs += ys
-
-        Args:
-            other: The second observable sequence in the concatenation.
-
-        Returns:
-            Concatenated observable sequence.
-        """
-        from rx import concat
-        return concat(self, other)
-
     def subscribe(self,  # pylint: disable=too-many-arguments,arguments-differ
                   observer: Optional[Union[typing.Observer, typing.OnNext]] = None,
                   on_error: Optional[typing.OnError] = None,
@@ -370,3 +281,92 @@ class Observable(typing.Observable):
         """
         from ..run import run
         return run(self)
+
+    def __await__(self) -> Any:
+        """Awaits the given observable.
+
+        Returns:
+            The last item of the observable sequence.
+        """
+        from ..operators.tofuture import _to_future
+        return iter(self.pipe(_to_future()))
+
+    def __add__(self, other) -> 'Observable':
+        """Pythonic version of :func:`concat <rx.concat>`.
+
+        Example:
+            >>> zs = xs + ys
+
+        Args:
+            other: The second observable sequence in the concatenation.
+
+        Returns:
+            Concatenated observable sequence.
+        """
+        from rx import concat
+        return concat(self, other)
+
+    def __iadd__(self, other) -> 'Observable':
+        """Pythonic use of :func:`concat <rx.concat>`.
+
+        Example:
+            >>> xs += ys
+
+        Args:
+            other: The second observable sequence in the concatenation.
+
+        Returns:
+            Concatenated observable sequence.
+        """
+        from rx import concat
+        return concat(self, other)
+
+    def __getitem__(self, key) -> 'Observable':
+        """
+        Pythonic version of :func:`slice <rx.operators.slice>`.
+
+        Slices the given observable using Python slice notation. The arguments
+        to slice are `start`, `stop` and `step` given within brackets `[]` and
+        separated by the colons `:`.
+
+        It is basically a wrapper around the operators
+        :func:`skip <rx.operators.skip>`,
+        :func:`skip_last <rx.operators.skip_last>`,
+        :func:`take <rx.operators.take>`,
+        :func:`take_last <rx.operators.take_last>` and
+        :func:`filter <rx.operators.filter>`.
+
+        The following diagram helps you remember how slices works with streams.
+        Positive numbers are relative to the start of the events, while negative
+        numbers are relative to the end (close) of the stream.
+
+        .. code::
+
+            r---e---a---c---t---i---v---e---!
+            0   1   2   3   4   5   6   7   8
+           -8  -7  -6  -5  -4  -3  -2  -1   0
+
+        Examples:
+            >>> result = source[1:10]
+            >>> result = source[1:-2]
+            >>> result = source[1:-1:2]
+
+        Args:
+            key: Slice object
+
+        Returns:
+            Sliced observable sequence.
+
+        Raises:
+            TypeError: If key is not of type :code:`int` or :code:`slice`
+        """
+
+        if isinstance(key, slice):
+            start, stop, step = key.start, key.stop, key.step
+        elif isinstance(key, int):
+            start, stop, step = key, key + 1, 1
+        else:
+            raise TypeError('Invalid argument type.')
+
+        from ..operators.slice import _slice
+        return _slice(start, stop, step)(self)
