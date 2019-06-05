@@ -9,6 +9,7 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 import json, requests
 import rx
+from rx.subject import Subject
 from rx.scheduler.eventloop import GEventScheduler
 
 class WikiFinder:
@@ -38,7 +39,7 @@ def handle_websocket():
     wsock = request.environ.get('wsgi.websocket')
     if not wsock:
         abort(400, 'Expected WebSocket request.')
-    stream = rx.subjects.Subject()
+    stream = Subject()
     query = stream.map(
         lambda x: x["term"]
     ).filter(

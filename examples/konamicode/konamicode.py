@@ -6,10 +6,11 @@ from tornado.escape import json_decode
 from tornado import ioloop
 
 from rx import operators as ops
-from rx.subjects import Subject
+from rx.subject import Subject
 
 UP, DOWN, LEFT, RIGHT, B, A = 38, 40, 37, 39, 66, 65
 codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A]
+
 
 class WSHandler(WebSocketHandler):
     def open(self):
@@ -41,9 +42,11 @@ class WSHandler(WebSocketHandler):
     def on_close(self):
         print("WebSocket closed")
 
+
 class MainHandler(RequestHandler):
     def get(self):
         self.render("index.html")
+
 
 def main():
     port = os.environ.get("PORT", 8080)
@@ -55,6 +58,7 @@ def main():
     print("Starting server at port: %s" % port)
     app.listen(port)
     ioloop.IOLoop.current().start()
+
 
 if __name__ == '__main__':
     main()

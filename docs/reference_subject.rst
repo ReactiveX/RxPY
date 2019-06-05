@@ -3,14 +3,14 @@
 Subject
 ========
 
-.. autoclass:: rx.subjects.Subject
+.. autoclass:: rx.subject.Subject
     :members:
 
-.. autoclass:: rx.subjects.BehaviorSubject
+.. autoclass:: rx.subject.BehaviorSubject
     :members:
 
-.. autoclass:: rx.subjects.ReplaySubject
+.. autoclass:: rx.subject.ReplaySubject
     :members:
 
-.. autoclass:: rx.subjects.AsyncSubject
+.. autoclass:: rx.subject.AsyncSubject
     :members:

@@ -6,7 +6,7 @@ from rx.scheduler import timeout_scheduler
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
-from rx.subjects import Subject
+from rx.subject import Subject
 
 
 def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,

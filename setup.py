@@ -59,7 +59,7 @@ setup(
               'rx.core.operators', 'rx.core.operators.connectable',
               'rx.core.observer', 'rx.core.observable',
               'rx.scheduler', 'rx.scheduler.eventloop', 'rx.scheduler.mainloop',
-              'rx.operators', 'rx.disposable', 'rx.subjects',
+              'rx.operators', 'rx.disposable', 'rx.subject',
               'rx.testing'],
     package_dir={'rx': 'rx'},
     include_package_data=True

@@ -2,7 +2,7 @@ import unittest
 import pytest
 
 from rx import operators as ops
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next

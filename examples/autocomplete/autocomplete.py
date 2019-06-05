@@ -16,7 +16,7 @@ from tornado.escape import json_decode
 from tornado import ioloop
 
 from rx import operators as ops
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.scheduler.eventloop import IOLoopScheduler
 
 scheduler = IOLoopScheduler(ioloop.IOLoop.current())

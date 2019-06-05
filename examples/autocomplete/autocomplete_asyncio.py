@@ -19,7 +19,7 @@ from tornado.websocket import WebSocketHandler
 
 from rx import operators as ops
 from rx.scheduler.eventloop import AsyncIOScheduler
-from rx.subjects import Subject
+from rx.subject import Subject
 
 
 def search_wikipedia(term):

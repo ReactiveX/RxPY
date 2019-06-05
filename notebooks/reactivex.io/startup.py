@@ -16,6 +16,8 @@ sleep, now = time.sleep, time.time
 O = rx.Observable
 
 ts_glob = 0 # global start time
+
+
 def reset_start_time(show_doc_for=None, title=True, sleep=None):
     'resets global start time and also prints doc strings'
     global ts_glob
@@ -108,7 +110,7 @@ def cur_thread():
     return _cur()
 
 from rx.scheduler import new_thread_scheduler, timeout_scheduler
-from rx.subjects import Subject
+from rx.subject import Subject
 from rx.testing import marbles, dump
 def marble_stream(s):
     return O.from_marbles(s).to_blocking()

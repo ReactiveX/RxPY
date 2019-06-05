@@ -2,6 +2,7 @@ import threading
 
 from rx.core import typing
 
+
 class InnerSubscription(typing.Disposable):
     def __init__(self, subject, observer):
         self.subject = subject

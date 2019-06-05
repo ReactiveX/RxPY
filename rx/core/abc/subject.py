@@ -21,5 +21,5 @@ class Subject(Observer, Observable):
         raise NotImplementedError
 
     @abstractmethod
-    def subscribe(self, observer=None, scheduler=None):
+    def subscribe(self, observer=None, *, scheduler=None):
         raise NotImplementedError

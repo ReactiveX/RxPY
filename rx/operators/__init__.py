@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from rx.internal.utils import NotSet
 from rx.core import Observable, ConnectableObservable, GroupedObservable, typing, pipe
 from rx.core.typing import Mapper, MapperIndexed, Predicate, PredicateIndexed, Comparer, Accumulator
-from rx.subjects import Subject
+from rx.subject import Subject
 
 
 def all(predicate: Predicate) -> Callable[[Observable], Observable]:
