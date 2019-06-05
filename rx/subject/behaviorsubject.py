@@ -17,9 +17,9 @@ class BehaviorSubject(Subject):
         creates a subject that caches its last value and starts with the
         specified value.
 
-        Keyword parameters:
-        :param T value: Initial value sent to observers when no other
-            value has been received by the subject yet.
+        Args:
+            value: Initial value sent to observers when no other value has been
+                received by the subject yet.
         """
 
         super().__init__()
@@ -55,7 +55,7 @@ class BehaviorSubject(Subject):
         """Release all resources.
 
         Releases all resources used by the current instance of the
-        ReplaySubject class and unsubscribe all observers.
+        BehaviorSubject class and unsubscribe all observers.
         """
 
         with self.lock:
