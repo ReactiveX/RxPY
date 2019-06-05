@@ -201,6 +201,8 @@ can be adopted. So we consider that such features are beyond the scope of RxPY.
 You are encouraged to provide independent implementations as separate packages so
 that they can be shared by the community.
 
+List of community projects supporting backpressure can be found in :ref:`additional_readings`.
+
 Time Is In Seconds
 ------------------
 

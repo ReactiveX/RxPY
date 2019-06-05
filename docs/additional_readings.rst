@@ -1,3 +1,5 @@
+.. _additional_readings:
+
 Additional Readings
 ===================
 
@@ -17,6 +19,10 @@ Several commercial contents have their associated example code available freely:
 
 * `Packt Reactive Programming in Python <https://github.com/PacktPublishing/Reactive-Programming-in-Python>`_
 
+RxPY 3.0.0 has removed support for backpressure here are the known community projects supporting backpressure:
+
+* `rxbackpressure rxpy extension <https://github.com/MichaelSchneeberger/rxbackpressure>`_
+* `rxpy_backpressure observer decorators <https://github.com/daliclass/rxpy-backpressure>`_
 
 Commercial Material
 --------------------
