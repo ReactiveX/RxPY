@@ -69,6 +69,7 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented
 
     @abstractmethod
@@ -88,6 +89,7 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented
 
     @abstractmethod
@@ -107,4 +109,5 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented

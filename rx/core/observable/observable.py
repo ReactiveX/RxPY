@@ -23,7 +23,7 @@ class Observable(typing.Observable):
     Represents a push-style collection, which you can :func:`pipe <pipe>` into
     :mod:`operators <rx.operators>`."""
 
-    def __init__(self, subscribe: Optional[typing.Subscribable] = None) -> None:
+    def __init__(self, subscribe: Optional[typing.Subscription] = None) -> None:
         """Creates an observable sequence object from the specified
         subscription function.
 
