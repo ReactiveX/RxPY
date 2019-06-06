@@ -10,11 +10,11 @@ except ImportError:
 from configparser import ConfigParser
 
 
-# General project metadata is stored in .bumpversion.cfg
-with open('.bumpversion.cfg') as project_file:
+# General project metadata is stored in project.cfg
+with open('project.cfg') as project_file:
     config = ConfigParser()
     config.read_file(project_file)
-    project_meta = dict(config.items('bumpversion'))
+    project_meta = dict(config.items('project'))
 
 
 # Populate the long_description field from README.rst
@@ -25,7 +25,7 @@ with open('README.rst') as readme_file:
 setup(
     **{key: project_meta[key] for key in (
         'name',
-        'current_version',
+        'version',
         'description',
         'long_description',
         'author',
@@ -34,7 +34,6 @@ setup(
         'url',
         'download_url'
     )},
-    version=project_meta.get("current_version"),
     zip_safe=True,
     python_requires='>=3.6.0',
 
@@ -57,7 +56,7 @@ setup(
     package_data={'rx': ['py.typed']},
     packages=['rx', 'rx.internal', 'rx.core', 'rx.core.abc',
               'rx.core.operators', 'rx.core.operators.connectable',
-              'rx.core.observer', 'rx.core.observable',
+              'rx.core.observable', 'rx.core.observer',
               'rx.scheduler', 'rx.scheduler.eventloop', 'rx.scheduler.mainloop',
               'rx.operators', 'rx.disposable', 'rx.subject',
               'rx.testing'],
