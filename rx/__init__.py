@@ -6,7 +6,9 @@ from typing import Iterable, Callable, Any, Optional, Union, Mapping, Sequence
 from .core import Observable, typing, pipe
 from .core.typing import Mapper, Predicate
 
-__version__ = "3.0.0-beta4"
+
+# Please make sure the version here remains the same as in project.cfg
+__version__ = '3.0.0b4'
 
 
 def amb(*sources: Observable) -> Observable:
