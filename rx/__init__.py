@@ -40,6 +40,15 @@ def case(mapper: Callable[[], Any],
          ) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
+    .. marble::
+        :alt: case
+
+        --1---------------|
+        a--1--2--3--4--|
+         b--10-20-30---|
+        [case(mapper, { 1: a, 2: b })]
+        ---1--2--3--4--|
+
     Examples:
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 })
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 }, obs0)
@@ -250,6 +259,15 @@ def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in source.
 
+    .. marble::
+        :alt: for_in
+
+        a--1--2-|
+         b--10--20-|
+        [for_in((a, b), lambda i: i+1)]
+        ---2--3--11--21-|
+
+
     Note:
         This is just a wrapper for `rx.concat(map(mapper, values))`
 
@@ -267,14 +285,14 @@ def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
 
 def from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that contains a single element
-    generate from a supplier, using the specified scheduler to send out
+    generated from a supplier, using the specified scheduler to send out
     observer messages.
 
     .. marble::
         :alt: from_callable
 
-        [   from_callable()    ]
-        ---1--2--3--|
+        [ from_callable() ]
+        --1--|
 
     Examples:
         >>> res = rx.from_callable(lambda: calculate_value())
@@ -313,6 +331,12 @@ def from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[
 
 def from_future(future: _Future) -> Observable:
     """Converts a Future to an Observable sequence
+
+    .. marble::
+        :alt: from_future
+
+        [  from_future()  ]
+        ------1|
 
     Args:
         future: A Python 3 compatible future.
@@ -439,6 +463,12 @@ def generate_with_relative_time(initial_state: Any,
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
+    .. marble::
+        :alt: generate_with_relative_time
+
+        [generate_with_relative_time()]
+        -1-2-3-4-|
+
     Example:
         res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
 
@@ -462,6 +492,12 @@ def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Obser
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements, using the specified scheduler to
     send out observer messages.
+
+    .. marble::
+        :alt: generate
+
+        [   generate()    ]
+        -1-2-3-4-|
 
     Example:
         >>> res = rx.generate(0, lambda x: x < 10, lambda x: x + 1)
@@ -828,6 +864,12 @@ def start_async(function_async: Callable[[], _Future]) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
+    .. marble::
+        :alt: start_async
+
+        [  start_async()  ]
+        ------1|
+
     Args:
         function_async: Asynchronous function which returns a Future to
             run.
@@ -906,6 +948,12 @@ def to_async(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Ca
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified
     scheduler.
+
+    .. marble::
+        :alt: to_async
+
+        [  to_async()()   ]
+        ------1|
 
     Examples:
         res = rx.to_async(lambda x, y: x + y)(4, 3)
