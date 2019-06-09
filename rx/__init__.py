@@ -8,7 +8,7 @@ from .core.typing import Mapper, Predicate
 
 
 # Please make sure the version here remains the same as in project.cfg
-__version__ = '3.0.0b4'
+__version__ = '3.0.0'
 
 
 def amb(*sources: Observable) -> Observable:
