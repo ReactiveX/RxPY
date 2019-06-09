@@ -19,7 +19,7 @@ The Reactive Extensions for Python (RxPY)
 *A library for composing asynchronous and event-based programs using observable collections and
 query operator functions in Python*
 
-RxPY v3.0 Beta
+RxPY v3.0
 ----------------
 
 **This branch is work-in-progress.**
