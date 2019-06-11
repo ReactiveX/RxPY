@@ -119,6 +119,56 @@ class Scheduler(abc.Scheduler):
 
         return NotImplemented
 
+    @classmethod
+    @abstractmethod
+    def to_seconds(cls, value: AbsoluteOrRelativeTime) -> float:
+        """Converts time value to seconds. This method handles both absolute
+        (datetime) and relative (timedelta) values. If the argument is already
+        a float, it is simply returned unchanged.
+
+        Args:
+            value: the time value to convert to seconds.
+
+        Returns:
+            The value converted to seconds.
+        """
+
+        return NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def to_datetime(cls, value: AbsoluteOrRelativeTime) -> datetime:
+        """Converts time value to datetime. This method handles both absolute
+        (float) and relative (timedelta) values. If the argument is already
+        a datetime, it is simply returned unchanged.
+
+        Args:
+            value: the time value to convert to datetime.
+
+        Returns:
+            The value converted to datetime.
+        """
+
+        return NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def to_timedelta(cls, value: AbsoluteOrRelativeTime) -> timedelta:
+        """Converts time value to timedelta. This method handles both absolute
+        (datetime) and relative (float) values. If the argument is already
+        a timedelta, it is simply returned unchanged. If the argument is an
+        absolute time, the result value will be the timedelta since the epoch,
+        January 1st, 1970, 00:00:00.
+
+        Args:
+            value: the time value to convert to timedelta.
+
+        Returns:
+            The value converted to timedelta.
+        """
+
+        return NotImplemented
+
 
 class PeriodicScheduler(abc.PeriodicScheduler):
     """PeriodicScheduler abstract base class."""
