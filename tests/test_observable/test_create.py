@@ -117,19 +117,19 @@ class TestCreate(unittest.TestCase):
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe).subscribe(lambda x: _raise('ex'))
+            rx.create(subscribe).subscribe_(lambda x: _raise('ex'))
 
         def subscribe2(o, scheduler=None):
             o.on_error('exception')
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe2).subscribe(on_error=lambda ex: _raise('ex'))
+            rx.create(subscribe2).subscribe_(on_error=lambda ex: _raise('ex'))
 
         def subscribe3(o, scheduler=None):
             o.on_completed()
             return lambda: None
 
         with self.assertRaises(RxException):
-            rx.create(subscribe3).subscribe(on_completed=lambda: _raise('ex'))
+            rx.create(subscribe3).subscribe_(on_completed=lambda: _raise('ex'))
 

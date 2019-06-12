@@ -28,8 +28,8 @@ class ConnectableObservable(Observable):
             def dispose():
                 self.has_subscription = False
 
-            subscription = self.source.subscribe(self.subject, scheduler)
-            self.subscription = CompositeDisposable(subscription, Disposable(dispose))
+            disp = self.source.subscribe(self.subject, scheduler=scheduler)
+            self.subscription = CompositeDisposable(disp, Disposable(dispose))
 
         return self.subscription
 

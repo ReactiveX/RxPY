@@ -64,4 +64,4 @@ class TestFromIterable(unittest.TestCase):
 
     def test_observer_throws(self):
         with self.assertRaises(RxException):
-            rx.from_iterable([1, 2, 3]).subscribe(lambda x: _raise('ex'))
+            rx.from_iterable([1, 2, 3]).subscribe_(lambda x: _raise('ex'))

@@ -15,10 +15,11 @@ def sleep(tm):
 def output(result):
     print('%d seconds' % result)
 
+
 with concurrent.futures.ProcessPoolExecutor(5) as executor:
     rx.from_(seconds).pipe(
         ops.flat_map(lambda s: executor.submit(sleep, s))
-    ).subscribe(output)
+    ).subscribe_(output)
 
 # 1 seconds
 # 2 seconds

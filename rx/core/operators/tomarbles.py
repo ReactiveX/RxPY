@@ -22,8 +22,8 @@ def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 
             Observable stream.
         """
 
-        def subscribe(observer, scheduler=None):
-            scheduler = scheduler or new_thread_scheduler
+        def subscribe(observer, scheduler_=None):
+            _scheduler = scheduler or new_thread_scheduler
 
             result: List[str] = []
             last = scheduler.now
@@ -54,7 +54,11 @@ def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 
                 observer.on_next("".join(n for n in result))
                 observer.on_completed()
 
-            return source.subscribe_(on_next, on_error, on_completed)
+            return source.subscribe_(
+                on_next,
+                on_error,
+                on_completed
+            )
         return Observable(subscribe)
     return to_marbles
 

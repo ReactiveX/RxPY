@@ -4,6 +4,7 @@ from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Predicate
 
+
 def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
     def some(source: Observable) -> Observable:
         """Partially applied operator.
@@ -31,7 +32,12 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
             def on_error():
                 observer.on_next(False)
                 observer.on_completed()
-            return source.subscribe_(on_next, observer.on_error, on_error, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_error,
+                scheduler=scheduler
+            )
 
         if predicate:
             return source.pipe(

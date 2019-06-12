@@ -45,7 +45,12 @@ def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Obse
                         observer.on_next(value)
                     observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return take_while
 
@@ -94,6 +99,11 @@ def _take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) ->
                         observer.on_next(value)
                     observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return take_while_indexed

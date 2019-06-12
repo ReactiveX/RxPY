@@ -34,7 +34,12 @@ def _take_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
 
             return CompositeDisposable(
                 source.subscribe(observer),
-                obs.subscribe_(on_completed, observer.on_error, noop, scheduler)
+                obs.subscribe_(
+                    on_completed,
+                    observer.on_error,
+                    noop,
+                    scheduler=scheduler
+                )
             )
         return Observable(subscribe)
     return take_until

@@ -33,6 +33,11 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
                     observer.on_next(default_value)
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return default_if_empty

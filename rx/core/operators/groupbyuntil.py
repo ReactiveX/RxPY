@@ -97,7 +97,12 @@ def _group_by_until(key_mapper: Mapper,
                     def on_completed():
                         expire()
 
-                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(on_next, on_error, on_completed, scheduler)
+                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(
+                        on_next,
+                        on_error,
+                        on_completed,
+                        scheduler=scheduler
+                    )
 
                 try:
                     element = element_mapper(x)
@@ -122,7 +127,12 @@ def _group_by_until(key_mapper: Mapper,
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            group_disposable.add(source.subscribe_(
+                on_next,
+                on_error,
+                on_completed,
+                scheduler=scheduler
+            ))
             return ref_count_disposable
         return Observable(subscribe)
     return group_by_until

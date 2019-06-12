@@ -41,40 +41,25 @@ class Observable(typing.Observable):
                         ) -> typing.Disposable:
         return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
 
-    def subscribe(self,  # pylint: disable=too-many-arguments,arguments-differ
-                  observer: Optional[Union[typing.Observer, typing.OnNext]] = None,
-                  on_error: Optional[typing.OnError] = None,
-                  on_completed: Optional[typing.OnCompleted] = None,
-                  on_next: Optional[typing.OnNext] = None,
+    def subscribe(self,
+                  observer: Optional[typing.Observer] = None,
                   *,
                   scheduler: Optional[typing.Scheduler] = None,
                   ) -> typing.Disposable:
         """Subscribe an observer to the observable sequence.
 
-        You may subscribe using an observer or callbacks, not both; if the first
-        argument is an instance of :class:`Observer <..typing.Observer>` or if
-        it has a (callable) attribute named :code:`on_next`, then any callback
-        arguments will be ignored.
+        If you would like to subscribe using callbacks instead of an observer,
+        please use :func:`subscribe_`.
 
 
         Examples:
             >>> source.subscribe()
             >>> source.subscribe(observer)
             >>> source.subscribe(observer, scheduler=scheduler)
-            >>> source.subscribe(on_next)
-            >>> source.subscribe(on_next, on_error)
-            >>> source.subscribe(on_next, on_error, on_completed)
-            >>> source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
 
         Args:
             observer: [Optional] The object that is to receive
                 notifications.
-            on_error: [Optional] Action to invoke upon exceptional termination
-                of the observable sequence.
-            on_completed: [Optional] Action to invoke upon graceful termination
-                of the observable sequence.
-            on_next: [Optional] Action to invoke for each element in the
-                observable sequence.
             scheduler: [Optional] The default scheduler to use for this
                 subscription.
 
@@ -83,20 +68,19 @@ class Observable(typing.Observable):
             the observable sequence.
         """
         if observer:
-            if isinstance(observer, typing.Observer) \
-                    or hasattr(observer, 'on_next') \
-                    and callable(getattr(observer, 'on_next')):
-                on_next = cast(typing.Observer, observer).on_next
-                on_error = cast(typing.Observer, observer).on_error
-                on_completed = cast(typing.Observer, observer).on_completed
-            else:
-                on_next = observer
-        return self.subscribe_(on_next, on_error, on_completed, scheduler)
+            return self.subscribe_(
+                cast(typing.Observer, observer).on_next,
+                cast(typing.Observer, observer).on_error,
+                cast(typing.Observer, observer).on_completed,
+                scheduler=scheduler
+            )
+        return self.subscribe_(scheduler=scheduler)
 
     def subscribe_(self,
                    on_next: Optional[typing.OnNext] = None,
                    on_error: Optional[typing.OnError] = None,
                    on_completed: Optional[typing.OnCompleted] = None,
+                   *,
                    scheduler: Optional[typing.Scheduler] = None
                    ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.

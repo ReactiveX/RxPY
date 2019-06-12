@@ -99,8 +99,18 @@ def _sequence_equal(second: Observable, comparer: Optional[Comparer] = None
                         observer.on_next(True)
                         observer.on_completed()
 
-            subscription1 = first.subscribe_(on_next1, observer.on_error, on_completed1, scheduler)
-            subscription2 = second.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
+            subscription1 = first.subscribe_(
+                on_next1,
+                observer.on_error,
+                on_completed1,
+                scheduler=scheduler
+            )
+            subscription2 = second.subscribe_(
+                on_next2,
+                observer.on_error,
+                on_completed2,
+                scheduler=scheduler
+            )
             return CompositeDisposable(subscription1, subscription2)
         return Observable(subscribe)
     return sequence_equal

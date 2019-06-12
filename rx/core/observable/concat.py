@@ -34,7 +34,12 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
+                d.disposable = current.subscribe_(
+                    observer.on_next,
+                    observer.on_error,
+                    on_completed,
+                    scheduler=scheduler
+                )
 
         cancelable.disposable = scheduler.schedule(action)
 

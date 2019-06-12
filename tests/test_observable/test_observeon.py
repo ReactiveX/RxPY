@@ -48,7 +48,6 @@ class TestObserveOn(unittest.TestCase):
         assert results.messages == [on_error(210, ex)]
         assert xs.subscriptions == [subscribe(200, 210)]
 
-
     def test_observe_on_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
@@ -62,7 +61,6 @@ class TestObserveOn(unittest.TestCase):
 
         assert results.messages == [on_completed(250)]
         assert xs.subscriptions == [subscribe(200, 250)]
-
 
     def test_observe_on_never(self):
         scheduler = TestScheduler()

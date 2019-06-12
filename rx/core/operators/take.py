@@ -37,6 +37,11 @@ def _take(count: int) -> Callable[[Observable], Observable]:
                     if not remaining:
                         observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return take

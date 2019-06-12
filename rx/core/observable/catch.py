@@ -54,7 +54,12 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
+                d.disposable = current.subscribe_(
+                    observer.on_next,
+                    on_error,
+                    observer.on_completed,
+                    scheduler=scheduler
+                )
 
         cancelable.disposable = scheduler.schedule(action)
 

@@ -27,8 +27,18 @@ def sample_observable(source: Observable, sampler: Observable) -> Observable:
             at_end[0] = True
 
         return CompositeDisposable(
-            source.subscribe_(on_next, observer.on_error, on_completed, scheduler),
-            sampler.subscribe_(sample_subscribe, observer.on_error, sample_subscribe, scheduler)
+            source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            ),
+            sampler.subscribe_(
+                sample_subscribe,
+                observer.on_error,
+                sample_subscribe,
+                scheduler=scheduler
+            )
         )
     return Observable(subscribe)
 

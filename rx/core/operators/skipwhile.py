@@ -38,7 +38,12 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
                 if running:
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return skip_while
 

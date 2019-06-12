@@ -18,6 +18,11 @@ def _dematerialize() -> Callable[[Observable], Observable]:
             def on_next(value):
                 return value.accept(observer)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return dematerialize

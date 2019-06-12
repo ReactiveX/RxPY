@@ -37,6 +37,10 @@ def _pairwise() -> Callable[[Observable], Observable]:
                 if pair:
                     observer.on_next(pair)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed
+            )
         return Observable(subscribe)
     return pairwise

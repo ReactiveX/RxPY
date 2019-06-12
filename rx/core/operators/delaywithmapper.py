@@ -62,14 +62,24 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
                         delays.remove(d)
                         done()
 
-                    d.disposable = delay.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+                    d.disposable = delay.subscribe_(
+                        on_next,
+                        observer.on_error,
+                        on_completed,
+                        scheduler=scheduler
+                    )
 
                 def on_completed():
                     at_end[0] = True
                     subscription.dispose()
                     done()
 
-                subscription.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+                subscription.disposable = source.subscribe_(
+                    on_next,
+                    observer.on_error,
+                    on_completed,
+                    scheduler=scheduler
+                )
 
             if not sub_delay:
                 start()

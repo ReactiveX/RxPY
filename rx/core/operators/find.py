@@ -26,6 +26,11 @@ def _find_value(predicate: Predicate, yield_index) -> Callable[[Observable], Obs
                 observer.on_next(-1 if yield_index else None)
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return find_value

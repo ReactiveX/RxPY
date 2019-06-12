@@ -68,7 +68,12 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
                 s[0].on_completed()
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
+            group_disposable.add(source.subscribe_(
+                on_next,
+                on_error,
+                on_completed,
+                scheduler=scheduler_
+            ))
             return ref_count_disposable
         return Observable(subscribe)
     return window_with_time_or_count

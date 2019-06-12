@@ -46,7 +46,12 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_(observer.on_next, on_resume, on_resume, scheduler)
+            d.disposable = current.subscribe_(
+                observer.on_next,
+                on_resume,
+                on_resume,
+                scheduler=scheduler
+            )
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

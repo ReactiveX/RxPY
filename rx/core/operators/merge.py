@@ -56,7 +56,12 @@ def _merge(*sources: Observable,
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
+                subscription.disposable = xs.subscribe_(
+                    on_next,
+                    on_error,
+                    on_completed,
+                    scheduler=scheduler
+                )
 
             def on_next(inner_source):
                 if active_count[0] < max_concurrent:
@@ -70,7 +75,12 @@ def _merge(*sources: Observable,
                 if active_count[0] == 0:
                     observer.on_completed()
 
-            group.add(source.subscribe_(on_next, observer.on_error, on_completed, scheduler))
+            group.add(source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            ))
             return group
         return Observable(subscribe)
     return merge
@@ -110,7 +120,12 @@ def _merge_all() -> Callable[[Observable], Observable]:
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
+                subscription = inner_source.subscribe_(
+                    on_next,
+                    on_error,
+                    on_completed,
+                    scheduler=scheduler
+                )
                 inner_subscription.disposable = subscription
 
             def on_completed():
@@ -118,7 +133,12 @@ def _merge_all() -> Callable[[Observable], Observable]:
                 if len(group) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            m.disposable = source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
             return group
 
         return Observable(subscribe)

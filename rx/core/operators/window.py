@@ -71,7 +71,12 @@ def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
                 window_subject.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(on_next_window, on_error, on_completed, scheduler))
+            d.add(source.subscribe_(
+                on_next_window,
+                on_error,
+                on_completed,
+                scheduler=scheduler
+            ))
 
             def on_next_observer(w):
                 nonlocal window_subject
@@ -79,7 +84,12 @@ def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
                 window_subject = Subject()
                 observer.on_next(add_ref(window_subject, r))
 
-            d.add(boundaries.subscribe_(on_next_observer, on_error, on_completed, scheduler))
+            d.add(boundaries.subscribe_(
+                on_next_observer,
+                on_error,
+                on_completed,
+                scheduler=scheduler
+            ))
             return r
         return Observable(subscribe)
     return window
@@ -116,7 +126,12 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
                 window.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            d.add(source.subscribe_(
+                on_next,
+                on_error,
+                on_completed,
+                scheduler=scheduler
+            ))
 
             def create_window_on_completed():
                 try:
@@ -134,7 +149,12 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
 
                 m1 = SingleAssignmentDisposable()
                 m.disposable = m1
-                m1.disposable = window_close.pipe(ops.take(1)).subscribe_(noop, on_error, on_completed, scheduler)
+                m1.disposable = window_close.pipe(ops.take(1)).subscribe_(
+                    noop,
+                    on_error,
+                    on_completed,
+                    scheduler=scheduler
+                )
 
             create_window_on_completed()
             return r

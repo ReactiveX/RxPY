@@ -56,7 +56,7 @@ def main():
     rx.from_(text).pipe(
         mapper,
         labeler,
-    ).subscribe(on_next, on_error=print, scheduler=scheduler)
+    ).subscribe_(on_next, print, scheduler=scheduler)
 
     frame.Bind(wx.EVT_CLOSE, lambda e: (scheduler.cancel_all(), e.Skip()))
     app.MainLoop()

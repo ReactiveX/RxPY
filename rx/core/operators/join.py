@@ -59,7 +59,12 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(
+                    noop,
+                    observer.on_error,
+                    lambda: expire(),
+                    scheduler=scheduler
+                )
 
                 for val in right_map.values():
                     result = (value, val)
@@ -70,7 +75,12 @@ def _join(right: Observable,
                 if right_done[0] or not len(left_map):
                     observer.on_completed()
 
-            group.add(left.subscribe_(on_next_left, observer.on_error, on_completed_left, scheduler))
+            group.add(left.subscribe_(
+                on_next_left,
+                observer.on_error,
+                on_completed_left,
+                scheduler=scheduler
+            ))
 
             def on_next_right(value):
                 duration = None
@@ -94,7 +104,12 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(
+                    noop,
+                    observer.on_error,
+                    lambda: expire(),
+                    scheduler=scheduler
+                )
 
                 for val in left_map.values():
                     result = (val, value)
@@ -105,7 +120,11 @@ def _join(right: Observable,
                 if left_done[0] or not len(right_map):
                     observer.on_completed()
 
-            group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right))
+            group.add(right.subscribe_(
+                on_next_right,
+                observer.on_error,
+                on_completed_right
+            ))
             return group
         return Observable(subscribe)
     return join

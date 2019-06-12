@@ -60,7 +60,12 @@ def _combine_latest(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subscriptions[i].disposable = sources[i].subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
 
         for idx in range(n):
             func(idx)

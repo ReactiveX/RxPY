@@ -70,7 +70,7 @@ class TestTimeInterval(unittest.TestCase):
     def test_interval_timespan_observer_throws(self):
         scheduler = TestScheduler()
         xs = rx.interval(1)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler)
+        xs.subscribe_(lambda x: _raise("ex"), scheduler=scheduler)
 
         with self.assertRaises(RxException):
             scheduler.start()

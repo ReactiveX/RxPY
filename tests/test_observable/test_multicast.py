@@ -1,5 +1,4 @@
 import unittest
-import pytest
 
 from rx import operators as ops
 from rx.subject import Subject
@@ -41,7 +40,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action)
 
         def action0(scheduler, state):
-            d1[0] = c[0].subscribe(obv, scheduler)
+            d1[0] = c[0].subscribe(obv, scheduler=scheduler)
         scheduler.schedule_absolute(100, action0)
 
         def action1(scheduler, state):
@@ -81,7 +80,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o, scheduler)
+            d1[0] = c[0].subscribe(o, scheduler=scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -173,7 +172,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o, scheduler)
+            d1[0] = c[0].subscribe(o, scheduler=scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -207,7 +206,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o, scheduler)
+            d1[0] = c[0].subscribe(o, scheduler=scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
@@ -233,7 +232,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = c[0].subscribe(o, scheduler)
+            d1[0] = c[0].subscribe(o, scheduler=scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()

@@ -48,6 +48,11 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
 
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler_)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler_
+            )
         return Observable(subscribe)
     return take_last_with_time

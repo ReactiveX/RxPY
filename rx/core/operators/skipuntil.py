@@ -38,7 +38,12 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
                 if is_open[0]:
                     observer.on_completed()
 
-            subs = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subs = source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
             subscriptions = CompositeDisposable(subs)
 
             right_subscription = SingleAssignmentDisposable()
@@ -51,7 +56,12 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             def on_completed2():
                 right_subscription.dispose()
 
-            right_subscription.disposable = obs.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
+            right_subscription.disposable = obs.subscribe_(
+                on_next2,
+                observer.on_error,
+                on_completed2,
+                scheduler=scheduler
+            )
 
             return subscriptions
         return Observable(subscribe)

@@ -44,7 +44,7 @@ def _exclusive() -> Callable[[Observable], Observable]:
                         observer.on_next,
                         observer.on_error,
                         on_completed_inner,
-                        scheduler
+                        scheduler=scheduler
                     )
 
             def on_completed():
@@ -52,7 +52,12 @@ def _exclusive() -> Callable[[Observable], Observable]:
                 if not has_current[0] and len(g) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            m.disposable = source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
             return g
         return Observable(subscribe)
     return exclusive

@@ -62,7 +62,12 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
                         if active_count[0] == 0:
                             observer.on_completed()
 
-                    sad.disposable = work.subscribe_(on_next, observer.on_error, on_complete, scheduler)
+                    sad.disposable = work.subscribe_(
+                        on_next,
+                        observer.on_error,
+                        on_complete,
+                        scheduler=scheduler
+                    )
                     m.disposable = scheduler.schedule(action)
 
                 if is_owner:

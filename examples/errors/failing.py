@@ -25,7 +25,7 @@ def main():
     xs.pipe(
         ops.map(failing),
         ops.retry()
-    ).subscribe(print)
+    ).subscribe_(print)
 
     xs.connect()  # Must connect. Cannot use ref_count() with publish()
 

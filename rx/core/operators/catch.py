@@ -29,7 +29,7 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             observer.on_next,
             on_error,
             observer.on_completed,
-            scheduler
+            scheduler=scheduler
         )
         return subscription
     return Observable(subscribe)

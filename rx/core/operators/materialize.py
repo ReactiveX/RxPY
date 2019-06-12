@@ -30,6 +30,11 @@ def _materialize() -> Callable[[Observable], Observable]:
                 observer.on_next(OnCompleted())
                 observer.on_completed()
 
-            return source.subscribe_(on_next, on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                on_error,
+                on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return materialize

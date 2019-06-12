@@ -60,7 +60,12 @@ def _zip(*args: Observable) -> Observable:
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(on_next, observer.on_error, lambda: done(i), scheduler)
+            sad.disposable = source.subscribe_(
+                on_next,
+                observer.on_error,
+                lambda: done(i),
+                scheduler=scheduler
+            )
             subscriptions[i] = sad
         for idx in range(n):
             func(idx)

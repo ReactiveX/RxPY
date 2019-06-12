@@ -9,7 +9,10 @@ class GroupedObservable(Observable):
         self.key = key
 
         def subscribe(observer, scheduler=None):
-            return CompositeDisposable(merged_disposable.disposable, underlying_observable.subscribe(observer, scheduler=scheduler))
+            return CompositeDisposable(
+                merged_disposable.disposable,
+                underlying_observable.subscribe(observer, scheduler=scheduler)
+            )
 
         self.underlying_observable = underlying_observable if not merged_disposable else Observable(subscribe)
 

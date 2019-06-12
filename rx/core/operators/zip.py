@@ -3,6 +3,7 @@ from typing import Callable, Iterable
 import rx
 from rx.core import Observable
 
+
 # pylint: disable=redefined-builtin
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:
     def zip(source: Observable) -> Observable:
@@ -23,6 +24,7 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
         """
         return rx.zip(source, *args)
     return zip
+
 
 def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
     def zip_with_iterable(source: Observable) -> Observable:
@@ -46,11 +48,7 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
         second = iter(seq)
 
         def subscribe(observer, scheduler=None):
-            index = 0
-
             def on_next(left):
-                nonlocal index
-
                 try:
                     right = next(second)
                 except StopIteration:
@@ -59,6 +57,11 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
                     result = (left, right)
                     observer.on_next(result)
 
-            return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return first.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return zip_with_iterable

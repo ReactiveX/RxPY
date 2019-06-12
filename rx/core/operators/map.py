@@ -40,7 +40,12 @@ def _map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
                 else:
                     obv.on_next(result)
 
-            return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                obv.on_error,
+                obv.on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return map
 

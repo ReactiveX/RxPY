@@ -196,7 +196,7 @@ emissions:
                     observer.on_error,
                     observer.on_completed,
                     scheduler)
-            return rx.create(subscribe)
+            return rx.create(subscribe_observer=subscribe_observer)
         return _lowercase
 
     rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(

@@ -36,6 +36,11 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
                 if emit:
                     observer.on_next(x)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=_scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=_scheduler
+            )
         return Observable(subscribe)
     return throttle_first

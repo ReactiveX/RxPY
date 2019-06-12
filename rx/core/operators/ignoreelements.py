@@ -15,7 +15,12 @@ def _ignore_elements() -> Callable[[Observable], Observable]:
 
     def ignore_elements(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
-            return source.subscribe_(noop, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                noop,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler
+            )
 
         return Observable(subscribe)
     return ignore_elements

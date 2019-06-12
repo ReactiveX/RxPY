@@ -42,7 +42,12 @@ def _to_dict(key_mapper: Mapper,
                 observer.on_next(m)
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next,
+                observer.on_error,
+                on_completed,
+                scheduler=scheduler
+            )
         return Observable(subscribe)
     return to_dict
 

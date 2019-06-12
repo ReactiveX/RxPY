@@ -50,7 +50,12 @@ def _amb(right_source: Observable):
                 if choice[0] == left_choice:
                     observer.on_completed()
 
-            left_d = left_source.subscribe_(on_next_left, on_error_left, on_completed_left, scheduler)
+            left_d = left_source.subscribe_(
+                on_next_left,
+                on_error_left,
+                on_completed_left,
+                scheduler=scheduler
+            )
             left_subscription.disposable = left_d
 
             def send_right(value: Any) -> None:
@@ -71,7 +76,12 @@ def _amb(right_source: Observable):
                 if choice[0] == right_choice:
                     observer.on_completed()
 
-            right_d = obs.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
+            right_d = obs.subscribe_(
+                send_right,
+                on_error_right,
+                on_completed_right,
+                scheduler=scheduler
+            )
             right_subscription.disposable = right_d
             return CompositeDisposable(left_subscription, right_subscription)
         return Observable(subscribe)
