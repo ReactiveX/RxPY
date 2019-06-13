@@ -1,9 +1,9 @@
 import logging
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from collections import OrderedDict
 
 from rx import operators as ops
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
 from rx.subject import Subject
@@ -36,7 +36,9 @@ def _group_join(right: Observable,
         return None
 
     def group_join(left: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             group = CompositeDisposable()
             rcd = RefCountDisposable(group)
             left_map = OrderedDict()
@@ -92,7 +94,7 @@ def _group_join(right: Observable,
 
                     observer.on_error(error)
 
-                md.disposable = duration.pipe(ops.take(1)).subscribe_(
+                md.disposable = duration.pipe(ops.take(1)).subscribe(
                     nothing,
                     on_error,
                     expire,
@@ -105,7 +107,7 @@ def _group_join(right: Observable,
 
                 observer.on_error(error)
 
-            group.add(left.subscribe_(
+            group.add(left.subscribe(
                 on_next_left,
                 on_error_left,
                 observer.on_completed,
@@ -141,7 +143,7 @@ def _group_join(right: Observable,
 
                         observer.on_error(error)
 
-                md.disposable = duration.pipe(ops.take(1)).subscribe_(
+                md.disposable = duration.pipe(ops.take(1)).subscribe(
                     nothing,
                     on_error,
                     expire,
@@ -158,11 +160,11 @@ def _group_join(right: Observable,
 
                 observer.on_error(error)
 
-            group.add(right.subscribe_(
+            group.add(right.subscribe(
                 send_right,
                 on_error_right,
                 scheduler=scheduler
             ))
             return rcd
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return group_join

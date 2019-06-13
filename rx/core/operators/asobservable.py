@@ -1,5 +1,6 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, Optional
+
+from rx.core import Observable, typing
 
 
 def _as_observable() -> Callable[[Observable], Observable]:
@@ -14,8 +15,10 @@ def _as_observable() -> Callable[[Observable], Observable]:
             source sequence.
         """
 
-        def subscribe(observer, scheduler=None):
-            return source.subscribe(observer, scheduler=scheduler)
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
+            return source.subscribe_observer(observer, scheduler=scheduler)
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return as_observable

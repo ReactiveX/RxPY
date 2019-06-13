@@ -17,7 +17,9 @@ class Timestamp(object):
 def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                               scheduler: Optional[typing.Scheduler] = None) -> Observable:
 
-    def subscribe(observer, scheduler_=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler_: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         nonlocal duetime
 
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
@@ -93,10 +95,10 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
         subscription = source.pipe(
             ops.materialize(),
             ops.timestamp()
-        ).subscribe_(on_next, scheduler=scheduler_)
+        ).subscribe(on_next, scheduler=scheduler_)
 
         return CompositeDisposable(subscription, cancelable)
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def _delay(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:

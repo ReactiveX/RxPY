@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 
 
 def _pairwise() -> Callable[[Observable], Observable]:
@@ -19,7 +19,9 @@ def _pairwise() -> Callable[[Observable], Observable]:
             observations from the input observable as an array.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             has_previous = [False]
             previous = [None]
 
@@ -37,10 +39,10 @@ def _pairwise() -> Callable[[Observable], Observable]:
                 if pair:
                     observer.on_next(pair)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return pairwise

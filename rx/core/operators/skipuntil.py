@@ -1,13 +1,14 @@
 from asyncio import Future
-from typing import cast, Callable, Union
+from typing import cast, Callable, Optional, Union
 
 from rx import from_future
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
-def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Observable]:
+def _skip_until(other: Union[Observable, Future]
+                ) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
 
@@ -27,7 +28,9 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
         obs = cast(Observable, other)
 
     def skip_until(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             is_open = [False]
 
             def on_next(left):
@@ -38,7 +41,7 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
                 if is_open[0]:
                     observer.on_completed()
 
-            subs = source.subscribe_(
+            subs = source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
@@ -56,7 +59,7 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             def on_completed2():
                 right_subscription.dispose()
 
-            right_subscription.disposable = obs.subscribe_(
+            right_subscription.disposable = obs.subscribe(
                 on_next2,
                 observer.on_error,
                 on_completed2,
@@ -64,5 +67,5 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             )
 
             return subscriptions
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return skip_until

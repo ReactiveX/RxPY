@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Mapper, SubComparer
 from rx.internal.basic import default_sub_comparer
 
@@ -10,7 +10,9 @@ def extrema_by(source: Observable,
                comparer: SubComparer
                ) -> Observable:
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         has_value = [False]
         last_key = [None]
         items = []
@@ -45,13 +47,13 @@ def extrema_by(source: Observable,
             observer.on_next(items)
             observer.on_completed()
 
-        return source.subscribe_(
+        return source.subscribe(
             on_next,
             observer.on_error,
             on_completed,
             scheduler=scheduler
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def _min_by(key_mapper: Mapper,

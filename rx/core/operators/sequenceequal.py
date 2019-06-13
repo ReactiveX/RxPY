@@ -1,8 +1,8 @@
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
 import collections
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Comparer
 from rx.disposable import CompositeDisposable
 from rx.internal import default_comparer
@@ -35,7 +35,9 @@ def _sequence_equal(second: Observable, comparer: Optional[Comparer] = None
         """
         first = source
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             donel = [False]
             doner = [False]
             ql = []
@@ -99,18 +101,18 @@ def _sequence_equal(second: Observable, comparer: Optional[Comparer] = None
                         observer.on_next(True)
                         observer.on_completed()
 
-            subscription1 = first.subscribe_(
+            subscription1 = first.subscribe(
                 on_next1,
                 observer.on_error,
                 on_completed1,
                 scheduler=scheduler
             )
-            subscription2 = second.subscribe_(
+            subscription2 = second.subscribe(
                 on_next2,
                 observer.on_error,
                 on_completed2,
                 scheduler=scheduler
             )
             return CompositeDisposable(subscription1, subscription2)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return sequence_equal

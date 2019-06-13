@@ -86,7 +86,7 @@ class TestObserveOn(unittest.TestCase):
             actual_subscribe_scheduler = scheduler
             observer.on_completed()
 
-        xs = rx.create(subscribe)
+        xs = rx.create(subscribe_observer=subscribe)
 
         xs.pipe(ops.observe_on(scheduler)).subscribe(
             scheduler=expected_subscribe_scheduler)

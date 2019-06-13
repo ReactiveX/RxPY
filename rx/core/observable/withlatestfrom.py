@@ -1,13 +1,16 @@
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
+from typing import Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import NotSet
 
 
 def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
     NO_VALUE = NotSet()
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         def subscribe_all(parent, *children):
 
             values = [NO_VALUE for _ in children]
@@ -18,7 +21,7 @@ def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
                 def on_next(value):
                     with parent.lock:
                         values[i] = value
-                subscription.disposable = child.subscribe_(
+                subscription.disposable = child.subscribe(
                     on_next,
                     observer.on_error,
                     scheduler=scheduler
@@ -33,7 +36,7 @@ def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
                         result = (value,) + tuple(values)
                         observer.on_next(result)
 
-            disp = parent.subscribe_(
+            disp = parent.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
@@ -45,4 +48,4 @@ def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
 
             return [parent_subscription] + children_subscription
         return CompositeDisposable(subscribe_all(parent, *sources))
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

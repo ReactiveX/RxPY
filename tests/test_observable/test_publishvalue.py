@@ -43,7 +43,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -116,7 +116,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -178,7 +178,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -242,7 +242,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):

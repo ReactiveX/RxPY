@@ -1,3 +1,6 @@
+from typing import Optional
+
+from rx.core import typing
 from rx.disposable import Disposable
 from rx.disposable import CompositeDisposable
 
@@ -17,7 +20,7 @@ class ConnectableObservable(Observable):
         super().__init__()
 
     def _subscribe_core(self, observer, scheduler=None):
-        return self.subject.subscribe(observer, scheduler=scheduler)
+        return self.subject.subscribe_observer(observer, scheduler=scheduler)
 
     def connect(self, scheduler=None):
         """Connects the observable."""
@@ -28,7 +31,7 @@ class ConnectableObservable(Observable):
             def dispose():
                 self.has_subscription = False
 
-            disp = self.source.subscribe(self.subject, scheduler=scheduler)
+            disp = self.source.subscribe_observer(self.subject, scheduler=scheduler)
             self.subscription = CompositeDisposable(disp, Disposable(dispose))
 
         return self.subscription
@@ -51,10 +54,12 @@ class ConnectableObservable(Observable):
             connectable_subscription[0] = source.connect()
             is_connected[0] = True
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]
-            subscription = source.subscribe(observer)
+            subscription = source.subscribe_observer(observer)
             if should_connect:
                 connectable_subscription[0] = source.connect(scheduler)
                 is_connected[0] = True
@@ -65,4 +70,4 @@ class ConnectableObservable(Observable):
                 is_connected[0] = False
 
             return Disposable(dispose)
-        return Observable(subscribe)
+        return Observable(subscribe_observer)

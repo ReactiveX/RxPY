@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal import noop
 
 
@@ -14,13 +14,15 @@ def _ignore_elements() -> Callable[[Observable], Observable]:
     """
 
     def ignore_elements(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            return source.subscribe_(
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
+            return source.subscribe(
                 noop,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return ignore_elements

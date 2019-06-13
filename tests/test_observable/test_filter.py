@@ -216,7 +216,7 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(created, action)
 
         def action1(scheduler, state):
-            d.disposable = ys[0].subscribe(results)
+            d.disposable = ys[0].subscribe_observer(results)
 
         scheduler.schedule_absolute(subscribed, action1)
 
@@ -367,7 +367,7 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
-            d.disposable = ys[0].subscribe(results)
+            d.disposable = ys[0].subscribe_observer(results)
 
         scheduler.schedule_absolute(subscribed, action2)
 

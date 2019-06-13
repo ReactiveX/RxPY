@@ -2,7 +2,7 @@ from typing import Callable, Optional
 from collections import OrderedDict
 
 from rx import operators as ops
-from rx.core import Observable, GroupedObservable
+from rx.core import Observable, GroupedObservable, typing
 from rx.core.typing import Mapper
 from rx.subject import Subject
 from rx.disposable import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
@@ -38,7 +38,9 @@ def _group_by_until(key_mapper: Mapper,
     element_mapper = element_mapper or identity
 
     def group_by_until(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             writers = OrderedDict()
             group_disposable = CompositeDisposable()
             ref_count_disposable = RefCountDisposable(group_disposable)
@@ -97,7 +99,7 @@ def _group_by_until(key_mapper: Mapper,
                     def on_completed():
                         expire()
 
-                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(
+                    sad.disposable = duration.pipe(ops.take(1)).subscribe(
                         on_next,
                         on_error,
                         on_completed,
@@ -127,12 +129,12 @@ def _group_by_until(key_mapper: Mapper,
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(
+            group_disposable.add(source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             ))
             return ref_count_disposable
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return group_by_until

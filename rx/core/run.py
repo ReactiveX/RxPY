@@ -53,7 +53,7 @@ def run(source: Observable) -> Any:
         done = True
         latch.set()
 
-    source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+    source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
 
     while not done:
         latch.wait()

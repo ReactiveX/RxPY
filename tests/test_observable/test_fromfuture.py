@@ -27,7 +27,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = True
 
-            source.subscribe_(on_next, on_error, on_completed)
+            source.subscribe(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert(all(success))
@@ -54,7 +54,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = False
 
-            source.subscribe_(on_next, on_error, on_completed)
+            source.subscribe(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
         assert all(success)
@@ -79,7 +79,7 @@ class TestFromFuture(unittest.TestCase):
             def on_completed():
                 success[2] = False
 
-            subscription = source.subscribe_(on_next, on_error, on_completed)
+            subscription = source.subscribe(on_next, on_error, on_completed)
             subscription.dispose()
 
         loop.run_until_complete(go())

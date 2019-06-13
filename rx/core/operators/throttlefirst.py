@@ -17,7 +17,10 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
         Returns:
             An Observable that performs the throttle operation.
         """
-        def subscribe(observer, scheduler_=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             duration = _scheduler.to_timedelta(window_duration or 0.0)
@@ -36,11 +39,11 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
                 if emit:
                     observer.on_next(x)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=_scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return throttle_first

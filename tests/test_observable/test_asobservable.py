@@ -68,13 +68,13 @@ class TestAsObservable(unittest.TestCase):
 
         def subscribe(obs, scheduler=None):
             subscribed[0] = True
-            disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe(obs)
+            disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe_observer(obs)
 
             def func():
                 return disp.dispose()
             return func
 
-        xs = rx.create(subscribe)
+        xs = rx.create(subscribe_observer=subscribe)
         xs.pipe(ops.as_observable())
         assert not subscribed[0]
 

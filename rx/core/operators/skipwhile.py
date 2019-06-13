@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable, typing, pipe
@@ -22,7 +22,10 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
             input sequence starting at the first element in the linear
             series that does not pass the test specified by predicate.
         """
-        def subscribe(observer, scheduler=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             running = False
 
             def on_next(value):
@@ -38,13 +41,13 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
                 if running:
                     observer.on_next(value)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return skip_while
 
 

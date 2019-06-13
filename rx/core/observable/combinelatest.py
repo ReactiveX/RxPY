@@ -19,9 +19,9 @@ def _combine_latest(*sources: Observable) -> Observable:
 
     parent = sources[0]
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None
-                  ) -> CompositeDisposable:
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         n = len(sources)
         has_value = [False] * n
@@ -60,7 +60,7 @@ def _combine_latest(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = sources[i].subscribe_(
+            subscriptions[i].disposable = sources[i].subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
@@ -70,4 +70,4 @@ def _combine_latest(*sources: Observable) -> Observable:
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

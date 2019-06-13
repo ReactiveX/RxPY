@@ -4,7 +4,7 @@ import threading
 from datetime import datetime, timedelta
 
 from rx import Observable
-from rx.core import notification
+from rx.core import notification, typing
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import NewThreadScheduler
 from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
@@ -57,7 +57,9 @@ def hot(string: str,
     is_stopped = False
     observers = []
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         # should a hot observable already completed or on error
         # re-push on_completed/on_error at subscription time?
         if not is_stopped:
@@ -93,7 +95,7 @@ def hot(string: str,
         # Don't make closures within a loop
         _scheduler.schedule_relative(timespan, action)
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def from_marbles(string: str,
@@ -105,7 +107,9 @@ def from_marbles(string: str,
 
     messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
 
-    def subscribe(observer, scheduler_):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler_: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
         disp = CompositeDisposable()
 
@@ -122,7 +126,7 @@ def from_marbles(string: str,
             schedule_msg(message)
 
         return disp
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def parse(string: str,

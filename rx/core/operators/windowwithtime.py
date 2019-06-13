@@ -20,7 +20,9 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.
         timeshift = timedelta(seconds=timeshift)
 
     def window_with_time(source: Observable) -> Observable:
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             timer_d = SerialDisposable()
@@ -91,12 +93,12 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(
+            group_disposable.add(source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler_
             ))
             return ref_count_disposable
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return window_with_time

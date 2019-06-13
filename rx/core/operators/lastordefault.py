@@ -1,6 +1,6 @@
 from typing import Callable, Any, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx import operators as ops
@@ -11,7 +11,9 @@ def last_or_default_async(source: Observable,
                           default_value: Any = None
                           ) -> Observable:
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         value = [default_value]
         seen_value = [False]
 
@@ -26,13 +28,13 @@ def last_or_default_async(source: Observable,
                 observer.on_next(value[0])
                 observer.on_completed()
 
-        return source.subscribe_(
+        return source.subscribe(
             on_next,
             observer.on_error,
             on_completed,
             scheduler=scheduler
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def _last_or_default(predicate: Optional[Predicate] = None,

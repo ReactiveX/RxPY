@@ -28,13 +28,15 @@ def _take_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sc
             specified duration from the start of the source sequence.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             def action(scheduler, state):
                 observer.on_completed()
 
             disp = _scheduler.schedule_relative(duration, action)
-            return CompositeDisposable(disp, source.subscribe(observer, scheduler=scheduler_))
-        return Observable(subscribe)
+            return CompositeDisposable(disp, source.subscribe_observer(observer, scheduler=scheduler_))
+        return Observable(subscribe_observer=subscribe_observer)
     return take_with_time

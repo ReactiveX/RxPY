@@ -1,8 +1,8 @@
 import logging
-from typing import Callable, Any
+from typing import Any, Callable, Optional
 
 from rx import empty
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal import noop
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
@@ -53,7 +53,9 @@ def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
     """
     def window(source: Observable) -> Observable:
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             window_subject = Subject()
             d = CompositeDisposable()
             r = RefCountDisposable(d)
@@ -71,7 +73,7 @@ def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
                 window_subject.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(
+            d.add(source.subscribe(
                 on_next_window,
                 on_error,
                 on_completed,
@@ -84,14 +86,14 @@ def _window(boundaries: Observable) -> Callable[[Observable], Observable]:
                 window_subject = Subject()
                 observer.on_next(add_ref(window_subject, r))
 
-            d.add(boundaries.subscribe_(
+            d.add(boundaries.subscribe(
                 on_next_observer,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             ))
             return r
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return window
 
 
@@ -107,7 +109,9 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
     """
     def window_when(source: Observable) -> Observable:
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             m = SerialDisposable()
             d = CompositeDisposable(m)
             r = RefCountDisposable(d)
@@ -126,7 +130,7 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
                 window.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(
+            d.add(source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
@@ -149,7 +153,7 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
 
                 m1 = SingleAssignmentDisposable()
                 m.disposable = m1
-                m1.disposable = window_close.pipe(ops.take(1)).subscribe_(
+                m1.disposable = window_close.pipe(ops.take(1)).subscribe(
                     noop,
                     on_error,
                     on_completed,
@@ -158,5 +162,5 @@ def _window_when(closing_mapper: Callable[[], Observable]) -> Callable[[Observab
 
             create_window_on_completed()
             return r
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return window_when

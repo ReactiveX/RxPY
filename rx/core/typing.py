@@ -254,11 +254,43 @@ class Observable(Generic[T_out], abc.Observable):
 
     @abstractmethod
     def subscribe(self,
-                  observer: Optional[Observer[T_out]] = None,
+                  on_next: Optional[OnNext] = None,
+                  on_error: Optional[OnError] = None,
+                  on_completed: Optional[OnCompleted] = None,
                   *,
                   scheduler: Optional[Scheduler] = None
                   ) -> Disposable:
+        """Subscribe callbacks to the observable sequence.
+
+        If you would like to subscribe using an :class:`Observer` instead of
+        callbacks,  please use :func:`subscribe_observer`.
+
+        Args:
+            on_next: [Optional] Action to invoke for each element in the
+                observable sequence.
+            on_error: [Optional] Action to invoke upon exceptional termination
+                of the observable sequence.
+            on_completed: [Optional] Action to invoke upon graceful termination
+                of the observable sequence.
+            scheduler: [Optional] The scheduler to use for this subscription.
+
+        Returns:
+            Disposable object representing subscription to the observable
+            sequence.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def subscribe_observer(self,
+                           observer: Optional[Observer[T_out]] = None,
+                           *,
+                           scheduler: Optional[Scheduler] = None
+                           ) -> Disposable:
         """Subscribe an observer to the observable sequence.
+
+        If you would like to subscribe using callbacks instead of an observer,
+        please use :func:`subscribe`.
 
         Args:
             observer: [Optional] The object that is to receive
@@ -267,8 +299,8 @@ class Observable(Generic[T_out], abc.Observable):
                 subscription.
 
         Returns:
-            Disposable object representing an observer's subscription
-            to the observable sequence.
+            Disposable object representing a subscription to the observable
+            sequence.
         """
 
         raise NotImplementedError
@@ -285,11 +317,43 @@ class Subject(Generic[T_in, T_out], abc.Subject):
 
     @abstractmethod
     def subscribe(self,
-                  observer: Optional[Observer[T_out]] = None,
+                  on_next: Optional[OnNext] = None,
+                  on_error: Optional[OnError] = None,
+                  on_completed: Optional[OnCompleted] = None,
                   *,
                   scheduler: Optional[Scheduler] = None
                   ) -> Disposable:
+        """Subscribe callbacks to the observable sequence.
+
+        If you would like to subscribe using an :class:`Observer` instead of
+        callbacks,  please use :func:`subscribe_observer`.
+
+        Args:
+            on_next: [Optional] Action to invoke for each element in the
+                observable sequence.
+            on_error: [Optional] Action to invoke upon exceptional termination
+                of the observable sequence.
+            on_completed: [Optional] Action to invoke upon graceful termination
+                of the observable sequence.
+            scheduler: [Optional] The scheduler to use for this subscription.
+
+        Returns:
+            Disposable object representing subscription to the observable
+            sequence.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def subscribe_observer(self,
+                           observer: Observer[T_out],
+                           *,
+                           scheduler: Optional[Scheduler] = None
+                           ) -> Disposable:
         """Subscribe an observer to the observable sequence.
+
+        If you would like to subscribe using callbacks instead of an observer,
+        please use :func:`subscribe`.
 
         Args:
             observer: [Optional] The object that is to receive
@@ -298,8 +362,8 @@ class Subject(Generic[T_in, T_out], abc.Subject):
                 subscription.
 
         Returns:
-            Disposable object representing an observer's subscription
-            to the observable sequence.
+            Disposable object representing a subscription to the observable
+            sequence.
         """
 
         raise NotImplementedError
@@ -331,4 +395,10 @@ class Subject(Generic[T_in, T_out], abc.Subject):
         raise NotImplementedError
 
 
-Subscription = Callable[[Observer, Optional[Scheduler]], Disposable]
+SubscribeCallbacks = Callable[[Optional[OnNext],
+                               Optional[OnError],
+                               Optional[OnCompleted],
+                               Optional[Scheduler]
+                               ], Disposable]
+
+SubscribeObserver = Callable[[Observer, Optional[Scheduler]], Disposable]

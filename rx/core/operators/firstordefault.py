@@ -1,14 +1,16 @@
 from typing import Any, Callable, Optional
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, pipe, typing
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
 def _first_or_default_async(has_default=False, default_value=None):
     def first_or_default_async(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(x):
                 observer.on_next(x)
                 observer.on_completed()
@@ -20,13 +22,13 @@ def _first_or_default_async(has_default=False, default_value=None):
                     observer.on_next(default_value)
                     observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return first_or_default_async
 
 

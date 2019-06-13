@@ -88,7 +88,7 @@ class Subscriber:
 def subs(src, **kw):
     # required for e.g. .multicast:
     obs = Subscriber(src, **kw)
-    subscription = src.subscribe(obs)
+    subscription = obs.subscribe_to(src)
     if kw.pop('return_subscriber', None):
         return subscription, obs
     return subscription

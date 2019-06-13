@@ -4,7 +4,7 @@ from rx.internal.basic import identity
 from rx.internal.utils import infinite
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, pipe, typing
 from rx.core.typing import Mapper, MapperIndexed, Observer, Disposable, Scheduler
 
 
@@ -31,22 +31,24 @@ def _map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
             of the source.
         """
 
-        def subscribe(obv: Observer, scheduler: Scheduler = None) -> Disposable:
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(value: Any) -> None:
                 try:
                     result = _mapper(value)
                 except Exception as err:  # pylint: disable=broad-except
-                    obv.on_error(err)
+                    observer.on_error(err)
                 else:
-                    obv.on_next(result)
+                    observer.on_next(result)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
-                obv.on_error,
-                obv.on_completed,
+                observer.on_error,
+                observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return map
 
 

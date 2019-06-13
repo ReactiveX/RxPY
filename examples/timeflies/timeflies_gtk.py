@@ -62,7 +62,7 @@ def main():
     rx.from_(text).pipe(
         mapper,
         labeler,
-    ).subscribe_(on_next, print, scheduler=scheduler)
+    ).subscribe(on_next, print, scheduler=scheduler)
 
     window.show_all()
 

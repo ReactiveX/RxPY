@@ -2,7 +2,7 @@ from typing import Callable, Optional
 
 import rx
 from rx import from_future
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
@@ -33,7 +33,9 @@ def _merge(*sources: Observable,
             sources_ = tuple([source]) + sources
             return rx.merge(*sources_)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             active_count = [0]
             group = CompositeDisposable()
             is_stopped = [False]
@@ -56,7 +58,7 @@ def _merge(*sources: Observable,
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription.disposable = xs.subscribe_(
+                subscription.disposable = xs.subscribe(
                     on_next,
                     on_error,
                     on_completed,
@@ -75,14 +77,14 @@ def _merge(*sources: Observable,
                 if active_count[0] == 0:
                     observer.on_completed()
 
-            group.add(source.subscribe_(
+            group.add(source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             ))
             return group
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return merge
 
 
@@ -100,7 +102,10 @@ def _merge_all() -> Callable[[Observable], Observable]:
             The observable sequence that merges the elements of the inner
             sequences.
         """
-        def subscribe(observer, scheduler=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             group = CompositeDisposable()
             is_stopped = [False]
             m = SingleAssignmentDisposable()
@@ -120,7 +125,7 @@ def _merge_all() -> Callable[[Observable], Observable]:
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription = inner_source.subscribe_(
+                subscription = inner_source.subscribe(
                     on_next,
                     on_error,
                     on_completed,
@@ -133,7 +138,7 @@ def _merge_all() -> Callable[[Observable], Observable]:
                 if len(group) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(
+            m.disposable = source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
@@ -141,5 +146,5 @@ def _merge_all() -> Callable[[Observable], Observable]:
             )
             return group
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return merge_all

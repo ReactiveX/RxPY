@@ -187,7 +187,7 @@ emissions:
 
     def lowercase():
         def _lowercase(source):
-            def subscribe(observer, scheduler = None):
+            def subscribe_observer(observer, scheduler = None):
                 def on_next(value):
                     observer.on_next(value.lower())
 

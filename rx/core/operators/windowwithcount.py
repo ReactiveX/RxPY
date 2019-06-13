@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 import logging
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, RefCountDisposable
 from rx.internal.exceptions import ArgumentOutOfRangeException
@@ -38,7 +38,10 @@ def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obse
         raise ArgumentOutOfRangeException()
 
     def window_with_count(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             m = SingleAssignmentDisposable()
             refCountDisposable = RefCountDisposable(m)
             n = [0]
@@ -74,12 +77,12 @@ def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obse
                     q.pop(0).on_completed()
                 observer.on_completed()
 
-            m.disposable = source.subscribe_(
+            m.disposable = source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             )
             return refCountDisposable
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return window_with_count

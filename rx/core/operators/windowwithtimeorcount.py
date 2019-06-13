@@ -10,7 +10,9 @@ from rx.subject import Subject
 def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, scheduler: Optional[typing.Scheduler] = None
                                ) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             n = [0]
@@ -68,12 +70,12 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
                 s[0].on_completed()
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(
+            group_disposable.add(source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler_
             ))
             return ref_count_disposable
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return window_with_time_or_count

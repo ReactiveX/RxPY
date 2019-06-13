@@ -1,7 +1,7 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -17,7 +17,9 @@ def _exclusive() -> Callable[[Observable], Observable]:
     """
 
     def exclusive(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             has_current = [False]
             is_stopped = [False]
             m = SingleAssignmentDisposable()
@@ -40,7 +42,7 @@ def _exclusive() -> Callable[[Observable], Observable]:
                         if is_stopped[0] and len(g) == 1:
                             observer.on_completed()
 
-                    inner_subscription.disposable = inner_source.subscribe_(
+                    inner_subscription.disposable = inner_source.subscribe(
                         observer.on_next,
                         observer.on_error,
                         on_completed_inner,
@@ -52,12 +54,12 @@ def _exclusive() -> Callable[[Observable], Observable]:
                 if not has_current[0] and len(g) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(
+            m.disposable = source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
             return g
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return exclusive

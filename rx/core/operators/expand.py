@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Mapper
 from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
 from rx.scheduler import ImmediateScheduler
@@ -18,7 +18,10 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             An observable sequence containing all the elements produced
             by the recursive expansion.
         """
-        def subscribe(observer, scheduler=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             scheduler = scheduler or ImmediateScheduler.singleton()
 
             queue = []
@@ -62,7 +65,7 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
                         if active_count[0] == 0:
                             observer.on_completed()
 
-                    sad.disposable = work.subscribe_(
+                    sad.disposable = work.subscribe(
                         on_next,
                         observer.on_error,
                         on_complete,
@@ -77,5 +80,5 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             active_count[0] += 1
             ensure_active()
             return d
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return expand

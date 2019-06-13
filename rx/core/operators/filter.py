@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Predicate, PredicateIndexed, Scheduler, Observer, Disposable
 
 
@@ -22,7 +22,9 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
             A filtered observable sequence.
         """
 
-        def subscribe(observer: Observer, scheduler: Optional[Scheduler]) -> Disposable:
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(value):
                 try:
                     should_run = predicate(value)
@@ -33,13 +35,13 @@ def _filter(predicate: Predicate) -> Callable[[Observable], Observable]:
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return filter
 
 
@@ -60,7 +62,9 @@ def _filter_indexed(predicate_indexed: Optional[PredicateIndexed] = None) -> Cal
             A filtered observable sequence.
         """
 
-        def subscribe(observer: Observer, scheduler: Optional[Scheduler]):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             count = 0
 
             def on_next(value):
@@ -76,11 +80,11 @@ def _filter_indexed(predicate_indexed: Optional[PredicateIndexed] = None) -> Cal
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return filter_indexed

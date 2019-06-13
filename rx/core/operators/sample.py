@@ -6,7 +6,9 @@ from rx.disposable import CompositeDisposable
 
 
 def sample_observable(source: Observable, sampler: Observable) -> Observable:
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         at_end = [None]
         has_value = [None]
         value = [None]
@@ -27,20 +29,20 @@ def sample_observable(source: Observable, sampler: Observable) -> Observable:
             at_end[0] = True
 
         return CompositeDisposable(
-            source.subscribe_(
+            source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             ),
-            sampler.subscribe_(
+            sampler.subscribe(
                 sample_subscribe,
                 observer.on_error,
                 sample_subscribe,
                 scheduler=scheduler
             )
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def _sample(sampler: Union[typing.RelativeTime, Observable],

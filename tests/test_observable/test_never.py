@@ -17,6 +17,6 @@ class TestNever(unittest.TestCase):
         scheduler = TestScheduler()
         xs = never()
         results = scheduler.create_observer()
-        xs.subscribe(results)
+        xs.subscribe_observer(results)
         scheduler.start()
         assert results.messages == []

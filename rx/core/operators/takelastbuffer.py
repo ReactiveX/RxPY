@@ -1,5 +1,5 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, Optional
+from rx.core import Observable, typing
 
 
 def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
@@ -24,7 +24,9 @@ def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
             sequence.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             q = []
 
             def on_next(x):
@@ -37,11 +39,11 @@ def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
                 observer.on_next(q)
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return take_last_buffer

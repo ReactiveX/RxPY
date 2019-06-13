@@ -1,8 +1,8 @@
 from asyncio import Future
-from typing import cast, Any, Callable, Union
+from typing import cast, Any, Callable, Optional, Union
 
 from rx import from_future
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
 
@@ -21,7 +21,9 @@ def _switch_latest() -> Callable[[Observable], Observable]:
             that has been received.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             inner_subscription = SerialDisposable()
             has_latest = [False]
             is_stopped = [False]
@@ -57,7 +59,7 @@ def _switch_latest() -> Callable[[Observable], Observable]:
                         if is_stopped[0]:
                             observer.on_completed()
 
-                d.disposable = obs.subscribe_(
+                d.disposable = obs.subscribe(
                     on_next,
                     on_error,
                     on_completed,
@@ -69,12 +71,12 @@ def _switch_latest() -> Callable[[Observable], Observable]:
                 if not has_latest[0]:
                     observer.on_completed()
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
             return CompositeDisposable(subscription, inner_subscription)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return switch_latest

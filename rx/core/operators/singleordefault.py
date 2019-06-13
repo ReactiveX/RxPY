@@ -1,14 +1,16 @@
-from typing import Optional, Callable
+from typing import Any, Optional, Callable
 
 from rx import operators as ops
-from rx.core import Observable, pipe
-from rx.core.typing import Predicate, Any
+from rx.core import Observable, pipe, typing
+from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
 def _single_or_default_async(has_default: bool = False, default_value: Any = None) -> Callable[[Observable], Observable]:
     def single_or_default_async(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             value = [default_value]
             seen_value = [False]
 
@@ -26,13 +28,13 @@ def _single_or_default_async(has_default: bool = False, default_value: Any = Non
                     observer.on_next(value[0])
                     observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return single_or_default_async
 
 

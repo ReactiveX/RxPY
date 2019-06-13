@@ -1,6 +1,6 @@
 # By design, pylint: disable=C0302
 import threading
-from typing import Any, Callable, Optional, Union, TypeVar, cast, overload
+from typing import cast, overload, Any, Callable, Optional, TypeVar
 
 from rx.disposable import Disposable
 from rx.scheduler import CurrentThreadScheduler
@@ -23,72 +23,60 @@ class Observable(typing.Observable):
     Represents a push-style collection, which you can :func:`pipe <pipe>` into
     :mod:`operators <rx.operators>`."""
 
-    def __init__(self, subscribe: Optional[typing.Subscription] = None) -> None:
-        """Creates an observable sequence object from the specified
-        subscription function.
+    def __init__(self,
+                 subscribe: Optional[typing.SubscribeCallbacks] = None,
+                 *,
+                 subscribe_observer: Optional[typing.SubscribeObserver] = None
+                 ) -> None:
+        """Creates an observable sequence object from the given subscribe
+        function.
+
+        Note: only one of the arguments takes effect, and the first one takes
+        precedence in case both are given.
 
         Args:
-            subscribe: [Optional] Subscription function
+            subscribe: [Optional] Subscription function using callbacks.
+            subscribe_observer: [Optional] Subscription function using an
+                :class:`Observer <rx.core.typing.Observer>`.
         """
+
         super().__init__()
 
         self.lock = threading.RLock()
         self._subscribe = subscribe
+        self._subscribe_observer = subscribe_observer
 
     def _subscribe_core(self,
                         observer: typing.Observer,
                         scheduler: Optional[typing.Scheduler] = None
                         ) -> typing.Disposable:
-        return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
+        if callable(self._subscribe):
+            return self._subscribe(observer.on_next,
+                                   observer.on_error,
+                                   observer.on_completed,
+                                   scheduler)
+
+        if callable(self._subscribe_observer):
+            return self._subscribe_observer(observer, scheduler)
+
+        return Disposable()
 
     def subscribe(self,
-                  observer: Optional[typing.Observer] = None,
+                  on_next: Optional[typing.OnNext] = None,
+                  on_error: Optional[typing.OnError] = None,
+                  on_completed: Optional[typing.OnCompleted] = None,
                   *,
-                  scheduler: Optional[typing.Scheduler] = None,
+                  scheduler: Optional[typing.Scheduler] = None
                   ) -> typing.Disposable:
-        """Subscribe an observer to the observable sequence.
-
-        If you would like to subscribe using callbacks instead of an observer,
-        please use :func:`subscribe_`.
-
-
-        Examples:
-            >>> source.subscribe()
-            >>> source.subscribe(observer)
-            >>> source.subscribe(observer, scheduler=scheduler)
-
-        Args:
-            observer: [Optional] The object that is to receive
-                notifications.
-            scheduler: [Optional] The default scheduler to use for this
-                subscription.
-
-        Returns:
-            Disposable object representing an observer's subscription to
-            the observable sequence.
-        """
-        if observer:
-            return self.subscribe_(
-                cast(typing.Observer, observer).on_next,
-                cast(typing.Observer, observer).on_error,
-                cast(typing.Observer, observer).on_completed,
-                scheduler=scheduler
-            )
-        return self.subscribe_(scheduler=scheduler)
-
-    def subscribe_(self,
-                   on_next: Optional[typing.OnNext] = None,
-                   on_error: Optional[typing.OnError] = None,
-                   on_completed: Optional[typing.OnCompleted] = None,
-                   *,
-                   scheduler: Optional[typing.Scheduler] = None
-                   ) -> typing.Disposable:
         """Subscribe callbacks to the observable sequence.
 
+        If you would like to subscribe using an :class:`Observer` instead of
+        callbacks,  please use :func:`subscribe_observer`.
+
         Examples:
-            >>> source.subscribe_(on_next)
-            >>> source.subscribe_(on_next, on_error)
-            >>> source.subscribe_(on_next, on_error, on_completed)
+            >>> source.subscribe(on_next)
+            >>> source.subscribe(on_next, on_error)
+            >>> source.subscribe(on_next, on_error, on_completed)
 
         Args:
             on_next: [Optional] Action to invoke for each element in the
@@ -100,11 +88,11 @@ class Observable(typing.Observable):
             scheduler: [Optional] The scheduler to use for this subscription.
 
         Returns:
-            Disposable object representing an observer's subscription to
-            the observable sequence.
+            Disposable object representing subscription to the observable
+            sequence.
         """
 
-        auto_detach_observer = AutoDetachObserver(on_next, on_error, on_completed)
+        auto_detach_obs = AutoDetachObserver(on_next, on_error, on_completed)
 
         def fix_subscriber(subscriber):
             """Fixes subscriber to make sure it returns a Disposable instead
@@ -116,12 +104,12 @@ class Observable(typing.Observable):
 
         def set_disposable(_: abc.Scheduler = None, __: Any = None):
             try:
-                subscriber = self._subscribe_core(auto_detach_observer, scheduler)
+                subscriber = self._subscribe_core(auto_detach_obs, scheduler)
             except Exception as ex:  # By design. pylint: disable=W0703
-                if not auto_detach_observer.fail(ex):
+                if not auto_detach_obs.fail(ex):
                     raise
             else:
-                auto_detach_observer.subscription = fix_subscriber(subscriber)
+                auto_detach_obs.subscription = fix_subscriber(subscriber)
 
         # Subscribe needs to set up the trampoline before for subscribing.
         # Actually, the first call to Subscribe creates the trampoline so
@@ -138,7 +126,42 @@ class Observable(typing.Observable):
             set_disposable()
 
         # Hide the identity of the auto detach observer
-        return Disposable(auto_detach_observer.dispose)
+        return Disposable(auto_detach_obs.dispose)
+
+    def subscribe_observer(self,
+                           observer: Optional[typing.Observer] = None,
+                           *,
+                           scheduler: Optional[typing.Scheduler] = None,
+                           ) -> typing.Disposable:
+        """Subscribe an observer to the observable sequence.
+
+        If you would like to subscribe using callbacks instead of an observer,
+        please use :func:`subscribe`.
+
+        Examples:
+            >>> source.subscribe_observer()
+            >>> source.subscribe_observer(observer)
+            >>> source.subscribe_observer(observer, scheduler=scheduler)
+
+        Args:
+            observer: [Optional] The object that is to receive
+                notifications.
+            scheduler: [Optional] The default scheduler to use for this
+                subscription.
+
+        Returns:
+            Disposable object representing a subscription to the observable
+            sequence.
+        """
+
+        if observer:
+            return self.subscribe(
+                cast(typing.Observer, observer).on_next,
+                cast(typing.Observer, observer).on_error,
+                cast(typing.Observer, observer).on_completed,
+                scheduler=scheduler
+            )
+        return self.subscribe(scheduler=scheduler)
 
     @overload
     def pipe(self,

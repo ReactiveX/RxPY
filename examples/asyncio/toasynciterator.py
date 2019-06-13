@@ -17,7 +17,7 @@ def to_async_iterable():
                         self.notifications = []
                         self.future = Future()
 
-                        source.pipe(ops.materialize()).subscribe_(self.on_next)
+                        source.pipe(ops.materialize()).subscribe(self.on_next)
 
                     def feeder(self):
                         if not self.notifications or self.future.done():

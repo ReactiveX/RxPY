@@ -60,7 +60,7 @@ class TestReturnValue(unittest.TestCase):
             def on_completed():
                 results.on_completed()
 
-            d.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+            d.disposable = xs.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
             return d.disposable
 
         scheduler.schedule_absolute(100, action)
@@ -70,12 +70,12 @@ class TestReturnValue(unittest.TestCase):
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = rx.return_value(1)
-        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise('ex'), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = rx.return_value(1)
-        ys.subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler=scheduler2)
+        ys.subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'), scheduler=scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)

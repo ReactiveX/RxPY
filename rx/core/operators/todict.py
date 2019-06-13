@@ -18,7 +18,9 @@ def _to_dict(key_mapper: Mapper,
             containing the values from the observable sequence.
         """
 
-        def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             m = dict()
 
             def on_next(x: Any) -> None:
@@ -42,12 +44,12 @@ def _to_dict(key_mapper: Mapper,
                 observer.on_next(m)
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return to_dict
 

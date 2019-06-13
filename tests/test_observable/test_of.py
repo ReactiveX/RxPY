@@ -16,14 +16,14 @@ class TestOf(unittest.TestCase):
     def test_of(self):
         results = []
 
-        rx.of(1, 2, 3, 4, 5).subscribe_(results.append)
+        rx.of(1, 2, 3, 4, 5).subscribe(results.append)
 
         assert(str([1, 2, 3, 4, 5]) == str(results))
 
     def test_of_empty(self):
         results = []
 
-        rx.of().subscribe_(results.append)
+        rx.of().subscribe(results.append)
 
         assert(len(results) == 0)
 

@@ -1,11 +1,13 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, Optional
+from rx.core import Observable, typing
 from rx.core.typing import Predicate
 
 
 def _find_value(predicate: Predicate, yield_index) -> Callable[[Observable], Observable]:
     def find_value(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             i = [0]
 
             def on_next(x):
@@ -26,11 +28,11 @@ def _find_value(predicate: Predicate, yield_index) -> Callable[[Observable], Obs
                 observer.on_next(-1 if yield_index else None)
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return find_value

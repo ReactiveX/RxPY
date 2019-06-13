@@ -1,17 +1,20 @@
 from functools import update_wrapper
 from types import FunctionType
-from typing import cast, Any, Callable, Iterable
+from typing import cast, Any, Callable, Iterable, Optional
 
+from rx.core import typing
 from rx.disposable import CompositeDisposable
 
 
 def add_ref(xs, r):
     from rx.core import Observable
 
-    def subscribe(observer, scheduler=None):
-        return CompositeDisposable(r.disposable, xs.subscribe(observer))
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
+        return CompositeDisposable(r.disposable, xs.subscribe_observer(observer))
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def is_future(fut: Any) -> bool:

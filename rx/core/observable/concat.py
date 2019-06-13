@@ -1,7 +1,7 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 from rx.disposable import Disposable
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
 from rx.scheduler import CurrentThreadScheduler
 
@@ -10,7 +10,9 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
@@ -34,7 +36,7 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(
+                d.disposable = current.subscribe(
                     observer.on_next,
                     observer.on_error,
                     on_completed,
@@ -48,4 +50,4 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
             is_disposed = True
 
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

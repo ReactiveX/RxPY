@@ -21,7 +21,7 @@ class MySubject(Observable, Observer):
 
     def __init__(self):
 
-        super(MySubject, self).__init__()
+        super().__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
@@ -64,7 +64,7 @@ class TestConnectableObservable(unittest.TestCase):
 
         def on_next(x):
             y[0] = x
-        co2.subscribe_(on_next=on_next)
+        co2.subscribe(on_next=on_next)
         self.assertNotEqual(1, y[0])
 
         co2.connect()

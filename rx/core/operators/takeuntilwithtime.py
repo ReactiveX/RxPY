@@ -6,7 +6,8 @@ from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
 
-def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
+def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
+                          scheduler: Optional[typing.Scheduler] = None
                           ) -> Callable[[Observable], Observable]:
     def take_until_with_time(source: Observable) -> Observable:
         """Takes elements for the specified duration until the specified end
@@ -23,7 +24,9 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Op
             until the specified end time.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(end_time, datetime):
@@ -35,6 +38,6 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Op
                 observer.on_completed()
 
             task = scheduler_method(end_time, action)
-            return CompositeDisposable(task, source.subscribe(observer, scheduler=scheduler_))
-        return Observable(subscribe)
+            return CompositeDisposable(task, source.subscribe_observer(observer, scheduler=scheduler_))
+        return Observable(subscribe_observer=subscribe_observer)
     return take_until_with_time

@@ -1,7 +1,7 @@
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Optional
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, typing
 
 
 # pylint: disable=redefined-builtin
@@ -47,7 +47,9 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
         first = source
         second = iter(seq)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(left):
                 try:
                     right = next(second)
@@ -57,11 +59,11 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
                     result = (left, right)
                     observer.on_next(result)
 
-            return first.subscribe_(
+            return first.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return zip_with_iterable

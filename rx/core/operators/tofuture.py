@@ -44,7 +44,7 @@ def _to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[
             else:
                 future.set_exception(SequenceContainsNoElementsError())
 
-        source.subscribe_(on_next, on_error, on_completed)
+        source.subscribe(on_next, on_error, on_completed)
 
         # No cancellation can be done
         return future

@@ -26,7 +26,10 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
             An observable sequence with the elements taken during the
             specified duration from the end of the source sequence.
         """
-        def subscribe(observer, scheduler_=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             nonlocal duration
 
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
@@ -48,11 +51,11 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
 
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_completed,
                 scheduler=scheduler_
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return take_last_with_time

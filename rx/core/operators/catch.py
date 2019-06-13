@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 
 import rx
 from rx.core import Observable, typing
@@ -7,7 +7,9 @@ from rx.internal.utils import is_future
 
 
 def catch_handler(source: Observable, handler: Callable[[Exception, Observable], Observable]) -> Observable:
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
 
@@ -23,16 +25,16 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             result = rx.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = result.subscribe(observer, scheduler=scheduler)
+            d.disposable = result.subscribe_observer(observer, scheduler=scheduler)
 
-        d1.disposable = source.subscribe_(
+        d1.disposable = source.subscribe(
             observer.on_next,
             on_error,
             observer.on_completed,
             scheduler=scheduler
         )
         return subscription
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def _catch(handler: Union[Observable, Callable[[Exception, Observable], Observable]]

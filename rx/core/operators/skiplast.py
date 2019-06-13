@@ -1,5 +1,5 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, Optional
+from rx.core import Observable, typing
 
 
 def _skip_last(count: int) -> Callable[[Observable], Observable]:
@@ -21,7 +21,9 @@ def _skip_last(count: int) -> Callable[[Observable], Observable]:
             elements except for the bypassed ones at the end.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             q = []
 
             def on_next(value):
@@ -34,11 +36,11 @@ def _skip_last(count: int) -> Callable[[Observable], Observable]:
                 if front is not None:
                     observer.on_next(front)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return skip_last

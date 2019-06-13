@@ -35,7 +35,9 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
         else:
             scheduler_method = 'schedule_relative'
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             open = [False]
@@ -43,7 +45,7 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
             def on_next(x):
                 if open[0]:
                     observer.on_next(x)
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
@@ -54,5 +56,5 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
                 open[0] = True
             disp = getattr(_scheduler, scheduler_method)(start_time, action)
             return CompositeDisposable(disp, subscription)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return skip_until_with_time

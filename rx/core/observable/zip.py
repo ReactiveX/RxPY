@@ -26,7 +26,9 @@ def _zip(*args: Observable) -> Observable:
 
     sources = list(args)
 
-    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         n = len(sources)
         queues : List[List] = [[] for _ in range(n)]
         is_done = [False] * n
@@ -60,7 +62,7 @@ def _zip(*args: Observable) -> Observable:
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(
+            sad.disposable = source.subscribe(
                 on_next,
                 observer.on_error,
                 lambda: done(i),
@@ -70,4 +72,4 @@ def _zip(*args: Observable) -> Observable:
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

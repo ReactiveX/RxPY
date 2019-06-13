@@ -27,7 +27,7 @@ def _raise(ex):
 class MySubject(Observable, Observer):
 
     def __init__(self):
-        super(MySubject, self).__init__()
+        super().__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
@@ -131,7 +131,7 @@ class TestPublish(unittest.TestCase):
                     disconnected[0] = True
                 return func
 
-            return rx.create(create)
+            return rx.create(subscribe_observer=create)
 
         xs = rx.defer(factory)
 
@@ -186,7 +186,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -255,7 +255,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -317,7 +317,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -379,7 +379,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe(results)
+            subscription[0] = ys[0].subscribe_observer(results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):

@@ -1,14 +1,15 @@
 from asyncio import Future
-from typing import cast, Callable, Union
+from typing import cast, Callable, Optional, Union
 
 from rx import from_future
 from rx.internal import noop
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 from rx.internal.utils import is_future
 
 
-def _take_until(other: Union[Observable, Future]) -> Callable[[Observable], Observable]:
+def _take_until(other: Union[Observable, Future]
+                ) -> Callable[[Observable], Observable]:
     if is_future(other):
         obs = from_future(cast(Future, other))
     else:
@@ -27,19 +28,21 @@ def _take_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             further propagation.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
 
             def on_completed(_):
                 observer.on_completed()
 
             return CompositeDisposable(
-                source.subscribe(observer),
-                obs.subscribe_(
+                source.subscribe_observer(observer),
+                obs.subscribe(
                     on_completed,
                     observer.on_error,
                     noop,
                     scheduler=scheduler
                 )
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return take_until

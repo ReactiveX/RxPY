@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal import ArgumentOutOfRangeException
 
 
@@ -22,7 +22,9 @@ def _skip(count: int) -> Callable[[Observable], Observable]:
             after the specified index in the input sequence.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             remaining = count
 
             def on_next(value):
@@ -33,11 +35,11 @@ def _skip(count: int) -> Callable[[Observable], Observable]:
                 else:
                     remaining -= 1
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return skip

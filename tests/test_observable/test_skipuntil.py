@@ -127,10 +127,10 @@ class TestSkipUntil(unittest.TestCase):
         disposed = [False]
         l = scheduler.create_hot_observable(l_msgs)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer, scheduler=None):
             disposed[0] = True
 
-        r = Observable(subscribe)
+        r = Observable(subscribe_observer=subscribe_observer)
 
         def create():
             return l.pipe(ops.skip_until(r))

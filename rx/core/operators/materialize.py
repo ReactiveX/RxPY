@@ -1,5 +1,6 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, Optional
+
+from rx.core import Observable, typing
 from rx.core.notification import OnNext, OnError, OnCompleted
 
 
@@ -18,7 +19,9 @@ def _materialize() -> Callable[[Observable], Observable]:
             notification values from the source sequence.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(value):
                 observer.on_next(OnNext(value))
 
@@ -30,11 +33,11 @@ def _materialize() -> Callable[[Observable], Observable]:
                 observer.on_next(OnCompleted())
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return materialize

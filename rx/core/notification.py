@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from typing import Optional
+
 from rx.scheduler import ImmediateScheduler
 
 from .. import typing
@@ -61,14 +63,16 @@ class Notification:
 
         scheduler = scheduler or ImmediateScheduler.singleton()
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def action(scheduler, state):
                 self._accept_observer(observer)
                 if self.kind == 'N':
                     observer.on_completed()
 
             return scheduler.schedule(action)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
 
     def equals(self, other):
         """Indicates whether this instance and a specified object are

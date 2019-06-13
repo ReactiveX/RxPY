@@ -113,21 +113,21 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
         xs = rx.return_value(11).pipe(ops.repeat())
-        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise('ex'), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = rx.throw('ex').pipe(ops.repeat())
-        ys.subscribe_(lambda ex: _raise('ex'), scheduler=scheduler2)
+        ys.subscribe(lambda ex: _raise('ex'), scheduler=scheduler2)
 
         with self.assertRaises(Exception):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = rx.return_value(1).pipe(ops.repeat())
-        d = zs.subscribe_(on_completed=lambda: _raise('ex'), scheduler=scheduler3)
+        d = zs.subscribe(on_completed=lambda: _raise('ex'), scheduler=scheduler3)
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()
@@ -135,7 +135,7 @@ class TestRepeat(unittest.TestCase):
         # scheduler4 = TestScheduler()
         # xss = Observable.create(lambda o: _raise('ex')).repeat()
         # with self.assertRaises(RxException):
-        #     xss.subscribe(scheduler=scheduler4)
+        #     xss.subscribe_observer(scheduler=scheduler4)
 
     def test_repeat_observable_repeat_count_basic(self):
         scheduler = TestScheduler()
@@ -173,25 +173,25 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
         xs = rx.return_value(1).pipe(ops.repeat(3))
-        xs.subscribe_(lambda x: _raise('ex'), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise('ex'), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = rx.throw('ex1').pipe(ops.repeat(3))
-        ys.subscribe_(on_error=lambda ex: _raise('ex2'), scheduler=scheduler2)
+        ys.subscribe(on_error=lambda ex: _raise('ex2'), scheduler=scheduler2)
 
         with self.assertRaises(RxException):
             scheduler2.start()
 
         # scheduler3 = TestScheduler()
         # zs = rx.return_value(1).repeat(100)
-        # d = zs.subscribe(on_completed=lambda: _raise('ex3'), scheduler=scheduler3)
+        # d = zs.subscribe_observer(on_completed=lambda: _raise('ex3'), scheduler=scheduler3)
 
         # scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())
         # scheduler3.start()
 
     #     xss = Observable.create(lambda o: _raise('ex4')).repeat(3)
     #     with self.assertRaises(RxException):
-    #         xss.subscribe()
+    #         xss.subscribe_observer()

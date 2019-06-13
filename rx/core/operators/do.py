@@ -35,7 +35,9 @@ def _do_action(on_next: Optional[typing.OnNext] = None,
             behavior applied.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def _on_next(x):
                 if not on_next:
                     observer.on_next(x)
@@ -69,13 +71,13 @@ def _do_action(on_next: Optional[typing.OnNext] = None,
 
                     observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 _on_next,
                 _on_error,
                 _on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return do_action
 
 
@@ -107,7 +109,9 @@ def do_after_next(source, after_next):
     after_next -- Action to invoke on each element after it has been emitted
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         def on_next(value):
             try:
@@ -116,12 +120,12 @@ def do_after_next(source, after_next):
             except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
 
-        return source.subscribe_(
+        return source.subscribe(
             on_next,
             observer.on_error,
             observer.on_completed
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def do_on_subscribe(source: Observable, on_subscribe):
@@ -133,16 +137,19 @@ def do_on_subscribe(source: Observable, on_subscribe):
     Args:
         on_subscribe: Action to invoke on subscription
     """
-    def subscribe(observer, scheduler=None):
+
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         on_subscribe()
-        return source.subscribe_(
+        return source.subscribe(
             observer.on_next,
             observer.on_error,
             observer.on_completed,
             scheduler=scheduler
         )
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def do_on_dispose(source: Observable, on_dispose):
@@ -160,10 +167,12 @@ def do_on_dispose(source: Observable, on_dispose):
         def dispose(self) -> None:
             on_dispose()
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        subscription = source.subscribe_(
+        subscription = source.subscribe(
             observer.on_next,
             observer.on_error,
             observer.on_completed,
@@ -172,7 +181,7 @@ def do_on_dispose(source: Observable, on_dispose):
         composite_disposable.add(subscription)
         return composite_disposable
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def do_on_terminate(source, on_terminate):
@@ -184,7 +193,9 @@ def do_on_terminate(source, on_terminate):
     on_terminate -- Action to invoke when on_complete or throw is called
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         def on_completed():
             try:
@@ -202,13 +213,13 @@ def do_on_terminate(source, on_terminate):
             else:
                 observer.on_error(exception)
 
-        return source.subscribe_(
+        return source.subscribe(
             observer.on_next,
             on_error,
             on_completed,
             scheduler=scheduler
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def do_after_terminate(source, after_terminate):
@@ -219,7 +230,10 @@ def do_after_terminate(source, after_terminate):
 
     on_terminate -- Action to invoke after on_complete or throw is called
     """
-    def subscribe(observer, scheduler=None):
+
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         def on_completed():
             observer.on_completed()
@@ -235,13 +249,13 @@ def do_after_terminate(source, after_terminate):
             except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
 
-        return source.subscribe_(
+        return source.subscribe(
             observer.on_next,
             on_error,
             on_completed,
             scheduler=scheduler
         )
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
 
 
 def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
@@ -269,7 +283,9 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
                 self.was_invoked[0] = True
 
     def partial(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
 
             was_invoked = [False]
 
@@ -293,7 +309,7 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             composite_disposable = CompositeDisposable()
             composite_disposable.add(OnDispose(was_invoked))
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 observer.on_next,
                 on_error,
                 on_completed,
@@ -303,5 +319,5 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             return composite_disposable
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return partial

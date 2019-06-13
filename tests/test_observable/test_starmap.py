@@ -73,25 +73,25 @@ class TestSelect(unittest.TestCase):
         with self.assertRaises(RxException):
             return_value((1, 10)).pipe(
                 mapper
-            ).subscribe_(lambda x: _raise("ex"))
+            ).subscribe(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
             throw('ex').pipe(
                 mapper
-            ).subscribe_(on_error=lambda ex: _raise(ex))
+            ).subscribe(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             empty().pipe(
                 mapper
-            ).subscribe_(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+            ).subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
 
         def subscribe(observer, scheduler=None):
             _raise('ex')
 
         with self.assertRaises(RxException):
-            create(subscribe).pipe(
+            create(subscribe_observer=subscribe).pipe(
                 mapper
-            ).subscribe_()
+            ).subscribe()
 
     def test_starmap_dispose_inside_mapper(self):
         scheduler = TestScheduler()
@@ -115,7 +115,7 @@ class TestSelect(unittest.TestCase):
 
         d.disposable = xs.pipe(
             ops.starmap(mapper)
-        ).subscribe(results, scheduler=scheduler)
+        ).subscribe_observer(results, scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()

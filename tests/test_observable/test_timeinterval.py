@@ -91,7 +91,7 @@ class TestTimeInterval(unittest.TestCase):
         )
 
         l = []
-        d = xs.subscribe_(l.append)
+        d = xs.subscribe(l.append)
         time.sleep(0.1)
         self.assertEqual(len(l), 2)
         [self.assertIsInstance(el, datetime.timedelta) for el in l]

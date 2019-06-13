@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Mapper, Predicate
 from rx.scheduler import CurrentThreadScheduler
 from rx.disposable import MultipleAssignmentDisposable
@@ -11,7 +11,9 @@ def _generate(initial_state: Any,
               iterate: Mapper
               ) -> Observable:
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
         first = True
         state = initial_state
@@ -46,4 +48,4 @@ def _generate(initial_state: Any,
 
         mad.disposable = scheduler.schedule(action)
         return mad
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

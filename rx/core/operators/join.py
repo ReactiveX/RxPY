@@ -1,8 +1,8 @@
-from typing import Callable, Any
+from typing import Any, Callable, Optional
 from collections import OrderedDict
 
 from rx.operators import take
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.internal import noop
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
 
@@ -27,7 +27,9 @@ def _join(right: Observable,
 
         left = source
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             group = CompositeDisposable()
             left_done = [False]
             left_map = OrderedDict()
@@ -59,7 +61,7 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(
+                md.disposable = duration.pipe(take(1)).subscribe(
                     noop,
                     observer.on_error,
                     lambda: expire(),
@@ -75,7 +77,7 @@ def _join(right: Observable,
                 if right_done[0] or not len(left_map):
                     observer.on_completed()
 
-            group.add(left.subscribe_(
+            group.add(left.subscribe(
                 on_next_left,
                 observer.on_error,
                 on_completed_left,
@@ -104,7 +106,7 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(
+                md.disposable = duration.pipe(take(1)).subscribe(
                     noop,
                     observer.on_error,
                     lambda: expire(),
@@ -120,11 +122,11 @@ def _join(right: Observable,
                 if left_done[0] or not len(right_map):
                     observer.on_completed()
 
-            group.add(right.subscribe_(
+            group.add(right.subscribe(
                 on_next_right,
                 observer.on_error,
                 on_completed_right
             ))
             return group
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return join

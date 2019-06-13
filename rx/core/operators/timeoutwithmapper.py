@@ -1,7 +1,7 @@
 from typing import Callable, Optional, Any
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 
 
@@ -35,7 +35,9 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
     other = other or rx.throw(Exception('Timeout'))
 
     def timeout_with_mapper(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             subscription = SerialDisposable()
             timer = SerialDisposable()
             original = SingleAssignmentDisposable()
@@ -56,7 +58,7 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
 
                 def on_next(x):
                     if timer_wins():
-                        subscription.disposable = other.subscribe(observer, scheduler=scheduler)
+                        subscription.disposable = other.subscribe_observer(observer, scheduler=scheduler)
 
                     d.dispose()
 
@@ -66,9 +68,9 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
 
                 def on_completed():
                     if timer_wins():
-                        subscription.disposable = other.subscribe(observer)
+                        subscription.disposable = other.subscribe_observer(observer)
 
-                d.disposable = timeout.subscribe_(
+                d.disposable = timeout.subscribe(
                     on_next,
                     on_error,
                     on_completed,
@@ -104,12 +106,12 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
                 if observer_wins():
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(
+            original.disposable = source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             )
             return CompositeDisposable(subscription, timer)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return timeout_with_mapper

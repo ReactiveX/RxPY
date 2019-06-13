@@ -1,6 +1,6 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Predicate, PredicateIndexed
 
 
@@ -22,7 +22,9 @@ def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Obse
             test no longer passes.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             running = True
 
             def on_next(value):
@@ -45,13 +47,13 @@ def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Obse
                         observer.on_next(value)
                     observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return take_while
 
 
@@ -73,7 +75,9 @@ def _take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) ->
             test no longer passes.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             running = True
             i = 0
 
@@ -99,11 +103,11 @@ def _take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) ->
                         observer.on_next(value)
                     observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return take_while_indexed

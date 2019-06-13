@@ -1,5 +1,5 @@
 from typing import Callable, Optional
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Mapper, Comparer
 from rx.internal.basic import default_comparer
 
@@ -46,7 +46,9 @@ def _distinct(key_mapper: Optional[Mapper] = None,
             sequence.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             hashset = HashSet(comparer)
 
             def on_next(x):
@@ -60,11 +62,11 @@ def _distinct(key_mapper: Optional[Mapper] = None,
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 observer.on_completed,
                 scheduler=scheduler
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return distinct

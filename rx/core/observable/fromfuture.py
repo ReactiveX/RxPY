@@ -19,9 +19,9 @@ def _from_future(future: Future) -> Observable:
         and failure.
     """
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None
-                  ) -> typing.Disposable:
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         def done(future):
             try:
@@ -40,4 +40,4 @@ def _from_future(future: Future) -> Observable:
 
         return Disposable(dispose)
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

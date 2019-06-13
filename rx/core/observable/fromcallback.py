@@ -24,7 +24,9 @@ def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[
     def function(*args):
         arguments = list(args)
 
-        def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def handler(*args):
                 results = list(args)
                 if mapper:
@@ -47,5 +49,5 @@ def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[
             func(*arguments)
             return Disposable()
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return function

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Scheduler, RelativeTime
 from rx.scheduler import NewThreadScheduler
 
@@ -22,7 +22,9 @@ def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 
             Observable stream.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or new_thread_scheduler
 
             result: List[str] = []
@@ -54,12 +56,12 @@ def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 
                 observer.on_next("".join(n for n in result))
                 observer.on_completed()
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 on_error,
                 on_completed
             )
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return to_marbles
 
 

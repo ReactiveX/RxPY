@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from rx import operators as ops
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.core.typing import Predicate
 
 
@@ -24,7 +24,10 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
             pass the test in the specified predicate if given, else if
             some items are in the sequence.
         """
-        def subscribe(observer, scheduler=None):
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             def on_next(_):
                 observer.on_next(True)
                 observer.on_completed()
@@ -32,7 +35,7 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
             def on_error():
                 observer.on_next(False)
                 observer.on_completed()
-            return source.subscribe_(
+            return source.subscribe(
                 on_next,
                 observer.on_error,
                 on_error,
@@ -45,5 +48,5 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
                 _some(),
             )
 
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return some

@@ -1,11 +1,11 @@
-from typing import Union
+from typing import Optional, Union
 from asyncio import Future
 
 import rx
-from rx.scheduler import CurrentThreadScheduler
-from rx.core import Observable
+from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
+from rx.scheduler import CurrentThreadScheduler
 
 
 def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
@@ -22,7 +22,9 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
 
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
@@ -46,7 +48,7 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_(
+            d.disposable = current.subscribe(
                 observer.on_next,
                 on_resume,
                 on_resume,
@@ -55,4 +57,4 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)

@@ -34,7 +34,9 @@ def _timeout(duetime: typing.AbsoluteTime,
             An obserable sequence switching to the other sequence in
             case of a timeout.
         """
-        def subscribe(observer, scheduler_=None):
+        def subscribe_observer(observer: typing.Observer,
+                           scheduler_: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(duetime, datetime):
@@ -57,7 +59,10 @@ def _timeout(duetime: typing.AbsoluteTime,
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
-                        subscription.disposable = obs.subscribe(observer, scheduler=scheduler)
+                        subscription.disposable = obs.subscribe_observer(
+                            observer,
+                            scheduler=scheduler
+                        )
 
                 timer.disposable = scheduler_method(duetime, action)
 
@@ -82,12 +87,12 @@ def _timeout(duetime: typing.AbsoluteTime,
                     _id[0] += 1
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(
+            original.disposable = source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler_
             )
             return CompositeDisposable(subscription, timer)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return timeout

@@ -1,12 +1,12 @@
-from typing import Callable, Any
+from typing import Any, Callable, Optional
 
-from rx.core.typing import Disposable
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.scheduler import TimeoutScheduler
 
 
-def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
+def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler
+              ) -> Callable[[Observable], Observable]:
     def debounce(source: Observable) -> Observable:
         """Ignores values from an observable sequence which are followed by
         another value before duetime.
@@ -22,7 +22,9 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
             returns the debounced observable sequence.
         """
 
-        def subscribe(observer, scheduler_=None) -> Disposable:
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler_: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             cancelable = SerialDisposable()
             has_value = [False]
@@ -59,14 +61,14 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler_
             )
             return CompositeDisposable(subscription, cancelable)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return debounce
 
 
@@ -86,7 +88,10 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
         Returns:
             The throttled observable sequence.
         """
-        def subscribe(observer, scheduler=None) -> Disposable:
+
+        def subscribe_observer(observer: typing.Observer,
+                               scheduler: Optional[typing.Scheduler] = None
+                               ) -> typing.Disposable:
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]
@@ -121,7 +126,7 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
                     has_value[0] = False
                     d.dispose()
 
-                d.disposable = throttle.subscribe_(
+                d.disposable = throttle.subscribe(
                     on_next,
                     observer.on_error,
                     on_completed,
@@ -143,12 +148,12 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next,
                 on_error,
                 on_completed,
                 scheduler=scheduler
             )
             return CompositeDisposable(subscription, cancelable)
-        return Observable(subscribe)
+        return Observable(subscribe_observer=subscribe_observer)
     return throttle_with_mapper

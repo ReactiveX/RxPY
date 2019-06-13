@@ -12,7 +12,9 @@ def _never() -> Observable:
         An observable sequence whose observers will never get called.
     """
 
-    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
+    def subscribe_observer(observer: typing.Observer,
+                           scheduler: Optional[typing.Scheduler] = None
+                           ) -> typing.Disposable:
         return Disposable()
 
-    return Observable(subscribe)
+    return Observable(subscribe_observer=subscribe_observer)
