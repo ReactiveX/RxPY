@@ -4,6 +4,7 @@ from datetime import datetime
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
+from rx.internal.utils import subscribe as _subscribe
 
 
 def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
@@ -38,7 +39,7 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime,
                 observer.on_completed()
 
             task = scheduler_method(end_time, action)
-            sub = observer.subscribe_to(source, scheduler=scheduler_)
+            sub = _subscribe(source, observer, scheduler=scheduler_)
             return CompositeDisposable(task, sub)
         return Observable(subscribe_observer=subscribe_observer)
     return take_until_with_time

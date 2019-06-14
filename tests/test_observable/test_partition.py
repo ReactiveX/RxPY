@@ -1,7 +1,7 @@
 import unittest
 
-import rx
 from rx import operators as ops
+from rx.internal.utils import subscribe as _subscribe
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -38,8 +38,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
         def action2(scheduler, state):
@@ -78,8 +78,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
         def action2(scheduler, state):
@@ -121,8 +121,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
 
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
@@ -169,8 +169,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
 
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
@@ -217,8 +217,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
 
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
@@ -264,8 +264,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
 
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
@@ -311,8 +311,8 @@ class TestPartition(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
-            subscription1[0] = results1.subscribe_to(observables[0])
-            subscription2[0] = results2.subscribe_to(observables[1])
+            subscription1[0] = _subscribe(observables[0], results1)
+            subscription2[0] = _subscribe(observables[1], results2)
 
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 

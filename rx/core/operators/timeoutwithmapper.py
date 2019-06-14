@@ -3,6 +3,7 @@ from typing import Callable, Optional, Any
 import rx
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.internal.utils import is_future, subscribe as _subscribe
 
 
 def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
@@ -58,7 +59,9 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
 
                 def on_next(x):
                     if timer_wins():
-                        subscription.disposable = observer.subscribe_to(other, scheduler=scheduler)
+                        subscription.disposable = _subscribe(other,
+                                                             observer,
+                                                             scheduler=scheduler)
 
                     d.dispose()
 
@@ -68,7 +71,7 @@ def _timeout_with_mapper(first_timeout: Optional[Observable] = None,
 
                 def on_completed():
                     if timer_wins():
-                        subscription.disposable = observer.subscribe_to(other)
+                        subscription.disposable = _subscribe(other, observer)
 
                 d.disposable = timeout.subscribe(
                     on_next,

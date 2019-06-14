@@ -2,6 +2,7 @@ from typing import Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable
+from rx.internal.utils import subscribe as _subscribe
 
 from .observable import Observable
 
@@ -16,11 +17,11 @@ class GroupedObservable(Observable):
                                ) -> typing.Disposable:
             return CompositeDisposable(
                 merged_disposable.disposable,
-                observer.subscribe_to(underlying_observable, scheduler=scheduler)
+                _subscribe(underlying_observable, observer, scheduler=scheduler)
             )
 
         self.underlying_observable = underlying_observable if not merged_disposable \
             else Observable(subscribe_observer=subscribe_observer)
 
     def _subscribe_core(self, observer, scheduler=None):
-        return observer.subscribe_to(self.underlying_observable, scheduler=scheduler)
+        return _subscribe(self.underlying_observable, observer, scheduler=scheduler)

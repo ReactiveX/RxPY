@@ -1,8 +1,9 @@
 import unittest
 
 from rx import return_value, throw, empty, create
-from rx.testing import TestScheduler, ReactiveTest
 from rx.disposable import SerialDisposable
+from rx.internal.utils import subscribe as _subscribe
+from rx.testing import TestScheduler, ReactiveTest
 
 from rx import operators as ops
 
@@ -113,7 +114,9 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x + y
 
-        d.disposable = results.subscribe_to(xs.pipe(ops.starmap(mapper)), scheduler=scheduler)
+        d.disposable = _subscribe(xs.pipe(ops.starmap(mapper)),
+                                  results,
+                                  scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()

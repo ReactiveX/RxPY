@@ -2,6 +2,7 @@ from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.core.observer import ObserveOnObserver
+from rx.internal.utils import subscribe as _subscribe
 
 
 def _observe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observable]:
@@ -26,8 +27,8 @@ def _observe_on(scheduler: typing.Scheduler) -> Callable[[Observable], Observabl
         def subscribe_observer(observer: typing.Observer,
                                scheduler_: Optional[typing.Scheduler] = None
                                ) -> typing.Disposable:
-            wrapped = ObserveOnObserver(scheduler, observer)
-            return wrapped.subscribe_to(source, scheduler=scheduler_)
+            return _subscribe(source, ObserveOnObserver(scheduler, observer),
+                             scheduler=scheduler_)
 
         return Observable(subscribe_observer=subscribe_observer)
     return observe_on

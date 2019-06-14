@@ -2,6 +2,7 @@ import unittest
 
 from rx import operators as ops
 from rx.subject import Subject
+from rx.internal.utils import subscribe as _subscribe
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -40,7 +41,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(50, action)
 
         def action0(scheduler, state):
-            d1[0] = obv.subscribe_to(c[0], scheduler=scheduler)
+            d1[0] = _subscribe(c[0], obv, scheduler=scheduler)
         scheduler.schedule_absolute(100, action0)
 
         def action1(scheduler, state):
@@ -80,7 +81,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0], scheduler=scheduler)
+            d1[0] = _subscribe(c[0], o, scheduler=scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -109,7 +110,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0])
+            d1[0] = _subscribe(c[0], o)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -138,7 +139,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0])
+            d1[0] = _subscribe(c[0], o)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -172,7 +173,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0], scheduler=scheduler)
+            d1[0] = _subscribe(c[0], o, scheduler=scheduler)
         scheduler.schedule_absolute(200, action2)
 
         def action3(scheduler, state):
@@ -206,7 +207,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0], scheduler=scheduler)
+            d1[0] = _subscribe(c[0], o, scheduler=scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()
@@ -232,7 +233,7 @@ class TestMulticast(unittest.TestCase):
         scheduler.schedule_absolute(100, action1)
 
         def action2(scheduler, state):
-            d1[0] = o.subscribe_to(c[0], scheduler=scheduler)
+            d1[0] = _subscribe(c[0], o, scheduler=scheduler)
         scheduler.schedule_absolute(400, action2)
 
         scheduler.start()

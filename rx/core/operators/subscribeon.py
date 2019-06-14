@@ -2,6 +2,7 @@ from typing import Callable, Optional
 from rx.core import Observable, typing
 from rx.core.typing import Scheduler
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
+from rx.internal.utils import subscribe as _subscribe
 
 
 def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
@@ -34,7 +35,8 @@ def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
             d.disposable = m
 
             def action(scheduler, state):
-                d.disposable = ScheduledDisposable(scheduler, observer.subscribe_to(source))
+                d.disposable = ScheduledDisposable(scheduler,
+                                                   _subscribe(source, observer))
 
             m.disposable = scheduler.schedule(action)
             return d

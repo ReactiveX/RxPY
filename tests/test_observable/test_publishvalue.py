@@ -2,6 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
+from rx.internal.utils import subscribe as _subscribe
 from rx.testing import TestScheduler, ReactiveTest
 
 on_next = ReactiveTest.on_next
@@ -43,7 +44,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = results.subscribe_to(ys[0])
+            subscription[0] = _subscribe(ys[0], results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -116,7 +117,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = results.subscribe_to(ys[0])
+            subscription[0] = _subscribe(ys[0], results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -178,7 +179,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = results.subscribe_to(ys[0])
+            subscription[0] = _subscribe(ys[0], results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -242,7 +243,7 @@ class TestPublishValue(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = results.subscribe_to(ys[0])
+            subscription[0] = _subscribe(ys[0], results)
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):

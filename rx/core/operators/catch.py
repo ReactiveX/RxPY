@@ -3,7 +3,7 @@ from typing import Callable, Optional, Union
 import rx
 from rx.core import Observable, typing
 from rx.disposable import SingleAssignmentDisposable, SerialDisposable
-from rx.internal.utils import is_future
+from rx.internal.utils import is_future, subscribe as _subscribe
 
 
 def catch_handler(source: Observable, handler: Callable[[Exception, Observable], Observable]) -> Observable:
@@ -25,7 +25,7 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             result = rx.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = observer.subscribe_to(result, scheduler=scheduler)
+            d.disposable = _subscribe(result, observer, scheduler=scheduler)
 
         d1.disposable = source.subscribe(
             observer.on_next,

@@ -6,7 +6,7 @@ from rx import from_future, throw
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.scheduler import TimeoutScheduler
-from rx.internal.utils import is_future
+from rx.internal.utils import is_future, subscribe as _subscribe
 
 
 def _timeout(duetime: typing.AbsoluteTime,
@@ -59,7 +59,9 @@ def _timeout(duetime: typing.AbsoluteTime,
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
-                        subscription.disposable = observer.subscribe_to(obs, scheduler=scheduler)
+                        subscription.disposable = _subscribe(obs,
+                                                             observer,
+                                                             scheduler=scheduler)
 
                 timer.disposable = scheduler_method(duetime, action)
 

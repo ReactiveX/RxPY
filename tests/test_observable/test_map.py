@@ -3,7 +3,7 @@ import unittest
 from rx import return_value, throw, empty, create
 from rx.testing import TestScheduler, ReactiveTest
 from rx.disposable import SerialDisposable
-
+from rx.internal.utils import subscribe as _subscribe
 from rx.operators import map, map_indexed
 
 on_next = ReactiveTest.on_next
@@ -66,7 +66,8 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x
 
-        d.disposable = results.subscribe_to(xs.pipe(map(projection)), scheduler=scheduler)
+        d.disposable = _subscribe(xs.pipe(map(projection)),
+                                  results, scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()
@@ -254,7 +255,7 @@ class TestSelect(unittest.TestCase):
 
             return x + index * 10
 
-        d.disposable = results.subscribe_to(xs.pipe(map_indexed(projection)))
+        d.disposable = _subscribe(xs.pipe(map_indexed(projection)), results)
 
         def action(scheduler, state):
             return d.dispose()

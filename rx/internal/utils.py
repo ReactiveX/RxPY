@@ -6,13 +6,24 @@ from rx.core import typing
 from rx.disposable import CompositeDisposable
 
 
+def subscribe(observable: typing.Observable,
+              observer: typing.Observer,
+              scheduler: Optional[typing.Scheduler] = None
+              ) -> typing.Disposable:
+    return observable.subscribe(observer.on_next,
+                                observer.on_error,
+                                observer.on_completed,
+                                scheduler=scheduler)
+
+
 def add_ref(xs, r):
     from rx.core import Observable
 
     def subscribe_observer(observer: typing.Observer,
                            scheduler: Optional[typing.Scheduler] = None
                            ) -> typing.Disposable:
-        return CompositeDisposable(r.disposable, observer.subscribe_to(xs))
+        return CompositeDisposable(r.disposable,
+                                   subscribe(xs, observer, scheduler=scheduler))
 
     return Observable(subscribe_observer=subscribe_observer)
 

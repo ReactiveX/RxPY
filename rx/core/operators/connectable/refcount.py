@@ -1,7 +1,8 @@
 from typing import Callable, Optional
 
-from rx.disposable import Disposable
 from rx.core import ConnectableObservable, Observable, typing
+from rx.disposable import Disposable
+from rx.internal.utils import subscribe as _subscribe
 
 
 def _ref_count() -> Callable[[ConnectableObservable], Observable]:
@@ -19,7 +20,7 @@ def _ref_count() -> Callable[[ConnectableObservable], Observable]:
                                ) -> typing.Disposable:
             count[0] += 1
             should_connect = count[0] == 1
-            subscription = observer.subscribe_to(source, scheduler=scheduler)
+            subscription = _subscribe(source, observer, scheduler=scheduler)
             if should_connect:
                 connectable_subscription[0] = source.connect(scheduler)
 

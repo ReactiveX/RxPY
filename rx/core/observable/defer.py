@@ -3,7 +3,7 @@ from asyncio import Future
 
 from rx import throw, from_future
 from rx.core import Observable, typing
-from rx.internal.utils import is_future
+from rx.internal.utils import is_future, subscribe as _subscribe
 
 
 def _defer(factory: Callable[[typing.Scheduler], Union[Observable, Future]]
@@ -29,8 +29,8 @@ def _defer(factory: Callable[[typing.Scheduler], Union[Observable, Future]]
         try:
             result = factory(scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
-            return observer.subscribe_to(throw(ex))
+            return _subscribe(throw(ex), observer)
 
         result = from_future(result) if is_future(result) else result
-        return observer.subscribe_to(result, scheduler=scheduler)
+        return _subscribe(result, observer, scheduler=scheduler)
     return Observable(subscribe_observer=subscribe_observer)

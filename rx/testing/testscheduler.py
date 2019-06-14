@@ -1,8 +1,9 @@
 from typing import Callable, Any
 
 import rx
-from rx.disposable import Disposable
 from rx.core import Observable, typing
+from rx.disposable import Disposable
+from rx.internal.utils import subscribe as _subscribe
 from rx.scheduler import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
@@ -80,7 +81,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            subscription[0] = observer.subscribe_to(source[0], scheduler=scheduler)
+            subscription[0] = _subscribe(source[0], observer, scheduler=scheduler)
             return Disposable()
         self.schedule_absolute(subscribed, action_subscribe)
 
