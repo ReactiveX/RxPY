@@ -20,6 +20,16 @@ class AutoDetachObserver(typing.Observer):
         self._subscription = SingleAssignmentDisposable()
         self.is_stopped = False
 
+    def subscribe_to(self,
+                     observable: typing.Observable,
+                     *,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> typing.Disposable:
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
+
     def on_next(self, value: Any) -> None:
         if self.is_stopped:
             return

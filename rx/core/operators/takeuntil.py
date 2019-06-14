@@ -36,7 +36,7 @@ def _take_until(other: Union[Observable, Future]
                 observer.on_completed()
 
             return CompositeDisposable(
-                source.subscribe_observer(observer),
+                observer.subscribe_to(source),
                 obs.subscribe(
                     on_completed,
                     observer.on_error,

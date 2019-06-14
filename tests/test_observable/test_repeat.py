@@ -135,7 +135,7 @@ class TestRepeat(unittest.TestCase):
         # scheduler4 = TestScheduler()
         # xss = Observable.create(lambda o: _raise('ex')).repeat()
         # with self.assertRaises(RxException):
-        #     xss.subscribe_observer(scheduler=scheduler4)
+        #     xss.subscribe(scheduler=scheduler4)
 
     def test_repeat_observable_repeat_count_basic(self):
         scheduler = TestScheduler()
@@ -187,11 +187,11 @@ class TestRepeat(unittest.TestCase):
 
         # scheduler3 = TestScheduler()
         # zs = rx.return_value(1).repeat(100)
-        # d = zs.subscribe_observer(on_completed=lambda: _raise('ex3'), scheduler=scheduler3)
+        # d = zs.subscribe(on_completed=lambda: _raise('ex3'), scheduler=scheduler3)
 
         # scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())
         # scheduler3.start()
 
     #     xss = Observable.create(lambda o: _raise('ex4')).repeat(3)
     #     with self.assertRaises(RxException):
-    #         xss.subscribe_observer()
+    #         xss.subscribe()

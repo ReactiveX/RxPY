@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-import rx
+from rx import throw
 from rx.core import Observable
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable
@@ -38,8 +38,8 @@ def _using(resource_factory: Callable[[], typing.Disposable],
 
             source = observable_factory(resource)
         except Exception as exception:  # pylint: disable=broad-except
-            d = rx.throw(exception).subscribe_observer(observer, scheduler=scheduler)
+            d = observer.subscribe_to(throw(exception), scheduler=scheduler)
             return CompositeDisposable(d, disp)
 
-        return CompositeDisposable(source.subscribe_observer(observer, scheduler=scheduler), disp)
+        return CompositeDisposable(observer.subscribe_to(source, scheduler=scheduler), disp)
     return Observable(subscribe_observer=subscribe_observer)

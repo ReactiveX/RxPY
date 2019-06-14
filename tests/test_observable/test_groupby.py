@@ -372,7 +372,7 @@ class TestGroupBy(unittest.TestCase):
                 c["results"][group.key] = result
 
                 def action21(scheduler, state):
-                    c["inner_subscriptions"][group.key] = group.subscribe_observer(result, scheduler=scheduler)
+                    c["inner_subscriptions"][group.key] = result.subscribe_to(group, scheduler=scheduler)
 
                 scheduler.schedule_relative(100, action21)
             c["outer_subscription"] = c["outer"].subscribe(next, scheduler=scheduler)
@@ -449,7 +449,7 @@ class TestGroupBy(unittest.TestCase):
                 c["result"] = scheduler.create_observer()
                 inners[group.key] = group
                 results[group.key] = c["result"]
-                inner_subscriptions[group.key] = group.subscribe_observer(c["result"], scheduler=scheduler)
+                inner_subscriptions[group.key] = c["result"].subscribe_to(group, scheduler=scheduler)
             c["outer_subscription"] = c["outer"].subscribe(on_next, scheduler=scheduler)
             return c["outer_subscription"]
         scheduler.schedule_absolute(subscribed, action2)
@@ -533,7 +533,7 @@ class TestGroupBy(unittest.TestCase):
                 results[group.key] = result
 
                 def action3(scheduler, state):
-                    inner_subscriptions[group.key] = group.subscribe_observer(result, scheduler=scheduler)
+                    inner_subscriptions[group.key] = result.subscribe_to(group, scheduler=scheduler)
 
                 scheduler.schedule_relative(100, action3)
             c["outer_subscription"] = c["outer"].subscribe(on_next, lambda e: None, scheduler=scheduler)
@@ -582,7 +582,7 @@ class TestGroupBy(unittest.TestCase):
 
         def action2(scheduler, state):
             results[0] = scheduler.create_observer()
-            xs[0].subscribe_observer(results[0], scheduler=scheduler)
+            results[0].subscribe_to(xs[0], scheduler=scheduler)
         scheduler.schedule_absolute(subscribed, action2)
 
         scheduler.start()

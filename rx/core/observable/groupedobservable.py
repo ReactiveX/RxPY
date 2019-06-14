@@ -16,11 +16,11 @@ class GroupedObservable(Observable):
                                ) -> typing.Disposable:
             return CompositeDisposable(
                 merged_disposable.disposable,
-                underlying_observable.subscribe_observer(observer, scheduler=scheduler)
+                observer.subscribe_to(underlying_observable, scheduler=scheduler)
             )
 
         self.underlying_observable = underlying_observable if not merged_disposable \
             else Observable(subscribe_observer=subscribe_observer)
 
     def _subscribe_core(self, observer, scheduler=None):
-        return self.underlying_observable.subscribe_observer(observer, scheduler=scheduler)
+        return observer.subscribe_to(self.underlying_observable, scheduler=scheduler)

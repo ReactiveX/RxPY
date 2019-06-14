@@ -38,6 +38,6 @@ def _time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Ob
                 last = now
                 return TimeInterval(value=value, interval=span)
 
-            return source.pipe(ops.map(mapper)).subscribe_observer(observer, scheduler=scheduler_)
+            return observer.subscribe_to(source.pipe(ops.map(mapper)), scheduler=scheduler_)
         return Observable(subscribe_observer=subscribe_observer)
     return time_interval

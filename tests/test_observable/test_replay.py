@@ -29,7 +29,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results, scheduler=scheduler)
+            subscription[0] = results.subscribe_to(ys[0], scheduler=scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -79,7 +79,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -121,7 +121,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scehduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -163,7 +163,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -267,7 +267,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -318,7 +318,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results, scheduler=scheduler)
+            subscription[0] = results.subscribe_to(ys[0], scheduler=scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -359,7 +359,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results, scheduler=scheduler)
+            subscription[0] = results.subscribe_to(ys[0], scheduler=scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):
@@ -401,7 +401,7 @@ class TestReplay(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results, scheduler=scheduler)
+            subscription[0] = results.subscribe_to(ys[0], scheduler=scheduler)
         scheduler.schedule_absolute(450, action1)
 
         def action2(scheduler, state):

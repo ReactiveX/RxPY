@@ -34,7 +34,7 @@ def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
             d.disposable = m
 
             def action(scheduler, state):
-                d.disposable = ScheduledDisposable(scheduler, source.subscribe_observer(observer))
+                d.disposable = ScheduledDisposable(scheduler, observer.subscribe_to(source))
 
             m.disposable = scheduler.schedule(action)
             return d

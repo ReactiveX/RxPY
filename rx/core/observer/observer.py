@@ -20,6 +20,16 @@ class Observer(typing.Observer, typing.Disposable):
         self._handler_on_error = on_error or default_error
         self._handler_on_completed = on_completed or noop
 
+    def subscribe_to(self,
+                     observable: typing.Observable,
+                     *,
+                     scheduler: Optional[typing.Scheduler] = None
+                     ) -> typing.Disposable:
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
+
     def on_next(self, value: Any) -> None:
         """Notify the observer of a new element in the sequence."""
         if not self.is_stopped:

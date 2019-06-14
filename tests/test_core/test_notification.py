@@ -1,4 +1,6 @@
-from rx.core.typing import Observer
+from typing import Optional
+
+from rx.core.typing import Observable, Observer, Scheduler
 from rx.testing import TestScheduler, ReactiveTest
 from rx.core.notification import OnNext, OnError, OnCompleted
 
@@ -46,6 +48,12 @@ class CheckOnNextObserver(Observer):
 
         self.value = None
 
+    def subscribe_to(self, observable, *, scheduler=None):
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
+
     def on_next(self, value):
         self.value = value
         return self.value
@@ -72,6 +80,11 @@ class AcceptObserver(Observer):
         self._on_error = on_error
         self._on_completed = on_completed
 
+    def subscribe_to(self, observable, *, scheduler=None):
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
     def on_next(self, value):
         return self._on_next(value)
 
@@ -162,6 +175,12 @@ class CheckOnErrorObserver(Observer):
         super(CheckOnErrorObserver, self).__init__()
 
         self.error = None
+
+    def subscribe_to(self, observable, *, scheduler=None):
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
 
     def on_next(value):
         raise NotImplementedError()
@@ -264,6 +283,12 @@ class CheckOnCompletedObserver(Observer):
         super(CheckOnCompletedObserver, self).__init__()
 
         self.completed = False
+
+    def subscribe_to(self, observable, *, scheduler=None):
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
 
     def on_next(self):
         raise NotImplementedError()

@@ -53,7 +53,7 @@ def test_infinite():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
-        subscription[0] = xs.subscribe_observer(subject[0])
+        subscription[0] = subject[0].subscribe_to(xs)
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
@@ -61,15 +61,15 @@ def test_infinite():
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
-        subscription1[0] = subject[0].subscribe_observer(results1)
+        subscription1[0] = results1.subscribe_to(subject[0])
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
-        subscription2[0] = subject[0].subscribe_observer(results2)
+        subscription2[0] = results2.subscribe_to(subject[0])
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
-        subscription3[0] = subject[0].subscribe_observer(results3)
+        subscription3[0] = results3.subscribe_to(subject[0])
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
@@ -124,7 +124,7 @@ def test_finite():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
-        subscription[0] = xs.subscribe_observer(subject[0])
+        subscription[0] = subject[0].subscribe_to(xs)
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
@@ -132,15 +132,15 @@ def test_finite():
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
-        subscription1[0] = subject[0].subscribe_observer(results1)
+        subscription1[0] = results1.subscribe_to(subject[0])
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
-        subscription2[0] = subject[0].subscribe_observer(results2)
+        subscription2[0] = results2.subscribe_to(subject[0])
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
-        subscription3[0] = subject[0].subscribe_observer(results3)
+        subscription3[0] = results3.subscribe_to(subject[0])
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
@@ -196,7 +196,7 @@ def test_error():
     scheduler.schedule_absolute(100, action)
 
     def action1(scheduler, state=None):
-        subscription[0] = xs.subscribe_observer(subject[0])
+        subscription[0] = subject[0].subscribe_to(xs)
     scheduler.schedule_absolute(200, action1)
 
     def action2(scheduler, state=None):
@@ -204,15 +204,15 @@ def test_error():
     scheduler.schedule_absolute(1000, action2)
 
     def action3(scheduler, state=None):
-        subscription1[0] = subject[0].subscribe_observer(results1)
+        subscription1[0] = results1.subscribe_to(subject[0])
     scheduler.schedule_absolute(300, action3)
 
     def action4(scheduler, state=None):
-        subscription2[0] = subject[0].subscribe_observer(results2)
+        subscription2[0] = results2.subscribe_to(subject[0])
     scheduler.schedule_absolute(400, action4)
 
     def action5(scheduler, state=None):
-        subscription3[0] = subject[0].subscribe_observer(results3)
+        subscription3[0] = results3.subscribe_to(subject[0])
     scheduler.schedule_absolute(900, action5)
 
     def action6(scheduler, state=None):
@@ -261,7 +261,7 @@ def test_canceled():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
-        subscription[0] = xs.subscribe_observer(subject[0])
+        subscription[0] = subject[0].subscribe_to(xs)
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
@@ -269,15 +269,15 @@ def test_canceled():
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
-        subscription1[0] = subject[0].subscribe_observer(results1)
+        subscription1[0] = results1.subscribe_to(subject[0])
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
-        subscription2[0] = subject[0].subscribe_observer(results2)
+        subscription2[0] = results2.subscribe_to(subject[0])
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
-        subscription3[0] = subject[0].subscribe_observer(results3)
+        subscription3[0] = results3.subscribe_to(subject[0])
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
@@ -318,15 +318,15 @@ def test_subject_disposed():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
-        subscription1[0] = subject[0].subscribe_observer(results1)
+        subscription1[0] = results1.subscribe_to(subject[0])
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
-        subscription2[0] = subject[0].subscribe_observer(results2)
+        subscription2[0] = results2.subscribe_to(subject[0])
     scheduler.schedule_absolute(300, action3)
 
     def action4(scheduler, state=None):
-        subscription3[0] = subject[0].subscribe_observer(results3)
+        subscription3[0] = results3.subscribe_to(subject[0])
     scheduler.schedule_absolute(400, action4)
 
     def action5(scheduler, state=None):

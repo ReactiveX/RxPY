@@ -7,7 +7,6 @@ from rx.scheduler import VirtualTimeScheduler
 from .subscription import Subscription
 
 
-
 class ColdObservable(Observable):
     def __init__(self, scheduler: VirtualTimeScheduler, messages) -> None:
         super().__init__()

@@ -80,7 +80,7 @@ class TestScheduler(VirtualTimeScheduler):
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
-            subscription[0] = source[0].subscribe_observer(observer, scheduler=scheduler)
+            subscription[0] = observer.subscribe_to(source[0], scheduler=scheduler)
             return Disposable()
         self.schedule_absolute(subscribed, action_subscribe)
 

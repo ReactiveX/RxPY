@@ -25,7 +25,7 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             result = rx.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
-            d.disposable = result.subscribe_observer(observer, scheduler=scheduler)
+            d.disposable = observer.subscribe_to(result, scheduler=scheduler)
 
         d1.disposable = source.subscribe(
             observer.on_next,

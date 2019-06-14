@@ -68,7 +68,7 @@ class TestAsObservable(unittest.TestCase):
 
         def subscribe(obs, scheduler=None):
             subscribed[0] = True
-            disp = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)).subscribe_observer(obs)
+            disp = obs.subscribe_to(scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250)))
 
             def func():
                 return disp.dispose()

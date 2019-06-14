@@ -24,7 +24,7 @@ def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
                                scheduler: Optional[typing.Scheduler] = None
                                ) -> typing.Disposable:
             try:
-                subscription = source.subscribe_observer(observer, scheduler=scheduler)
+                subscription = observer.subscribe_to(source, scheduler=scheduler)
             except Exception:
                 action()
                 raise

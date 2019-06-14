@@ -66,9 +66,7 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x
 
-        d.disposable = xs.pipe(
-            map(projection)
-        ).subscribe_observer(results, scheduler=scheduler)
+        d.disposable = results.subscribe_to(xs.pipe(map(projection)), scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()
@@ -256,7 +254,7 @@ class TestSelect(unittest.TestCase):
 
             return x + index * 10
 
-        d.disposable = xs.pipe(map_indexed(projection)).subscribe_observer(results)
+        d.disposable = results.subscribe_to(xs.pipe(map_indexed(projection)))
 
         def action(scheduler, state):
             return d.dispose()

@@ -18,7 +18,7 @@ def _as_observable() -> Callable[[Observable], Observable]:
         def subscribe_observer(observer: typing.Observer,
                                scheduler: Optional[typing.Scheduler] = None
                                ) -> typing.Disposable:
-            return source.subscribe_observer(observer, scheduler=scheduler)
+            return observer.subscribe_to(source, scheduler=scheduler)
 
         return Observable(subscribe_observer=subscribe_observer)
     return as_observable

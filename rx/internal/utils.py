@@ -12,7 +12,7 @@ def add_ref(xs, r):
     def subscribe_observer(observer: typing.Observer,
                            scheduler: Optional[typing.Scheduler] = None
                            ) -> typing.Disposable:
-        return CompositeDisposable(r.disposable, xs.subscribe_observer(observer))
+        return CompositeDisposable(r.disposable, observer.subscribe_to(xs))
 
     return Observable(subscribe_observer=subscribe_observer)
 

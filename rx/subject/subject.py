@@ -15,6 +15,8 @@ class Subject(Observable, Observer, typing.Subject):
     """
 
     def __init__(self) -> None:
+        """Creates a new instance of Subject."""
+
         super().__init__()
 
         self.is_disposed = False

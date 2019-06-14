@@ -34,6 +34,12 @@ class MySubject(Observable, Observer):
         self.disposed = False
         self.observer = None
 
+    def subscribe_to(self, observable, *, scheduler=None):
+        return observable.subscribe(self.on_next,
+                                    self.on_error,
+                                    self.on_completed,
+                                    scheduler=scheduler)
+
     def _subscribe_core(self, observer, scheduler=None):
         self.subscribe_count += 1
         self.observer = observer
@@ -186,7 +192,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -255,7 +261,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -317,7 +323,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):
@@ -379,7 +385,7 @@ class TestPublish(unittest.TestCase):
         scheduler.schedule_absolute(created, action0)
 
         def action1(scheduler, state):
-            subscription[0] = ys[0].subscribe_observer(results)
+            subscription[0] = results.subscribe_to(ys[0])
         scheduler.schedule_absolute(subscribed, action1)
 
         def action2(scheduler, state):

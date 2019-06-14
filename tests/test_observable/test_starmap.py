@@ -113,9 +113,7 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x + y
 
-        d.disposable = xs.pipe(
-            ops.starmap(mapper)
-        ).subscribe_observer(results, scheduler=scheduler)
+        d.disposable = results.subscribe_to(xs.pipe(ops.starmap(mapper)), scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()

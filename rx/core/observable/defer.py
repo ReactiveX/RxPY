@@ -29,8 +29,8 @@ def _defer(factory: Callable[[typing.Scheduler], Union[Observable, Future]]
         try:
             result = factory(scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
-            return throw(ex).subscribe_observer(observer)
+            return observer.subscribe_to(throw(ex))
 
         result = from_future(result) if is_future(result) else result
-        return result.subscribe_observer(observer, scheduler=scheduler)
+        return observer.subscribe_to(result, scheduler=scheduler)
     return Observable(subscribe_observer=subscribe_observer)
