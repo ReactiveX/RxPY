@@ -2,8 +2,7 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.core import Observable
-from rx.core.typing import Observer
+from rx.core import Observable, Observer
 from rx.testing import TestScheduler, ReactiveTest
 from rx.subject import Subject
 from rx.core import ConnectableObservable
@@ -26,12 +25,6 @@ class MySubject(Observable, Observer):
         self.dispose_on_map = {}
         self.subscribe_count = 0
         self.disposed = False
-
-    def subscribe_to(self, observable, *, scheduler=None):
-        return observable.subscribe(self.on_next,
-                                    self.on_error,
-                                    self.on_completed,
-                                    scheduler=scheduler)
 
     def _subscribe_core(self, observer, scheduler=None):
         self.subscribe_count += 1

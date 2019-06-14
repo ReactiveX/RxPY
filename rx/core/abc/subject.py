@@ -9,10 +9,6 @@ class Subject(Observer, Observable):
     __slots__ = ()
 
     @abstractmethod
-    def subscribe_to(self, observable, *, scheduler=None):
-        raise NotImplementedError
-
-    @abstractmethod
     def on_next(self, value):
         raise NotImplementedError
 

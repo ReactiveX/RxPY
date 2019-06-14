@@ -1,6 +1,4 @@
-from typing import Optional
-
-from rx.core.typing import Observable, Observer, Scheduler
+from rx.core.observer import Observer
 from rx.testing import TestScheduler, ReactiveTest
 from rx.core.notification import OnNext, OnError, OnCompleted
 
@@ -44,15 +42,8 @@ def test_on_next_tostring():
 
 class CheckOnNextObserver(Observer):
     def __init__(self):
-        super(CheckOnNextObserver, self).__init__()
-
+        super().__init__()
         self.value = None
-
-    def subscribe_to(self, observable, *, scheduler=None):
-        return observable.subscribe(self.on_next,
-                                    self.on_error,
-                                    self.on_completed,
-                                    scheduler=scheduler)
 
     def on_next(self, value):
         self.value = value
@@ -76,20 +67,16 @@ def test_on_next_accept_observer():
 
 class AcceptObserver(Observer):
     def __init__(self, on_next, on_error, on_completed):
+        super().__init__()
         self._on_next = on_next
         self._on_error = on_error
         self._on_completed = on_completed
 
-    def subscribe_to(self, observable, *, scheduler=None):
-        return observable.subscribe(self.on_next,
-                                    self.on_error,
-                                    self.on_completed,
-                                    scheduler=scheduler)
     def on_next(self, value):
         return self._on_next(value)
 
-    def on_error(self, exception):
-        return self._on_error(exception)
+    def on_error(self, error):
+        return self._on_error(error)
 
     def on_completed(self):
         return self._on_completed()
@@ -100,8 +87,10 @@ def test_on_next_accept_observer_with_result():
 
     def on_next(x):
         return "OK"
+
     def on_error(err):
         assert False
+
     def on_completed():
         assert False
 
@@ -172,21 +161,14 @@ def test_throw_tostring():
 
 class CheckOnErrorObserver(Observer):
     def __init__(self):
-        super(CheckOnErrorObserver, self).__init__()
-
+        super().__init__()
         self.error = None
 
-    def subscribe_to(self, observable, *, scheduler=None):
-        return observable.subscribe(self.on_next,
-                                    self.on_error,
-                                    self.on_completed,
-                                    scheduler=scheduler)
-
-    def on_next(value):
+    def on_next(self, value):
         raise NotImplementedError()
 
-    def on_error(self, exception):
-        self.error = exception
+    def on_error(self, error):
+        self.error = error
 
     def on_completed(self):
         raise NotImplementedError()
@@ -280,20 +262,13 @@ def test_close_tostring():
 
 class CheckOnCompletedObserver(Observer):
     def __init__(self):
-        super(CheckOnCompletedObserver, self).__init__()
-
+        super().__init__()
         self.completed = False
 
-    def subscribe_to(self, observable, *, scheduler=None):
-        return observable.subscribe(self.on_next,
-                                    self.on_error,
-                                    self.on_completed,
-                                    scheduler=scheduler)
-
-    def on_next(self):
+    def on_next(self, value):
         raise NotImplementedError()
 
-    def on_error(self):
+    def on_error(self, error):
         raise NotImplementedError()
 
     def on_completed(self):

@@ -219,14 +219,6 @@ class Observer(Generic[T_in], abc.Observer):
     __slots__ = ()
 
     @abstractmethod
-    def subscribe_to(self,
-                     observable: 'Observable',
-                     *,
-                     scheduler: Optional[Scheduler] = None
-                     ) -> Disposable:
-        raise NotImplementedError
-
-    @abstractmethod
     def on_next(self, value: T_in) -> None:
         """Notifies the observer of a new element in the sequence.
 
@@ -320,14 +312,6 @@ class Subject(Generic[T_in, T_out], abc.Subject):
             sequence.
         """
 
-        raise NotImplementedError
-
-    @abstractmethod
-    def subscribe_to(self,
-                     observable: 'Observable',
-                     *,
-                     scheduler: Optional[Scheduler] = None
-                     ) -> Disposable:
         raise NotImplementedError
 
     @abstractmethod
