@@ -6,7 +6,7 @@ import time
 import inspect
 import logging
 from random import randint
-from rx.testing import marbles
+
 
 logging.basicConfig(format="%(threadName)s:%(message)s")
 log = logging.getLogger("Rx")
@@ -88,7 +88,7 @@ class Subscriber:
 def subs(src, **kw):
     # required for e.g. .multicast:
     obs = Subscriber(src, **kw)
-    subscription = obs.subscribe_to(src)
+    subscription = src.subscribe(obs.on_next, obs.on_error, obs.on_completed)
     if kw.pop('return_subscriber', None):
         return subscription, obs
     return subscription

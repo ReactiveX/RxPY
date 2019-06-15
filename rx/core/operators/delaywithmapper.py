@@ -86,10 +86,10 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
             if not sub_delay:
                 start()
             else:
-                subscription.disposable(sub_delay.subscribe_(
+                subscription.disposable = sub_delay.subscribe(
                     lambda _: start(),
                     observer.on_error,
-                    start))
+                    start)
 
             return CompositeDisposable(subscription, delays)
         return Observable(subscribe_observer=subscribe_observer)
