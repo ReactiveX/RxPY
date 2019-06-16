@@ -50,13 +50,13 @@ class Observable(typing.Observable):
                         observer: typing.Observer,
                         scheduler: Optional[typing.Scheduler] = None
                         ) -> typing.Disposable:
-        if callable(self._subscribe):
+        if self._subscribe is not None:
             return self._subscribe(observer.on_next,
                                    observer.on_error,
                                    observer.on_completed,
                                    scheduler)
 
-        if callable(self._subscribe_observer):
+        if self._subscribe_observer is not None:
             return self._subscribe_observer(observer, scheduler)
 
         return Disposable()
