@@ -280,4 +280,4 @@ class Subject(Generic[T_in, T_out], abc.Subject):
         raise NotImplementedError
 
 
-Subscribable = Callable[[Observer, Optional[Scheduler]], Disposable]
+Subscription = Callable[[Observer, Optional[Scheduler]], Disposable]

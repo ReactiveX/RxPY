@@ -2521,12 +2521,16 @@ def skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sch
 
 def slice(start: Optional[int] = None,
           stop: Optional[int] = None,
-          step: int = 1
+          step: Optional[int] = None
           ) -> Callable[[Observable], Observable]:
     """The slice operator.
 
-    Slices the given observable. It is basically a wrapper around the
-    operators skip(), skip_last(), take(), take_last() and filter().
+    Slices the given observable. It is basically a wrapper around the operators
+    :func:`skip <rx.operators.skip>`,
+    :func:`skip_last <rx.operators.skip_last>`,
+    :func:`take <rx.operators.take>`,
+    :func:`take_last <rx.operators.take_last>` and
+    :func:`filter <rx.operators.filter>`.
 
     .. marble::
         :alt: slice
@@ -2541,7 +2545,8 @@ def slice(start: Optional[int] = None,
         >>> result = source.slice(1, -1, 2)
 
     Args:
-        stop:Last element to take of skip last
+        start: First element to take of skip last
+        stop: Last element to take of skip last
         step: Takes every step element. Must be larger than zero
 
     Returns:

@@ -8,7 +8,7 @@ improvements, some of the most important ones being:
 
 * A better integration in IDEs via autocompletion support.
 * New operators can be implemented outside of RxPY.
-* Operator chains are now built via the *pipe* operator.
+* Operator chains are now built via the :func:`pipe <rx.Observable.pipe>` operator.
 * A default scheduler can be provided in an operator chain.
 
 Pipe Based Operator Chaining
@@ -27,9 +27,10 @@ using the existing Observable methods:
         .filter(lambda i: i >= 5) \
         .subscribe(lambda value: print("Received {0}".format(value)))
 
-Chaining in RxPY v3 is based on the pipe operator. This pipe operator is now one
-of the only methods of the Observable class. In RxPY v3, operators are
-implemented as functions:
+Chaining in RxPY v3 is based on the :func:`pipe <rx.Observable.pipe>` operator.
+This operator is now one of the only methods of the
+:class:`Observable <rx.Observable>` class. In RxPY v3, operators are implemented
+as functions:
 
 .. code:: python
 
@@ -49,8 +50,13 @@ Removal Of The Result Mapper
 -----------------------------
 
 The mapper function is removed in operators that combine the values of several
-observables. This change applies to the following operators: zip,
-zip_with_iterable, join, group_join, combine_latest, and with_latest_from.
+observables. This change applies to the following operators:
+:func:`combine_latest <rx.operators.combine_latest>`,
+:func:`group_join <rx.operators.group_join>`,
+:func:`join <rx.operators.join>`,
+:func:`with_latest_from <rx.operators.with_latest_from>`,
+:func:`zip <rx.operators.zip>`, and
+:func:`zip_with_iterable <rx.operators.zip_with_iterable>`.
 
 In RxPY v1, these operators were used the following way:
 
@@ -107,7 +113,7 @@ The subscription function provided to the :func:`create <rx.create>` operator
 now takes two parameters: An observer and a scheduler. The scheduler parameter
 is new: If a scheduler has been set in the call to subscribe, then this
 scheduler is passed to the subscription function. Otherwise this parameter is
-set to None.
+set to *None*.
 
 One can use or ignore this parameter. This new scheduler parameter allows the
 create operator to use the default scheduler provided in the subscribe call. So
@@ -118,8 +124,11 @@ Removal Of List Of Observables
 -------------------------------
 
 The support of list of Observables as a parameter has been removed in the
-following operators: merge, zip, combine_latest. For example in RxPY v1 the
-merge operator could be called with a list:
+following operators:
+:func:`merge <rx.merge>`,
+:func:`zip <rx.zip>`, and
+:func:`combine_latest <rx.combine_latest>`.
+For example in RxPY v1 the *merge* operator could be called with a list:
 
 .. code:: python
 
@@ -175,7 +184,7 @@ an Observable completes was done the following way:
     res = Observable.from_([1, 2, 3, 4]).to_blocking().last()
     print(res)
 
-This is now done with the *run* operator:
+This is now done with the :func:`run <rx.Observable.run>` operator:
 
 .. code:: python
 
@@ -184,9 +193,9 @@ This is now done with the *run* operator:
     res = rx.from_([1, 2, 3, 4]).run()
     print(res)
 
-The *run* operator returns only the last value emitted by the source Observable.
-It is possible to use the previous blocking operators by using the standard
-operators before *run*. For example:
+The *run* operator returns only the last value emitted by the source
+Observable. It is possible to use the previous blocking operators by using the
+standard operators before *run*. For example:
 
 * Get first item: obs.pipe(ops.first()).run()
 * Get all items: obs.pipe(ops.to_list()).run()
@@ -198,10 +207,11 @@ Back-Pressure
 Support for back-pressure - and so ControllableObservable - has been removed in
 RxPY v3. Back-pressure can be implemented in several ways, and many strategies
 can be adopted. So we consider that such features are beyond the scope of RxPY.
-You are encouraged to provide independent implementations as separate packages so
-that they can be shared by the community.
+You are encouraged to provide independent implementations as separate packages
+so that they can be shared by the community.
 
-List of community projects supporting backpressure can be found in :ref:`additional_reading`.
+List of community projects supporting backpressure can be found in
+:ref:`additional_reading`.
 
 Time Is In Seconds
 ------------------
@@ -218,3 +228,22 @@ is now written as:
 .. code:: python
 
     ops.debounce(0.5)
+
+Packages Renamed
+----------------
+
+Some packages were renamed:
+
++-----------------------+-------------------------+
+| Old name              | New name                |
++-----------------------+-------------------------+
+| *rx.concurrency*      | *rx.scheduler*          |
++-----------------------+-------------------------+
+| *rx.disposables*      | *rx.disposable*         |
++-----------------------+-------------------------+
+| *rx.subjects*         | *rx.subject*            |
++-----------------------+-------------------------+
+
+Furthermore, the package formerly known as *rx.concurrency.mainloopscheduler*
+has been split into two parts, *rx.scheduler.mainloop* and
+*rx.scheduler.eventloop*.

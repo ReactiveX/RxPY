@@ -144,7 +144,7 @@ html_short_title = project + ' ' + version
 #
 # html_theme_options = {}
 html_theme_options = {
-    'projectlink': url,
+    'projectlink': url
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
