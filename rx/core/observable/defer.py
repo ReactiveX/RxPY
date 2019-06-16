@@ -7,7 +7,8 @@ from rx.core.typing import Scheduler
 from rx.internal.utils import is_future
 
 
-def _defer(observable_factory: Callable[[Scheduler], Union[Observable, Future]]) -> Observable:
+def _defer(factory: Callable[[Scheduler], Union[Observable, Future]]
+           ) -> Observable:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 
@@ -25,7 +26,7 @@ def _defer(observable_factory: Callable[[Scheduler], Union[Observable, Future]])
 
     def subscribe(observer, scheduler=None):
         try:
-            result = observable_factory(scheduler)
+            result = factory(scheduler)
         except Exception as ex:  # By design. pylint: disable=W0703
             return throw(ex).subscribe(observer)
 

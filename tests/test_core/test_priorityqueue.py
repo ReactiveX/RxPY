@@ -20,15 +20,12 @@ class TestItem():
         return str(self)
 
     def __eq__(self, other):
-        print("__eq__")
-        return self.value == other.value #and self.label == other.label
+        return self.value == other.value  # and self.label == other.label
 
     def __lt__(self, other):
-        print("__lt__")
         return self.value < other.value
 
     def __gt__(self, other):
-        print("__gt__")
         return self.value > other.value
 
 
