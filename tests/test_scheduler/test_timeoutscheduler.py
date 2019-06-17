@@ -1,5 +1,6 @@
 import unittest
 
+import threading
 from datetime import timedelta
 from time import sleep
 
@@ -9,12 +10,46 @@ from rx.internal.basic import default_now
 
 class TestTimeoutScheduler(unittest.TestCase):
 
+    def test_timeout_singleton(self):
+        scheduler = [
+            TimeoutScheduler(),
+            TimeoutScheduler.instance()
+        ]
+        assert scheduler[0] is scheduler[1]
+
+        gate = [threading.Semaphore(0), threading.Semaphore(0)]
+        scheduler = [None, None]
+
+        def run(idx):
+            scheduler[idx] = TimeoutScheduler()
+            gate[idx].release()
+
+        for idx in (0, 1):
+            threading.Thread(target=run, args=(idx,)).start()
+            gate[idx].acquire()
+
+        assert scheduler[0] is not None
+        assert scheduler[1] is not None
+        assert scheduler[0] is scheduler[1]
+
+    def test_timeout_extend(self):
+        class MyScheduler(TimeoutScheduler):
+            pass
+
+        scheduler = [
+            MyScheduler(),
+            MyScheduler.instance(),
+            TimeoutScheduler.instance(),
+        ]
+        assert scheduler[0] is scheduler[1]
+        assert scheduler[0] is not scheduler[2]
+
     def test_timeout_now(self):
         scheduler = TimeoutScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
-    def test_threadpool_now_units(self):
+    def test_timeout_now_units(self):
         scheduler = TimeoutScheduler()
         diff = scheduler.now
         sleep(0.1)

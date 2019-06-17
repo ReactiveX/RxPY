@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from rx.core import typing, Observable
-from rx.scheduler import immediate_scheduler
+from rx.scheduler import ImmediateScheduler
 
 
 def _empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
@@ -9,7 +9,7 @@ def _empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
                   scheduler_: Optional[typing.Scheduler] = None
                   ) -> typing.Disposable:
 
-        _scheduler = scheduler or scheduler_ or immediate_scheduler
+        _scheduler = scheduler or scheduler_ or ImmediateScheduler.instance()
 
         def action(_: typing.Scheduler, __: Any) -> None:
             observer.on_completed()

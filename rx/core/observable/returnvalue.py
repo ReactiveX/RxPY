@@ -2,7 +2,7 @@ from typing import Any, Callable, Optional
 
 from rx.core import typing
 from rx.core import Observable
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.core.abc.scheduler import Scheduler
 
 
@@ -24,7 +24,7 @@ def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> O
     """
 
     def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
-        _scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.instance()
 
         def action(scheduler: typing.Scheduler, state: Any = None):
             observer.on_next(value)
@@ -36,7 +36,7 @@ def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> O
 
 def _from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
-        _scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.instance()
 
         def action(_: Scheduler, __: Any = None):
             nonlocal observer

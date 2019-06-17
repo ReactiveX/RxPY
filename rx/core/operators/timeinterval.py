@@ -4,7 +4,8 @@ from datetime import timedelta
 
 from rx import operators as ops
 from rx.core import Observable, typing
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
+
 
 class TimeInterval(NamedTuple):
     value: Any
@@ -24,7 +25,7 @@ def _time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Ob
         """
 
         def subscribe(observer, scheduler_):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
             last = _scheduler.now
 
             def mapper(value):

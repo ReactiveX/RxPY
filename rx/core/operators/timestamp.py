@@ -3,8 +3,9 @@ from datetime import datetime
 
 from rx import defer
 from rx.core import Observable, typing
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx import operators
+
 
 class Timestamp(NamedTuple):
     value: Any
@@ -29,7 +30,7 @@ def _timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observ
         """
 
         def factory(scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
             mapper = operators.map(lambda value: Timestamp(value=value, timestamp=_scheduler.now))
 
             return source.pipe(mapper)

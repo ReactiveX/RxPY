@@ -1,8 +1,7 @@
-from typing import Callable, Union, Optional
-from datetime import timedelta
+from typing import Callable, Optional
 
 from rx.core import Observable, typing
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx.internal.utils import add_ref
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
 from rx.subject import Subject
@@ -12,7 +11,7 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
                                ) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
 
             n = [0]
             s = [None]

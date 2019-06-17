@@ -2,7 +2,7 @@ from typing import Any
 
 from rx.core import Observable
 from rx.core.typing import Mapper, Predicate
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
@@ -12,7 +12,7 @@ def _generate(initial_state: Any,
               ) -> Observable:
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or CurrentThreadScheduler.instance()
         first = True
         state = initial_state
         mad = MultipleAssignmentDisposable()

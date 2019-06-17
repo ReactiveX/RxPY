@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from rx.core import Observable, typing
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 
 
 def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
@@ -18,7 +18,7 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
             An Observable that performs the throttle operation.
         """
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
 
             duration = _scheduler.to_timedelta(window_duration or 0.0)
             if duration <= _scheduler.to_timedelta(0):

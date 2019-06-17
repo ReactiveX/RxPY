@@ -2,7 +2,7 @@ from typing import Optional
 
 from rx.core import typing
 from rx.core import Observable
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
@@ -40,7 +40,7 @@ def _range(start: int,
     def subscribe(observer, scheduler_: typing.Scheduler = None):
         nonlocal range_t
 
-        _scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.instance()
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, iterator):

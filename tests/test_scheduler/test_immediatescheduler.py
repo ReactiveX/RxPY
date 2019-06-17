@@ -1,6 +1,7 @@
 import pytest
 import unittest
 
+import threading
 from datetime import timedelta
 from time import sleep
 
@@ -12,6 +13,40 @@ from rx.internal.exceptions import WouldBlockException
 
 
 class TestImmediateScheduler(unittest.TestCase):
+
+    def test_immediate_singleton(self):
+        scheduler = [
+            ImmediateScheduler(),
+            ImmediateScheduler.instance()
+        ]
+        assert scheduler[0] is scheduler[1]
+
+        gate = [threading.Semaphore(0), threading.Semaphore(0)]
+        scheduler = [None, None]
+
+        def run(idx):
+            scheduler[idx] = ImmediateScheduler()
+            gate[idx].release()
+
+        for idx in (0, 1):
+            threading.Thread(target=run, args=(idx,)).start()
+            gate[idx].acquire()
+
+        assert scheduler[0] is not None
+        assert scheduler[1] is not None
+        assert scheduler[0] is scheduler[1]
+
+    def test_immediate_extend(self):
+        class MyScheduler(ImmediateScheduler):
+            pass
+
+        scheduler = [
+            MyScheduler(),
+            MyScheduler.instance(),
+            ImmediateScheduler.instance(),
+        ]
+        assert scheduler[0] is scheduler[1]
+        assert scheduler[0] is not scheduler[2]
 
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()

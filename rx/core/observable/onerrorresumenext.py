@@ -2,7 +2,7 @@ from typing import Union
 from asyncio import Future
 
 import rx
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
 from rx.internal.utils import is_future
@@ -24,7 +24,7 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
     def subscribe(observer, scheduler=None):
 
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or CurrentThreadScheduler.instance()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()

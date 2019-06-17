@@ -1,10 +1,9 @@
-from typing import Callable, Union, Any
-from datetime import timedelta
+from typing import Callable, Any
 
 from rx.core.typing import Disposable
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 
 
 def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
@@ -24,7 +23,7 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
         """
 
         def subscribe(observer, scheduler_=None) -> Disposable:
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]

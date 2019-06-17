@@ -1,12 +1,10 @@
 import logging
-import threading
-
-from typing import MutableMapping, Optional
+from threading import current_thread, Lock, Thread
+from typing import Optional
 from weakref import WeakKeyDictionary
 
 from rx.core import typing
 from rx.internal import PriorityQueue
-from rx.internal.constants import DELTA_ZERO
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
@@ -15,53 +13,34 @@ from .trampoline import Trampoline
 log = logging.getLogger('Rx')
 
 
-class _Local(threading.local):
+class TrampolineScheduler(Scheduler):
+    """Represents an object that schedules units of work on the current
+    thread. You never want to schedule timeouts using the TrampolineScheduler
+    since it will block the current thread while waiting.
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.idle: bool = True
-        self.queue: PriorityQueue[ScheduledItem] = PriorityQueue()
+    This class is different from :class:`CurrentThreadScheduler` in that it
+    does not enforce a singleton instance per thread, and in that each instance
+    uses its own private queue.
 
+    As a result, you can nest schedulers -- e.g., suppose a TrampolineScheduler
+    has two actions scheduled, A and B, and in the course of executing A another
+    instance of TrampolineScheduler is created and scheduled to run C.
+    The final order of things happening on the current thread is A, C, B.
 
-class CurrentThreadScheduler(Scheduler):
-    """Represents an object that schedules units of work on the current thread.
-    You never want to schedule timeouts using the CurrentThreadScheduler since
-    that will block the current thread while waiting.
-
-    Please note, there will be at most a single instance per thread -- calls to
-    the constructor will just return the same instance if one already exists.
-
-    Conversely, if you pass an instance to another thread, it will effectively
-    behave as a separate scheduler, with its own queue. In particular, this
-    implies that you can't make assumptions about the execution order of items
-    that were scheduled by different threads -- even if they were submitted to
-    what superficially appears to be a single scheduler instance.
+    If you try something similar with the `:class:CurrentThreadScheduler` then,
+    due to the fact that it is a singleton per thread, with a common shared
+    queue, the order will be A, B, C.
     """
 
-    _local = _Local()
-    _global: MutableMapping[
-        threading.Thread,
-        MutableMapping[type, 'CurrentThreadScheduler']
-    ] = WeakKeyDictionary()
+    def __init__(self) -> None:
+        """Creates a scheduler that schedules work as soon as possible
+        on the current thread."""
 
-    @classmethod
-    def instance(cls) -> 'CurrentThreadScheduler':
-        thread = threading.current_thread()
-        thread_map = CurrentThreadScheduler._global.get(thread)
-        if thread_map is None:
-            thread_map = WeakKeyDictionary()
-            CurrentThreadScheduler._global[thread] = thread_map
-        try:
-            self = thread_map[cls]
-        except KeyError:
-            self = super().__new__(cls)
-            thread_map[cls] = self
-        return self
-
-    def __new__(cls) -> 'CurrentThreadScheduler':
-        """Ensure that each thread has at most a single instance."""
-
-        return cls.instance()
+        self.queues: WeakKeyDictionary[
+            Thread,
+            Optional[PriorityQueue]
+        ] = WeakKeyDictionary()
+        self.lock = Lock()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -97,7 +76,7 @@ class CurrentThreadScheduler(Scheduler):
             (best effort).
         """
 
-        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
+        duetime = self.to_timedelta(duetime)
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,
@@ -122,19 +101,30 @@ class CurrentThreadScheduler(Scheduler):
         if duetime > self.now:
             log.warning("Do not schedule blocking work!")
 
-        si: ScheduledItem = ScheduledItem(self, state, action, duetime)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
 
-        local: _Local = CurrentThreadScheduler._local
-        local.queue.enqueue(si)
-        if local.idle:
-            local.idle = False
+        queue: Optional[PriorityQueue] = self._get_queue()
+        if queue is None:
+            queue = PriorityQueue()
+            queue.enqueue(si)
+
+            self._set_queue(queue)
             try:
-                Trampoline.run(local.queue)
+                Trampoline.run(queue)
             finally:
-                local.idle = True
-                local.queue.clear()
+                self._set_queue(None)
+        else:
+            queue.enqueue(si)
 
         return si.disposable
+
+    def _get_queue(self) -> Optional[PriorityQueue]:
+        with self.lock:
+            return self.queues.get(current_thread())
+
+    def _set_queue(self, queue: Optional[PriorityQueue] = None):
+        with self.lock:
+            self.queues[current_thread()] = queue
 
     def schedule_required(self) -> bool:
         """Test if scheduling is required.
@@ -144,10 +134,10 @@ class CurrentThreadScheduler(Scheduler):
         False; otherwise, if the trampoline is not active, then it
         returns True.
         """
-        return CurrentThreadScheduler._local.idle
+        return self._get_queue() is None
 
     def ensure_trampoline(self, action):
-        """Method for testing the CurrentThreadScheduler."""
+        """Method for testing the TrampolineScheduler."""
 
         if self.schedule_required():
             return self.schedule(action)

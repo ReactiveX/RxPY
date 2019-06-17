@@ -1,7 +1,7 @@
-from typing import Union, Callable, Optional
+from typing import Callable, Optional
 
 from rx.core import Observable, typing
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 
 
 def _skip_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
@@ -32,7 +32,7 @@ def _skip_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
         def subscribe(observer, scheduler_=None):
             nonlocal duration
 
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
             duration = _scheduler.to_timedelta(duration)
             q = []
 
