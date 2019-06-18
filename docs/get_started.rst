@@ -165,7 +165,7 @@ other operators, then the implementation is straightforward, thanks to the
     from rx import operators as ops
 
     def length_more_than_5():
-        return pipe(
+        return rx.pipe(
             ops.map(lambda s: len(s)),
             ops.filter(lambda i: i >= 5),
         )
@@ -266,41 +266,48 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     import time
     from threading import current_thread
 
-    from rx import Observable
+    import rx
     from rx.scheduler import ThreadPoolScheduler
+    from rx import operators as ops
 
 
     def intense_calculation(value):
         # sleep for a random short duration between 0.5 to 2.0 seconds to simulate a long-running calculation
-        time.sleep(random.randint(5, 20) * .1)
+        time.sleep(random.randint(5, 20) * 0.1)
         return value
+
 
     # calculate number of CPU's, then create a ThreadPoolScheduler with that number of threads
     optimal_thread_count = multiprocessing.cpu_count()
     pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
     # Create Process 1
-    Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
-        .map(lambda s: intense_calculation(s)) \
-        .subscribe_on(pool_scheduler) \
-        .subscribe(on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
-                    on_error=lambda e: print(e),
-                    on_completed=lambda: print("PROCESS 1 done!"))
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        ops.map(lambda s: intense_calculation(s)), ops.subscribe_on(pool_scheduler)
+    ).subscribe(
+        on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
+        on_error=lambda e: print(e),
+        on_completed=lambda: print("PROCESS 1 done!"),
+    )
 
     # Create Process 2
-    Observable.range(1, 10) \
-        .map(lambda s: intense_calculation(s)) \
-        .subscribe_on(pool_scheduler) \
-        .subscribe(on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
-                    on_error=lambda e: print(e), on_completed=lambda: print("PROCESS 2 done!"))
+    rx.range(1, 10).pipe(
+        ops.map(lambda s: intense_calculation(s)), ops.subscribe_on(pool_scheduler)
+    ).subscribe(
+        on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
+        on_error=lambda e: print(e),
+        on_completed=lambda: print("PROCESS 2 done!"),
+    )
 
     # Create Process 3, which is infinite
-    Observable.interval(1000) \
-        .map(lambda i: i * 100) \
-        .observe_on(pool_scheduler) \
-        .map(lambda s: intense_calculation(s)) \
-        .subscribe(on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
-                    on_error=lambda e: print(e))
+    rx.interval(1).pipe(
+        ops.map(lambda i: i * 100),
+        ops.observe_on(pool_scheduler),
+        ops.map(lambda s: intense_calculation(s)),
+    ).subscribe(
+        on_next=lambda i: print("PROCESS 3: {0} {1}".format(current_thread().name, i)),
+        on_error=lambda e: print(e),
+    )
 
     input("Press any key to exit\n")
 
