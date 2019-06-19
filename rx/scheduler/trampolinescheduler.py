@@ -1,16 +1,41 @@
 import logging
-from threading import current_thread, Lock, Thread
-from typing import Optional
+from threading import current_thread, Thread
+from time import sleep
+from typing import MutableMapping, Optional
 from weakref import WeakKeyDictionary
 
 from rx.core import typing
-from rx.internal import PriorityQueue
+from rx.internal.priorityqueue import PriorityQueue
+from rx.internal.constants import DELTA_ZERO
 
 from .scheduler import Scheduler
 from .scheduleditem import ScheduledItem
-from .trampoline import Trampoline
 
 log = logging.getLogger('Rx')
+
+
+class _Trampoline(object):
+    @classmethod
+    def run(cls, queue: PriorityQueue[ScheduledItem]) -> None:
+        while queue:
+            item: ScheduledItem = queue.peek()
+            if item.is_cancelled():
+                queue.dequeue()
+            else:
+                diff = item.duetime - item.scheduler.now
+                if diff <= DELTA_ZERO:
+                    item.invoke()
+                    queue.dequeue()
+                else:
+                    sleep(diff.total_seconds())
+
+
+class _Local:
+    __slots__ = ('idle', 'queue')
+
+    def __init__(self):
+        self.idle: bool = True
+        self.queue: PriorityQueue = PriorityQueue()
 
 
 class TrampolineScheduler(Scheduler):
@@ -27,7 +52,7 @@ class TrampolineScheduler(Scheduler):
     instance of TrampolineScheduler is created and scheduled to run C.
     The final order of things happening on the current thread is A, C, B.
 
-    If you try something similar with the `:class:CurrentThreadScheduler` then,
+    If you try something similar with the *CurrentThreadScheduler* then,
     due to the fact that it is a singleton per thread, with a common shared
     queue, the order will be A, B, C.
     """
@@ -36,11 +61,7 @@ class TrampolineScheduler(Scheduler):
         """Creates a scheduler that schedules work as soon as possible
         on the current thread."""
 
-        self.queues: WeakKeyDictionary[
-            Thread,
-            Optional[PriorityQueue]
-        ] = WeakKeyDictionary()
-        self.lock = Lock()
+        self._local: MutableMapping[Thread, _Local] = WeakKeyDictionary()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -76,7 +97,7 @@ class TrampolineScheduler(Scheduler):
             (best effort).
         """
 
-        duetime = self.to_timedelta(duetime)
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(self,
@@ -99,32 +120,29 @@ class TrampolineScheduler(Scheduler):
         duetime = self.to_datetime(duetime)
 
         if duetime > self.now:
-            log.warning("Do not schedule blocking work!")
+            log.warning('Do not schedule blocking work!')
 
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
+        si: ScheduledItem = ScheduledItem(self, state, action, duetime)
 
-        queue: Optional[PriorityQueue] = self._get_queue()
-        if queue is None:
-            queue = PriorityQueue()
-            queue.enqueue(si)
-
-            self._set_queue(queue)
+        local = self._get_local()
+        local.queue.enqueue(si)
+        if local.idle:
+            local.idle = False
             try:
-                Trampoline.run(queue)
+                _Trampoline.run(local.queue)
             finally:
-                self._set_queue(None)
-        else:
-            queue.enqueue(si)
+                local.idle = True
+                local.queue.clear()
 
         return si.disposable
 
-    def _get_queue(self) -> Optional[PriorityQueue]:
-        with self.lock:
-            return self.queues.get(current_thread())
-
-    def _set_queue(self, queue: Optional[PriorityQueue] = None):
-        with self.lock:
-            self.queues[current_thread()] = queue
+    def _get_local(self):
+        thread = current_thread()
+        local = self._local.get(thread)
+        if local is None:
+            local = _Local()
+            self._local[thread] = local
+        return local
 
     def schedule_required(self) -> bool:
         """Test if scheduling is required.
@@ -134,7 +152,7 @@ class TrampolineScheduler(Scheduler):
         False; otherwise, if the trampoline is not active, then it
         returns True.
         """
-        return self._get_queue() is None
+        return self._get_local().idle
 
     def ensure_trampoline(self, action):
         """Method for testing the TrampolineScheduler."""
