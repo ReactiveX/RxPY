@@ -31,7 +31,7 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
         self._thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
         self._thread: Optional[typing.Startable] = None
         self._condition = threading.Condition(threading.Lock())
-        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
         self._ready_list: Deque[ScheduledItem] = deque()
 
         self._exit_if_empty = exit_if_empty
@@ -94,7 +94,7 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
             raise DisposedException()
 
         dt = self.to_datetime(duetime)
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
+        si: ScheduledItem = ScheduledItem(self, state, action, dt)
 
         with self._condition:
             if dt <= self.now:

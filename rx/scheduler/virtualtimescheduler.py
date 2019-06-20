@@ -2,7 +2,7 @@ import logging
 import threading
 from abc import abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from rx.internal import PriorityQueue, ArgumentOutOfRangeException
 from rx.core import typing
@@ -31,7 +31,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         self._clock = initial_clock
         self._is_enabled = False
         self._lock: threading.Lock = threading.Lock()
-        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
     def _get_clock(self):
         with self._lock:
@@ -106,7 +106,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         """
 
         dt = self.to_datetime(duetime)
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
+        si: ScheduledItem = ScheduledItem(self, state, action, dt)
         with self._lock:
             self._queue.enqueue(si)
         return si.disposable
@@ -126,7 +126,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
                 if not self._is_enabled or not self._queue:
                     break
 
-                item: ScheduledItem[typing.TState] = self._queue.dequeue()
+                item: ScheduledItem = self._queue.dequeue()
 
                 if item.duetime > self.now:
                     if isinstance(self._clock, datetime):
@@ -174,7 +174,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
                 if not self._is_enabled or not self._queue:
                     break
 
-                item: ScheduledItem[typing.TState] = self._queue.peek()
+                item: ScheduledItem = self._queue.peek()
 
                 if item.duetime > dt:
                     break

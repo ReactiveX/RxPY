@@ -126,7 +126,7 @@ class CatchScheduler(PeriodicScheduler):
         disp: SingleAssignmentDisposable = SingleAssignmentDisposable()
         failed: bool = False
 
-        def periodic(state: typing.TState) -> Optional[typing.TState]:
+        def periodic(state: Optional[typing.TState] = None) -> Optional[typing.TState]:
             nonlocal failed
             if failed:
                 return None

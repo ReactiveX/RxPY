@@ -17,7 +17,7 @@ log = logging.getLogger('Rx')
 
 class Trampoline(object):
     @classmethod
-    def run(cls, queue: PriorityQueue[ScheduledItem[typing.TState]]) -> None:
+    def run(cls, queue: PriorityQueue[ScheduledItem]) -> None:
         while queue:
             item: ScheduledItem = queue.peek()
             if item.is_cancelled():
@@ -37,8 +37,7 @@ class _Local(threading.local):
     def __init__(self) -> None:
         super().__init__()
         self.idle: bool = True
-        self.queue: PriorityQueue[
-            ScheduledItem[typing.TState]] = PriorityQueue()
+        self.queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
 
 class CurrentThreadScheduler(Scheduler):
@@ -134,7 +133,7 @@ class CurrentThreadScheduler(Scheduler):
         if duetime > self.now:
             log.warning("Do not schedule blocking work!")
 
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
+        si: ScheduledItem = ScheduledItem(self, state, action, duetime)
 
         local: _Local = CurrentThreadScheduler._local
         local.queue.enqueue(si)

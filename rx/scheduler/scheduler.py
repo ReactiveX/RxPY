@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from rx.core import typing
-from rx.disposable import Disposable, MultipleAssignmentDisposable
+from rx.disposable import Disposable
 from rx.internal.basic import default_now
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
+from rx.internal.constants import UTC_ZERO
 
 
 class Scheduler(typing.Scheduler):
