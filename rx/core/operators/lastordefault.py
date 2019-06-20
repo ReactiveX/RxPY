@@ -9,7 +9,7 @@ from rx import operators as ops
 def last_or_default_async(source: Observable,
                           has_default: bool = False,
                           default_value: Any = None
-                          ) -> Callable[[Observable], Observable]:
+                          ) -> Observable:
 
     def subscribe(observer, scheduler=None):
         value = [default_value]

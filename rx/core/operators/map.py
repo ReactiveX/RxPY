@@ -47,12 +47,12 @@ def _map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
 
 def _map_indexed(mapper_indexed: Optional[MapperIndexed] = None) -> Callable[[Observable], Observable]:
 
-    def _identity(value: Any, index: int) -> Any:
+    def _identity(value: Any, _: int) -> Any:
         return value
 
     _mapper_indexed = mapper_indexed or _identity
 
     return pipe(
         ops.zip_with_iterable(infinite()),
-        ops.starmap(_mapper_indexed)
+        ops.starmap_indexed(_mapper_indexed)
     )
