@@ -155,7 +155,7 @@ ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction
 
 Startable = Union[abc.Startable, Thread]
 StartableTarget = Callable[..., None]
-StartableFactory = Callable[[StartableTarget, Optional[Tuple]], Startable]
+StartableFactory = Callable[[StartableTarget], Startable]
 
 
 class Observer(Generic[T_in], abc.Observer):

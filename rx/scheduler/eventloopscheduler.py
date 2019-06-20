@@ -1,6 +1,7 @@
 import logging
 import threading
 from collections import deque
+from datetime import timedelta
 from typing import Deque, Optional
 
 from rx.core import typing
@@ -27,8 +28,8 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
         super().__init__()
         self._is_disposed = False
 
-        self._thread_factory = thread_factory or default_thread_factory
-        self._thread: Optional[threading.Thread] = None
+        self._thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
+        self._thread: Optional[typing.Startable] = None
         self._condition = threading.Condition(threading.Lock())
         self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
         self._ready_list: Deque[ScheduledItem] = deque()
@@ -187,8 +188,9 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
                     continue
 
                 elif self._queue:
-                    due = self._queue.peek().duetime - self.now
-                    seconds = due.total_seconds()
+                    time = self.now
+                    item = self._queue.peek()
+                    seconds = (item.duetime - time).total_seconds()
                     if seconds > 0:
                         log.debug("timeout: %s", seconds)
                         self._condition.wait(seconds)

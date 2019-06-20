@@ -36,8 +36,8 @@ class TestScheduler(VirtualTimeScheduler):
         duetime = duetime if isinstance(duetime, float) else self.to_seconds(duetime)
         return super().schedule_absolute(duetime, action, state)
 
-    @staticmethod
-    def add(absolute, relative):
+    @classmethod
+    def add(cls, absolute, relative):
         """Adds a relative virtual time to an absolute virtual time value"""
 
         return absolute + relative

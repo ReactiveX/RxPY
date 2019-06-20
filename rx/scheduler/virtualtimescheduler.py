@@ -19,7 +19,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
-    def __init__(self, initial_clock=0.0) -> None:
+    def __init__(self, initial_clock=0) -> None:
         """Creates a new virtual time scheduler with the specified
         initial clock value.
 
@@ -85,8 +85,8 @@ class VirtualTimeScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        duetime = self.add(self._clock, self.to_seconds(duetime))
-        return self.schedule_absolute(duetime, action, state=state)
+        time: typing.AbsoluteTime = self.add(self._clock, self.to_seconds(duetime))
+        return self.schedule_absolute(time, action, state=state)
 
     def schedule_absolute(self,
                           duetime: typing.AbsoluteTime,
@@ -105,7 +105,8 @@ class VirtualTimeScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
+        dt = self.to_datetime(duetime)
+        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
         with self._lock:
             self._queue.enqueue(si)
         return si.disposable
@@ -127,8 +128,11 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
                 item: ScheduledItem[typing.TState] = self._queue.dequeue()
 
-                if item.duetime > self._clock:
-                    self._clock = item.duetime
+                if item.duetime > self.now:
+                    if isinstance(self._clock, datetime):
+                        self._clock = item.duetime
+                    else:
+                        self._clock = self.to_seconds(item.duetime)
                     spinning = 0
 
                 elif spinning > MAX_SPINNING:
@@ -147,7 +151,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         with self._lock:
             self._is_enabled = False
 
-    def advance_to(self, time: float) -> None:
+    def advance_to(self, time: typing.AbsoluteTime) -> None:
         """Advances the schedulers clock to the specified absolute time,
         running all work til that point.
 
@@ -155,11 +159,12 @@ class VirtualTimeScheduler(PeriodicScheduler):
             time: Absolute time to advance the schedulers clock to.
         """
 
+        dt: datetime = self.to_datetime(time)
         with self._lock:
-            if self._clock > time:
+            if self.now > dt:
                 raise ArgumentOutOfRangeException()
 
-            if self._clock == time or self._is_enabled:
+            if self.now == dt or self._is_enabled:
                 return
 
             self._is_enabled = True
@@ -171,11 +176,14 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
                 item: ScheduledItem[typing.TState] = self._queue.peek()
 
-                if item.duetime > time:
+                if item.duetime > dt:
                     break
 
-                if item.duetime > self._clock:
-                    self._clock = item.duetime
+                if item.duetime > self.now:
+                    if isinstance(self._clock, datetime):
+                        self._clock = item.duetime
+                    else:
+                        self._clock = self.to_seconds(item.duetime)
 
                 self._queue.dequeue()
 
@@ -184,9 +192,12 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
         with self._lock:
             self._is_enabled = False
-            self._clock = time
+            if isinstance(self._clock, datetime):
+                self._clock = dt
+            else:
+                self._clock = self.to_seconds(dt)
 
-    def advance_by(self, time: float) -> None:
+    def advance_by(self, time: typing.RelativeTime) -> None:
         """Advances the schedulers clock by the specified relative time,
         running all work scheduled for that timespan.
 
@@ -196,26 +207,31 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
         log.debug("VirtualTimeScheduler.advance_by(time=%s)", time)
 
-        self.advance_to(self.add(self._clock, time))
+        self.advance_to(self.add(self.now, self.to_timedelta(time)))
 
-    def sleep(self, time: float) -> None:
+    def sleep(self, time: typing.RelativeTime) -> None:
         """Advances the schedulers clock by the specified relative time.
 
         Args:
             time: Relative time to advance the schedulers clock by.
         """
 
-        dt = self.add(self._clock, time)
+        absolute = self.add(self.now, self.to_timedelta(time))
+        dt: datetime = self.to_datetime(absolute)
 
-        if self._clock > dt:
+        if self.now > dt:
             raise ArgumentOutOfRangeException()
 
         with self._lock:
-            self._clock = dt
+            if isinstance(self._clock, datetime):
+                self._clock = dt
+            else:
+                self._clock = self.to_seconds(dt)
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def add(absolute: typing.AbsoluteTime,
+    def add(cls,
+            absolute: typing.AbsoluteTime,
             relative: typing.RelativeTime
             ) -> typing.AbsoluteTime:
         """Adds a relative time value to an absolute time value.

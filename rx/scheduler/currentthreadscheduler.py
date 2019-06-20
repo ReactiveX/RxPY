@@ -63,8 +63,9 @@ class CurrentThreadScheduler(Scheduler):
         """Ensure that each thread has at most a single instance."""
 
         thread = threading.current_thread()
-        self: 'CurrentThreadScheduler' = CurrentThreadScheduler._global.get(thread)
-        if not self:
+        try:
+            self = CurrentThreadScheduler._global[thread]
+        except KeyError:
             self = super().__new__(cls)
             CurrentThreadScheduler._global[thread] = self
         return self

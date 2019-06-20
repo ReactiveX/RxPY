@@ -31,8 +31,9 @@ class HistoricalScheduler(VirtualTimeScheduler):
 
         return self._clock
 
-    @staticmethod
-    def add(absolute: typing.AbsoluteTime,
+    @classmethod
+    def add(cls,
+            absolute: typing.AbsoluteTime,
             relative: typing.RelativeTime
             ) -> typing.AbsoluteTime:
         """Adds a relative time value to an absolute time value.
@@ -45,4 +46,4 @@ class HistoricalScheduler(VirtualTimeScheduler):
             The resulting absolute virtual time sum value.
         """
 
-        return absolute + HistoricalScheduler.to_timedelta(relative)
+        return cls.to_datetime(absolute) + cls.to_timedelta(relative)

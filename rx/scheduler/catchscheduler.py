@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable, Optional
+from typing import cast, Callable, Optional
 
 from rx.core import typing
 from rx.disposable import Disposable, SingleAssignmentDisposable
@@ -27,8 +27,8 @@ class CatchScheduler(PeriodicScheduler):
         super().__init__()
         self._scheduler: typing.Scheduler = scheduler
         self._handler: Callable[[Exception], bool] = handler
-        self._recursive_original: typing.Scheduler = None
-        self._recursive_wrapper: 'CatchScheduler' = None
+        self._recursive_original: Optional[typing.Scheduler] = None
+        self._recursive_wrapper: Optional['CatchScheduler'] = None
 
     @property
     def now(self) -> datetime:
@@ -118,22 +118,29 @@ class CatchScheduler(PeriodicScheduler):
             The disposable object used to cancel the scheduled
             recurring action (best effort).
         """
+
+        schedule_periodic = getattr(self._scheduler, 'schedule_periodic')
+        if not callable(schedule_periodic):
+            raise NotImplementedError
+
         disp: SingleAssignmentDisposable = SingleAssignmentDisposable()
         failed: bool = False
 
         def periodic(state: typing.TState) -> Optional[typing.TState]:
             nonlocal failed
-            if not failed:
-                try:
-                    return action(state)
-                except Exception as ex:
-                    failed = True
-                    if not self._handler(ex):
-                        raise
-                    disp.dispose()
-                    return None
+            if failed:
+                return None
+            try:
+                return action(state)
+            except Exception as ex:
+                failed = True
+                if not self._handler(ex):
+                    raise
+                disp.dispose()
+                return None
 
-        disp.disposable = self._scheduler.schedule_periodic(period, periodic, state=state)
+        scheduler = cast(PeriodicScheduler, self._scheduler)
+        disp.disposable = scheduler.schedule_periodic(period, periodic, state=state)
         return disp
 
     def _clone(self, scheduler: typing.Scheduler) -> 'CatchScheduler':
@@ -155,7 +162,7 @@ class CatchScheduler(PeriodicScheduler):
         return wrapped_action
 
     def _get_recursive_wrapper(self, scheduler) -> 'CatchScheduler':
-        if self._recursive_original != scheduler:
+        if self._recursive_wrapper is None or self._recursive_original != scheduler:
             self._recursive_original = scheduler
             wrapper = self._clone(scheduler)
             wrapper._recursive_original = scheduler

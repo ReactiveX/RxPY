@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Optional
 
 from rx.core import typing
@@ -34,11 +35,13 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
         disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
         seconds: float = self.to_seconds(period)
 
-        def periodic(scheduler: typing.Scheduler, state: typing.TState) -> Optional[Disposable]:
+        def periodic(scheduler: typing.Scheduler,
+                     state: Optional[typing.TState] = None
+                     ) -> Optional[Disposable]:
             if disp.is_disposed:
                 return None
 
-            time: typing.AbsoluteOrRelativeTime = scheduler.now
+            now: datetime = scheduler.now
 
             try:
                 state = action(state)
@@ -46,7 +49,7 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
                 disp.dispose()
                 raise
 
-            time = seconds - (scheduler.now - time).total_seconds()
+            time = seconds - (scheduler.now - now).total_seconds()
             disp.disposable = scheduler.schedule_relative(time, periodic, state=state)
 
             return None
