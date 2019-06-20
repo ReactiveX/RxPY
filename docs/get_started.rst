@@ -421,3 +421,22 @@ are correctly served, multiplexed on the AsyncIO event loop.
 
 Default Scheduler
 ..................
+
+There are several ways to choose a scheduler. The first one is to provide it
+explicitly to each operator that supports a scheduler. However this can be
+annoying when a lot of operators are used. So there is a second way to indicate
+what scheduler will be used as the default scheduler for the whole chain: The
+scheduler provided in the subscribe call is the default scheduler for all
+operators in a pipe.
+
+.. code:: python
+
+    source.pipe(
+        ...
+    ).subscribe(proxy, scheduler=my_default_scheduler)
+
+Operators that accept a scheduler select the scheduler to use in the following way:
+
+- If a scheduler is provided for the operator, then use it.
+- If a default scheduler is provided in subscribe, then use it.
+- Otherwise use the default scheduler of the operator.
