@@ -156,52 +156,33 @@ class Observable(typing.Observable):
         return Disposable(auto_detach_observer.dispose)
 
     @overload
+    # pylint: no-self-use
+    def pipe(self) -> 'Observable':
+        ...  # pylint: disable=pointless-statement
+
+    @overload
+    # pylint: disable=function-redefined, no-self-use
+    def pipe(self, op1: Callable[['Observable'], A]) -> A:
+        ...  # pylint: disable=pointless-statement
+
+    @overload
+    # pylint: disable=function-redefined, no-self-use
     def pipe(self,
-             *operators: Callable[['Observable'], 'Observable']
-             ) -> 'Observable':  # pylint: disable=no-self-use
-        """Compose multiple operators left to right.
-
-        Composes zero or more operators into a functional composition.
-        The operators are composed from left to right. A composition of zero
-        operators gives back the original source.
-
-        Examples:
-            >>> source.pipe() == source
-            >>> source.pipe(f) == f(source)
-            >>> source.pipe(g, f) == f(g(source))
-            >>> source.pipe(h, g, f) == f(g(h(source)))
-
-        Args:
-            operators: Sequence of operators.
-
-        Returns:
-             The composed observable.
-        """
-        ...
-
-    @overload
-    def pipe(self) -> 'Observable':  # pylint: disable=function-redefined, no-self-use
-        ...  # pylint: disable=pointless-statement
-
-    @overload
-    def pipe(self, op1: Callable[['Observable'], A]) -> A:  # pylint: disable=function-redefined, no-self-use
-        ...  # pylint: disable=pointless-statement
-
-    @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B]) -> B:
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
+    # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C]) -> C:
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use
+    # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
@@ -209,7 +190,8 @@ class Observable(typing.Observable):
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
@@ -218,7 +200,8 @@ class Observable(typing.Observable):
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
@@ -228,7 +211,8 @@ class Observable(typing.Observable):
         ...  # pylint: disable=pointless-statement
 
     @overload
-    def pipe(self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    # pylint: disable=function-redefined, no-self-use, too-many-arguments
+    def pipe(self,
              op1: Callable[['Observable'], A],
              op2: Callable[[A], B],
              op3: Callable[[B], C],
@@ -238,8 +222,15 @@ class Observable(typing.Observable):
              op7: Callable[[F], G]) -> G:
         ...  # pylint: disable=pointless-statement
 
-    # pylint: disable=function-redefined
-    def pipe(self, *operators: Callable[['Observable'], Any]) -> Any:
+    @overload
+    # pylint: disable=function-redefined, no-self-use
+    def pipe(self,
+             *operators: Callable[['Observable'], 'Observable']
+             ) -> 'Observable':
+        ...  # pylint: disable=pointless-statement
+
+    # pylint: disable=function-redefined, no-self-use
+    def pipe(self, *operators: Callable[['Observable'], Any], **kwargs) -> Any:
         """Compose multiple operators left to right.
 
         Composes zero or more operators into a functional composition.
@@ -254,10 +245,12 @@ class Observable(typing.Observable):
 
         Args:
             operators: Sequence of operators.
+            **kwargs: Ignore this, only present to satisfy mypy type checker.
 
         Returns:
              The composed observable.
         """
+
         from ..pipe import pipe
         return pipe(*operators)(self)
 

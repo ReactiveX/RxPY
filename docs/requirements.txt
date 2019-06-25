@@ -2,3 +2,4 @@ sphinx>=2.0
 sphinx-autodoc-typehints>=1.6.0
 guzzle_sphinx_theme>=0.7.11
 sphinxcontrib_dooble>=1.0
+sphinxcontrib_autodoc_filterparams>=0.0.1

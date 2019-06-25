@@ -55,6 +55,7 @@ needs_sphinx = '2.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinxcontrib_autodoc_filterparams',
     'sphinx_autodoc_typehints',
     'guzzle_sphinx_theme',
     'sphinxcontrib_dooble',
@@ -96,6 +97,24 @@ def format_annotation(annotation):
     return _format_annotation(annotation)
 
 sphinx_autodoc_typehints.format_annotation = format_annotation
+
+# End hack.
+
+
+# Hack to remove bogus **kwargs parameter from cases where the implementing
+# function for a bunch of overloaded functions is defined with a variadic
+# position parameter. In those cases, mypy complains unless it also has a
+# variadic keyword parameter, but we don't want that in documentation.
+
+hide_params = {
+    'rx.core.observable.observable.Observable.pipe': {'**kwargs'},
+    'rx.core.pipe': {'**kwargs'}
+}
+
+
+def sphinxcontrib_autodoc_filterparams(fun, param):
+    hide = hide_params.get(fun.__module__ + '.' + fun.__qualname__)
+    return hide is None or param not in hide
 
 # End hack.
 
