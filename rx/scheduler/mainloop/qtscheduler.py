@@ -1,6 +1,7 @@
 import logging
 
-from typing import Any, Optional
+from datetime import timedelta
+from typing import Any, Optional, Set
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -23,7 +24,8 @@ class QtScheduler(PeriodicScheduler):
         """
         super().__init__()
         self._qtcore = qtcore
-        self._periodic_timers = set()
+        timer_class: Any = self._qtcore.QTimer
+        self._periodic_timers: Set[timer_class] = set()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -93,8 +95,8 @@ class QtScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        duetime = self.to_datetime(duetime) - self.now
-        return self.schedule_relative(duetime, action, state=state)
+        delta: timedelta = self.to_datetime(duetime) - self.now
+        return self.schedule_relative(delta, action, state=state)
 
     def schedule_periodic(self,
                           period: typing.RelativeTime,

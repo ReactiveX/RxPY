@@ -1,11 +1,10 @@
 from threading import Thread
-from typing import Optional, Tuple
 
 from rx.core.typing import StartableTarget
 
 
-def default_thread_factory(target: StartableTarget, args: Optional[Tuple] = None) -> Thread:
-    return Thread(target=target, args=args or (), daemon=True)
+def default_thread_factory(target: StartableTarget) -> Thread:
+    return Thread(target=target, daemon=True)
 
 
 def synchronized(lock):

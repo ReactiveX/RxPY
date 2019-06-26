@@ -33,7 +33,7 @@ class PyGameScheduler(PeriodicScheduler):
         super().__init__()
         self._pygame = pygame  # TODO not used, refactor to actually use pygame?
         self._lock = threading.Lock()
-        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -90,7 +90,7 @@ class PyGameScheduler(PeriodicScheduler):
         """
 
         duetime = self.to_datetime(duetime)
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, duetime)
+        si: ScheduledItem = ScheduledItem(self, state, action, duetime)
 
         with self._lock:
             self._queue.enqueue(si)
@@ -100,7 +100,7 @@ class PyGameScheduler(PeriodicScheduler):
     def run(self) -> None:
         while self._queue:
             with self._lock:
-                item: ScheduledItem[typing.TState] = self._queue.peek()
+                item: ScheduledItem = self._queue.peek()
                 diff = item.duetime - self.now
 
                 if diff > DELTA_ZERO:

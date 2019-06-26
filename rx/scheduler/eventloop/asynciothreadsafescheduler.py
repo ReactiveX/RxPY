@@ -2,7 +2,7 @@ import logging
 import asyncio
 
 from concurrent.futures import Future
-from typing import Optional
+from typing import List, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -50,7 +50,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle = self._loop.call_soon_threadsafe(interval)
 
         def dispose() -> None:
-            future = Future()
+            future: Future = Future()
 
             def cancel_handle() -> None:
                 handle.cancel()
@@ -88,7 +88,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
 
         # the operations on the list used here are atomic, so there is no
         # need to protect its access with a lock
-        handle = []
+        handle: List[asyncio.Handle] = []
 
         def stage2() -> None:
             handle.append(self._loop.call_later(seconds, interval))
@@ -96,7 +96,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle.append(self._loop.call_soon_threadsafe(stage2))
 
         def dispose() -> None:
-            future = Future()
+            future: Future = Future()
 
             def cancel_handle() -> None:
                 try:

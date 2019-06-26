@@ -99,7 +99,10 @@ class OnNext(Notification):
         return observer.on_next(self.value)
 
     def __str__(self):
-        return "OnNext(%s)" % str(self.value)
+        val = self.value
+        if isinstance(val, int):
+            val = float(val)
+        return "OnNext(%s)" % str(val)
 
 
 class OnError(Notification):
