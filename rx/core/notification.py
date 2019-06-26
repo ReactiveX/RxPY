@@ -59,7 +59,7 @@ class Notification:
             notification upon subscription.
         """
 
-        scheduler = scheduler or ImmediateScheduler.instance()
+        scheduler = scheduler or ImmediateScheduler.singleton()
 
         def subscribe(observer, scheduler=None):
             def action(scheduler, state):

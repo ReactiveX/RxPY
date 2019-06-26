@@ -13,7 +13,7 @@ class TestTimeoutScheduler(unittest.TestCase):
     def test_timeout_singleton(self):
         scheduler = [
             TimeoutScheduler(),
-            TimeoutScheduler.instance()
+            TimeoutScheduler.singleton()
         ]
         assert scheduler[0] is scheduler[1]
 
@@ -38,8 +38,8 @@ class TestTimeoutScheduler(unittest.TestCase):
 
         scheduler = [
             MyScheduler(),
-            MyScheduler.instance(),
-            TimeoutScheduler.instance(),
+            MyScheduler.singleton(),
+            TimeoutScheduler.singleton(),
         ]
         assert scheduler[0] is scheduler[1]
         assert scheduler[0] is not scheduler[2]

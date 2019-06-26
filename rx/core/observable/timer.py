@@ -20,7 +20,7 @@ def observable_timer_date(duetime, scheduler: Optional[typing.Scheduler] = None)
 
 def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         nonlocal duetime
 
         if not isinstance(duetime, datetime):
@@ -48,7 +48,7 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typ
 
 def observable_timer_timespan(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         d = _scheduler.to_seconds(duetime)
 
         def action(scheduler, state):
@@ -67,7 +67,7 @@ def observable_timer_timespan_and_period(duetime: typing.RelativeTime,
                                          ) -> Observable:
     if duetime == period:
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             def action(count):
                 observer.on_next(count)

@@ -14,7 +14,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
     def test_currentthread_singleton(self):
         scheduler = [
             CurrentThreadScheduler(),
-            CurrentThreadScheduler.instance()
+            CurrentThreadScheduler.singleton()
         ]
         assert scheduler[0] is scheduler[1]
 
@@ -39,8 +39,8 @@ class TestCurrentThreadScheduler(unittest.TestCase):
 
         scheduler = [
             MyScheduler(),
-            MyScheduler.instance(),
-            CurrentThreadScheduler.instance(),
+            MyScheduler.singleton(),
+            CurrentThreadScheduler.singleton(),
         ]
         assert scheduler[0] is scheduler[1]
         assert scheduler[0] is not scheduler[2]

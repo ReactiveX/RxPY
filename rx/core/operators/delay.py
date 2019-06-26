@@ -20,7 +20,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
     def subscribe(observer, scheduler_=None):
         nonlocal duetime
 
-        _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
         if isinstance(duetime, datetime):
             duetime = _scheduler.to_datetime(duetime) - _scheduler.now

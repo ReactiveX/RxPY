@@ -40,7 +40,7 @@ def _range(start: int,
     def subscribe(observer, scheduler_: typing.Scheduler = None):
         nonlocal range_t
 
-        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.instance()
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         sd = MultipleAssignmentDisposable()
 
         def action(scheduler, iterator):

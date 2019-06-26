@@ -10,7 +10,7 @@ def _throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) -
     exception = exception if isinstance(exception, Exception) else Exception(exception)
 
     def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
-        _scheduler = scheduler or ImmediateScheduler.instance()
+        _scheduler = scheduler or ImmediateScheduler.singleton()
 
         def action(scheduler: typing.Scheduler, state: Any):
             observer.on_error(exception)

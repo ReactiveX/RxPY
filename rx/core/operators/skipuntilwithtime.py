@@ -36,7 +36,7 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
             scheduler_method = 'schedule_relative'
 
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             open = [False]
 

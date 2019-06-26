@@ -23,7 +23,7 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
         """
 
         def subscribe(observer, scheduler_=None) -> Disposable:
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]

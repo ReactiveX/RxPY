@@ -12,7 +12,7 @@ def _generate(initial_state: Any,
               ) -> Observable:
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler.instance()
+        scheduler = scheduler or CurrentThreadScheduler.singleton()
         first = True
         state = initial_state
         mad = MultipleAssignmentDisposable()

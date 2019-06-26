@@ -30,7 +30,7 @@ def _timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observ
         """
 
         def factory(scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             mapper = operators.map(lambda value: Timestamp(value=value, timestamp=_scheduler.now))
 
             return source.pipe(mapper)

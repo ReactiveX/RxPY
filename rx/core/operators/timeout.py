@@ -29,7 +29,7 @@ def _timeout(duetime: typing.AbsoluteTime, other: Optional[Observable] = None, s
             case of a timeout.
         """
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(duetime, datetime):
                 scheduler_method = _scheduler.schedule_absolute

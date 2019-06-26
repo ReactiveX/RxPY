@@ -27,7 +27,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
     sources_ = iter(sources)
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler.instance()
+        scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()

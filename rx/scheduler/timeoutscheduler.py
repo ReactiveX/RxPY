@@ -15,7 +15,7 @@ class TimeoutScheduler(PeriodicScheduler):
     _global: MutableMapping[type, 'TimeoutScheduler'] = WeakKeyDictionary()
 
     @classmethod
-    def instance(cls) -> 'TimeoutScheduler':
+    def singleton(cls) -> 'TimeoutScheduler':
         with TimeoutScheduler._lock:
             try:
                 self = TimeoutScheduler._global[cls]
@@ -25,7 +25,7 @@ class TimeoutScheduler(PeriodicScheduler):
         return self
 
     def __new__(cls) -> 'TimeoutScheduler':
-        return cls.instance()
+        return cls.singleton()
 
     def schedule(self,
                  action: typing.ScheduledAction,

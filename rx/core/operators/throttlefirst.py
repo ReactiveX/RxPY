@@ -18,7 +18,7 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
             An Observable that performs the throttle operation.
         """
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             duration = _scheduler.to_timedelta(window_duration or 0.0)
             if duration <= _scheduler.to_timedelta(0):

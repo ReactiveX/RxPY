@@ -20,7 +20,7 @@ class ImmediateScheduler(Scheduler):
     _global: MutableMapping[type, 'ImmediateScheduler'] = WeakKeyDictionary()
 
     @classmethod
-    def instance(cls) -> 'ImmediateScheduler':
+    def singleton(cls) -> 'ImmediateScheduler':
         with ImmediateScheduler._lock:
             try:
                 self = ImmediateScheduler._global[cls]
@@ -30,7 +30,7 @@ class ImmediateScheduler(Scheduler):
         return self
 
     def __new__(cls) -> 'ImmediateScheduler':
-        return cls.instance()
+        return cls.singleton()
 
     def schedule(self,
                  action: typing.ScheduledAction,

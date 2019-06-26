@@ -11,7 +11,7 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
                                ) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             n = [0]
             s = [None]

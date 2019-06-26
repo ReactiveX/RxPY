@@ -29,7 +29,7 @@ def _to_async(func: Callable,
         Aynchronous function.
     """
 
-    _scheduler = scheduler or TimeoutScheduler.instance()
+    _scheduler = scheduler or TimeoutScheduler.singleton()
 
     def wrapper(*args) -> Observable:
         subject = AsyncSubject()

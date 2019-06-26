@@ -17,7 +17,7 @@ class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_singleton(self):
         scheduler = [
             ImmediateScheduler(),
-            ImmediateScheduler.instance()
+            ImmediateScheduler.singleton()
         ]
         assert scheduler[0] is scheduler[1]
 
@@ -42,8 +42,8 @@ class TestImmediateScheduler(unittest.TestCase):
 
         scheduler = [
             MyScheduler(),
-            MyScheduler.instance(),
-            ImmediateScheduler.instance(),
+            MyScheduler.singleton(),
+            ImmediateScheduler.singleton(),
         ]
         assert scheduler[0] is scheduler[1]
         assert scheduler[0] is not scheduler[2]

@@ -31,7 +31,7 @@ def _generate_with_relative_time(initial_state: Any,
     """
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or TimeoutScheduler.instance()
+        scheduler = scheduler or TimeoutScheduler.singleton()
         mad = MultipleAssignmentDisposable()
         state = initial_state
         has_result = False

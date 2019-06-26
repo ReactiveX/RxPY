@@ -24,7 +24,7 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Op
         """
 
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(end_time, datetime):
                 scheduler_method = _scheduler.schedule_absolute

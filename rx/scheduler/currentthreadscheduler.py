@@ -42,7 +42,7 @@ class CurrentThreadScheduler(TrampolineScheduler):
     ] = WeakKeyDictionary()
 
     @classmethod
-    def instance(cls) -> 'CurrentThreadScheduler':
+    def singleton(cls) -> 'CurrentThreadScheduler':
         thread = threading.current_thread()
         thread_map = CurrentThreadScheduler._global.get(thread)
         if thread_map is None:
@@ -58,7 +58,7 @@ class CurrentThreadScheduler(TrampolineScheduler):
     def __new__(cls) -> 'CurrentThreadScheduler':
         """Ensure that each thread has at most a single instance."""
 
-        return cls.instance()
+        return cls.singleton()
 
     # pylint: disable=super-init-not-called
     def __init__(self):

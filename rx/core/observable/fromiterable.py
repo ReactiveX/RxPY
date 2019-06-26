@@ -21,7 +21,7 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
     """
 
     def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
-        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.instance()
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)
         disposed = False
 

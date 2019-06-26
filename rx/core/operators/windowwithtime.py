@@ -21,7 +21,7 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.
 
     def window_with_time(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             timer_d = SerialDisposable()
             next_shift = [timeshift]

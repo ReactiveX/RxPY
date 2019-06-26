@@ -35,7 +35,7 @@ def _skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sc
         """
 
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             open = [False]
 
             def action(scheduler, state):

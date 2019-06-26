@@ -19,7 +19,7 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             by the recursive expansion.
         """
         def subscribe(observer, scheduler=None):
-            scheduler = scheduler or ImmediateScheduler.instance()
+            scheduler = scheduler or ImmediateScheduler.singleton()
 
             queue = []
             m = SerialDisposable()

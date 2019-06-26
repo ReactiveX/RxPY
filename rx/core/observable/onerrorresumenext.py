@@ -24,7 +24,7 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
     def subscribe(observer, scheduler=None):
 
-        scheduler = scheduler or CurrentThreadScheduler.instance()
+        scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()

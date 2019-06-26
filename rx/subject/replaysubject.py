@@ -50,7 +50,7 @@ class ReplaySubject(Subject):
 
         super().__init__()
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
-        self.scheduler = scheduler or CurrentThreadScheduler.instance()
+        self.scheduler = scheduler or CurrentThreadScheduler.singleton()
         self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
         self.queue: List[QueueItem] = []
 

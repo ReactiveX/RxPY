@@ -25,7 +25,7 @@ def _time_interval(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Ob
         """
 
         def subscribe(observer, scheduler_):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             last = _scheduler.now
 
             def mapper(value):

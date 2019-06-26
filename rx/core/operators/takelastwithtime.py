@@ -29,7 +29,7 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
         def subscribe(observer, scheduler_=None):
             nonlocal duration
 
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.instance()
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             duration = _scheduler.to_timedelta(duration)
             q = []
 
