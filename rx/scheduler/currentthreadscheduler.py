@@ -1,68 +1,80 @@
 import logging
-import threading
+from threading import current_thread, local, Thread
 
 from typing import MutableMapping
 from weakref import WeakKeyDictionary
 
-from .trampolinescheduler import TrampolineScheduler, _Local as Local
-
+from .trampoline import Trampoline
+from .trampolinescheduler import TrampolineScheduler
 
 log = logging.getLogger('Rx')
 
 
-class _Local(threading.local):
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.local = Local()
-
-
 class CurrentThreadScheduler(TrampolineScheduler):
     """Represents an object that schedules units of work on the current thread.
-    You never want to schedule timeouts using the *CurrentThreadScheduler*
-    since that will block the current thread while waiting.
+    You should never schedule timeouts using the *CurrentThreadScheduler*, as
+    that will block the thread while waiting.
 
-    Please note, there will be at most a single instance per thread -- calls to
-    the constructor will just return the same instance if one already exists.
-
-    Conversely, if you pass an instance to another thread, it will effectively
-    behave as a separate scheduler, with its own queue. In particular, this
-    implies that you can't make assumptions about the execution order of items
-    that were scheduled by different threads -- even if they were submitted to
-    what superficially appears to be a single scheduler instance.
-
-    If this is not what you want, you might consider using the base class
-    :class:`TrampolineScheduler` instead.
+    Each instance manages a number of trampolines (and queues), one for each
+    thread that calls a *schedule* method. These trampolines are automatically
+    garbage-collected when threads disappear, because they're stored in a weak
+    key dictionary.
     """
 
-    _local = _Local()
     _global: MutableMapping[
-        threading.Thread,
-        MutableMapping[type, 'CurrentThreadScheduler']
+        type,
+        MutableMapping[Thread, 'CurrentThreadScheduler']
     ] = WeakKeyDictionary()
 
     @classmethod
     def singleton(cls) -> 'CurrentThreadScheduler':
-        thread = threading.current_thread()
-        thread_map = CurrentThreadScheduler._global.get(thread)
-        if thread_map is None:
-            thread_map = WeakKeyDictionary()
-            CurrentThreadScheduler._global[thread] = thread_map
+        """
+        Obtain a singleton instance for the current thread. Please note, if you
+        pass this instance to another thread, it will effectively behave as
+        if it were created by that other thread (separate trampoline and queue).
+
+        Returns:
+            The singleton *CurrentThreadScheduler* instance.
+        """
+        thread = current_thread()
+        class_map = CurrentThreadScheduler._global.get(cls)
+        if class_map is None:
+            class_map = WeakKeyDictionary()
+            CurrentThreadScheduler._global[cls] = class_map
         try:
-            self = thread_map[cls]
+            self = class_map[thread]
         except KeyError:
-            self = super().__new__(cls)
-            thread_map[cls] = self
+            self = CurrentThreadSchedulerSingleton()
+            class_map[thread] = self
         return self
-
-    def __new__(cls) -> 'CurrentThreadScheduler':
-        """Ensure that each thread has at most a single instance."""
-
-        return cls.singleton()
 
     # pylint: disable=super-init-not-called
     def __init__(self):
-        pass  # By design
+        self._tramps: MutableMapping[Thread, Trampoline] = WeakKeyDictionary()
 
-    def _get_local(self):
-        return CurrentThreadScheduler._local.local
+    def get_trampoline(self) -> Trampoline:
+        thread = current_thread()
+        tramp = self._tramps.get(thread)
+        if tramp is None:
+            tramp = Trampoline()
+            self._tramps[thread] = tramp
+        return tramp
+
+
+class _Local(local):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.tramp = Trampoline()
+
+
+class CurrentThreadSchedulerSingleton(CurrentThreadScheduler):
+
+    _local = _Local()
+
+    # pylint: disable=super-init-not-called
+    def __init__(self):
+        pass
+
+    def get_trampoline(self) -> Trampoline:
+        return CurrentThreadSchedulerSingleton._local.tramp

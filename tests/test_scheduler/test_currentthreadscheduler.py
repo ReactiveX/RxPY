@@ -14,15 +14,17 @@ class TestCurrentThreadScheduler(unittest.TestCase):
     def test_currentthread_singleton(self):
         scheduler = [
             CurrentThreadScheduler(),
+            CurrentThreadScheduler.singleton(),
             CurrentThreadScheduler.singleton()
         ]
-        assert scheduler[0] is scheduler[1]
+        assert scheduler[0] is not scheduler[1]
+        assert scheduler[1] is scheduler[2]
 
         gate = [threading.Semaphore(0), threading.Semaphore(0)]
         scheduler = [None, None]
 
         def run(idx):
-            scheduler[idx] = CurrentThreadScheduler()
+            scheduler[idx] = CurrentThreadScheduler.singleton()
             gate[idx].release()
 
         for idx in (0, 1):
@@ -40,10 +42,12 @@ class TestCurrentThreadScheduler(unittest.TestCase):
         scheduler = [
             MyScheduler(),
             MyScheduler.singleton(),
+            MyScheduler.singleton(),
             CurrentThreadScheduler.singleton(),
         ]
-        assert scheduler[0] is scheduler[1]
-        assert scheduler[0] is not scheduler[2]
+        assert scheduler[0] is not scheduler[1]
+        assert scheduler[1] is scheduler[2]
+        assert scheduler[1] is not scheduler[3]
 
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
@@ -126,8 +130,31 @@ class TestCurrentThreadScheduler(unittest.TestCase):
             def action3(scheduler, state=None):
                 tests.append(3)
 
-            scheduler3 = CurrentThreadScheduler()
-            scheduler3.schedule(action3)
+            CurrentThreadScheduler().schedule(action3)
+
+        scheduler.ensure_trampoline(outer)
+
+        assert tests == [1, 2, 3]
+
+    def test_currentthread_singleton_schedule_nested_order(self):
+        scheduler = CurrentThreadScheduler.singleton()
+        tests = []
+
+        def outer(scheduler, state=None):
+            def action1(scheduler, state=None):
+                tests.append(1)
+
+                def action2(scheduler, state=None):
+                    tests.append(2)
+
+                scheduler.schedule(action2)
+
+            scheduler.schedule(action1)
+
+            def action3(scheduler, state=None):
+                tests.append(3)
+
+            scheduler.schedule(action3)
 
         scheduler.ensure_trampoline(outer)
 
@@ -163,13 +190,13 @@ class TestCurrentThreadScheduler(unittest.TestCase):
                 nonlocal ran1
                 ran1 = True
 
-            scheduler.ensure_trampoline(inner_action1)
+            scheduler.schedule(inner_action1)
 
             def inner_action2(scheduler, state):
                 nonlocal ran2
                 ran2 = True
 
-            return scheduler.ensure_trampoline(inner_action2)
+            return scheduler.schedule(inner_action2)
 
         scheduler.ensure_trampoline(outer_action)
         assert ran1 is True
