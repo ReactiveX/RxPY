@@ -32,7 +32,6 @@ class Trampoline(object):
 
 
 class _Local(threading.local):
-    __slots__ = 'idle', 'queue'
 
     def __init__(self) -> None:
         super().__init__()
