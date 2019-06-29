@@ -611,7 +611,8 @@ def delay(duetime: typing.RelativeTime,
 
 
 def distinct(key_mapper: Optional[Mapper] = None,
-             comparer: Optional[Comparer] = None
+             comparer: Optional[Comparer] = None,
+             flushes: Observable = None,
              ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of
@@ -635,6 +636,7 @@ def distinct(key_mapper: Optional[Mapper] = None,
         key_mapper: [Optional]  A function to compute the comparison
             key for each element.
         comparer: [Optional]  Used to compare items in the collection.
+        flushes: [Optional] Observable for flushing the internal HashSet of the operator.
 
     Returns:
         An operator function that takes an observable source and
@@ -643,7 +645,7 @@ def distinct(key_mapper: Optional[Mapper] = None,
         sequence.
     """
     from rx.core.operators.distinct import _distinct
-    return _distinct(key_mapper, comparer)
+    return _distinct(key_mapper, comparer, flushes)
 
 
 def distinct_until_changed(key_mapper: Optional[Mapper] = None,

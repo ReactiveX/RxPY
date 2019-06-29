@@ -22,9 +22,13 @@ class HashSet:
             self.set.append(value)
         return ret_value
 
+    def flush(self):
+        self.set = []
+
 
 def _distinct(key_mapper: Optional[Mapper] = None,
-              comparer: Optional[Comparer] = None
+              comparer: Optional[Comparer] = None,
+              flushes: Observable = None,
               ) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
 
@@ -49,6 +53,13 @@ def _distinct(key_mapper: Optional[Mapper] = None,
         def subscribe(observer, scheduler=None):
             hashset = HashSet(comparer)
 
+            if flushes:
+                disposable = flushes.subscribe_(lambda _: hashset.flush(), scheduler=scheduler)
+                source.subscribe_(on_error=lambda _: disposable.dispose(),
+                                  on_completed=lambda: disposable.dispose(),
+                                  scheduler=scheduler
+                                  )
+
             def on_next(x):
                 key = x
 
@@ -60,6 +71,6 @@ def _distinct(key_mapper: Optional[Mapper] = None,
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe_(on_next, observer.on_error,observer.on_completed, scheduler)
+            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
         return Observable(subscribe)
     return distinct

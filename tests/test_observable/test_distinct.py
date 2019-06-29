@@ -48,6 +48,18 @@ class TestDistinctUntilChanged(unittest.TestCase):
         assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 3), on_completed(420)]
         assert xs.subscriptions == [subscribe(200, 420)]
 
+    def test_distinct_default_comparer_some_duplicates_flush(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(280, 4), on_next(300, 2), on_next(350, 2), on_next(380, 3), on_next(400, 4), on_completed(420))
+
+        def create():
+            flushes = xs.pipe(ops.skip(3), ops.take(1))
+            return xs.pipe(ops.distinct(flushes=flushes))
+
+        results = scheduler.start(create)
+        assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 3), on_next(400, 4), on_completed(420)]
+        assert xs.subscriptions == [subscribe(200, 380), subscribe(200, 420), subscribe(200, 420)]
+
     def test_distinct_key_mapper_all_distinct(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(280, 8), on_next(300, 4), on_next(350, 2), on_next(380, 6), on_next(400, 10), on_completed(420))
