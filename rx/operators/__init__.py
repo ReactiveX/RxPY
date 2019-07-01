@@ -612,7 +612,7 @@ def delay(duetime: typing.RelativeTime,
 
 def distinct(key_mapper: Optional[Mapper] = None,
              comparer: Optional[Comparer] = None,
-             flushes: Observable = None,
+             flushes: Optional[Observable] = None,
              ) -> Callable[[Observable], Observable]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of

@@ -28,7 +28,7 @@ class HashSet:
 
 def _distinct(key_mapper: Optional[Mapper] = None,
               comparer: Optional[Comparer] = None,
-              flushes: Observable = None,
+              flushes: Optional[Observable] = None,
               ) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
 
