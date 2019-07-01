@@ -6,7 +6,8 @@ Schedulers
 .. automodule:: rx.scheduler
     :members: CatchScheduler, CurrentThreadScheduler, EventLoopScheduler,
                 HistoricalScheduler, ImmediateScheduler, NewThreadScheduler,
-                ThreadPoolScheduler, TimeoutScheduler, VirtualTimeScheduler
+                ThreadPoolScheduler, TimeoutScheduler, TrampolineScheduler,
+                VirtualTimeScheduler
 
 .. automodule:: rx.scheduler.eventloop
     :members: AsyncIOScheduler, AsyncIOThreadSafeScheduler, EventletScheduler,

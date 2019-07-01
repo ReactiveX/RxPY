@@ -5,7 +5,7 @@ from typing import cast, Callable, Optional, Union
 from rx import from_future, throw
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx.internal.utils import is_future
 
 
@@ -35,7 +35,7 @@ def _timeout(duetime: typing.AbsoluteTime,
             case of a timeout.
         """
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(duetime, datetime):
                 scheduler_method = _scheduler.schedule_absolute

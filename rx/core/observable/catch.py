@@ -3,7 +3,7 @@ from typing import Iterable
 from rx.disposable import Disposable
 from rx.core import Observable
 from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 
 
 def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
@@ -27,7 +27,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
     sources_ = iter(sources)
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or current_thread_scheduler
+        scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()

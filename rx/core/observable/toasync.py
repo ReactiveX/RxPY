@@ -3,7 +3,7 @@ from typing import Callable, Optional
 from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Scheduler
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx.subject import AsyncSubject
 
 
@@ -29,7 +29,7 @@ def _to_async(func: Callable,
         Aynchronous function.
     """
 
-    _scheduler = scheduler or timeout_scheduler
+    _scheduler = scheduler or TimeoutScheduler.singleton()
 
     def wrapper(*args) -> Observable:
         subject = AsyncSubject()

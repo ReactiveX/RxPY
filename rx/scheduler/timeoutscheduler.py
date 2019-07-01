@@ -1,5 +1,6 @@
-from threading import Timer
-from typing import Optional
+from threading import Lock, Timer
+from typing import MutableMapping, Optional
+from weakref import WeakKeyDictionary
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -9,6 +10,22 @@ from .periodicscheduler import PeriodicScheduler
 
 class TimeoutScheduler(PeriodicScheduler):
     """A scheduler that schedules work via a timed callback."""
+
+    _lock = Lock()
+    _global: MutableMapping[type, 'TimeoutScheduler'] = WeakKeyDictionary()
+
+    @classmethod
+    def singleton(cls) -> 'TimeoutScheduler':
+        with TimeoutScheduler._lock:
+            try:
+                self = TimeoutScheduler._global[cls]
+            except KeyError:
+                self = super().__new__(cls)
+                TimeoutScheduler._global[cls] = self
+        return self
+
+    def __new__(cls) -> 'TimeoutScheduler':
+        return cls.singleton()
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -93,6 +110,3 @@ class TimeoutScheduler(PeriodicScheduler):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
-
-
-timeout_scheduler = TimeoutScheduler()

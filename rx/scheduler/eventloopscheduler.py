@@ -211,6 +211,3 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
             if not self._is_disposed:
                 self._is_disposed = True
                 self._condition.notify()
-
-
-event_loop_scheduler = EventLoopScheduler()
