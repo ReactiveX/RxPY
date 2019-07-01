@@ -1,4 +1,5 @@
-from typing import Any
+from asyncio import Future
+from typing import cast, Any, Union
 
 from rx import from_future
 from rx.core import Observable, typing
@@ -7,7 +8,11 @@ from rx.internal.utils import is_future
 
 
 def _amb(right_source: Observable):
-    right_source = from_future(right_source) if is_future(right_source) else right_source
+
+    if is_future(right_source):
+        obs = from_future(cast(Future, right_source))
+    else:
+        obs = cast(Observable, right_source)
 
     def amb(left_source: Observable):
         def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
@@ -45,8 +50,8 @@ def _amb(right_source: Observable):
                 if choice[0] == left_choice:
                     observer.on_completed()
 
-            lelf_d = left_source.subscribe_(on_next_left, on_error_left, on_completed_left, scheduler)
-            left_subscription.disposable = lelf_d
+            left_d = left_source.subscribe_(on_next_left, on_error_left, on_completed_left, scheduler)
+            left_subscription.disposable = left_d
 
             def send_right(value: Any) -> None:
                 with left_source.lock:
@@ -66,7 +71,7 @@ def _amb(right_source: Observable):
                 if choice[0] == right_choice:
                     observer.on_completed()
 
-            right_d = right_source.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
+            right_d = obs.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
             right_subscription.disposable = right_d
             return CompositeDisposable(left_subscription, right_subscription)
         return Observable(subscribe)

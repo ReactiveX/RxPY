@@ -1,4 +1,5 @@
-from typing import Callable, Any
+from asyncio import Future
+from typing import cast, Callable, Union
 import itertools
 
 import rx
@@ -8,7 +9,7 @@ from rx.internal.utils import is_future, infinite
 
 
 def _while_do(condition: Predicate) -> Callable[[Observable], Observable]:
-    def while_do(source: Observable) -> Observable:
+    def while_do(source: Union[Observable, Future]) -> Observable:
         """Repeats source as long as condition holds emulating a while
         loop.
 
@@ -20,6 +21,10 @@ def _while_do(condition: Predicate) -> Callable[[Observable], Observable]:
             An observable sequence which is repeated as long as the
             condition holds.
         """
-        source = rx.from_future(source) if is_future(source) else source
-        return rx.concat_with_iterable(itertools.takewhile(condition, (source for x in infinite())))
+        if is_future(source):
+            obs = rx.from_future(cast(Future, source))
+        else:
+            obs = cast(Observable, source)
+        it = itertools.takewhile(condition, (obs for _ in infinite()))
+        return rx.concat_with_iterable(it)
     return while_do

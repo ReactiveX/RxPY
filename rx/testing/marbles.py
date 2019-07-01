@@ -5,8 +5,9 @@ from warnings import warn
 
 import rx
 from rx.core import Observable
+from rx.core.notification import Notification
 from rx.scheduler import NewThreadScheduler
-from rx.core.typing import Callable
+from rx.core.typing import Callable, RelativeTime
 from rx.testing import TestScheduler, Recorded, ReactiveTest
 from rx.core.observable.marbles import parse
 
@@ -133,7 +134,8 @@ def marbles_testing(timespan=1.0):
         outside_of_context = True
 
 
-def messages_to_records(messages: List[Tuple]) -> List[Recorded]:
+def messages_to_records(messages: List[Tuple[RelativeTime, Notification]]
+                        ) -> List[Recorded]:
     """
     Helper function to convert messages returned by parse() to a list of
     Recorded.

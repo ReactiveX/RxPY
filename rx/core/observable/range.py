@@ -1,3 +1,4 @@
+from sys import maxsize
 from typing import Optional
 
 from rx.core import typing
@@ -30,12 +31,15 @@ def _range(start: int,
         integral numbers.
     """
 
+    _stop: int = maxsize if stop is None else stop
+    _step: int = 1 if step is None else step
+
     if step is None and stop is None:
         range_t = range(start)
     elif step is None:
-        range_t = range(start, stop)
+        range_t = range(start, _stop)
     else:
-        range_t = range(start, stop, step)
+        range_t = range(start, _stop, _step)
 
     def subscribe(observer, scheduler_: typing.Scheduler = None):
         nonlocal range_t

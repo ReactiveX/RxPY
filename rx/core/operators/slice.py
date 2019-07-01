@@ -1,4 +1,5 @@
-from typing import cast, Callable, Optional
+from sys import maxsize
+from typing import Callable, Optional
 
 from rx import operators as ops
 from rx.core import Observable
@@ -9,15 +10,9 @@ def _slice(start: Optional[int] = None,
            stop: Optional[int] = None,
            step: Optional[int] = None
            ) -> Callable[[Observable], Observable]:
-    has_start = start is not None
-    if has_start:
-        _start = cast(int, start)
-    has_stop = stop is not None
-    if has_stop:
-        _stop = cast(int, stop)
-    has_step = step is not None
-    if has_step:
-        _step = cast(int, step)
+    _start: int = 0 if start is None else start
+    _stop: int = maxsize if stop is None else stop
+    _step: int = 1 if step is None else step
 
     pipeline = []
 
@@ -32,6 +27,7 @@ def _slice(start: Optional[int] = None,
         :func:`filter <rx.operators.filter>`.
 
         The following diagram helps you remember how slices works with streams.
+
         Positive numbers are relative to the start of the events, while negative
         numbers are relative to the end (close) of the stream.
 
@@ -53,24 +49,22 @@ def _slice(start: Optional[int] = None,
             A sliced observable sequence.
         """
 
-        if has_stop and _stop >= 0:
+        if _stop >= 0:
             pipeline.append(ops.take(_stop))
 
-        if has_start and _start > 0:
+        if _start > 0:
             pipeline.append(ops.skip(_start))
+        elif _start < 0:
+            pipeline.append(ops.take_last(-_start))
 
-        if has_start and _start < 0:
-            pipeline.append(ops.take_last(abs(_start)))
+        if _stop < 0:
+            pipeline.append(ops.skip_last(-_stop))
 
-        if has_stop and _stop < 0:
-            pipeline.append(ops.skip_last(abs(_stop)))
-
-        if has_step:
-            if _step > 1:
-                pipeline.append(ops.filter_indexed(lambda x, i: i % _step == 0))
-            elif _step < 0:
-                # Reversing events is not supported
-                raise TypeError('Negative step not supported.')
+        if _step > 1:
+            pipeline.append(ops.filter_indexed(lambda x, i: i % _step == 0))
+        elif _step < 0:
+            # Reversing events is not supported
+            raise TypeError('Negative step not supported.')
 
         return source.pipe(*pipeline)
     return slice
