@@ -1,3 +1,5 @@
+from contextlib import ExitStack
+
 from typing import Callable, Optional
 from rx.core import Observable
 from rx.core.typing import Mapper, Comparer
@@ -12,18 +14,27 @@ def array_index_of_comparer(array, item, comparer):
 
 
 class HashSet:
-    def __init__(self, comparer):
+    def __init__(self, comparer, lock=None):
         self.comparer = comparer
         self.set = []
+        self.lock = lock
 
     def push(self, value):
-        ret_value = array_index_of_comparer(self.set, value, self.comparer) == -1
-        if ret_value:
-            self.set.append(value)
-        return ret_value
+        with ExitStack() as stack:
+            if self.lock:
+                stack.enter_context(self.lock)
+
+            ret_value = array_index_of_comparer(self.set, value, self.comparer) == -1
+            if ret_value:
+                self.set.append(value)
+            return ret_value
 
     def flush(self):
-        self.set = []
+        with ExitStack() as stack:
+            if self.lock:
+                stack.enter_context(self.lock)
+
+            self.set = []
 
 
 def _distinct(key_mapper: Optional[Mapper] = None,
@@ -51,7 +62,7 @@ def _distinct(key_mapper: Optional[Mapper] = None,
         """
 
         def subscribe(observer, scheduler=None):
-            hashset = HashSet(comparer)
+            hashset = HashSet(comparer, lock=flushes.lock if flushes else None)
 
             if flushes:
                 disposable = flushes.subscribe_(lambda _: hashset.flush(), scheduler=scheduler)
