@@ -89,7 +89,7 @@ class Observable(typing.Observable):
             sequence.
         """
 
-        auto_detach_obs = AutoDetachObserver(on_next, on_error, on_completed)
+        auto_detach_obv = AutoDetachObserver(on_next, on_error, on_completed)
 
         def fix_subscriber(subscriber):
             """Fixes subscriber to make sure it returns a Disposable instead
@@ -101,12 +101,12 @@ class Observable(typing.Observable):
 
         def set_disposable(_: abc.Scheduler = None, __: Any = None):
             try:
-                subscriber = self._subscribe_core(auto_detach_obs, scheduler)
+                subscriber = self._subscribe_core(auto_detach_obv, scheduler)
             except Exception as ex:  # By design. pylint: disable=W0703
-                if not auto_detach_obs.fail(ex):
+                if not auto_detach_obv.fail(ex):
                     raise
             else:
-                auto_detach_obs.subscription = fix_subscriber(subscriber)
+                auto_detach_obv.subscription = fix_subscriber(subscriber)
 
         # Subscribe needs to set up the trampoline before for subscribing.
         # Actually, the first call to Subscribe creates the trampoline so
@@ -123,7 +123,7 @@ class Observable(typing.Observable):
             set_disposable()
 
         # Hide the identity of the auto detach observer
-        return Disposable(auto_detach_obs.dispose)
+        return Disposable(auto_detach_obv.dispose)
 
     @overload
     def pipe(self,
