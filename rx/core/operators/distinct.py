@@ -1,4 +1,4 @@
-from contextlib import ExitStack
+from contextlib import nullcontext
 
 from typing import Callable, Optional
 from rx.core import Observable
@@ -21,20 +21,14 @@ class HashSet:
         self.lock = lock
 
     def push(self, value):
-        with ExitStack() as stack:
-            if self.lock:
-                stack.enter_context(self.lock)
-
+        with self.lock or nullcontext():
             ret_value = array_index_of_comparer(self.set, value, self.comparer) == -1
             if ret_value:
                 self.set.append(value)
             return ret_value
 
     def flush(self):
-        with ExitStack() as stack:
-            if self.lock:
-                stack.enter_context(self.lock)
-
+        with self.lock or nullcontext():
             self.set = []
 
 
