@@ -8,7 +8,7 @@ from .internal.utils import alias
 
 
 # Please make sure the version here remains the same as in project.cfg
-__version__ = '3.0.0b4'
+__version__ = '3.0.0b5'
 
 
 def amb(*sources: Observable) -> Observable:
@@ -142,7 +142,7 @@ def create(subscribe: typing.Subscription) -> Observable:
 
     Args:
         subscribe: Subscription function.
-    
+
     Returns:
         An observable sequence that can be subscribed to via the given
         subscription function.
