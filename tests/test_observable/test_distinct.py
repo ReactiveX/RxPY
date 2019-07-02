@@ -58,7 +58,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(280, 4), on_next(300, 2), on_next(380, 3), on_next(400, 4), on_completed(420)]
-        assert xs.subscriptions == [subscribe(200, 380), subscribe(200, 420), subscribe(200, 420)]
+        assert xs.subscriptions == [subscribe(200, 420), subscribe(200, 380)]
 
     def test_distinct_key_mapper_all_distinct(self):
         scheduler = TestScheduler()

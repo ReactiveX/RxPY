@@ -3,6 +3,7 @@ from contextlib import ExitStack
 from typing import Callable, Optional
 from rx.core import Observable
 from rx.core.typing import Mapper, Comparer
+from rx.disposable import CompositeDisposable
 from rx.internal.basic import default_comparer
 
 
@@ -64,13 +65,6 @@ def _distinct(key_mapper: Optional[Mapper] = None,
         def subscribe(observer, scheduler=None):
             hashset = HashSet(comparer, lock=flushes.lock if flushes else None)
 
-            if flushes:
-                disposable = flushes.subscribe_(lambda _: hashset.flush(), scheduler=scheduler)
-                source.subscribe_(on_error=lambda _: disposable.dispose(),
-                                  on_completed=lambda: disposable.dispose(),
-                                  scheduler=scheduler
-                                  )
-
             def on_next(x):
                 key = x
 
@@ -82,6 +76,14 @@ def _distinct(key_mapper: Optional[Mapper] = None,
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+
+            source_disposable = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+
+            if flushes:
+                flushes_disposable = flushes.subscribe_(lambda _: hashset.flush(), scheduler=scheduler)
+                return CompositeDisposable(source_disposable, flushes_disposable)
+
+            return source_disposable
+
         return Observable(subscribe)
     return distinct
