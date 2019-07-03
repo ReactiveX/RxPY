@@ -1,4 +1,4 @@
-from contextlib import nullcontext
+from contextlib import contextmanager
 
 from typing import Callable, Optional
 from rx.core import Observable
@@ -12,6 +12,13 @@ def array_index_of_comparer(array, item, comparer):
         if comparer(a, item):
             return i
     return -1
+
+
+@contextmanager
+def nullcontext():
+    """For Python 3.6 compatibility
+    """
+    yield
 
 
 class HashSet:
