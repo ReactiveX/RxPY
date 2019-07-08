@@ -13,7 +13,10 @@ def _throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) -
         _scheduler = scheduler or ImmediateScheduler.singleton()
 
         def action(scheduler: typing.Scheduler, state: Any):
-            observer.on_error(exception)
+            try:
+                raise exception
+            except type(exception):
+                observer.on_error(exception)
 
         return _scheduler.schedule(action)
     return Observable(subscribe)
