@@ -2589,7 +2589,6 @@ def some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observ
     return _some(predicate)
 
 
-
 def starmap(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
     """The starmap operator.
 
@@ -2602,7 +2601,7 @@ def starmap(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observabl
     grouped as tuples and the mapper function takes multiple arguments.
 
     .. marble::
-        :alt: startmap
+        :alt: starmap
 
         -----1,2---3,4-----|
         [   starmap(add)   ]
@@ -2626,6 +2625,37 @@ def starmap(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observabl
         return pipe()
 
     return pipe(map(lambda values: cast(Mapper, mapper)(*values)))
+
+
+def starmap_indexed(mapper: Optional[MapperIndexed] = None
+                    ) -> Callable[[Observable], Observable]:
+    """Variant of :func:`starmap` which accepts an indexed mapper.
+
+    .. marble::
+        :alt: starmap_indexed
+
+        ---------1,2---3,4---------|
+        [   starmap_indexed(sum)   ]
+        ---------3-----8-----------|
+
+    Example:
+        >>> starmap_indexed(lambda x, y, i: x + y + i)
+
+    Args:
+        mapper: A transform function to invoke with unpacked elements
+            as arguments.
+
+    Returns:
+        An operator function that takes an observable source and
+        returns an observable sequence containing the results of
+        invoking the indexed mapper function with unpacked elements
+        of the source.
+    """
+
+    if mapper is None:
+        return pipe()
+
+    return pipe(map(lambda values: cast(MapperIndexed, mapper)(*values)))
 
 
 def start_with(*args: Any) -> Callable[[Observable], Observable]:

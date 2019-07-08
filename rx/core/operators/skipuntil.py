@@ -1,12 +1,13 @@
-from typing import Callable
+from asyncio import Future
+from typing import cast, Callable, Union
 
-import rx
+from rx import from_future
 from rx.core import Observable
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
-def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
+def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Observable]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
 
@@ -20,7 +21,10 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
     propagation.
     """
 
-    other = rx.from_future(other) if is_future(other) else other
+    if is_future(other):
+        obs = from_future(cast(Future, other))
+    else:
+        obs = cast(Observable, other)
 
     def skip_until(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
@@ -47,7 +51,7 @@ def _skip_until(other: Observable) -> Callable[[Observable], Observable]:
             def on_completed2():
                 right_subscription.dispose()
 
-            right_subscription.disposable = other.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
+            right_subscription.disposable = obs.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
 
             return subscriptions
         return Observable(subscribe)

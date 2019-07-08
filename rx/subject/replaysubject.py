@@ -5,7 +5,7 @@ from typing import cast, Any, Optional, List, NamedTuple
 from datetime import timedelta
 
 from rx.core import typing
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.core.observer.scheduledobserver import ScheduledObserver
 
 from .subject import Subject
@@ -50,7 +50,7 @@ class ReplaySubject(Subject):
 
         super().__init__()
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
-        self.scheduler = scheduler or current_thread_scheduler
+        self.scheduler = scheduler or CurrentThreadScheduler.singleton()
         self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
         self.queue: List[QueueItem] = []
 

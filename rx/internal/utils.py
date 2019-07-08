@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from types import FunctionType
-from typing import Any, Callable, Iterable
+from typing import cast, Any, Callable, Iterable
 
 from rx.disposable import CompositeDisposable
 
@@ -15,7 +15,7 @@ def add_ref(xs, r):
 
 
 def is_future(fut: Any) -> bool:
-    return callable(getattr(fut, "add_done_callback", None))
+    return callable(getattr(fut, 'add_done_callback', None))
 
 
 def infinite() -> Iterable[int]:
@@ -28,11 +28,16 @@ def infinite() -> Iterable[int]:
 def alias(name: str, doc: str, fun: Callable[..., Any]) -> Callable[..., Any]:
     # Adapted from https://stackoverflow.com/questions/13503079/how-to-create-a-copy-of-a-python-function#
     # See also help(type(lambda: 0))
-    alias = FunctionType(fun.__code__, fun.__globals__,
-                         name=name, argdefs=fun.__defaults__,
-                         closure=fun.__closure__)
-    alias = update_wrapper(alias, fun)
-    alias.__kwdefaults__ = fun.__kwdefaults__
+    _fun = cast(FunctionType, fun)
+    args = (_fun.__code__, _fun.__globals__)
+    kwargs = {
+        'name': name,
+        'argdefs': _fun.__defaults__,
+        'closure': _fun.__closure__
+    }
+    alias = FunctionType(*args, **kwargs)  # type: ignore
+    alias = cast(FunctionType, update_wrapper(alias, _fun))
+    alias.__kwdefaults__ = _fun.__kwdefaults__
     alias.__doc__ = doc
     return alias
 

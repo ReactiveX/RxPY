@@ -3,7 +3,7 @@ from typing import Callable
 from rx.core import Observable
 from rx.core.typing import Mapper
 from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
-from rx.scheduler import immediate_scheduler
+from rx.scheduler import ImmediateScheduler
 
 
 def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
@@ -19,7 +19,7 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             by the recursive expansion.
         """
         def subscribe(observer, scheduler=None):
-            scheduler = scheduler or immediate_scheduler
+            scheduler = scheduler or ImmediateScheduler.singleton()
 
             queue = []
             m = SerialDisposable()
