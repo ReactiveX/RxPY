@@ -2,7 +2,7 @@ from typing import Any, Callable
 
 from rx.core import Observable
 from rx.core.typing import Predicate, Mapper, RelativeTime
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx.disposable import MultipleAssignmentDisposable
 
 
@@ -31,7 +31,7 @@ def _generate_with_relative_time(initial_state: Any,
     """
 
     def subscribe(observer, scheduler=None):
-        scheduler = scheduler or timeout_scheduler
+        scheduler = scheduler or TimeoutScheduler.singleton()
         mad = MultipleAssignmentDisposable()
         state = initial_state
         has_result = False

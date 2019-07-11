@@ -1,4 +1,5 @@
-from typing import Callable
+from asyncio import Future
+from typing import cast, Callable, Union
 
 from rx import from_future
 from rx.internal import noop
@@ -7,8 +8,11 @@ from rx.disposable import CompositeDisposable
 from rx.internal.utils import is_future
 
 
-def _take_until(other: Observable) -> Callable[[Observable], Observable]:
-    other = from_future(other) if is_future(other) else other
+def _take_until(other: Union[Observable, Future]) -> Callable[[Observable], Observable]:
+    if is_future(other):
+        obs = from_future(cast(Future, other))
+    else:
+        obs = cast(Observable, other)
 
     def take_until(source: Observable) -> Observable:
         """Returns the values from the source observable sequence until
@@ -30,7 +34,7 @@ def _take_until(other: Observable) -> Callable[[Observable], Observable]:
 
             return CompositeDisposable(
                 source.subscribe(observer),
-                other.subscribe_(on_completed, observer.on_error, noop, scheduler)
+                obs.subscribe_(on_completed, observer.on_error, noop, scheduler)
             )
         return Observable(subscribe)
     return take_until

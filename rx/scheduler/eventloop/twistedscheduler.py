@@ -60,8 +60,6 @@ class TwistedScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        from twisted.internet.task import deferLater
-
         seconds = max(0.0, self.to_seconds(duetime))
 
         sad = SingleAssignmentDisposable()
@@ -70,7 +68,7 @@ class TwistedScheduler(PeriodicScheduler):
             sad.disposable = action(self, state)
 
         log.debug("timeout: %s", seconds)
-        timer = deferLater(self._reactor, seconds, interval).addErrback(lambda _: None)
+        timer = self._reactor.callLater(seconds, interval)
 
         def dispose() -> None:
             if not timer.called:

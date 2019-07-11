@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from rx.scheduler import immediate_scheduler
+from rx.scheduler import ImmediateScheduler
 
 from .. import typing
 from .observer import Observer
@@ -59,7 +59,7 @@ class Notification:
             notification upon subscription.
         """
 
-        scheduler = scheduler or immediate_scheduler
+        scheduler = scheduler or ImmediateScheduler.singleton()
 
         def subscribe(observer, scheduler=None):
             def action(scheduler, state):
@@ -99,7 +99,10 @@ class OnNext(Notification):
         return observer.on_next(self.value)
 
     def __str__(self):
-        return "OnNext(%s)" % str(self.value)
+        val = self.value
+        if isinstance(val, int):
+            val = float(val)
+        return "OnNext(%s)" % str(val)
 
 
 class OnError(Notification):

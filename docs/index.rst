@@ -17,7 +17,7 @@ observable collections and pipable query operators in Python.
     get_started
     migration
     operators
-    additional_readings
+    additional_reading
     reference
     contributing
     license

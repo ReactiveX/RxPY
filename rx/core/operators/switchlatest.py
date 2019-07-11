@@ -1,4 +1,5 @@
-from typing import Callable, Any
+from asyncio import Future
+from typing import cast, Any, Callable, Union
 
 from rx import from_future
 from rx.core import Observable
@@ -26,7 +27,7 @@ def _switch_latest() -> Callable[[Observable], Observable]:
             is_stopped = [False]
             latest = [0]
 
-            def on_next(inner_source: Observable):
+            def on_next(inner_source: Union[Observable, Future]):
                 nonlocal source
 
                 d = SingleAssignmentDisposable()
@@ -37,7 +38,10 @@ def _switch_latest() -> Callable[[Observable], Observable]:
                 inner_subscription.disposable = d
 
                 # Check if Future or Observable
-                inner_source = from_future(inner_source) if is_future(inner_source) else inner_source
+                if is_future(inner_source):
+                    obs = from_future(cast(Future, inner_source))
+                else:
+                    obs = cast(Observable, inner_source)
 
                 def on_next(x: Any) -> None:
                     if latest[0] == _id:
@@ -53,7 +57,7 @@ def _switch_latest() -> Callable[[Observable], Observable]:
                         if is_stopped[0]:
                             observer.on_completed()
 
-                d.disposable = inner_source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+                d.disposable = obs.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
 
             def on_completed() -> None:
                 is_stopped[0] = True

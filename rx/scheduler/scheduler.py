@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from rx.core import typing
-from rx.disposable import Disposable, MultipleAssignmentDisposable
+from rx.disposable import Disposable
 from rx.internal.basic import default_now
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
+from rx.internal.constants import UTC_ZERO
 
 
 class Scheduler(typing.Scheduler):
@@ -22,7 +22,7 @@ class Scheduler(typing.Scheduler):
 
         Returns:
              The scheduler's current time, as a datetime instance.
-         """
+        """
 
         return default_now()
 
@@ -41,6 +41,7 @@ class Scheduler(typing.Scheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented
 
     @abstractmethod
@@ -60,6 +61,7 @@ class Scheduler(typing.Scheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented
 
     @abstractmethod
@@ -79,6 +81,7 @@ class Scheduler(typing.Scheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+
         return NotImplemented
 
     def invoke_action(self,
@@ -96,6 +99,7 @@ class Scheduler(typing.Scheduler):
             The disposable object returned by the action, if any; or a new
             (no-op) disposable otherwise.
         """
+
         ret = action(self, state)
         if isinstance(ret, typing.Disposable):
             return ret

@@ -3,7 +3,7 @@ import threading
 from typing import Any, Callable, Optional, Union, TypeVar, cast, overload
 
 from rx.disposable import Disposable
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 
 from ..observer import AutoDetachObserver
 from .. import typing, abc
@@ -23,7 +23,7 @@ class Observable(typing.Observable):
     Represents a push-style collection, which you can :func:`pipe <pipe>` into
     :mod:`operators <rx.operators>`."""
 
-    def __init__(self, subscribe: Optional[typing.Subscribable] = None) -> None:
+    def __init__(self, subscribe: Optional[typing.Subscription] = None) -> None:
         """Creates an observable sequence object from the specified
         subscription function.
 
@@ -147,6 +147,7 @@ class Observable(typing.Observable):
         # https://social.msdn.microsoft.com/Forums/en-US/eb82f593-9684-4e27-
         # 97b9-8b8886da5c33/whats-the-rationale-behind-how-currentthreadsche
         # dulerschedulerequired-behaves?forum=rx
+        current_thread_scheduler = CurrentThreadScheduler.singleton()
         if current_thread_scheduler.schedule_required():
             current_thread_scheduler.schedule(set_disposable)
         else:

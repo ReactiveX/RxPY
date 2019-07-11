@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import cast, Any, Optional
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -43,9 +43,9 @@ class GtkScheduler(PeriodicScheduler):
 
             nonlocal state
             if periodic:
-                state = action(state)
+                state = cast(typing.ScheduledPeriodicAction, action)(state)
             else:
-                sad.disposable = self.invoke_action(action, state=state)
+                sad.disposable = self.invoke_action(cast(typing.ScheduledAction, action), state=state)
 
             return periodic
 

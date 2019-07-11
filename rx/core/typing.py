@@ -23,6 +23,7 @@ MapperIndexed = Callable[[T1, int], T2]
 Predicate = Callable[[T1], bool]
 PredicateIndexed = Callable[[T1, int], bool]
 Comparer = Callable[[T1, T2], bool]
+SubComparer = Callable[[T1, T2], int]
 Accumulator = Callable[[TState, T1], TState]
 AbsoluteTime = Union[datetime, float]
 RelativeTime = Union[timedelta, float]
@@ -119,6 +120,56 @@ class Scheduler(abc.Scheduler):
 
         return NotImplemented
 
+    @classmethod
+    @abstractmethod
+    def to_seconds(cls, value: AbsoluteOrRelativeTime) -> float:
+        """Converts time value to seconds. This method handles both absolute
+        (datetime) and relative (timedelta) values. If the argument is already
+        a float, it is simply returned unchanged.
+
+        Args:
+            value: the time value to convert to seconds.
+
+        Returns:
+            The value converted to seconds.
+        """
+
+        return NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def to_datetime(cls, value: AbsoluteOrRelativeTime) -> datetime:
+        """Converts time value to datetime. This method handles both absolute
+        (float) and relative (timedelta) values. If the argument is already
+        a datetime, it is simply returned unchanged.
+
+        Args:
+            value: the time value to convert to datetime.
+
+        Returns:
+            The value converted to datetime.
+        """
+
+        return NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def to_timedelta(cls, value: AbsoluteOrRelativeTime) -> timedelta:
+        """Converts time value to timedelta. This method handles both absolute
+        (datetime) and relative (float) values. If the argument is already
+        a timedelta, it is simply returned unchanged. If the argument is an
+        absolute time, the result value will be the timedelta since the epoch,
+        January 1st, 1970, 00:00:00.
+
+        Args:
+            value: the time value to convert to timedelta.
+
+        Returns:
+            The value converted to timedelta.
+        """
+
+        return NotImplemented
+
 
 class PeriodicScheduler(abc.PeriodicScheduler):
     """PeriodicScheduler abstract base class."""
@@ -155,7 +206,7 @@ ScheduledSingleOrPeriodicAction = Union[ScheduledAction, ScheduledPeriodicAction
 
 Startable = Union[abc.Startable, Thread]
 StartableTarget = Callable[..., None]
-StartableFactory = Callable[[StartableTarget, Optional[Tuple]], Startable]
+StartableFactory = Callable[[StartableTarget], Startable]
 
 
 class Observer(Generic[T_in], abc.Observer):
@@ -280,4 +331,4 @@ class Subject(Generic[T_in, T_out], abc.Subject):
         raise NotImplementedError
 
 
-Subscribable = Callable[[Observer, Optional[Scheduler]], Disposable]
+Subscription = Callable[[Observer, Optional[Scheduler]], Disposable]

@@ -1,18 +1,24 @@
+from asyncio import Future
 from datetime import datetime
-from typing import Callable, Optional
+from typing import cast, Callable, Optional, Union
 
 from rx import from_future, throw
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 from rx.internal.utils import is_future
 
 
-def _timeout(duetime: typing.AbsoluteTime, other: Optional[Observable] = None, scheduler: Optional[typing.Scheduler] = None
+def _timeout(duetime: typing.AbsoluteTime,
+             other: Optional[Union[Observable, Future]] = None,
+             scheduler: Optional[typing.Scheduler] = None
              ) -> Callable[[Observable], Observable]:
 
     other = other or throw(Exception("Timeout"))
-    other = from_future(other) if is_future(other) else other
+    if is_future(other):
+        obs = from_future(cast(Future, other))
+    else:
+        obs = cast(Observable, other)
 
     def timeout(source: Observable) -> Observable:
         """Returns the source observable sequence or the other observable
@@ -29,7 +35,7 @@ def _timeout(duetime: typing.AbsoluteTime, other: Optional[Observable] = None, s
             case of a timeout.
         """
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(duetime, datetime):
                 scheduler_method = _scheduler.schedule_absolute
@@ -51,7 +57,7 @@ def _timeout(duetime: typing.AbsoluteTime, other: Optional[Observable] = None, s
                     switched[0] = (_id[0] == my_id)
                     timer_wins = switched[0]
                     if timer_wins:
-                        subscription.disposable = other.subscribe(observer, scheduler=scheduler)
+                        subscription.disposable = obs.subscribe(observer, scheduler=scheduler)
 
                 timer.disposable = scheduler_method(duetime, action)
 

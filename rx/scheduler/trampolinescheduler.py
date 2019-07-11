@@ -1,39 +1,36 @@
 import logging
-import threading
 
-from typing import Any, Optional
+from typing import Optional
 
 from rx.core import typing
-from rx.internal import PriorityQueue
 from rx.internal.constants import DELTA_ZERO
 
-from ..scheduleditem import ScheduledItem
-from ..periodicscheduler import PeriodicScheduler
+from .scheduleditem import ScheduledItem
+from .scheduler import Scheduler
+from .trampoline import Trampoline
 
 
-log = logging.getLogger("Rx")
+log = logging.getLogger('Rx')
 
 
-class PyGameScheduler(PeriodicScheduler):
-    """A scheduler that schedules works for PyGame.
+class TrampolineScheduler(Scheduler):
+    """Represents an object that schedules units of work on the trampoline.
+    You should never schedule timeouts using the *TrampolineScheduler*, as
+    it will block the thread while waiting.
 
-    Note that this class expects the caller to invoke run() repeatedly.
+    Each instance has its own trampoline (and queue), and you can schedule work
+    on it from different threads. Beware though, that the first thread to call
+    a *schedule* method while the trampoline is idle will then remain occupied
+    until the queue is empty.
+    """
 
-    http://www.pygame.org/docs/ref/time.html
-    http://www.pygame.org/docs/ref/event.html"""
+    def __init__(self) -> None:
+        """Creates a scheduler that bounces its work off the trampoline."""
 
-    def __init__(self, pygame: Any):
-        """Create a new PyGameScheduler.
+        self._tramp = Trampoline()
 
-        Args:
-            pygame: The PyGame module to use; typically, you would get this by
-                import pygame
-        """
-
-        super().__init__()
-        self._pygame = pygame  # TODO not used, refactor to actually use pygame?
-        self._lock = threading.Lock()
-        self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
+    def get_trampoline(self) -> Trampoline:
+        return self._tramp
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -50,7 +47,6 @@ class PyGameScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        log.debug("PyGameScheduler.schedule(state=%s)", state)
         return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(self,
@@ -59,6 +55,7 @@ class PyGameScheduler(PeriodicScheduler):
                           state: Optional[typing.TState] = None
                           ) -> typing.Disposable:
         """Schedules an action to be executed after duetime.
+
         Args:
             duetime: Relative time after which to execute the action.
             action: Action to be executed.
@@ -89,24 +86,29 @@ class PyGameScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        duetime = self.to_datetime(duetime)
-        si: ScheduledItem = ScheduledItem(self, state, action, duetime)
+        dt = self.to_datetime(duetime)
+        if dt > self.now:
+            log.warning('Do not schedule blocking work!')
+        item: ScheduledItem = ScheduledItem(self, state, action, dt)
 
-        with self._lock:
-            self._queue.enqueue(si)
+        self.get_trampoline().run(item)
 
-        return si.disposable
+        return item.disposable
 
-    def run(self) -> None:
-        while self._queue:
-            with self._lock:
-                item: ScheduledItem = self._queue.peek()
-                diff = item.duetime - self.now
+    def schedule_required(self) -> bool:
+        """Test if scheduling is required.
 
-                if diff > DELTA_ZERO:
-                    break
+        Gets a value indicating whether the caller must call a
+        schedule method. If the trampoline is active, then it returns
+        False; otherwise, if the trampoline is not active, then it
+        returns True.
+        """
+        return self.get_trampoline().idle()
 
-                item = self._queue.dequeue()
+    def ensure_trampoline(self, action):
+        """Method for testing the TrampolineScheduler."""
 
-            if not item.is_cancelled():
-                item.invoke()
+        if self.schedule_required():
+            return self.schedule(action)
+
+        return action(self, None)

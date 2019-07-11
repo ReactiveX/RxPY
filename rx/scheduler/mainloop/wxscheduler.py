@@ -1,6 +1,6 @@
 import logging
 
-from typing import Any, Optional
+from typing import cast, Any, Optional, Set
 
 from rx.core import typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -24,9 +24,9 @@ class WxScheduler(PeriodicScheduler):
 
         super().__init__()
         self._wx = wx
-        self._timers = set()
+        timer_class: Any = self._wx.Timer
 
-        class Timer(self._wx.Timer):
+        class Timer(timer_class):
 
             def __init__(self, callback) -> None:
                 super().__init__()
@@ -36,6 +36,7 @@ class WxScheduler(PeriodicScheduler):
                 self.callback()
 
         self._timer_class = Timer
+        self._timers: Set[Timer] = set()
 
     def cancel_all(self) -> None:
         """Cancel all scheduled actions.
@@ -59,9 +60,9 @@ class WxScheduler(PeriodicScheduler):
         def interval() -> None:
             nonlocal state
             if periodic:
-                state = action(state)
+                state = cast(typing.ScheduledPeriodicAction, action)(state)
             else:
-                sad.disposable = action(scheduler, state)
+                sad.disposable = cast(typing.ScheduledAction, action)(scheduler, state)
 
         msecs = max(1, int(self.to_seconds(time) * 1000.0))  # Must be non-zero
 

@@ -1,5 +1,7 @@
 import logging
 import threading
+
+from datetime import datetime
 from typing import Optional
 
 from rx.core import typing
@@ -19,7 +21,7 @@ class NewThreadScheduler(PeriodicScheduler):
 
     def __init__(self, thread_factory: Optional[typing.StartableFactory] = None) -> None:
         super().__init__()
-        self.thread_factory = thread_factory or default_thread_factory
+        self.thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
 
     def schedule(self,
                  action: typing.ScheduledAction,
@@ -110,7 +112,7 @@ class NewThreadScheduler(PeriodicScheduler):
                 if disposed.is_set():
                     return
 
-                time: typing.AbsoluteOrRelativeTime = self.now
+                time: datetime = self.now
 
                 state = action(state)
 

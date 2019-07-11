@@ -1,7 +1,7 @@
-.. _additional_readings:
+.. _additional_reading:
 
-Additional Readings
-===================
+Additional Reading
+==================
 
 Open Material
 -------------

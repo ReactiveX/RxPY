@@ -2,7 +2,7 @@ from typing import Callable, Optional
 
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable
-from rx.scheduler import timeout_scheduler
+from rx.scheduler import TimeoutScheduler
 
 
 def _skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
@@ -35,7 +35,7 @@ def _skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sc
         """
 
         def subscribe(observer, scheduler_=None):
-            _scheduler = scheduler or scheduler_ or timeout_scheduler
+            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             open = [False]
 
             def action(scheduler, state):

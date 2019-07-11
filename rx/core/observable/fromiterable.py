@@ -1,7 +1,7 @@
 from typing import Iterable, Any, Optional
 
 from rx.core import Observable, typing
-from rx.scheduler import current_thread_scheduler
+from rx.scheduler import CurrentThreadScheduler
 from rx.disposable import CompositeDisposable, Disposable
 
 
@@ -21,7 +21,7 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
     """
 
     def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
-        _scheduler = scheduler or scheduler_ or current_thread_scheduler
+        _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)
         disposed = False
 

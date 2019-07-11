@@ -1,6 +1,7 @@
 import logging
 import threading
 from collections import deque
+from datetime import timedelta
 from typing import Deque, Optional
 
 from rx.core import typing
@@ -27,10 +28,10 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
         super().__init__()
         self._is_disposed = False
 
-        self._thread_factory = thread_factory or default_thread_factory
-        self._thread: Optional[threading.Thread] = None
+        self._thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
+        self._thread: Optional[typing.Startable] = None
         self._condition = threading.Condition(threading.Lock())
-        self._queue: PriorityQueue[ScheduledItem[typing.TState]] = PriorityQueue()
+        self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
         self._ready_list: Deque[ScheduledItem] = deque()
 
         self._exit_if_empty = exit_if_empty
@@ -93,7 +94,7 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
             raise DisposedException()
 
         dt = self.to_datetime(duetime)
-        si: ScheduledItem[typing.TState] = ScheduledItem(self, state, action, dt)
+        si: ScheduledItem = ScheduledItem(self, state, action, dt)
 
         with self._condition:
             if dt <= self.now:
@@ -187,8 +188,9 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
                     continue
 
                 elif self._queue:
-                    due = self._queue.peek().duetime - self.now
-                    seconds = due.total_seconds()
+                    time = self.now
+                    item = self._queue.peek()
+                    seconds = (item.duetime - time).total_seconds()
                     if seconds > 0:
                         log.debug("timeout: %s", seconds)
                         self._condition.wait(seconds)
@@ -209,6 +211,3 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
             if not self._is_disposed:
                 self._is_disposed = True
                 self._condition.notify()
-
-
-event_loop_scheduler = EventLoopScheduler()

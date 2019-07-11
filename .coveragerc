@@ -2,7 +2,6 @@
 omit =
     */python?.?/*
     */site-packages/nose/*
-    *__init__*
 exclude_lines =
     pragma: no cover
     return NotImplemented

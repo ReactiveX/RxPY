@@ -1,10 +1,10 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio.futures import Future as _Future
-from typing import Iterable, Callable, Any, Optional, Union, Mapping, Sequence
+from typing import Iterable, Callable, Any, Optional, Union, Mapping
 
-from .core import Observable, typing, pipe
-from .core.typing import Mapper, Predicate
+from .core import Observable, pipe, typing
+from .internal.utils import alias
 
 
 # Please make sure the version here remains the same as in project.cfg
@@ -12,7 +12,7 @@ __version__ = '3.0.0'
 
 
 def amb(*sources: Observable) -> Observable:
-    """Propagates the observable sequence that reacts first.
+    """Propagates the observable sequence that emits first.
 
     .. marble::
         :alt: amb
@@ -26,10 +26,14 @@ def amb(*sources: Observable) -> Observable:
     Example:
         >>> winner = rx.amb(xs, ys, zs)
 
+    Args:
+        sources: Sequence of observables to monitor for first emission.
+
     Returns:
-        An observable sequence that surfaces any of the given
-        sequences, whichever reacted first.
+        An observable sequence that surfaces any of the given sequences,
+        whichever emitted the first element.
     """
+
     from .core.observable.amb import _amb
     return _amb(*sources)
 
@@ -40,6 +44,15 @@ def case(mapper: Callable[[], Any],
          ) -> Observable:
     """Uses mapper to determine which source in sources to use.
 
+    .. marble::
+        :alt: case
+
+        --1---------------|
+        a--1--2--3--4--|
+         b--10-20-30---|
+        [case(mapper, { 1: a, 2: b })]
+        ---1--2--3--4--|
+
     Examples:
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 })
         >>> res = rx.case(mapper, { '1': obs1, '2': obs2 }, obs0)
@@ -49,20 +62,21 @@ def case(mapper: Callable[[], Any],
             case statement.
         sources: An object which has keys which correspond to the case
             statement labels.
-        default_source: The observable sequence or Future that will be
-            run if the sources are not matched. If this is not
-            provided, it defaults to rx.Observabe.empty.
+        default_source: [Optional] The observable sequence or Future that will
+            be run if the sources are not matched. If this is not provided,
+            it defaults to :func:`empty`.
 
     Returns:
         An observable sequence which is determined by a case statement.
     """
+
     from .core.observable.case import _case
     return _case(mapper, sources, default_source)
 
 
 def catch(*sources: Observable) -> Observable:
-    """Continues an observable sequence that is terminated by an
-    exception with the next observable sequence.
+    """Continues observable sequences which are terminated with an
+    exception by switching over to the next observable sequence.
 
     .. marble::
         :alt: catch
@@ -75,18 +89,21 @@ def catch(*sources: Observable) -> Observable:
     Examples:
         >>> res = rx.catch(xs, ys, zs)
 
+    Args:
+        sources: Sequence of observables.
+
     Returns:
-        An observable sequence containing elements from consecutive
-        source sequences until a source sequence terminates
-        successfully.
+        An observable sequence containing elements from consecutive observables
+        from the sequence of sources until one of them terminates successfully.
     """
+
     from .core.observable.catch import _catch_with_iterable
     return _catch_with_iterable(sources)
 
 
 def catch_with_iterable(sources: Iterable[Observable]) -> Observable:
-    """Continues an observable sequence that is terminated by an
-    exception with the next observable sequence.
+    """Continues observable sequences that are terminated with an
+    exception by switching over to the next observable sequence.
 
     .. marble::
         :alt: catch
@@ -101,19 +118,21 @@ def catch_with_iterable(sources: Iterable[Observable]) -> Observable:
         >>> res = rx.catch(src for src in [xs, ys, zs])
 
     Args:
-        sources: an Iterable of observables. Thus a generator is accepted.
+        sources: An Iterable of observables; thus, a generator can also
+            be used here.
 
     Returns:
-        An observable sequence containing elements from consecutive
-        source sequences until a source sequence terminates
-        successfully.
+        An observable sequence containing elements from consecutive observables
+        from the sequence of sources until one of them terminates successfully.
     """
+
     from .core.observable.catch import _catch_with_iterable
     return _catch_with_iterable(sources)
 
 
-def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], typing.Disposable]):
-    """Create observable from subscribe function.
+def create(subscribe: typing.Subscription) -> Observable:
+    """Creates an observable sequence object from the specified
+        subscription function.
 
     .. marble::
         :alt: create
@@ -121,6 +140,12 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
         [     create(a)    ]
         ---1---2---3---4---|
 
+    Args:
+        subscribe: Subscription function.
+
+    Returns:
+        An observable sequence that can be subscribed to via the given
+        subscription function.
     """
 
     return Observable(subscribe)
@@ -128,8 +153,8 @@ def create(subscribe: Callable[[typing.Observer, Optional[typing.Scheduler]], ty
 
 def combine_latest(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by creating a tuple whenever any of the
-    observable sequences produces an element.
+    sequence by creating a tuple whenever any of the observable
+    sequences emits an element.
 
     .. marble::
         :alt: combine_latest
@@ -142,16 +167,20 @@ def combine_latest(*sources: Observable) -> Observable:
     Examples:
         >>> obs = rx.combine_latest(obs1, obs2, obs3)
 
+    Args:
+        sources: Sequence of observables.
+
     Returns:
-        An observable sequence containing the result of combining
-        elements of the sources into a tuple.
+        An observable sequence containing the result of combining elements from
+        each source in given sequence.
     """
+
     from .core.observable.combinelatest import _combine_latest
     return _combine_latest(*sources)
 
 
 def concat(*sources: Observable) -> Observable:
-    """Concatenates all the observable sequences.
+    """Concatenates all of the specified observable sequences.
 
     .. marble::
         :alt: concat
@@ -164,16 +193,20 @@ def concat(*sources: Observable) -> Observable:
     Examples:
         >>> res = rx.concat(xs, ys, zs)
 
+    Args:
+        sources: Sequence of observables.
+
     Returns:
-        An observable sequence that contains the elements of each given
-        sequence, in sequential order.
+        An observable sequence that contains the elements of each source in
+        the given sequence, in sequential order.
     """
+
     from .core.observable.concat import _concat_with_iterable
     return _concat_with_iterable(sources)
 
 
 def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
-    """Concatenates all the observable sequences.
+    """Concatenates all of the specified observable sequences.
 
     .. marble::
         :alt: concat
@@ -188,17 +221,20 @@ def concat_with_iterable(sources: Iterable[Observable]) -> Observable:
         >>> res = rx.concat_with_iterable(for src in [xs, ys, zs])
 
     Args:
-        sources: an Iterable of observables. Thus a generator is accepted.
+        sources: An Iterable of observables; thus, a generator can also
+            be used here.
 
     Returns:
         An observable sequence that contains the elements of each given
         sequence, in sequential order.
     """
+
     from .core.observable.concat import _concat_with_iterable
     return _concat_with_iterable(sources)
 
 
-def defer(observable_factory: Callable[[typing.Scheduler], Union[Observable, _Future]]) -> Observable:
+def defer(factory: Callable[[typing.Scheduler], Union[Observable, _Future]]
+          ) -> Observable:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
 
@@ -213,15 +249,17 @@ def defer(observable_factory: Callable[[typing.Scheduler], Union[Observable, _Fu
         >>> res = rx.defer(lambda: of(1, 2, 3))
 
     Args:
-        observable_factory: Observable factory function to invoke for
-        each observer that subscribes to the resulting sequence.
+        factory: Observable factory function to invoke for each observer
+            which invokes :func:`subscribe() <rx.Observable.subscribe>` on
+            the resulting sequence.
 
     Returns:
         An observable sequence whose observers trigger an invocation
-        of the given observable factory function.
+        of the given factory function.
     """
+
     from .core.observable.defer import _defer
-    return _defer(observable_factory)
+    return _defer(factory)
 
 
 def empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
@@ -237,73 +275,96 @@ def empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
         >>> obs = rx.empty()
 
     Args:
-        scheduler: Scheduler to send the termination call on.
+        scheduler: [Optional] Scheduler instance to send the termination call
+            on. By default, this will use an instance of
+            :class:`ImmediateScheduler <rx.scheduler.ImmediateScheduler>`.
 
     Returns:
         An observable sequence with no elements.
     """
+
     from .core.observable.empty import _empty
     return _empty(scheduler)
 
 
-def for_in(values: Iterable[Any], mapper: Mapper) -> Observable:
+def for_in(values: Iterable[Any], mapper: typing.Mapper) -> Observable:
     """Concatenates the observable sequences obtained by running the
-    specified result mapper for each element in source.
+    specified result mapper for each element in the specified values.
+
+    .. marble::
+        :alt: for_in
+
+        a--1--2-|
+         b--10--20-|
+        [for_in((a, b), lambda i: i+1)]
+        ---2--3--11--21-|
+
 
     Note:
-        This is just a wrapper for `rx.concat(map(mapper, values))`
+        This is just a wrapper for
+        :func:`rx.concat(map(mapper, values)) <rx.concat>`
 
     Args:
-        values: A list of values to turn into an observable sequence.
-        mapper: A function to apply to each item in the values
-            list to turn it into an observable sequence.
+        values: An Iterable of values to turn into an observable
+            source.
+        mapper: A function to apply to each item in the values list to turn
+            it into an observable sequence; this should return instances of
+            :class:`rx.Observable`.
 
     Returns:
         An observable sequence from the concatenated observable
         sequences.
     """
+
     return concat_with_iterable(map(mapper, values))
 
 
-def from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
-    """Returns an observable sequence that contains a single element
-    generate from a supplier, using the specified scheduler to send out
-    observer messages.
+def from_callable(supplier: Callable[[], Any],
+                  scheduler: Optional[typing.Scheduler] = None
+                  ) -> Observable:
+    """Returns an observable sequence that contains a single element generated
+    by the given supplier, using the specified scheduler to send out observer
+    messages.
 
     .. marble::
         :alt: from_callable
 
-        [   from_callable()    ]
-        ---1--2--3--|
+        [ from_callable() ]
+        --1--|
 
     Examples:
         >>> res = rx.from_callable(lambda: calculate_value())
         >>> res = rx.from_callable(lambda: 1 / 0) # emits an error
 
     Args:
-        value: Single element in the resulting observable sequence.
-        scheduler: Scheduler to schedule the values on.
+        supplier: Function which is invoked to obtain the single element.
+        scheduler: [Optional] Scheduler instance to schedule the values on.
+            If not specified, the default is to use an instance of
+            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
 
     Returns:
-        An observable sequence containing the single specified
-        element derived from the supplier
+        An observable sequence containing the single element obtained by
+        invoking the given supplier function.
     """
+
     from .core.observable.returnvalue import _from_callable
     return _from_callable(supplier, scheduler)
 
 
-def from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[], Observable]:
+def from_callback(func: Callable,
+                  mapper: Optional[typing.Mapper] = None
+                  ) -> Callable[[], Observable]:
     """Converts a callback function to an observable sequence.
 
     Args:
-        func: Function with a callback as the last parameter to
+        func: Function with a callback as the last argument to
             convert to an Observable sequence.
         mapper: [Optional] A mapper which takes the arguments
             from the callback to produce a single item to yield on
             next.
 
     Returns:
-        A function, when executed with the required parameters minus
+        A function, when executed with the required arguments minus
         the callback, produces an Observable sequence with a single
         value of the arguments to the callback as a list.
     """
@@ -313,6 +374,12 @@ def from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[
 
 def from_future(future: _Future) -> Observable:
     """Converts a Future to an Observable sequence
+
+    .. marble::
+        :alt: from_future
+
+        [  from_future()  ]
+        ------1|
 
     Args:
         future: A Python 3 compatible future.
@@ -341,8 +408,10 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
         >>> rx.from_iterable([1,2,3])
 
     Args:
-        iterable: A Python iterable
-        scheduler: An optional scheduler to schedule the values on.
+        iterable: An Iterable to change into an observable sequence.
+        scheduler: [Optional] Scheduler instance to schedule the values on.
+            If not specified, the default is to use an instance of
+            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -352,8 +421,8 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
     return from_iterable_(iterable, scheduler)
 
 
-from_ = from_iterable
-from_list = from_iterable
+from_ = alias('from_', 'Alias for :func:`rx.from_iterable`.', from_iterable)
+from_list = alias('from_list', 'Alias for :func:`rx.from_iterable`.', from_iterable)
 
 
 def from_marbles(string: str,
@@ -372,52 +441,49 @@ def from_marbles(string: str,
         -1-2-3-|
 
     Each character in the string will advance time by timespan
-    (exept for space). Characters that are not special (see the table below)
+    (except for space). Characters that are not special (see the table below)
     will be interpreted as a value to be emitted. Numbers will be cast
     to int or float.
 
     Special characters:
-        +--------+--------------------------------------------------------+
-        |  `-`   | advance time by timespan                               |
-        +--------+--------------------------------------------------------+
-        |  `#`   | on_error()                                             |
-        +--------+--------------------------------------------------------+
-        |  `|`   | on_completed()                                         |
-        +--------+--------------------------------------------------------+
-        |  `(`   | open a group of marbles sharing the same timestamp     |
-        +--------+--------------------------------------------------------+
-        |  `)`   | close a group of marbles                               |
-        +--------+--------------------------------------------------------+
-        |  `,`   | separate elements in a group                           |
-        +--------+--------------------------------------------------------+
-        | space  | used to align multiple diagrams, does not advance time |
-        +--------+--------------------------------------------------------+
+        +------------+--------------------------------------------------------+
+        | :code:`-`  | advance time by timespan                               |
+        +------------+--------------------------------------------------------+
+        | :code:`#`  | on_error()                                             |
+        +------------+--------------------------------------------------------+
+        | :code:`|`  | on_completed()                                         |
+        +------------+--------------------------------------------------------+
+        | :code:`(`  | open a group of marbles sharing the same timestamp     |
+        +------------+--------------------------------------------------------+
+        | :code:`)`  | close a group of marbles                               |
+        +------------+--------------------------------------------------------+
+        | :code:`,`  | separate elements in a group                           |
+        +------------+--------------------------------------------------------+
+        | <space>    | used to align multiple diagrams, does not advance time |
+        +------------+--------------------------------------------------------+
 
-    In a group of elements, the position of the initial `(` determines the
-    timestamp at which grouped elements will be emitted. E.g. `--(12,3,4)--`
-    will emit 12, 3, 4 at 2 * timespan and then advance virtual time
-    by 8 * timespan.
+    In a group of elements, the position of the initial :code:`(` determines the
+    timestamp at which grouped elements will be emitted.
+    E.g. :code:`--(12,3,4)--` will emit 12, 3, 4 at 2 * timespan and then
+    advance virtual time by 8 * timespan.
 
     Examples:
-        >>> from_marbles("--1--(2,3)-4--|")
-        >>> from_marbles("a--b--c-", lookup={'a': 1, 'b': 2, 'c': 3})
-        >>> from_marbles("a--b---#", error=ValueError("foo"))
+        >>> from_marbles('--1--(2,3)-4--|')
+        >>> from_marbles('a--b--c-', lookup={'a': 1, 'b': 2, 'c': 3})
+        >>> from_marbles('a--b---#', error=ValueError('foo'))
 
     Args:
         string: String with marble diagram
-
-        timespan: [Optional] duration of each character in second.
-            If not specified, defaults to 0.1s.
-
-        lookup: [Optional] dict used to convert an element into a specified
-            value. If not specified, defaults to {}.
-
-        error: [Optional] exception that will be use in place of the # symbol.
-            If not specified, defaults to Exception('error').
-
+        timespan: [Optional] Duration of each character in seconds.
+            If not specified, defaults to :code:`0.1`.
         scheduler: [Optional] Scheduler to run the the input sequence
             on. If not specified, defaults to the subscribe scheduler
-            if defined, else to NewThreadScheduler.
+            if defined, else to an instance of
+            :class:`NewThreadScheduler <rx.scheduler.NewThreadScheduler`.
+        lookup: [Optional] A dict used to convert an element into a specified
+            value. If not specified, defaults to :code:`{}`.
+        error: [Optional] Exception that will be use in place of the :code:`#`
+            symbol. If not specified, defaults to :code:`Exception('error')`.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -428,28 +494,35 @@ def from_marbles(string: str,
     return _from_marbles(string, timespan, lookup=lookup, error=error, scheduler=scheduler)
 
 
-cold = from_marbles
+cold = alias('cold', 'Alias for :func:`rx.from_marbles`.', from_marbles)
 
 
 def generate_with_relative_time(initial_state: Any,
-                                condition: Predicate,
-                                iterate: Mapper,
+                                condition: typing.Predicate,
+                                iterate: typing.Mapper,
                                 time_mapper: Callable[[Any], typing.RelativeTime]
                                 ) -> Observable:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
+    .. marble::
+        :alt: generate_with_relative_time
+
+        [generate_with_relative_time()]
+        -1-2-3-4-|
+
     Example:
-        res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
+        >>> res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
 
     Args:
         initial_state: Initial state.
         condition: Condition to terminate generation (upon returning
-            false).
+            :code:`False`).
         iterate: Iteration step function.
         time_mapper: Time mapper function to control the speed of
             values being produced each iteration, returning relative times, i.e.
-            either floats denoting seconds or instances of timedelta.
+            either a :class:`float` denoting seconds, or an instance of
+            :class:`timedelta`.
 
     Returns:
         The generated sequence.
@@ -458,10 +531,18 @@ def generate_with_relative_time(initial_state: Any,
     return _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
 
-def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Observable:
+def generate(initial_state: Any,
+             condition: typing.Predicate,
+             iterate: typing.Mapper
+             ) -> Observable:
     """Generates an observable sequence by running a state-driven loop
-    producing the sequence's elements, using the specified scheduler to
-    send out observer messages.
+    producing the sequence's elements.
+
+    .. marble::
+        :alt: generate
+
+        [   generate()    ]
+        -1-2-3-4-|
 
     Example:
         >>> res = rx.generate(0, lambda x: x < 10, lambda x: x + 1)
@@ -469,7 +550,7 @@ def generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Obser
     Args:
         initial_state: Initial state.
         condition: Condition to terminate generation (upon returning
-            False).
+            :code:`False`).
         iterate: Iteration step function.
 
     Returns:
@@ -502,26 +583,26 @@ def hot(string: str,
     to int or float.
 
     Special characters:
-        +--------+--------------------------------------------------------+
-        |  `-`   | advance time by timespan                               |
-        +--------+--------------------------------------------------------+
-        |  `#`   | on_error()                                             |
-        +--------+--------------------------------------------------------+
-        |  `|`   | on_completed()                                         |
-        +--------+--------------------------------------------------------+
-        |  `(`   | open a group of elemets sharing the same timestamp     |
-        +--------+--------------------------------------------------------+
-        |  `)`   | close a group of elements                              |
-        +--------+--------------------------------------------------------+
-        |  `,`   | separate elements in a group                           |
-        +--------+--------------------------------------------------------+
-        | space  | used to align multiple diagrams, does not advance time |
-        +--------+--------------------------------------------------------+
+        +------------+--------------------------------------------------------+
+        | :code:`-`  | advance time by timespan                               |
+        +------------+--------------------------------------------------------+
+        | :code:`#`  | on_error()                                             |
+        +------------+--------------------------------------------------------+
+        | :code:`|`  | on_completed()                                         |
+        +------------+--------------------------------------------------------+
+        | :code:`(`  | open a group of elements sharing the same timestamp    |
+        +------------+--------------------------------------------------------+
+        | :code:`)`  | close a group of elements                              |
+        +------------+--------------------------------------------------------+
+        | :code:`,`  | separate elements in a group                           |
+        +------------+--------------------------------------------------------+
+        | <space>    | used to align multiple diagrams, does not advance time |
+        +------------+--------------------------------------------------------+
 
-    In a group of elements, the position of the initial `(` determines the
-    timestamp at which grouped elements will be emitted. E.g. `--(12,3,4)--`
-    will emit 12, 3, 4 at 2 * timespan and then advance virtual time
-    by 8 * timespan.
+    In a group of elements, the position of the initial :code:`(` determines the
+    timestamp at which grouped elements will be emitted.
+    E.g. :code:`--(12,3,4)--` will emit 12, 3, 4 at 2 * timespan and then
+    advance virtual time by 8 * timespan.
 
     Examples:
         >>> hot("--1--(2,3)-4--|")
@@ -530,21 +611,17 @@ def hot(string: str,
 
     Args:
         string: String with marble diagram
-
-        timespan: [Optional] duration of each character in second.
-            If not specified, defaults to 0.1s.
-
+        timespan: [Optional] Duration of each character in seconds.
+            If not specified, defaults to :code:`0.1`.
         duetime: [Optional] Absolute datetime or timedelta from now that
             determines when to start the emission of elements.
-
-        lookup: [Optional] dict used to convert an element into a specified
-            value. If not specified, defaults to {}.
-
-        error: [Optional] exception that will be use in place of the # symbol.
-            If not specified, defaults to Exception('error').
-
         scheduler: [Optional] Scheduler to run the the input sequence
-            on. If not specified, defaults to NewThreadScheduler.
+            on. If not specified, defaults to an instance of
+            :class:`NewThreadScheduler <rx.scheduler.NewThreadScheduler>`.
+        lookup: [Optional] A dict used to convert an element into a specified
+            value. If not specified, defaults to :code:`{}`.
+        error: [Optional] Exception that will be use in place of the :code:`#`
+            symbol. If not specified, defaults to :code:`Exception('error')`.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -577,12 +654,11 @@ def if_then(condition: Callable[[], bool],
     Args:
         condition: The condition which determines if the then_source or
             else_source will be run.
-        then_source: The observable sequence or Promise that
-            will be run if the condition function returns true.
-        else_source: [Optional] The observable sequence or
-            Promise that will be run if the condition function returns
-            False. If this is not provided, it defaults to
-            rx.empty
+        then_source: The observable sequence or :class:`Future` that
+            will be run if the condition function returns :code:`True`.
+        else_source: [Optional] The observable sequence or :class:`Future`
+            that will be run if the condition function returns :code:`False`.
+            If this is not provided, it defaults to :func:`empty() <rx.empty>`.
 
     Returns:
         An observable sequence which is either the then_source or
@@ -593,8 +669,7 @@ def if_then(condition: Callable[[], bool],
 
 
 def interval(period: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Observable:
-    """Returns an observable sequence that produces a value after each
-    period.
+    """Returns an observable sequence that produces a value after each period.
 
     .. marble::
         :alt: interval
@@ -607,9 +682,11 @@ def interval(period: typing.RelativeTime, scheduler: Optional[typing.Scheduler] 
 
     Args:
         period: Period for producing the values in the resulting sequence
-            (specified as a float denoting seconds or an instance of timedelta).
-        scheduler:  Scheduler to run the interval on. If not specified,
-            the timeout scheduler is used.
+            (specified as a :class:`float` denoting seconds or an instance of
+            :class:`timedelta`).
+        scheduler:  Scheduler to run the interval on. If not specified, an
+            instance of :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`
+            is used.
 
     Returns:
         An observable sequence that produces a value after each period.
@@ -619,8 +696,7 @@ def interval(period: typing.RelativeTime, scheduler: Optional[typing.Scheduler] 
 
 
 def merge(*sources: Observable) -> Observable:
-    """Merges all the observable sequences into a single observable
-    sequence.
+    """Merges all the observable sequences into a single observable sequence.
 
     .. marble::
         :alt: merge
@@ -632,6 +708,9 @@ def merge(*sources: Observable) -> Observable:
 
     Example:
         >>> res = rx.merge(obs1, obs2, obs3)
+
+    Args:
+        sources: Sequence of observables.
 
     Returns:
         The observable sequence that merges the elements of the
@@ -659,8 +738,8 @@ def never() -> Observable:
 
 
 def of(*args: Any) -> Observable:
-    """This method creates a new Observable instance with a variable
-    number of arguments, regardless of number or type of the arguments.
+    """This method creates a new observable sequence whose elements are taken
+    from the arguments.
 
     .. marble::
         :alt: of
@@ -668,8 +747,15 @@ def of(*args: Any) -> Observable:
         [    of(1,2,3)    ]
         ---1--2--3--|
 
+    Note:
+        This is just a wrapper for
+        :func:`rx.from_iterable(args) <rx.from_iterable>`
+
     Example:
         >>> res = rx.of(1,2,3)
+
+    Args:
+        args: The variable number elements to emit from the observable.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -694,9 +780,13 @@ def on_error_resume_next(*sources: Union[Observable, _Future]) -> Observable:
     Examples:
         >>> res = rx.on_error_resume_next(xs, ys, zs)
 
+    Args:
+        sources: Sequence of sources, each of which is expected to be an
+            instance of either :class:`Observable` or :class:`Future`.
+
     Returns:
         An observable sequence that concatenates the source sequences,
-        even if a sequence terminates exceptionally.
+        even if a sequence terminates with an exception.
     """
     from .core.observable.onerrorresumenext import _on_error_resume_next
     return _on_error_resume_next(*sources)
@@ -725,7 +815,9 @@ def range(start: int,
     Args:
         start: The value of the first integer in the sequence.
         count: The number of sequential integers to generate.
-        scheduler: The scheduler to schedule the values on.
+        scheduler: [Optional] The scheduler to schedule the values on. If not
+            specified, the default is to use an instance of
+            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
 
     Returns:
         An observable sequence that contains a range of sequential
@@ -754,14 +846,13 @@ def return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> Ob
         value: Single element in the resulting observable sequence.
 
     Returns:
-        An observable sequence containing the single specified
-        element.
+        An observable sequence containing the single specified element.
     """
     from .core.observable.returnvalue import _return_value
     return _return_value(value, scheduler)
 
 
-just = return_value
+just = alias('just', 'Alias for :func:`rx.return_value`.', return_value)
 
 
 def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Observable:
@@ -775,8 +866,8 @@ def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Obser
         -4-4-4-4->
 
     Examples:
-        1 - res = rx.repeat_value(42)
-        2 - res = rx.repeat_value(42, 4)
+        >>> res = rx.repeat_value(42)
+        >>> res = rx.repeat_value(42, 4)
 
     Args:
         value: Element to repeat.
@@ -802,6 +893,11 @@ def start(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Obser
         -4-|
           -4-|
 
+    Note:
+        The function is called immediately, not during the subscription
+        of the resulting sequence. Multiple subscriptions to the
+        resulting sequence can observe the function's result.
+
     Example:
         >>> res = rx.start(lambda: pprint('hello'))
         >>> res = rx.start(lambda: pprint('hello'), rx.Scheduler.timeout)
@@ -809,12 +905,8 @@ def start(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Obser
     Args:
         func: Function to run asynchronously.
         scheduler: [Optional] Scheduler to run the function on. If
-            not specified, defaults to Scheduler.timeout.
-
-    Remarks:
-        The function is called immediately, not during the subscription
-        of the resulting sequence. Multiple subscriptions to the
-        resulting sequence can observe the function's result.
+            not specified, defaults to an instance of
+            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
 
     Returns:
         An observable sequence exposing the function's result value,
@@ -828,9 +920,15 @@ def start_async(function_async: Callable[[], _Future]) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
+    .. marble::
+        :alt: start_async
+
+        [  start_async()  ]
+        ------1|
+
     Args:
-        function_async: Asynchronous function which returns a Future to
-            run.
+        function_async: Asynchronous function which returns a :class:`Future`
+            to run.
 
     Returns:
         An observable sequence exposing the function's result value,
@@ -842,8 +940,7 @@ def start_async(function_async: Callable[[], _Future]) -> Observable:
 
 def throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) -> Observable:
     """Returns an observable sequence that terminates with an exception,
-    using the specified scheduler to send out the single OnError
-    message.
+    using the specified scheduler to send out the single OnError message.
 
     .. marble::
         :alt: throw
@@ -856,7 +953,9 @@ def throw(exception: Exception, scheduler: Optional[typing.Scheduler] = None) ->
 
     Args:
         exception: An object used for the sequence's termination.
-        scheduler: Scheduler to schedule the error notification on.
+        scheduler: [Optional] Scheduler to schedule the error notification on.
+            If not specified, the default is to use an instance of
+            :class:`ImmediateScheduler <rx.scheduler.ImmediateScheduler>`.
 
     Returns:
         The observable sequence that terminates exceptionally with the
@@ -891,7 +990,8 @@ def timer(duetime: typing.AbsoluteOrRelativeTime, period: Optional[typing.Relati
             float denoting seconds or an instance of timedelta).
             If not specified, the resulting timer is not recurring.
         scheduler:  [Optional] Scheduler to run the timer on. If not specified,
-            the timeout scheduler is used.
+            the default is to use an instance of
+            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
 
     Returns:
         An observable sequence that produces a value after due time has
@@ -907,15 +1007,22 @@ def to_async(func: Callable, scheduler: Optional[typing.Scheduler] = None) -> Ca
     invocation of the original synchronous function on the specified
     scheduler.
 
+    .. marble::
+        :alt: to_async
+
+        [  to_async()()   ]
+        ------1|
+
     Examples:
-        res = rx.to_async(lambda x, y: x + y)(4, 3)
-        res = rx.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
-        res = rx.to_async(lambda x: log.debug(x), Scheduler.timeout)('hello')
+        >>> res = rx.to_async(lambda x, y: x + y)(4, 3)
+        >>> res = rx.to_async(lambda x, y: x + y, Scheduler.timeout)(4, 3)
+        >>> res = rx.to_async(lambda x: log.debug(x), Scheduler.timeout)('hello')
 
     Args:
         func: Function to convert to an asynchronous function.
         scheduler: [Optional] Scheduler to run the function on. If not
-            specified, defaults to Scheduler.timeout.
+            specified, defaults to an instance of
+            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
 
     Returns:
         Asynchronous function.
@@ -949,9 +1056,8 @@ def using(resource_factory: Callable[[], typing.Disposable],
 
 def with_latest_from(*sources: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by creating a tuple only when the first
-    observable sequence produces an element. The observables can be
-    passed either as separate arguments or as a list.
+    sequence by creating a :class:`tuple` only when the first
+    observable sequence produces an element.
 
     .. marble::
         :alt: with_latest_from
@@ -965,9 +1071,12 @@ def with_latest_from(*sources: Observable) -> Observable:
         >>> obs = rx.with_latest_from(obs1)
         >>> obs = rx.with_latest_from([obs1, obs2, obs3])
 
+    Args:
+        sources: Sequence of observables.
+
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources into a tuple.
+        elements of the sources into a :class:`tuple`.
     """
     from .core.observable.withlatestfrom import _with_latest_from
     return _with_latest_from(*sources)
@@ -975,7 +1084,7 @@ def with_latest_from(*sources: Observable) -> Observable:
 
 def zip(*args: Observable) -> Observable:
     """Merges the specified observable sequences into one observable
-    sequence by creating a tuple whenever all of the
+    sequence by creating a :class:`tuple` whenever all of the
     observable sequences have produced an element at a corresponding
     index.
 
@@ -995,7 +1104,7 @@ def zip(*args: Observable) -> Observable:
 
     Returns:
         An observable sequence containing the result of combining
-        elements of the sources as a tuple.
+        elements of the sources as a :class:`tuple`.
     """
     from .core.observable.zip import _zip
     return _zip(*args)
