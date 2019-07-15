@@ -1621,6 +1621,40 @@ def merge_all() -> Callable[[Observable], Observable]:
     return _merge_all()
 
 
+def merge_scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
+    """The merge_scan operator.
+
+    Applies an accumulator function over an observable sequence, where
+    the accumulator function itself returns an observable sequence, and
+    returns each intermediate result. The optional seed value is used
+    as the initial accumulator value. For accumulator not returning an
+    observable sequence, see `scan()`.
+
+    .. marble::
+        :alt: merge_scan
+
+        ----1--2--3--4-----|
+        [merge_scan(acc,i: acc+i)]
+        ----1--3--6--10----|
+
+    Examples:
+        >>> scanned = source.scan(lambda acc, x: of(acc + x))
+        >>> scanned = source.scan(lambda acc, x: of(acc + x), 0)
+
+    Args:
+        accumulator: An accumulator function to be invoked on each
+            element, returning an observable sequence.
+        seed: [Optional] The initial accumulator value.
+
+    Returns:
+        A partially applied operator function that takes an observable
+        source and returns an observable sequence containing the
+        accumulated values.
+    """
+    from rx.core.operators.merge_scan import _merge_scan
+    return _merge_scan(accumulator, seed)
+
+
 def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
     """The `min` operator.
 
