@@ -29,7 +29,7 @@ RxPY:
 
 .. code:: console
 
-    pip3 install --pre rx
+    pip3 install rx
 
 
 About ReactiveX
