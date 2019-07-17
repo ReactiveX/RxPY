@@ -22,9 +22,7 @@ query operator functions in Python*
 RxPY v3.0
 ----------------
 
-**This branch is work-in-progress.**
-
-FOR V 1.X PLEASE GO TO `STABLE BRANCH <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_.
+For v1.X please go to the `v1 branch <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_.
 
 RxPY v3.x runs on `Python <http://www.python.org/>`_ 3.6 or above. To install
 RxPY:
