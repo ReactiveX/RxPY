@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys 
+
 try:
     from setuptools import setup
 except ImportError:
@@ -21,6 +23,9 @@ with open('project.cfg') as project_file:
 with open('README.rst') as readme_file:
     project_meta['long_description'] = readme_file.read()
 
+
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 setup(
     **{key: project_meta[key] for key in (
@@ -50,7 +55,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    setup_requires=['pytest-runner'],
+    setup_requires=pytest_runner,
     tests_require=['pytest>=4.6.1', 'pytest-asyncio>=0.10.0', 'coverage>=4.5.3'],
 
     package_data={'rx': ['py.typed']},
