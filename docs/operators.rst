@@ -77,7 +77,7 @@ Error Handling
 ======================================================  ================================================
 Operator                                                                    Description
 ======================================================  ================================================
-:func:`catch_exception <rx.operators.catch_exception>`  Recover from an onError notification by continuing the sequence without error.
+:func:`catch <rx.operators.catch>`                      Continues observable sequences which are terminated with an exception by switching over to the next observable sequence.
 :func:`retry <rx.operators.retry>`                      If a source Observable sends an onError notification, resubscribe to it in the hopes that it will complete without error.
 ======================================================  ================================================
 
