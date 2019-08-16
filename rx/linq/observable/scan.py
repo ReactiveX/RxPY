@@ -1,3 +1,5 @@
+from threading import Lock
+
 from rx import Observable
 from rx.internal import extensionmethod
 
@@ -22,6 +24,8 @@ def scan(self, accumulator, seed=None):
     has_seed = seed is not None
 
     source = self
+    
+    lock = Lock()
 
     def defer():
         has_accumulation = [False]
@@ -29,10 +33,12 @@ def scan(self, accumulator, seed=None):
 
         def projection(x):
             if has_accumulation[0]:
-                accumulation[0] = accumulator(accumulation[0], x)
+                with lock:
+                    accumulation[0] = accumulator(accumulation[0], x)
             else:
-                accumulation[0] = accumulator(seed, x) if has_seed else x
-                has_accumulation[0] = True
+                with lock:
+                    accumulation[0] = accumulator(seed, x) if has_seed else x
+                    has_accumulation[0] = True
 
             return accumulation[0]
         return source.map(projection)
