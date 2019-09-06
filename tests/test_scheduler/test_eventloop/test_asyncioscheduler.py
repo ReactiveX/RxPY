@@ -82,3 +82,9 @@ class TestAsyncIOScheduler(unittest.TestCase):
             assert ran is False
 
         loop.run_until_complete(go())
+
+    def test_asyncio_get_event_loop(self):
+        loop = asyncio.get_event_loop()
+        scheduler = AsyncIOScheduler(loop)
+        scheduler_loop = scheduler.get_event_loop()
+        assert loop is scheduler_loop

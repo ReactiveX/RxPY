@@ -28,6 +28,9 @@ class AsyncIOScheduler(PeriodicScheduler):
         super().__init__()
         self._loop: asyncio.AbstractEventLoop = loop
 
+    def get_event_loop(self) -> asyncio.AbstractEventLoop:
+        return self._loop
+
     def schedule(self,
                  action: typing.ScheduledAction,
                  state: Optional[typing.TState] = None
