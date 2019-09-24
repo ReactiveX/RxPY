@@ -63,7 +63,7 @@ Read the `documentation
 the principles of RxPY and get the complete reference of the available
 operators.
 
-I you need to migrate code from RxPY v1.x, read the `migration
+If you need to migrate code from RxPY v1.x, read the `migration
 <https://rxpy.readthedocs.io/en/latest/migration.html>`_ section.
 
 There is also a list of third party documentation available `here
