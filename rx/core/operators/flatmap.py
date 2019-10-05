@@ -10,11 +10,12 @@ from rx.internal.utils import is_future
 def _flat_map_internal(source, mapper=None, mapper_indexed=None):
     def projection(x, i):
         mapper_result = mapper(x) if mapper else mapper_indexed(x, i)
-        if isinstance(mapper_result, collections.abc.Iterable):
+        if is_future(mapper_result):
+            result = from_future(mapper_result)
+        elif isinstance(mapper_result, collections.abc.Iterable):
             result = from_(mapper_result)
         else:
-            result = from_future(mapper_result) if is_future(
-                mapper_result) else mapper_result
+            result = mapper_result
         return result
 
     return source.pipe(
