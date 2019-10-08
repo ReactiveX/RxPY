@@ -3,6 +3,7 @@ import unittest
 import asyncio
 
 import rx
+import rx.operators as ops
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.testing import ReactiveTest
 
@@ -66,3 +67,15 @@ class TestToFuture(unittest.TestCase):
             result = await source
 
         self.assertRaises(SequenceContainsNoElementsError, loop.run_until_complete, go())
+
+    def test_await_with_delay(self):
+        loop = asyncio.get_event_loop()
+        result = None
+
+        async def go():
+            nonlocal result
+            source = rx.return_value(42).pipe(ops.delay(0.1))
+            result = await source
+
+        loop.run_until_complete(go())
+        assert result == 42

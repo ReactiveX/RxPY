@@ -1,9 +1,11 @@
 # By design, pylint: disable=C0302
 import threading
+import asyncio
 from typing import Any, Callable, Optional, Union, TypeVar, cast, overload
 
 from rx.disposable import Disposable
 from rx.scheduler import CurrentThreadScheduler
+from rx.scheduler.eventloop import AsyncIOScheduler
 
 from ..observer import AutoDetachObserver
 from .. import typing, abc
@@ -290,7 +292,8 @@ class Observable(typing.Observable):
             The last item of the observable sequence.
         """
         from ..operators.tofuture import _to_future
-        return iter(self.pipe(_to_future()))
+        loop = asyncio.get_event_loop()
+        return iter(self.pipe(_to_future(scheduler=AsyncIOScheduler(loop=loop))))
 
     def __add__(self, other) -> 'Observable':
         """Pythonic version of :func:`concat <rx.concat>`.
