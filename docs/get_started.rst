@@ -335,7 +335,7 @@ IO Concurrency
 
 IO concurrency is also supported for several asynchronous frameworks, in
 combination with associated RxPY schedulers. The following example implements
-an simple echo TCP server that delays its answers by 5 seconds. It uses AsyncIO
+a simple echo TCP server that delays its answers by 5 seconds. It uses AsyncIO
 as an event loop.
 
 The TCP server is implemented in AsyncIO, and the echo logic is implemented as
