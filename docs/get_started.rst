@@ -277,7 +277,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
         return value
 
 
-    # calculate number of CPU's, then create a ThreadPoolScheduler with that number of threads
+    # calculate number of CPUs, then create a ThreadPoolScheduler with that number of threads
     optimal_thread_count = multiprocessing.cpu_count()
     pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
