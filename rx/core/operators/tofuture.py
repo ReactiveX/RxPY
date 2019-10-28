@@ -1,11 +1,13 @@
 from typing import Callable, Optional
 from asyncio import Future
 
+from .. import typing
 from rx.core import Observable
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
 
-def _to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[Observable], Future]:
+def _to_future(future_ctor: Optional[Callable[[], Future]] = None,
+               scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Future]:
     future_ctor = future_ctor or Future
     future = future_ctor()
 
@@ -44,7 +46,7 @@ def _to_future(future_ctor: Optional[Callable[[], Future]] = None) -> Callable[[
             else:
                 future.set_exception(SequenceContainsNoElementsError())
 
-        source.subscribe_(on_next, on_error, on_completed)
+        source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
 
         # No cancellation can be done
         return future
