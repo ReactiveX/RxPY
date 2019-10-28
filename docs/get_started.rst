@@ -175,7 +175,7 @@ other operators, then the implementation is straightforward, thanks to the
     ).subscribe(lambda value: print("Received {0}".format(value)))
 
 In this example, the *pipe* and *filter* operators are grouped in a new
-*length_more_then_5* operator.
+*length_more_than_5* operator.
 
 It is also possible to create an operator that is not a composition of other
 operators. This allows to fully control the subscription logic and items
@@ -277,7 +277,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
         return value
 
 
-    # calculate number of CPU's, then create a ThreadPoolScheduler with that number of threads
+    # calculate number of CPUs, then create a ThreadPoolScheduler with that number of threads
     optimal_thread_count = multiprocessing.cpu_count()
     pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
@@ -335,7 +335,7 @@ IO Concurrency
 
 IO concurrency is also supported for several asynchronous frameworks, in
 combination with associated RxPY schedulers. The following example implements
-an simple echo TCP server that delays its answers by 5 seconds. It uses AsyncIO
+a simple echo TCP server that delays its answers by 5 seconds. It uses AsyncIO
 as an event loop.
 
 The TCP server is implemented in AsyncIO, and the echo logic is implemented as
