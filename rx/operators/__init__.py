@@ -1179,7 +1179,8 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
 
 
 def group_by(key_mapper: Mapper,
-             element_mapper: Optional[Mapper] = None
+             element_mapper: Optional[Mapper] = None,
+             subject_mapper: Optional[Callable[[], Subject]] = None,
              ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the
@@ -1210,12 +1211,13 @@ def group_by(key_mapper: Mapper,
         share that same key value.
     """
     from rx.core.operators.groupby import _group_by
-    return _group_by(key_mapper, element_mapper)
+    return _group_by(key_mapper, element_mapper, subject_mapper)
 
 
 def group_by_until(key_mapper: Mapper,
                    element_mapper: Optional[Mapper],
                    duration_mapper: Callable[[GroupedObservable], Observable],
+                   subject_mapper: Optional[Callable[[], Subject]] = None,
                    ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
@@ -1252,7 +1254,7 @@ def group_by_until(key_mapper: Mapper,
         with such a key value is encountered.
     """
     from rx.core.operators.groupbyuntil import _group_by_until
-    return _group_by_until(key_mapper, element_mapper, duration_mapper)
+    return _group_by_until(key_mapper, element_mapper, duration_mapper, subject_mapper)
 
 
 def group_join(right: Observable,
