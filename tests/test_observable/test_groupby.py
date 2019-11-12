@@ -593,6 +593,62 @@ class TestGroupBy(unittest.TestCase):
             on_next(200, ["gamma"]),
             on_completed(200)]
 
+    def test_group_by_with_ReplaySubject(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(300, 1),
+            on_next(310, 2),
+            on_next(320, 3),
+            on_next(320, 4),
+            on_next(320, 5),
+            on_next(320, 6),
+            on_completed(1000),
+            )
+
+        observer_groups = scheduler.create_observer()
+        observer_odd = scheduler.create_observer()
+        observer_even = scheduler.create_observer()
+
+        def subscription(scheduler, state):
+            source = xs.pipe(
+                ops.group_by(
+                    key_mapper=lambda x: x % 2,
+                    element_mapper=None,
+                    subject_mapper=lambda: rx.subject.ReplaySubject(2),
+                    )
+                )
+            return source.subscribe(observer_groups, scheduler=scheduler)
+
+        scheduler.schedule_absolute(290, subscription)
+        scheduler.advance_to(500)
+
+        # extract grouped observables from messages list
+        groups = {m.value.value.key: m.value.value for m in observer_groups.messages if m.value.kind =='N'}
+
+        def subscription_odd(scheduler, state):
+            source = groups[1]
+            return source.subscribe(observer_odd, scheduler=scheduler)
+
+        def subscription_even(scheduler, state):
+            source = groups[0]
+            return source.subscribe(observer_even, scheduler=scheduler)
+
+        scheduler.schedule_absolute(500, subscription_odd)
+        scheduler.schedule_absolute(600, subscription_even)
+        scheduler.advance_to(1100)
+
+        assert observer_odd.messages == [
+            on_next(500, 3),
+            on_next(500, 5),
+            on_completed(1000),
+            ]
+
+        assert observer_even.messages == [
+            on_next(600, 4),
+            on_next(600, 6),
+            on_completed(1000),
+            ]
+
 
 if __name__ == '__main__':
     unittest.main()
