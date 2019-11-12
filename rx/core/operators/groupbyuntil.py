@@ -24,10 +24,13 @@ def _group_by_until(key_mapper: Mapper,
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda grp: rx.never())
+        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject())
 
     Args:
         key_mapper: A function to extract the key for each element.
         duration_mapper: A function to signal the expiration of a group.
+        subject_mapper: A function that returns a subject used to initiate
+            a grouped observable. Default mapper returns a Subject object.
 
     Returns: a sequence of observable groups, each of which corresponds to
     a unique key value, containing all elements that share that same key
