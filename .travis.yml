@@ -65,15 +65,15 @@ matrix:
 #        # Install the various optional packages
 #        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted wxpython
 
-    - name: "Python 3.8 on Windows, with optional dependencies and benchmark"
+    - name: "Python 3.7 on Windows, with optional dependencies and benchmark"
       os: windows
       language: sh
-      python: 3.8
+      python: 3.7
       install:
         # Get Python 3.7 from choco
-        - choco install python3
-        - ln -s "/c/Python38/python.exe" "/c/Python38/python3.exe"
-        - export PATH="/c/Python38/:/c/Python38/Scripts/:$PATH"
+        - choco install python3 --version=3.7.5
+        - ln -s "/c/Python37/python.exe" "/c/Python37/python3.exe"
+        - export PATH="/c/Python37/:/c/Python37/Scripts/:$PATH"
         # Install the various optional packages
         - pip3 install eventlet gevent pygame pyqt5 pyside2 tornado twisted wxpython
         # TODO install pycairo and pygobject somehow?
