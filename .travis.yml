@@ -71,7 +71,7 @@ matrix:
       python: 3.7
       install:
         # Get Python 3.7 from choco
-        - choco install python3
+        - choco install python3 --version=3.7.5
         - ln -s "/c/Python37/python.exe" "/c/Python37/python3.exe"
         - export PATH="/c/Python37/:/c/Python37/Scripts/:$PATH"
         # Install the various optional packages
