@@ -31,12 +31,13 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
-        last_exception = [None]
-        is_disposed = []
+        last_exception = None
+        is_disposed = False
 
         def action(action1, state=None):
             def on_error(exn):
-                last_exception[0] = exn
+                nonlocal last_exception
+                last_exception = exn
                 cancelable.disposable = _scheduler.schedule(action)
 
             if is_disposed:
@@ -45,8 +46,8 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
             try:
                 current = next(sources_)
             except StopIteration:
-                if last_exception[0]:
-                    observer.on_error(last_exception[0])
+                if last_exception:
+                    observer.on_error(last_exception)
                 else:
                     observer.on_completed()
             except Exception as ex:  # pylint: disable=broad-except
@@ -59,6 +60,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
         cancelable.disposable = _scheduler.schedule(action)
 
         def dispose():
-            is_disposed.append(True)
+            nonlocal is_disposed
+            is_disposed= True
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return Observable(subscribe)
