@@ -26,8 +26,8 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler.singleton()
+    def subscribe(observer, scheduler_=None):
+        _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
@@ -37,7 +37,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
         def action(action1, state=None):
             def on_error(exn):
                 last_exception[0] = exn
-                cancelable.disposable = scheduler.schedule(action)
+                cancelable.disposable = _scheduler.schedule(action)
 
             if is_disposed:
                 return
@@ -54,9 +54,9 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
+                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler_)
 
-        cancelable.disposable = scheduler.schedule(action)
+        cancelable.disposable = _scheduler.schedule(action)
 
         def dispose():
             is_disposed.append(True)
