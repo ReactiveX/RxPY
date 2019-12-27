@@ -21,7 +21,7 @@ items to an Observer. You can use a :func:`create()
 * The *on_completed* function is called when the Observable completes.
 * The *on_error* function is called when an error occurs on the Observable.
 
-You do not have to specify all three events types. You can pick and choose which
+You do not have to specify all three event types. You can pick and choose which
 events you want to observe by providing only some of the callbacks, or simply by
 providing a single lambda for *on_next*. Typically in production, you will want
 to provide an *on_error* handler so that errors are explicitly handled by the
