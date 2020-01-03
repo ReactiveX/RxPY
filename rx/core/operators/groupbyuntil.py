@@ -41,7 +41,7 @@ def _group_by_until(key_mapper: Mapper,
 
     element_mapper = element_mapper or identity
 
-    default_subject_mapper = lambda: Subject()
+    default_subject_mapper = Subject
     subject_mapper = subject_mapper or default_subject_mapper
 
     def group_by_until(source: Observable) -> Observable:
