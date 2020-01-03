@@ -26,18 +26,19 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler.singleton()
+    def subscribe(observer, scheduler_=None):
+        _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
-        last_exception = [None]
-        is_disposed = []
+        last_exception = None
+        is_disposed = False
 
         def action(action1, state=None):
             def on_error(exn):
-                last_exception[0] = exn
-                cancelable.disposable = scheduler.schedule(action)
+                nonlocal last_exception
+                last_exception = exn
+                cancelable.disposable = _scheduler.schedule(action)
 
             if is_disposed:
                 return
@@ -45,8 +46,8 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
             try:
                 current = next(sources_)
             except StopIteration:
-                if last_exception[0]:
-                    observer.on_error(last_exception[0])
+                if last_exception:
+                    observer.on_error(last_exception)
                 else:
                     observer.on_completed()
             except Exception as ex:  # pylint: disable=broad-except
@@ -54,11 +55,12 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
+                d.disposable = current.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler_)
 
-        cancelable.disposable = scheduler.schedule(action)
+        cancelable.disposable = _scheduler.schedule(action)
 
         def dispose():
-            is_disposed.append(True)
+            nonlocal is_disposed
+            is_disposed= True
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return Observable(subscribe)
