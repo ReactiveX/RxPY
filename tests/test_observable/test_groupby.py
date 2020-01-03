@@ -637,6 +637,8 @@ class TestGroupBy(unittest.TestCase):
         scheduler.schedule_absolute(600, subscription_even)
         scheduler.advance_to(1100)
 
+        # only the last 2 items of odd/even are received because the
+        # ReplaySubject has been configured with a buffer size of 2
         assert observer_odd.messages == [
             on_next(500, 3),
             on_next(500, 5),
