@@ -310,7 +310,7 @@ def catch(handler: Union[Observable, Callable[[Exception, Observable], Observabl
 
     Examples:
         >>> op = catch(ys)
-        >>> op = catch(lambda ex: ys(ex))
+        >>> op = catch(lambda ex, src: ys(ex))
 
     Args:
         handler: Second observable sequence used to produce
