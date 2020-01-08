@@ -30,7 +30,7 @@ class TimeInterval(object):
     def __str__(self):
         return "%s@%s" % (self.value, self.interval)
 
-    def equals(other):
+    def equals(self, other):
         return other.interval == self.interval and other.value == self.value
 
     def get_hash_code(self):
