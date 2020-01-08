@@ -105,7 +105,7 @@ def _join(right: Observable,
                 if left_done[0] or not len(right_map):
                     observer.on_completed()
 
-            group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right))
+            group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right, scheduler))
             return group
         return Observable(subscribe)
     return join
