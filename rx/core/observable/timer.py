@@ -8,7 +8,7 @@ from rx.disposable import MultipleAssignmentDisposable
 
 def observable_timer_date(duetime, scheduler: Optional[typing.Scheduler] = None):
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
         def action(scheduler, state):
             observer.on_next(0)
