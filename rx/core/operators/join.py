@@ -29,17 +29,18 @@ def _join(right: Observable,
 
         def subscribe(observer, scheduler=None):
             group = CompositeDisposable()
-            left_done = [False]
+            left_done = False
             left_map = OrderedDict()
-            left_id = [0]
-            right_done = [False]
+            left_id = 0
+            right_done = False
             right_map = OrderedDict()
-            right_id = [0]
+            right_id = 0
 
             def on_next_left(value):
+                nonlocal left_id
                 duration = None
-                current_id = left_id[0]
-                left_id[0] += 1
+                current_id = left_id
+                left_id += 1
                 md = SingleAssignmentDisposable()
 
                 left_map[current_id] = value
@@ -48,7 +49,7 @@ def _join(right: Observable,
                 def expire():
                     if current_id in left_map:
                         del left_map[current_id]
-                    if not len(left_map) and left_done[0]:
+                    if not len(left_map) and left_done:
                         observer.on_completed()
 
                     return group.remove(md)
@@ -66,16 +67,18 @@ def _join(right: Observable,
                     observer.on_next(result)
 
             def on_completed_left():
-                left_done[0] = True
-                if right_done[0] or not len(left_map):
+                nonlocal left_done
+                left_done = True
+                if right_done or not len(left_map):
                     observer.on_completed()
 
             group.add(left.subscribe_(on_next_left, observer.on_error, on_completed_left, scheduler))
 
             def on_next_right(value):
+                nonlocal right_id
                 duration = None
-                current_id = right_id[0]
-                right_id[0] += 1
+                current_id = right_id
+                right_id += 1
                 md = SingleAssignmentDisposable()
                 right_map[current_id] = value
                 group.add(md)
@@ -83,7 +86,7 @@ def _join(right: Observable,
                 def expire():
                     if current_id in right_map:
                         del right_map[current_id]
-                    if not len(right_map) and right_done[0]:
+                    if not len(right_map) and right_done:
                         observer.on_completed()
 
                     return group.remove(md)
@@ -101,8 +104,9 @@ def _join(right: Observable,
                     observer.on_next(result)
 
             def on_completed_right():
-                right_done[0] = True
-                if left_done[0] or not len(right_map):
+                nonlocal right_done
+                right_done = True
+                if left_done or not len(right_map):
                     observer.on_completed()
 
             group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right, scheduler))
