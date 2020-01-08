@@ -22,6 +22,44 @@ def _raise(ex):
 
 
 class TestTimer(unittest.TestCase):
+    def test_oneshot_timer_date_basic(self):
+        scheduler = TestScheduler()
+        date = scheduler.to_datetime(250.0)
+
+        def create():
+            return rx.timer(duetime=date)
+
+        results = scheduler.start(create)
+        assert results.messages == [on_next(250.0, 0), on_completed(250.0)]
+
+    def test_oneshot_timer_date_passed(self):
+        scheduler = TestScheduler()
+        date = scheduler.to_datetime(90.0)
+
+        def create():
+            return rx.timer(date)
+
+        results = scheduler.start(create)
+        assert results.messages == [on_next(200, 0), on_completed(200)]
+
+    def test_oneshot_timer_date_disposed(self):
+        scheduler = TestScheduler()
+        date = scheduler.to_datetime(1010.0)
+
+        def create():
+            return rx.timer(date)
+
+        results = scheduler.start(create)
+        assert results.messages == []
+
+    def test_oneshot_timer_date_observer_throws(self):
+        scheduler = TestScheduler()
+        date = scheduler.to_datetime(250.0)
+        xs = rx.timer(date)
+        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler)
+
+        self.assertRaises(RxException, scheduler.start)
+
     def test_oneshot_timer_timespan_basic(self):
         scheduler = TestScheduler()
 
