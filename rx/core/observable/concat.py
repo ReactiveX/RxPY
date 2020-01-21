@@ -8,11 +8,9 @@ from rx.scheduler import CurrentThreadScheduler
 
 def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
 
-    sources_ = iter(sources)
-
     def subscribe(observer, scheduler_=None):
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
-
+        sources_ = iter(sources)
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
         is_disposed = False
