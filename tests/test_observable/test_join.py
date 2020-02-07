@@ -869,7 +869,52 @@ class TestJoin(unittest.TestCase):
                 )
 
         results = scheduler.start(create=create)
-        assert subscribe_schedulers['x'] == scheduler
-        assert subscribe_schedulers['y'] == scheduler
-        assert subscribe_schedulers['duration_x'] == scheduler
-        assert subscribe_schedulers['duration_y'] == scheduler
+        assert subscribe_schedulers['x'] is scheduler
+        assert subscribe_schedulers['y'] is scheduler
+        assert subscribe_schedulers['duration_x'] is scheduler
+        assert subscribe_schedulers['duration_y'] is scheduler
+
+    def test_join_op_forward_scheduler_None(self):
+
+        subscribe_schedulers = {
+            'x': 'unknown',
+            'y': 'unknown',
+            'duration_x': 'unknown',
+            'duration_y': 'unknown',
+            }
+
+        def subscribe_x(observer, scheduler='not_set'):
+            subscribe_schedulers['x'] = scheduler
+            # need to push one element to trigger duration mapper
+            observer.on_next('foo')
+
+        def subscribe_y(observer, scheduler='not_set'):
+            subscribe_schedulers['y'] = scheduler
+            # need to push one element to trigger duration mapper
+            observer.on_next('bar')
+
+        def subscribe_duration_x(observer, scheduler='not_set'):
+            subscribe_schedulers['duration_x'] = scheduler
+
+        def subscribe_duration_y(observer, scheduler='not_set'):
+            subscribe_schedulers['duration_y'] = scheduler
+
+        xs = rx.create(subscribe_x)
+        ys = rx.create(subscribe_y)
+        duration_x = rx.create(subscribe_duration_x)
+        duration_y = rx.create(subscribe_duration_y)
+
+        stream = xs.pipe(
+            ops.join(
+                ys,
+                lambda x: duration_x,
+                lambda y: duration_y,
+                ),
+            )
+
+        stream.subscribe()
+        assert subscribe_schedulers['x'] is None
+        assert subscribe_schedulers['y'] is None
+        assert subscribe_schedulers['duration_x'] is None
+        assert subscribe_schedulers['duration_y'] is None
+
