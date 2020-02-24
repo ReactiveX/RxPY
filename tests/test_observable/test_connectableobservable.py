@@ -241,3 +241,19 @@ class TestConnectableObservable(unittest.TestCase):
             subscribe(225, 241),
             subscribe(249, 255),
             subscribe(275, 295)]
+
+    def test_connectable_observable_forward_scheduler(self):
+        scheduler = TestScheduler()
+        subscribe_scheduler = 'unknown'
+
+        def subscribe(observer, scheduler=None):
+            nonlocal subscribe_scheduler
+            subscribe_scheduler = scheduler
+
+        xs = rx.create(subscribe)
+        subject = MySubject()
+
+        conn = ConnectableObservable(xs, subject)
+        conn.connect(scheduler)
+
+        assert subscribe_scheduler is scheduler
