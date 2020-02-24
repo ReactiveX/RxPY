@@ -87,18 +87,17 @@ qualname_overrides = {
 _format_annotation = sphinx_autodoc_typehints.format_annotation
 
 
-def format_annotation(annotation):
+def format_annotation(annotation, fully_qualified=False):
     if isinstance(annotation, type):
         full_name = f'{annotation.__module__}.{annotation.__qualname__}'
         override = qualname_overrides.get(full_name)
         if override is not None:
             return f':py:class:`~{override}`'
-    return _format_annotation(annotation)
+    return _format_annotation(annotation, fully_qualified)
 
 sphinx_autodoc_typehints.format_annotation = format_annotation
 
 # End hack.
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
