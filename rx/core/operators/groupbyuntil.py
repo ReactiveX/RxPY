@@ -11,7 +11,8 @@ from rx.internal.basic import identity
 
 def _group_by_until(key_mapper: Mapper,
                     element_mapper: Optional[Mapper],
-                    duration_mapper: Callable[[GroupedObservable], Observable]
+                    duration_mapper: Callable[[GroupedObservable], Observable],
+                    subject_mapper: Optional[Callable[[], Subject]] = None,
                     ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
@@ -23,10 +24,13 @@ def _group_by_until(key_mapper: Mapper,
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda grp: rx.never())
+        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject())
 
     Args:
         key_mapper: A function to extract the key for each element.
         duration_mapper: A function to signal the expiration of a group.
+        subject_mapper: A function that returns a subject used to initiate
+            a grouped observable. Default mapper returns a Subject object.
 
     Returns: a sequence of observable groups, each of which corresponds to
     a unique key value, containing all elements that share that same key
@@ -36,6 +40,9 @@ def _group_by_until(key_mapper: Mapper,
     """
 
     element_mapper = element_mapper or identity
+
+    default_subject_mapper = Subject
+    subject_mapper = subject_mapper or default_subject_mapper
 
     def group_by_until(source: Observable) -> Observable:
         def subscribe(observer, scheduler=None):
@@ -59,7 +66,15 @@ def _group_by_until(key_mapper: Mapper,
                 fire_new_map_entry = False
                 writer = writers.get(key)
                 if not writer:
-                    writer = Subject()
+                    try:
+                        writer = subject_mapper()
+                    except Exception as e:
+                        for wrt in writers.values():
+                            wrt.on_error(e)
+
+                        observer.on_error(e)
+                        return
+
                     writers[key] = writer
                     fire_new_map_entry = True
 

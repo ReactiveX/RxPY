@@ -1179,7 +1179,8 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
 
 
 def group_by(key_mapper: Mapper,
-             element_mapper: Optional[Mapper] = None
+             element_mapper: Optional[Mapper] = None,
+             subject_mapper: Optional[Callable[[], Subject]] = None,
              ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the
@@ -1197,11 +1198,14 @@ def group_by(key_mapper: Mapper,
     Examples:
         >>> group_by(lambda x: x.id)
         >>> group_by(lambda x: x.id, lambda x: x.name)
+        >>> group_by(lambda x: x.id, lambda x: x.name, lambda: ReplaySubject())
 
     Keyword arguments:
         key_mapper: A function to extract the key for each element.
         element_mapper: [Optional] A function to map each source
             element to an element in an observable group.
+        subject_mapper: A function that returns a subject used to initiate
+            a grouped observable. Default mapper returns a Subject object.
 
     Returns:
         An operator function that takes an observable source and
@@ -1210,12 +1214,13 @@ def group_by(key_mapper: Mapper,
         share that same key value.
     """
     from rx.core.operators.groupby import _group_by
-    return _group_by(key_mapper, element_mapper)
+    return _group_by(key_mapper, element_mapper, subject_mapper)
 
 
 def group_by_until(key_mapper: Mapper,
                    element_mapper: Optional[Mapper],
                    duration_mapper: Callable[[GroupedObservable], Observable],
+                   subject_mapper: Optional[Callable[[], Subject]] = None,
                    ) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
@@ -1228,7 +1233,7 @@ def group_by_until(key_mapper: Mapper,
         :alt: group_by_until
 
         --1--2--a--3--b--c-|
-        [    group_by()    ]
+        [ group_by_until() ]
         -+-----+-----------|
                +a-----b--c-|
          +1--2-----3-------|
@@ -1236,12 +1241,15 @@ def group_by_until(key_mapper: Mapper,
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never())
+        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject())
 
     Args:
         key_mapper: A function to extract the key for each element.
         element_mapper: A function to map each source element to an element in
             an observable group.
         duration_mapper: A function to signal the expiration of a group.
+        subject_mapper: A function that returns a subject used to initiate
+            a grouped observable. Default mapper returns a Subject object.
 
     Returns:
         An operator function that takes an observable source and
@@ -1252,7 +1260,7 @@ def group_by_until(key_mapper: Mapper,
         with such a key value is encountered.
     """
     from rx.core.operators.groupbyuntil import _group_by_until
-    return _group_by_until(key_mapper, element_mapper, duration_mapper)
+    return _group_by_until(key_mapper, element_mapper, duration_mapper, subject_mapper)
 
 
 def group_join(right: Observable,
