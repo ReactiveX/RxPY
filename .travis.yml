@@ -47,7 +47,7 @@ matrix:
         # Pre-built wheel for wxpython
         - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxpython
         # Install the various optional packages
-        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted
+        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5!=5.14.1 pyside2 tornado twisted
         # Coverage will be reported for the Python 3.7 Linux build
         - pip3 install coveralls
       script:
