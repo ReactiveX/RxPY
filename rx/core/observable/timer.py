@@ -8,7 +8,7 @@ from rx.disposable import MultipleAssignmentDisposable
 
 def observable_timer_date(duetime, scheduler: Optional[typing.Scheduler] = None):
     def subscribe(observer, scheduler_=None):
-        _scheduler = scheduler or scheduler_
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
         def action(scheduler, state):
             observer.on_next(0)
@@ -28,20 +28,23 @@ def observable_timer_duetime_and_period(duetime, period, scheduler: Optional[typ
 
         p = max(0.0, _scheduler.to_seconds(period))
         mad = MultipleAssignmentDisposable()
-        dt = [duetime]
-        count = [0]
+        dt = duetime
+        count = 0
 
         def action(scheduler, state):
+            nonlocal dt
+            nonlocal count
+
             if p > 0.0:
                 now = scheduler.now
-                dt[0] = dt[0] + scheduler.to_timedelta(p)
-                if dt[0] <= now:
-                    dt[0] = now + scheduler.to_timedelta(p)
+                dt = dt + scheduler.to_timedelta(p)
+                if dt <= now:
+                    dt = now + scheduler.to_timedelta(p)
 
-            observer.on_next(count[0])
-            count[0] += 1
-            mad.disposable = scheduler.schedule_absolute(dt[0], action)
-        mad.disposable = _scheduler.schedule_absolute(dt[0], action)
+            observer.on_next(count)
+            count += 1
+            mad.disposable = scheduler.schedule_absolute(dt, action)
+        mad.disposable = _scheduler.schedule_absolute(dt, action)
         return mad
     return Observable(subscribe)
 
