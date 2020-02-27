@@ -8,8 +8,8 @@ from rx.scheduler import CurrentThreadScheduler
 
 def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
 
-    def subscribe(observer, scheduler=None):
-        scheduler = scheduler or CurrentThreadScheduler.singleton()
+    def subscribe(observer, scheduler_=None):
+        _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         sources_ = iter(sources)
 
@@ -23,7 +23,7 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
                 return
 
             def on_completed():
-                cancelable.disposable = scheduler.schedule(action)
+                cancelable.disposable = _scheduler.schedule(action)
 
             try:
                 current = next(sources_)
@@ -34,9 +34,9 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
             else:
                 d = SingleAssignmentDisposable()
                 subscription.disposable = d
-                d.disposable = current.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
+                d.disposable = current.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler_)
 
-        cancelable.disposable = scheduler.schedule(action)
+        cancelable.disposable = _scheduler.schedule(action)
 
         def dispose():
             nonlocal is_disposed
