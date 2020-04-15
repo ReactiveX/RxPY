@@ -870,7 +870,7 @@ def expand(mapper: Mapper) -> Callable[[Observable], Observable]:
 
 def filter(predicate: Predicate) -> Callable[[Observable], Observable]:
     """Filters the elements of an observable sequence based on a
-    predicate by incorporating the element's index.
+    predicate.
 
     .. marble::
         :alt: filter
