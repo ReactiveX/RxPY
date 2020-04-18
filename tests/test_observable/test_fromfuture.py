@@ -59,6 +59,30 @@ class TestFromFuture(unittest.TestCase):
         loop.run_until_complete(go())
         assert all(success)
 
+    def test_future_cancel(self):
+        loop = asyncio.get_event_loop()
+        success = [True, False, True]
+
+        @asyncio.coroutine
+        def go():
+            future = Future()
+            source = rx.from_future(future)
+
+            def on_next(x):
+                success[0] = False
+
+            def on_error(err):
+                success[1] = type(err) == asyncio.CancelledError
+
+            def on_completed():
+                success[2] = False
+
+            source.subscribe(on_next, on_error, on_completed)
+            future.cancel()
+
+        loop.run_until_complete(go())
+        assert all(success)
+
     def test_future_dispose(self):
         loop = asyncio.get_event_loop()
         success = [True, True, True]

@@ -1,3 +1,4 @@
+import asyncio
 from asyncio.futures import Future
 from typing import Optional
 
@@ -26,7 +27,7 @@ def _from_future(future: Future) -> Observable:
         def done(future):
             try:
                 value = future.result()
-            except Exception as ex:  # pylint: disable=broad-except
+            except (Exception, asyncio.CancelledError) as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
             else:
                 observer.on_next(value)

@@ -23,11 +23,11 @@ matrix:
         - xvfb-run -a python3 setup.py test
 
 
-    - name: "Python 3.8-dev on Linux"
+    - name: "Python 3.8 on Linux"
       os: linux
       dist: xenial
       language: python
-      python: 3.8-dev
+      python: 3.8
       service:
         - xvfb
       script:
