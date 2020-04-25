@@ -14,7 +14,9 @@ def _to_set() -> Callable[[Observable], Observable]:
             s = set()
 
             def on_completed():
+                nonlocal s
                 observer.on_next(s)
+                s = set()
                 observer.on_completed()
 
             return source.subscribe_(s.add, observer.on_error, on_completed, scheduler)

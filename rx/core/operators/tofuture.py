@@ -41,10 +41,12 @@ def _to_future(future_ctor: Optional[Callable[[], Future]] = None,
             future.set_exception(err)
 
         def on_completed():
+            nonlocal last_value
             if has_value:
                 future.set_result(last_value)
             else:
                 future.set_exception(SequenceContainsNoElementsError())
+            last_value = None
 
         source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
 
