@@ -5,6 +5,7 @@ from rx.internal.utils import NotSet
 from rx.core import Observable, pipe
 from rx.core.typing import Accumulator
 
+
 def _reduce(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
@@ -28,12 +29,8 @@ def _reduce(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observabl
         an observable sequence containing a single element with the
         final accumulator value.
     """
-
-
     if seed is not NotSet:
-        initial = ops.start_with(seed)
         scanner = ops.scan(accumulator, seed=seed)
-
-        return pipe(scanner, initial, ops.last())
+        return pipe(scanner, ops.last_or_default(default_value=seed))
 
     return pipe(ops.scan(accumulator), ops.last())
