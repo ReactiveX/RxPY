@@ -2019,7 +2019,7 @@ def repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observa
 
     Returns:
         An operator function that takes an observable sources and
-        returna an observable sequence producing the elements of the
+        returns an observable sequence producing the elements of the
         given sequence repeatedly.
     """
     from rx.core.operators.repeat import _repeat
