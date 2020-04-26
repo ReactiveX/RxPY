@@ -47,7 +47,7 @@ matrix:
         # update pip as a workaround to PyQt5.14 installation failure
         - pip3 install --upgrade pip
         # Pre-built wheel for wxpython
-        - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxpython
+        - pip3 install -U -f "https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04" wxpython~=4.0.0
         # Install the various optional packages
         - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted
         # Coverage will be reported for the Python 3.7 Linux build
