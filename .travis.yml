@@ -44,10 +44,12 @@ matrix:
       install:
         # Native libraries for pycairo / pygobject
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
+        # update pip as a workaround to PyQt5.14 installation failure
+        - pip3 install --upgrade pip
         # Pre-built wheel for wxpython
         - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxpython
         # Install the various optional packages
-        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5!=5.14.1 pyside2 tornado twisted
+        - pip3 install eventlet gevent pycairo pygobject pygame pyqt5 pyside2 tornado twisted
         # Coverage will be reported for the Python 3.7 Linux build
         - pip3 install coveralls
       script:
