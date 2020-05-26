@@ -39,7 +39,9 @@ def _to_dict(key_mapper: Mapper,
                 m[key] = element
 
             def on_completed() -> None:
+                nonlocal m
                 observer.on_next(m)
+                m = dict()
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
