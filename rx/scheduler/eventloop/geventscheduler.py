@@ -52,7 +52,7 @@ class GEventScheduler(PeriodicScheduler):
         timer = self._gevent.spawn(interval)
 
         def dispose() -> None:
-            timer.kill()
+            timer.kill(block=False)
 
         return CompositeDisposable(sad, Disposable(dispose))
 
@@ -86,7 +86,7 @@ class GEventScheduler(PeriodicScheduler):
         timer = self._gevent.spawn_later(seconds, interval)
 
         def dispose() -> None:
-            timer.kill()
+            timer.kill(block=False)
 
         return CompositeDisposable(sad, Disposable(dispose))
 
