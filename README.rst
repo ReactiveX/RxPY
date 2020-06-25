@@ -67,7 +67,7 @@ If you need to migrate code from RxPY v1.x, read the `migration
 <https://rxpy.readthedocs.io/en/latest/migration.html>`_ section.
 
 There is also a list of third party documentation available `here
-<https://rxpy.readthedocs.io/en/latest/additional_readings.html>`_.
+<https://rxpy.readthedocs.io/en/latest/additional_reading.html>`_.
 
 
 Community
