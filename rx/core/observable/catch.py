@@ -61,6 +61,6 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
 
         def dispose():
             nonlocal is_disposed
-            is_disposed= True
+            is_disposed = True
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
     return Observable(subscribe)
