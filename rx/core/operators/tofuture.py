@@ -38,18 +38,20 @@ def _to_future(future_ctor: Optional[Callable[[], Future]] = None,
             has_value = True
 
         def on_error(err):
-            future.set_exception(err)
+            if not future.cancelled():
+                future.set_exception(err)
 
         def on_completed():
             nonlocal last_value
-            if has_value:
-                future.set_result(last_value)
-            else:
-                future.set_exception(SequenceContainsNoElementsError())
+            if not future.cancelled():
+                if has_value:
+                    future.set_result(last_value)
+                else:
+                    future.set_exception(SequenceContainsNoElementsError())
             last_value = None
 
-        source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+        dis = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+        future.add_done_callback(lambda _: dis.dispose())
 
-        # No cancellation can be done
         return future
     return to_future
