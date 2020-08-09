@@ -3492,8 +3492,8 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
         :alt: zip
 
         --1--2---3-----4---|
-        -a----b----c-d-----|
-        [       zip()      ]
+        -a----b----c-d------|
+        [       zip()       ]
         --1,a-2,b--3,c-4,d-|
 
 
