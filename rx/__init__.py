@@ -1090,10 +1090,10 @@ def zip(*args: Observable) -> Observable:
     .. marble::
         :alt: zip
 
-        --1--2---3-----4---|
+        --1--2---3-----4--|
         -a----b----c-d-----|
         [       zip()      ]
-        --1,a-2,b--3,c-4,d-|
+        --1,a-2,b--3,c-4,d|
 
     Example:
         >>> res = rx.zip(obs1, obs2)
