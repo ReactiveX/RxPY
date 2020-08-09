@@ -131,7 +131,6 @@ class TestWxScheduler(unittest.TestCase):
         scheduler.schedule_periodic(period, action, counter)
         exit.Start(500, wx.TIMER_ONE_SHOT)
         app.MainLoop()
-        sleep(1)
         scheduler.cancel_all()
 
         assert counter == 0
