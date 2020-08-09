@@ -27,7 +27,8 @@ def _zip(*args: Observable) -> Observable:
 
     sources = list(args)
 
-    def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None):
+    def subscribe(observer: typing.Observer,
+                  scheduler: Optional[typing.Scheduler] = None) -> CompositeDisposable:
         n = len(sources)
         queues: List[List] = [[] for _ in range(n)]
         lock = RLock()
