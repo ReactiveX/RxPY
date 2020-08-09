@@ -319,6 +319,35 @@ def for_in(values: Iterable[Any], mapper: typing.Mapper) -> Observable:
     return concat_with_iterable(map(mapper, values))
 
 
+def fork_join(*sources: Observable) -> Observable:
+    """Wait for observables to complete and then combine last values
+    they emitted into a tuple. Whenever any of that observables completes
+    without emitting any value, result sequence will complete at that moment as well.
+
+    .. marble::
+        :alt: fork_join
+
+        ---a-----b--c---d-|
+        --1---2------3-4---|
+        -a--------- b---|
+        [      fork_join()     ]
+        --------------------d4b|
+
+    Examples:
+        >>> obs = rx.fork_join(obs1, obs2, obs3)
+
+    Args:
+        sources: Sequence of observables.
+
+    Returns:
+        An observable sequence containing the result of combining last element from
+        each source in given sequence.
+    """
+
+    from .core.observable.forkjoin import _fork_join
+    return _fork_join(*sources)
+
+
 def from_callable(supplier: Callable[[], Any],
                   scheduler: Optional[typing.Scheduler] = None
                   ) -> Observable:
