@@ -1178,6 +1178,33 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
     return _flat_map_latest(mapper)
 
 
+def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
+    """Wait for observables to complete and then combine last values
+    they emitted into a tuple. Whenever any of that observables completes
+    without emitting any value, result sequence will complete at that moment as well.
+
+    .. marble::
+        :alt: fork_join
+
+        ---a-----b--c---d-|
+        --1---2------3-4---|
+        -a--------- b---|
+        [      fork_join()     ]
+        --------------------d4b|
+
+    Examples:
+        >>> res = fork_join(obs1)
+        >>> res = fork_join(obs1, obs2, obs3)
+
+    Returns:
+        An operator function that takes an observable source and
+        return an observable sequence containing the result
+        of combining last element from each source in given sequence.
+    """
+    from rx.core.operators.forkjoin import _fork_join
+    return _fork_join(*others)
+
+
 def group_by(key_mapper: Mapper,
              element_mapper: Optional[Mapper] = None,
              subject_mapper: Optional[Callable[[], Subject]] = None,

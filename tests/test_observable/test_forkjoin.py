@@ -1,6 +1,7 @@
 import unittest
 
 import rx
+from rx import operators as ops
 from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -182,4 +183,23 @@ class TestForkJoin(unittest.TestCase):
 
         xs = [scheduler.create_hot_observable(x) for x in [msgs1, msgs2, msgs3, msgs4, msgs5]]
         results = scheduler.start(lambda: rx.fork_join(*xs))
+        assert results.messages == [on_next(905, (9, 3, 2, 3, 99)), on_completed(905)]
+
+    def test_fork_join_many_ops(self):
+        scheduler = TestScheduler()
+
+        msgs1 = [on_next(150, 1), on_next(210, 2), on_next(230, 3), on_next(300, 9), on_completed(500)]
+        msgs2 = [on_next(150, 1), on_next(205, 3), on_next(220, 7), on_next(400, 3), on_completed(900)]
+        msgs3 = [on_next(150, 1), on_next(250, 2), on_next(300, 3), on_next(400, 9), on_next(500, 2), on_completed(850)]
+        msgs4 = [on_next(150, 1), on_next(400, 2), on_next(550, 10), on_next(560, 11), on_next(600, 3),
+                 on_completed(605)]
+        msgs5 = [on_next(150, 1), on_next(201, 3), on_next(550, 10), on_next(560, 11), on_next(600, 3),
+                 on_next(900, 99), on_completed(905)]
+
+        xs = [scheduler.create_hot_observable(x) for x in [msgs2, msgs3, msgs4, msgs5]]
+
+        def create():
+            return scheduler.create_hot_observable(msgs1).pipe(ops.fork_join(*xs))
+
+        results = scheduler.start(create)
         assert results.messages == [on_next(905, (9, 3, 2, 3, 99)), on_completed(905)]
