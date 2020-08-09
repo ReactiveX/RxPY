@@ -1,7 +1,7 @@
 from typing import Optional
 
 from rx.core import Observable, typing
-from rx.disposable import CompositeDisposable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
 def _fork_join(*sources: Observable) -> Observable:
@@ -44,6 +44,8 @@ def _fork_join(*sources: Observable) -> Observable:
         subscriptions = [None] * n
 
         def _subscribe(i: int):
+            subscriptions[i] = SingleAssignmentDisposable()
+
             def on_next(value):
                 with parent.lock:
                     values[i] = value
@@ -53,7 +55,7 @@ def _fork_join(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i] = sources[i].subscribe(
+            subscriptions[i].disposable = sources[i].subscribe_(
                 on_next,
                 observer.on_error,
                 on_completed,
