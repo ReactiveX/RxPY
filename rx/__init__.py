@@ -6,7 +6,6 @@ from typing import Iterable, Callable, Any, Optional, Union, Mapping
 from .core import Observable, pipe, typing
 from .internal.utils import alias
 
-
 # Please make sure the version here remains the same as in project.cfg
 __version__ = '3.1.1'
 
@@ -561,8 +560,8 @@ def generate(initial_state: Any,
 
 
 def hot(string: str,
-        timespan: typing.RelativeTime=0.1,
-        duetime:typing.AbsoluteOrRelativeTime = 0.0,
+        timespan: typing.RelativeTime = 0.1,
+        duetime: typing.AbsoluteOrRelativeTime = 0.0,
         scheduler: Optional[typing.Scheduler] = None,
         lookup: Optional[Mapping] = None,
         error: Optional[Exception] = None
@@ -1091,10 +1090,10 @@ def zip(*args: Observable) -> Observable:
     .. marble::
         :alt: zip
 
-        --1--2---3-----4---|
+        --1--2---3-----4--|
         -a----b----c-d-----|
         [       zip()      ]
-        --1,a-2,b--3,c-4,d-|
+        --1,a-2,b--3,c-4,d|
 
     Example:
         >>> res = rx.zip(obs1, obs2)

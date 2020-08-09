@@ -13,7 +13,6 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-
 class TestZip(unittest.TestCase):
 
     def test_zip_never_never(self):
@@ -37,7 +36,7 @@ class TestZip(unittest.TestCase):
             return o1.pipe(ops.zip(o2))
 
         results = scheduler.start(create)
-        assert results.messages == []
+        assert results.messages == [on_completed(210)]
 
     def test_zip_empty_empty(self):
         scheduler = TestScheduler()
@@ -67,7 +66,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_completed(215)]
+        assert results.messages == [on_completed(210)]
 
     def test_zip_non_empty_empty(self):
         scheduler = TestScheduler()
@@ -82,7 +81,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_completed(215)]
+        assert results.messages == [on_completed(210)]
 
     def test_zip_never_non_empty(self):
         scheduler = TestScheduler()
@@ -96,7 +95,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == []
+        assert results.messages == [on_completed(220)]
 
     def test_zip_non_empty_never(self):
         scheduler = TestScheduler()
@@ -110,7 +109,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == []
+        assert results.messages == [on_completed(220)]
 
     def test_zip_non_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -125,7 +124,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(220, 2 + 3), on_completed(240)]
+        assert results.messages == [on_next(220, 2 + 3), on_completed(230)]
 
     def test_zip_empty_error(self):
         ex = 'ex'
@@ -246,6 +245,7 @@ class TestZip(unittest.TestCase):
             for i in range(5):
                 results.append(on_next(205 + i * 5, i))
             return results
+
         msgs1 = msgs1_factory()
 
         def msgs2_factory():
@@ -253,6 +253,7 @@ class TestZip(unittest.TestCase):
             for i in range(10):
                 results.append(on_next(205 + i * 8, i))
             return results
+
         msgs2 = msgs2_factory()
 
         length = min(len(msgs1), len(msgs2))
@@ -265,13 +266,13 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create).messages
-        assert(length == len(results))
+        assert (length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N'
-                   and results[i].time == time
-                   and results[i].value.value == _sum)
+            assert (results[i].value.kind == 'N'
+                    and results[i].time == time
+                    and results[i].value.value == _sum)
 
     def test_zip_some_data_asymmetric2(self):
         scheduler = TestScheduler()
@@ -282,6 +283,7 @@ class TestZip(unittest.TestCase):
                 results.append(on_next(205 + i * 5, i))
 
             return results
+
         msgs1 = msgs1_factory()
 
         def msgs2_factory():
@@ -289,6 +291,7 @@ class TestZip(unittest.TestCase):
             for i in range(5):
                 results.append(on_next(205 + i * 8, i))
             return results
+
         msgs2 = msgs2_factory()
 
         length = min(len(msgs1), len(msgs2))
@@ -301,13 +304,13 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create).messages
-        assert(length == len(results))
+        assert (length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N'
-                   and results[i].time == time
-                   and results[i].value.value == _sum)
+            assert (results[i].value.kind == 'N'
+                    and results[i].time == time
+                    and results[i].value.value == _sum)
 
     def test_zip_some_data_symmetric(self):
         scheduler = TestScheduler()
@@ -317,6 +320,7 @@ class TestZip(unittest.TestCase):
             for i in range(10):
                 results.append(on_next(205 + i * 5, i))
             return results
+
         msgs1 = msgs1_factory()
 
         def msgs2_factory():
@@ -324,6 +328,7 @@ class TestZip(unittest.TestCase):
             for i in range(10):
                 results.append(on_next(205 + i * 8, i))
             return results
+
         msgs2 = msgs2_factory()
 
         length = min(len(msgs1), len(msgs2))
@@ -336,13 +341,13 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create).messages
-        assert(length == len(results))
+        assert (length == len(results))
         for i in range(length):
             _sum = msgs1[i].value.value + msgs2[i].value.value
             time = max(msgs1[i].time, msgs2[i].time)
-            assert(results[i].value.kind == 'N'
-                   and results[i].time == time
-                   and results[i].value.value == _sum)
+            assert (results[i].value.kind == 'N'
+                    and results[i].time == time
+                    and results[i].value.value == _sum)
 
     def test_zip_with_iterable_never_empty(self):
         scheduler = TestScheduler()
@@ -423,7 +428,7 @@ class TestZip(unittest.TestCase):
     def test_zip_with_iterable_non_empty_non_empty(self):
         scheduler = TestScheduler()
         n1 = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(215, 2), on_completed(230))
+            on_next(150, 1), on_next(215, 2), on_completed(230))
         n2 = [3]
 
         def create():

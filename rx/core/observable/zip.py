@@ -1,11 +1,9 @@
+from threading import RLock
 from typing import Optional, List
 
-from rx import from_future
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal.utils import is_future
 from rx.internal.concurrency import synchronized
-from threading import RLock
 
 
 # pylint: disable=redefined-builtin
@@ -33,7 +31,6 @@ def _zip(*args: Observable) -> Observable:
         n = len(sources)
         queues: List[List] = [[] for _ in range(n)]
         lock = RLock()
-        is_done = [False] * n
 
         @synchronized(lock)
         def next(i):
@@ -46,26 +43,18 @@ def _zip(*args: Observable) -> Observable:
                     return
 
                 observer.on_next(res)
-            elif all([x for j, x in enumerate(is_done) if j != i]):
-                observer.on_completed()
-
-        def done(i):
-            is_done[i] = True
-            if all(is_done):
-                observer.on_completed()
 
         subscriptions = [None] * n
 
         def func(i):
             source = sources[i]
             sad = SingleAssignmentDisposable()
-            source = from_future(source) if is_future(source) else source
 
             def on_next(x):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(on_next, observer.on_error, lambda: done(i), scheduler)
+            sad.disposable = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
             subscriptions[i] = sad
 
         for idx in range(n):
