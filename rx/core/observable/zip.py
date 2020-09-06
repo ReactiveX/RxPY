@@ -1,9 +1,11 @@
 from threading import RLock
 from typing import Optional, List
 
+from rx import from_future
 from rx.core import Observable, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
+from rx.internal.utils import is_future
 
 
 # pylint: disable=redefined-builtin
@@ -50,6 +52,7 @@ def _zip(*args: Observable) -> Observable:
         def func(i):
             source = sources[i]
             sad = SingleAssignmentDisposable()
+            source = from_future(source) if is_future(source) else source
 
             def on_next(x):
                 queues[i].append(x)
