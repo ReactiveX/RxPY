@@ -6,6 +6,7 @@ import rx
 import rx.operators as ops
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.testing import ReactiveTest
+from rx.subject import Subject
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -79,3 +80,33 @@ class TestToFuture(unittest.TestCase):
 
         loop.run_until_complete(go())
         assert result == 42
+
+    def test_cancel(self):
+        loop = asyncio.get_event_loop()
+
+        async def go():
+            source = rx.return_value(42)
+            fut = next(source.__await__())
+            # This used to raise an InvalidStateError before we got
+            # support for cancellation.
+            fut.cancel()
+            await fut
+
+        self.assertRaises(asyncio.CancelledError, loop.run_until_complete, go())
+
+    def test_dispose_on_cancel(self):
+        loop = asyncio.get_event_loop()
+        sub = Subject()
+
+        async def using_sub():
+            # Since the subject never completes, this await statement
+            # will never be complete either. We wait forever.
+            await rx.using(lambda: sub, lambda s: s)
+
+        async def go():
+            await asyncio.wait_for(using_sub(), 0.1)
+
+        self.assertRaises(asyncio.TimeoutError, loop.run_until_complete, go())
+        # When we cancel the future (due to the time-out), the future
+        # automatically disposes the underlying subject.
+        self.assertTrue(sub.is_disposed)
