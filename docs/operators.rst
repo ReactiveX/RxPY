@@ -69,6 +69,7 @@ Operator                                                                    Desc
 :func:`start_with <rx.operators.start_with>`            Emit a specified sequence of items before beginning to emit the items from the source Observable.
 :func:`switch_latest <rx.operators.switch_latest>`      Convert an Observable that emits Observables into a single Observable that emits the items emitted by the most-recently-emitted of those Observables.
 :func:`zip <rx.operators.zip>`                          Combine the emissions of multiple Observables together via a specified function and emit single items for each combination based on the results of this function.
+:func:`fork_join <rx.operators.fork_join>`              Wait for Observables to complete and then combine last values they emitted into a tuple.
 ======================================================  ================================================
 
 Error Handling
