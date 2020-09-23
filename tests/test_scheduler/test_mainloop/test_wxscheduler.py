@@ -119,7 +119,7 @@ class TestWxScheduler(unittest.TestCase):
         app = make_app()
         exit = AppExit(app)
         scheduler = WxScheduler(wx)
-        period = 0.05
+        period = 0.15
         counter = 3
 
         def action(state):
