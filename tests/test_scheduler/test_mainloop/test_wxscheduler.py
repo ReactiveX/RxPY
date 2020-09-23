@@ -123,6 +123,7 @@ class TestWxScheduler(unittest.TestCase):
         counter = 3
 
         def action(state):
+            print("action")
             nonlocal counter
             if state:
                 counter -= 1
@@ -130,7 +131,10 @@ class TestWxScheduler(unittest.TestCase):
 
         scheduler.schedule_periodic(period, action, counter)
         exit.Start(500, wx.TIMER_ONE_SHOT)
+        print("start app")
         app.MainLoop()
+        print("app completed")
         scheduler.cancel_all()
+        print("cancelled")
 
         assert counter == 0
