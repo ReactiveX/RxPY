@@ -51,6 +51,3 @@ def _raise(ex):
 #     strictEqual(subscribes, 1, "catchException(function): After dispose: 1 subscribes")
 #     strictEqual(unsubscribes, 1, "catchException(function): After dispose: 1 unsubscribes") // this one FAILS (unsubscribes is 0)
 #
-
-if __name__ == '__main__':
-    test_combine_latest_return_empty()

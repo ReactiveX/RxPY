@@ -215,7 +215,3 @@ def _raise(ex):
 
 
 # // TakeLast
-
-
-if __name__ == '__main__':
-    test_buffer_with_time_or_count_basic()
