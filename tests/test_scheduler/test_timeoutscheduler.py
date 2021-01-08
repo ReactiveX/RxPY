@@ -96,5 +96,5 @@ class TestTimeoutScheduler(unittest.TestCase):
         d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
         d.dispose()
 
-        sleep(0.1)
+        sleep(0.3)
         assert ran is False
