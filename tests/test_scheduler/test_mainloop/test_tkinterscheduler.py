@@ -31,7 +31,7 @@ class TestTkinterScheduler(unittest.TestCase):
         diff = scheduler.now
         sleep(1.1)
         diff = scheduler.now - diff
-        assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1200)
+        assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1300)
 
     def test_tkinter_schedule_action(self):
         scheduler = TkinterScheduler(root)
