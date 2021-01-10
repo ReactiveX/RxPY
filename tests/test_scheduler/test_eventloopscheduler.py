@@ -37,6 +37,9 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler.schedule(action)
         gate.acquire()
         assert ran is True
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         assert scheduler._has_thread() is False
 
     def test_event_loop_different_thread(self):
