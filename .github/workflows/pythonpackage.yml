@@ -46,6 +46,7 @@ jobs:
       - name: Run coverage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_SERVICE_NAME: github-actions
         run: |
           pip install coveralls
           coverage run -m pytest && coveralls
