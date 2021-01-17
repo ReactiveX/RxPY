@@ -45,7 +45,7 @@ jobs:
           pip install pytest
       - name: Run coverage
         env:
-          COVERALLS_SERVICE_NAME: github-actions
+          GITHUB_TOKEN: ${{ env.COVERALLS_REPO_TOKEN }}
         run: |
           pip install coveralls
           coverage run -m pytest && coveralls
