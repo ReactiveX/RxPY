@@ -85,7 +85,7 @@ class TestNewThreadScheduler(unittest.TestCase):
 
     def test_new_thread_schedule_periodic_cancel(self):
         scheduler = NewThreadScheduler()
-        period = 0.05
+        period = 0.1
         counter = 3
 
         def action(state):
@@ -95,6 +95,6 @@ class TestNewThreadScheduler(unittest.TestCase):
                 return state - 1
 
         disp = scheduler.schedule_periodic(period, action, counter)
-        sleep(0.2)
+        sleep(0.3)
         disp.dispose()
         assert 0 < counter < 3
