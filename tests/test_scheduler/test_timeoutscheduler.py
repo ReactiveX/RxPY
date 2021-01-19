@@ -93,8 +93,8 @@ class TestTimeoutScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
+        d = scheduler.schedule_relative(timedelta(milliseconds=300), action)
         d.dispose()
 
-        sleep(0.3)
+        sleep(0.1)
         assert ran is False
