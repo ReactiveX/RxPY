@@ -95,6 +95,6 @@ class TestNewThreadScheduler(unittest.TestCase):
                 return state - 1
 
         disp = scheduler.schedule_periodic(period, action, counter)
-        sleep(0.3)
+        sleep(0.2)
         disp.dispose()
         assert 0 < counter < 3
