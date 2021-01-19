@@ -43,11 +43,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest
-      - name: Run coverage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_SERVICE_NAME: github-actions
+      - name: Run coverage tests
         run: |
           pip install coveralls
-          coverage run -m pytest && coveralls
+          coverage run -m pytest
+      - name: Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_SERVICE_NAME: github
+        run: |
+          coveralls
   
