@@ -80,7 +80,7 @@ class TestTimeoutScheduler(unittest.TestCase):
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
 
-        sleep(0.3)
+        sleep(0.4)
         assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
