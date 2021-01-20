@@ -51,7 +51,7 @@ class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) <= timedelta(milliseconds=1)
 
     def test_immediate_now_units(self):
         scheduler = ImmediateScheduler()
