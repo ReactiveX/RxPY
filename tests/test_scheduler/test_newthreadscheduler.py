@@ -13,7 +13,7 @@ class TestNewThreadScheduler(unittest.TestCase):
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_new_thread_now_units(self):
         scheduler = NewThreadScheduler()
