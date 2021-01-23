@@ -54,6 +54,9 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule(action)
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         assert thread_id != threading.current_thread().ident
         assert scheduler._has_thread() is False
 
@@ -70,6 +73,9 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule(action)
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         assert result == [1, 2]
         assert scheduler._has_thread() is False
 
@@ -87,6 +93,9 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler.schedule(lambda s, t: result.append(1))
 
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         assert result == [1, 2, 3]
         assert scheduler._has_thread() is False
 
@@ -110,6 +119,9 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler.schedule(action)
 
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         assert result == [1, 2, 3]
         assert scheduler._has_thread() is False
 
@@ -126,6 +138,9 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
         assert scheduler._has_thread() is False
@@ -143,6 +158,9 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         scheduler.schedule_absolute(scheduler.now, action)
         gate.acquire()
+        # There is no guarantee that the event-loop thread ends before the
+        # test thread is re-scheduled, give it some time to always run.
+        sleep(0.1)
         diff = endtime - starttime
         assert diff < timedelta(milliseconds=180)
         assert scheduler._has_thread() is False
