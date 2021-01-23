@@ -47,7 +47,7 @@ class TestTimeoutScheduler(unittest.TestCase):
     def test_timeout_now(self):
         scheduler = TimeoutScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_timeout_now_units(self):
         scheduler = TimeoutScheduler()

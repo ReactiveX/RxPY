@@ -52,7 +52,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
     def test_currentthread_now(self):
         scheduler = CurrentThreadScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_currentthread_now_units(self):
         scheduler = CurrentThreadScheduler()

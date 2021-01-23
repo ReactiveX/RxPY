@@ -16,7 +16,7 @@ class TestThreadPoolScheduler(unittest.TestCase):
     def test_threadpool_now(self):
         scheduler = ThreadPoolScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_threadpool_now_units(self):
         scheduler = ThreadPoolScheduler()

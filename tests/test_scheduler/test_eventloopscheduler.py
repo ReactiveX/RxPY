@@ -15,7 +15,7 @@ class TestEventLoopScheduler(unittest.TestCase):
     def test_event_loop_now(self):
         scheduler = EventLoopScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_event_loop_now_units(self):
         scheduler = EventLoopScheduler()
