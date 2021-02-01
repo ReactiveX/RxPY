@@ -46,7 +46,6 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                     queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
                     should_run = not active[0]
                     active[0] = True
-
             if should_run:
                 if exception[0]:
                     observer.on_error(exception[0])
@@ -93,7 +92,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
         subscription = source.pipe(
             ops.materialize(),
             ops.timestamp()
-        ).subscribe_(on_next, scheduler=scheduler_)
+        ).subscribe_(on_next, scheduler=_scheduler)
 
         return CompositeDisposable(subscription, cancelable)
     return Observable(subscribe)
