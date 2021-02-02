@@ -93,7 +93,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
         subscription = source.pipe(
             ops.materialize(),
             ops.timestamp()
-        ).subscribe_(on_next, scheduler=scheduler_)
+        ).subscribe_(on_next, scheduler=_scheduler)
 
         return CompositeDisposable(subscription, cancelable)
     return Observable(subscribe)
