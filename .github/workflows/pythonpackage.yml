@@ -18,7 +18,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install -r requirements_dev.txt
+        pip install -r requirements.txt
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -39,7 +39,7 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          pip install -r requirements_dev.txt
+          pip install -r requirements.txt
       - name: Run coverage tests
         run: |
           coverage run -m pytest
