@@ -18,9 +18,9 @@ class TestTrampolineScheduler(unittest.TestCase):
     def test_trampoline_now_units(self):
         scheduler = TrampolineScheduler()
         diff = scheduler.now
-        sleep(0.1)
+        sleep(1.1)
         diff = scheduler.now - diff
-        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+        assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1300)
 
     def test_trampoline_schedule(self):
         scheduler = TrampolineScheduler()

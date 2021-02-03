@@ -47,14 +47,14 @@ class TestTimeoutScheduler(unittest.TestCase):
     def test_timeout_now(self):
         scheduler = TimeoutScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_timeout_now_units(self):
         scheduler = TimeoutScheduler()
         diff = scheduler.now
-        sleep(0.1)
+        sleep(1.1)
         diff = scheduler.now - diff
-        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+        assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1300)
 
     def test_timeout_schedule_action(self):
         scheduler = TimeoutScheduler()
@@ -80,7 +80,7 @@ class TestTimeoutScheduler(unittest.TestCase):
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
 
-        sleep(0.3)
+        sleep(0.4)
         assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
@@ -93,7 +93,7 @@ class TestTimeoutScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
+        d = scheduler.schedule_relative(timedelta(milliseconds=300), action)
         d.dispose()
 
         sleep(0.1)

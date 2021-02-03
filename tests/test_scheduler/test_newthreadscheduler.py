@@ -13,14 +13,14 @@ class TestNewThreadScheduler(unittest.TestCase):
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=5)
 
     def test_new_thread_now_units(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now
-        sleep(0.1)
+        sleep(1.1)
         diff = scheduler.now - diff
-        assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
+        assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1300)
 
     def test_new_thread_schedule_action(self):
         scheduler = NewThreadScheduler()
@@ -46,7 +46,7 @@ class TestNewThreadScheduler(unittest.TestCase):
 
         scheduler.schedule_relative(timedelta(milliseconds=200), action)
 
-        sleep(0.3)
+        sleep(0.4)
         assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
@@ -85,8 +85,8 @@ class TestNewThreadScheduler(unittest.TestCase):
 
     def test_new_thread_schedule_periodic_cancel(self):
         scheduler = NewThreadScheduler()
-        period = 0.05
-        counter = 3
+        period = 0.1
+        counter = 4
 
         def action(state):
             nonlocal counter
@@ -95,6 +95,6 @@ class TestNewThreadScheduler(unittest.TestCase):
                 return state - 1
 
         disp = scheduler.schedule_periodic(period, action, counter)
-        sleep(0.10)
+        sleep(0.4)
         disp.dispose()
-        assert 0 < counter < 3
+        assert 0 <= counter < 4

@@ -389,7 +389,3 @@ def test_subject_disposed():
     assert results1.messages == []
     assert results2.messages == []
     assert results3.messages == []
-
-
-if __name__ == '__main__':
-    unittest.main()
