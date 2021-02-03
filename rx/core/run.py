@@ -14,7 +14,7 @@ def run(source: Observable) -> Any:
 
     Subscribes to the observable source. Then blocks and waits for the
     observable source to either complete or error. Returns the
-    last value emitted, or thows exception if any error occured.
+    last value emitted, or throws exception if any error occured.
 
     Examples:
         >>> result = run(source)
