@@ -1188,7 +1188,7 @@ def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
 
         ---a-----b--c---d-|
         --1---2------3-4---|
-        -a--------- b---|
+        -a---------b---|
         [      fork_join()     ]
         --------------------d4b|
 
