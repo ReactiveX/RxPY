@@ -92,3 +92,29 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
             assert ran is False
 
         loop.run_until_complete(go())
+
+    def test_asyncio_threadsafe_schedule_action_cancel_same_thread(self):
+        ran = False
+        dispose_completed = False
+
+        def action(scheduler, state):
+            nonlocal ran
+            ran = True
+
+        # Make the actual test body run in deamon thread, so that in case of
+        # failure it doesn't hang indefinitely.
+        def test_body():
+            nonlocal dispose_completed
+            loop = asyncio.new_event_loop()
+            scheduler = AsyncIOThreadSafeScheduler(loop)
+            d = scheduler.schedule_relative(0.05, action)
+            d.dispose()
+            dispose_completed = True
+            asyncio.sleep(0.2, loop=loop)
+
+        thread = threading.Thread(target=test_body)
+        thread.daemon = True
+        thread.start()
+        thread.join(0.3)
+        assert dispose_completed is True
+        assert ran is False
