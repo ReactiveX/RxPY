@@ -50,10 +50,14 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle = self._loop.call_soon_threadsafe(interval)
 
         def dispose() -> None:
+            future: Future = Future()
+
             def cancel_handle() -> None:
                 handle.cancel()
+                future.set_result(0)
 
             self._loop.call_soon_threadsafe(cancel_handle)
+            future.result()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
@@ -92,14 +96,18 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle.append(self._loop.call_soon_threadsafe(stage2))
 
         def dispose() -> None:
+            future: Future = Future()
+
             def cancel_handle() -> None:
                 try:
                     handle.pop().cancel()
                     handle.pop().cancel()
                 except Exception:
                     pass
+                future.set_result(0)
 
             self._loop.call_soon_threadsafe(cancel_handle)
+            future.result()
 
         return CompositeDisposable(sad, Disposable(dispose))
 
