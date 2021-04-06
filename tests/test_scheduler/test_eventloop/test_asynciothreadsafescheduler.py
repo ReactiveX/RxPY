@@ -108,9 +108,54 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
             loop = asyncio.new_event_loop()
             scheduler = AsyncIOThreadSafeScheduler(loop)
             d = scheduler.schedule_relative(0.05, action)
+
+            # Test case when dispose is called on thread on which loop is not
+            # yet running.
             d.dispose()
             dispose_completed = True
-            asyncio.sleep(0.2, loop=loop)
+
+            @asyncio.coroutine
+            def go():
+                yield from asyncio.sleep(0.2, loop=loop)
+
+            loop.run_until_complete(go())
+
+        thread = threading.Thread(target=test_body)
+        thread.daemon = True
+        thread.start()
+        thread.join(0.3)
+        assert dispose_completed is True
+        assert ran is False
+
+    def test_asyncio_threadsafe_schedule_action_cancel_same_loop(self):
+        ran = False
+        dispose_completed = False
+
+        def action(scheduler, state):
+            nonlocal ran
+            ran = True
+
+        # Make the actual test body run in deamon thread, so that in case of
+        # failure it doesn't hang indefinitely.
+        def test_body():
+            nonlocal dispose_completed
+            loop = asyncio.new_event_loop()
+            scheduler = AsyncIOThreadSafeScheduler(loop)
+            d = scheduler.schedule_relative(0.1, action)
+
+            def do_dispose():
+                nonlocal dispose_completed
+                dispose_completed = True
+                d.dispose()
+
+            # Test case when dispose is called in loop's callback.
+            loop.call_soon(do_dispose)
+
+            @asyncio.coroutine
+            def go():
+                yield from asyncio.sleep(0.2, loop=loop)
+
+            loop.run_until_complete(go())
 
         thread = threading.Thread(target=test_body)
         thread.daemon = True
