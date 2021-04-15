@@ -50,7 +50,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle = self._loop.call_soon_threadsafe(interval)
 
         def dispose() -> None:
-            if not self._is_loop_running_on_another_thread():
+            if self._on_self_loop_or_not_running():
                 handle.cancel()
                 return
 
@@ -107,7 +107,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
                 except Exception:
                     pass
 
-            if not self._is_loop_running_on_another_thread():
+            if self._on_self_loop_or_not_running():
                 do_cancel_handles()
                 return
 
@@ -142,9 +142,14 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=state)
 
-    def _is_loop_running_on_another_thread(self):
+    def _on_self_loop_or_not_running(self):
+        """
+            Returns True if either self._loop is not running, or we're currently
+            executing on self._loop. In both cases, waiting for a future to be
+            resolved on the loop would result in a deadlock.
+        """
         if not self._loop.is_running():
-            return False
+            return True
         current_loop = None
         try:
             # In python 3.7 there asyncio.get_running_loop() is prefered.
@@ -154,4 +159,4 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
             # thread, we get error like:
             # RuntimeError: There is no current event loop in thread 'Thread-1'
             pass
-        return self._loop != current_loop
+        return self._loop == current_loop
