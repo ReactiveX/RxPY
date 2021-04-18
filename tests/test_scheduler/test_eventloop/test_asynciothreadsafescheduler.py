@@ -92,3 +92,71 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
             assert ran is False
 
         loop.run_until_complete(go())
+
+    def cancel_same_thread_common(self, test_body):
+        update_state = {
+            'ran': False,
+            'dispose_completed': False
+        }
+
+        def action(scheduler, state):
+            update_state['ran'] = True
+
+        # Make the actual test body run in deamon thread, so that in case of
+        # failure it doesn't hang indefinitely.
+        def thread_target():
+            loop = asyncio.new_event_loop()
+            scheduler = AsyncIOThreadSafeScheduler(loop)
+
+            test_body(scheduler, action, update_state)
+
+            @asyncio.coroutine
+            def go():
+                yield from asyncio.sleep(0.2, loop=loop)
+
+            loop.run_until_complete(go())
+
+        thread = threading.Thread(target=thread_target)
+        thread.daemon = True
+        thread.start()
+        thread.join(0.3)
+        assert update_state['dispose_completed'] is True
+        assert update_state['ran'] is False
+
+
+    def test_asyncio_threadsafe_cancel_non_relative_same_thread(self):
+        def test_body(scheduler, action, update_state):
+            d = scheduler.schedule(action)
+
+            # Test case when dispose is called on thread on which loop is not
+            # yet running, and non-relative schedele is used.
+            d.dispose()
+            update_state['dispose_completed'] = True
+
+        self.cancel_same_thread_common(test_body)
+
+
+    def test_asyncio_threadsafe_schedule_action_cancel_same_thread(self):
+        def test_body(scheduler, action, update_state):
+            d = scheduler.schedule_relative(0.05, action)
+
+            # Test case when dispose is called on thread on which loop is not
+            # yet running, and relative schedule is used.
+            d.dispose()
+            update_state['dispose_completed'] = True
+
+        self.cancel_same_thread_common(test_body)
+
+
+    def test_asyncio_threadsafe_schedule_action_cancel_same_loop(self):
+        def test_body(scheduler, action, update_state):
+            d = scheduler.schedule_relative(0.1, action)
+
+            def do_dispose():
+                d.dispose()
+                update_state['dispose_completed'] = True
+
+            # Test case when dispose is called in loop's callback.
+            scheduler._loop.call_soon(do_dispose)
+
+        self.cancel_same_thread_common(test_body)
