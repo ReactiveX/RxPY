@@ -48,7 +48,7 @@ class TimeoutScheduler(PeriodicScheduler):
             sad.disposable = self.invoke_action(action, state)
 
         timer = Timer(0, interval)
-        timer.setDaemon(True)
+        timer.daemon = True
         timer.start()
 
         def dispose() -> None:
@@ -83,7 +83,7 @@ class TimeoutScheduler(PeriodicScheduler):
             sad.disposable = self.invoke_action(action, state)
 
         timer = Timer(seconds, interval)
-        timer.setDaemon(True)
+        timer.daemon = True
         timer.start()
 
         def dispose() -> None:
