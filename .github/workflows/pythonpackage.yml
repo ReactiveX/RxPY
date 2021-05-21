@@ -61,6 +61,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          pip install ray
       - name: Run coverage tests
         run: |
           coverage run -m pytest
