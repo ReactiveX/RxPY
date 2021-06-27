@@ -18,7 +18,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
         diff = scheduler.now
-        yield from asyncio.sleep(0.1, loop=loop)
+        yield from asyncio.sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
@@ -36,7 +36,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
             scheduler.schedule(action)
 
-            yield from asyncio.sleep(0.1, loop=loop)
+            yield from asyncio.sleep(0.1)
             assert ran is True
 
         loop.run_until_complete(go())
@@ -56,7 +56,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
             scheduler.schedule_relative(0.2, action)
 
-            yield from asyncio.sleep(0.3, loop=loop)
+            yield from asyncio.sleep(0.3)
             assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
@@ -78,7 +78,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             d = scheduler.schedule_relative(0.05, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.3, loop=loop)
+            yield from asyncio.sleep(0.3)
             assert ran is False
 
         loop.run_until_complete(go())
