@@ -19,7 +19,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now
-        yield from asyncio.sleep(0.1, loop=loop)
+        yield from asyncio.sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
@@ -40,7 +40,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.1, loop=loop)
+            yield from asyncio.sleep(0.1)
             assert ran is True
 
         loop.run_until_complete(go())
@@ -63,7 +63,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.3, loop=loop)
+            yield from asyncio.sleep(0.3)
             assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
@@ -88,7 +88,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.3, loop=loop)
+            yield from asyncio.sleep(0.3)
             assert ran is False
 
         loop.run_until_complete(go())
@@ -112,7 +112,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             @asyncio.coroutine
             def go():
-                yield from asyncio.sleep(0.2, loop=loop)
+                yield from asyncio.sleep(0.2)
 
             loop.run_until_complete(go())
 
