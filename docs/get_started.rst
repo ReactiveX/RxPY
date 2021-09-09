@@ -309,13 +309,13 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
         on_error=lambda e: print(e),
     )
 
-    input("Press any key to exit\n")
+    input("Press Enter key to exit\n")
 
 **OUTPUT:**
 
 .. code:: console
 
-    Press any key to exit
+    Press Enter key to exit
     PROCESS 1: Thread-1 Alpha
     PROCESS 2: Thread-2 1
     PROCESS 3: Thread-4 0
