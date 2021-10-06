@@ -2,7 +2,7 @@ from typing import Iterable, Any, Optional
 
 from rx.core import Observable, typing
 from rx.scheduler import CurrentThreadScheduler
-from rx.disposable import CompositeDisposable, Disposable
+from rx.disposable import MultipleAssignmentDisposable
 
 
 def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
@@ -23,24 +23,18 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
     def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)
-        disposed = False
+        mad = MultipleAssignmentDisposable()
 
         def action(_: typing.Scheduler, __: Any = None) -> None:
-            nonlocal disposed
-
             try:
-                while not disposed:
-                    value = next(iterator)
-                    observer.on_next(value)
+                value = next(iterator)
+                observer.on_next(value)
+                mad.disposable = _scheduler.schedule(action)
             except StopIteration:
                 observer.on_completed()
             except Exception as error:  # pylint: disable=broad-except
                 observer.on_error(error)
 
-        def dispose() -> None:
-            nonlocal disposed
-            disposed = True
-
-        disp = Disposable(dispose)
-        return CompositeDisposable(_scheduler.schedule(action), disp)
+        mad.disposable = _scheduler.schedule(action)
+        return mad
     return Observable(subscribe)
