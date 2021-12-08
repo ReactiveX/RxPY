@@ -87,13 +87,13 @@ qualname_overrides = {
 _format_annotation = sphinx_autodoc_typehints.format_annotation
 
 
-def format_annotation(annotation, fully_qualified=False):
+def format_annotation(annotation, fully_qualified=False, simplify_optional_unions=True):
     if isinstance(annotation, type):
         full_name = f'{annotation.__module__}.{annotation.__qualname__}'
         override = qualname_overrides.get(full_name)
         if override is not None:
             return f':py:class:`~{override}`'
-    return _format_annotation(annotation, fully_qualified)
+    return _format_annotation(annotation, fully_qualified, simplify_optional_unions)
 
 sphinx_autodoc_typehints.format_annotation = format_annotation
 
