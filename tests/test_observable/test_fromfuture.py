@@ -11,8 +11,7 @@ class TestFromFuture(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [False, True, False]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             future = Future()
             future.set_result(42)
 
@@ -36,8 +35,7 @@ class TestFromFuture(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [True, False, True]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             error = Exception('woops')
 
             future = Future()
@@ -63,8 +61,7 @@ class TestFromFuture(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [True, False, True]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             future = Future()
             source = rx.from_future(future)
 
@@ -87,8 +84,7 @@ class TestFromFuture(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [True, True, True]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             future = Future()
             future.set_result(42)
 

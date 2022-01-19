@@ -20,8 +20,7 @@ class TestStart(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [False]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             def func():
                 future = Future()
                 future.set_result(42)
@@ -40,8 +39,7 @@ class TestStart(unittest.TestCase):
         loop = asyncio.get_event_loop()
         success = [False]
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             def func():
                 future = Future()
                 future.set_exception(Exception(str(42)))
@@ -73,7 +71,6 @@ class TestStart(unittest.TestCase):
             on_completed(200)]
 
         assert(done)
-
 
     def test_start_func2(self):
         scheduler = TestScheduler()

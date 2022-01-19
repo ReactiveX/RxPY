@@ -37,8 +37,7 @@ def to_async_generator(sentinel=None):
 
         source.pipe(ops.materialize()).subscribe(on_next)
 
-        @asyncio.coroutine
-        def gen():
+        async def gen():
             """Generator producing futures"""
             nonlocal future
 
@@ -50,8 +49,7 @@ def to_async_generator(sentinel=None):
     return _to_async_generator
 
 
-@asyncio.coroutine
-def go(loop):
+async def go(loop):
     scheduler = AsyncIOScheduler(loop)
 
     xs = rx.from_([x for x in range(10)], scheduler=scheduler)
@@ -60,7 +58,7 @@ def go(loop):
     # Wish we could write something like:
     # ys = (x for x in yield from gen())
     while True:
-        x = yield from gen()
+        x = await gen()
         if x is None:
             break
         print(x)

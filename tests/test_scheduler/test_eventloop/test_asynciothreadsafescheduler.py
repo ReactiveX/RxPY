@@ -26,8 +26,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             scheduler = AsyncIOThreadSafeScheduler(loop)
             ran = False
 
@@ -40,7 +39,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.1)
+            await asyncio.sleep(0.1)
             assert ran is True
 
         loop.run_until_complete(go())
@@ -48,8 +47,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             scheduler = AsyncIOThreadSafeScheduler(loop)
             starttime = loop.time()
             endtime = None
@@ -63,7 +61,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.3)
+            await asyncio.sleep(0.3)
             assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
@@ -73,8 +71,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action_cancel(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             ran = False
             scheduler = AsyncIOThreadSafeScheduler(loop)
 
@@ -88,7 +85,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             threading.Thread(target=schedule).start()
 
-            yield from asyncio.sleep(0.3)
+            await asyncio.sleep(0.3)
             assert ran is False
 
         loop.run_until_complete(go())
@@ -110,9 +107,8 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
 
             test_body(scheduler, action, update_state)
 
-            @asyncio.coroutine
-            def go():
-                yield from asyncio.sleep(0.2)
+            async def go():
+                await asyncio.sleep(0.2)
 
             loop.run_until_complete(go())
 

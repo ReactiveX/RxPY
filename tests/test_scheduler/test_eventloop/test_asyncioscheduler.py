@@ -25,8 +25,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_action(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             scheduler = AsyncIOScheduler(loop)
             ran = False
 
@@ -36,7 +35,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
             scheduler.schedule(action)
 
-            yield from asyncio.sleep(0.1)
+            await asyncio.sleep(0.1)
             assert ran is True
 
         loop.run_until_complete(go())
@@ -44,8 +43,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_action_due(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             scheduler = AsyncIOScheduler(loop)
             starttime = loop.time()
             endtime = None
@@ -56,7 +54,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
             scheduler.schedule_relative(0.2, action)
 
-            yield from asyncio.sleep(0.3)
+            await asyncio.sleep(0.3)
             assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
@@ -66,8 +64,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_action_cancel(self):
         loop = asyncio.get_event_loop()
 
-        @asyncio.coroutine
-        def go():
+        async def go():
             ran = False
             scheduler = AsyncIOScheduler(loop)
 
@@ -78,7 +75,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             d = scheduler.schedule_relative(0.05, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.3)
+            await asyncio.sleep(0.3)
             assert ran is False
 
         loop.run_until_complete(go())
