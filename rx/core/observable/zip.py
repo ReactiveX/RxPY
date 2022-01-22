@@ -34,6 +34,7 @@ def _zip(*args: Observable) -> Observable:
         n = len(sources)
         queues: List[List] = [[] for _ in range(n)]
         lock = RLock()
+        is_completed = [False] * n
 
         @synchronized(lock)
         def next(i):
@@ -46,6 +47,14 @@ def _zip(*args: Observable) -> Observable:
                     return
 
                 observer.on_next(res)
+            elif all([x for j, x in enumerate(is_completed) if j != i]) \
+                and all([len(x) == 0 for j, x in enumerate(queues) if j != i]):
+                observer.on_completed()
+
+        def completed(i):
+            is_completed[i] = True
+            if all(is_completed) or all([len(q) == 0 for q in queues]):
+                observer.on_completed()
 
         subscriptions = [None] * n
 
@@ -58,7 +67,7 @@ def _zip(*args: Observable) -> Observable:
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            sad.disposable = source.subscribe_(on_next, observer.on_error, lambda: completed(i), scheduler)
             subscriptions[i] = sad
 
         for idx in range(n):
