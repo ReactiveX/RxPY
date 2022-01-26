@@ -7,8 +7,7 @@ from rx.core.typing import Predicate, PredicateIndexed
 def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Observable], Observable]:
     def take_while(source: Observable) -> Observable:
         """Returns elements from an observable sequence as long as a
-        specified condition is true. The element's index is used in the
-        logic of the predicate function.
+        specified condition is true.
 
         Example:
             >>> take_while(source)
