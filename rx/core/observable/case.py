@@ -1,9 +1,7 @@
-from asyncio import Future
-from typing import Any, Callable, Mapping, Optional, TypeVar, Union
+from typing import Callable, Mapping, Optional, TypeVar, Union
 
 from rx import defer, empty, from_future
-from rx.core import Observable
-from rx.internal.utils import is_future
+from rx.core import Observable, typing, abc
 
 _Key = TypeVar("_Key")
 _T = TypeVar("_T")
@@ -12,20 +10,24 @@ _T = TypeVar("_T")
 def _case(
     mapper: Callable[[], _Key],
     sources: Mapping[_Key, Observable[_T]],
-    default_source: Optional[Union[Observable[_T], Future]] = None,
+    default_source: Optional[Union[Observable[_T], typing.Future]] = None,
 ) -> Observable[_T]:
 
-    default_source: Union[Observable[_T], Future] = default_source or empty()
+    default_source_: Union[Observable[_T], typing.Future] = default_source or empty()
 
-    def factory(_) -> Observable[_T]:
+    def factory(_: abc.SchedulerBase) -> Observable[_T]:
         try:
-            result = sources[mapper()]
+            result: Union[Observable[_T], typing.Future] = sources[mapper()]
         except KeyError:
-            result = default_source
+            result = default_source_
 
-        result: Observable[_T] = from_future(result) if is_future(result) else result
+        if isinstance(result, typing.Future):
 
-        return result
+            result_: Observable[_T] = from_future(result)
+        else:
+            result_ = result
+
+        return result_
 
     return defer(factory)
 

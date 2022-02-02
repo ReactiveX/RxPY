@@ -413,7 +413,7 @@ def from_callback(func: Callable, mapper: Optional[typing.Mapper] = None) -> Cal
     return _from_callback(func, mapper)
 
 
-def from_future(future: Union[Future, Observable[_T]]) -> Observable[_T]:
+def from_future(future: Union[typing.Future, Observable[_T]]) -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     .. marble::
@@ -425,7 +425,6 @@ def from_future(future: Union[Future, Observable[_T]]) -> Observable[_T]:
     Args:
         future: A Python 3 compatible future.
             https://docs.python.org/3/library/asyncio-task.html#future
-            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
     Returns:
         An observable sequence which wraps the existing future success
@@ -745,7 +744,7 @@ def interval(period: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase]
     return _interval(period, scheduler)
 
 
-def merge(*sources: Observable) -> Observable:
+def merge(*sources: Observable[_T]) -> Observable[_T]:
     """Merges all the observable sequences into a single observable sequence.
 
     .. marble::
@@ -771,7 +770,7 @@ def merge(*sources: Observable) -> Observable:
     return _merge(*sources)
 
 
-def never() -> Observable:
+def never() -> Observable[Any]:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
 

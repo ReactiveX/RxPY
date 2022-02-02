@@ -1,22 +1,24 @@
-from asyncio import Future
-from typing import Any, Union, cast
+from typing import Callable, List, Optional, Union, cast, TypeVar
 
 from rx import from_future
-from rx.core import Observable, abc
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal.utils import is_future
+
+_T = TypeVar("_T")
 
 
-def _amb(right_source: Observable):
+def _amb(right_source: Union[Observable[_T], typing.Future]) -> Callable[[Observable[_T]], Observable[_T]]:
 
-    if is_future(right_source):
-        obs = from_future(cast(Future, right_source))
+    if isinstance(right_source, typing.Future):
+        obs: Observable[_T] = cast(Observable[_T], from_future(right_source))
     else:
-        obs = cast(Observable, right_source)
+        obs: Observable[_T] = right_source
 
-    def amb(left_source: Observable):
-        def subscribe(observer: abc.ObserverBase, scheduler: abc.SchedulerBase = None) -> abc.DisposableBase:
-            choice = [None]
+    def amb(left_source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        ) -> abc.DisposableBase:
+            choice: List[Optional[str]] = [None]
             left_choice = "L"
             right_choice = "R"
             left_subscription = SingleAssignmentDisposable()
@@ -32,19 +34,19 @@ def _amb(right_source: Observable):
                     choice[0] = right_choice
                     left_subscription.dispose()
 
-            def on_next_left(value):
+            def on_next_left(value: _T) -> None:
                 with left_source.lock:
                     choice_left()
                 if choice[0] == left_choice:
                     observer.on_next(value)
 
-            def on_error_left(err):
+            def on_error_left(err: Exception) -> None:
                 with left_source.lock:
                     choice_left()
                 if choice[0] == left_choice:
                     observer.on_error(err)
 
-            def on_completed_left():
+            def on_completed_left() -> None:
                 with left_source.lock:
                     choice_left()
                 if choice[0] == left_choice:
@@ -53,7 +55,7 @@ def _amb(right_source: Observable):
             left_d = left_source.subscribe_(on_next_left, on_error_left, on_completed_left, scheduler)
             left_subscription.disposable = left_d
 
-            def send_right(value: Any) -> None:
+            def send_right(value: _T) -> None:
                 with left_source.lock:
                     choice_right()
                 if choice[0] == right_choice:
@@ -78,3 +80,6 @@ def _amb(right_source: Observable):
         return Observable(subscribe)
 
     return amb
+
+
+__all__ = ["_amb"]

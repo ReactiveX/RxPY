@@ -2,21 +2,21 @@ from functools import update_wrapper
 from types import FunctionType
 from typing import Any, Callable, Iterable, Optional, cast
 
-from rx.core.abc import ObservableBase, ObserverBase, SchedulerBase
+from rx.core import abc, typing
 from rx.disposable import CompositeDisposable
 
 
-def add_ref(xs: ObservableBase[Any], r):
+def add_ref(xs: abc.ObservableBase[Any], r):
     from rx.core import Observable
 
-    def subscribe(observer: ObserverBase[Any], scheduler: Optional[SchedulerBase] = None):
+    def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return Observable(subscribe)
 
 
 def is_future(fut: Any) -> bool:
-    return callable(getattr(fut, "add_done_callback", None))
+    return isinstance(fut, typing.Future)
 
 
 def infinite() -> Iterable[int]:

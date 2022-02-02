@@ -1,12 +1,13 @@
-from asyncio import Future
-from typing import Callable, Union
+from typing import Callable, Optional, Union, TypeVar
 
 from rx import from_future, throw
-from rx.core import Observable, abc
-from rx.internal.utils import is_future
+from rx.core import Observable, abc, typing
+from rx.scheduler import ImmediateScheduler
+
+_T = TypeVar("_T")
 
 
-def _defer(factory: Callable[[abc.SchedulerBase], Union[Observable, Future]]) -> Observable:
+def _defer(factory: Callable[[abc.SchedulerBase], Union[Observable[_T], typing.Future]]) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 
@@ -22,13 +23,13 @@ def _defer(factory: Callable[[abc.SchedulerBase], Union[Observable, Future]]) ->
         of the given observable factory function.
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         try:
-            result = factory(scheduler)
+            result = factory(scheduler or ImmediateScheduler.singleton())
         except Exception as ex:  # By design. pylint: disable=W0703
             return throw(ex).subscribe(observer)
 
-        result = from_future(result) if is_future(result) else result
+        result = from_future(result) if isinstance(result, typing.Future) else result
         return result.subscribe(observer, scheduler=scheduler)
 
     return Observable(subscribe)

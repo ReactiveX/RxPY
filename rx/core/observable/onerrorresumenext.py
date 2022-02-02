@@ -1,15 +1,14 @@
-from asyncio import Future
-from typing import Union
+from typing import Optional, Union, TypeVar, Any
 
 import rx
-from rx.core import Observable
-from rx.disposable import (CompositeDisposable, SerialDisposable,
-                           SingleAssignmentDisposable)
-from rx.internal.utils import is_future
+from rx.core import Observable, typing, abc
+from rx.disposable import CompositeDisposable, SerialDisposable, SingleAssignmentDisposable
 from rx.scheduler import CurrentThreadScheduler
 
+_T = TypeVar("_T")
 
-def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
+
+def _on_error_resume_next(*sources: Union[Observable[_T], typing.Future]) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
@@ -23,14 +22,14 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
 
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
 
-        def action(scheduler, state=None):
+        def action(scheduler: abc.SchedulerBase, state: Optional[Any] = None):
             try:
                 source = next(sources_)
             except StopIteration:
@@ -39,7 +38,7 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = rx.from_future(source) if is_future(source) else source
+            current = rx.from_future(source) if isinstance(source, typing.Future) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d
@@ -51,4 +50,8 @@ def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)
+
     return Observable(subscribe)
+
+
+__all__ = ["_on_error_resume_next"]

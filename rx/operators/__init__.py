@@ -1697,7 +1697,7 @@ def merge(*sources: Observable, max_concurrent: Optional[int] = None) -> Callabl
     return _merge(*sources, max_concurrent=max_concurrent)
 
 
-def merge_all() -> Callable[[Observable], Observable]:
+def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     """The merge_all operator.
 
     Merges an observable sequence of observable sequences into an
