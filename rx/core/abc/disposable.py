@@ -1,10 +1,9 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from types import TracebackType
-from typing import Optional, Protocol, Type, runtime_checkable
+from typing import Optional, Type
 
 
-@runtime_checkable
-class DisposableBase(Protocol):
+class DisposableBase(ABC):
     """Disposable abstract base class. Untyped."""
 
     __slots__ = ()

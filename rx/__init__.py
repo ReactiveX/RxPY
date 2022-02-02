@@ -1,20 +1,12 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 
-from typing import (TYPE_CHECKING, Any, Callable, Iterable, Mapping, Optional,
-                    Tuple, TypeVar, Union)
+from typing import Any, Callable, Iterable, Mapping, Optional, Tuple, TypeVar, Union
 
 from .core import Observable, abc, pipe, typing
 from .internal.utils import alias
 from .subject import Subject
-
-if TYPE_CHECKING:
-    # Futures cannot take generic argument before Python 3.9
-    class _Future:
-        pass
-
-else:
-    from asyncio.futures import Future as _Future
+from .core.typing import Future
 
 _T = TypeVar("_T")
 _T1 = TypeVar("_T1")
@@ -54,7 +46,7 @@ def amb(*sources: Observable[_T]) -> Observable[_T]:
 def case(
     mapper: Callable[[], _T1],
     sources: Mapping[_T1, _T2],
-    default_source: Optional[Union[Observable[_T2], _Future]] = None,
+    default_source: Optional[Union[Observable[_T2], Future]] = None,
 ) -> Observable[_T2]:
     """Uses mapper to determine which source in sources to use.
 
@@ -253,7 +245,7 @@ def concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
     return _concat_with_iterable(sources)
 
 
-def defer(factory: Callable[[abc.SchedulerBase], Union[Observable[_T], _Future]]) -> Observable[_T]:
+def defer(factory: Callable[[abc.SchedulerBase], Union[Observable[_T], Future]]) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
 
@@ -421,7 +413,7 @@ def from_callback(func: Callable, mapper: Optional[typing.Mapper] = None) -> Cal
     return _from_callback(func, mapper)
 
 
-def from_future(future: Union[_Future, Observable[_T]]) -> Observable[_T]:
+def from_future(future: Union[Future, Observable[_T]]) -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     .. marble::
@@ -581,8 +573,7 @@ def generate_with_relative_time(
     Returns:
         The generated sequence.
     """
-    from .core.observable.generatewithrelativetime import \
-        _generate_with_relative_time
+    from .core.observable.generatewithrelativetime import _generate_with_relative_time
 
     return _generate_with_relative_time(initial_state, condition, iterate, time_mapper)
 
@@ -690,8 +681,8 @@ def hot(
 
 def if_then(
     condition: Callable[[], bool],
-    then_source: Union[Observable, _Future],
-    else_source: Union[None, Observable, _Future] = None,
+    then_source: Union[Observable, Future],
+    else_source: Union[None, Observable, Future] = None,
 ) -> Observable:
     """Determines whether an observable collection contains values.
 
@@ -825,7 +816,7 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
-def on_error_resume_next(*sources: Union[Observable, _Future]) -> Observable:
+def on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
@@ -980,7 +971,7 @@ def start(func: Callable, scheduler: Optional[abc.SchedulerBase] = None) -> Obse
     return _start(func, scheduler)
 
 
-def start_async(function_async: Callable[[], _Future]) -> Observable:
+def start_async(function_async: Callable[[], Future]) -> Observable:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
