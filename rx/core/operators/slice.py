@@ -1,22 +1,23 @@
 from sys import maxsize
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, Any, List
 
 from rx import operators as ops
 from rx.core import Observable
 
+_T = TypeVar("_T")
+
 
 # pylint: disable=redefined-builtin
-def _slice(start: Optional[int] = None,
-           stop: Optional[int] = None,
-           step: Optional[int] = None
-           ) -> Callable[[Observable], Observable]:
+def _slice(
+    start: Optional[int] = None, stop: Optional[int] = None, step: Optional[int] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
     _start: int = 0 if start is None else start
     _stop: int = maxsize if stop is None else stop
     _step: int = 1 if step is None else step
 
-    pipeline = []
+    pipeline: List[Callable[[Observable[Any]], Observable[Any]]] = []
 
-    def slice(source: Observable) -> Observable:
+    def slice(source: Observable[_T]) -> Observable[_T]:
         """The partially applied slice operator.
 
         Slices the given observable. It is basically a wrapper around the operators
@@ -64,7 +65,11 @@ def _slice(start: Optional[int] = None,
             pipeline.append(ops.filter_indexed(lambda x, i: i % _step == 0))
         elif _step < 0:
             # Reversing events is not supported
-            raise TypeError('Negative step not supported.')
+            raise TypeError("Negative step not supported.")
 
         return source.pipe(*pipeline)
+
     return slice
+
+
+__all__ = ["_slice"]

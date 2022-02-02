@@ -1,18 +1,20 @@
 from asyncio import Future
 from datetime import datetime
-from typing import cast, Callable, Optional, Union
+from typing import Callable, Optional, Union, cast
 
 from rx import from_future, throw
-from rx.core import Observable, typing
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
-from rx.scheduler import TimeoutScheduler
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.internal.utils import is_future
+from rx.scheduler import TimeoutScheduler
 
 
-def _timeout(duetime: typing.AbsoluteTime,
-             other: Optional[Union[Observable, Future]] = None,
-             scheduler: Optional[typing.Scheduler] = None
-             ) -> Callable[[Observable], Observable]:
+def _timeout(
+    duetime: typing.AbsoluteTime,
+    other: Optional[Union[Observable, Future]] = None,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable], Observable]:
 
     other = other or throw(Exception("Timeout"))
     if is_future(other):
@@ -34,6 +36,7 @@ def _timeout(duetime: typing.AbsoluteTime,
             An obserable sequence switching to the other sequence in
             case of a timeout.
         """
+
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
@@ -54,7 +57,7 @@ def _timeout(duetime: typing.AbsoluteTime,
                 my_id = _id[0]
 
                 def action(scheduler, state=None):
-                    switched[0] = (_id[0] == my_id)
+                    switched[0] = _id[0] == my_id
                     timer_wins = switched[0]
                     if timer_wins:
                         subscription.disposable = obs.subscribe(observer, scheduler=scheduler)
@@ -84,5 +87,7 @@ def _timeout(duetime: typing.AbsoluteTime,
 
             original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler_)
             return CompositeDisposable(subscription, timer)
+
         return Observable(subscribe)
+
     return timeout

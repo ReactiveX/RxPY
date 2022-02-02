@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Sequence, Any
+from typing import Any, Callable, Optional, Sequence
 
 from rx import operators as ops
 from rx.core import Observable, pipe

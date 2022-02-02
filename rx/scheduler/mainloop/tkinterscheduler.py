@@ -1,9 +1,12 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
-from rx.core import typing
-from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+from rx.core import abc, typing
+from rx.disposable import (CompositeDisposable, Disposable,
+                           SingleAssignmentDisposable)
 
 from ..periodicscheduler import PeriodicScheduler
+
+_TState = TypeVar("_TState")
 
 
 class TkinterScheduler(PeriodicScheduler):
@@ -23,10 +26,7 @@ class TkinterScheduler(PeriodicScheduler):
         super().__init__()
         self._root = root
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -40,11 +40,12 @@ class TkinterScheduler(PeriodicScheduler):
 
         return self.schedule_relative(0.0, action, state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -70,11 +71,12 @@ class TkinterScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

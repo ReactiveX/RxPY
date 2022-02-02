@@ -2,10 +2,10 @@ import logging
 import threading
 from abc import abstractmethod
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional, TypeVar
 
-from rx.internal import PriorityQueue, ArgumentOutOfRangeException
-from rx.core import typing
+from rx.core import abc, typing
+from rx.internal import ArgumentOutOfRangeException, PriorityQueue
 
 from .periodicscheduler import PeriodicScheduler
 from .scheduleditem import ScheduledItem
@@ -14,12 +14,14 @@ log = logging.getLogger("Rx")
 
 MAX_SPINNING = 100
 
+_TState = TypeVar("_TState")
+
 
 class VirtualTimeScheduler(PeriodicScheduler):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
-    def __init__(self, initial_clock=0) -> None:
+    def __init__(self, initial_clock: int = 0) -> None:
         """Creates a new virtual time scheduler with the specified
         initial clock value.
 
@@ -47,14 +49,11 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
         Returns:
              The scheduler's current time, as a datetime instance.
-         """
+        """
 
         return self.to_datetime(self._clock)
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -68,11 +67,9 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
         return self.schedule_absolute(self._clock, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -88,11 +85,9 @@ class VirtualTimeScheduler(PeriodicScheduler):
         time: typing.AbsoluteTime = self.add(self._clock, self.to_seconds(duetime))
         return self.schedule_absolute(time, action, state=state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -230,10 +225,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
     @classmethod
     @abstractmethod
-    def add(cls,
-            absolute: typing.AbsoluteTime,
-            relative: typing.RelativeTime
-            ) -> typing.AbsoluteTime:
+    def add(cls, absolute: typing.AbsoluteTime, relative: typing.RelativeTime) -> typing.AbsoluteTime:
         """Adds a relative time value to an absolute time value.
 
         Args:

@@ -1,11 +1,14 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.core.typing import Predicate
 
-def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
-    def some(source: Observable) -> Observable:
+_T = TypeVar("_T")
+
+
+def _some(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]], Observable[bool]]:
+    def some(source: Observable[_T]) -> Observable[bool]:
         """Partially applied operator.
 
         Determines whether some element of an observable sequence satisfies a
@@ -23,14 +26,16 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
             pass the test in the specified predicate if given, else if
             some items are in the sequence.
         """
-        def subscribe(observer, scheduler=None):
-            def on_next(_):
+
+        def subscribe(observer: abc.ObserverBase[bool], scheduler: Optional[abc.SchedulerBase] = None):
+            def on_next(_: _T):
                 observer.on_next(True)
                 observer.on_completed()
 
             def on_error():
                 observer.on_next(False)
                 observer.on_completed()
+
             return source.subscribe_(on_next, observer.on_error, on_error, scheduler)
 
         if predicate:
@@ -40,4 +45,5 @@ def _some(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
             )
 
         return Observable(subscribe)
+
     return some

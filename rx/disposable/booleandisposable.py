@@ -1,8 +1,9 @@
 from threading import RLock
-from rx.core.typing import Disposable
+
+from rx.core.abc import DisposableBase
 
 
-class BooleanDisposable(Disposable):
+class BooleanDisposable(DisposableBase):
     """Represents a Disposable that can be checked for status."""
 
     def __init__(self):

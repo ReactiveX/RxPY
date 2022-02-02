@@ -1,6 +1,5 @@
 import logging
-from threading import current_thread, local, Thread
-
+from threading import Thread, current_thread, local
 from typing import MutableMapping
 from weakref import WeakKeyDictionary
 

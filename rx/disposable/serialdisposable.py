@@ -1,33 +1,33 @@
 from threading import RLock
 from typing import Optional
 
-from rx.core import typing
-from rx.core.typing import Disposable
+from rx.core import abc
+from rx.core.abc import DisposableBase
 
 
-class SerialDisposable(Disposable):
+class SerialDisposable(DisposableBase):
     """Represents a disposable resource whose underlying disposable
     resource can be replaced by another disposable resource, causing
     automatic disposal of the previous underlying disposable resource.
     """
 
     def __init__(self) -> None:
-        self.current: Optional[Disposable] = None
+        self.current: Optional[DisposableBase] = None
         self.is_disposed = False
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self) -> Optional[Disposable]:
+    def get_disposable(self) -> Optional[DisposableBase]:
         return self.current
 
-    def set_disposable(self, value: typing.Disposable) -> None:
+    def set_disposable(self, value: abc.DisposableBase) -> None:
         """If the SerialDisposable has already been disposed, assignment
         to this property causes immediate disposal of the given
         disposable object. Assigning this property disposes the previous
         disposable object."""
 
-        old: Optional[Disposable] = None
+        old: Optional[DisposableBase] = None
 
         with self.lock:
             should_dispose = self.is_disposed
@@ -47,7 +47,7 @@ class SerialDisposable(Disposable):
         """Disposes the underlying disposable as well as all future
         replacements."""
 
-        old: Optional[Disposable] = None
+        old: Optional[DisposableBase] = None
 
         with self.lock:
             if not self.is_disposed:

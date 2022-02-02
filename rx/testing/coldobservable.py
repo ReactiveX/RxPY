@@ -1,14 +1,15 @@
-from typing import List
+from typing import List, Optional, TypeVar
 
-from rx.disposable import Disposable, CompositeDisposable
-from rx.core import Observable, typing
+from rx.core import Observable, abc
+from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import VirtualTimeScheduler
 
 from .subscription import Subscription
 
+_T = TypeVar("_T")
 
 
-class ColdObservable(Observable):
+class ColdObservable(Observable[_T]):
     def __init__(self, scheduler: VirtualTimeScheduler, messages) -> None:
         super().__init__()
 
@@ -16,7 +17,7 @@ class ColdObservable(Observable):
         self.messages = messages
         self.subscriptions: List[Subscription] = []
 
-    def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
+    def _subscribe_core(self, observer=None, scheduler: Optional[abc.SubjectBase] = None) -> abc.DisposableBase:
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
         disp = CompositeDisposable()
@@ -25,6 +26,7 @@ class ColdObservable(Observable):
             def action(scheduler, state):
                 notification.accept(observer)
                 return Disposable()
+
             return action
 
         for message in self.messages:

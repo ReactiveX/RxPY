@@ -1,4 +1,5 @@
 from typing import Callable, Optional
+
 from rx import operators as ops
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate

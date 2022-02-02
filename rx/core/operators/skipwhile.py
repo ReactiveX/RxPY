@@ -1,11 +1,13 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, typing, pipe
+from rx.core import Observable, abc, pipe, typing
+
+_T = TypeVar("_T")
 
 
-def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observable]:
-    def skip_while(source: Observable) -> Observable:
+def _skip_while(predicate: typing.Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+    def skip_while(source: Observable[_T]) -> Observable[_T]:
         """Bypasses elements in an observable sequence as long as a
         specified condition is true and then returns the remaining
         elements. The element's index is used in the logic of the
@@ -22,10 +24,11 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
             input sequence starting at the first element in the linear
             series that does not pass the test specified by predicate.
         """
-        def subscribe(observer, scheduler=None):
+
+        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
             running = False
 
-            def on_next(value):
+            def on_next(value: _T):
                 nonlocal running
 
                 if not running:
@@ -39,13 +42,18 @@ def _skip_while(predicate: typing.Predicate) -> Callable[[Observable], Observabl
                     observer.on_next(value)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+
         return Observable(subscribe)
+
     return skip_while
 
 
-def _skip_while_indexed(predicate: typing.PredicateIndexed) -> Callable[[Observable], Observable]:
+def _skip_while_indexed(predicate: typing.PredicateIndexed[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     return pipe(
         ops.map_indexed(lambda x, i: (x, i)),
         ops.skip_while(lambda x: predicate(*x)),
-        ops.map(lambda x: x[0])
+        ops.map(lambda x: x[0]),
     )
+
+
+__all__ = ["_skip_while", "_skip_while_indexed"]

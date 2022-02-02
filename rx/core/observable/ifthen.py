@@ -1,9 +1,8 @@
-from typing import Callable, Union, cast
 from asyncio import Future
+from typing import Callable, Union, cast
 
 import rx
-from rx.core import Observable
-from rx.core.typing import Scheduler
+from rx.core import Observable, abc
 from rx.internal.utils import is_future
 
 
@@ -37,7 +36,7 @@ def _if_then(condition: Callable[[], bool],
     then_source = rx.from_future(cast(Future, then_source)) if is_future(then_source) else then_source
     else_source = rx.from_future(cast(Future, else_source)) if is_future(else_source) else else_source
 
-    def factory(_: Scheduler):
+    def factory(_: abc.SchedulerBase):
         return then_source if condition() else else_source
 
     return rx.defer(factory)

@@ -7,8 +7,7 @@ from rx.internal.priorityqueue import PriorityQueue
 from .scheduleditem import ScheduledItem
 
 
-class Trampoline(object):
-
+class Trampoline:
     def __init__(self):
         self._idle: bool = True
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()

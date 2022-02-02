@@ -1,13 +1,14 @@
-from typing import Callable, Optional
 from datetime import datetime
+from typing import Callable, Optional
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
 
-def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
-                          ) -> Callable[[Observable], Observable]:
+def _take_until_with_time(
+    end_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable], Observable]:
     def take_until_with_time(source: Observable) -> Observable:
         """Takes elements for the specified duration until the specified end
         time, using the specified scheduler to run timers.
@@ -36,5 +37,7 @@ def _take_until_with_time(end_time: typing.AbsoluteOrRelativeTime, scheduler: Op
 
             task = scheduler_method(end_time, action)
             return CompositeDisposable(task, source.subscribe(observer, scheduler=scheduler_))
+
         return Observable(subscribe)
+
     return take_until_with_time

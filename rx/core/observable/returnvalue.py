@@ -1,12 +1,12 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
-from rx.core import typing
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.scheduler import CurrentThreadScheduler
-from rx.core.abc.scheduler import Scheduler
+
+_T = TypeVar("_T")
 
 
-def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> Observable:
+def _return_value(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -23,22 +23,23 @@ def _return_value(value: Any, scheduler: Optional[typing.Scheduler] = None) -> O
         element.
     """
 
-    def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
-        def action(scheduler: typing.Scheduler, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None):
             observer.on_next(value)
             observer.on_completed()
 
         return _scheduler.schedule(action)
+
     return Observable(subscribe)
 
 
-def _from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Scheduler] = None) -> Observable:
-    def subscribe(observer: typing.Observer, scheduler_: typing.Scheduler = None):
+def _from_callable(supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
-        def action(_: Scheduler, __: Any = None):
+        def action(_: abc.SchedulerBase, __: Any = None):
             nonlocal observer
 
             try:
@@ -46,6 +47,10 @@ def _from_callable(supplier: Callable[[], Any], scheduler: Optional[typing.Sched
                 observer.on_completed()
             except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
+
         return _scheduler.schedule(action)
 
     return Observable(subscribe)
+
+
+__all__ = ["_return_value", "_from_callable"]

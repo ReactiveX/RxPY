@@ -1,9 +1,10 @@
 from asyncio import Future
-from typing import cast, Any, Callable, Union
+from typing import Any, Callable, Union, cast
 
 from rx import from_future
 from rx.core import Observable
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.internal.utils import is_future
 
 

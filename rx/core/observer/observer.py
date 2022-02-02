@@ -1,31 +1,44 @@
-from typing import Any, Callable, Optional
+from __future__ import annotations
 
-from .. import typing
-from rx.internal import noop, default_error
+from typing import TYPE_CHECKING, Callable, Optional, TypeVar
+
+from rx.core import abc
+from rx.core.typing import OnCompleted, OnError, OnNext
+from rx.internal.basic import default_error, noop
+
+_T_in = TypeVar("_T_in", contravariant=True)
+
+if TYPE_CHECKING:
+    from rx.core.notification import Notification
+else:
+
+    class Notification:
+        pass
 
 
-class Observer(typing.Observer, typing.Disposable):
+class Observer(abc.ObserverBase[_T_in], abc.DisposableBase):
     """Base class for implementations of the Observer class. This base
     class enforces the grammar of observers where OnError and
     OnCompleted are terminal messages.
     """
 
-    def __init__(self,
-                 on_next: Optional[typing.OnNext] = None,
-                 on_error: Optional[typing.OnError] = None,
-                 on_completed: Optional[typing.OnCompleted] = None
-                 ) -> None:
+    def __init__(
+        self,
+        on_next: Optional[OnNext[_T_in]] = None,
+        on_error: Optional[OnError] = None,
+        on_completed: Optional[OnCompleted] = None,
+    ) -> None:
         self.is_stopped = False
-        self._handler_on_next = on_next or noop
-        self._handler_on_error = on_error or default_error
-        self._handler_on_completed = on_completed or noop
+        self._handler_on_next: OnNext[_T_in] = on_next or noop
+        self._handler_on_error: OnError = on_error or default_error
+        self._handler_on_completed: OnCompleted = on_completed or noop
 
-    def on_next(self, value: Any) -> None:
+    def on_next(self, value: _T_in) -> None:
         """Notify the observer of a new element in the sequence."""
         if not self.is_stopped:
             self._on_next_core(value)
 
-    def _on_next_core(self, value: Any) -> None:
+    def _on_next_core(self, value: _T_in) -> None:
         """For Subclassing purpose. This method is called by `on_next()`
         method until the observer is stopped.
         """
@@ -76,22 +89,24 @@ class Observer(typing.Observer, typing.Disposable):
 
     def throw(self, error: Exception) -> None:
         import traceback
+
         traceback.print_stack()
         if error:
             raise error
         1 / 0  # Raise division by zero
 
-    def to_notifier(self) -> Callable:
+    def to_notifier(self) -> Callable[[Notification[_T_in]], None]:
         """Creates a notification callback from an observer.
 
         Returns the action that forwards its input notification to the
         underlying observer."""
 
-        def func(notifier):
+        def func(notifier: Notification[_T_in]) -> None:
             return notifier.accept(self)
+
         return func
 
-    def as_observer(self) -> 'Observer':
+    def as_observer(self) -> abc.ObserverBase[_T_in]:
         """Hides the identity of an observer.
 
         Returns an observer that hides the identity of the specified

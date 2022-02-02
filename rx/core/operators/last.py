@@ -1,13 +1,16 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
+
 from rx import operators
 from rx.core import Observable
 from rx.core.typing import Predicate
 
 from .lastordefault import last_or_default_async
 
+_T = TypeVar("_T")
 
-def _last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
-    def last(source: Observable) -> Observable:
+
+def _last(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]], Observable[_T]]:
+    def last(source: Observable[_T]) -> Observable[_T]:
         """Partially applied last operator.
 
         Returns the last element of an observable sequence that
@@ -27,10 +30,11 @@ def _last(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
         """
 
         if predicate:
-            return source.pipe(
-                operators.filter(predicate),
-                operators.last()
-            )
+            return source.pipe(operators.filter(predicate), operators.last())
 
         return last_or_default_async(source, False)
+
     return last
+
+
+__all__ = ["_last"]

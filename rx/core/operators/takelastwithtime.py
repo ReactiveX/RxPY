@@ -1,10 +1,12 @@
 from typing import Callable, Optional
-from rx.core import Observable, typing
+
+from rx.core import Observable, abc, typing
 from rx.scheduler import TimeoutScheduler
 
 
-def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
-                         ) -> Callable[[Observable], Observable]:
+def _take_last_with_time(
+    duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable], Observable]:
     def take_last_with_time(source: Observable) -> Observable:
         """Returns elements within the specified duration from the end
         of the observable source sequence.
@@ -26,6 +28,7 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
             An observable sequence with the elements taken during the
             specified duration from the end of the source sequence.
         """
+
         def subscribe(observer, scheduler_=None):
             nonlocal duration
 
@@ -49,5 +52,7 @@ def _take_last_with_time(duration: typing.RelativeTime, scheduler: Optional[typi
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler_)
+
         return Observable(subscribe)
+
     return take_last_with_time

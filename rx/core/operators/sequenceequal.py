@@ -1,5 +1,5 @@
-from typing import Any, Callable, Optional
 import collections
+from typing import Any, Callable, Optional
 
 import rx
 from rx.core import Observable

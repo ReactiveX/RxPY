@@ -1,4 +1,5 @@
 from typing import Any, Callable
+
 from rx.core import Observable
 from rx.internal.exceptions import ArgumentOutOfRangeException
 

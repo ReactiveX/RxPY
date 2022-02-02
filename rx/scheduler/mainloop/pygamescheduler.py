@@ -1,15 +1,15 @@
 import logging
 import threading
+from typing import Any, Optional, TypeVar
 
-from typing import Any, Optional
-
-from rx.core import typing
+from rx.core import abc, typing
 from rx.internal import PriorityQueue
 from rx.internal.constants import DELTA_ZERO
 
-from ..scheduleditem import ScheduledItem
 from ..periodicscheduler import PeriodicScheduler
+from ..scheduleditem import ScheduledItem
 
+_TState = TypeVar("_TState")
 
 log = logging.getLogger("Rx")
 
@@ -35,10 +35,7 @@ class PyGameScheduler(PeriodicScheduler):
         self._lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -53,11 +50,12 @@ class PyGameScheduler(PeriodicScheduler):
         log.debug("PyGameScheduler.schedule(state=%s)", state)
         return self.schedule_absolute(self.now, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
         Args:
             duetime: Relative time after which to execute the action.
@@ -72,11 +70,12 @@ class PyGameScheduler(PeriodicScheduler):
         duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

@@ -1,11 +1,12 @@
 from typing import Callable, Optional
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc, typing
 from rx.scheduler import TimeoutScheduler
 
 
-def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
-                   ) -> Callable[[Observable], Observable]:
+def _throttle_first(
+    window_duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable], Observable]:
     def throttle_first(source: Observable) -> Observable:
         """Returns an observable that emits only the first item emitted
         by the source Observable during sequential time windows of a
@@ -17,12 +18,13 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
         Returns:
             An Observable that performs the throttle operation.
         """
+
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             duration = _scheduler.to_timedelta(window_duration or 0.0)
             if duration <= _scheduler.to_timedelta(0):
-                raise ValueError('window_duration cannot be less or equal zero.')
+                raise ValueError("window_duration cannot be less or equal zero.")
             last_on_next = [0]
 
             def on_next(x):
@@ -37,5 +39,7 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
                     observer.on_next(x)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=_scheduler)
+
         return Observable(subscribe)
+
     return throttle_first

@@ -1,4 +1,5 @@
 from typing import Callable, Optional
+
 from rx.core import Observable
 from rx.core.typing import Mapper, SubComparer
 from rx.internal.basic import default_sub_comparer

@@ -1,15 +1,16 @@
 from threading import RLock
+from typing import Any, List
 
-from rx.core.typing import Disposable
+from rx.core.abc import DisposableBase
 
 
-class CompositeDisposable(Disposable):
+class CompositeDisposable(DisposableBase):
     """Represents a group of disposable resources that are disposed
     together"""
 
-    def __init__(self, *args):
+    def __init__(self, *args: Any):
         if args and isinstance(args[0], list):
-            self.disposable = args[0]
+            self.disposable: List[DisposableBase] = args[0]
         else:
             self.disposable = list(args)
 
@@ -17,7 +18,7 @@ class CompositeDisposable(Disposable):
         self.lock = RLock()
         super(CompositeDisposable, self).__init__()
 
-    def add(self, item):
+    def add(self, item: DisposableBase):
         """Adds a disposable to the CompositeDisposable or disposes the
         disposable if the CompositeDisposable is disposed
 
@@ -34,7 +35,7 @@ class CompositeDisposable(Disposable):
         if should_dispose:
             item.dispose()
 
-    def remove(self, item):
+    def remove(self, item: DisposableBase):
         """Removes and disposes the first occurrence of a disposable
         from the CompositeDisposable."""
 
@@ -52,7 +53,7 @@ class CompositeDisposable(Disposable):
 
         return should_dispose
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Disposes all disposable in the group and removes them from
         the group."""
 
@@ -67,7 +68,7 @@ class CompositeDisposable(Disposable):
         for disp in current_disposable:
             disp.dispose()
 
-    def clear(self):
+    def clear(self) -> None:
         """Removes and disposes all disposable from the
         CompositeDisposable, but does not dispose the
         CompositeDisposable."""
@@ -79,7 +80,7 @@ class CompositeDisposable(Disposable):
         for disposable in current_disposable:
             disposable.dispose()
 
-    def contains(self, item):
+    def contains(self, item: DisposableBase) -> bool:
         """Determines whether the CompositeDisposable contains a specific
         disposable.
 

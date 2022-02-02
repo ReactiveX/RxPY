@@ -1,12 +1,13 @@
 import logging
+from typing import Any, Optional, Set, TypeVar, cast
 
-from typing import cast, Any, Optional, Set
-
-from rx.core import typing
-from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+from rx.core import abc, typing
+from rx.disposable import (CompositeDisposable, Disposable,
+                           SingleAssignmentDisposable)
 
 from ..periodicscheduler import PeriodicScheduler
 
+_TState = TypeVar("_TState")
 
 log = logging.getLogger("Rx")
 
@@ -27,7 +28,6 @@ class WxScheduler(PeriodicScheduler):
         timer_class: Any = self._wx.Timer
 
         class Timer(timer_class):
-
             def __init__(self, callback) -> None:
                 super().__init__()
                 self.callback = callback
@@ -47,12 +47,13 @@ class WxScheduler(PeriodicScheduler):
         for timer in self._timers:
             timer.Stop()
 
-    def _wxtimer_schedule(self,
-                          time: typing.AbsoluteOrRelativeTime,
-                          action: typing.ScheduledSingleOrPeriodicAction,
-                          state: Optional[typing.TState] = None,
-                          periodic: bool = False
-                          ) -> typing.Disposable:
+    def _wxtimer_schedule(
+        self,
+        time: typing.AbsoluteOrRelativeTime,
+        action: typing.ScheduledSingleOrPeriodicAction,
+        state: Optional[_TState] = None,
+        periodic: bool = False,
+    ) -> abc.DisposableBase:
         scheduler = self
 
         sad = SingleAssignmentDisposable()
@@ -62,17 +63,14 @@ class WxScheduler(PeriodicScheduler):
             if periodic:
                 state = cast(typing.ScheduledPeriodicAction, action)(state)
             else:
-                sad.disposable = cast(typing.ScheduledAction, action)(scheduler, state)
+                sad.disposable = cast(typing.ScheduledAction[_TState], action)(scheduler, state)
 
         msecs = max(1, int(self.to_seconds(time) * 1000.0))  # Must be non-zero
 
         log.debug("timeout wx: %s", msecs)
 
         timer = self._timer_class(interval)
-        timer.Start(
-            msecs,
-            self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT
-        )
+        timer.Start(msecs, self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT)
         self._timers.add(timer)
 
         def dispose() -> None:
@@ -81,10 +79,7 @@ class WxScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -98,11 +93,12 @@ class WxScheduler(PeriodicScheduler):
 
         return self._wxtimer_schedule(0.0, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -116,11 +112,12 @@ class WxScheduler(PeriodicScheduler):
         """
         return self._wxtimer_schedule(duetime, action, state=state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -136,21 +133,22 @@ class WxScheduler(PeriodicScheduler):
         duetime = self.to_datetime(duetime)
         return self._wxtimer_schedule(duetime - self.now, action, state=state)
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction,
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.
 
-       Args:
-            period: Period in seconds for running the work repeatedly.
-            action: Action to be executed.
-            state: [Optional] state to be given to the action function.
+        Args:
+             period: Period in seconds for running the work repeatedly.
+             action: Action to be executed.
+             state: [Optional] state to be given to the action function.
 
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort).
+         Returns:
+             The disposable object used to cancel the scheduled action
+             (best effort).
         """
 
         return self._wxtimer_schedule(period, action, state=state, periodic=True)

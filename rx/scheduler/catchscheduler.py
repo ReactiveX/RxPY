@@ -1,18 +1,17 @@
 from datetime import datetime
-from typing import cast, Callable, Optional
+from typing import Callable, Optional, TypeVar, cast
 
-from rx.core import typing
+from rx.core import abc, typing
+from rx.core.abc.scheduler import ScheduledAction, SchedulerBase
 from rx.disposable import Disposable, SingleAssignmentDisposable
 
 from .periodicscheduler import PeriodicScheduler
 
+_TState = TypeVar("_TState")
+
 
 class CatchScheduler(PeriodicScheduler):
-
-    def __init__(self,
-                 scheduler: typing.Scheduler,
-                 handler: Callable[[Exception], bool]
-                 ) -> None:
+    def __init__(self, scheduler: abc.SchedulerBase, handler: Callable[[Exception], bool]) -> None:
         """Wraps a scheduler, passed as constructor argument, adding exception
         handling for scheduled actions. The handler should return True to
         indicate it handled the exception successfully. Falsy return values will
@@ -25,10 +24,10 @@ class CatchScheduler(PeriodicScheduler):
         """
 
         super().__init__()
-        self._scheduler: typing.Scheduler = scheduler
+        self._scheduler: abc.SchedulerBase = scheduler
         self._handler: Callable[[Exception], bool] = handler
-        self._recursive_original: Optional[typing.Scheduler] = None
-        self._recursive_wrapper: Optional['CatchScheduler'] = None
+        self._recursive_original: Optional[abc.SchedulerBase] = None
+        self._recursive_wrapper: Optional["CatchScheduler"] = None
 
     @property
     def now(self) -> datetime:
@@ -42,10 +41,7 @@ class CatchScheduler(PeriodicScheduler):
 
         return self._scheduler.now
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -60,11 +56,9 @@ class CatchScheduler(PeriodicScheduler):
         action = self._wrap(action)
         return self._scheduler.schedule(action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -80,11 +74,9 @@ class CatchScheduler(PeriodicScheduler):
         action = self._wrap(action)
         return self._scheduler.schedule_relative(duetime, action, state=state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -100,11 +92,12 @@ class CatchScheduler(PeriodicScheduler):
         action = self._wrap(action)
         return self._scheduler.schedule_absolute(duetime, action, state=state)
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
         Args:
@@ -119,14 +112,14 @@ class CatchScheduler(PeriodicScheduler):
             recurring action (best effort).
         """
 
-        schedule_periodic = getattr(self._scheduler, 'schedule_periodic')
+        schedule_periodic = getattr(self._scheduler, "schedule_periodic")
         if not callable(schedule_periodic):
             raise NotImplementedError
 
         disp: SingleAssignmentDisposable = SingleAssignmentDisposable()
         failed: bool = False
 
-        def periodic(state: Optional[typing.TState] = None) -> Optional[typing.TState]:
+        def periodic(state: Optional[_TState] = None) -> Optional[_TState]:
             nonlocal failed
             if failed:
                 return None
@@ -143,15 +136,13 @@ class CatchScheduler(PeriodicScheduler):
         disp.disposable = scheduler.schedule_periodic(period, periodic, state=state)
         return disp
 
-    def _clone(self, scheduler: typing.Scheduler) -> 'CatchScheduler':
+    def _clone(self, scheduler: abc.SchedulerBase) -> "CatchScheduler":
         return CatchScheduler(scheduler, self._handler)
 
-    def _wrap(self, action: typing.ScheduledAction) -> typing.ScheduledAction:
+    def _wrap(self, action: typing.ScheduledAction[_TState]) -> typing.ScheduledAction[_TState]:
         parent = self
 
-        def wrapped_action(self,
-                           state: Optional[typing.TState]
-                           ) -> Optional[typing.Disposable]:
+        def wrapped_action(self: CatchScheduler, state: Optional[_TState]) -> Optional[abc.DisposableBase]:
             try:
                 return action(parent._get_recursive_wrapper(self), state)
             except Exception as ex:
@@ -161,7 +152,7 @@ class CatchScheduler(PeriodicScheduler):
 
         return wrapped_action
 
-    def _get_recursive_wrapper(self, scheduler) -> 'CatchScheduler':
+    def _get_recursive_wrapper(self, scheduler: SchedulerBase) -> "CatchScheduler":
         if self._recursive_wrapper is None or self._recursive_original != scheduler:
             self._recursive_original = scheduler
             wrapper = self._clone(scheduler)

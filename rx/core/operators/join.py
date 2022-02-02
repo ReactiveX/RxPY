@@ -1,10 +1,10 @@
-from typing import Callable, Any
 from collections import OrderedDict
+from typing import Any, Callable
 
-from rx.operators import take
 from rx.core import Observable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import noop
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable
+from rx.operators import take
 
 
 def _join(right: Observable,

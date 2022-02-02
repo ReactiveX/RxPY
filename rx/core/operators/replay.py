@@ -1,16 +1,17 @@
-from typing import Union, Callable, Optional
+from typing import Callable, Optional, Union
 
 from rx import operators as ops
-from rx.core import Observable, ConnectableObservable, typing
-from rx.core.typing import Scheduler, Mapper
+from rx.core import ConnectableObservable, Observable, abc, typing
+from rx.core.typing import Mapper
 from rx.subject import ReplaySubject
 
 
-def _replay(mapper: Optional[Mapper] = None,
-            buffer_size: Optional[int] = None,
-            window: Optional[typing.RelativeTime] = None,
-            scheduler: Optional[Scheduler] = None
-            ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+def _replay(
+    mapper: Optional[Mapper] = None,
+    buffer_size: Optional[int] = None,
+    window: Optional[typing.RelativeTime] = None,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications
@@ -43,8 +44,10 @@ def _replay(mapper: Optional[Mapper] = None,
     """
 
     if mapper:
+
         def subject_factory(scheduler):
             return ReplaySubject(buffer_size, window, scheduler)
+
         return ops.multicast(subject_factory=subject_factory, mapper=mapper)
 
     return ops.multicast(ReplaySubject(buffer_size, window, scheduler))

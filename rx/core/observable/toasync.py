@@ -1,15 +1,12 @@
 from typing import Callable, Optional
 
 from rx import operators as ops
-from rx.core import Observable
-from rx.core.typing import Scheduler
+from rx.core import Observable, abc
 from rx.scheduler import TimeoutScheduler
 from rx.subject import AsyncSubject
 
 
-def _to_async(func: Callable,
-              scheduler: Optional[Scheduler] = None
-              ) -> Callable:
+def _to_async(func: Callable, scheduler: Optional[abc.SchedulerBase] = None) -> Callable:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified
@@ -46,4 +43,5 @@ def _to_async(func: Callable,
 
         _scheduler.schedule(action)
         return subject.pipe(ops.as_observable())
+
     return wrapper

@@ -1,10 +1,13 @@
-from rx import never
+from typing import TypeVar
 
+from rx import never
 from rx import operators as _
 from rx.core import Observable
 
+_T = TypeVar("_T")
 
-def _amb(*sources: Observable) -> Observable:
+
+def _amb(*sources: Observable[_T]) -> Observable[_T]:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -15,12 +18,15 @@ def _amb(*sources: Observable) -> Observable:
         whichever reacted first.
     """
 
-    acc = never()
+    acc: Observable[_T] = never()
 
-    def func(previous, current):
+    def func(previous: Observable[_T], current: Observable[_T]):
         return _.amb(previous)(current)
 
     for source in sources:
         acc = func(acc, source)
 
     return acc
+
+
+__all__ = ["_amb"]

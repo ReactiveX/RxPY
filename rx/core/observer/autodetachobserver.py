@@ -1,18 +1,20 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
-from rx.internal import noop, default_error
 from rx.disposable import SingleAssignmentDisposable
+from rx.internal import default_error, noop
 
-from .. import typing
+from .. import abc, typing
+
+_T_in = TypeVar("_T_in", contravariant=True)
 
 
-class AutoDetachObserver(typing.Observer):
-
-    def __init__(self,
-                 on_next: Optional[typing.OnNext] = None,
-                 on_error: Optional[typing.OnError] = None,
-                 on_completed: Optional[typing.OnCompleted] = None
-                 ) -> None:
+class AutoDetachObserver(abc.ObserverBase[_T_in]):
+    def __init__(
+        self,
+        on_next: Optional[typing.OnNext] = None,
+        on_error: Optional[typing.OnError] = None,
+        on_completed: Optional[typing.OnCompleted] = None,
+    ) -> None:
         self._on_next = on_next or noop
         self._on_error = on_error or default_error
         self._on_completed = on_completed or noop
@@ -20,12 +22,12 @@ class AutoDetachObserver(typing.Observer):
         self._subscription = SingleAssignmentDisposable()
         self.is_stopped = False
 
-    def on_next(self, value: Any) -> None:
+    def on_next(self, value: _T_in) -> None:
         if self.is_stopped:
             return
         self._on_next(value)
 
-    def on_error(self, error) -> None:
+    def on_error(self, error: Exception) -> None:
         if self.is_stopped:
             return
         self.is_stopped = True
@@ -45,7 +47,7 @@ class AutoDetachObserver(typing.Observer):
         finally:
             self.dispose()
 
-    def set_disposable(self, value: typing.Disposable):
+    def set_disposable(self, value: abc.DisposableBase):
         self._subscription.disposable = value
 
     subscription = property(fset=set_disposable)

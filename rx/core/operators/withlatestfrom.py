@@ -4,7 +4,6 @@ import rx
 from rx.core import Observable
 
 
-
 def _with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]:
     """With latest from operator.
 

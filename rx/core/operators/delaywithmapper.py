@@ -1,7 +1,8 @@
 from typing import Callable
 
-from rx.core import Observable, typing
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 
 
 def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
@@ -25,7 +26,7 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
 
         sub_delay, mapper = None, None
 
-        if isinstance(subscription_delay, typing.Observable):
+        if isinstance(subscription_delay, abc.ObservableBase):
             mapper = delay_duration_mapper
             sub_delay = subscription_delay
         else:
@@ -36,7 +37,7 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
             at_end = [False]
 
             def done():
-                if (at_end[0] and delays.length == 0):
+                if at_end[0] and delays.length == 0:
                     observer.on_completed()
 
             subscription = SerialDisposable()
@@ -77,5 +78,7 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
                 subscription.disposable = sub_delay.subscribe_(lambda _: start(), observer.on_error, start)
 
             return CompositeDisposable(subscription, delays)
+
         return Observable(subscribe)
+
     return delay_with_mapper

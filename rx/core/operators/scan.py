@@ -1,14 +1,21 @@
-from typing import Any, Callable
+from typing import Callable, TypeVar, Union, Type, cast
 
-from rx import defer, operators as ops
-from rx.internal.utils import NotSet
-from rx.core import Observable
+from rx import defer
+from rx import operators as ops
+from rx.core import Observable, abc
 from rx.core.typing import Accumulator
+from rx.internal.utils import NotSet
 
-def _scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable], Observable]:
+_T = TypeVar("_T")
+_TState = TypeVar("_TState")
+
+
+def _scan(
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
+) -> Callable[[Observable[_T]], Observable[_TState]]:
     has_seed = seed is not NotSet
 
-    def scan(source: Observable) -> Observable:
+    def scan(source: Observable[_T]) -> Observable[_TState]:
         """Partially applied scan operator.
 
         Applies an accumulator function over an observable sequence and
@@ -24,11 +31,11 @@ def _scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable]
             An observable sequence containing the accumulated values.
         """
 
-        def factory(scheduler):
+        def factory(scheduler: abc.SchedulerBase) -> Observable[_TState]:
             has_accumulation = False
-            accumulation = None
+            accumulation: _TState = cast(_TState, None)
 
-            def projection(x):
+            def projection(x: _T) -> _TState:
                 nonlocal has_accumulation
                 nonlocal accumulation
 
@@ -39,6 +46,12 @@ def _scan(accumulator: Accumulator, seed: Any = NotSet) -> Callable[[Observable]
                     has_accumulation = True
 
                 return accumulation
+
             return source.pipe(ops.map(projection))
+
         return defer(factory)
+
     return scan
+
+
+__all__ = ["_scan"]

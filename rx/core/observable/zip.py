@@ -1,16 +1,16 @@
 from threading import RLock
-from typing import Optional, List
+from typing import Any, List, Optional, Tuple
 
 from rx import from_future
-from rx.core import Observable, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future
 
-
 # pylint: disable=redefined-builtin
 
-def _zip(*args: Observable) -> Observable:
+
+def _zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
@@ -29,14 +29,15 @@ def _zip(*args: Observable) -> Observable:
 
     sources = list(args)
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None) -> CompositeDisposable:
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> CompositeDisposable:
         n = len(sources)
-        queues: List[List] = [[] for _ in range(n)]
+        queues: List[List[Any]] = [[] for _ in range(n)]
         lock = RLock()
 
         @synchronized(lock)
-        def next(i):
+        def next(i: int):
             if all([len(q) for q in queues]):
                 try:
                     queued_values = [x.pop(0) for x in queues]
@@ -47,14 +48,14 @@ def _zip(*args: Observable) -> Observable:
 
                 observer.on_next(res)
 
-        subscriptions = [None] * n
+        subscriptions: List[Optional[abc.DisposableBase]] = [None] * n
 
-        def func(i):
+        def func(i: int):
             source = sources[i]
             sad = SingleAssignmentDisposable()
-            source = from_future(source) if is_future(source) else source
+            source: Observable[Any] = from_future(source) if is_future(source) else source
 
-            def on_next(x):
+            def on_next(x: Any):
                 queues[i].append(x)
                 next(i)
 

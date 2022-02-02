@@ -1,18 +1,18 @@
 import sys
+from datetime import datetime, timedelta
+from typing import Any, List, NamedTuple, Optional, TypeVar, cast
 
-from datetime import datetime
-from typing import cast, Any, Optional, List, NamedTuple
-from datetime import timedelta
-
-from rx.core import typing
-from rx.scheduler import CurrentThreadScheduler
+from rx.core import Observer, abc, typing
 from rx.core.observer.scheduledobserver import ScheduledObserver
+from rx.scheduler import CurrentThreadScheduler
 
 from .subject import Subject
 
+_T = TypeVar("_T")
 
-class RemovableDisposable(typing.Disposable):
-    def __init__(self, subject, observer):
+
+class RemovableDisposable(abc.DisposableBase):
+    def __init__(self, subject: Subject[_T], observer: Observer[_T]):
         self.subject = subject
         self.observer = observer
 
@@ -27,17 +27,18 @@ class QueueItem(NamedTuple):
     value: Any
 
 
-class ReplaySubject(Subject):
+class ReplaySubject(Subject[_T]):
     """Represents an object that is both an observable sequence as well
     as an observer. Each notification is broadcasted to all subscribed
     and future observers, subject to buffer trimming policies.
     """
 
-    def __init__(self,
-                 buffer_size: int = None,
-                 window: typing.RelativeTime = None,
-                 scheduler: Optional[typing.Scheduler] = None
-                 ) -> None:
+    def __init__(
+        self,
+        buffer_size: Optional[int] = None,
+        window: Optional[typing.RelativeTime] = None,
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> None:
         """Initializes a new instance of the ReplaySubject class with
         the specified buffer size, window and scheduler.
 
@@ -54,10 +55,9 @@ class ReplaySubject(Subject):
         self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
         self.queue: List[QueueItem] = []
 
-    def _subscribe_core(self,
-                        observer: typing.Observer,
-                        scheduler: Optional[typing.Scheduler] = None
-                        ) -> typing.Disposable:
+    def _subscribe_core(
+        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
 
@@ -97,7 +97,7 @@ class ReplaySubject(Subject):
             observer.on_next(value)
 
         for observer in observers:
-            cast(ScheduledObserver, observer).ensure_active()
+            cast(ScheduledObserver[_T], observer).ensure_active()
 
     def _on_error_core(self, error: Exception) -> None:
         """Notifies all subscribed observers with the exception."""
@@ -111,7 +111,7 @@ class ReplaySubject(Subject):
 
         for observer in observers:
             observer.on_error(error)
-            cast(ScheduledObserver, observer).ensure_active()
+            cast(ScheduledObserver[_T], observer).ensure_active()
 
     def _on_completed_core(self) -> None:
         """Notifies all subscribed observers of the end of the sequence."""
@@ -124,7 +124,7 @@ class ReplaySubject(Subject):
 
         for observer in observers:
             observer.on_completed()
-            cast(ScheduledObserver, observer).ensure_active()
+            cast(ScheduledObserver[_T], observer).ensure_active()
 
     def dispose(self) -> None:
         """Releases all resources used by the current instance of the

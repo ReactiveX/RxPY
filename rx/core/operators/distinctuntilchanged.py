@@ -1,7 +1,8 @@
 from typing import Callable, Optional
+
 from rx.core import Observable
-from rx.core.typing import Mapper, Comparer
-from rx.internal.basic import identity, default_comparer
+from rx.core.typing import Comparer, Mapper
+from rx.internal.basic import default_comparer, identity
 
 
 def _distinct_until_changed(

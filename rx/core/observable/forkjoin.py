@@ -1,6 +1,6 @@
 from typing import Optional
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
@@ -19,9 +19,7 @@ def _fork_join(*sources: Observable) -> Observable:
 
     parent = sources[0]
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None
-                  ) -> CompositeDisposable:
+    def subscribe(observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None) -> CompositeDisposable:
         n = len(sources)
         values = [None] * n
         is_done = [False] * n
@@ -55,12 +53,7 @@ def _fork_join(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = sources[i].subscribe_(
-                on_next,
-                observer.on_error,
-                on_completed,
-                scheduler
-            )
+            subscriptions[i].disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
 
         for i in range(n):
             _subscribe(i)

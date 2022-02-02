@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Union, List
+from typing import Any, Callable, Iterable, List, Union
 
 import rx
 from rx.core import Observable, typing

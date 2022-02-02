@@ -1,14 +1,16 @@
 import threading
-from typing import List, Any
+from typing import Any, List, TypeVar
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.disposable import SerialDisposable
 
 from .observer import Observer
 
+_T_in = TypeVar("_T_in", contravariant=True)
 
-class ScheduledObserver(Observer):
-    def __init__(self, scheduler: typing.Scheduler, observer: typing.Observer) -> None:
+
+class ScheduledObserver(Observer[_T_in]):
+    def __init__(self, scheduler: abc.SchedulerBase, observer: abc.ObserverBase[_T_in]) -> None:
         super().__init__()
 
         self.scheduler = scheduler
@@ -26,16 +28,19 @@ class ScheduledObserver(Observer):
     def _on_next_core(self, value: Any) -> None:
         def action():
             self.observer.on_next(value)
+
         self.queue.append(action)
 
     def _on_error_core(self, error: Exception) -> None:
         def action():
             self.observer.on_error(error)
+
         self.queue.append(action)
 
     def _on_completed_core(self) -> None:
         def action():
             self.observer.on_completed()
+
         self.queue.append(action)
 
     def ensure_active(self) -> None:
@@ -49,7 +54,7 @@ class ScheduledObserver(Observer):
         if is_owner:
             self.disposable.disposable = self.scheduler.schedule(self.run)
 
-    def run(self, scheduler: typing.Scheduler, state: typing.TState) -> None:
+    def run(self, scheduler: abc.SchedulerBase, state: Any) -> None:
         parent = self
 
         with self.lock:

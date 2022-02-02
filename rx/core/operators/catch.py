@@ -1,8 +1,8 @@
 from typing import Callable, Union
 
 import rx
-from rx.core import Observable, typing
-from rx.disposable import SingleAssignmentDisposable, SerialDisposable
+from rx.core import Observable, abc, typing
+from rx.disposable import SerialDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
@@ -25,18 +25,15 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler=scheduler)
 
-        d1.disposable = source.subscribe_(
-            observer.on_next,
-            on_error,
-            observer.on_completed,
-            scheduler
-        )
+        d1.disposable = source.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
         return subscription
+
     return Observable(subscribe)
 
 
-def _catch(handler: Union[Observable, Callable[[Exception, Observable], Observable]]
-          ) -> Callable[[Observable], Observable]:
+def _catch(
+    handler: Union[Observable, Callable[[Exception, Observable], Observable]]
+) -> Callable[[Observable], Observable]:
     def catch(source: Observable) -> Observable:
         """Continues an observable sequence that is terminated by an
         exception with the next observable sequence.
@@ -59,8 +56,9 @@ def _catch(handler: Union[Observable, Callable[[Exception, Observable], Observab
         """
         if callable(handler):
             return catch_handler(source, handler)
-        elif isinstance(handler, typing.Observable):
+        elif isinstance(handler, abc.ObservableBase):
             return rx.catch(source, handler)
         else:
-            raise TypeError('catch operator takes whether an Observable or a callable handler as argument.')
+            raise TypeError("catch operator takes whether an Observable or a callable handler as argument.")
+
     return catch

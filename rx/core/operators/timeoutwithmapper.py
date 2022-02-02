@@ -1,8 +1,9 @@
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 import rx
 from rx.core import Observable
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 
 
 def _timeout_with_mapper(first_timeout: Optional[Observable] = None,

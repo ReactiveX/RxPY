@@ -1,14 +1,16 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, TypeVar
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.disposable import Disposable
 from rx.internal.basic import default_now
 from rx.internal.constants import UTC_ZERO
 
+_TState = TypeVar("_TState")
 
-class Scheduler(typing.Scheduler):
+
+class Scheduler(abc.SchedulerBase):
     """Base class for the various scheduler implementations in this package as
     well as the mainloop sub-package. This does not include an implementation
     of schedule_periodic, refer to PeriodicScheduler.
@@ -27,10 +29,7 @@ class Scheduler(typing.Scheduler):
         return default_now()
 
     @abstractmethod
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -45,11 +44,9 @@ class Scheduler(typing.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -65,11 +62,9 @@ class Scheduler(typing.Scheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -84,10 +79,9 @@ class Scheduler(typing.Scheduler):
 
         return NotImplemented
 
-    def invoke_action(self,
-                      action: typing.ScheduledAction,
-                      state: Optional[typing.TState] = None
-                      ) -> typing.Disposable:
+    def invoke_action(
+        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Invoke the given given action. This is typically called by instances
         of ScheduledItem.
 
@@ -101,7 +95,7 @@ class Scheduler(typing.Scheduler):
         """
 
         ret = action(self, state)
-        if isinstance(ret, typing.Disposable):
+        if isinstance(ret, abc.DisposableBase):
             return ret
 
         return Disposable()

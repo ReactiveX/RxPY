@@ -1,4 +1,5 @@
-from .testscheduler import TestScheduler
-from .reactivetest import OnNextPredicate, OnErrorPredicate, ReactiveTest, is_prime
 from .mockdisposable import MockDisposable
+from .reactivetest import (OnErrorPredicate, OnNextPredicate, ReactiveTest,
+                           is_prime)
 from .recorded import Recorded
+from .testscheduler import TestScheduler

@@ -14,9 +14,8 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception):
     raise RxException(ex)
-
 
 
 # test("Rx.Observable.catchException() does not lose subscription to underlying observable", 12, function () {

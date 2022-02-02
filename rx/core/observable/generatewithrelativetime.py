@@ -1,9 +1,9 @@
 from typing import Any, Callable
 
 from rx.core import Observable
-from rx.core.typing import Predicate, Mapper, RelativeTime
-from rx.scheduler import TimeoutScheduler
+from rx.core.typing import Mapper, Predicate, RelativeTime
 from rx.disposable import MultipleAssignmentDisposable
+from rx.scheduler import TimeoutScheduler
 
 
 def _generate_with_relative_time(initial_state: Any,

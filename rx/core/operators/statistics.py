@@ -1,5 +1,6 @@
-from rx.core import Observable
 import math
+
+from rx.core import Observable
 
 
 def determine_median(sorted_list):

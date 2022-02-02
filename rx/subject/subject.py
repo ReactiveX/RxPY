@@ -1,14 +1,16 @@
 import threading
-from typing import Any, List, Optional
+from typing import List, Optional, TypeVar
 
+from rx.core import Observable, Observer, abc
 from rx.disposable import Disposable
-from rx.core import Observable, Observer, typing
 from rx.internal import DisposedException
 
 from .innersubscription import InnerSubscription
 
+_T = TypeVar("_T")
 
-class Subject(Observable, Observer, typing.Subject):
+
+class Subject(Observable[_T], Observer[_T], abc.SubjectBase[_T]):
     """Represents an object that is both an observable sequence as well
     as an observer. Each notification is broadcasted to all subscribed
     observers.
@@ -18,7 +20,7 @@ class Subject(Observable, Observer, typing.Subject):
         super().__init__()
 
         self.is_disposed = False
-        self.observers: List[typing.Observer] = []
+        self.observers: List[abc.ObserverBase[_T]] = []
         self.exception: Optional[Exception] = None
 
         self.lock = threading.RLock()
@@ -27,10 +29,9 @@ class Subject(Observable, Observer, typing.Subject):
         if self.is_disposed:
             raise DisposedException()
 
-    def _subscribe_core(self,
-                        observer: typing.Observer,
-                        scheduler: Optional[typing.Scheduler] = None
-                        ) -> typing.Disposable:
+    def _subscribe_core(
+        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -43,7 +44,7 @@ class Subject(Observable, Observer, typing.Subject):
                 observer.on_completed()
             return Disposable()
 
-    def on_next(self, value: Any) -> None:
+    def on_next(self, value: _T) -> None:
         """Notifies all subscribed observers with the value.
 
         Args:
@@ -54,7 +55,7 @@ class Subject(Observable, Observer, typing.Subject):
             self.check_disposed()
         super().on_next(value)
 
-    def _on_next_core(self, value: Any) -> None:
+    def _on_next_core(self, value: _T) -> None:
         with self.lock:
             observers = self.observers.copy()
 

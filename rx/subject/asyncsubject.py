@@ -1,13 +1,15 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
+from rx.core import abc, typing
 from rx.disposable import Disposable
-from rx.core import typing
 
-from .subject import Subject
 from .innersubscription import InnerSubscription
+from .subject import Subject
+
+_T = TypeVar("_T")
 
 
-class AsyncSubject(Subject):
+class AsyncSubject(Subject[_T]):
     """Represents the result of an asynchronous operation. The last value
     before the close notification, or the error received through
     on_error, is sent to all subscribed observers."""
@@ -18,13 +20,12 @@ class AsyncSubject(Subject):
 
         super().__init__()
 
-        self.value = None
-        self.has_value = False
+        self.value: Optional[_T] = None
+        self.has_value: bool = False
 
-    def _subscribe_core(self,
-                        observer: typing.Observer,
-                        scheduler: Optional[typing.Scheduler] = None
-                        ) -> typing.Disposable:
+    def _subscribe_core(
+        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -45,7 +46,7 @@ class AsyncSubject(Subject):
 
         return Disposable()
 
-    def _on_next_core(self, value: Any) -> None:
+    def _on_next_core(self, value: _T) -> None:
         """Remember the value. Upon completion, the most recently received value
         will be passed on to all subscribed observers.
 

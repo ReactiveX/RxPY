@@ -1,6 +1,5 @@
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
-
 from rx.core import Observable
+from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import NotSet
 
 

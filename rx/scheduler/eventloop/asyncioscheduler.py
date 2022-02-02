@@ -1,15 +1,15 @@
-import logging
 import asyncio
-
+import logging
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TypeVar
 
-from rx.core import typing
-from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+from rx.core import abc, typing
+from rx.disposable import (CompositeDisposable, Disposable,
+                           SingleAssignmentDisposable)
 
 from ..periodicscheduler import PeriodicScheduler
 
-
+_TState = TypeVar("_TState")
 log = logging.getLogger("Rx")
 
 
@@ -28,10 +28,7 @@ class AsyncIOScheduler(PeriodicScheduler):
         super().__init__()
         self._loop: asyncio.AbstractEventLoop = loop
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -54,11 +51,12 @@ class AsyncIOScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -86,11 +84,12 @@ class AsyncIOScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

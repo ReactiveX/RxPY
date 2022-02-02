@@ -1,13 +1,14 @@
-from asyncio import Future
-from typing import cast, Callable, Union
+from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 from rx import from_future
-from rx.core import Observable
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
+_T = TypeVar("_T")
 
-def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Observable]:
+
+def _skip_until(other: Union[Observable[_T], typing.Future]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
 
@@ -22,19 +23,19 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
     """
 
     if is_future(other):
-        obs = from_future(cast(Future, other))
+        obs: Observable[Any] = from_future(cast(typing.Future, other))
     else:
-        obs = cast(Observable, other)
+        obs = cast(Observable[_T], other)
 
-    def skip_until(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    def skip_until(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
             is_open = [False]
 
-            def on_next(left):
+            def on_next(left: _T) -> None:
                 if is_open[0]:
                     observer.on_next(left)
 
-            def on_completed():
+            def on_completed() -> None:
                 if is_open[0]:
                     observer.on_completed()
 
@@ -44,7 +45,7 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             right_subscription = SingleAssignmentDisposable()
             subscriptions.add(right_subscription)
 
-            def on_next2(x):
+            def on_next2(x: Any) -> None:
                 is_open[0] = True
                 right_subscription.dispose()
 
@@ -54,5 +55,10 @@ def _skip_until(other: Union[Observable, Future]) -> Callable[[Observable], Obse
             right_subscription.disposable = obs.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
 
             return subscriptions
+
         return Observable(subscribe)
+
     return skip_until
+
+
+__all__ = ["_skip_until"]

@@ -1,9 +1,9 @@
-from typing import Any
-
 import math
 import types
+from typing import Any
 
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core.notification import OnCompleted, OnError, OnNext
+
 from .recorded import Recorded
 from .subscription import Subscription
 

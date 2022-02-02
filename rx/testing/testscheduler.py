@@ -1,14 +1,16 @@
-from typing import Callable, Any
+from typing import Any, Callable, TypeVar
 
 import rx
+from rx.core import Observable, abc, typing
 from rx.disposable import Disposable
-from rx.core import Observable, typing
 from rx.scheduler import VirtualTimeScheduler
 
 from .coldobservable import ColdObservable
 from .hotobservable import HotObservable
 from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
+
+_TState = TypeVar("_TState")
 
 
 class TestScheduler(VirtualTimeScheduler):
@@ -18,7 +20,9 @@ class TestScheduler(VirtualTimeScheduler):
 
     __test__ = False
 
-    def schedule_absolute(self, duetime: typing.AbsoluteTime, action: Callable, state: Any = None) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: _TState = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at the specified virtual
         time.
 
@@ -76,18 +80,21 @@ class TestScheduler(VirtualTimeScheduler):
             """Called at create time. Defaults to 100"""
             source[0] = create()
             return Disposable()
+
         self.schedule_absolute(created, action_create)
 
         def action_subscribe(scheduler, state):
             """Called at subscribe time. Defaults to 200"""
             subscription[0] = source[0].subscribe(observer, scheduler=scheduler)
             return Disposable()
+
         self.schedule_absolute(subscribed, action_subscribe)
 
         def action_dispose(scheduler, state):
             """Called at dispose time. Defaults to 1000"""
             subscription[0].dispose()
             return Disposable()
+
         self.schedule_absolute(disposed, action_dispose)
 
         super().start()

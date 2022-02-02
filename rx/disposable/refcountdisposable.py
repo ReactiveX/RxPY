@@ -1,18 +1,18 @@
 from threading import RLock
+from typing import Optional
 
+from rx.core.abc import DisposableBase
 from rx.disposable import Disposable
-from rx.core import typing
 
 
-class RefCountDisposable(typing.Disposable):
+class RefCountDisposable(DisposableBase):
     """Represents a disposable resource that only disposes its underlying
     disposable resource when all dependent disposable objects have been
     disposed."""
 
-    class InnerDisposable(typing.Disposable):
-
-        def __init__(self, parent) -> None:
-            self.parent = parent
+    class InnerDisposable(DisposableBase):
+        def __init__(self, parent: "RefCountDisposable") -> None:
+            self.parent: Optional[RefCountDisposable] = parent
             self.is_disposed = False
             self.lock = RLock()
 
@@ -20,9 +20,11 @@ class RefCountDisposable(typing.Disposable):
             with self.lock:
                 parent = self.parent
                 self.parent = None
-            parent.release()
 
-    def __init__(self, disposable) -> None:
+            if parent is not None:
+                parent.release()
+
+    def __init__(self, disposable: DisposableBase) -> None:
         """Initializes a new instance of the RefCountDisposable class with the
         specified disposable."""
 
@@ -67,7 +69,7 @@ class RefCountDisposable(typing.Disposable):
             self.underlying_disposable.dispose()
 
     @property
-    def disposable(self) -> typing.Disposable:
+    def disposable(self) -> DisposableBase:
         """Returns a dependent disposable that when disposed decreases the
         refcount on the underlying disposable."""
 

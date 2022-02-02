@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Any, Callable
 
 from rx import operators as ops
 from rx.core import Observable

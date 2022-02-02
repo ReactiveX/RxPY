@@ -1,11 +1,12 @@
 import logging
-from typing import Callable, Any
 from collections import OrderedDict
+from typing import Any, Callable
 
 from rx import operators as ops
 from rx.core import Observable
+from rx.disposable import (CompositeDisposable, RefCountDisposable,
+                           SingleAssignmentDisposable)
 from rx.internal.utils import add_ref
-from rx.disposable import SingleAssignmentDisposable, RefCountDisposable, CompositeDisposable
 from rx.subject import Subject
 
 log = logging.getLogger("Rx")

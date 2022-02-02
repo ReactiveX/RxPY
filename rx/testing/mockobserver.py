@@ -1,14 +1,15 @@
-from typing import Any, List
+from typing import Any, List, TypeVar
 
-from rx.core.typing import Observer
-from rx.core.notification import OnNext, OnError, OnCompleted
+from rx.core.abc import ObserverBase
+from rx.core.notification import OnCompleted, OnError, OnNext
 from rx.scheduler import VirtualTimeScheduler
 
 from .recorded import Recorded
 
+_T = TypeVar("_T")
 
-class MockObserver(Observer):
 
+class MockObserver(ObserverBase[_T]):
     def __init__(self, scheduler: VirtualTimeScheduler) -> None:
         self.scheduler: VirtualTimeScheduler = scheduler
         self.messages: List[Recorded] = []

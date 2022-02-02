@@ -1,14 +1,13 @@
 from typing import List, Optional
 
-from rx.core import Observable
-from rx.core.typing import Scheduler, RelativeTime
+from rx.core import Observable, abc
+from rx.core.typing import RelativeTime
 from rx.scheduler import NewThreadScheduler
 
 new_thread_scheduler = NewThreadScheduler()
 
 
-def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 0.1):
-
+def _to_marbles(scheduler: Optional[abc.SchedulerBase] = None, timespan: RelativeTime = 0.1):
     def to_marbles(source: Observable) -> Observable:
         """Convert an observable sequence into a marble diagram string.
 
@@ -55,13 +54,14 @@ def _to_marbles(scheduler: Optional[Scheduler] = None, timespan: RelativeTime = 
                 observer.on_completed()
 
             return source.subscribe_(on_next, on_error, on_completed)
+
         return Observable(subscribe)
+
     return to_marbles
 
 
 def stringify(value):
-    """Utility for stringifying an event.
-    """
+    """Utility for stringifying an event."""
     string = str(value)
     if len(string) > 1:
         string = "(%s)" % string

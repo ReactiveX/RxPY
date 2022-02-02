@@ -1,10 +1,10 @@
 from asyncio import Future
-from typing import cast, Callable, Union
+from typing import Callable, Union, cast
 
 from rx import from_future
-from rx.internal import noop
 from rx.core import Observable
 from rx.disposable import CompositeDisposable
+from rx.internal import noop
 from rx.internal.utils import is_future
 
 

@@ -1,29 +1,33 @@
-from typing import List
+from typing import Any, List, Optional, TypeVar
 
+from rx.core import Observable, abc
+from rx.core.notification import Notification
 from rx.disposable import Disposable
-from rx.core import Observable, typing
 from rx.scheduler import VirtualTimeScheduler
 
 from .recorded import Recorded
 from .subscription import Subscription
 
+_T = TypeVar("_T")
 
-class HotObservable(Observable):
+
+class HotObservable(Observable[_T]):
     def __init__(self, scheduler: VirtualTimeScheduler, messages: List[Recorded]) -> None:
         super().__init__()
 
         self.scheduler: VirtualTimeScheduler = scheduler
         self.messages = messages
         self.subscriptions: List[Subscription] = []
-        self.observers: List[typing.Observer] = []
+        self.observers: List[abc.ObserverBase[_T]] = []
 
         observable = self
 
-        def get_action(notification):
-            def action(scheduler, state):
+        def get_action(notification: Notification):
+            def action(scheduler: abc.SchedulerBase, state: Any):
                 for observer in observable.observers[:]:
                     notification.accept(observer)
                 return Disposable()
+
             return action
 
         for message in self.messages:
@@ -33,7 +37,7 @@ class HotObservable(Observable):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe_core(self, observer=None, scheduler=None) -> typing.Disposable:
+    def _subscribe_core(self, observer=None, scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1

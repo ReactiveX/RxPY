@@ -1,21 +1,20 @@
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional, TypeVar
 
-from rx.core import Observable
-from rx.core.typing import Predicate
-from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx import operators as ops
+from rx.core import Observable, abc, typing
+from rx.internal.exceptions import SequenceContainsNoElementsError
+
+_T = TypeVar("_T")
 
 
-def last_or_default_async(source: Observable,
-                          has_default: bool = False,
-                          default_value: Any = None
-                          ) -> Observable:
-
-    def subscribe(observer, scheduler=None):
+def last_or_default_async(
+    source: Observable[_T], has_default: bool = False, default_value: Any = None
+) -> Observable[_T]:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
         value = [default_value]
         seen_value = [False]
 
-        def on_next(x):
+        def on_next(x: _T) -> None:
             value[0] = x
             seen_value[0] = True
 
@@ -27,14 +26,14 @@ def last_or_default_async(source: Observable,
                 observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+
     return Observable(subscribe)
 
 
-def _last_or_default(predicate: Optional[Predicate] = None,
-                     default_value: Any = None
-                     ) -> Callable[[Observable], Observable]:
-
-    def last_or_default(source: Observable) -> Observable:
+def _last_or_default(
+    predicate: Optional[typing.Predicate[_T]] = None, default_value: Any = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def last_or_default(source: Observable[_T]) -> Observable[_T]:
         """Return last or default element.
 
         Examples:
@@ -55,4 +54,5 @@ def _last_or_default(predicate: Optional[Predicate] = None,
             )
 
         return last_or_default_async(source, True, default_value)
+
     return last_or_default

@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import Any, List, Optional, Tuple
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _combine_latest(*sources: Observable) -> Observable:
+def _combine_latest(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
@@ -19,9 +19,9 @@ def _combine_latest(*sources: Observable) -> Observable:
 
     parent = sources[0]
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None
-                  ) -> CompositeDisposable:
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> CompositeDisposable:
 
         n = len(sources)
         has_value = [False] * n
@@ -29,7 +29,7 @@ def _combine_latest(*sources: Observable) -> Observable:
         is_done = [False] * n
         values = [None] * n
 
-        def _next(i):
+        def _next(i: Any):
             has_value[i] = True
 
             if has_value_all[0] or all(has_value):
@@ -41,17 +41,17 @@ def _combine_latest(*sources: Observable) -> Observable:
 
             has_value_all[0] = all(has_value)
 
-        def done(i):
+        def done(i: Any):
             is_done[i] = True
             if all(is_done):
                 observer.on_completed()
 
-        subscriptions = [None] * n
+        subscriptions: List[Optional[SingleAssignmentDisposable]] = [None] * n
 
-        def func(i):
+        def func(i: int):
             subscriptions[i] = SingleAssignmentDisposable()
 
-            def on_next(x):
+            def on_next(x: Any) -> None:
                 with parent.lock:
                     values[i] = x
                     _next(i)
@@ -60,9 +60,12 @@ def _combine_latest(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subscription = subscriptions[i]
+            assert subscription
+            subscription.disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
 
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
+
     return Observable(subscribe)

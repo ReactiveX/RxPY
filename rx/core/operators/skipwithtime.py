@@ -1,13 +1,16 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, Any
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None
-                    ) -> Callable[[Observable], Observable]:
-    def skip_with_time(source: Observable) -> Observable:
+
+def _skip_with_time(
+    duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def skip_with_time(source: Observable[_T]) -> Observable[_T]:
         """Skips elements for the specified duration from the start of
         the observable source sequence.
 
@@ -34,20 +37,25 @@ def _skip_with_time(duration: typing.RelativeTime, scheduler: Optional[typing.Sc
             specified duration from the start of the source sequence.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             open = [False]
 
-            def action(scheduler, state):
+            def action(scheduler: abc.SchedulerBase, state: Any) -> None:
                 open[0] = True
 
             t = _scheduler.schedule_relative(duration, action)
 
-            def on_next(x):
+            def on_next(x: _T):
                 if open[0]:
                     observer.on_next(x)
 
             d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
             return CompositeDisposable(t, d)
+
         return Observable(subscribe)
+
     return skip_with_time
+
+
+__all__ = ["_skip_with_time"]

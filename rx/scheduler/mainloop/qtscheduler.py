@@ -1,13 +1,14 @@
 import logging
-
 from datetime import timedelta
-from typing import Any, Optional, Set
+from typing import Any, Optional, Set, TypeVar
 
-from rx.core import typing
-from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+from rx.core import abc, typing
+from rx.disposable import (CompositeDisposable, Disposable,
+                           SingleAssignmentDisposable)
 
 from ..periodicscheduler import PeriodicScheduler
 
+_TState = TypeVar("_TState")
 
 log = logging.getLogger(__name__)
 
@@ -27,10 +28,7 @@ class QtScheduler(PeriodicScheduler):
         timer_class: Any = self._qtcore.QTimer
         self._periodic_timers: Set[timer_class] = set()
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -43,11 +41,12 @@ class QtScheduler(PeriodicScheduler):
         """
         return self.schedule_relative(0.0, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -78,11 +77,12 @@ class QtScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -98,21 +98,22 @@ class QtScheduler(PeriodicScheduler):
         delta: timedelta = self.to_datetime(duetime) - self.now
         return self.schedule_relative(delta, action, state=state)
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction,
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.
 
-       Args:
-            period: Period in seconds for running the work repeatedly.
-            action: Action to be executed.
-            state: [Optional] state to be given to the action function.
+        Args:
+             period: Period in seconds for running the work repeatedly.
+             action: Action to be executed.
+             state: [Optional] state to be given to the action function.
 
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort).
+         Returns:
+             The disposable object used to cancel the scheduled action
+             (best effort).
         """
         msecs = max(0, int(self.to_seconds(period) * 1000.0))
         sad = SingleAssignmentDisposable()

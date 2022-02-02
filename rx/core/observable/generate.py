@@ -2,8 +2,8 @@ from typing import Any
 
 from rx.core import Observable
 from rx.core.typing import Mapper, Predicate
-from rx.scheduler import CurrentThreadScheduler
 from rx.disposable import MultipleAssignmentDisposable
+from rx.scheduler import CurrentThreadScheduler
 
 
 def _generate(initial_state: Any,

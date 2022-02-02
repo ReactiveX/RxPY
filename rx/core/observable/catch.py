@@ -1,12 +1,14 @@
-from typing import Iterable
+from typing import Any, Iterable, Optional, TypeVar
 
-from rx.disposable import Disposable
-from rx.core import Observable
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.core import Observable, abc
+from rx.disposable import (CompositeDisposable, Disposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.scheduler import CurrentThreadScheduler
 
+_T = TypeVar("_T")
 
-def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
+
+def _catch_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -26,7 +28,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
 
     sources_ = iter(sources)
 
-    def subscribe(observer, scheduler_=None):
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
@@ -34,8 +36,8 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
         last_exception = None
         is_disposed = False
 
-        def action(action1, state=None):
-            def on_error(exn):
+        def action(action1, state: Any = None):
+            def on_error(exn: Exception) -> None:
                 nonlocal last_exception
                 last_exception = exn
                 cancelable.disposable = _scheduler.schedule(action)
@@ -62,5 +64,7 @@ def _catch_with_iterable(sources: Iterable[Observable]) -> Observable:
         def dispose():
             nonlocal is_disposed
             is_disposed = True
+
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+
     return Observable(subscribe)

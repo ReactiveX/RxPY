@@ -1,14 +1,14 @@
-from typing import List, Tuple, Optional, Mapping
 import re
 import threading
 from datetime import datetime, timedelta
+from typing import List, Mapping, Optional, Tuple
 
 from rx import Observable
 from rx.core import notification
+from rx.core.abc import SchedulerBase
+from rx.core.typing import AbsoluteOrRelativeTime, RelativeTime
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import NewThreadScheduler
-from rx.core.typing import RelativeTime, AbsoluteOrRelativeTime, Scheduler
-
 
 new_thread_scheduler = NewThreadScheduler()
 
@@ -22,22 +22,25 @@ pattern_comma_error = r"(,)"
 # element: match | or # or one or more characters which are not - | # ( ) ,
 pattern_element = r"(#|\||[^-,()#\|]+)"
 
-pattern = r'|'.join([
-    pattern_group,
-    pattern_ticks,
-    pattern_comma_error,
-    pattern_element,
-    ])
+pattern = r"|".join(
+    [
+        pattern_group,
+        pattern_ticks,
+        pattern_comma_error,
+        pattern_element,
+    ]
+)
 tokens = re.compile(pattern)
 
 
-def hot(string: str,
-        timespan: RelativeTime = 0.1,
-        duetime: AbsoluteOrRelativeTime = 0.0,
-        lookup: Optional[Mapping] = None,
-        error: Optional[Exception] = None,
-        scheduler: Optional[Scheduler] = None
-        ) -> Observable:
+def hot(
+    string: str,
+    timespan: RelativeTime = 0.1,
+    duetime: AbsoluteOrRelativeTime = 0.0,
+    lookup: Optional[Mapping] = None,
+    error: Optional[Exception] = None,
+    scheduler: Optional[SchedulerBase] = None,
+) -> Observable:
 
     _scheduler = scheduler or new_thread_scheduler
 
@@ -51,7 +54,7 @@ def hot(string: str,
         lookup=lookup,
         error=error,
         raise_stopped=True,
-        )
+    )
 
     lock = threading.RLock()
     is_stopped = False
@@ -81,7 +84,7 @@ def hot(string: str,
                 for observer in observers:
                     notification.accept(observer)
 
-                if notification.kind in ('C', 'E'):
+                if notification.kind in ("C", "E"):
                     is_stopped = True
 
         return action
@@ -96,12 +99,13 @@ def hot(string: str,
     return Observable(subscribe)
 
 
-def from_marbles(string: str,
-                 timespan: RelativeTime = 0.1,
-                 lookup: Optional[Mapping] = None,
-                 error: Optional[Exception] = None,
-                 scheduler: Optional[Scheduler] = None
-                 ) -> Observable:
+def from_marbles(
+    string: str,
+    timespan: RelativeTime = 0.1,
+    lookup: Optional[Mapping] = None,
+    error: Optional[Exception] = None,
+    scheduler: Optional[SchedulerBase] = None,
+) -> Observable:
 
     messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
 
@@ -122,16 +126,18 @@ def from_marbles(string: str,
             schedule_msg(message)
 
         return disp
+
     return Observable(subscribe)
 
 
-def parse(string: str,
-          timespan: RelativeTime = 1.0,
-          time_shift: RelativeTime = 0.0,
-          lookup: Optional[Mapping] = None,
-          error: Optional[Exception] = None,
-          raise_stopped: bool = False
-          ) -> List[Tuple[RelativeTime, notification.Notification]]:
+def parse(
+    string: str,
+    timespan: RelativeTime = 1.0,
+    time_shift: RelativeTime = 0.0,
+    lookup: Optional[Mapping] = None,
+    error: Optional[Exception] = None,
+    raise_stopped: bool = False,
+) -> List[Tuple[RelativeTime, notification.Notification]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
@@ -189,7 +195,7 @@ def parse(string: str,
 
     """
 
-    error = error or Exception('error')
+    error = error or Exception("error")
     lookup = lookup or {}
 
     if isinstance(timespan, timedelta):
@@ -197,7 +203,7 @@ def parse(string: str,
     if isinstance(time_shift, timedelta):
         time_shift = time_shift.total_seconds()
 
-    string = string.replace(' ', '')
+    string = string.replace(" ", "")
 
     # try to cast a string to an int, then to a float
     def try_number(element):
@@ -210,9 +216,9 @@ def parse(string: str,
                 return element
 
     def map_element(time, element):
-        if element == '|':
+        if element == "|":
             return (time, notification.OnCompleted())
-        elif element == '#':
+        elif element == "#":
             return (time, notification.OnError(error))
         else:
             value = try_number(element)
@@ -225,9 +231,9 @@ def parse(string: str,
         nonlocal is_stopped
         if raise_stopped:
             if is_stopped:
-                raise ValueError('Elements cannot be declared after a # or | symbol.')
+                raise ValueError("Elements cannot be declared after a # or | symbol.")
 
-            if element in ('#', '|'):
+            if element in ("#", "|"):
                 is_stopped = True
 
     iframe = 0
@@ -238,10 +244,10 @@ def parse(string: str,
         group, ticks, comma_error, element = results
 
         if group:
-            elements = group[1:-1].split(',')
+            elements = group[1:-1].split(",")
             for elm in elements:
                 check_stopped(elm)
-            grp_messages = [map_element(timestamp, elm) for elm in elements if elm !='']
+            grp_messages = [map_element(timestamp, elm) for elm in elements if elm != ""]
             messages.extend(grp_messages)
             iframe += len(group)
 

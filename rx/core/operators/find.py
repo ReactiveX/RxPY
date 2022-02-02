@@ -1,4 +1,5 @@
 from typing import Callable
+
 from rx.core import Observable
 from rx.core.typing import Predicate
 

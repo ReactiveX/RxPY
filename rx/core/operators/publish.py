@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from rx import operators as ops
-from rx.core import Observable, ConnectableObservable, pipe
+from rx.core import ConnectableObservable, Observable, pipe
 from rx.core.typing import Mapper
 from rx.subject import Subject
 

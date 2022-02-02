@@ -1,16 +1,20 @@
-from typing import Callable, Optional
 from datetime import timedelta
+from typing import Callable, Optional
 
-from rx.core import Observable, typing
-from rx.scheduler import TimeoutScheduler
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, RefCountDisposable,
+                           SerialDisposable, SingleAssignmentDisposable)
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.utils import add_ref
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
+from rx.scheduler import TimeoutScheduler
 from rx.subject import Subject
 
 
-def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.RelativeTime] = None,
-                      scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def _window_with_time(
+    timespan: typing.RelativeTime,
+    timeshift: Optional[typing.RelativeTime] = None,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable], Observable]:
     if timeshift is None:
         timeshift = timespan
 
@@ -69,6 +73,7 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.
                         s.on_completed()
 
                     create_timer()
+
                 m.disposable = _scheduler.schedule_relative(ts, action)
 
             q.append(Subject())
@@ -93,5 +98,7 @@ def _window_with_time(timespan: typing.RelativeTime, timeshift: Optional[typing.
 
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
             return ref_count_disposable
+
         return Observable(subscribe)
+
     return window_with_time

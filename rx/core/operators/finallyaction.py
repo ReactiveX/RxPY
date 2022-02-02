@@ -1,7 +1,7 @@
 from typing import Callable
 
-from rx.disposable import Disposable
 from rx.core import Observable
+from rx.disposable import Disposable
 
 
 def _finally_action(action: Callable) -> Callable[[Observable], Observable]:

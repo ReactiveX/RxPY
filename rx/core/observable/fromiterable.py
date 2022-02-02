@@ -1,11 +1,13 @@
-from typing import Iterable, Any, Optional
+from typing import Any, Iterable, Optional, TypeVar
 
-from rx.core import Observable, typing
-from rx.scheduler import CurrentThreadScheduler
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, Disposable
+from rx.scheduler import CurrentThreadScheduler
+
+_T = TypeVar("_T")
 
 
-def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = None) -> Observable:
+def from_iterable(iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
     """Converts an iterable to an observable sequence.
 
     Example:
@@ -20,12 +22,12 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
         given iterable sequence.
     """
 
-    def subscribe(observer: typing.Observer, scheduler_: Optional[typing.Scheduler] = None) -> typing.Disposable:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)
         disposed = False
 
-        def action(_: typing.Scheduler, __: Any = None) -> None:
+        def action(_: abc.SchedulerBase, __: Any = None) -> None:
             nonlocal disposed
 
             try:
@@ -43,4 +45,5 @@ def from_iterable(iterable: Iterable, scheduler: Optional[typing.Scheduler] = No
 
         disp = Disposable(dispose)
         return CompositeDisposable(_scheduler.schedule(action), disp)
+
     return Observable(subscribe)

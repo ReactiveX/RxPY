@@ -2,7 +2,8 @@ from typing import Callable
 
 from rx.core import Observable
 from rx.core.typing import Mapper
-from rx.disposable import SerialDisposable, CompositeDisposable, SingleAssignmentDisposable
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.scheduler import ImmediateScheduler
 
 

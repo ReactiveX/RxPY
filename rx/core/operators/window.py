@@ -1,13 +1,14 @@
 import logging
-from typing import Callable, Any
+from typing import Any, Callable
 
 from rx import empty
+from rx import operators as ops
 from rx.core import Observable
+from rx.disposable import (CompositeDisposable, RefCountDisposable,
+                           SerialDisposable, SingleAssignmentDisposable)
 from rx.internal import noop
 from rx.internal.utils import add_ref
-from rx.disposable import SingleAssignmentDisposable, SerialDisposable, CompositeDisposable, RefCountDisposable
 from rx.subject import Subject
-from rx import operators as ops
 
 log = logging.getLogger("Rx")
 

@@ -1,23 +1,26 @@
 from abc import abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TypeVar
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.disposable import Disposable, MultipleAssignmentDisposable
 
 from .scheduler import Scheduler
 
+_TState = TypeVar("_TState")
 
-class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
+
+class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
     """Base class for the various periodic scheduler implementations in this
     package as well as the mainloop sub-package.
     """
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
         Args:
@@ -35,9 +38,7 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
         disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
         seconds: float = self.to_seconds(period)
 
-        def periodic(scheduler: typing.Scheduler,
-                     state: Optional[typing.TState] = None
-                     ) -> Optional[Disposable]:
+        def periodic(scheduler: abc.SchedulerBase, state: Optional[_TState] = None) -> Optional[Disposable]:
             if disp.is_disposed:
                 return None
 
@@ -58,10 +59,7 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
         return disp
 
     @abstractmethod
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -76,11 +74,9 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -96,11 +92,9 @@ class PeriodicScheduler(Scheduler, typing.PeriodicScheduler):
         return NotImplemented
 
     @abstractmethod
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

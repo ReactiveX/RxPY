@@ -1,11 +1,14 @@
-from typing import Callable, Optional
 from datetime import datetime, timedelta
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, typing
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, MultipleAssignmentDisposable,
+                           SerialDisposable)
 from rx.internal.constants import DELTA_ZERO
-from rx.disposable import CompositeDisposable, SerialDisposable, MultipleAssignmentDisposable
 from rx.scheduler import TimeoutScheduler
+
+_T = TypeVar("_T")
 
 
 class Timestamp(object):
@@ -14,10 +17,10 @@ class Timestamp(object):
         self.timestamp = timestamp
 
 
-def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
-                              scheduler: Optional[typing.Scheduler] = None) -> Observable:
-
-    def subscribe(observer, scheduler_=None):
+def observable_delay_timespan(
+    source: Observable[_T], duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
         nonlocal duetime
 
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
@@ -37,7 +40,7 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
             should_run = False
 
             with source.lock:
-                if notification.value.kind == 'E':
+                if notification.value.kind == "E":
                     del queue[:]
                     queue.append(notification)
                     exception[0] = notification.value.exception
@@ -90,17 +93,18 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                             mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
 
                     mad.disposable = _scheduler.schedule_relative(duetime, action)
-        subscription = source.pipe(
-            ops.materialize(),
-            ops.timestamp()
-        ).subscribe_(on_next, scheduler=_scheduler)
+
+        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe_(on_next, scheduler=_scheduler)
 
         return CompositeDisposable(subscription, cancelable)
+
     return Observable(subscribe)
 
 
-def _delay(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
-    def delay(source: Observable) -> Observable:
+def _delay(
+    duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def delay(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence.
 
         A partially applied delay operator function.
@@ -115,4 +119,8 @@ def _delay(duetime: typing.RelativeTime, scheduler: Optional[typing.Scheduler] =
             A time-shifted observable sequence.
         """
         return observable_delay_timespan(source, duetime, scheduler)
+
     return delay
+
+
+__all__ = ["_delay"]

@@ -1,10 +1,10 @@
-from typing import Callable, Optional
 import logging
+from typing import Callable, Optional
 
 from rx.core import Observable
-from rx.internal.utils import add_ref
-from rx.disposable import SingleAssignmentDisposable, RefCountDisposable
+from rx.disposable import RefCountDisposable, SingleAssignmentDisposable
 from rx.internal.exceptions import ArgumentOutOfRangeException
+from rx.internal.utils import add_ref
 from rx.subject import Subject
 
 log = logging.getLogger("Rx")

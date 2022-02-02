@@ -1,14 +1,15 @@
-from typing import Iterable
+from typing import Any, Iterable, Optional, TypeVar
 
-from rx.disposable import Disposable
-from rx.core import Observable
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, SerialDisposable
+from rx.core import Observable, abc
+from rx.disposable import (CompositeDisposable, Disposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.scheduler import CurrentThreadScheduler
 
+_T = TypeVar("_T")
 
-def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
 
-    def subscribe(observer, scheduler_=None):
+def _concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
+    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         sources_ = iter(sources)
@@ -17,7 +18,7 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
         cancelable = SerialDisposable()
         is_disposed = False
 
-        def action(action1, state=None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None):
             nonlocal is_disposed
             if is_disposed:
                 return
@@ -43,4 +44,8 @@ def _concat_with_iterable(sources: Iterable[Observable]) -> Observable:
             is_disposed = True
 
         return CompositeDisposable(subscription, cancelable, Disposable(dispose))
+
     return Observable(subscribe)
+
+
+__all__ = ["_concat_with_iterable"]

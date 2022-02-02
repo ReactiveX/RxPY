@@ -1,14 +1,13 @@
 from typing import Callable
 
 import rx
-from rx.core import Observable
-from rx.core import typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, Disposable
 
 
-def _using(resource_factory: Callable[[], typing.Disposable],
-           observable_factory: Callable[[typing.Disposable], Observable]
-           ) -> Observable:
+def _using(
+    resource_factory: Callable[[], abc.DisposableBase], observable_factory: Callable[[abc.DisposableBase], Observable]
+) -> Observable:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
@@ -40,4 +39,5 @@ def _using(resource_factory: Callable[[], typing.Disposable],
             return CompositeDisposable(d, disp)
 
         return CompositeDisposable(source.subscribe(observer, scheduler=scheduler), disp)
+
     return Observable(subscribe)

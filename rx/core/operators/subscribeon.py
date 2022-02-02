@@ -1,11 +1,13 @@
-from typing import Callable
-from rx.core import Observable
-from rx.core.typing import Scheduler
-from rx.disposable import SingleAssignmentDisposable, SerialDisposable, ScheduledDisposable
+from typing import Callable, TypeVar, Optional, Any
+
+from rx.core import Observable, abc
+from rx.disposable import ScheduledDisposable, SerialDisposable, SingleAssignmentDisposable
+
+_T = TypeVar("_T")
 
 
-def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
-    def subscribe_on(source: Observable) -> Observable:
+def _subscribe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable[_T]], Observable[_T]]:
+    def subscribe_on(source: Observable[_T]) -> Observable[_T]:
         """Subscribe on the specified scheduler.
 
         Wrap the source sequence in order to run its subscription and
@@ -25,16 +27,21 @@ def _subscribe_on(scheduler: Scheduler) -> Callable[[Observable], Observable]:
             The source sequence whose subscriptions and
             un-subscriptions happen on the specified scheduler.
         """
-        def subscribe(observer, _=None):
+
+        def subscribe(observer: abc.ObserverBase[_T], _: Optional[abc.SchedulerBase] = None):
             m = SingleAssignmentDisposable()
             d = SerialDisposable()
             d.disposable = m
 
-            def action(scheduler, state):
+            def action(scheduler: abc.SchedulerBase, state: Optional[Any] = None):
                 d.disposable = ScheduledDisposable(scheduler, source.subscribe(observer))
 
             m.disposable = scheduler.schedule(action)
             return d
 
         return Observable(subscribe)
+
     return subscribe_on
+
+
+__all__ = ["_subscribe_on"]

@@ -1,11 +1,12 @@
-from typing import Union
 from asyncio import Future
+from typing import Union
 
 import rx
-from rx.scheduler import CurrentThreadScheduler
 from rx.core import Observable
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.internal.utils import is_future
+from rx.scheduler import CurrentThreadScheduler
 
 
 def _on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:

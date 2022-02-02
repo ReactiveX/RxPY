@@ -1,14 +1,17 @@
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
-from rx.core import Observable, typing
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[typing.Scheduler] = None
-                          ) -> Callable[[Observable], Observable]:
-    def skip_until_with_time(source: Observable) -> Observable:
+
+def _skip_until_with_time(
+    start_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def skip_until_with_time(source: Observable[_T]) -> Observable[_T]:
         """Skips elements from the observable source sequence until the
         specified start time.
 
@@ -31,23 +34,30 @@ def _skip_until_with_time(start_time: typing.AbsoluteOrRelativeTime, scheduler: 
         """
 
         if isinstance(start_time, datetime):
-            scheduler_method = 'schedule_absolute'
+            scheduler_method = "schedule_absolute"
         else:
-            scheduler_method = 'schedule_relative'
+            scheduler_method = "schedule_relative"
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             open = [False]
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 if open[0]:
                     observer.on_next(x)
+
             subscription = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
 
-            def action(scheduler, state):
+            def action(scheduler: abc.SchedulerBase, state: Any):
                 open[0] = True
+
             disp = getattr(_scheduler, scheduler_method)(start_time, action)
             return CompositeDisposable(disp, subscription)
+
         return Observable(subscribe)
+
     return skip_until_with_time
+
+
+__all__ = ["_skip_until_with_time"]

@@ -1,15 +1,19 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, abc, pipe
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
+_T = TypeVar("_T")
 
-def _first_or_default_async(has_default=False, default_value=None):
-    def first_or_default_async(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            def on_next(x):
+
+def _first_or_default_async(
+    has_default: bool = False, default_value: Optional[_T] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def first_or_default_async(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+            def on_next(x: _T):
                 observer.on_next(x)
                 observer.on_completed()
 
@@ -21,13 +25,15 @@ def _first_or_default_async(has_default=False, default_value=None):
                     observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+
         return Observable(subscribe)
+
     return first_or_default_async
 
 
-def _first_or_default(predicate: Optional[Predicate] = None,
-                      default_value: Any = None
-                      ) -> Callable[[Observable], Observable]:
+def _first_or_default(
+    predicate: Optional[Predicate[_T]] = None, default_value: Optional[_T] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no
     such element exists.
@@ -53,8 +59,8 @@ def _first_or_default(predicate: Optional[Predicate] = None,
     """
 
     if predicate:
-        return pipe(
-            ops.filter(predicate),
-            ops.first_or_default(None, default_value)
-        )
+        return pipe(ops.filter(predicate), ops.first_or_default(None, default_value))
     return _first_or_default_async(True, default_value)
+
+
+__all__ = ["_first_or_default", "_first_or_default_async"]

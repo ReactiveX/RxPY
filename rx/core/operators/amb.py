@@ -1,8 +1,8 @@
 from asyncio import Future
-from typing import cast, Any, Union
+from typing import Any, Union, cast
 
 from rx import from_future
-from rx.core import Observable, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
@@ -15,10 +15,10 @@ def _amb(right_source: Observable):
         obs = cast(Observable, right_source)
 
     def amb(left_source: Observable):
-        def subscribe(observer: typing.Observer, scheduler: typing.Scheduler = None) -> typing.Disposable:
+        def subscribe(observer: abc.ObserverBase, scheduler: abc.SchedulerBase = None) -> abc.DisposableBase:
             choice = [None]
-            left_choice = 'L'
-            right_choice = 'R'
+            left_choice = "L"
+            right_choice = "R"
             left_subscription = SingleAssignmentDisposable()
             right_subscription = SingleAssignmentDisposable()
 
@@ -74,5 +74,7 @@ def _amb(right_source: Observable):
             right_d = obs.subscribe_(send_right, on_error_right, on_completed_right, scheduler)
             right_subscription.disposable = right_d
             return CompositeDisposable(left_subscription, right_subscription)
+
         return Observable(subscribe)
+
     return amb

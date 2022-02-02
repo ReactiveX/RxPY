@@ -1,18 +1,17 @@
 from typing import Any, Optional
 
-from rx.core import typing, Observable
+from rx.core import Observable, abc
 from rx.scheduler import ImmediateScheduler
 
 
-def _empty(scheduler: Optional[typing.Scheduler] = None) -> Observable:
-    def subscribe(observer: typing.Observer,
-                  scheduler_: Optional[typing.Scheduler] = None
-                  ) -> typing.Disposable:
+def _empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable:
+    def subscribe(observer: abc.ObserverBase, scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
 
         _scheduler = scheduler or scheduler_ or ImmediateScheduler.singleton()
 
-        def action(_: typing.Scheduler, __: Any) -> None:
+        def action(_: abc.SchedulerBase, __: Any) -> None:
             observer.on_completed()
 
         return _scheduler.schedule(action)
+
     return Observable(subscribe)

@@ -2,8 +2,8 @@ from typing import Any
 
 from rx.disposable import Disposable
 
-from .subject import Subject
 from .innersubscription import InnerSubscription
+from .subject import Subject
 
 
 class BehaviorSubject(Subject):

@@ -1,5 +1,5 @@
 from .gtkscheduler import GtkScheduler
-from .tkinterscheduler import TkinterScheduler
 from .pygamescheduler import PyGameScheduler
 from .qtscheduler import QtScheduler
+from .tkinterscheduler import TkinterScheduler
 from .wxscheduler import WxScheduler

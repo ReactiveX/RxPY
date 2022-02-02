@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
 
-class Startable(ABC):
+class StartableBase(ABC):
     """Abstract base class for Thread- and Process-like objects."""
+
     __slots__ = ()
 
     @abstractmethod

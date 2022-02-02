@@ -1,8 +1,10 @@
 from threading import RLock
-from rx.core.typing import Disposable
+from typing import Optional
+
+from rx.core.abc import DisposableBase
 
 
-class SingleAssignmentDisposable(Disposable):
+class SingleAssignmentDisposable(DisposableBase):
     """Single assignment disposable.
 
     Represents a disposable resource which only allows a single
@@ -15,19 +17,19 @@ class SingleAssignmentDisposable(Disposable):
         class.
         """
         self.is_disposed = False
-        self.current = None
+        self.current: Optional[DisposableBase] = None
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self):
+    def get_disposable(self) -> Optional[DisposableBase]:
         return self.current
 
-    def set_disposable(self, value):
+    def set_disposable(self, value: DisposableBase):
         if self.current:
-            raise Exception('Disposable has already been assigned')
+            raise Exception("Disposable has already been assigned")
 
-        old = None
+        old: Optional[DisposableBase] = None
 
         with self.lock:
             should_dispose = self.is_disposed
@@ -35,7 +37,7 @@ class SingleAssignmentDisposable(Disposable):
                 old = self.current
                 self.current = value
 
-        if old:
+        if old is not None:
             old.dispose()
 
         if should_dispose and value:
@@ -45,7 +47,7 @@ class SingleAssignmentDisposable(Disposable):
 
     def dispose(self) -> None:
         """Sets the status to disposed"""
-        old = None
+        old: Optional[DisposableBase] = None
 
         with self.lock:
             if not self.is_disposed:

@@ -1,14 +1,16 @@
 from typing import Callable, Optional
 
-from rx.core import Observable, typing
-from rx.scheduler import TimeoutScheduler
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, RefCountDisposable,
+                           SerialDisposable, SingleAssignmentDisposable)
 from rx.internal.utils import add_ref
-from rx.disposable import SingleAssignmentDisposable, CompositeDisposable, RefCountDisposable, SerialDisposable
+from rx.scheduler import TimeoutScheduler
 from rx.subject import Subject
 
 
-def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, scheduler: Optional[typing.Scheduler] = None
-                               ) -> Callable[[Observable], Observable]:
+def _window_with_time_or_count(
+    timespan: typing.RelativeTime, count: int, scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[[Observable], Observable]:
     def window_with_time_or_count(source: Observable) -> Observable:
         def subscribe(observer, scheduler_=None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
@@ -70,5 +72,7 @@ def _window_with_time_or_count(timespan: typing.RelativeTime, count: int, schedu
 
             group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
             return ref_count_disposable
+
         return Observable(subscribe)
+
     return window_with_time_or_count

@@ -1,10 +1,9 @@
-from typing import Callable, NamedTuple, Any, Optional
 from datetime import datetime
+from typing import Any, Callable, NamedTuple, Optional
 
-from rx import defer
-from rx.core import Observable, typing
+from rx import defer, operators
+from rx.core import Observable, abc
 from rx.scheduler import TimeoutScheduler
-from rx import operators
 
 
 class Timestamp(NamedTuple):
@@ -12,7 +11,7 @@ class Timestamp(NamedTuple):
     timestamp: datetime
 
 
-def _timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observable], Observable]:
+def _timestamp(scheduler: Optional[abc.SchedulerBase] = None) -> Callable[[Observable], Observable]:
     def timestamp(source: Observable) -> Observable:
         """Records the timestamp for each value in an observable sequence.
 
@@ -34,5 +33,7 @@ def _timestamp(scheduler: Optional[typing.Scheduler] = None) -> Callable[[Observ
             mapper = operators.map(lambda value: Timestamp(value=value, timestamp=_scheduler.now))
 
             return source.pipe(mapper)
+
         return defer(factory)
+
     return timestamp

@@ -1,12 +1,14 @@
 from threading import Lock
-from typing import Optional, MutableMapping
+from typing import MutableMapping, Optional, TypeVar
 from weakref import WeakKeyDictionary
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import WouldBlockException
 
 from .scheduler import Scheduler
+
+_TState = TypeVar("_TState")
 
 
 class ImmediateScheduler(Scheduler):
@@ -17,10 +19,10 @@ class ImmediateScheduler(Scheduler):
     """
 
     _lock = Lock()
-    _global: MutableMapping[type, 'ImmediateScheduler'] = WeakKeyDictionary()
+    _global: MutableMapping[type, "ImmediateScheduler"] = WeakKeyDictionary()
 
     @classmethod
-    def singleton(cls) -> 'ImmediateScheduler':
+    def singleton(cls) -> "ImmediateScheduler":
         with ImmediateScheduler._lock:
             try:
                 self = ImmediateScheduler._global[cls]
@@ -29,13 +31,10 @@ class ImmediateScheduler(Scheduler):
                 ImmediateScheduler._global[cls] = self
         return self
 
-    def __new__(cls) -> 'ImmediateScheduler':
+    def __new__(cls) -> "ImmediateScheduler":
         return cls.singleton()
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -49,11 +48,9 @@ class ImmediateScheduler(Scheduler):
 
         return self.invoke_action(action, state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -72,11 +69,9 @@ class ImmediateScheduler(Scheduler):
 
         return self.invoke_action(action, state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

@@ -1,32 +1,28 @@
 import logging
 import threading
-
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TypeVar
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.disposable import Disposable
 from rx.internal.concurrency import default_thread_factory
 
 from .eventloopscheduler import EventLoopScheduler
 from .periodicscheduler import PeriodicScheduler
 
+_TState = TypeVar("_TState")
 
-log = logging.getLogger('Rx')
+log = logging.getLogger("Rx")
 
 
 class NewThreadScheduler(PeriodicScheduler):
-    """Creates an object that schedules each unit of work on a separate thread.
-    """
+    """Creates an object that schedules each unit of work on a separate thread."""
 
     def __init__(self, thread_factory: Optional[typing.StartableFactory] = None) -> None:
         super().__init__()
         self.thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -41,11 +37,9 @@ class NewThreadScheduler(PeriodicScheduler):
         scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
         return scheduler.schedule(action, state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -61,11 +55,9 @@ class NewThreadScheduler(PeriodicScheduler):
         scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
         return scheduler.schedule_relative(duetime, action, state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -81,11 +73,12 @@ class NewThreadScheduler(PeriodicScheduler):
         dt = self.to_datetime(duetime)
         return self.schedule_relative(dt - self.now, action, state=state)
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
         Args:

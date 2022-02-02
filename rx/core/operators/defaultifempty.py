@@ -1,6 +1,7 @@
 from typing import Any, Callable
+
 from rx.core import Observable
-from rx.core.typing import Disposable
+from rx.core.abc import DisposableBase
 
 
 def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Observable]:
@@ -21,7 +22,7 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
             source.
         """
 
-        def subscribe(observer, scheduler=None) -> Disposable:
+        def subscribe(observer, scheduler=None) -> DisposableBase:
             found = [False]
 
             def on_next(x: Any):
@@ -34,5 +35,7 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
                 observer.on_completed()
 
             return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+
         return Observable(subscribe)
+
     return default_if_empty

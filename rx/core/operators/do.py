@@ -1,14 +1,14 @@
 from typing import Callable, Optional
 
-from rx.core import Observable, typing
-from rx.core.typing import Observer, Disposable
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 
 
-def _do_action(on_next: Optional[typing.OnNext] = None,
-               on_error: Optional[typing.OnError] = None,
-               on_completed: Optional[typing.OnCompleted] = None
-               ) -> Callable[[Observable], Observable]:
+def _do_action(
+    on_next: Optional[typing.OnNext] = None,
+    on_error: Optional[typing.OnError] = None,
+    on_completed: Optional[typing.OnCompleted] = None,
+) -> Callable[[Observable], Observable]:
     def do_action(source: Observable) -> Observable:
         """Invokes an action for each element in the observable
         sequence and invokes an action on graceful or exceptional
@@ -64,17 +64,19 @@ def _do_action(on_next: Optional[typing.OnNext] = None,
                 else:
                     try:
                         on_completed()
-                    except Exception as e:   # pylint: disable=broad-except
+                    except Exception as e:  # pylint: disable=broad-except
                         observer.on_error(e)
 
                     observer.on_completed()
 
             return source.subscribe_(_on_next, _on_error, _on_completed, scheduler)
+
         return Observable(subscribe)
+
     return do_action
 
 
-def do(observer: Observer) -> Callable[[Observable], Observable]:
+def do(observer: abc.ObserverBase) -> Callable[[Observable], Observable]:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -103,7 +105,6 @@ def do_after_next(source, after_next):
     """
 
     def subscribe(observer, scheduler=None):
-
         def on_next(value):
             try:
                 observer.on_next(value)
@@ -112,6 +113,7 @@ def do_after_next(source, after_next):
                 observer.on_error(e)
 
         return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+
     return Observable(subscribe)
 
 
@@ -124,6 +126,7 @@ def do_on_subscribe(source: Observable, on_subscribe):
     Args:
         on_subscribe: Action to invoke on subscription
     """
+
     def subscribe(observer, scheduler=None):
         on_subscribe()
         return source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
@@ -142,7 +145,6 @@ def do_on_dispose(source: Observable, on_dispose):
     """
 
     class OnDispose(Disposable):
-
         def dispose(self) -> None:
             on_dispose()
 
@@ -166,7 +168,6 @@ def do_on_terminate(source, on_terminate):
     """
 
     def subscribe(observer, scheduler=None):
-
         def on_completed():
             try:
                 on_terminate()
@@ -184,6 +185,7 @@ def do_on_terminate(source, on_terminate):
                 observer.on_error(exception)
 
         return source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
+
     return Observable(subscribe)
 
 
@@ -195,8 +197,8 @@ def do_after_terminate(source, after_terminate):
 
     on_terminate -- Action to invoke after on_complete or throw is called
     """
-    def subscribe(observer, scheduler=None):
 
+    def subscribe(observer, scheduler=None):
         def on_completed():
             observer.on_completed()
             try:
@@ -212,6 +214,7 @@ def do_after_terminate(source, after_terminate):
                 observer.on_error(err)
 
         return source.subscribe(observer.on_next, on_error, on_completed, scheduler)
+
     return Observable(subscribe)
 
 
@@ -270,4 +273,5 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
             return composite_disposable
 
         return Observable(subscribe)
+
     return partial

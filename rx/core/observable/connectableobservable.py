@@ -1,14 +1,18 @@
-from rx.disposable import Disposable
-from rx.disposable import CompositeDisposable
+from typing import List, Optional, TypeVar
+
+from rx.core import abc
+from rx.disposable import CompositeDisposable, Disposable
 
 from .observable import Observable
 
+_T = TypeVar("_T")
 
-class ConnectableObservable(Observable):
+
+class ConnectableObservable(Observable[_T]):
     """Represents an observable that can be connected and
     disconnected."""
 
-    def __init__(self, source, subject):
+    def __init__(self, source: abc.ObservableBase[_T], subject: abc.SubjectBase[_T]):
         self.subject = subject
         self.has_subscription = False
         self.subscription = None
@@ -16,10 +20,10 @@ class ConnectableObservable(Observable):
 
         super().__init__()
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
         return self.subject.subscribe(observer, scheduler=scheduler)
 
-    def connect(self, scheduler=None):
+    def connect(self, scheduler: Optional[abc.SchedulerBase] = None):
         """Connects the observable."""
 
         if not self.has_subscription:
@@ -33,7 +37,7 @@ class ConnectableObservable(Observable):
 
         return self.subscription
 
-    def auto_connect(self, subscriber_count=1):
+    def auto_connect(self, subscriber_count: int = 1) -> Observable[_T]:
         """Returns an observable sequence that stays connected to the
         source indefinitely to the observable sequence.
         Providing a subscriber_count will cause it to connect() after
@@ -42,7 +46,7 @@ class ConnectableObservable(Observable):
         subscribers.
         """
 
-        connectable_subscription = [None]
+        connectable_subscription: List[Optional[abc.DisposableBase]] = [None]
         count = [0]
         source = self
         is_connected = [False]
@@ -51,7 +55,7 @@ class ConnectableObservable(Observable):
             connectable_subscription[0] = source.connect()
             is_connected[0] = True
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)
@@ -65,4 +69,5 @@ class ConnectableObservable(Observable):
                 is_connected[0] = False
 
             return Disposable(dispose)
+
         return Observable(subscribe)

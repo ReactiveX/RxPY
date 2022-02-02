@@ -1,16 +1,16 @@
 import logging
+from typing import Optional, TypeVar
 
-from typing import Optional
-
-from rx.core import typing
+from rx.core import abc, typing
+from rx.core.abc.scheduler import ScheduledAction
 from rx.internal.constants import DELTA_ZERO
 
 from .scheduleditem import ScheduledItem
 from .scheduler import Scheduler
 from .trampoline import Trampoline
 
-
-log = logging.getLogger('Rx')
+_TState = TypeVar("_TState")
+log = logging.getLogger("Rx")
 
 
 class TrampolineScheduler(Scheduler):
@@ -25,17 +25,13 @@ class TrampolineScheduler(Scheduler):
     """
 
     def __init__(self) -> None:
-        """Creates a scheduler that bounces its work off the trampoline."""
 
         self._tramp = Trampoline()
 
     def get_trampoline(self) -> Trampoline:
         return self._tramp
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -49,11 +45,9 @@ class TrampolineScheduler(Scheduler):
 
         return self.schedule_absolute(self.now, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -69,11 +63,9 @@ class TrampolineScheduler(Scheduler):
         duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -88,7 +80,7 @@ class TrampolineScheduler(Scheduler):
 
         dt = self.to_datetime(duetime)
         if dt > self.now:
-            log.warning('Do not schedule blocking work!')
+            log.warning("Do not schedule blocking work!")
         item: ScheduledItem = ScheduledItem(self, state, action, dt)
 
         self.get_trampoline().run(item)
@@ -105,7 +97,7 @@ class TrampolineScheduler(Scheduler):
         """
         return self.get_trampoline().idle()
 
-    def ensure_trampoline(self, action):
+    def ensure_trampoline(self, action: ScheduledAction[_TState]):
         """Method for testing the TrampolineScheduler."""
 
         if self.schedule_required():

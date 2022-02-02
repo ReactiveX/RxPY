@@ -1,11 +1,11 @@
-from asyncio import Future
-from typing import cast, Callable, Union
 import itertools
+from asyncio import Future
+from typing import Callable, Union, cast
 
 import rx
 from rx.core import Observable
 from rx.core.typing import Predicate
-from rx.internal.utils import is_future, infinite
+from rx.internal.utils import infinite, is_future
 
 
 def _while_do(condition: Predicate) -> Callable[[Observable], Observable]:

@@ -1,7 +1,7 @@
-from typing import Callable
 from asyncio import Future
+from typing import Callable
 
-from rx import throw, from_future
+from rx import from_future, throw
 from rx.core import Observable
 
 

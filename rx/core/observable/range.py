@@ -1,17 +1,14 @@
 from sys import maxsize
-from typing import Optional
+from typing import Iterator, Optional
 
-from rx.core import typing
-from rx.core import Observable
-from rx.scheduler import CurrentThreadScheduler
+from rx.core import Observable, abc
 from rx.disposable import MultipleAssignmentDisposable
+from rx.scheduler import CurrentThreadScheduler
 
 
-def _range(start: int,
-           stop: Optional[int] = None,
-           step: Optional[int] = None,
-           scheduler: Optional[typing.Scheduler] = None
-           ) -> Observable:
+def _range(
+    start: int, stop: Optional[int] = None, step: Optional[int] = None, scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[int]:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -41,14 +38,15 @@ def _range(start: int,
     else:
         range_t = range(start, _stop, _step)
 
-    def subscribe(observer, scheduler_: typing.Scheduler = None):
+    def subscribe(observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None):
         nonlocal range_t
 
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         sd = MultipleAssignmentDisposable()
 
-        def action(scheduler, iterator):
+        def action(scheduler: abc.SchedulerBase, iterator: Optional[Iterator[int]]):
             try:
+                assert iterator
                 observer.on_next(next(iterator))
                 sd.disposable = _scheduler.schedule(action, state=iterator)
             except StopIteration:
@@ -56,4 +54,8 @@ def _range(start: int,
 
         sd.disposable = _scheduler.schedule(action, iter(range_t))
         return sd
+
     return Observable(subscribe)
+
+
+__all__ = ["_range"]

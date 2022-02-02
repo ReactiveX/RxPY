@@ -1,9 +1,8 @@
 from typing import Callable, Optional
 
-from rx.disposable import Disposable
-from rx.core import typing
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.core.typing import Mapper
+from rx.disposable import Disposable
 
 
 def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[], Observable]:
@@ -24,13 +23,13 @@ def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[
     def function(*args):
         arguments = list(args)
 
-        def subscribe(observer: typing.Observer, scheduler: Optional[typing.Scheduler] = None) -> typing.Disposable:
+        def subscribe(observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
             def handler(*args):
                 results = list(args)
                 if mapper:
                     try:
                         results = mapper(args)
-                    except Exception as err: # pylint: disable=broad-except
+                    except Exception as err:  # pylint: disable=broad-except
                         observer.on_error(err)
                         return
 
@@ -48,4 +47,5 @@ def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[
             return Disposable()
 
         return Observable(subscribe)
+
     return function

@@ -1,14 +1,12 @@
-from typing import Callable, Union
 from asyncio import Future
+from typing import Callable, Union
 
-from rx import throw, from_future
-from rx.core import Observable
-from rx.core.typing import Scheduler
+from rx import from_future, throw
+from rx.core import Observable, abc
 from rx.internal.utils import is_future
 
 
-def _defer(factory: Callable[[Scheduler], Union[Observable, Future]]
-           ) -> Observable:
+def _defer(factory: Callable[[abc.SchedulerBase], Union[Observable, Future]]) -> Observable:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
 
@@ -32,4 +30,5 @@ def _defer(factory: Callable[[Scheduler], Union[Observable, Future]]
 
         result = from_future(result) if is_future(result) else result
         return result.subscribe(observer, scheduler=scheduler)
+
     return Observable(subscribe)

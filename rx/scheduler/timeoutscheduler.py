@@ -1,21 +1,24 @@
 from threading import Lock, Timer
-from typing import MutableMapping, Optional
+from typing import MutableMapping, Optional, TypeVar
 from weakref import WeakKeyDictionary
 
-from rx.core import typing
-from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
+from rx.core import abc, typing
+from rx.disposable import (CompositeDisposable, Disposable,
+                           SingleAssignmentDisposable)
 
 from .periodicscheduler import PeriodicScheduler
+
+_TState = TypeVar("_TState")
 
 
 class TimeoutScheduler(PeriodicScheduler):
     """A scheduler that schedules work via a timed callback."""
 
     _lock = Lock()
-    _global: MutableMapping[type, 'TimeoutScheduler'] = WeakKeyDictionary()
+    _global: MutableMapping[type, "TimeoutScheduler"] = WeakKeyDictionary()
 
     @classmethod
-    def singleton(cls) -> 'TimeoutScheduler':
+    def singleton(cls) -> "TimeoutScheduler":
         with TimeoutScheduler._lock:
             try:
                 self = TimeoutScheduler._global[cls]
@@ -24,13 +27,10 @@ class TimeoutScheduler(PeriodicScheduler):
                 TimeoutScheduler._global[cls] = self
         return self
 
-    def __new__(cls) -> 'TimeoutScheduler':
+    def __new__(cls) -> "TimeoutScheduler":
         return cls.singleton()
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -56,11 +56,9 @@ class TimeoutScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -91,11 +89,9 @@ class TimeoutScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:

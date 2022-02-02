@@ -3,6 +3,7 @@ from typing import Callable, Iterable
 import rx
 from rx.core import Observable
 
+
 # pylint: disable=redefined-builtin
 def _zip(*args: Observable) -> Callable[[Observable], Observable]:
     def zip(source: Observable) -> Observable:

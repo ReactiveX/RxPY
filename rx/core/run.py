@@ -3,8 +3,8 @@ from typing import Any, Optional
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.scheduler import NewThreadScheduler
-from .observable import Observable
 
+from .observable import Observable
 
 scheduler = NewThreadScheduler()
 

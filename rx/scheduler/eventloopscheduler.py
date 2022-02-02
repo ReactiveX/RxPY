@@ -1,30 +1,27 @@
 import logging
 import threading
 from collections import deque
-from datetime import timedelta
-from typing import Deque, Optional
+from typing import Deque, Optional, TypeVar
 
-from rx.core import typing
+from rx.core import abc, typing
 from rx.disposable import Disposable
 from rx.internal.concurrency import default_thread_factory
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import DisposedException
 from rx.internal.priorityqueue import PriorityQueue
 
-from .scheduleditem import ScheduledItem
 from .periodicscheduler import PeriodicScheduler
+from .scheduleditem import ScheduledItem
+
+log = logging.getLogger("Rx")
+
+_TState = TypeVar("_TState")
 
 
-log = logging.getLogger('Rx')
-
-
-class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
+class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
     """Creates an object that schedules units of work on a designated thread."""
 
-    def __init__(self,
-                 thread_factory: Optional[typing.StartableFactory] = None,
-                 exit_if_empty: bool = False
-                 ) -> None:
+    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None, exit_if_empty: bool = False) -> None:
         super().__init__()
         self._is_disposed = False
 
@@ -36,10 +33,7 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
 
         self._exit_if_empty = exit_if_empty
 
-    def schedule(self,
-                 action: typing.ScheduledAction,
-                 state: Optional[typing.TState] = None
-                 ) -> typing.Disposable:
+    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -53,11 +47,9 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
 
         return self.schedule_absolute(self.now, action, state=state)
 
-    def schedule_relative(self,
-                          duetime: typing.RelativeTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_relative(
+        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
         Args:
@@ -73,11 +65,9 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
         duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
         return self.schedule_absolute(self.now + duetime, action, state)
 
-    def schedule_absolute(self,
-                          duetime: typing.AbsoluteTime,
-                          action: typing.ScheduledAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_absolute(
+        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
         Args:
@@ -106,11 +96,12 @@ class EventLoopScheduler(PeriodicScheduler, typing.Disposable):
 
         return Disposable(si.cancel)
 
-    def schedule_periodic(self,
-                          period: typing.RelativeTime,
-                          action: typing.ScheduledPeriodicAction,
-                          state: Optional[typing.TState] = None
-                          ) -> typing.Disposable:
+    def schedule_periodic(
+        self,
+        period: typing.RelativeTime,
+        action: typing.ScheduledPeriodicAction[_TState],
+        state: Optional[_TState] = None,
+    ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
         Args:

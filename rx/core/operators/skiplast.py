@@ -1,9 +1,12 @@
-from typing import Callable
-from rx.core import Observable
+from typing import Callable, List, Optional, TypeVar
+
+from rx.core import Observable, abc
+
+_T = TypeVar("_T")
 
 
-def _skip_last(count: int) -> Callable[[Observable], Observable]:
-    def skip_last(source: Observable) -> Observable:
+def _skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+    def skip_last(source: Observable[_T]) -> Observable[_T]:
         """Bypasses a specified number of elements at the end of an
         observable sequence.
 
@@ -21,10 +24,10 @@ def _skip_last(count: int) -> Callable[[Observable], Observable]:
             elements except for the bypassed ones at the end.
         """
 
-        def subscribe(observer, scheduler=None):
-            q = []
+        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+            q: List[_T] = []
 
-            def on_next(value):
+            def on_next(value: _T) -> None:
                 front = None
                 with source.lock:
                     q.append(value)
@@ -35,5 +38,10 @@ def _skip_last(count: int) -> Callable[[Observable], Observable]:
                     observer.on_next(front)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+
         return Observable(subscribe)
+
     return skip_last
+
+
+__all__ = ["_skip_last"]

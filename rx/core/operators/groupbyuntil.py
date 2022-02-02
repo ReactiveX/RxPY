@@ -1,12 +1,13 @@
-from typing import Callable, Optional
 from collections import OrderedDict
+from typing import Callable, Optional
 
 from rx import operators as ops
-from rx.core import Observable, GroupedObservable
+from rx.core import GroupedObservable, Observable
 from rx.core.typing import Mapper
-from rx.subject import Subject
-from rx.disposable import CompositeDisposable, RefCountDisposable, SingleAssignmentDisposable
+from rx.disposable import (CompositeDisposable, RefCountDisposable,
+                           SingleAssignmentDisposable)
 from rx.internal.basic import identity
+from rx.subject import Subject
 
 
 def _group_by_until(key_mapper: Mapper,

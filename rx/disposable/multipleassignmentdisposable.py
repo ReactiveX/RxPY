@@ -1,22 +1,24 @@
 from threading import RLock
-from rx.core.typing import Disposable
+from typing import Optional
+
+from rx.core.abc import DisposableBase
 
 
-class MultipleAssignmentDisposable(Disposable):
+class MultipleAssignmentDisposable(DisposableBase):
     """Represents a disposable resource whose underlying disposable
     resource can be replaced by another disposable resource."""
 
     def __init__(self):
-        self.current = None
+        self.current: Optional[DisposableBase] = None
         self.is_disposed = False
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self):
+    def get_disposable(self) -> Optional[DisposableBase]:
         return self.current
 
-    def set_disposable(self, value):
+    def set_disposable(self, value: DisposableBase):
         """If the MultipleAssignmentDisposable has already been
         disposed, assignment to this property causes immediate disposal
         of the given disposable object."""

@@ -1,13 +1,15 @@
-from typing import Callable, Any
+from typing import Any, Callable, TypeVar
 
-from rx.core.typing import Disposable
-from rx.core import Observable, typing
-from rx.disposable import CompositeDisposable, SingleAssignmentDisposable, SerialDisposable
+from rx.core import Observable, abc, typing
+from rx.disposable import (CompositeDisposable, SerialDisposable,
+                           SingleAssignmentDisposable)
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Callable[[Observable], Observable]:
-    def debounce(source: Observable) -> Observable:
+
+def _debounce(duetime: typing.RelativeTime, scheduler: abc.SchedulerBase) -> Callable[[Observable[_T]], Observable[_T]]:
+    def debounce(source: Observable[_T]) -> Observable[_T]:
         """Ignores values from an observable sequence which are followed by
         another value before duetime.
 
@@ -22,7 +24,7 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
             returns the debounced observable sequence.
         """
 
-        def subscribe(observer, scheduler_=None) -> Disposable:
+        def subscribe(observer, scheduler_=None) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             cancelable = SerialDisposable()
             has_value = [False]
@@ -61,12 +63,16 @@ def _debounce(duetime: typing.RelativeTime, scheduler=typing.Scheduler) -> Calla
 
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler_)
             return CompositeDisposable(subscription, cancelable)
+
         return Observable(subscribe)
+
     return debounce
 
 
-def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable]) -> Callable[[Observable], Observable]:
-    def throttle_with_mapper(source: Observable) -> Observable:
+def _throttle_with_mapper(
+    throttle_duration_mapper: Callable[[Any], Observable[_T]]
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def throttle_with_mapper(source: Observable[_T]) -> Observable[_T]:
         """Partially applied throttle_with_mapper operator.
 
         Ignores values from an observable sequence which are followed by
@@ -81,7 +87,8 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
         Returns:
             The throttled observable sequence.
         """
-        def subscribe(observer, scheduler=None) -> Disposable:
+
+        def subscribe(observer, scheduler=None) -> abc.DisposableBase:
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]
@@ -135,5 +142,7 @@ def _throttle_with_mapper(throttle_duration_mapper: Callable[[Any], Observable])
 
             subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
             return CompositeDisposable(subscription, cancelable)
+
         return Observable(subscribe)
+
     return throttle_with_mapper

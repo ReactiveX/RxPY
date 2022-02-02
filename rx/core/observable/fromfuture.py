@@ -1,13 +1,11 @@
 import asyncio
-from asyncio.futures import Future
-from typing import Optional
+from typing import Any, Optional
 
+from rx.core import Observable, abc, typing
 from rx.disposable import Disposable
-from rx.core import typing
-from rx.core import Observable
 
 
-def _from_future(future: Future) -> Observable:
+def _from_future(future: typing.Future) -> Observable[Any]:
     """Converts a Future to an Observable sequence
 
     Args:
@@ -20,13 +18,10 @@ def _from_future(future: Future) -> Observable:
         and failure.
     """
 
-    def subscribe(observer: typing.Observer,
-                  scheduler: Optional[typing.Scheduler] = None
-                  ) -> typing.Disposable:
-
-        def done(future):
+    def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+        def done(future: typing.Future):
             try:
-                value = future.result()
+                value: Any = future.result()
             except (Exception, asyncio.CancelledError) as ex:  # pylint: disable=broad-except
                 observer.on_error(ex)
             else:
@@ -42,3 +37,6 @@ def _from_future(future: Future) -> Observable:
         return Disposable(dispose)
 
     return Observable(subscribe)
+
+
+__all__ = ["_from_future"]
