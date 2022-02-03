@@ -24,20 +24,16 @@ scheduler = IOLoopScheduler(ioloop.IOLoop.current())
 
 def search_wikipedia(term):
     """Search Wikipedia for a given term"""
-    url = 'http://en.wikipedia.org/w/api.php'
+    url = "http://en.wikipedia.org/w/api.php"
 
-    params = {
-        "action": 'opensearch',
-        "search": term,
-        "format": 'json'
-    }
+    params = {"action": "opensearch", "search": term, "format": "json"}
     # Must set a user agent for non-browser requests to Wikipedia
     user_agent = "RxPY/3.0 (https://github.com/dbrattli/RxPY; dag@brattli.net) Tornado/4.0.1"
 
     url = url_concat(url, params)
 
     http_client = AsyncHTTPClient()
-    return http_client.fetch(url, method='GET', user_agent=user_agent)
+    return http_client.fetch(url, method="GET", user_agent=user_agent)
 
 
 class WSHandler(WebSocketHandler):
@@ -52,9 +48,9 @@ class WSHandler(WebSocketHandler):
         searcher = self.stream.pipe(
             ops.map(lambda x: x["term"]),
             ops.filter(lambda text: len(text) > 2),  # Only if the text is longer than 2 characters
-            ops.debounce(0.750),                     # Pause for 750ms
-            ops.distinct_until_changed(),            # Only if the value has changed
-            ops.flat_map_latest(search_wikipedia)
+            ops.debounce(0.750),  # Pause for 750ms
+            ops.distinct_until_changed(),  # Only if the value has changed
+            ops.flat_map_latest(search_wikipedia),
         )
 
         def send_response(x):
@@ -80,15 +76,13 @@ class MainHandler(RequestHandler):
 
 def main():
     port = os.environ.get("PORT", 8080)
-    app = Application([
-        url(r"/", MainHandler),
-        (r'/ws', WSHandler),
-        (r'/static/(.*)', StaticFileHandler, {'path': "."})
-    ])
+    app = Application(
+        [url(r"/", MainHandler), (r"/ws", WSHandler), (r"/static/(.*)", StaticFileHandler, {"path": "."})]
+    )
     print("Starting server at port: %s" % port)
     app.listen(port)
     ioloop.IOLoop.current().start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

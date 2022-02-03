@@ -1,21 +1,25 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional, TypeVar, cast
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.core.typing import Mapper, Predicate, RelativeTime
 from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import TimeoutScheduler
 
+_TState = TypeVar("_TState")
 
-def _generate_with_relative_time(initial_state: Any,
-                                 condition: Predicate,
-                                 iterate: Mapper,
-                                 time_mapper: Callable[[Any], RelativeTime]
-                                 ) -> Observable:
+
+def _generate_with_relative_time(
+    initial_state: _TState,
+    condition: Predicate[_TState],
+    iterate: Mapper[_TState, _TState],
+    time_mapper: Callable[[_TState], RelativeTime],
+) -> Observable[_TState]:
     """Generates an observable sequence by iterating a state from an
     initial state until the condition fails.
 
     Example:
-        res = source.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
+        res = source.generate_with_relative_time(0, lambda x: True,
+        lambda x: x + 1, lambda x: 0.5)
 
     Args:
         initial_state: Initial state.
@@ -23,23 +27,27 @@ def _generate_with_relative_time(initial_state: Any,
             false).
         iterate: Iteration step function.
         time_mapper: Time mapper function to control the speed of
-            values being produced each iteration, returning relative times, i.e.
-            either floats denoting seconds or instances of timedelta.
+            values being produced each iteration, returning relative
+            times, i.e. either floats denoting seconds or instances of
+            timedelta.
 
     Returns:
         The generated sequence.
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[_TState],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ):
         scheduler = scheduler or TimeoutScheduler.singleton()
         mad = MultipleAssignmentDisposable()
         state = initial_state
         has_result = False
-        result = None
+        result: _TState = cast(_TState, None)
         first = True
-        time = None
+        time: Optional[RelativeTime] = None
 
-        def action(scheduler, _):
+        def action(scheduler: abc.SchedulerBase, _: Any):
             nonlocal state
             nonlocal has_result
             nonlocal result
@@ -66,10 +74,15 @@ def _generate_with_relative_time(initial_state: Any,
                 return
 
             if has_result:
+                assert time
                 mad.disposable = scheduler.schedule_relative(time, action)
             else:
                 observer.on_completed()
 
         mad.disposable = scheduler.schedule_relative(0, action)
         return mad
+
     return Observable(subscribe)
+
+
+__all__ = ["_generate_with_relative_time"]

@@ -57,3 +57,6 @@ class Trampoline:
                 seconds = (item.duetime - item.scheduler.now).total_seconds()
                 if seconds > 0.0:
                     self._condition.wait(seconds)
+
+
+__all__ = ["Trampoline"]

@@ -78,3 +78,5 @@ _build
 
 # Type checkers
 .pyre
+
+.ionide/

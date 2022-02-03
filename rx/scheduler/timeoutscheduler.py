@@ -3,8 +3,7 @@ from typing import MutableMapping, Optional, TypeVar
 from weakref import WeakKeyDictionary
 
 from rx.core import abc, typing
-from rx.disposable import (CompositeDisposable, Disposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
 from .periodicscheduler import PeriodicScheduler
 
@@ -30,7 +29,9 @@ class TimeoutScheduler(PeriodicScheduler):
     def __new__(cls) -> "TimeoutScheduler":
         return cls.singleton()
 
-    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -57,7 +58,10 @@ class TimeoutScheduler(PeriodicScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -90,7 +94,10 @@ class TimeoutScheduler(PeriodicScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -106,3 +113,6 @@ class TimeoutScheduler(PeriodicScheduler):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state)
+
+
+__all__ = ["TimeoutScheduler"]

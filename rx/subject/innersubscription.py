@@ -1,14 +1,16 @@
 import threading
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from rx.core import abc
-from rx.core.abc.observable import ObservableBase
+
+if TYPE_CHECKING:
+    from .subject import Subject
 
 _T = TypeVar("_T")
 
 
 class InnerSubscription(abc.DisposableBase):
-    def __init__(self, subject: abc.SubjectBase[_T], observer: ObservableBase[_T]):
+    def __init__(self, subject: "Subject[_T]", observer: abc.ObserverBase[_T]):
         self.subject = subject
         self.observer = observer
 
