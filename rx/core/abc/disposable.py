@@ -26,3 +26,6 @@ class DisposableBase(ABC):
     ):
         """Context management protocol."""
         self.dispose()
+
+
+__all__ = ["DisposableBase"]

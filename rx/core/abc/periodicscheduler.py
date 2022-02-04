@@ -7,7 +7,9 @@ from .scheduler import RelativeTime, ScheduledAction
 _TState = TypeVar("_TState")  # Can be anything
 
 ScheduledPeriodicAction = Callable[[Optional[_TState]], Optional[_TState]]
-ScheduledSingleOrPeriodicAction = Union[ScheduledAction[_TState], ScheduledPeriodicAction[_TState]]
+ScheduledSingleOrPeriodicAction = Union[
+    ScheduledAction[_TState], ScheduledPeriodicAction[_TState]
+]
 
 
 class PeriodicSchedulerBase(ABC):
@@ -17,7 +19,10 @@ class PeriodicSchedulerBase(ABC):
 
     @abstractmethod
     def schedule_periodic(
-        self, period: RelativeTime, action: ScheduledPeriodicAction[_TState], state: Optional[_TState] = None
+        self,
+        period: RelativeTime,
+        action: ScheduledPeriodicAction[_TState],
+        state: Optional[_TState] = None,
     ) -> DisposableBase:
         """Schedules a periodic piece of work.
 
@@ -36,4 +41,9 @@ class PeriodicSchedulerBase(ABC):
         return NotImplemented
 
 
-__all__ = ["PeriodicSchedulerBase", "ScheduledPeriodicAction", "ScheduledSingleOrPeriodicAction", "RelativeTime"]
+__all__ = [
+    "PeriodicSchedulerBase",
+    "ScheduledPeriodicAction",
+    "ScheduledSingleOrPeriodicAction",
+    "RelativeTime",
+]

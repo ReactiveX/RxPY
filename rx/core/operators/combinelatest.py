@@ -1,11 +1,13 @@
-from typing import Any, Callable, Iterable, List, Union
+from typing import Any, Callable
 
 import rx
-from rx.core import Observable, typing
+from rx.core import Observable
 
 
-def _combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
-    def combine_latest(source: Observable) -> Observable:
+def _combine_latest(
+    *others: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Any]]:
+    def combine_latest(source: Observable[Any]) -> Observable[Any]:
         """Merges the specified observable sequences into one
         observable sequence by creating a tuple whenever any
         of the observable sequences produces an element.
@@ -21,4 +23,8 @@ def _combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
         sources = (source,) + others
 
         return rx.combine_latest(*sources)
+
     return combine_latest
+
+
+__all__ = ["_combine_latest"]

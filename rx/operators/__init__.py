@@ -1,7 +1,18 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Any, Callable, Iterable, List, Optional, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from rx.core import (
     ConnectableObservable,
@@ -226,7 +237,7 @@ def buffer_toggle(
 
 def buffer_with_count(
     count: int, skip: Optional[int] = None
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -260,7 +271,7 @@ def buffer_with_time(
     timespan: typing.RelativeTime,
     timeshift: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -297,8 +308,10 @@ def buffer_with_time(
 
 
 def buffer_with_time_or_count(
-    timespan, count, scheduler=None
-) -> Callable[[Observable], Observable]:
+    timespan: typing.RelativeTime,
+    count: int,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Projects each element of an observable sequence into a buffer
     that is completed when either it's full or a given amount of time
     has elapsed.
@@ -367,7 +380,9 @@ def catch(
     return _catch(handler)
 
 
-def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
+def combine_latest(
+    *others: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
@@ -394,7 +409,7 @@ def combine_latest(*others: Observable) -> Callable[[Observable], Observable]:
     return _combine_latest(*others)
 
 
-def concat(*sources: Observable) -> Callable[[Observable], Observable]:
+def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Concatenates all the observable sequences.
 
     .. marble::
@@ -419,8 +434,8 @@ def concat(*sources: Observable) -> Callable[[Observable], Observable]:
 
 
 def contains(
-    value: Any, comparer: Optional[typing.Comparer] = None
-) -> Callable[[Observable], Observable]:
+    value: _T, comparer: Optional[typing.Comparer[_T]] = None
+) -> Callable[[Observable[_T]], Observable[bool]]:
     """Determines whether an observable sequence contains a specified
     element with an optional equality comparer.
 
@@ -451,8 +466,8 @@ def contains(
 
 
 def count(
-    predicate: Optional[typing.Predicate] = None,
-) -> Callable[[Observable], Observable]:
+    predicate: Optional[typing.Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[int]]:
     """Returns an observable sequence containing a value that
     represents how many elements in the specified observable sequence
     satisfy a condition if provided, else the count of items.
@@ -3482,7 +3497,7 @@ def to_future(
     return _to_future(future_ctor)
 
 
-def to_iterable() -> Callable[[Observable], Observable]:
+def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Creates an iterable from an observable sequence.
 
     There is also an alias called ``to_list``.
@@ -3519,7 +3534,7 @@ def to_marbles(
     return _to_marbles(scheduler=scheduler, timespan=timespan)
 
 
-def to_set() -> Callable[[Observable], Observable]:
+def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
     """Converts the observable sequence to a set.
 
     Returns:
@@ -3532,7 +3547,7 @@ def to_set() -> Callable[[Observable], Observable]:
     return _to_set()
 
 
-def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
+def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a while
     loop.
 
@@ -3550,7 +3565,9 @@ def while_do(condition: Predicate) -> Callable[[Observable], Observable]:
     return _while_do(condition)
 
 
-def window(boundaries: Observable) -> Callable[[Observable], Observable]:
+def window(
+    boundaries: Observable[Any],
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
 

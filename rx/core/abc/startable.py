@@ -9,3 +9,6 @@ class StartableBase(ABC):
     @abstractmethod
     def start(self) -> None:
         raise NotImplementedError
+
+
+__all__ = ["StartableBase"]

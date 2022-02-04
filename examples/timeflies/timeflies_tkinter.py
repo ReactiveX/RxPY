@@ -1,5 +1,5 @@
 from typing import Any, Tuple
-from tkinter import Tk, Label, Frame
+from tkinter import Tk, Label, Frame, Event
 import tkinter
 
 import rx
@@ -13,7 +13,7 @@ def main():
     root.title("Rx for Python rocks")
     scheduler = TkinterScheduler(root)
 
-    mousemove: Subject[tkinter.Event[Any]] = Subject()
+    mousemove: Subject[Event[Any]] = Subject()
 
     frame = Frame(root, width=600, height=600)
 
@@ -25,7 +25,9 @@ def main():
         label, ev, i = info
         label.place(x=ev.x + i * 12 + 15, y=ev.y)
 
-    def handle_label(label: tkinter.Label, i: int) -> Observable[Tuple[tkinter.Label, tkinter.Event[Any], int]]:
+    def handle_label(
+        label: tkinter.Label, i: int
+    ) -> Observable[Tuple[tkinter.Label, tkinter.Event[Any], int]]:
         label.config(dict(borderwidth=0, padx=0, pady=0))
 
         mapper = ops.map(lambda ev: (label, ev, i))
@@ -36,7 +38,9 @@ def main():
     mapper = ops.map(lambda c: Label(frame, text=c))
     labeler = ops.flat_map_indexed(handle_label)
 
-    rx.from_(text).pipe(mapper, labeler).subscribe(on_next, on_error=print, scheduler=scheduler)
+    rx.from_(text).pipe(mapper, labeler).subscribe(
+        on_next, on_error=print, scheduler=scheduler
+    )
 
     frame.pack()
     root.mainloop()

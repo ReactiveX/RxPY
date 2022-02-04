@@ -2,7 +2,7 @@ from asyncio import Future
 from typing import Optional, Union, TypeVar, Any
 
 import rx
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc
 from rx.disposable import (
     CompositeDisposable,
     SerialDisposable,

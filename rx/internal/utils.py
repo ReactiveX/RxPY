@@ -5,9 +5,10 @@ from typing import Any, Callable, Iterable, Optional, cast
 
 from rx.core import abc
 from rx.disposable import CompositeDisposable
+from rx.disposable.refcountdisposable import RefCountDisposable
 
 
-def add_ref(xs: abc.ObservableBase[Any], r):
+def add_ref(xs: abc.ObservableBase[Any], r: RefCountDisposable):
     from rx.core import Observable
 
     def subscribe(

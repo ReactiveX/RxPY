@@ -1,11 +1,13 @@
-from typing import Callable
+from typing import Callable, TypeVar
 
 import rx
 from rx.core import Observable
 
+_T = TypeVar("_T")
 
-def _concat(*sources: Observable) -> Callable[[Observable], Observable]:
-    def concat(source: Observable) -> Observable:
+
+def _concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+    def concat(source: Observable[_T]) -> Observable[_T]:
         """Concatenates all the observable sequences.
 
         Examples:
@@ -17,4 +19,8 @@ def _concat(*sources: Observable) -> Callable[[Observable], Observable]:
             each given sequence, in sequential order.
         """
         return rx.concat(source, *sources)
+
     return concat
+
+
+__all__ = ["_concat"]

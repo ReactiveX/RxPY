@@ -1,10 +1,14 @@
-from typing import Any, Callable, Optional
+from typing import TypeVar, Callable, Optional
 
 from rx import to_async
 from rx.core import Observable, abc
 
+_T = TypeVar("_T")
 
-def _start(func: Callable[..., None], scheduler: Optional[abc.SchedulerBase] = None) -> Observable[Any]:
+
+def _start(
+    func: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 

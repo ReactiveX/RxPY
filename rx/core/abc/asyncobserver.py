@@ -22,3 +22,6 @@ class AsyncObserver(AsyncObservable):
 
     async def subscribe_async(self, observer):
         return self
+
+
+__all__ = ["AsyncObserver"]

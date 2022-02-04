@@ -1,7 +1,17 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from typing import Any, Callable, Iterable, Mapping, Optional, Tuple, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    Mapping,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from .core import Observable, abc, pipe, typing
 from .internal.utils import alias
@@ -247,7 +257,7 @@ def concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
 
 def defer(
-    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], Future]]
+    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]]
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
@@ -420,7 +430,7 @@ def from_callback(
     return _from_callback(func, mapper)
 
 
-def from_future(future: Union[Observable[_T], "Future[_T]"]) -> Observable[_T]:
+def from_future(future: "Future[_T]") -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     .. marble::
@@ -480,9 +490,9 @@ def from_marbles(
     string: str,
     timespan: typing.RelativeTime = 0.1,
     scheduler: Optional[abc.SchedulerBase] = None,
-    lookup: Optional[Mapping] = None,
+    lookup: Optional[Mapping[str, Any]] = None,
     error: Optional[Exception] = None,
-) -> Observable:
+) -> Observable[Any]:
     """Convert a marble diagram string to a cold observable sequence, using
     an optional scheduler to enumerate the events.
 
@@ -695,9 +705,9 @@ def hot(
 
 def if_then(
     condition: Callable[[], bool],
-    then_source: Union[Observable, Future],
-    else_source: Union[None, Observable, Future] = None,
-) -> Observable:
+    then_source: Union[Observable[_T], "Future[_T]"],
+    else_source: Union[None, Observable[_T], "Future[_T]"] = None,
+) -> Observable[_T]:
     """Determines whether an observable collection contains values.
 
     .. marble::
@@ -733,7 +743,7 @@ def if_then(
 
 def interval(
     period: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
-) -> Observable:
+) -> Observable[int]:
     """Returns an observable sequence that produces a value after each period.
 
     .. marble::
@@ -761,7 +771,7 @@ def interval(
     return _interval(period, scheduler)
 
 
-def merge(*sources: Observable[_T]) -> Observable[_T]:
+def merge(*sources: Observable[Any]) -> Observable[Any]:
     """Merges all the observable sequences into a single observable sequence.
 
     .. marble::
@@ -805,7 +815,7 @@ def never() -> Observable[Any]:
     return _never()
 
 
-def of(*args: Any) -> Observable:
+def of(*args: _T) -> Observable[_T]:
     """This method creates a new observable sequence whose elements are taken
     from the arguments.
 
@@ -832,7 +842,9 @@ def of(*args: Any) -> Observable:
     return from_iterable(args)
 
 
-def on_error_resume_next(*sources: Union[Observable, Future]) -> Observable:
+def on_error_resume_next(
+    *sources: Union[Observable[_T], "Future[_T]"]
+) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
@@ -866,7 +878,7 @@ def range(
     stop: Optional[int] = None,
     step: Optional[int] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Observable:
+) -> Observable[int]:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
     messages.
@@ -899,8 +911,8 @@ def range(
 
 
 def return_value(
-    value: Any, scheduler: Optional[abc.SchedulerBase] = None
-) -> Observable:
+    value: _T, scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -929,7 +941,9 @@ def return_value(
 just = alias("just", "Alias for :func:`rx.return_value`.", return_value)
 
 
-def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Observable:
+def repeat_value(
+    value: _T = None, repeat_count: Optional[int] = None
+) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 
@@ -957,7 +971,9 @@ def repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Obser
     return _repeat_value(value, repeat_count)
 
 
-def start(func: Callable, scheduler: Optional[abc.SchedulerBase] = None) -> Observable:
+def start(
+    func: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
 
@@ -992,7 +1008,7 @@ def start(func: Callable, scheduler: Optional[abc.SchedulerBase] = None) -> Obse
     return _start(func, scheduler)
 
 
-def start_async(function_async: Callable[[], Future]) -> Observable:
+def start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 
@@ -1016,8 +1032,8 @@ def start_async(function_async: Callable[[], Future]) -> Observable:
 
 
 def throw(
-    exception: Exception, scheduler: Optional[abc.SchedulerBase] = None
-) -> Observable:
+    exception: Union[str, Exception], scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[Any]:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError message.
 
@@ -1202,14 +1218,35 @@ def zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
 
 __all__ = [
+    "amb",
+    "case",
+    "catch",
+    "catch_with_iterable",
+    "create",
+    "combine_latest",
+    "concat",
+    "concat_with_iterable",
+    "defer",
+    "empty",
+    "fork_join",
+    "from_callable",
+    "from_callback",
+    "from_future",
+    "from_iterable",
     "never",
+    "on_error_resume_next",
+    "of",
+    "return_value",
     "pipe",
-    "with_latest_from",
+    "range",
+    "repeat_value",
+    "Subject",
+    "start",
+    "start_async",
     "throw",
     "timer",
-    "using",
     "to_async",
+    "using",
+    "with_latest_from",
     "zip",
-    "return_value",
-    "Subject",
 ]

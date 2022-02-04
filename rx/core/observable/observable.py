@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Any, Callable, Optional, TypeVar, Union, cast, overload
+from typing import Any, Callable, Iterable, Optional, TypeVar, Union, cast, overload
 
 from rx.core import abc
 from rx.disposable import Disposable
@@ -42,7 +42,9 @@ class Observable(abc.ObservableBase[_T]):
         self._subscribe = subscribe
 
     def _subscribe_core(
-        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
     ) -> abc.DisposableBase:
         return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
 
@@ -147,13 +149,19 @@ class Observable(abc.ObservableBase[_T]):
             the observable sequence.
         """
 
-        auto_detach_observer: AutoDetachObserver[_T] = AutoDetachObserver(on_next, on_error, on_completed)
+        auto_detach_observer: AutoDetachObserver[_T] = AutoDetachObserver(
+            on_next, on_error, on_completed
+        )
 
-        def fix_subscriber(subscriber: Union[abc.DisposableBase, Callable[[], None]]) -> abc.DisposableBase:
+        def fix_subscriber(
+            subscriber: Union[abc.DisposableBase, Callable[[], None]]
+        ) -> abc.DisposableBase:
             """Fixes subscriber to make sure it returns a Disposable instead
             of None or a dispose function"""
 
-            if isinstance(subscriber, abc.DisposableBase) or hasattr(subscriber, "dispose"):
+            if isinstance(subscriber, abc.DisposableBase) or hasattr(
+                subscriber, "dispose"
+            ):
                 return subscriber
 
             return Disposable(subscriber)
@@ -206,10 +214,6 @@ class Observable(abc.ObservableBase[_T]):
         Returns:
              The composed observable.
         """
-        ...
-
-    @overload
-    def pipe(self) -> Observable[_T]:
         ...
 
     @overload
@@ -279,7 +283,6 @@ class Observable(abc.ObservableBase[_T]):
     ) -> _G:
         ...
 
-    # pylint: disable=function-redefined
     def pipe(self, *operators: Callable[[Any], Any]) -> Any:
         """Compose multiple operators left to right.
 
@@ -325,7 +328,7 @@ class Observable(abc.ObservableBase[_T]):
 
         return run(self)
 
-    def __await__(self) -> Any:
+    def __await__(self) -> Iterable[_T]:
         """Awaits the given observable.
 
         Returns:
@@ -418,3 +421,6 @@ class Observable(abc.ObservableBase[_T]):
         from ..operators.slice import _slice
 
         return _slice(start, stop, step)(self)
+
+
+__all__ = ["Observable"]

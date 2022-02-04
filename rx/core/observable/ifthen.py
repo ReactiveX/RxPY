@@ -46,3 +46,6 @@ def _if_then(
         return then_source if condition() else else_source
 
     return rx.defer(factory)
+
+
+__all__ = ["_if_then"]

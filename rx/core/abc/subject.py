@@ -20,7 +20,10 @@ class SubjectBase(ObserverBase[_T], ObservableBase[_T]):
 
     @abstractmethod
     def subscribe(
-        self, observer: Optional[ObserverBase[_T]] = None, *, scheduler: Optional[SchedulerBase] = None
+        self,
+        observer: Optional[ObserverBase[_T]] = None,
+        *,
+        scheduler: Optional[SchedulerBase] = None
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 
@@ -62,3 +65,6 @@ class SubjectBase(ObserverBase[_T], ObservableBase[_T]):
         """Notifies the observer of the end of the sequence."""
 
         raise NotImplementedError
+
+
+__all__ = ["SubjectBase"]

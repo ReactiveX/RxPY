@@ -1,11 +1,15 @@
-from typing import Any, Optional
+from typing import TypeVar, Optional
 
 import rx
 from rx import operators as ops
 from rx.core import Observable
 
+_T = TypeVar("_T")
 
-def _repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Observable:
+
+def _repeat_value(
+    value: _T = None, repeat_count: Optional[int] = None
+) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 
@@ -28,3 +32,6 @@ def _repeat_value(value: Any = None, repeat_count: Optional[int] = None) -> Obse
 
     xs = rx.return_value(value)
     return xs.pipe(ops.repeat(repeat_count))
+
+
+__all__ = ["_repeat_value"]

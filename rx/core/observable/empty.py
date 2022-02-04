@@ -4,8 +4,10 @@ from rx.core import Observable, abc
 from rx.scheduler import ImmediateScheduler
 
 
-def _empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable:
-    def subscribe(observer: abc.ObserverBase, scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+def _empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable[Any]:
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler_: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
 
         _scheduler = scheduler or scheduler_ or ImmediateScheduler.singleton()
 
@@ -15,3 +17,6 @@ def _empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable:
         return _scheduler.schedule(action)
 
     return Observable(subscribe)
+
+
+__all__ = ["_empty"]
