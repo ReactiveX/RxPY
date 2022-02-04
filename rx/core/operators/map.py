@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar, cast
 
 from rx import operators as ops
 from rx.core import Observable, abc, pipe
@@ -9,10 +9,13 @@ from rx.internal.utils import infinite
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 
-# pylint: disable=redefined-builtin
-def _map(mapper: Optional[Mapper[_T1, _T2]] = None) -> Callable[[Observable[_T1]], Observable[_T2]]:
 
-    _mapper = mapper or identity
+# pylint: disable=redefined-builtin
+def map(
+    mapper: Optional[Mapper[_T1, _T2]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+
+    _mapper = mapper or cast(Mapper[_T1, _T2], identity)
 
     def map(source: Observable[_T1]) -> Observable[_T2]:
         """Partially applied map operator.
@@ -32,8 +35,10 @@ def _map(mapper: Optional[Mapper[_T1, _T2]] = None) -> Callable[[Observable[_T1]
             of the source.
         """
 
-        def subscribe(obv: abc.ObserverBase[_T2], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
-            def on_next(value: Any) -> None:
+        def subscribe(
+            obv: abc.ObserverBase[_T2], scheduler: Optional[abc.SchedulerBase] = None
+        ) -> abc.DisposableBase:
+            def on_next(value: _T1) -> None:
                 try:
                     result = _mapper(value)
                 except Exception as err:  # pylint: disable=broad-except
@@ -48,7 +53,7 @@ def _map(mapper: Optional[Mapper[_T1, _T2]] = None) -> Callable[[Observable[_T1]
     return map
 
 
-def _map_indexed(
+def map_indexed(
     mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def _identity(value: Any, _: int) -> Any:
@@ -59,4 +64,4 @@ def _map_indexed(
     return pipe(ops.zip_with_iterable(infinite()), ops.starmap_indexed(_mapper_indexed))
 
 
-__all__ = ["_map", "_map_indexed"]
+__all__ = ["map", "map_indexed"]

@@ -10,7 +10,7 @@ from rx.internal.utils import is_future
 _T = TypeVar("_T")
 
 
-def _merge(
+def merge(
     *sources: Observable[_T], max_concurrent: Optional[int] = None
 ) -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def merge(source: Observable[Observable[_T]]) -> Observable[_T]:
@@ -34,7 +34,10 @@ def _merge(
             sources_ = tuple([source]) + sources
             return rx.merge(*sources_)
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             active_count = [0]
             group = CompositeDisposable()
             is_stopped = [False]
@@ -57,7 +60,9 @@ def _merge(
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
+                subscription.disposable = xs.subscribe_(
+                    on_next, on_error, on_completed, scheduler
+                )
 
             def on_next(inner_source: Observable[_T]) -> None:
                 if active_count[0] < max_concurrent:
@@ -71,7 +76,9 @@ def _merge(
                 if active_count[0] == 0:
                     observer.on_completed()
 
-            group.add(source.subscribe_(on_next, observer.on_error, on_completed, scheduler))
+            group.add(
+                source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            )
             return group
 
         return Observable(subscribe)
@@ -79,7 +86,7 @@ def _merge(
     return merge
 
 
-def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def merge_all(source: Observable[Observable[_T]]) -> Observable[_T]:
         """Partially applied merge_all operator.
 
@@ -94,7 +101,10 @@ def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
             sequences.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             group = CompositeDisposable()
             is_stopped = [False]
             m = SingleAssignmentDisposable()
@@ -104,7 +114,11 @@ def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                 inner_subscription = SingleAssignmentDisposable()
                 group.add(inner_subscription)
 
-                inner_source = from_future(inner_source) if is_future(inner_source) else inner_source
+                inner_source = (
+                    from_future(inner_source)
+                    if is_future(inner_source)
+                    else inner_source
+                )
 
                 @synchronized(source.lock)
                 def on_completed():
@@ -114,7 +128,9 @@ def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
 
                 on_next: typing.OnNext[_T] = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
+                subscription = inner_source.subscribe_(
+                    on_next, on_error, on_completed, scheduler
+                )
                 inner_subscription.disposable = subscription
 
             def on_completed():
@@ -122,7 +138,9 @@ def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                 if len(group) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            m.disposable = source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
             return group
 
         return Observable(subscribe)
@@ -130,4 +148,4 @@ def _merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     return merge_all
 
 
-__all__ = ["_merge", "_merge_all"]
+__all__ = ["merge", "merge_all"]

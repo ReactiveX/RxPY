@@ -1,16 +1,20 @@
 import sys
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 import rx
 from rx.core import Observable
 from rx.internal.utils import infinite
 
+_T = TypeVar("_T")
 
-def _repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observable]:
+
+def repeat(
+    repeat_count: Optional[int] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     if repeat_count is None:
         repeat_count = sys.maxsize
 
-    def repeat(source: Observable) -> Observable:
+    def repeat(source: Observable[_T]) -> Observable[_T]:
         """Repeats the observable sequence a specified number of times.
         If the repeat count is not specified, the sequence repeats
         indefinitely.
@@ -32,5 +36,9 @@ def _repeat(repeat_count: Optional[int] = None) -> Callable[[Observable], Observ
         else:
             gen = range(repeat_count)
 
-        return rx.defer(lambda _: rx.concat_with_iterable(source for _ in  gen))
+        return rx.defer(lambda _: rx.concat_with_iterable(source for _ in gen))
+
     return repeat
+
+
+__all = ["repeat"]

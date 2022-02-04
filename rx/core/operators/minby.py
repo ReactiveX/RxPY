@@ -56,7 +56,7 @@ def extrema_by(
     return Observable(subscribe)
 
 
-def _min_by(
+def min_by(
     key_mapper: typing.Mapper[_T, _TKey],
     comparer: Optional[typing.SubComparer[_TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
@@ -86,4 +86,4 @@ def _min_by(
     return min_by
 
 
-__all__ = ["_min_by"]
+__all__ = ["min_by"]

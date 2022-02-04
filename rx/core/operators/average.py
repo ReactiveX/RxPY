@@ -1,18 +1,23 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators
 from rx.core import Observable
 from rx.core.typing import Mapper
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
+
 
 class AverageValue(object):
-    def __init__(self, sum, count):
+    def __init__(self, sum: float, count: int):
         self.sum = sum
         self.count = count
 
 
-def _average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
-    def average(source: Observable) -> Observable:
+def average(
+    key_mapper: Optional[Mapper[_T, _TKey]] = None,
+) -> Callable[[Observable[_T]], Observable[float]]:
+    def average(source: Observable[_T]) -> Observable[float]:
         """Partially applied average operator.
 
         Computes the average of an observable sequence of values that
@@ -33,15 +38,15 @@ def _average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Obse
         if key_mapper:
             return source.pipe(
                 operators.map(key_mapper),
-                operators.average()
+                operators.average(),
             )
 
-        def accumulator(prev, cur):
-            return AverageValue(sum=prev.sum+cur, count=prev.count+1)
+        def accumulator(prev: AverageValue, cur: float) -> AverageValue:
+            return AverageValue(sum=prev.sum + cur, count=prev.count + 1)
 
-        def mapper(s):
+        def mapper(s: AverageValue) -> float:
             if s.count == 0:
-                raise Exception('The input sequence was empty')
+                raise Exception("The input sequence was empty")
 
             return s.sum / float(s.count)
 
@@ -49,6 +54,10 @@ def _average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Obse
         return source.pipe(
             operators.scan(accumulator, seed),
             operators.last(),
-            operators.map(mapper)
+            operators.map(mapper),
         )
+
     return average
+
+
+__all__ = ["average"]

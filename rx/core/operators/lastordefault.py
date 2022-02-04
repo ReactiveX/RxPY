@@ -30,7 +30,7 @@ def last_or_default_async(
     return Observable(subscribe)
 
 
-def _last_or_default(
+def last_or_default(
     predicate: Optional[typing.Predicate[_T]] = None, default_value: Any = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def last_or_default(source: Observable[_T]) -> Observable[_T]:
@@ -56,3 +56,5 @@ def _last_or_default(
         return last_or_default_async(source, True, default_value)
 
     return last_or_default
+
+__all__ = [ "last_or_default", "last_or_default_async"]

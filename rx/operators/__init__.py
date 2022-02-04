@@ -1,7 +1,6 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
-from tkinter import NO
 from typing import (
     Any,
     Callable,
@@ -90,9 +89,9 @@ def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_
         returns an observable sequence that surfaces any of the given
         sequences, whichever reacted first.
     """
-    from rx.core.operators.amb import _amb
+    from rx.core.operators.amb import amb
 
-    return _amb(right_source)
+    return amb(right_source)
 
 
 def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
@@ -103,12 +102,14 @@ def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
         returns and observable sequence that hides the identity of the
         source sequence.
     """
-    from rx.core.operators.asobservable import _as_observable
+    from rx.core.operators.asobservable import as_observable
 
-    return _as_observable()
+    return as_observable()
 
 
-def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
+def average(
+    key_mapper: Optional[Mapper[_T, _TKey]] = None
+) -> Callable[[Observable[_T]], Observable[float]]:
     """The average operator.
 
     Computes the average of an observable sequence of values that
@@ -134,9 +135,9 @@ def average(key_mapper: Optional[Mapper] = None) -> Callable[[Observable], Obser
         returns an observable sequence containing a single element with
         the average of the sequence of values.
     """
-    from rx.core.operators.average import _average
+    from rx.core.operators.average import average
 
-    return _average(key_mapper)
+    return average(key_mapper)
 
 
 def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
@@ -1576,9 +1577,9 @@ def last_or_default(
         the observable sequence that satisfies the condition in the
         predicate, or a default value if no such element exists.
     """
-    from rx.core.operators.lastordefault import _last_or_default
+    from rx.core.operators.lastordefault import last_or_default
 
-    return _last_or_default(predicate, default_value)
+    return last_or_default(predicate, default_value)
 
 
 def map(
@@ -1608,9 +1609,9 @@ def map(
         the result of invoking the transform function on each element
         of the source.
     """
-    from rx.core.operators.map import _map
+    from rx.core.operators.map import map
 
-    return _map(mapper)
+    return map(mapper)
 
 
 def map_indexed(
@@ -1640,9 +1641,9 @@ def map_indexed(
         the result of invoking the transform function on each element
         of the source.
     """
-    from rx.core.operators.map import _map_indexed
+    from rx.core.operators.map import map_indexed
 
-    return _map_indexed(mapper_indexed)
+    return map_indexed(mapper_indexed)
 
 
 def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
@@ -1654,9 +1655,9 @@ def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
         returns an observable sequence containing the materialized
         notification values from the source sequence.
     """
-    from rx.core.operators.materialize import _materialize
+    from rx.core.operators.materialize import materialize
 
-    return _materialize()
+    return materialize()
 
 
 def max(
@@ -1684,9 +1685,9 @@ def max(
         source and returns an observable sequence containing a single
         element with the maximum element in the source sequence.
     """
-    from rx.core.operators.max import _max
+    from rx.core.operators.max import max
 
-    return _max(comparer)
+    return max(comparer)
 
 
 def max_by(
@@ -1717,9 +1718,9 @@ def max_by(
         source and return an observable sequence containing a list of
         zero or more elements that have a maximum key value.
     """
-    from rx.core.operators.maxby import _max_by
+    from rx.core.operators.maxby import max_by
 
-    return _max_by(key_mapper, comparer)
+    return max_by(key_mapper, comparer)
 
 
 def merge(
@@ -1752,9 +1753,9 @@ def merge(
         returns the observable sequence that merges the elements of the
         inner sequences.
     """
-    from rx.core.operators.merge import _merge
+    from rx.core.operators.merge import merge
 
-    return _merge(*sources, max_concurrent=max_concurrent)
+    return merge(*sources, max_concurrent=max_concurrent)
 
 
 def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
@@ -1776,9 +1777,9 @@ def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
         source and returns the observable sequence that merges the
         elements of the inner sequences.
     """
-    from rx.core.operators.merge import _merge_all
+    from rx.core.operators.merge import merge_all
 
-    return _merge_all()
+    return merge_all()
 
 
 def min(
@@ -1808,9 +1809,9 @@ def min(
         returns an observable sequence containing a single element
         with the minimum element in the source sequence.
     """
-    from rx.core.operators.min import _min
+    from rx.core.operators.min import min
 
-    return _min(comparer)
+    return min(comparer)
 
 
 def min_by(
@@ -1841,9 +1842,9 @@ def min_by(
         reuturns an observable sequence containing a list of zero
         or more elements that have a minimum key value.
     """
-    from rx.core.operators.minby import _min_by
+    from rx.core.operators.minby import min_by
 
-    return _min_by(key_mapper, comparer)
+    return min_by(key_mapper, comparer)
 
 
 def multicast(
@@ -1901,12 +1902,14 @@ def observe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observabl
         returns the source sequence whose observations happen on the
         specified scheduler.
     """
-    from rx.core.operators.observeon import _observe_on
+    from rx.core.operators.observeon import observe_on
 
-    return _observe_on(scheduler)
+    return observe_on(scheduler)
 
 
-def on_error_resume_next(second: Observable) -> Callable[[Observable], Observable]:
+def on_error_resume_next(
+    second: Observable[_T],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Continues an observable sequence that is terminated normally
     or by an exception with the next observable sequence.
 
@@ -1929,9 +1932,9 @@ def on_error_resume_next(second: Observable) -> Callable[[Observable], Observabl
         exceptionally.
     """
 
-    from rx.core.operators.onerrorresumenext import _on_error_resume_next
+    from rx.core.operators.onerrorresumenext import on_error_resume_next
 
-    return _on_error_resume_next(second)
+    return on_error_resume_next(second)
 
 
 def pairwise() -> Callable[[Observable], Observable]:
@@ -2161,9 +2164,9 @@ def reduce(
         source and returns an observable sequence containing a single
         element with the final accumulator value.
     """
-    from rx.core.operators.reduce import _reduce
+    from rx.core.operators.reduce import reduce
 
-    return _reduce(accumulator, seed)
+    return reduce(accumulator, seed)
 
 
 def ref_count() -> Callable[[ConnectableObservable], Observable]:
@@ -2203,9 +2206,9 @@ def repeat(
         returns an observable sequence producing the elements of the
         given sequence repeatedly.
     """
-    from rx.core.operators.repeat import _repeat
+    from rx.core.operators.repeat import repeat
 
-    return _repeat(repeat_count)
+    return repeat(repeat_count)
 
 
 def replay(
@@ -2272,9 +2275,9 @@ def retry(
         An observable sequence producing the elements of the given
         sequence repeatedly until it terminates successfully.
     """
-    from rx.core.operators.retry import _retry
+    from rx.core.operators.retry import retry
 
-    return _retry(retry_count)
+    return retry(retry_count)
 
 
 def sample(
@@ -2304,13 +2307,13 @@ def sample(
         An operator function that takes an observable source and
         returns a sampled observable sequence.
     """
-    from rx.core.operators.sample import _sample
+    from rx.core.operators.sample import sample
 
-    return _sample(sampler, scheduler)
+    return sample(sampler, scheduler)
 
 
 def scan(
-    accumulator: Accumulator[_TState, _T], seed: Union[_T, NotSet] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, NotSet] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """The scan operator.
 

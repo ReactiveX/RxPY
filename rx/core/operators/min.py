@@ -16,7 +16,7 @@ def first_only(x: Sequence[_T]) -> _T:
     return x[0]
 
 
-def _min(
+def min(
     comparer: Optional[Comparer[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The `min` operator.
@@ -35,8 +35,10 @@ def _min(
         An observable sequence containing a single element
         with the minimum element in the source sequence.
     """
+    return pipe(
+        ops.min_by(identity, comparer),
+        ops.map(first_only),
+    )
 
-    return pipe(ops.min_by(identity, comparer), ops.map(first_only))
 
-
-__all__ = ["_min"]
+__all__ = ["min"]

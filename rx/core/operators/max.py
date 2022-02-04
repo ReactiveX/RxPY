@@ -10,7 +10,7 @@ from .min import first_only
 _T = TypeVar("_T")
 
 
-def _max(
+def max(
     comparer: Optional[Comparer[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the maximum value in an observable sequence according to
@@ -32,4 +32,4 @@ def _max(
     return pipe(ops.max_by(identity, comparer), ops.map(first_only))
 
 
-__all__ = ["_max"]
+__all__ = ["max"]

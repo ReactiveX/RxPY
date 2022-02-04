@@ -2,13 +2,13 @@ from asyncio import Future
 from typing import Callable, List, Optional, Union, cast, TypeVar
 
 from rx import from_future
-from rx.core import Observable, abc, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 _T = TypeVar("_T")
 
 
-def _amb(
+def amb(
     right_source: Union[Observable[_T], "Future[_T]"]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
 
@@ -90,4 +90,4 @@ def _amb(
     return amb
 
 
-__all__ = ["_amb"]
+__all__ = ["amb"]
