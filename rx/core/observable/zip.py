@@ -47,13 +47,15 @@ def _zip(*args: Observable) -> Observable:
                     return
 
                 observer.on_next(res)
-            elif all([x for j, x in enumerate(is_completed) if j != i]) \
-                and all([len(x) == 0 for j, x in enumerate(queues) if j != i]):
-                observer.on_completed()
+
+                # after sending the zipped values, complete the observer if at least one upstream observable
+                # is completed and its queue has length zero
+                if any((done for queue, done in zip(queues, is_completed) if len(queue)==0)):
+                    observer.on_completed()
 
         def completed(i):
             is_completed[i] = True
-            if all(is_completed) or all([len(q) == 0 for q in queues]):
+            if len(queues[i]) == 0:
                 observer.on_completed()
 
         subscriptions = [None] * n

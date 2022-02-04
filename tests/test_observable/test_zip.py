@@ -139,7 +139,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(200+240, 1 + 1), on_next(200+245, 2 + 3), on_completed(200+250)]
+        assert results.messages == [on_next(200+240, 1 + 1), on_next(200+245, 2 + 3), on_completed(200+245)]
 
     def test_zip_non_empty_partial_sequential(self):
         scheduler = TestScheduler()
