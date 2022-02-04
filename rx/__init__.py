@@ -1003,9 +1003,9 @@ def start(
         An observable sequence exposing the function's result value,
         or an exception.
     """
-    from .core.observable.start import _start
+    from .core.observable.start import start
 
-    return _start(func, scheduler)
+    return start(func, scheduler)
 
 
 def start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
@@ -1102,8 +1102,8 @@ def timer(
 
 
 def to_async(
-    func: Callable[..., Any], scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable:
+    func: Callable[..., _T], scheduler: Optional[abc.SchedulerBase] = None
+) -> Callable[..., Observable[_T]]:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
     invocation of the original synchronous function on the specified
@@ -1129,9 +1129,9 @@ def to_async(
     Returns:
         Asynchronous function.
     """
-    from .core.observable.toasync import _to_async
+    from .core.observable.toasync import to_async
 
-    return _to_async(func, scheduler)
+    return to_async(func, scheduler)
 
 
 def using(

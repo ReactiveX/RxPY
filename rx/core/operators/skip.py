@@ -6,7 +6,7 @@ from rx.internal import ArgumentOutOfRangeException
 _T = TypeVar("_T")
 
 
-def _skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     if count < 0:
         raise ArgumentOutOfRangeException()
 
@@ -47,4 +47,4 @@ def _skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     return skip
 
 
-__all__ = ["_skip"]
+__all__ = ["skip"]

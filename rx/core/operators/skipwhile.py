@@ -6,7 +6,9 @@ from rx.core import Observable, abc, pipe, typing
 _T = TypeVar("_T")
 
 
-def _skip_while(predicate: typing.Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip_while(
+    predicate: typing.Predicate[_T],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_while(source: Observable[_T]) -> Observable[_T]:
         """Bypasses elements in an observable sequence as long as a
         specified condition is true and then returns the remaining
@@ -25,7 +27,10 @@ def _skip_while(predicate: typing.Predicate[_T]) -> Callable[[Observable[_T]], O
             series that does not pass the test specified by predicate.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             running = False
 
             def on_next(value: _T):
@@ -41,14 +46,18 @@ def _skip_while(predicate: typing.Predicate[_T]) -> Callable[[Observable[_T]], O
                 if running:
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return skip_while
 
 
-def _skip_while_indexed(predicate: typing.PredicateIndexed[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip_while_indexed(
+    predicate: typing.PredicateIndexed[_T],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     return pipe(
         ops.map_indexed(lambda x, i: (x, i)),
         ops.skip_while(lambda x: predicate(*x)),
@@ -56,4 +65,4 @@ def _skip_while_indexed(predicate: typing.PredicateIndexed[_T]) -> Callable[[Obs
     )
 
 
-__all__ = ["_skip_while", "_skip_while_indexed"]
+__all__ = ["skip_while", "skip_while_indexed"]

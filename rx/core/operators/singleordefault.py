@@ -8,7 +8,7 @@ from rx.internal.exceptions import SequenceContainsNoElementsError
 _T = TypeVar("_T")
 
 
-def _single_or_default_async(
+def single_or_default_async(
     has_default: bool = False, default_value: _T = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def single_or_default_async(source: Observable[_T]) -> Observable[_T]:
@@ -44,7 +44,7 @@ def _single_or_default_async(
     return single_or_default_async
 
 
-def _single_or_default(
+def single_or_default(
     predicate: Optional[Predicate[_T]] = None, default_value: _T = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the only element of an observable sequence that matches
@@ -73,7 +73,7 @@ def _single_or_default(
     if predicate:
         return pipe(ops.filter(predicate), ops.single_or_default(None, default_value))
     else:
-        return _single_or_default_async(True, default_value)
+        return single_or_default_async(True, default_value)
 
 
-__all__ = ["_single_or_default", "_single_or_default_async"]
+__all__ = ["single_or_default", "single_or_default_async"]

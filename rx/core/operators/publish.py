@@ -1,12 +1,17 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import ConnectableObservable, Observable, pipe
 from rx.core.typing import Mapper
 from rx.subject import Subject
 
+_T = TypeVar("_T")
+_TResult = TypeVar("_TResult")
 
-def _publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], ConnectableObservable]:
+
+def _publish(
+    mapper: Optional[Mapper[_T, _TResult]] = None,
+) -> Callable[[Observable[_T]], ConnectableObservable[_TResult]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
@@ -34,7 +39,7 @@ def _publish(mapper: Optional[Mapper] = None) -> Callable[[Observable], Connecta
     return pipe(ops.multicast(subject=Subject()))
 
 
-def _share() -> Callable[[Observable], Observable]:
+def share() -> Callable[[Observable[_T]], Observable[_T]]:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original

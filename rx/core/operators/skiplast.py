@@ -5,7 +5,7 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def _skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_last(source: Observable[_T]) -> Observable[_T]:
         """Bypasses a specified number of elements at the end of an
         observable sequence.
@@ -24,7 +24,10 @@ def _skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
             elements except for the bypassed ones at the end.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             q: List[_T] = []
 
             def on_next(value: _T) -> None:
@@ -37,11 +40,13 @@ def _skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
                 if front is not None:
                     observer.on_next(front)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return skip_last
 
 
-__all__ = ["_skip_last"]
+__all__ = ["skip_last"]

@@ -7,7 +7,7 @@ from rx.core.typing import Predicate
 _T = TypeVar("_T")
 
 
-def _single(
+def single(
     predicate: Optional[Predicate[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the only element of an observable sequence that satisfies the
@@ -33,4 +33,4 @@ def _single(
         return ops.single_or_default_async(False)
 
 
-__all__ = ["_single"]
+__all__ = ["single"]

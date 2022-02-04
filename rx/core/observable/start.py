@@ -6,7 +6,7 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def _start(
+def start(
     func: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[_T]:
     """Invokes the specified function asynchronously on the specified
@@ -34,4 +34,4 @@ def _start(
     return to_async(func, scheduler)()
 
 
-__all__ = ["_start"]
+__all__ = ["start"]

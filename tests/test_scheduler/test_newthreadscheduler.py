@@ -9,7 +9,6 @@ from rx.internal.basic import default_now
 
 
 class TestNewThreadScheduler(unittest.TestCase):
-
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now - default_now()
@@ -62,7 +61,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
         d.dispose()
 
-        sleep(0.1)
+        sleep(0.2)
         assert ran is False
 
     def test_new_thread_schedule_periodic(self):
@@ -71,7 +70,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.05
         counter = 3
 
-        def action(state):
+        def action(state: int):
             nonlocal counter
             if state:
                 counter -= 1
@@ -88,7 +87,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.1
         counter = 4
 
-        def action(state):
+        def action(state: int):
             nonlocal counter
             if state:
                 counter -= 1

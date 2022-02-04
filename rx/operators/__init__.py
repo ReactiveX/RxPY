@@ -2399,9 +2399,9 @@ def share() -> Callable[[Observable[_T]], Observable[_T]]:
         source
         Observable.
     """
-    from rx.core.operators.publish import _share
+    from rx.core.operators.publish import share
 
-    return _share()
+    return share()
 
 
 def single(
@@ -2434,9 +2434,9 @@ def single(
         the observable sequence that satisfies the condition in the
         predicate.
     """
-    from rx.core.operators.single import _single
+    from rx.core.operators.single import single
 
-    return _single(predicate)
+    return single(predicate)
 
 
 def single_or_default(
@@ -2472,17 +2472,17 @@ def single_or_default(
         the observable sequence that satisfies the condition in the
         predicate, or a default value if no such element exists.
     """
-    from rx.core.operators.singleordefault import _single_or_default
+    from rx.core.operators.singleordefault import single_or_default
 
-    return _single_or_default(predicate, default_value)
+    return single_or_default(predicate, default_value)
 
 
 def single_or_default_async(
     has_default: bool = False, default_value: Optional[_T] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    from rx.core.operators.singleordefault import _single_or_default_async
+    from rx.core.operators.singleordefault import single_or_default_async
 
-    return _single_or_default_async(has_default, default_value)
+    return single_or_default_async(has_default, default_value)
 
 
 def skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2508,9 +2508,9 @@ def skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence that contains the elements that
         occur after the specified index in the input sequence.
     """
-    from rx.core.operators.skip import _skip
+    from rx.core.operators.skip import skip
 
-    return _skip(count)
+    return skip(count)
 
 
 def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2541,9 +2541,9 @@ def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence containing the source sequence
         elements except for the bypassed ones at the end.
     """
-    from rx.core.operators.skiplast import _skip_last
+    from rx.core.operators.skiplast import skip_last
 
-    return _skip_last(count)
+    return skip_last(count)
 
 
 def skip_last_with_time(
@@ -2570,9 +2570,9 @@ def skip_last_with_time(
         An observable sequence with the elements skipped during the
     specified duration from the end of the source sequence.
     """
-    from rx.core.operators.skiplastwithtime import _skip_last_with_time
+    from rx.core.operators.skiplastwithtime import skip_last_with_time
 
-    return _skip_last_with_time(duration, scheduler=scheduler)
+    return skip_last_with_time(duration, scheduler=scheduler)
 
 
 def skip_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2597,9 +2597,9 @@ def skip_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[
         source sequence starting from the point the other sequence
         triggered propagation.
     """
-    from rx.core.operators.skipuntil import _skip_until
+    from rx.core.operators.skipuntil import skip_until
 
-    return _skip_until(other)
+    return skip_until(other)
 
 
 def skip_until_with_time(
@@ -2667,9 +2667,9 @@ def skip_while(
         the input sequence starting at the first element in the linear
         series that does not pass the test specified by predicate.
     """
-    from rx.core.operators.skipwhile import _skip_while
+    from rx.core.operators.skipwhile import skip_while
 
-    return _skip_while(predicate)
+    return skip_while(predicate)
 
 
 def skip_while_indexed(
@@ -2701,9 +2701,9 @@ def skip_while_indexed(
         the input sequence starting at the first element in the linear
         series that does not pass the test specified by predicate.
     """
-    from rx.core.operators.skipwhile import _skip_while_indexed
+    from rx.core.operators.skipwhile import skip_while_indexed
 
-    return _skip_while_indexed(predicate)
+    return skip_while_indexed(predicate)
 
 
 def skip_with_time(
@@ -2907,12 +2907,14 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
         An operator function that takes a source observable and returns
         the source sequence prepended with the specified values.
     """
-    from rx.core.operators.startswith import _start_with
+    from rx.core.operators.startswith import start_with
 
-    return _start_with(*args)
+    return start_with(*args)
 
 
-def subscribe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observable]:
+def subscribe_on(
+    scheduler: abc.SchedulerBase,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Subscribe on the specified scheduler.
 
     Wrap the source sequence in order to run its subscription and
@@ -2933,9 +2935,9 @@ def subscribe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observa
         returns the source sequence whose subscriptions and
         un-subscriptions happen on the specified scheduler.
     """
-    from rx.core.operators.subscribeon import _subscribe_on
+    from rx.core.operators.subscribeon import subscribe_on
 
-    return _subscribe_on(scheduler)
+    return subscribe_on(scheduler)
 
 
 def sum(
@@ -2993,9 +2995,9 @@ def switch_latest() -> Callable[[Observable[Observable[Any]]], Observable[Any]]:
         time produces the elements of the most recent inner observable
         sequence that has been received.
     """
-    from rx.core.operators.switchlatest import _switch_latest
+    from rx.core.operators.switchlatest import switch_latest
 
-    return _switch_latest()
+    return switch_latest()
 
 
 def take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3345,7 +3347,7 @@ def throttle_with_mapper(
 
 def timestamp(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[Any]]:
     """The timestamp operator.
 
     Records the timestamp for each value in an observable sequence.
@@ -3361,9 +3363,9 @@ def timestamp(
         source and returns an observable sequence with timestamp
         information on values.
     """
-    from rx.core.operators.timestamp import _timestamp
+    from rx.core.operators.timestamp import timestamp
 
-    return _timestamp(scheduler=scheduler)
+    return timestamp(scheduler=scheduler)
 
 
 def timeout(
@@ -3433,9 +3435,9 @@ def timeout_with_mapper(
         returns the source sequence switching to the other sequence in
         case of a timeout.
     """
-    from rx.core.operators.timeoutwithmapper import _timeout_with_mapper
+    from rx.core.operators.timeoutwithmapper import timeout_with_mapper
 
-    return _timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
+    return timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
 
 
 def time_interval(
