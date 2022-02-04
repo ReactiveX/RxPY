@@ -17,12 +17,12 @@ def _to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
             observer: abc.ObserverBase[Set[_T]],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            s = set[_T]()
+            s: Set[_T] = set()
 
             def on_completed() -> None:
                 nonlocal s
                 observer.on_next(s)
-                s = set[_T]()
+                s = set()
                 observer.on_completed()
 
             return source.subscribe_(s.add, observer.on_error, on_completed, scheduler)

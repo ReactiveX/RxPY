@@ -52,7 +52,7 @@ def _window_with_count(
             q: List[Subject[_T]] = []
 
             def create_window():
-                s = Subject[_T]()
+                s: Subject[_T] = Subject()
                 q.append(s)
                 observer.on_next(add_ref(s, refCountDisposable))
 

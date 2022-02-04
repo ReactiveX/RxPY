@@ -30,7 +30,7 @@ def _timestamp(
             An observable sequence with timestamp information on values.
         """
 
-        def factory(scheduler_=None):
+        def factory(scheduler_: Optional[abc.SchedulerBase] = None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             mapper = operators.map(
                 lambda value: Timestamp(value=value, timestamp=_scheduler.now)
@@ -41,3 +41,6 @@ def _timestamp(
         return defer(factory)
 
     return timestamp
+
+
+__all__ = ["_timestamp"]
