@@ -1,3 +1,4 @@
+from asyncio import Future
 from typing import Callable, Union, cast, TypeVar
 
 import rx
@@ -8,8 +9,8 @@ _T = TypeVar("_T")
 
 def _if_then(
     condition: Callable[[], bool],
-    then_source: Union[Observable[_T], typing.Future],
-    else_source: Union[None, Observable[_T], typing.Future] = None,
+    then_source: Union[Observable[_T], "Future[_T]"],
+    else_source: Union[None, Observable[_T], "Future[_T]"] = None,
 ) -> Observable[_T]:
     """Determines whether an observable collection contains values.
 
@@ -35,10 +36,10 @@ def _if_then(
     else_source = else_source or rx.empty()
 
     then_source = (
-        rx.from_future(cast(typing.Future, then_source)) if isinstance(then_source, typing.Future) else then_source
+        rx.from_future(then_source) if isinstance(then_source, Future) else then_source
     )
     else_source = (
-        rx.from_future(cast(typing.Future, else_source)) if isinstance(else_source, typing.Future) else else_source
+        rx.from_future(else_source) if isinstance(else_source, Future) else else_source
     )
 
     def factory(_: abc.SchedulerBase) -> Observable[_T]:

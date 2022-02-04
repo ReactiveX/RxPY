@@ -1,14 +1,17 @@
+from asyncio import Future
 from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 from rx import from_future
-from rx.core import Observable, abc, typing
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 _T = TypeVar("_T")
 
 
-def _skip_until(other: Union[Observable[_T], typing.Future]) -> Callable[[Observable[_T]], Observable[_T]]:
+def _skip_until(
+    other: Union[Observable[_T], "Future[_T]"]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
 
@@ -23,12 +26,15 @@ def _skip_until(other: Union[Observable[_T], typing.Future]) -> Callable[[Observ
     """
 
     if is_future(other):
-        obs: Observable[Any] = from_future(cast(typing.Future, other))
+        obs: Observable[Any] = from_future(other)
     else:
         obs = cast(Observable[_T], other)
 
     def skip_until(source: Observable[_T]) -> Observable[_T]:
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             is_open = [False]
 
             def on_next(left: _T) -> None:
@@ -39,7 +45,9 @@ def _skip_until(other: Union[Observable[_T], typing.Future]) -> Callable[[Observ
                 if is_open[0]:
                     observer.on_completed()
 
-            subs = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subs = source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
             subscriptions = CompositeDisposable(subs)
 
             right_subscription = SingleAssignmentDisposable()
@@ -52,7 +60,9 @@ def _skip_until(other: Union[Observable[_T], typing.Future]) -> Callable[[Observ
             def on_completed2():
                 right_subscription.dispose()
 
-            right_subscription.disposable = obs.subscribe_(on_next2, observer.on_error, on_completed2, scheduler)
+            right_subscription.disposable = obs.subscribe_(
+                on_next2, observer.on_error, on_completed2, scheduler
+            )
 
             return subscriptions
 

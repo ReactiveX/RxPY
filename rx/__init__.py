@@ -1,12 +1,11 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
-
+from asyncio import Future
 from typing import Any, Callable, Iterable, Mapping, Optional, Tuple, TypeVar, Union
 
 from .core import Observable, abc, pipe, typing
 from .internal.utils import alias
 from .subject import Subject
-from .core.typing import Future
 
 _T = TypeVar("_T")
 _T1 = TypeVar("_T1")
@@ -421,7 +420,7 @@ def from_callback(
     return _from_callback(func, mapper)
 
 
-def from_future(future: Union[typing.Future, Observable[_T]]) -> Observable[_T]:
+def from_future(future: Union[Observable[_T], "Future[_T]"]) -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     .. marble::

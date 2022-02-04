@@ -1,22 +1,25 @@
+from asyncio import Future
 from functools import update_wrapper
 from types import FunctionType
 from typing import Any, Callable, Iterable, Optional, cast
 
-from rx.core import abc, typing
+from rx.core import abc
 from rx.disposable import CompositeDisposable
 
 
 def add_ref(xs: abc.ObservableBase[Any], r):
     from rx.core import Observable
 
-    def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ):
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return Observable(subscribe)
 
 
 def is_future(fut: Any) -> bool:
-    return isinstance(fut, typing.Future)
+    return isinstance(fut, Future)
 
 
 def infinite() -> Iterable[int]:

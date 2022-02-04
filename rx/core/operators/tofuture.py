@@ -1,19 +1,20 @@
 from asyncio import Future
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, cast
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
-from .. import abc
+_T = TypeVar("_T")
 
 
 def _to_future(
-    future_ctor: Optional[Callable[[], Future]] = None, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Future]:
-    future_ctor = future_ctor or Future
-    future = future_ctor()
+    future_ctor: Optional[Callable[[], "Future[_T]"]] = None,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T]], "Future[_T]"]:
+    future_ctor_: Callable[[], "Future[_T]"] = future_ctor or (lambda: Future())
+    future: "Future[_T]" = future_ctor_()
 
-    def to_future(source: Observable) -> Future:
+    def to_future(source: Observable[_T]) -> "Future[_T]":
         """Converts an existing observable sequence to a Future.
 
         If the observable emits a single item, then this item is set as the
@@ -31,15 +32,15 @@ def _to_future(
         """
 
         has_value = False
-        last_value = None
+        last_value = cast(_T, None)
 
-        def on_next(value):
+        def on_next(value: _T):
             nonlocal last_value
             nonlocal has_value
             last_value = value
             has_value = True
 
-        def on_error(err):
+        def on_error(err: Exception):
             if not future.cancelled():
                 future.set_exception(err)
 
@@ -58,3 +59,6 @@ def _to_future(
         return future
 
     return to_future
+
+
+__all__ = ["_to_future"]

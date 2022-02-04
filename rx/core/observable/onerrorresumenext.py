@@ -1,14 +1,21 @@
+from asyncio import Future
 from typing import Optional, Union, TypeVar, Any
 
 import rx
 from rx.core import Observable, typing, abc
-from rx.disposable import CompositeDisposable, SerialDisposable, SingleAssignmentDisposable
+from rx.disposable import (
+    CompositeDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 from rx.scheduler import CurrentThreadScheduler
 
 _T = TypeVar("_T")
 
 
-def _on_error_resume_next(*sources: Union[Observable[_T], typing.Future]) -> Observable[_T]:
+def _on_error_resume_next(
+    *sources: Union[Observable[_T], "Future[_T]"]
+) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
 
@@ -22,7 +29,9 @@ def _on_error_resume_next(*sources: Union[Observable[_T], typing.Future]) -> Obs
 
     sources_ = iter(sources)
 
-    def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ):
 
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
@@ -38,7 +47,7 @@ def _on_error_resume_next(*sources: Union[Observable[_T], typing.Future]) -> Obs
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = rx.from_future(source) if isinstance(source, typing.Future) else source
+            current = rx.from_future(source) if isinstance(source, Future) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d
@@ -46,7 +55,9 @@ def _on_error_resume_next(*sources: Union[Observable[_T], typing.Future]) -> Obs
             def on_resume(state=None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_(observer.on_next, on_resume, on_resume, scheduler)
+            d.disposable = current.subscribe_(
+                observer.on_next, on_resume, on_resume, scheduler
+            )
 
         cancelable.disposable = scheduler.schedule(action)
         return CompositeDisposable(subscription, cancelable)

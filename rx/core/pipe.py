@@ -11,39 +11,20 @@ G = TypeVar("G")
 
 
 @overload
-def pipe(*operators: Callable[["Observable"], "Observable"]) -> Callable[["Observable"], "Observable"]:  # type: ignore
-    """Compose multiple operators left to right.
-
-    Composes zero or more operators into a functional composition. The
-    operators are composed to left to right. A composition of zero
-    operators gives back the source.
-
-    Examples:
-        >>> pipe()(source) == source
-        >>> pipe(f)(source) == f(source)
-        >>> pipe(f, g)(source) == g(f(source))
-        >>> pipe(f, g, h)(source) == h(g(f(source)))
-        ...
-
-    Returns:
-        The composed observable.
-    """
+def pipe(__op1: Callable[[A], B]) -> Callable[[A], B]:
     ...
 
 
 @overload
-def pipe(__op1: Callable[[A], B]) -> Callable[[A], B]:  # pylint: disable=function-redefined
-    ...
-
-
-@overload
-def pipe(__op1: Callable[[A], B], __op2: Callable[[B], C]) -> Callable[[A], C]:  # pylint: disable=function-redefined
+def pipe(__op1: Callable[[A], B], __op2: Callable[[B], C]) -> Callable[[A], C]:
     ...
 
 
 @overload
 def pipe(
-    __op1: Callable[[A], B], __op2: Callable[[B], C], __op3: Callable[[C], D]  # pylint: disable=function-redefined
+    __op1: Callable[[A], B],
+    __op2: Callable[[B], C],
+    __op3: Callable[[C], D],
 ) -> Callable[[A], D]:
     ...
 

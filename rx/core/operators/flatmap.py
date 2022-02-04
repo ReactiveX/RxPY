@@ -1,5 +1,4 @@
-import collections
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, Iterable
 
 from rx import from_, from_future
 from rx import operators as ops
@@ -17,10 +16,12 @@ def _flat_map_internal(
     mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
 ) -> Observable[_T2]:
     def projection(x: _T1, i: int):
-        mapper_result = mapper(x) if mapper else mapper_indexed(x, i) if mapper_indexed else None
+        mapper_result = (
+            mapper(x) if mapper else mapper_indexed(x, i) if mapper_indexed else None
+        )
         if is_future(mapper_result):
             result = from_future(mapper_result)
-        elif isinstance(mapper_result, collections.abc.Iterable):
+        elif isinstance(mapper_result, Iterable):
             result = from_(mapper_result)
         else:
             result = mapper_result
@@ -29,7 +30,9 @@ def _flat_map_internal(
     return source.pipe(ops.map_indexed(projection), ops.merge_all())
 
 
-def _flat_map(mapper: Optional[Mapper[_T1, Observable[_T2]]] = None) -> Callable[[Observable[_T1]], Observable[_T2]]:
+def _flat_map(
+    mapper: Optional[Mapper[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map(source: Observable[_T1]) -> Observable[_T2]:
         """One of the Following:
         Projects each element of an observable sequence to an observable
@@ -89,7 +92,9 @@ def _flat_map_indexed(
     return flat_map_indexed
 
 
-def _flat_map_latest(mapper: Mapper[_T1, Observable[_T2]]) -> Callable[[Observable[_T1]], Observable[_T2]]:
+def _flat_map_latest(
+    mapper: Mapper[_T1, Observable[_T2]]
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map_latest(source: Observable[_T1]) -> Observable[_T2]:
         """Projects each element of an observable sequence into a new
         sequence of observable sequences by incorporating the element's

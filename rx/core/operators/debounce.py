@@ -1,14 +1,19 @@
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, List, Optional, TypeVar, cast
 
 from rx.core import Observable, abc, typing
-from rx.disposable import (CompositeDisposable, SerialDisposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import (
+    CompositeDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 from rx.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
 
 
-def _debounce(duetime: typing.RelativeTime, scheduler: abc.SchedulerBase) -> Callable[[Observable[_T]], Observable[_T]]:
+def _debounce(
+    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase
+) -> Callable[[Observable[_T]], Observable[_T]]:
     def debounce(source: Observable[_T]) -> Observable[_T]:
         """Ignores values from an observable sequence which are followed by
         another value before duetime.
@@ -24,14 +29,17 @@ def _debounce(duetime: typing.RelativeTime, scheduler: abc.SchedulerBase) -> Cal
             returns the debounced observable sequence.
         """
 
-        def subscribe(observer, scheduler_=None) -> abc.DisposableBase:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             cancelable = SerialDisposable()
             has_value = [False]
-            value = [None]
-            _id = [0]
+            value: List[_T] = [cast(_T, None)]
+            _id: List[int] = [0]
 
-            def on_next(x: Any) -> None:
+            def on_next(x: _T) -> None:
                 has_value[0] = True
                 value[0] = x
                 _id[0] += 1
@@ -39,7 +47,7 @@ def _debounce(duetime: typing.RelativeTime, scheduler: abc.SchedulerBase) -> Cal
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def action(scheduler, state=None) -> None:
+                def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
                     has_value[0] = False
@@ -61,7 +69,9 @@ def _debounce(duetime: typing.RelativeTime, scheduler: abc.SchedulerBase) -> Cal
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler_)
+            subscription = source.subscribe_(
+                on_next, on_error, on_completed, scheduler=scheduler_
+            )
             return CompositeDisposable(subscription, cancelable)
 
         return Observable(subscribe)
@@ -88,7 +98,10 @@ def _throttle_with_mapper(
             The throttled observable sequence.
         """
 
-        def subscribe(observer, scheduler=None) -> abc.DisposableBase:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             cancelable = SerialDisposable()
             has_value = [False]
             value = [None]
@@ -109,7 +122,7 @@ def _throttle_with_mapper(
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def on_next(x: Any) -> None:
+                def on_next(x: _T) -> None:
                     if has_value[0] and _id[0] == current_id:
                         observer.on_next(value[0])
 
@@ -123,9 +136,11 @@ def _throttle_with_mapper(
                     has_value[0] = False
                     d.dispose()
 
-                d.disposable = throttle.subscribe_(on_next, observer.on_error, on_completed, scheduler=scheduler)
+                d.disposable = throttle.subscribe_(
+                    on_next, observer.on_error, on_completed, scheduler=scheduler
+                )
 
-            def on_error(e) -> None:
+            def on_error(e: Exception) -> None:
                 cancelable.dispose()
                 observer.on_error(e)
                 has_value[0] = False
@@ -140,9 +155,14 @@ def _throttle_with_mapper(
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+            subscription = source.subscribe_(
+                on_next, on_error, on_completed, scheduler=scheduler
+            )
             return CompositeDisposable(subscription, cancelable)
 
         return Observable(subscribe)
 
     return throttle_with_mapper
+
+
+__all__ = ["_debounce", "_throttle_with_mapper"]

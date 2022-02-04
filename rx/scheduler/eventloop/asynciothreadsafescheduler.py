@@ -4,8 +4,7 @@ from concurrent.futures import Future
 from typing import TYPE_CHECKING, List, Optional, TypeVar
 
 from rx.core import abc, typing
-from rx.disposable import (CompositeDisposable, Disposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
 from .asyncioscheduler import AsyncIOScheduler
 
@@ -29,7 +28,9 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
 
         super().__init__(loop)
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -52,10 +53,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
                 handle.cancel()
                 return
 
-            if TYPE_CHECKING:
-                future: Future[int] = Future()
-            else:
-                future: Future = Future()
+            future: "Future[int]" = Future()
 
             def cancel_handle() -> None:
                 handle.cancel()
@@ -67,7 +65,10 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -110,10 +111,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
                 do_cancel_handles()
                 return
 
-            if TYPE_CHECKING:
-                future: Future[int] = Future()
-            else:
-                future: Future = Future()
+            future: "Future[int]" = Future()
 
             def cancel_handle() -> None:
                 do_cancel_handles()
@@ -125,7 +123,10 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
