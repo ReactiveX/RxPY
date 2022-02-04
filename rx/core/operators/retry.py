@@ -1,11 +1,15 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 import rx
 from rx.core import Observable
 from rx.internal.utils import infinite
 
+_T = TypeVar("_T")
 
-def _retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observable]:
+
+def _retry(
+    retry_count: Optional[int] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is
     not specified, it retries indefinitely.
@@ -28,6 +32,10 @@ def _retry(retry_count: Optional[int] = None) -> Callable[[Observable], Observab
     else:
         gen = range(retry_count)
 
-    def retry(source: Observable) -> Observable:
+    def retry(source: Observable[_T]) -> Observable[_T]:
         return rx.catch_with_iterable(source for _ in gen)
+
     return retry
+
+
+__all__ = ["_retry"]

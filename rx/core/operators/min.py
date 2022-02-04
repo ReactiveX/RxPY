@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -6,15 +6,19 @@ from rx.core.typing import Comparer
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
+_T = TypeVar("_T")
 
-def first_only(x: Sequence) -> Any:
+
+def first_only(x: Sequence[_T]) -> _T:
     if not x:
         raise SequenceContainsNoElementsError()
 
     return x[0]
 
 
-def _min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
+def _min(
+    comparer: Optional[Comparer[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """The `min` operator.
 
     Returns the minimum element in an observable sequence according to
@@ -32,7 +36,7 @@ def _min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observab
         with the minimum element in the source sequence.
     """
 
-    return pipe(
-        ops.min_by(identity, comparer),
-        ops.map(first_only)
-    )
+    return pipe(ops.min_by(identity, comparer), ops.map(first_only))
+
+
+__all__ = ["_min"]

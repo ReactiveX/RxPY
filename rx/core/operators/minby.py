@@ -1,21 +1,27 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, cast, List
 
-from rx.core import Observable
-from rx.core.typing import Mapper, SubComparer
+from rx.core import Observable, typing, abc
 from rx.internal.basic import default_sub_comparer
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
 
-def extrema_by(source: Observable,
-               key_mapper: Mapper,
-               comparer: SubComparer
-               ) -> Observable:
 
-    def subscribe(observer, scheduler=None):
-        has_value = [False]
-        last_key = [None]
-        items = []
+def extrema_by(
+    source: Observable[_T],
+    key_mapper: typing.Mapper[_T, _TKey],
+    comparer: typing.SubComparer[_TKey],
+) -> Observable[List[_T]]:
+    def subscribe(
+        observer: abc.ObserverBase[List[_T]],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
+        has_value = False
+        last_key: _TKey = cast(_TKey, None)
+        items: List[_T] = []
 
-        def on_next(x):
+        def on_next(x: _T) -> None:
+            nonlocal has_value, last_key
             try:
                 key = key_mapper(x)
             except Exception as ex:
@@ -24,18 +30,18 @@ def extrema_by(source: Observable,
 
             comparison = 0
 
-            if not has_value[0]:
-                has_value[0] = True
-                last_key[0] = key
+            if not has_value:
+                has_value = True
+                last_key = key
             else:
                 try:
-                    comparison = comparer(key, last_key[0])
+                    comparison = comparer(key, last_key)
                 except Exception as ex1:
                     observer.on_error(ex1)
                     return
 
             if comparison > 0:
-                last_key[0] = key
+                last_key = key
                 items[:] = []
 
             if comparison >= 0:
@@ -46,12 +52,14 @@ def extrema_by(source: Observable,
             observer.on_completed()
 
         return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+
     return Observable(subscribe)
 
 
-def _min_by(key_mapper: Mapper,
-            comparer: Optional[SubComparer] = None
-            ) -> Callable[[Observable], Observable]:
+def _min_by(
+    key_mapper: typing.Mapper[_T, _TKey],
+    comparer: Optional[typing.SubComparer[_TKey]] = None,
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -70,8 +78,12 @@ def _min_by(key_mapper: Mapper,
         elements that have a minimum key value.
     """
 
-    cmp: SubComparer = comparer or default_sub_comparer
+    cmp = comparer or default_sub_comparer
 
-    def min_by(source: Observable) -> Observable:
-        return extrema_by(source, key_mapper, lambda x, y: - cmp(x, y))
+    def min_by(source: Observable[_T]) -> Observable[List[_T]]:
+        return extrema_by(source, key_mapper, lambda x, y: -cmp(x, y))
+
     return min_by
+
+
+__all__ = ["_min_by"]

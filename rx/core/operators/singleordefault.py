@@ -1,20 +1,25 @@
-from typing import Callable, Optional, Any
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, pipe, abc
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
+_T = TypeVar("_T")
+
 
 def _single_or_default_async(
-    has_default: bool = False, default_value: Any = None
-) -> Callable[[Observable], Observable]:
-    def single_or_default_async(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    has_default: bool = False, default_value: _T = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def single_or_default_async(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             value = [default_value]
             seen_value = [False]
 
-            def on_next(x):
+            def on_next(x: _T):
                 if seen_value[0]:
                     observer.on_error(
                         Exception("Sequence contains more than one element")
@@ -40,8 +45,8 @@ def _single_or_default_async(
 
 
 def _single_or_default(
-    predicate: Optional[Predicate] = None, default_value: Any = None
-) -> Callable[[Observable], Observable]:
+    predicate: Optional[Predicate[_T]] = None, default_value: _T = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the only element of an observable sequence that matches
     the predicate, or a default value if no such element exists this
     method reports an exception if there is more than one element in the
@@ -69,3 +74,6 @@ def _single_or_default(
         return pipe(ops.filter(predicate), ops.single_or_default(None, default_value))
     else:
         return _single_or_default_async(True, default_value)
+
+
+__all__ = ["_single_or_default", "_single_or_default_async"]

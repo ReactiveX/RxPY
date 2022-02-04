@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Any, NoReturn, Union
+from typing import Any, NoReturn, Union, TypeVar
 
+_T = TypeVar("_T")
 
 # Defaults
 def noop(*args: Any, **kw: Any):
@@ -8,7 +9,7 @@ def noop(*args: Any, **kw: Any):
     pass
 
 
-def identity(x: Any) -> Any:
+def identity(x: _T) -> _T:
     """Returns argument x"""
     return x
 

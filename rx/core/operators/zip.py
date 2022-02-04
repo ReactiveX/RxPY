@@ -1,12 +1,17 @@
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Any, Optional, Tuple, TypeVar
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, abc
+
+_T = TypeVar("_T")
+_TOther = TypeVar("_TOther")
 
 
 # pylint: disable=redefined-builtin
-def _zip(*args: Observable) -> Callable[[Observable], Observable]:
-    def zip(source: Observable) -> Observable:
+def _zip(
+    *args: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
+    def zip(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         """Merges the specified observable sequences into one observable
         sequence by creating a tuple whenever all of the
         observable sequences have produced an element at a corresponding
@@ -23,10 +28,14 @@ def _zip(*args: Observable) -> Callable[[Observable], Observable]:
             elements of the sources as a tuple.
         """
         return rx.zip(source, *args)
+
     return zip
 
-def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
-    def zip_with_iterable(source: Observable) -> Observable:
+
+def _zip_with_iterable(
+    seq: Iterable[_TOther],
+) -> Callable[[Observable[_T]], Observable[Tuple[_T, _TOther]]]:
+    def zip_with_iterable(source: Observable[_T]) -> Observable[Tuple[_T, _TOther]]:
         """Merges the specified observable sequence and list into one
         observable sequence by creating a tuple whenever all of
         the observable sequences have produced an element at a
@@ -46,10 +55,13 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
         first = source
         second = iter(seq)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[Tuple[_T, _TOther]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             index = 0
 
-            def on_next(left):
+            def on_next(left: _T) -> None:
                 nonlocal index
 
                 try:
@@ -60,6 +72,13 @@ def _zip_with_iterable(seq: Iterable) -> Callable[[Observable], Observable]:
                     result = (left, right)
                     observer.on_next(result)
 
-            return first.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return first.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
+
         return Observable(subscribe)
+
     return zip_with_iterable
+
+
+__all__ = ["_zip", "_zip_with_iterable"]

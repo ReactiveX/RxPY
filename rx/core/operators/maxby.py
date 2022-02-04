@@ -1,19 +1,22 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, List
 
-from rx.core import Observable
-from rx.core.typing import Mapper, SubComparer
+from rx.core import Observable, typing
 from rx.internal.basic import default_sub_comparer
 
 from .minby import extrema_by
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
 
-def _max_by(key_mapper: Mapper,
-            comparer: Optional[SubComparer] = None
-            ) -> Callable[[Observable], Observable]:
+
+def _max_by(
+    key_mapper: typing.Mapper[_T, _TKey],
+    comparer: Optional[typing.SubComparer[_TKey]] = None,
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
 
     cmp = comparer or default_sub_comparer
 
-    def max_by(source: Observable) -> Observable:
+    def max_by(source: Observable[_T]) -> Observable[List[_T]]:
         """Partially applied max_by operator.
 
         Returns the elements in an observable sequence with the maximum
@@ -30,4 +33,8 @@ def _max_by(key_mapper: Mapper,
             elements that have a maximum key value.
         """
         return extrema_by(source, key_mapper, cmp)
+
     return max_by
+
+
+__all__ = ["_max_by"]

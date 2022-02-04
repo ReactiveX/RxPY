@@ -26,7 +26,7 @@ MapperIndexed = Callable[[_T1, int], _T2]
 Predicate = Callable[[_T1], bool]
 PredicateIndexed = Callable[[_T1, int], bool]
 Comparer = Callable[[_T1, _T1], bool]
-SubComparer = Callable[[_T1, _T2], int]
+SubComparer = Callable[[_T1, _T1], int]
 Accumulator = Callable[[_TState, _T1], _TState]
 
 

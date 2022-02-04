@@ -1,14 +1,19 @@
 from asyncio import Future
 from functools import update_wrapper
 from types import FunctionType
-from typing import Any, Callable, Iterable, Optional, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, cast, TypeVar
 
 from rx.core import abc
 from rx.disposable import CompositeDisposable
 from rx.disposable.refcountdisposable import RefCountDisposable
 
+if TYPE_CHECKING:
+    from rx.core import Observable
 
-def add_ref(xs: abc.ObservableBase[Any], r: RefCountDisposable):
+_T = TypeVar("_T")
+
+
+def add_ref(xs: "Observable[_T]", r: RefCountDisposable) -> "Observable[_T]":
     from rx.core import Observable
 
     def subscribe(

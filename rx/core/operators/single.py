@@ -1,11 +1,15 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 
+_T = TypeVar("_T")
 
-def _single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
+
+def _single(
+    predicate: Optional[Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the only element of an observable sequence that satisfies the
     condition in the optional predicate, and reports an exception if there
     is not exactly one element in the observable sequence.
@@ -27,3 +31,6 @@ def _single(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obs
         return pipe(ops.filter(predicate), ops.single())
     else:
         return ops.single_or_default_async(False)
+
+
+__all__ = ["_single"]

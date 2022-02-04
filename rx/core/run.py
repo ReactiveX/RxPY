@@ -1,5 +1,5 @@
 import threading
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.scheduler import NewThreadScheduler
@@ -8,8 +8,10 @@ from .observable import Observable
 
 scheduler = NewThreadScheduler()
 
+_T = TypeVar("_T")
 
-def run(source: Observable) -> Any:
+
+def run(source: Observable[_T]) -> _T:
     """Run source synchronously.
 
     Subscribes to the observable source. Then blocks and waits for the
@@ -58,7 +60,7 @@ def run(source: Observable) -> Any:
     while not done:
         latch.wait()
 
-    if exception and isinstance(exception, Exception):
+    if isinstance(exception, Exception):
         raise exception  # pylint: disable=raising-bad-type
 
     if not has_result:

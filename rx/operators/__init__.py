@@ -1,6 +1,7 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
+from tkinter import NO
 from typing import (
     Any,
     Callable,
@@ -21,6 +22,7 @@ from rx.core import (
     abc,
     pipe,
     typing,
+    Notification,
 )
 from rx.core.typing import (
     Accumulator,
@@ -627,7 +629,7 @@ def delay_with_mapper(
     return _delay_with_mapper(subscription_delay, delay_duration_mapper)
 
 
-def dematerialize() -> Callable[[Observable], Observable]:
+def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
     """Dematerialize operator.
 
     Dematerializes the explicit notification values of an
@@ -1643,7 +1645,7 @@ def map_indexed(
     return _map_indexed(mapper_indexed)
 
 
-def materialize() -> Callable[[Observable], Observable]:
+def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
     """Materializes the implicit notifications of an observable
     sequence as explicit notification values.
 
@@ -1657,7 +1659,9 @@ def materialize() -> Callable[[Observable], Observable]:
     return _materialize()
 
 
-def max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
+def max(
+    comparer: Optional[Comparer[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
@@ -1686,8 +1690,8 @@ def max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observabl
 
 
 def max_by(
-    key_mapper: Mapper, comparer: Optional[Comparer] = None
-) -> Callable[[Observable], Observable]:
+    key_mapper: Mapper[_T, _TKey], comparer: Optional[Comparer[_TKey]] = None
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """The max_by operator.
 
     Returns the elements in an observable sequence with the maximum
@@ -1719,8 +1723,8 @@ def max_by(
 
 
 def merge(
-    *sources: Observable, max_concurrent: Optional[int] = None
-) -> Callable[[Observable], Observable]:
+    *sources: Observable[Any], max_concurrent: Optional[int] = None
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """Merges an observable sequence of observable sequences into an
     observable sequence, limiting the number of concurrent
     subscriptions to inner sequences. Or merges two observable
@@ -1777,7 +1781,9 @@ def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     return _merge_all()
 
 
-def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
+def min(
+    comparer: Optional[Comparer[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """The `min` operator.
 
     Returns the minimum element in an observable sequence according to
@@ -1808,8 +1814,8 @@ def min(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observabl
 
 
 def min_by(
-    key_mapper: Mapper, comparer: Optional[Comparer] = None
-) -> Callable[[Observable], Observable]:
+    key_mapper: Mapper[_T, _TKey], comparer: Optional[Comparer[_TKey]] = None
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -2930,8 +2936,8 @@ def subscribe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observa
 
 
 def sum(
-    key_mapper: Optional[Mapper[_T1, _T2]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    key_mapper: Optional[Mapper[_T, int]] = None
+) -> Callable[[Observable[_T]], Observable[int]]:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the
     input sequence, else if not specified computes the sum on each item

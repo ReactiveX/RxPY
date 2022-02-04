@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -7,8 +7,12 @@ from rx.internal.basic import identity
 
 from .min import first_only
 
+_T = TypeVar("_T")
 
-def _max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observable]:
+
+def _max(
+    comparer: Optional[Comparer[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.
 
@@ -25,7 +29,7 @@ def _max(comparer: Optional[Comparer] = None) -> Callable[[Observable], Observab
         maximum element in the source sequence.
     """
 
-    return pipe(
-        ops.max_by(identity, comparer),
-        ops.map(first_only)
-    )
+    return pipe(ops.max_by(identity, comparer), ops.map(first_only))
+
+
+__all__ = ["_max"]

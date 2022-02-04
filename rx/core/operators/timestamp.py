@@ -11,8 +11,10 @@ class Timestamp(NamedTuple):
     timestamp: datetime
 
 
-def _timestamp(scheduler: Optional[abc.SchedulerBase] = None) -> Callable[[Observable], Observable]:
-    def timestamp(source: Observable) -> Observable:
+def _timestamp(
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[Any]], Observable[Timestamp]]:
+    def timestamp(source: Observable[Any]) -> Observable[Timestamp]:
         """Records the timestamp for each value in an observable sequence.
 
         Examples:
@@ -30,7 +32,9 @@ def _timestamp(scheduler: Optional[abc.SchedulerBase] = None) -> Callable[[Obser
 
         def factory(scheduler_=None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
-            mapper = operators.map(lambda value: Timestamp(value=value, timestamp=_scheduler.now))
+            mapper = operators.map(
+                lambda value: Timestamp(value=value, timestamp=_scheduler.now)
+            )
 
             return source.pipe(mapper)
 
