@@ -10,7 +10,7 @@ from rx.internal.utils import is_future
 _T = TypeVar("_T")
 
 
-def merge(
+def merge_(
     *sources: Observable[_T], max_concurrent: Optional[int] = None
 ) -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def merge(source: Observable[Observable[_T]]) -> Observable[_T]:
@@ -86,7 +86,7 @@ def merge(
     return merge
 
 
-def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def merge_all_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def merge_all(source: Observable[Observable[_T]]) -> Observable[_T]:
         """Partially applied merge_all operator.
 
@@ -148,4 +148,4 @@ def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     return merge_all
 
 
-__all__ = ["merge", "merge_all"]
+__all__ = ["merge_", "merge_all_"]

@@ -9,7 +9,7 @@ _T = TypeVar("_T")
 _TKey = TypeVar("_TKey")
 
 
-def max_by(
+def max_by_(
     key_mapper: typing.Mapper[_T, _TKey],
     comparer: Optional[typing.SubComparer[_TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
@@ -37,4 +37,4 @@ def max_by(
     return max_by
 
 
-__all__ = ["max_by"]
+__all__ = ["max_by_"]

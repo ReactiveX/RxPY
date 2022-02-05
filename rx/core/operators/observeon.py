@@ -7,7 +7,7 @@ from rx.core.observer import ObserveOnObserver
 _T = TypeVar("_T")
 
 
-def observe_on(
+def observe_on_(
     scheduler: abc.SchedulerBase,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def observe_on(source: Observable[_T]) -> Observable[_T]:
@@ -41,4 +41,4 @@ def observe_on(
     return observe_on
 
 
-__all__ = ["observe_on"]
+__all__ = ["observe_on_"]

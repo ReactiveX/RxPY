@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, cast
 
 from rx import operators as ops
 from rx.core import Observable, abc, pipe
@@ -8,11 +8,14 @@ from rx.internal.exceptions import SequenceContainsNoElementsError
 _T = TypeVar("_T")
 
 
-def _first_or_default_async(
+def first_or_default_async_(
     has_default: bool = False, default_value: Optional[_T] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def first_or_default_async(source: Observable[_T]) -> Observable[_T]:
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             def on_next(x: _T):
                 observer.on_next(x)
                 observer.on_completed()
@@ -21,17 +24,19 @@ def _first_or_default_async(
                 if not has_default:
                     observer.on_error(SequenceContainsNoElementsError())
                 else:
-                    observer.on_next(default_value)
+                    observer.on_next(cast(_T, default_value))
                     observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return first_or_default_async
 
 
-def _first_or_default(
+def first_or_default_(
     predicate: Optional[Predicate[_T]] = None, default_value: Optional[_T] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the first element of an observable sequence that
@@ -60,7 +65,7 @@ def _first_or_default(
 
     if predicate:
         return pipe(ops.filter(predicate), ops.first_or_default(None, default_value))
-    return _first_or_default_async(True, default_value)
+    return first_or_default_async_(True, default_value)
 
 
-__all__ = ["_first_or_default", "_first_or_default_async"]
+__all__ = ["first_or_default_", "first_or_default_async_"]

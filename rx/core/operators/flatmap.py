@@ -30,7 +30,7 @@ def _flat_map_internal(
     return source.pipe(ops.map_indexed(projection), ops.merge_all())
 
 
-def _flat_map(
+def flat_map_(
     mapper: Optional[Mapper[_T1, Observable[_T2]]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map(source: Observable[_T1]) -> Observable[_T2]:
@@ -62,7 +62,7 @@ def _flat_map(
     return flat_map
 
 
-def _flat_map_indexed(
+def flat_map_indexed_(
     mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map_indexed(source: Observable[_T1]) -> Observable[_T2]:
@@ -92,7 +92,7 @@ def _flat_map_indexed(
     return flat_map_indexed
 
 
-def _flat_map_latest(
+def flat_map_latest_(
     mapper: Mapper[_T1, Observable[_T2]]
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map_latest(source: Observable[_T1]) -> Observable[_T2]:
@@ -118,4 +118,4 @@ def _flat_map_latest(
     return flat_map_latest
 
 
-__all__ = ["_flat_map", "_flat_map_latest", "_flat_map_indexed"]
+__all__ = ["flat_map_", "flat_map_latest_", "flat_map_indexed_"]

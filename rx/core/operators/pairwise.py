@@ -1,10 +1,12 @@
-from typing import Callable
+from typing import Callable, Optional, Tuple, TypeVar, cast
 
-from rx.core import Observable
+from rx.core import Observable, abc
+
+_T = TypeVar("_T")
 
 
-def _pairwise() -> Callable[[Observable], Observable]:
-    def pairwise(source: Observable) -> Observable:
+def pairwise_() -> Callable[[Observable[_T]], Observable[Tuple[_T, _T]]]:
+    def pairwise(source: Observable[_T]) -> Observable[Tuple[_T, _T]]:
         """Partially applied pairwise operator.
 
         Returns a new observable that triggers on the second and
@@ -19,24 +21,33 @@ def _pairwise() -> Callable[[Observable], Observable]:
             observations from the input observable as an array.
         """
 
-        def subscribe(observer, scheduler=None):
-            has_previous = [False]
-            previous = [None]
+        def subscribe(
+            observer: abc.ObserverBase[Tuple[_T, _T]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            has_previous = False
+            previous: _T = cast(_T, None)
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
+                nonlocal has_previous, previous
                 pair = None
 
                 with source.lock:
-                    if has_previous[0]:
-                        pair = (previous[0], x)
+                    if has_previous:
+                        pair = (previous, x)
                     else:
-                        has_previous[0] = True
+                        has_previous = True
 
-                    previous[0] = x
+                    previous = x
 
                 if pair:
                     observer.on_next(pair)
 
             return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+
         return Observable(subscribe)
+
     return pairwise
+
+
+__all__ = ["pairwise_"]

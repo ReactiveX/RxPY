@@ -1163,9 +1163,9 @@ def first_or_default(
         observable sequence that satisfies the condition in the
         predicate, or a default value if no such element exists.
     """
-    from rx.core.operators.firstordefault import _first_or_default
+    from rx.core.operators.firstordefault import first_or_default_
 
-    return _first_or_default(predicate, default_value)
+    return first_or_default_(predicate, default_value)
 
 
 def flat_map(
@@ -1208,9 +1208,9 @@ def flat_map(
         invoking the one-to-many transform function on each element of
         the input sequence.
     """
-    from rx.core.operators.flatmap import _flat_map
+    from rx.core.operators.flatmap import flat_map_
 
-    return _flat_map(mapper)
+    return flat_map_(mapper)
 
 
 def flat_map_indexed(
@@ -1252,9 +1252,9 @@ def flat_map_indexed(
         invoking the one-to-many transform function on each element of
         the input sequence.
     """
-    from rx.core.operators.flatmap import _flat_map_indexed
+    from rx.core.operators.flatmap import flat_map_indexed_
 
-    return _flat_map_indexed(mapper_indexed)
+    return flat_map_indexed_(mapper_indexed)
 
 
 def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
@@ -1277,9 +1277,9 @@ def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
         point in time produces the elements of the most recent inner
         observable sequence that has been received.
     """
-    from rx.core.operators.flatmap import _flat_map_latest
+    from rx.core.operators.flatmap import flat_map_latest_
 
-    return _flat_map_latest(mapper)
+    return flat_map_latest_(mapper)
 
 
 def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
@@ -1691,9 +1691,9 @@ def max(
         source and returns an observable sequence containing a single
         element with the maximum element in the source sequence.
     """
-    from rx.core.operators.max import max
+    from rx.core.operators.max import max_
 
-    return max(comparer)
+    return max_(comparer)
 
 
 def max_by(
@@ -1724,9 +1724,9 @@ def max_by(
         source and return an observable sequence containing a list of
         zero or more elements that have a maximum key value.
     """
-    from rx.core.operators.maxby import max_by
+    from rx.core.operators.maxby import max_by_
 
-    return max_by(key_mapper, comparer)
+    return max_by_(key_mapper, comparer)
 
 
 def merge(
@@ -1759,9 +1759,9 @@ def merge(
         returns the observable sequence that merges the elements of the
         inner sequences.
     """
-    from rx.core.operators.merge import merge
+    from rx.core.operators.merge import merge_
 
-    return merge(*sources, max_concurrent=max_concurrent)
+    return merge_(*sources, max_concurrent=max_concurrent)
 
 
 def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
@@ -1783,9 +1783,9 @@ def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
         source and returns the observable sequence that merges the
         elements of the inner sequences.
     """
-    from rx.core.operators.merge import merge_all
+    from rx.core.operators.merge import merge_all_
 
-    return merge_all()
+    return merge_all_()
 
 
 def min(
@@ -1815,9 +1815,9 @@ def min(
         returns an observable sequence containing a single element
         with the minimum element in the source sequence.
     """
-    from rx.core.operators.min import min
+    from rx.core.operators.min import min_
 
-    return min(comparer)
+    return min_(comparer)
 
 
 def min_by(
@@ -1848,9 +1848,9 @@ def min_by(
         reuturns an observable sequence containing a list of zero
         or more elements that have a minimum key value.
     """
-    from rx.core.operators.minby import min_by
+    from rx.core.operators.minby import min_by_
 
-    return min_by(key_mapper, comparer)
+    return min_by_(key_mapper, comparer)
 
 
 def multicast(
@@ -1892,7 +1892,9 @@ def multicast(
     return _multicast(subject, subject_factory, mapper)
 
 
-def observe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observable]:
+def observe_on(
+    scheduler: abc.SchedulerBase,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Wraps the source sequence in order to run its observer callbacks
     on the specified scheduler.
 
@@ -1908,9 +1910,9 @@ def observe_on(scheduler: abc.SchedulerBase) -> Callable[[Observable], Observabl
         returns the source sequence whose observations happen on the
         specified scheduler.
     """
-    from rx.core.operators.observeon import observe_on
+    from rx.core.operators.observeon import observe_on_
 
-    return observe_on(scheduler)
+    return observe_on_(scheduler)
 
 
 def on_error_resume_next(
@@ -1938,12 +1940,12 @@ def on_error_resume_next(
         exceptionally.
     """
 
-    from rx.core.operators.onerrorresumenext import on_error_resume_next
+    from rx.core.operators.onerrorresumenext import on_error_resume_next_
 
-    return on_error_resume_next(second)
+    return on_error_resume_next_(second)
 
 
-def pairwise() -> Callable[[Observable], Observable]:
+def pairwise() -> Callable[[Observable[_T]], Observable[Tuple[_T, _T]]]:
     """The pairwise operator.
 
     Returns a new observable that triggers on the second and subsequent
@@ -1957,12 +1959,14 @@ def pairwise() -> Callable[[Observable], Observable]:
         returns an observable that triggers on successive pairs of
         observations from the input observable as an array.
     """
-    from rx.core.operators.pairwise import _pairwise
+    from rx.core.operators.pairwise import pairwise_
 
-    return _pairwise()
+    return pairwise_()
 
 
-def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
+def partition(
+    predicate: Predicate[_T],
+) -> Callable[[Observable[_T]], List[Observable[_T]]]:
     """Returns two observables which partition the observations of the
     source by the given function. The first will trigger observations
     for those values for which the predicate returns true. The second
@@ -1989,14 +1993,14 @@ def partition(predicate: Predicate) -> Callable[[Observable], List[Observable]]:
         predicate returns True, and the second triggers when the
         predicate returns False.
     """
-    from rx.core.operators.partition import _partition
+    from rx.core.operators.partition import partition_
 
-    return _partition(predicate)
+    return partition_(predicate)
 
 
 def partition_indexed(
-    predicate_indexed: PredicateIndexed,
-) -> Callable[[Observable], List[Observable]]:
+    predicate_indexed: PredicateIndexed[_T],
+) -> Callable[[Observable[_T]], List[Observable[_T]]]:
     """The indexed partition operator.
 
     Returns two observables which partition the observations of the
@@ -2024,9 +2028,9 @@ def partition_indexed(
         returns True, and the second triggers when the predicate
         returns False.
     """
-    from rx.core.operators.partition import _partition_indexed
+    from rx.core.operators.partition import partition_indexed_
 
-    return _partition_indexed(predicate_indexed)
+    return partition_indexed_(predicate_indexed)
 
 
 def pluck(key: Any) -> Callable[[Observable], Observable]:

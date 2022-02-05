@@ -16,7 +16,7 @@ def first_only(x: Sequence[_T]) -> _T:
     return x[0]
 
 
-def min(
+def min_(
     comparer: Optional[Comparer[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The `min` operator.
@@ -41,4 +41,4 @@ def min(
     )
 
 
-__all__ = ["min"]
+__all__ = ["min_"]

@@ -4,7 +4,7 @@ from rx import operators as ops
 from rx.core import Observable, pipe
 from rx.core.typing import Predicate
 
-from .firstordefault import _first_or_default_async
+from .firstordefault import first_or_default_async_
 
 
 def _first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
@@ -30,4 +30,4 @@ def _first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obse
     if predicate:
         return pipe(ops.filter(predicate), ops.first())
 
-    return _first_or_default_async(False)
+    return first_or_default_async_(False)
