@@ -10,7 +10,7 @@ from rx.disposable import (
 _T = TypeVar("_T")
 
 
-def subscribe_on(
+def subscribe_on_(
     scheduler: abc.SchedulerBase,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def subscribe_on(source: Observable[_T]) -> Observable[_T]:
@@ -54,4 +54,4 @@ def subscribe_on(
     return subscribe_on
 
 
-__all__ = ["subscribe_on"]
+__all__ = ["subscribe_on_"]

@@ -1,10 +1,12 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.internal import noop
 
+_T = TypeVar("_T")
 
-def _ignore_elements() -> Callable[[Observable], Observable]:
+
+def ignore_elements_() -> Callable[[Observable[_T]], Observable[_T]]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
@@ -13,9 +15,18 @@ def _ignore_elements() -> Callable[[Observable], Observable]:
         termination, successful or exceptional, of the source sequence.
     """
 
-    def ignore_elements(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            return source.subscribe_(noop, observer.on_error, observer.on_completed, scheduler)
+    def ignore_elements(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            return source.subscribe_(
+                noop, observer.on_error, observer.on_completed, scheduler
+            )
 
         return Observable(subscribe)
+
     return ignore_elements
+
+
+__all__ = ["ignore_elements_"]

@@ -6,7 +6,7 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
+def to_iterable_() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     def to_iterable(source: Observable[_T]) -> Observable[List[_T]]:
         """Creates an iterable from an observable sequence.
 
@@ -42,4 +42,4 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return to_iterable
 
 
-__all__ = ["to_iterable"]
+__all__ = ["to_iterable_"]

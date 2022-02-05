@@ -11,7 +11,7 @@ class Timestamp(NamedTuple):
     timestamp: datetime
 
 
-def timestamp(
+def timestamp_(
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[Any]], Observable[Timestamp]]:
     def timestamp(source: Observable[Any]) -> Observable[Timestamp]:
@@ -43,4 +43,4 @@ def timestamp(
     return timestamp
 
 
-__all__ = ["timestamp"]
+__all__ = ["timestamp_"]

@@ -9,7 +9,7 @@ from .lastordefault import last_or_default_async
 _T = TypeVar("_T")
 
 
-def _last(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]], Observable[_T]]:
+def last_(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]], Observable[_T]]:
     def last(source: Observable[_T]) -> Observable[_T]:
         """Partially applied last operator.
 
@@ -37,4 +37,4 @@ def _last(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]
     return last
 
 
-__all__ = ["_last"]
+__all__ = ["last_"]

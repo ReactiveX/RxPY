@@ -14,7 +14,7 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-def timeout(
+def timeout_(
     duetime: typing.AbsoluteOrRelativeTime,
     other: Optional[Union[Observable[_T], "Future[_T]"]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,

@@ -5,7 +5,7 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip_last_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_last(source: Observable[_T]) -> Observable[_T]:
         """Bypasses a specified number of elements at the end of an
         observable sequence.
@@ -49,4 +49,4 @@ def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     return skip_last
 
 
-__all__ = ["skip_last"]
+__all__ = ["skip_last_"]

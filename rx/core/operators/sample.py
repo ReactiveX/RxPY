@@ -45,7 +45,7 @@ def sample_observable(
     return Observable(subscribe)
 
 
-def sample(
+def sample_(
     sampler: Union[typing.RelativeTime, Observable[Any]],
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -70,4 +70,4 @@ def sample(
     return sample
 
 
-__all__ = ["sample"]
+__all__ = ["sample_"]

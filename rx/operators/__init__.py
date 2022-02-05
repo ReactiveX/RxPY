@@ -784,13 +784,13 @@ def do(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable[
         returns the source sequence with the side-effecting behavior
         applied.
     """
-    from rx.core.operators.do import do as do_
+    from rx.core.operators.do import do_
 
     return do_(observer)
 
 
 def do_action(
-    on_next: Optional[typing.OnNext] = None,
+    on_next: Optional[typing.OnNext[_T]] = None,
     on_error: Optional[typing.OnError] = None,
     on_completed: Optional[typing.OnCompleted] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -825,9 +825,9 @@ def do_action(
         returns the source sequence with the side-effecting behavior
         applied.
     """
-    from rx.core.operators.do import _do_action
+    from rx.core.operators.do import do_action_
 
-    return _do_action(on_next, on_error, on_completed)
+    return do_action_(on_next, on_error, on_completed)
 
 
 def do_while(condition: Predicate) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -979,9 +979,9 @@ def filter(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T
         returns an observable sequence that contains elements from the
         input sequence that satisfy the condition.
     """
-    from rx.core.operators.filter import _filter
+    from rx.core.operators.filter import filter_
 
-    return _filter(predicate)
+    return filter_(predicate)
 
 
 def filter_indexed(
@@ -1010,9 +1010,9 @@ def filter_indexed(
         returns an observable sequence that contains elements from the
         input sequence that satisfy the condition.
     """
-    from rx.core.operators.filter import _filter_indexed
+    from rx.core.operators.filter import filter_indexed_
 
-    return _filter_indexed(predicate_indexed)
+    return filter_indexed_(predicate_indexed)
 
 
 def finally_action(action: Callable) -> Callable[[Observable], Observable]:
@@ -1099,7 +1099,9 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
     return _find_value(predicate, True)
 
 
-def first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
+def first(
+    predicate: Optional[Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
@@ -1126,9 +1128,9 @@ def first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obser
         observable sequence that satisfies the condition in the
         predicate if provided, else the first item in the sequence.
     """
-    from rx.core.operators.first import _first
+    from rx.core.operators.first import first_
 
-    return _first(predicate)
+    return first_(predicate)
 
 
 def first_or_default(
@@ -1214,7 +1216,7 @@ def flat_map(
 
 
 def flat_map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None,
+    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """The `flat_map_indexed` operator.
 
@@ -1257,7 +1259,9 @@ def flat_map_indexed(
     return flat_map_indexed_(mapper_indexed)
 
 
-def flat_map_latest(mapper: Mapper) -> Callable[[Observable], Observable]:
+def flat_map_latest(
+    mapper: Mapper[_T1, Observable[_T2]]
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
     index and then transforms an observable sequence of observable
@@ -1436,7 +1440,7 @@ def group_join(
     return _group_join(right, left_duration_mapper, right_duration_mapper)
 
 
-def ignore_elements() -> Callable[[Observable], Observable]:
+def ignore_elements() -> Callable[[Observable[_T]], Observable[_T]]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
@@ -1452,9 +1456,9 @@ def ignore_elements() -> Callable[[Observable], Observable]:
         returns an empty observable sequence that signals termination,
         successful or exceptional, of the source sequence.
     """
-    from rx.core.operators.ignoreelements import _ignore_elements
+    from rx.core.operators.ignoreelements import ignore_elements_
 
-    return _ignore_elements()
+    return ignore_elements_()
 
 
 def is_empty() -> Callable[[Observable[Any]], Observable[bool]]:
@@ -1473,9 +1477,9 @@ def is_empty() -> Callable[[Observable[Any]], Observable[bool]]:
         returns an observable sequence containing a single element
         determining whether the source sequence is empty.
     """
-    from rx.core.operators.isempty import _is_empty
+    from rx.core.operators.isempty import is_empty_
 
-    return _is_empty()
+    return is_empty_()
 
 
 def join(
@@ -1543,9 +1547,9 @@ def last(
         the observable sequence that satisfies the condition in the
         predicate.
     """
-    from rx.core.operators.last import _last
+    from rx.core.operators.last import last_
 
-    return _last(predicate)
+    return last_(predicate)
 
 
 def last_or_default(
@@ -1854,12 +1858,12 @@ def min_by(
 
 
 def multicast(
-    subject: Optional[abc.SubjectBase] = None,
+    subject: Optional[abc.SubjectBase[_T]] = None,
     subject_factory: Optional[
-        Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase]
+        Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_T]]
     ] = None,
-    mapper: Optional[Callable[[ConnectableObservable], Observable]] = None,
-) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+    mapper: Optional[Callable[[ConnectableObservable[_T]], Observable[_T]]] = None,
+) -> Callable[[Observable[_T]], Union[Observable[_T], ConnectableObservable[_T]]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
@@ -2071,8 +2075,8 @@ def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
 
 
 def publish(
-    mapper: Optional[Mapper] = None,
-) -> Callable[[Observable], ConnectableObservable]:
+    mapper: Optional[Mapper[_T1, _T2]] = None,
+) -> Callable[[Observable[_T2]], ConnectableObservable[_T2]]:
     """The `publish` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -2098,9 +2102,9 @@ def publish(
         sequence produced by multicasting the source sequence within a
         mapper function.
     """
-    from rx.core.operators.publish import _publish
+    from rx.core.operators.publish import publish_
 
-    return _publish(mapper)
+    return publish_(mapper)
 
 
 def publish_value(
@@ -2174,9 +2178,9 @@ def reduce(
         source and returns an observable sequence containing a single
         element with the final accumulator value.
     """
-    from rx.core.operators.reduce import reduce
+    from rx.core.operators.reduce import reduce_
 
-    return reduce(accumulator, seed)
+    return reduce_(accumulator, seed)
 
 
 def ref_count() -> Callable[[ConnectableObservable[_T]], Observable[_T]]:
@@ -2216,9 +2220,9 @@ def repeat(
         returns an observable sequence producing the elements of the
         given sequence repeatedly.
     """
-    from rx.core.operators.repeat import repeat
+    from rx.core.operators.repeat import repeat_
 
-    return repeat(repeat_count)
+    return repeat_(repeat_count)
 
 
 def replay(
@@ -2285,9 +2289,9 @@ def retry(
         An observable sequence producing the elements of the given
         sequence repeatedly until it terminates successfully.
     """
-    from rx.core.operators.retry import retry
+    from rx.core.operators.retry import retry_
 
-    return retry(retry_count)
+    return retry_(retry_count)
 
 
 def sample(
@@ -2317,9 +2321,9 @@ def sample(
         An operator function that takes an observable source and
         returns a sampled observable sequence.
     """
-    from rx.core.operators.sample import sample
+    from rx.core.operators.sample import sample_
 
-    return sample(sampler, scheduler)
+    return sample_(sampler, scheduler)
 
 
 def scan(
@@ -2353,9 +2357,9 @@ def scan(
         source and returns an observable sequence containing the
         accumulated values.
     """
-    from rx.core.operators.scan import _scan
+    from rx.core.operators.scan import scan_
 
-    return _scan(accumulator, seed)
+    return scan_(accumulator, seed)
 
 
 def sequence_equal(
@@ -2390,9 +2394,9 @@ def sequence_equal(
         their corresponding elements are equal according to the
         specified equality comparer.
     """
-    from rx.core.operators.sequenceequal import _sequence_equal
+    from rx.core.operators.sequenceequal import _sequence_equal_
 
-    return _sequence_equal(second, comparer)
+    return _sequence_equal_(second, comparer)
 
 
 def share() -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2409,9 +2413,9 @@ def share() -> Callable[[Observable[_T]], Observable[_T]]:
         source
         Observable.
     """
-    from rx.core.operators.publish import share
+    from rx.core.operators.publish import share_
 
-    return share()
+    return share_()
 
 
 def single(
@@ -2444,9 +2448,9 @@ def single(
         the observable sequence that satisfies the condition in the
         predicate.
     """
-    from rx.core.operators.single import single
+    from rx.core.operators.single import single_
 
-    return single(predicate)
+    return single_(predicate)
 
 
 def single_or_default(
@@ -2482,17 +2486,17 @@ def single_or_default(
         the observable sequence that satisfies the condition in the
         predicate, or a default value if no such element exists.
     """
-    from rx.core.operators.singleordefault import single_or_default
+    from rx.core.operators.singleordefault import single_or_default_
 
-    return single_or_default(predicate, default_value)
+    return single_or_default_(predicate, default_value)
 
 
 def single_or_default_async(
     has_default: bool = False, default_value: Optional[_T] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    from rx.core.operators.singleordefault import single_or_default_async
+    from rx.core.operators.singleordefault import single_or_default_async_
 
-    return single_or_default_async(has_default, default_value)
+    return single_or_default_async_(has_default, default_value)
 
 
 def skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2518,9 +2522,9 @@ def skip(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence that contains the elements that
         occur after the specified index in the input sequence.
     """
-    from rx.core.operators.skip import skip
+    from rx.core.operators.skip import skip_
 
-    return skip(count)
+    return skip_(count)
 
 
 def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2551,9 +2555,9 @@ def skip_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence containing the source sequence
         elements except for the bypassed ones at the end.
     """
-    from rx.core.operators.skiplast import skip_last
+    from rx.core.operators.skiplast import skip_last_
 
-    return skip_last(count)
+    return skip_last_(count)
 
 
 def skip_last_with_time(
@@ -2580,9 +2584,9 @@ def skip_last_with_time(
         An observable sequence with the elements skipped during the
     specified duration from the end of the source sequence.
     """
-    from rx.core.operators.skiplastwithtime import skip_last_with_time
+    from rx.core.operators.skiplastwithtime import skip_last_with_time_
 
-    return skip_last_with_time(duration, scheduler=scheduler)
+    return skip_last_with_time_(duration, scheduler=scheduler)
 
 
 def skip_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2607,9 +2611,9 @@ def skip_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[
         source sequence starting from the point the other sequence
         triggered propagation.
     """
-    from rx.core.operators.skipuntil import skip_until
+    from rx.core.operators.skipuntil import skip_until_
 
-    return skip_until(other)
+    return skip_until_(other)
 
 
 def skip_until_with_time(
@@ -2642,9 +2646,9 @@ def skip_until_with_time(
         returns an observable sequence with the elements skipped
         until the specified start time.
     """
-    from rx.core.operators.skipuntilwithtime import _skip_until_with_time
+    from rx.core.operators.skipuntilwithtime import skip_until_with_time_
 
-    return _skip_until_with_time(start_time, scheduler=scheduler)
+    return skip_until_with_time_(start_time, scheduler=scheduler)
 
 
 def skip_while(
@@ -2677,9 +2681,9 @@ def skip_while(
         the input sequence starting at the first element in the linear
         series that does not pass the test specified by predicate.
     """
-    from rx.core.operators.skipwhile import skip_while
+    from rx.core.operators.skipwhile import skip_while_
 
-    return skip_while(predicate)
+    return skip_while_(predicate)
 
 
 def skip_while_indexed(
@@ -2711,9 +2715,9 @@ def skip_while_indexed(
         the input sequence starting at the first element in the linear
         series that does not pass the test specified by predicate.
     """
-    from rx.core.operators.skipwhile import skip_while_indexed
+    from rx.core.operators.skipwhile import skip_while_indexed_
 
-    return skip_while_indexed(predicate)
+    return skip_while_indexed_(predicate)
 
 
 def skip_with_time(
@@ -2750,9 +2754,9 @@ def skip_with_time(
         returns an observable sequence with the elements skipped during
         the specified duration from the start of the source sequence.
     """
-    from rx.core.operators.skipwithtime import _skip_with_time
+    from rx.core.operators.skipwithtime import skip_with_time_
 
-    return _skip_with_time(duration, scheduler=scheduler)
+    return skip_with_time_(duration, scheduler=scheduler)
 
 
 def slice(
@@ -2788,9 +2792,9 @@ def slice(
         An operator function that takes an observable source and
         returns a sliced observable sequence.
     """
-    from rx.core.operators.slice import _slice
+    from rx.core.operators.slice import slice_
 
-    return _slice(start, stop, step)
+    return slice_(start, stop, step)
 
 
 def some(
@@ -2823,9 +2827,9 @@ def some(
         pass the test in the specified predicate if given, else if some
         items are in the sequence.
     """
-    from rx.core.operators.some import _some
+    from rx.core.operators.some import some_
 
-    return _some(predicate)
+    return some_(predicate)
 
 
 def starmap(
@@ -2917,9 +2921,9 @@ def start_with(*args: Any) -> Callable[[Observable], Observable]:
         An operator function that takes a source observable and returns
         the source sequence prepended with the specified values.
     """
-    from rx.core.operators.startswith import start_with
+    from rx.core.operators.startswith import start_with_
 
-    return start_with(*args)
+    return start_with_(*args)
 
 
 def subscribe_on(
@@ -2945,9 +2949,9 @@ def subscribe_on(
         returns the source sequence whose subscriptions and
         un-subscriptions happen on the specified scheduler.
     """
-    from rx.core.operators.subscribeon import subscribe_on
+    from rx.core.operators.subscribeon import subscribe_on_
 
-    return subscribe_on(scheduler)
+    return subscribe_on_(scheduler)
 
 
 def sum(
@@ -2978,9 +2982,9 @@ def sum(
         an observable sequence containing a single element with the sum
         of the values in the source sequence.
     """
-    from rx.core.operators.sum import _sum
+    from rx.core.operators.sum import sum_
 
-    return _sum(key_mapper)
+    return sum_(key_mapper)
 
 
 def switch_latest() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
@@ -3101,9 +3105,9 @@ def take_last_buffer(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         the specified number of elements from the end of the source
         sequence.
     """
-    from rx.core.operators.takelastbuffer import _take_last_buffer
+    from rx.core.operators.takelastbuffer import take_last_buffer_
 
-    return _take_last_buffer(count)
+    return take_last_buffer_(count)
 
 
 def take_last_with_time(
@@ -3305,9 +3309,9 @@ def take_with_time(
         returns an observable sequence with the elements taken during
         the specified duration from the start of the source sequence.
     """
-    from rx.core.operators.takewithtime import _take_with_time
+    from rx.core.operators.takewithtime import take_with_time_
 
-    return _take_with_time(duration, scheduler=scheduler)
+    return take_with_time_(duration, scheduler=scheduler)
 
 
 def throttle_first(
@@ -3325,9 +3329,9 @@ def throttle_first(
         An operator function that takes an observable source and
         returns an observable that performs the throttle operation.
     """
-    from rx.core.operators.throttlefirst import throttle_first
+    from rx.core.operators.throttlefirst import throttle_first_
 
-    return throttle_first(window_duration, scheduler)
+    return throttle_first_(window_duration, scheduler)
 
 
 def throttle_with_mapper(
@@ -3373,9 +3377,9 @@ def timestamp(
         source and returns an observable sequence with timestamp
         information on values.
     """
-    from rx.core.operators.timestamp import timestamp
+    from rx.core.operators.timestamp import timestamp_
 
-    return timestamp(scheduler=scheduler)
+    return timestamp_(scheduler=scheduler)
 
 
 def timeout(
@@ -3412,9 +3416,9 @@ def timeout(
         returns the source sequence switching to the other sequence in
         case of a timeout.
     """
-    from rx.core.operators.timeout import timeout
+    from rx.core.operators.timeout import timeout_
 
-    return timeout(duetime, other, scheduler)
+    return timeout_(duetime, other, scheduler)
 
 
 def timeout_with_mapper(
@@ -3445,9 +3449,9 @@ def timeout_with_mapper(
         returns the source sequence switching to the other sequence in
         case of a timeout.
     """
-    from rx.core.operators.timeoutwithmapper import timeout_with_mapper
+    from rx.core.operators.timeoutwithmapper import timeout_with_mapper_
 
-    return timeout_with_mapper(first_timeout, timeout_duration_mapper, other)
+    return timeout_with_mapper_(first_timeout, timeout_duration_mapper, other)
 
 
 def time_interval(
@@ -3471,9 +3475,9 @@ def time_interval(
         returns an observable sequence with time interval information
         on values.
     """
-    from rx.core.operators.timeinterval import time_interval
+    from rx.core.operators.timeinterval import time_interval_
 
-    return time_interval(scheduler=scheduler)
+    return time_interval_(scheduler=scheduler)
 
 
 def to_dict(
@@ -3493,9 +3497,9 @@ def to_dict(
         returns an observable sequence with a single value of a
         dictionary containing the values from the observable sequence.
     """
-    from rx.core.operators.todict import to_dict
+    from rx.core.operators.todict import to_dict_
 
-    return to_dict(key_mapper, element_mapper)
+    return to_dict_(key_mapper, element_mapper)
 
 
 def to_future(
@@ -3513,9 +3517,9 @@ def to_future(
         An operator function that takes an observable source and returns
         a future with the last value from the observable sequence.
     """
-    from rx.core.operators.tofuture import to_future
+    from rx.core.operators.tofuture import to_future_
 
-    return to_future(future_ctor)
+    return to_future_(future_ctor)
 
 
 def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
@@ -3528,9 +3532,9 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
         returns an observable sequence containing a single element with
         an iterable containing all the elements of the source sequence.
     """
-    from rx.core.operators.toiterable import to_iterable
+    from rx.core.operators.toiterable import to_iterable_
 
-    return to_iterable()
+    return to_iterable_()
 
 
 to_list = to_iterable
@@ -3563,9 +3567,9 @@ def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
         returns an observable sequence with a single value of a set
         containing the values from the observable sequence.
     """
-    from rx.core.operators.toset import to_set
+    from rx.core.operators.toset import to_set_
 
-    return to_set()
+    return to_set_()
 
 
 def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3581,9 +3585,9 @@ def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[
         returns an observable sequence which is repeated as long as the
         condition holds.
     """
-    from rx.core.operators.whiledo import while_do
+    from rx.core.operators.whiledo import while_do_
 
-    return while_do(condition)
+    return while_do_(condition)
 
 
 def window(

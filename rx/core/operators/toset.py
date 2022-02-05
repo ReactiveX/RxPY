@@ -5,7 +5,7 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
+def to_set_() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
     """Converts the observable sequence to a set.
 
     Returns an observable sequence with a single value of a set
@@ -32,4 +32,4 @@ def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
     return to_set
 
 
-__all__ = ["to_set"]
+__all__ = ["to_set_"]

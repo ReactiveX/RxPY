@@ -1,14 +1,16 @@
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _take_with_time(
+
+def take_with_time_(
     duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Observable]:
-    def take_with_time(source: Observable) -> Observable:
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def take_with_time(source: Observable[_T]) -> Observable[_T]:
         """Takes elements for the specified duration from the start of
         the observable source sequence.
 
@@ -29,15 +31,23 @@ def _take_with_time(
             specified duration from the start of the source sequence.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            def action(scheduler, state):
+            def action(scheduler: abc.SchedulerBase, state: Any = None):
                 observer.on_completed()
 
             disp = _scheduler.schedule_relative(duration, action)
-            return CompositeDisposable(disp, source.subscribe(observer, scheduler=scheduler_))
+            return CompositeDisposable(
+                disp, source.subscribe(observer, scheduler=scheduler_)
+            )
 
         return Observable(subscribe)
 
     return take_with_time
+
+
+__all__ = ["take_with_time_"]

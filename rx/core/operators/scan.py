@@ -10,7 +10,7 @@ _T = TypeVar("_T")
 _TState = TypeVar("_TState")
 
 
-def _scan(
+def scan_(
     accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     has_seed = seed is not NotSet
@@ -54,4 +54,4 @@ def _scan(
     return scan
 
 
-__all__ = ["_scan"]
+__all__ = ["scan_"]

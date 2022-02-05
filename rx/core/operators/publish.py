@@ -9,7 +9,7 @@ _T = TypeVar("_T")
 _TResult = TypeVar("_TResult")
 
 
-def _publish(
+def publish_(
     mapper: Optional[Mapper[_T, _TResult]] = None,
 ) -> Callable[[Observable[_T]], ConnectableObservable[_TResult]]:
     """Returns an observable sequence that is the result of invoking the
@@ -39,7 +39,7 @@ def _publish(
     return pipe(ops.multicast(subject=Subject()))
 
 
-def share() -> Callable[[Observable[_T]], Observable[_T]]:
+def share_() -> Callable[[Observable[_T]], Observable[_T]]:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original
@@ -50,4 +50,7 @@ def share() -> Callable[[Observable[_T]], Observable[_T]]:
 
     This is an alias for a composed publish() and ref_count().
     """
-    return pipe(_publish(), ops.ref_count())
+    return pipe(publish_(), ops.ref_count())
+
+
+__all__ = ["publish_", "share_"]

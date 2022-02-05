@@ -8,7 +8,7 @@ _TKey = TypeVar("_TKey")
 _TValue = TypeVar("_TValue")
 
 
-def to_dict(
+def to_dict_(
     key_mapper: Mapper[_T, _TKey], element_mapper: Optional[Mapper[_T, _TValue]] = None
 ) -> Callable[[Observable[_T]], Observable[Dict[_TKey, _TValue]]]:
     def to_dict(source: Observable[_T]) -> Observable[Dict[_TKey, _TValue]]:
@@ -60,4 +60,4 @@ def to_dict(
     return to_dict
 
 
-__all__ = ["to_dict"]
+__all__ = ["to_dict_"]

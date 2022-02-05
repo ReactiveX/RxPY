@@ -6,7 +6,7 @@ from rx.core import Observable
 _T = TypeVar("_T")
 
 
-def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
+def start_with_(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
     def start_with(source: Observable[_T]) -> Observable[_T]:
         """Partially applied start_with operator.
 
@@ -25,4 +25,4 @@ def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
     return start_with
 
 
-__all__ = ["start_with"]
+__all__ = ["start_with_"]

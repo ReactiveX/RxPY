@@ -13,7 +13,7 @@ class TimeInterval(NamedTuple):
     interval: timedelta
 
 
-def time_interval(
+def time_interval_(
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def time_interval(source: Observable[_T]) -> Observable[_T]:

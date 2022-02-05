@@ -8,7 +8,7 @@ _T = TypeVar("_T")
 
 
 # pylint: disable=redefined-builtin
-def _slice(
+def slice_(
     start: Optional[int] = None, stop: Optional[int] = None, step: Optional[int] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     _start: int = 0 if start is None else start
@@ -72,4 +72,4 @@ def _slice(
     return slice
 
 
-__all__ = ["_slice"]
+__all__ = ["slice_"]

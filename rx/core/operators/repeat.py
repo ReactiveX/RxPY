@@ -8,7 +8,7 @@ from rx.internal.utils import infinite
 _T = TypeVar("_T")
 
 
-def repeat(
+def repeat_(
     repeat_count: Optional[int] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     if repeat_count is None:

@@ -1,15 +1,17 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 
+_T = TypeVar("_T")
 
-def _do_action(
-    on_next: Optional[typing.OnNext] = None,
+
+def do_action_(
+    on_next: Optional[typing.OnNext[_T]] = None,
     on_error: Optional[typing.OnError] = None,
     on_completed: Optional[typing.OnCompleted] = None,
-) -> Callable[[Observable], Observable]:
-    def do_action(source: Observable) -> Observable:
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def do_action(source: Observable[_T]) -> Observable[_T]:
         """Invokes an action for each element in the observable
         sequence and invokes an action on graceful or exceptional
         termination of the observable sequence. This method can be used
@@ -35,8 +37,11 @@ def _do_action(
             behavior applied.
         """
 
-        def subscribe(observer, scheduler=None):
-            def _on_next(x):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            def _on_next(x: _T) -> None:
                 if not on_next:
                     observer.on_next(x)
                 else:
@@ -47,7 +52,7 @@ def _do_action(
 
                     observer.on_next(x)
 
-            def _on_error(exception):
+            def _on_error(exception: Exception) -> None:
                 if not on_error:
                     observer.on_error(exception)
                 else:
@@ -58,7 +63,7 @@ def _do_action(
 
                     observer.on_error(exception)
 
-            def _on_completed():
+            def _on_completed() -> None:
                 if not on_completed:
                     observer.on_completed()
                 else:
@@ -76,7 +81,7 @@ def _do_action(
     return do_action
 
 
-def do(observer: abc.ObserverBase) -> Callable[[Observable], Observable]:
+def do_(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Invokes an action for each element in the observable sequence and
     invokes an action on graceful or exceptional termination of the
     observable sequence. This method can be used for debugging, logging,
@@ -94,7 +99,7 @@ def do(observer: abc.ObserverBase) -> Callable[[Observable], Observable]:
         applied.
     """
 
-    return _do_action(observer.on_next, observer.on_error, observer.on_completed)
+    return do_action_(observer.on_next, observer.on_error, observer.on_completed)
 
 
 def do_after_next(source, after_next):
@@ -129,7 +134,9 @@ def do_on_subscribe(source: Observable, on_subscribe):
 
     def subscribe(observer, scheduler=None):
         on_subscribe()
-        return source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
+        return source.subscribe_(
+            observer.on_next, observer.on_error, observer.on_completed, scheduler
+        )
 
     return Observable(subscribe)
 
@@ -151,7 +158,9 @@ def do_on_dispose(source: Observable, on_dispose):
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        subscription = source.subscribe_(observer.on_next, observer.on_error, observer.on_completed, scheduler)
+        subscription = source.subscribe_(
+            observer.on_next, observer.on_error, observer.on_completed, scheduler
+        )
         composite_disposable.add(subscription)
         return composite_disposable
 
@@ -267,7 +276,9 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             composite_disposable = CompositeDisposable()
             composite_disposable.add(OnDispose(was_invoked))
-            subscription = source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
+            subscription = source.subscribe_(
+                observer.on_next, on_error, on_completed, scheduler
+            )
             composite_disposable.add(subscription)
 
             return composite_disposable
@@ -275,3 +286,6 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
         return Observable(subscribe)
 
     return partial
+
+
+__all__ = ["do_", "do_action_"]

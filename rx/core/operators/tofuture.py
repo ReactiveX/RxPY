@@ -7,7 +7,7 @@ from rx.internal.exceptions import SequenceContainsNoElementsError
 _T = TypeVar("_T")
 
 
-def to_future(
+def to_future_(
     future_ctor: Optional[Callable[[], "Future[_T]"]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], "Future[_T]"]:
@@ -61,4 +61,4 @@ def to_future(
     return to_future
 
 
-__all__ = ["to_future"]
+__all__ = ["to_future_"]

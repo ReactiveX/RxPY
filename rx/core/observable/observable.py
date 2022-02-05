@@ -335,10 +335,10 @@ class Observable(abc.ObservableBase[_T]):
         Returns:
             The last item of the observable sequence.
         """
-        from ..operators.tofuture import to_future
+        from ..operators.tofuture import to_future_
 
         loop = asyncio.get_event_loop()
-        return iter(self.pipe(to_future(scheduler=AsyncIOScheduler(loop=loop))))
+        return iter(self.pipe(to_future_(scheduler=AsyncIOScheduler(loop=loop))))
 
     def __add__(self, other: Observable[_T]) -> Observable[_T]:
         """Pythonic version of :func:`concat <rx.concat>`.
@@ -419,9 +419,9 @@ class Observable(abc.ObservableBase[_T]):
         else:
             raise TypeError("Invalid argument type.")
 
-        from ..operators.slice import _slice
+        from ..operators.slice import slice_
 
-        return _slice(start, stop, step)(self)
+        return slice_(start, stop, step)(self)
 
 
 __all__ = ["Observable"]

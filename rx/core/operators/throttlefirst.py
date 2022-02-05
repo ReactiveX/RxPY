@@ -7,7 +7,7 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-def throttle_first(
+def throttle_first_(
     window_duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def throttle_first(source: Observable[_T]) -> Observable[_T]:
@@ -54,4 +54,4 @@ def throttle_first(
     return throttle_first
 
 
-__all__ = ["throttle_first"]
+__all__ = ["throttle_first_"]

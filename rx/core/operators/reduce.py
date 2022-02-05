@@ -9,7 +9,7 @@ _T = TypeVar("_T")
 _TState = TypeVar("_TState")
 
 
-def reduce(
+def reduce_(
     accumulator: Accumulator[_TState, _T], seed: Any = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """Applies an accumulator function over an observable sequence,
@@ -41,4 +41,4 @@ def reduce(
     return pipe(ops.scan(accumulator), ops.last())
 
 
-__all__ = ["reduce"]
+__all__ = ["reduce_"]

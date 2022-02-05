@@ -7,7 +7,7 @@ from rx.core.typing import Mapper
 _T = TypeVar("_T")
 
 
-def _sum(
+def sum_(
     key_mapper: Optional[Mapper[_T, int]] = None
 ) -> Callable[[Observable[_T]], Observable[int]]:
     if key_mapper:
@@ -16,4 +16,4 @@ def _sum(
     return ops.reduce(seed=0, accumulator=lambda prev, curr: prev + curr)
 
 
-__all__ = ["_sum"]
+__all__ = ["sum_"]

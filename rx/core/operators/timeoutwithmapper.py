@@ -11,7 +11,7 @@ from rx.disposable import (
 _T = TypeVar("_T")
 
 
-def timeout_with_mapper(
+def timeout_with_mapper_(
     first_timeout: Optional[Observable[_T]] = None,
     timeout_duration_mapper: Optional[Callable[[Any], Observable[Any]]] = None,
     other: Optional[Observable[_T]] = None,
@@ -123,4 +123,4 @@ def timeout_with_mapper(
     return timeout_with_mapper
 
 
-__all__ = ["timeout_with_mapper"]
+__all__ = ["timeout_with_mapper_"]

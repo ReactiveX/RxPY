@@ -7,7 +7,7 @@ from rx.internal.utils import infinite
 _T = TypeVar("_T")
 
 
-def retry(
+def retry_(
     retry_count: Optional[int] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats the source observable sequence the specified number of
@@ -38,4 +38,4 @@ def retry(
     return retry
 
 
-__all__ = ["retry"]
+__all__ = ["retry_"]

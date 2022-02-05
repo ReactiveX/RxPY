@@ -7,7 +7,9 @@ from rx.core.typing import Predicate
 _T = TypeVar("_T")
 
 
-def _some(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]], Observable[bool]]:
+def some_(
+    predicate: Optional[Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[bool]]:
     def some(source: Observable[_T]) -> Observable[bool]:
         """Partially applied operator.
 
@@ -27,7 +29,10 @@ def _some(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]
             some items are in the sequence.
         """
 
-        def subscribe(observer: abc.ObserverBase[bool], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[bool],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             def on_next(_: _T):
                 observer.on_next(True)
                 observer.on_completed()
@@ -41,9 +46,12 @@ def _some(predicate: Optional[Predicate[_T]] = None) -> Callable[[Observable[_T]
         if predicate:
             return source.pipe(
                 ops.filter(predicate),
-                _some(),
+                some_(),
             )
 
         return Observable(subscribe)
 
     return some
+
+
+__all__ = ["some_"]

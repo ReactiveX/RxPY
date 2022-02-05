@@ -7,7 +7,7 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-def _skip_with_time(
+def skip_with_time_(
     duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_with_time(source: Observable[_T]) -> Observable[_T]:
@@ -58,4 +58,4 @@ def _skip_with_time(
     return skip_with_time
 
 
-__all__ = ["_skip_with_time"]
+__all__ = ["skip_with_time_"]

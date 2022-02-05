@@ -9,7 +9,7 @@ from rx.internal.utils import is_future
 _T = TypeVar("_T")
 
 
-def skip_until(
+def skip_until_(
     other: Union[Observable[_T], "Future[_T]"]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only after
@@ -71,4 +71,4 @@ def skip_until(
     return skip_until
 
 
-__all__ = ["skip_until"]
+__all__ = ["skip_until_"]

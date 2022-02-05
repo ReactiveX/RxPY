@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -6,8 +6,12 @@ from rx.core.typing import Predicate
 
 from .firstordefault import first_or_default_async_
 
+_T = TypeVar("_T")
 
-def _first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Observable]:
+
+def first_(
+    predicate: Optional[Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
@@ -31,3 +35,6 @@ def _first(predicate: Optional[Predicate] = None) -> Callable[[Observable], Obse
         return pipe(ops.filter(predicate), ops.first())
 
     return first_or_default_async_(False)
+
+
+__all__ = ["first_"]

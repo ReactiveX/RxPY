@@ -6,7 +6,7 @@ from rx.core import Observable, abc, pipe, typing
 _T = TypeVar("_T")
 
 
-def skip_while(
+def skip_while_(
     predicate: typing.Predicate[_T],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_while(source: Observable[_T]) -> Observable[_T]:
@@ -55,7 +55,7 @@ def skip_while(
     return skip_while
 
 
-def skip_while_indexed(
+def skip_while_indexed_(
     predicate: typing.PredicateIndexed[_T],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     return pipe(
@@ -65,4 +65,4 @@ def skip_while_indexed(
     )
 
 
-__all__ = ["skip_while", "skip_while_indexed"]
+__all__ = ["skip_while_", "skip_while_indexed_"]

@@ -5,8 +5,9 @@ from rx.core.typing import Predicate, PredicateIndexed
 
 _T = TypeVar("_T")
 
+
 # pylint: disable=redefined-builtin
-def _filter(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     def filter(source: Observable[_T]) -> Observable[_T]:
         """Partially applied filter operator.
 
@@ -23,7 +24,9 @@ def _filter(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
             A filtered observable sequence.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]) -> abc.DisposableBase:
+        def subscribe(
+            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+        ) -> abc.DisposableBase:
             def on_next(value: _T):
                 try:
                     should_run = predicate(value)
@@ -34,14 +37,16 @@ def _filter(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return filter
 
 
-def _filter_indexed(
+def filter_indexed_(
     predicate_indexed: Optional[PredicateIndexed[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def filter_indexed(source: Observable[_T]) -> Observable[_T]:
@@ -60,7 +65,9 @@ def _filter_indexed(
             A filtered observable sequence.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]):
+        def subscribe(
+            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+        ):
             count = 0
 
             def on_next(value: _T):
@@ -76,11 +83,13 @@ def _filter_indexed(
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return filter_indexed
 
 
-__all__ = ["_filter", "_filter_indexed"]
+__all__ = ["filter_", "filter_indexed_"]
