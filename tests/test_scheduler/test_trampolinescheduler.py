@@ -9,11 +9,10 @@ from rx.internal.basic import default_now
 
 
 class TestTrampolineScheduler(unittest.TestCase):
-
     def test_trampoline_now(self):
         scheduler = TrampolineScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: diff can be 1 ms in CI
 
     def test_trampoline_now_units(self):
         scheduler = TrampolineScheduler()
@@ -69,6 +68,7 @@ class TestTrampolineScheduler(unittest.TestCase):
                 ran = True
 
             return scheduler.schedule(inner_action)
+
         scheduler.schedule(action)
 
         assert ran is True
@@ -78,7 +78,6 @@ class TestTrampolineScheduler(unittest.TestCase):
         tests = []
 
         def outer(scheduler, state=None):
-
             def action1(scheduler, state=None):
                 tests.append(1)
 
