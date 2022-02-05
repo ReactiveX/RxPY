@@ -2983,7 +2983,7 @@ def sum(
     return _sum(key_mapper)
 
 
-def switch_latest() -> Callable[[Observable[Observable[Any]]], Observable[Any]]:
+def switch_latest() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
@@ -3005,9 +3005,9 @@ def switch_latest() -> Callable[[Observable[Observable[Any]]], Observable[Any]]:
         time produces the elements of the most recent inner observable
         sequence that has been received.
     """
-    from rx.core.operators.switchlatest import switch_latest
+    from rx.core.operators.switchlatest import switch_latest_
 
-    return switch_latest()
+    return switch_latest_()
 
 
 def take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3032,9 +3032,9 @@ def take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence that contains the specified
         number of elements from the start of the input sequence.
     """
-    from rx.core.operators.take import _take
+    from rx.core.operators.take import take_
 
-    return _take(count)
+    return take_(count)
 
 
 def take_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3065,9 +3065,9 @@ def take_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         returns an observable sequence containing the specified number
         of elements from the end of the source sequence.
     """
-    from rx.core.operators.takelast import _take_last
+    from rx.core.operators.takelast import take_last_
 
-    return _take_last(count)
+    return take_last_(count)
 
 
 def take_last_buffer(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3138,9 +3138,9 @@ def take_last_with_time(
         during the specified duration from the end of the source
         sequence.
     """
-    from rx.core.operators.takelastwithtime import _take_last_with_time
+    from rx.core.operators.takelastwithtime import take_last_with_time_
 
-    return _take_last_with_time(duration, scheduler=scheduler)
+    return take_last_with_time_(duration, scheduler=scheduler)
 
 
 def take_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3165,9 +3165,9 @@ def take_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[
         source sequence up to the point the other sequence interrupted
         further propagation.
     """
-    from rx.core.operators.takeuntil import _take_until
+    from rx.core.operators.takeuntil import take_until_
 
-    return _take_until(other)
+    return take_until_(other)
 
 
 def take_until_with_time(
@@ -3200,14 +3200,14 @@ def take_until_with_time(
         returns an observable sequence with the elements taken until
         the specified end time.
     """
-    from rx.core.operators.takeuntilwithtime import _take_until_with_time
+    from rx.core.operators.takeuntilwithtime import take_until_with_time_
 
-    return _take_until_with_time(end_time, scheduler=scheduler)
+    return take_until_with_time_(end_time, scheduler=scheduler)
 
 
 def take_while(
-    predicate: Predicate, inclusive: bool = False
-) -> Callable[[Observable], Observable]:
+    predicate: Predicate[_T], inclusive: bool = False
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -3234,9 +3234,9 @@ def take_while(
         the input sequence that occur before the element at which the
         test no longer passes.
     """
-    from rx.core.operators.takewhile import _take_while
+    from rx.core.operators.takewhile import take_while_
 
-    return _take_while(predicate, inclusive)
+    return take_while_(predicate, inclusive)
 
 
 def take_while_indexed(
@@ -3269,9 +3269,9 @@ def take_while_indexed(
         input sequence that occur before the element at which the test no
         longer passes.
     """
-    from rx.core.operators.takewhile import _take_while_indexed
+    from rx.core.operators.takewhile import take_while_indexed_
 
-    return _take_while_indexed(predicate, inclusive)
+    return take_while_indexed_(predicate, inclusive)
 
 
 def take_with_time(
@@ -3697,7 +3697,7 @@ def window_toggle(
 
 def window_with_count(
     count: int, skip: Optional[int] = None
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
 
@@ -3723,29 +3723,29 @@ def window_with_count(
     Returns:
         An observable sequence of windows.
     """
-    from rx.core.operators.windowwithcount import _window_with_count
+    from rx.core.operators.windowwithcount import window_with_count_
 
-    return _window_with_count(count, skip)
+    return window_with_count_(count, skip)
 
 
 def window_with_time(
     timespan: typing.RelativeTime,
     timeshift: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
-    from rx.core.operators.windowwithtime import _window_with_time
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    from rx.core.operators.windowwithtime import window_with_time_
 
-    return _window_with_time(timespan, timeshift, scheduler)
+    return window_with_time_(timespan, timeshift, scheduler)
 
 
 def window_with_time_or_count(
     timespan: typing.RelativeTime,
     count: int,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
-    from rx.core.operators.windowwithtimeorcount import _window_with_time_or_count
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    from rx.core.operators.windowwithtimeorcount import window_with_time_or_count_
 
-    return _window_with_time_or_count(timespan, count, scheduler)
+    return window_with_time_or_count_(timespan, count, scheduler)
 
 
 def with_latest_from(
@@ -3775,9 +3775,9 @@ def with_latest_from(
         returns an observable sequence containing the result of
         combining elements of the sources into a tuple.
     """
-    from rx.core.operators.withlatestfrom import with_latest_from
+    from rx.core.operators.withlatestfrom import with_latest_from_
 
-    return with_latest_from(*sources)
+    return with_latest_from_(*sources)
 
 
 def zip(*args: Observable[Any]) -> Callable[[Observable[Any]], Observable[Any]]:
@@ -3806,9 +3806,9 @@ def zip(*args: Observable[Any]) -> Callable[[Observable[Any]], Observable[Any]]:
         returns an observable sequence containing the result of
         combining elements of the sources as a tuple.
     """
-    from rx.core.operators.zip import zip
+    from rx.core.operators.zip import zip_
 
-    return zip(*args)
+    return zip_(*args)
 
 
 def zip_with_iterable(
@@ -3837,9 +3837,9 @@ def zip_with_iterable(
         returns an observable sequence containing the result of
         combining elements of the sources as a tuple.
     """
-    from rx.core.operators.zip import zip_with_iterable
+    from rx.core.operators.zip import zip_with_iterable_
 
-    return zip_with_iterable(second)
+    return zip_with_iterable_(second)
 
 
 zip_with_list = zip_with_iterable

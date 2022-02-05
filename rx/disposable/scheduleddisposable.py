@@ -1,14 +1,16 @@
 from threading import RLock
 from typing import Any
 
-from rx.core.abc import DisposableBase, SchedulerBase
+from rx.core import abc
 
 
-class ScheduledDisposable(DisposableBase):
+class ScheduledDisposable(abc.DisposableBase):
     """Represents a disposable resource whose disposal invocation will
     be scheduled on the specified Scheduler"""
 
-    def __init__(self, scheduler: SchedulerBase, disposable: DisposableBase) -> None:
+    def __init__(
+        self, scheduler: abc.SchedulerBase, disposable: abc.DisposableBase
+    ) -> None:
         """Initializes a new instance of the ScheduledDisposable class
         that uses a Scheduler on which to dispose the disposable."""
 
@@ -24,7 +26,7 @@ class ScheduledDisposable(DisposableBase):
 
         parent = self
 
-        def action(scheduler: SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any):
             """Scheduled dispose action"""
 
             should_dispose = False

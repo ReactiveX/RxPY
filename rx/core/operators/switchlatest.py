@@ -1,18 +1,19 @@
 from asyncio import Future
-from typing import Any, Callable, Union, cast
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from rx import from_future
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.disposable import (
     CompositeDisposable,
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from rx.internal.utils import is_future
+
+_T = TypeVar("_T")
 
 
-def switch_latest() -> Callable[[Observable], Observable]:
-    def switch_latest(source: Observable) -> Observable:
+def switch_latest_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+    def switch_latest(source: Observable[Observable[_T]]) -> Observable[_T]:
         """Partially applied switch_latest operator.
 
         Transforms an observable sequence of observable sequences into
@@ -25,13 +26,16 @@ def switch_latest() -> Callable[[Observable], Observable]:
             that has been received.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             inner_subscription = SerialDisposable()
             has_latest = [False]
             is_stopped = [False]
             latest = [0]
 
-            def on_next(inner_source: Union[Observable, Future]):
+            def on_next(inner_source: Union[Observable[_T], "Future[_T]"]) -> None:
                 nonlocal source
 
                 d = SingleAssignmentDisposable()
@@ -42,10 +46,10 @@ def switch_latest() -> Callable[[Observable], Observable]:
                 inner_subscription.disposable = d
 
                 # Check if Future or Observable
-                if is_future(inner_source):
-                    obs = from_future(cast(Future, inner_source))
+                if isinstance(inner_source, Future):
+                    obs = from_future(inner_source)
                 else:
-                    obs = cast(Observable, inner_source)
+                    obs = inner_source
 
                 def on_next(x: Any) -> None:
                     if latest[0] == _id:
@@ -80,4 +84,4 @@ def switch_latest() -> Callable[[Observable], Observable]:
     return switch_latest
 
 
-__all__ = ["switch_latest"]
+__all__ = ["switch_latest_"]

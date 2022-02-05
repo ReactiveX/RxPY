@@ -12,7 +12,7 @@ log = logging.getLogger("Rx")
 _T = TypeVar("_T")
 
 
-def _window_with_count(
+def window_with_count_(
     count: int, skip: Optional[int] = None
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or more
@@ -89,4 +89,4 @@ def _window_with_count(
     return window_with_count
 
 
-__all__ = ["_window_with_count"]
+__all__ = ["window_with_count_"]

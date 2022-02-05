@@ -7,7 +7,7 @@ from rx.internal import ArgumentOutOfRangeException
 _T = TypeVar("_T")
 
 
-def _take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+def take_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     if count < 0:
         raise ArgumentOutOfRangeException()
 
@@ -51,4 +51,4 @@ def _take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     return take
 
 
-__all__ = ["_take"]
+__all__ = ["take_"]

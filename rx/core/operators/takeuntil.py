@@ -1,22 +1,21 @@
 from asyncio import Future
-from typing import Callable, Optional, Union, cast, TypeVar
+from typing import Callable, Optional, Union, TypeVar
 
 from rx import from_future
 from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable
 from rx.internal import noop
-from rx.internal.utils import is_future
 
 _T = TypeVar("_T")
 
 
-def _take_until(
+def take_until_(
     other: Union[Observable[_T], "Future[_T]"]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    if is_future(other):
+    if isinstance(other, Future):
         obs: Observable[_T] = from_future(other)
     else:
-        obs = cast(Observable[_T], other)
+        obs = other
 
     def take_until(source: Observable[_T]) -> Observable[_T]:
         """Returns the values from the source observable sequence until
@@ -48,4 +47,4 @@ def _take_until(
     return take_until
 
 
-__all__ = ["_take_until"]
+__all__ = ["take_until_"]

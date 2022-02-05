@@ -1,10 +1,12 @@
-from typing import Callable
+from typing import Callable, List, Optional, TypeVar
 
-from rx.core import Observable
+from rx.core import Observable, abc
+
+_T = TypeVar("_T")
 
 
-def _take_last(count: int) -> Callable[[Observable], Observable]:
-    def take_last(source: Observable) -> Observable:
+def take_last_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+    def take_last(source: Observable[_T]) -> Observable[_T]:
         """Returns a specified number of contiguous elements from the end of an
         observable sequence.
 
@@ -25,10 +27,13 @@ def _take_last(count: int) -> Callable[[Observable], Observable]:
             from the end of the source sequence.
         """
 
-        def subscribe(observer, scheduler=None):
-            q = []
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            q: List[_T] = []
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 q.append(x)
                 if len(q) > count:
                     q.pop(0)
@@ -38,6 +43,13 @@ def _take_last(count: int) -> Callable[[Observable], Observable]:
                     observer.on_next(q.pop(0))
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
+
         return Observable(subscribe)
+
     return take_last
+
+
+__all__ = ["take_last_"]

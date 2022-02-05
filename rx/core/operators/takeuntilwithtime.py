@@ -1,15 +1,18 @@
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _take_until_with_time(
-    end_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Observable]:
-    def take_until_with_time(source: Observable) -> Observable:
+
+def take_until_with_time_(
+    end_time: typing.AbsoluteOrRelativeTime,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def take_until_with_time(source: Observable[_T]) -> Observable[_T]:
         """Takes elements for the specified duration until the specified end
         time, using the specified scheduler to run timers.
 
@@ -24,7 +27,10 @@ def _take_until_with_time(
             until the specified end time.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(end_time, datetime):
@@ -32,12 +38,17 @@ def _take_until_with_time(
             else:
                 scheduler_method = _scheduler.schedule_relative
 
-            def action(scheduler, state):
+            def action(scheduler: abc.SchedulerBase, state: Any = None):
                 observer.on_completed()
 
             task = scheduler_method(end_time, action)
-            return CompositeDisposable(task, source.subscribe(observer, scheduler=scheduler_))
+            return CompositeDisposable(
+                task, source.subscribe(observer, scheduler=scheduler_)
+            )
 
         return Observable(subscribe)
 
     return take_until_with_time
+
+
+__all__ = ["take_until_with_time_"]

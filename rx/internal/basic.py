@@ -18,7 +18,7 @@ def default_now() -> datetime:
     return datetime.utcnow()
 
 
-def default_comparer(x: Any, y: Any) -> bool:
+def default_comparer(x: _T, y: _T) -> bool:
     return x == y
 
 

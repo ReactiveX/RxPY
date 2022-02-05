@@ -18,7 +18,7 @@ class MultipleAssignmentDisposable(DisposableBase):
     def get_disposable(self) -> Optional[DisposableBase]:
         return self.current
 
-    def set_disposable(self, value: DisposableBase):
+    def set_disposable(self, value: DisposableBase) -> None:
         """If the MultipleAssignmentDisposable has already been
         disposed, assignment to this property causes immediate disposal
         of the given disposable object."""
@@ -33,7 +33,7 @@ class MultipleAssignmentDisposable(DisposableBase):
 
     disposable = property(get_disposable, set_disposable)
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Disposes the underlying disposable as well as all future
         replacements."""
 

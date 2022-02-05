@@ -4,7 +4,7 @@ import rx
 from rx.core import Observable
 
 
-def with_latest_from(
+def with_latest_from_(
     *sources: Observable[Any],
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     """With latest from operator.
@@ -29,4 +29,4 @@ def with_latest_from(
     return with_latest_from
 
 
-__all__ = ["with_latest_from"]
+__all__ = ["with_latest_from_"]

@@ -1,20 +1,26 @@
 from datetime import timedelta
-from typing import Callable, Optional
+from typing import Any, Callable, List, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
-from rx.disposable import (CompositeDisposable, RefCountDisposable,
-                           SerialDisposable, SingleAssignmentDisposable)
+from rx.disposable import (
+    CompositeDisposable,
+    RefCountDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.utils import add_ref
 from rx.scheduler import TimeoutScheduler
 from rx.subject import Subject
 
+_T = TypeVar("_T")
 
-def _window_with_time(
+
+def window_with_time_(
     timespan: typing.RelativeTime,
     timeshift: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     if timeshift is None:
         timeshift = timespan
 
@@ -23,15 +29,18 @@ def _window_with_time(
     if not isinstance(timeshift, timedelta):
         timeshift = timedelta(seconds=timeshift)
 
-    def window_with_time(source: Observable) -> Observable:
-        def subscribe(observer, scheduler_=None):
+    def window_with_time(source: Observable[_T]) -> Observable[Observable[_T]]:
+        def subscribe(
+            observer: abc.ObserverBase[Observable[_T]],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             timer_d = SerialDisposable()
             next_shift = [timeshift]
             next_span = [timespan]
             total_time = [DELTA_ZERO]
-            q = []
+            q: List[Subject[_T]] = []
 
             group_disposable = CompositeDisposable(timer_d)
             ref_count_disposable = RefCountDisposable(group_disposable)
@@ -60,8 +69,8 @@ def _window_with_time(
                 if is_shift:
                     next_shift[0] += timeshift
 
-                def action(scheduler, state=None):
-                    s = None
+                def action(scheduler: abc.SchedulerBase, state: Any = None):
+                    s: Optional[Subject[_T]] = None
 
                     if is_shift:
                         s = Subject()
@@ -80,25 +89,30 @@ def _window_with_time(
             observer.on_next(add_ref(q[0], ref_count_disposable))
             create_timer()
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 for s in q:
                     s.on_next(x)
 
-            def on_error(e):
+            def on_error(e: Exception) -> None:
                 for s in q:
                     s.on_error(e)
 
                 observer.on_error(e)
 
-            def on_completed():
+            def on_completed() -> None:
                 for s in q:
                     s.on_completed()
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler_))
+            group_disposable.add(
+                source.subscribe_(on_next, on_error, on_completed, scheduler_)
+            )
             return ref_count_disposable
 
         return Observable(subscribe)
 
     return window_with_time
+
+
+__all__ = ["window_with_time_"]

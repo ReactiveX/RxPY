@@ -1,16 +1,16 @@
 from threading import RLock
 from typing import Any, List
 
-from rx.core.abc import DisposableBase
+from rx.core import abc
 
 
-class CompositeDisposable(DisposableBase):
+class CompositeDisposable(abc.DisposableBase):
     """Represents a group of disposable resources that are disposed
     together"""
 
     def __init__(self, *args: Any):
         if args and isinstance(args[0], list):
-            self.disposable: List[DisposableBase] = args[0]
+            self.disposable: List[abc.DisposableBase] = args[0]
         else:
             self.disposable = list(args)
 
@@ -18,7 +18,7 @@ class CompositeDisposable(DisposableBase):
         self.lock = RLock()
         super(CompositeDisposable, self).__init__()
 
-    def add(self, item: DisposableBase):
+    def add(self, item: abc.DisposableBase):
         """Adds a disposable to the CompositeDisposable or disposes the
         disposable if the CompositeDisposable is disposed
 
@@ -35,7 +35,7 @@ class CompositeDisposable(DisposableBase):
         if should_dispose:
             item.dispose()
 
-    def remove(self, item: DisposableBase):
+    def remove(self, item: abc.DisposableBase):
         """Removes and disposes the first occurrence of a disposable
         from the CompositeDisposable."""
 
@@ -80,7 +80,7 @@ class CompositeDisposable(DisposableBase):
         for disposable in current_disposable:
             disposable.dispose()
 
-    def contains(self, item: DisposableBase) -> bool:
+    def contains(self, item: abc.DisposableBase) -> bool:
         """Determines whether the CompositeDisposable contains a specific
         disposable.
 
@@ -92,12 +92,12 @@ class CompositeDisposable(DisposableBase):
 
         return item in self.disposable
 
-    def to_list(self):
+    def to_list(self) -> List[abc.DisposableBase]:
         return self.disposable[:]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.disposable)
 
     @property
-    def length(self):
+    def length(self) -> int:
         return len(self.disposable)

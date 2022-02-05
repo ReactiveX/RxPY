@@ -52,8 +52,8 @@ def alias(name: str, doc: str, fun: Callable[..., Any]) -> Callable[..., Any]:
 class NotSet:
     """Sentinel value."""
 
-    def __eq__(self, other: Any):
+    def __eq__(self, other: Any) -> bool:
         return self is other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "NotSet"

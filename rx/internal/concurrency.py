@@ -8,7 +8,7 @@ def default_thread_factory(target: StartableTarget) -> Thread:
     return Thread(target=target, daemon=True)
 
 
-def synchronized(lock: RLock):
+def synchronized(lock: RLock) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """A decorator for synchronizing access to a given function."""
 
     def wrapper(fn: Callable[..., Any]) -> Callable[..., Any]:
