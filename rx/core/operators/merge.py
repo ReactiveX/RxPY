@@ -2,7 +2,7 @@ from typing import Callable, List, Optional, TypeVar
 
 import rx
 from rx import from_future
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 from rx.internal.utils import is_future

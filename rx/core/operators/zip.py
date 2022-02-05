@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Any, Optional, Tuple, TypeVar
+from typing import Any, Callable, Iterable, Optional, Tuple, TypeVar
 
 import rx
 from rx.core import Observable, abc

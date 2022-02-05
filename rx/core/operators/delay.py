@@ -3,8 +3,11 @@ from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, abc, typing
-from rx.disposable import (CompositeDisposable, MultipleAssignmentDisposable,
-                           SerialDisposable)
+from rx.disposable import (
+    CompositeDisposable,
+    MultipleAssignmentDisposable,
+    SerialDisposable,
+)
 from rx.internal.constants import DELTA_ZERO
 from rx.scheduler import TimeoutScheduler
 

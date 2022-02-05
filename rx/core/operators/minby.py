@@ -1,6 +1,6 @@
-from typing import Callable, Optional, TypeVar, cast, List
+from typing import Callable, List, Optional, TypeVar, cast
 
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 from rx.internal.basic import default_sub_comparer
 
 _T = TypeVar("_T")

@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar, Iterable
+from typing import Callable, Iterable, Optional, TypeVar
 
 from rx import from_, from_future
 from rx import operators as ops

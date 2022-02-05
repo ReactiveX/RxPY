@@ -1,6 +1,6 @@
 from typing import Callable, Optional, TypeVar
 
-from rx.core import Observable, Notification, abc
+from rx.core import Notification, Observable, abc
 
 _T = TypeVar("_T")
 

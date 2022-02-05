@@ -1,7 +1,7 @@
-from typing import Callable, List, Optional, TypeVar, Iterable
+from typing import Callable, Iterable, List, Optional, TypeVar
 
 import rx
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
 from rx.internal import default_comparer
 

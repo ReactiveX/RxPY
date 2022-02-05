@@ -1,4 +1,4 @@
-from typing import cast, Callable, Optional, TypeVar, Dict
+from typing import Callable, Dict, Optional, TypeVar, cast
 
 from rx.core import Observable, abc
 from rx.core.typing import Mapper

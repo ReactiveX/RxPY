@@ -3,8 +3,7 @@ from datetime import datetime
 from typing import Any, Optional, TypeVar
 
 from rx.core import abc, typing
-from rx.disposable import (CompositeDisposable, Disposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
 from ..periodicscheduler import PeriodicScheduler
 
@@ -29,7 +28,9 @@ class GEventScheduler(PeriodicScheduler):
         super().__init__()
         self._gevent = gevent
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:

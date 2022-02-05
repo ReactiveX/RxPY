@@ -4,8 +4,11 @@ from typing import Any, Callable
 
 from rx import operators as ops
 from rx.core import Observable
-from rx.disposable import (CompositeDisposable, RefCountDisposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import (
+    CompositeDisposable,
+    RefCountDisposable,
+    SingleAssignmentDisposable,
+)
 from rx.internal.utils import add_ref
 from rx.subject import Subject
 

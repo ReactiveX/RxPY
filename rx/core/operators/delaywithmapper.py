@@ -1,8 +1,11 @@
 from typing import Callable
 
 from rx.core import Observable, abc, typing
-from rx.disposable import (CompositeDisposable, SerialDisposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import (
+    CompositeDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 
 
 def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:

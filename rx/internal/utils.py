@@ -1,7 +1,7 @@
 from asyncio import Future
 from functools import update_wrapper
 from types import FunctionType
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, cast, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, TypeVar, cast
 
 from rx.core import abc
 from rx.disposable import CompositeDisposable

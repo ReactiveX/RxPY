@@ -3,8 +3,7 @@ from datetime import timedelta
 from typing import Any, Optional, Set, TypeVar
 
 from rx.core import abc, typing
-from rx.disposable import (CompositeDisposable, Disposable,
-                           SingleAssignmentDisposable)
+from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
 
 from ..periodicscheduler import PeriodicScheduler
 

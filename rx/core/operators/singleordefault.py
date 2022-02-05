@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe, abc
+from rx.core import Observable, abc, pipe
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 

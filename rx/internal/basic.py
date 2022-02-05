@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, NoReturn, Union, TypeVar
+from typing import Any, NoReturn, TypeVar, Union
 
 _T = TypeVar("_T")
 

@@ -18,11 +18,11 @@ from typing import (
 from rx.core import (
     ConnectableObservable,
     GroupedObservable,
+    Notification,
     Observable,
     abc,
     pipe,
     typing,
-    Notification,
 )
 from rx.core.typing import (
     Accumulator,
@@ -2265,9 +2265,9 @@ def replay(
         sequence produced by multicasting the source sequence within a
         mapper function.
     """
-    from rx.core.operators.replay import _replay
+    from rx.core.operators.replay import replay_
 
-    return _replay(mapper, buffer_size, window, scheduler=scheduler)
+    return replay_(mapper, buffer_size, window, scheduler=scheduler)
 
 
 def retry(

@@ -1,4 +1,5 @@
 from typing import TypeVar
+
 import rx
 from rx import operators as ops
 from rx.core import Observable

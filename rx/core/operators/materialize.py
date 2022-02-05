@@ -1,8 +1,7 @@
 from typing import Callable, Optional, TypeVar
-from rx.core.notification import Notification
 
 from rx.core import Observable, abc
-from rx.core.notification import OnCompleted, OnError, OnNext
+from rx.core.notification import Notification, OnCompleted, OnError, OnNext
 
 _T = TypeVar("_T")
 

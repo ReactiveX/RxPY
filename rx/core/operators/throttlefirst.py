@@ -1,5 +1,5 @@
-from typing import Callable, Optional, TypeVar
 from datetime import datetime
+from typing import Callable, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.scheduler import TimeoutScheduler

@@ -1,5 +1,5 @@
-from threading import Thread, RLock
-from typing import Callable, Any
+from threading import RLock, Thread
+from typing import Any, Callable
 
 from rx.core.typing import StartableTarget
 

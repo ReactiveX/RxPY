@@ -3,7 +3,6 @@ from typing import Callable, Optional, TypeVar
 from rx.core import Observable, abc
 from rx.core.observer import ObserveOnObserver
 
-
 _T = TypeVar("_T")
 
 

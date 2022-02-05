@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar, List
+from typing import Callable, List, Optional, TypeVar
 
 from rx.core import Observable, typing
 from rx.internal.basic import default_sub_comparer

@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, TypeVar, Dict, Any
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.scheduler import TimeoutScheduler

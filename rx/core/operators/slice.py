@@ -1,5 +1,5 @@
 from sys import maxsize
-from typing import Callable, Optional, TypeVar, Any, List
+from typing import Any, Callable, List, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable

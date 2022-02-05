@@ -1,6 +1,4 @@
-from typing import Callable
-
-from typing import TypeVar
+from typing import Callable, TypeVar
 
 import rx
 from rx.core import Observable

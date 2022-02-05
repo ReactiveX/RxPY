@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar, Union, Type, cast
+from typing import Callable, Type, TypeVar, Union, cast
 
 from rx import defer
 from rx import operators as ops
