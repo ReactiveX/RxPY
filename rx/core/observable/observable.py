@@ -334,10 +334,10 @@ class Observable(abc.ObservableBase[_T]):
         Returns:
             The last item of the observable sequence.
         """
-        from ..operators.tofuture import _to_future
+        from ..operators.tofuture import to_future
 
         loop = asyncio.get_event_loop()
-        return iter(self.pipe(_to_future(scheduler=AsyncIOScheduler(loop=loop))))
+        return iter(self.pipe(to_future(scheduler=AsyncIOScheduler(loop=loop))))
 
     def __add__(self, other: Observable[_T]) -> Observable[_T]:
         """Pythonic version of :func:`concat <rx.concat>`.

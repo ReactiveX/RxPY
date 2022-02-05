@@ -1,11 +1,17 @@
-from typing import Any, Callable, Optional
+from typing import cast, Callable, Optional, TypeVar, Dict
 
 from rx.core import Observable, abc
 from rx.core.typing import Mapper
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
+_TValue = TypeVar("_TValue")
 
-def _to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:
-    def to_dict(source: Observable) -> Observable:
+
+def to_dict(
+    key_mapper: Mapper[_T, _TKey], element_mapper: Optional[Mapper[_T, _TValue]] = None
+) -> Callable[[Observable[_T]], Observable[Dict[_TKey, _TValue]]]:
+    def to_dict(source: Observable[_T]) -> Observable[Dict[_TKey, _TValue]]:
         """Converts the observable sequence to a Map if it exists.
 
         Args:
@@ -16,10 +22,13 @@ def _to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None) -> Cal
             containing the values from the observable sequence.
         """
 
-        def subscribe(observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
-            m = dict()
+        def subscribe(
+            observer: abc.ObserverBase[Dict[_TKey, _TValue]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            m: Dict[_TKey, _TValue] = dict()
 
-            def on_next(x: Any) -> None:
+            def on_next(x: _T) -> None:
                 try:
                     key = key_mapper(x)
                 except Exception as ex:  # pylint: disable=broad-except
@@ -34,7 +43,7 @@ def _to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None) -> Cal
                         observer.on_error(ex)
                         return
 
-                m[key] = element
+                m[key] = cast(_TValue, element)
 
             def on_completed() -> None:
                 nonlocal m
@@ -42,8 +51,13 @@ def _to_dict(key_mapper: Mapper, element_mapper: Optional[Mapper] = None) -> Cal
                 m = dict()
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return to_dict
+
+
+__all__ = ["to_dict"]

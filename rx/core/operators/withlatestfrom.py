@@ -1,10 +1,12 @@
-from typing import Callable
+from typing import Any, Callable
 
 import rx
 from rx.core import Observable
 
 
-def _with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]:
+def with_latest_from(
+    *sources: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """With latest from operator.
 
     Merges the specified observable sequences into one observable
@@ -21,6 +23,10 @@ def _with_latest_from(*sources: Observable) -> Callable[[Observable], Observable
     elements of the sources into a tuple.
     """
 
-    def with_latest_from(source: Observable) -> Observable:
+    def with_latest_from(source: Observable[Any]) -> Observable[Any]:
         return rx.with_latest_from(source, *sources)
+
     return with_latest_from
+
+
+__all__ = ["with_latest_from"]

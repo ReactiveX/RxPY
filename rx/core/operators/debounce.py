@@ -11,8 +11,8 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-def _debounce(
-    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase
+def debounce(
+    duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def debounce(source: Observable[_T]) -> Observable[_T]:
         """Ignores values from an observable sequence which are followed by
@@ -79,8 +79,8 @@ def _debounce(
     return debounce
 
 
-def _throttle_with_mapper(
-    throttle_duration_mapper: Callable[[Any], Observable[_T]]
+def throttle_with_mapper(
+    throttle_duration_mapper: Callable[[Any], Observable[Any]]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def throttle_with_mapper(source: Observable[_T]) -> Observable[_T]:
         """Partially applied throttle_with_mapper operator.
@@ -103,11 +103,13 @@ def _throttle_with_mapper(
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
             cancelable = SerialDisposable()
-            has_value = [False]
-            value = [None]
+            has_value: bool = False
+            value: _T = cast(_T, None)
             _id = [0]
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
+                nonlocal value, has_value
+
                 throttle = None
                 try:
                     throttle = throttle_duration_mapper(x)
@@ -115,25 +117,27 @@ def _throttle_with_mapper(
                     observer.on_error(e)
                     return
 
-                has_value[0] = True
-                value[0] = x
+                has_value = True
+                value = x
                 _id[0] += 1
                 current_id = _id[0]
                 d = SingleAssignmentDisposable()
                 cancelable.disposable = d
 
-                def on_next(x: _T) -> None:
-                    if has_value[0] and _id[0] == current_id:
-                        observer.on_next(value[0])
+                def on_next(x: Any) -> None:
+                    nonlocal has_value
+                    if has_value and _id[0] == current_id:
+                        observer.on_next(value)
 
-                    has_value[0] = False
+                    has_value = False
                     d.dispose()
 
                 def on_completed() -> None:
-                    if has_value[0] and _id[0] == current_id:
-                        observer.on_next(value[0])
+                    nonlocal has_value
+                    if has_value and _id[0] == current_id:
+                        observer.on_next(value)
 
-                    has_value[0] = False
+                    has_value = False
                     d.dispose()
 
                 d.disposable = throttle.subscribe_(
@@ -141,18 +145,20 @@ def _throttle_with_mapper(
                 )
 
             def on_error(e: Exception) -> None:
+                nonlocal has_value
                 cancelable.dispose()
                 observer.on_error(e)
-                has_value[0] = False
+                has_value = False
                 _id[0] += 1
 
             def on_completed() -> None:
+                nonlocal has_value
                 cancelable.dispose()
-                if has_value[0]:
-                    observer.on_next(value[0])
+                if has_value:
+                    observer.on_next(value)
 
                 observer.on_completed()
-                has_value[0] = False
+                has_value = False
                 _id[0] += 1
 
             subscription = source.subscribe_(
@@ -165,4 +171,4 @@ def _throttle_with_mapper(
     return throttle_with_mapper
 
 
-__all__ = ["_debounce", "_throttle_with_mapper"]
+__all__ = ["debounce", "throttle_with_mapper"]

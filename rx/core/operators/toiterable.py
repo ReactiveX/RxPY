@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, List, Optional, TypeVar
+from typing import Callable, List, Optional, TypeVar
 
 from rx.core import Observable, abc
 
@@ -6,8 +6,8 @@ from rx.core import Observable, abc
 _T = TypeVar("_T")
 
 
-def _to_iterable() -> Callable[[Observable[_T]], Observable[Iterable[_T]]]:
-    def to_iterable(source: Observable[_T]) -> Observable[Iterable[_T]]:
+def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    def to_iterable(source: Observable[_T]) -> Observable[List[_T]]:
         """Creates an iterable from an observable sequence.
 
         Returns:
@@ -17,7 +17,7 @@ def _to_iterable() -> Callable[[Observable[_T]], Observable[Iterable[_T]]]:
         """
 
         def subscribe(
-            observer: abc.ObserverBase[Iterable[_T]],
+            observer: abc.ObserverBase[List[_T]],
             scheduler: Optional[abc.SchedulerBase] = None,
         ):
             nonlocal source
@@ -42,4 +42,4 @@ def _to_iterable() -> Callable[[Observable[_T]], Observable[Iterable[_T]]]:
     return to_iterable
 
 
-__all__ = ["_to_iterable"]
+__all__ = ["to_iterable"]

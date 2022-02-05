@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from rx.core import Observable, abc
 from rx.core.typing import RelativeTime
@@ -7,8 +7,10 @@ from rx.scheduler import NewThreadScheduler
 new_thread_scheduler = NewThreadScheduler()
 
 
-def _to_marbles(scheduler: Optional[abc.SchedulerBase] = None, timespan: RelativeTime = 0.1):
-    def to_marbles(source: Observable) -> Observable:
+def to_marbles(
+    scheduler: Optional[abc.SchedulerBase] = None, timespan: RelativeTime = 0.1
+):
+    def to_marbles(source: Observable[Any]) -> Observable[str]:
         """Convert an observable sequence into a marble diagram string.
 
         Args:
@@ -21,7 +23,10 @@ def _to_marbles(scheduler: Optional[abc.SchedulerBase] = None, timespan: Relativ
             Observable stream.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[str],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             scheduler = scheduler or new_thread_scheduler
 
             result: List[str] = []
@@ -37,11 +42,11 @@ def _to_marbles(scheduler: Optional[abc.SchedulerBase] = None, timespan: Relativ
                 dashes = "-" * int((secs + timespan / 2.0) * (1.0 / timespan))
                 result.append(dashes)
 
-            def on_next(value):
+            def on_next(value: Any) -> None:
                 add_timespan()
                 result.append(stringify(value))
 
-            def on_error(exception):
+            def on_error(exception: Exception) -> None:
                 add_timespan()
                 result.append(stringify(exception))
                 observer.on_next("".join(n for n in result))
@@ -60,10 +65,13 @@ def _to_marbles(scheduler: Optional[abc.SchedulerBase] = None, timespan: Relativ
     return to_marbles
 
 
-def stringify(value):
+def stringify(value: Any) -> str:
     """Utility for stringifying an event."""
     string = str(value)
     if len(string) > 1:
         string = "(%s)" % string
 
     return string
+
+
+__all__ = ["stringify"]

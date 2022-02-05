@@ -4,6 +4,7 @@ from asyncio import Future
 from typing import (
     Any,
     Callable,
+    Dict,
     Iterable,
     List,
     Optional,
@@ -39,6 +40,7 @@ _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 _TKey = TypeVar("_TKey")
 _TState = TypeVar("_TState")
+_TValue = TypeVar("_TValue")
 
 
 def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
@@ -64,9 +66,9 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
         determining whether all elements in the source sequence pass
         the test in the specified predicate.
     """
-    from rx.core.operators.all import _all
+    from rx.core.operators.all import all
 
-    return _all(predicate)
+    return all(predicate)
 
 
 def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -140,7 +142,9 @@ def average(
     return average(key_mapper)
 
 
-def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
+def buffer(
+    boundaries: Observable[Any],
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or
     more buffers.
 
@@ -163,9 +167,9 @@ def buffer(boundaries: Observable) -> Callable[[Observable], Observable]:
         A function that takes an observable source and returns an
         observable sequence of buffers.
     """
-    from rx.core.operators.buffer import _buffer
+    from rx.core.operators.buffer import buffer
 
-    return _buffer(boundaries)
+    return buffer(boundaries)
 
 
 def buffer_when(
@@ -265,9 +269,9 @@ def buffer_with_count(
         A function that takes an observable source and returns an
         observable sequence of buffers.
     """
-    from rx.core.operators.buffer import _buffer_with_count
+    from rx.core.operators.buffer import buffer_with_count
 
-    return _buffer_with_count(count, skip)
+    return buffer_with_count(count, skip)
 
 
 def buffer_with_time(
@@ -527,9 +531,9 @@ def debounce(
         An operator function that takes the source observable and
         returns the debounced observable sequence.
     """
-    from rx.core.operators.debounce import _debounce
+    from rx.core.operators.debounce import debounce
 
-    return _debounce(duetime, scheduler)
+    return debounce(duetime, scheduler)
 
 
 throttle_with_timeout = debounce
@@ -3302,7 +3306,7 @@ def take_with_time(
 
 def throttle_first(
     window_duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns an Observable that emits only the first item emitted by
     the source Observable during sequential time windows of a specified
     duration.
@@ -3315,14 +3319,14 @@ def throttle_first(
         An operator function that takes an observable source and
         returns an observable that performs the throttle operation.
     """
-    from rx.core.operators.throttlefirst import _throttle_first
+    from rx.core.operators.throttlefirst import throttle_first
 
-    return _throttle_first(window_duration, scheduler)
+    return throttle_first(window_duration, scheduler)
 
 
 def throttle_with_mapper(
-    throttle_duration_mapper: Callable[[Any], Observable]
-) -> Callable[[Observable], Observable]:
+    throttle_duration_mapper: Callable[[Any], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """The throttle_with_mapper operator.
 
     Ignores values from an observable sequence which are followed by
@@ -3340,9 +3344,9 @@ def throttle_with_mapper(
         A partially applied operator function that takes an observable
         source and returns the throttled observable sequence.
     """
-    from rx.core.operators.debounce import _throttle_with_mapper
+    from rx.core.operators.debounce import throttle_with_mapper
 
-    return _throttle_with_mapper(throttle_duration_mapper)
+    return throttle_with_mapper(throttle_duration_mapper)
 
 
 def timestamp(
@@ -3369,10 +3373,10 @@ def timestamp(
 
 
 def timeout(
-    duetime: typing.AbsoluteTime,
-    other: Optional[Observable] = None,
+    duetime: typing.AbsoluteOrRelativeTime,
+    other: Optional[Observable[_T]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence or the other observable
     sequence if duetime elapses.
 
@@ -3402,16 +3406,16 @@ def timeout(
         returns the source sequence switching to the other sequence in
         case of a timeout.
     """
-    from rx.core.operators.timeout import _timeout
+    from rx.core.operators.timeout import timeout
 
-    return _timeout(duetime, other, scheduler)
+    return timeout(duetime, other, scheduler)
 
 
 def timeout_with_mapper(
-    first_timeout: Optional[Observable] = None,
-    timeout_duration_mapper: Optional[Callable[[Any], Observable]] = None,
-    other: Optional[Observable] = None,
-) -> Callable[[Observable], Observable]:
+    first_timeout: Optional[Observable[Any]] = None,
+    timeout_duration_mapper: Optional[Callable[[_T], Observable[Any]]] = None,
+    other: Optional[Observable[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
@@ -3442,7 +3446,7 @@ def timeout_with_mapper(
 
 def time_interval(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Records the time interval between consecutive values in an
     observable sequence.
 
@@ -3461,14 +3465,14 @@ def time_interval(
         returns an observable sequence with time interval information
         on values.
     """
-    from rx.core.operators.timeinterval import _time_interval
+    from rx.core.operators.timeinterval import time_interval
 
-    return _time_interval(scheduler=scheduler)
+    return time_interval(scheduler=scheduler)
 
 
 def to_dict(
-    key_mapper: Mapper, element_mapper: Optional[Mapper] = None
-) -> Callable[[Observable], Observable]:
+    key_mapper: Mapper[_T, _TKey], element_mapper: Optional[Mapper[_T, _TValue]] = None
+) -> Callable[[Observable[_T]], Observable[Dict[_TKey, _TValue]]]:
     """Converts the observable sequence to a Map if it exists.
 
     Args:
@@ -3483,14 +3487,14 @@ def to_dict(
         returns an observable sequence with a single value of a
         dictionary containing the values from the observable sequence.
     """
-    from rx.core.operators.todict import _to_dict
+    from rx.core.operators.todict import to_dict
 
-    return _to_dict(key_mapper, element_mapper)
+    return to_dict(key_mapper, element_mapper)
 
 
 def to_future(
-    future_ctor: Optional[Callable[[], Future]] = None
-) -> Callable[[Observable], Future]:
+    future_ctor: Optional[Callable[[], "Future[_T]"]] = None
+) -> Callable[[Observable[_T]], "Future[_T]"]:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -3503,9 +3507,9 @@ def to_future(
         An operator function that takes an observable source and returns
         a future with the last value from the observable sequence.
     """
-    from rx.core.operators.tofuture import _to_future
+    from rx.core.operators.tofuture import to_future
 
-    return _to_future(future_ctor)
+    return to_future(future_ctor)
 
 
 def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
@@ -3518,9 +3522,9 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
         returns an observable sequence containing a single element with
         an iterable containing all the elements of the source sequence.
     """
-    from rx.core.operators.toiterable import _to_iterable
+    from rx.core.operators.toiterable import to_iterable
 
-    return _to_iterable()
+    return to_iterable()
 
 
 to_list = to_iterable
@@ -3528,7 +3532,7 @@ to_list = to_iterable
 
 def to_marbles(
     timespan: typing.RelativeTime = 0.1, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[Any]], Observable[str]]:
     """Convert an observable sequence into a marble diagram string.
 
     Args:
@@ -3540,9 +3544,9 @@ def to_marbles(
     Returns:
         Observable stream.
     """
-    from rx.core.operators.tomarbles import _to_marbles
+    from rx.core.operators.tomarbles import to_marbles
 
-    return _to_marbles(scheduler=scheduler, timespan=timespan)
+    return to_marbles(scheduler=scheduler, timespan=timespan)
 
 
 def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
@@ -3553,9 +3557,9 @@ def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
         returns an observable sequence with a single value of a set
         containing the values from the observable sequence.
     """
-    from rx.core.operators.toset import _to_set
+    from rx.core.operators.toset import to_set
 
-    return _to_set()
+    return to_set()
 
 
 def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3571,9 +3575,9 @@ def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[
         returns an observable sequence which is repeated as long as the
         condition holds.
     """
-    from rx.core.operators.whiledo import _while_do
+    from rx.core.operators.whiledo import while_do
 
-    return _while_do(condition)
+    return while_do(condition)
 
 
 def window(
@@ -3738,7 +3742,9 @@ def window_with_time_or_count(
     return _window_with_time_or_count(timespan, count, scheduler)
 
 
-def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]:
+def with_latest_from(
+    *sources: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """The `with_latest_from` operator.
 
     Merges the specified observable sequences into one observable
@@ -3763,12 +3769,12 @@ def with_latest_from(*sources: Observable) -> Callable[[Observable], Observable]
         returns an observable sequence containing the result of
         combining elements of the sources into a tuple.
     """
-    from rx.core.operators.withlatestfrom import _with_latest_from
+    from rx.core.operators.withlatestfrom import with_latest_from
 
-    return _with_latest_from(*sources)
+    return with_latest_from(*sources)
 
 
-def zip(*args: Observable) -> Callable[[Observable], Observable]:
+def zip(*args: Observable[Any]) -> Callable[[Observable[Any]], Observable[Any]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
@@ -3794,9 +3800,9 @@ def zip(*args: Observable) -> Callable[[Observable], Observable]:
         returns an observable sequence containing the result of
         combining elements of the sources as a tuple.
     """
-    from rx.core.operators.zip import _zip
+    from rx.core.operators.zip import zip
 
-    return _zip(*args)
+    return zip(*args)
 
 
 def zip_with_iterable(
@@ -3825,9 +3831,9 @@ def zip_with_iterable(
         returns an observable sequence containing the result of
         combining elements of the sources as a tuple.
     """
-    from rx.core.operators.zip import _zip_with_iterable
+    from rx.core.operators.zip import zip_with_iterable
 
-    return _zip_with_iterable(second)
+    return zip_with_iterable(second)
 
 
 zip_with_list = zip_with_iterable

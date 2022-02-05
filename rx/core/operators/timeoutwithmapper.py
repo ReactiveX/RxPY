@@ -1,19 +1,21 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 import rx
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.disposable import (
     CompositeDisposable,
     SerialDisposable,
     SingleAssignmentDisposable,
 )
 
+_T = TypeVar("_T")
+
 
 def timeout_with_mapper(
-    first_timeout: Optional[Observable] = None,
-    timeout_duration_mapper: Optional[Callable[[Any], Observable]] = None,
-    other: Optional[Observable] = None,
-) -> Callable[[Observable], Observable]:
+    first_timeout: Optional[Observable[_T]] = None,
+    timeout_duration_mapper: Optional[Callable[[Any], Observable[Any]]] = None,
+    other: Optional[Observable[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
 
@@ -39,8 +41,11 @@ def timeout_with_mapper(
     first_timeout = first_timeout or rx.never()
     other = other or rx.throw(Exception("Timeout"))
 
-    def timeout_with_mapper(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    def timeout_with_mapper(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             subscription = SerialDisposable()
             timer = SerialDisposable()
             original = SingleAssignmentDisposable()
@@ -50,7 +55,7 @@ def timeout_with_mapper(
             switched = False
             _id = [0]
 
-            def set_timer(timeout: Observable) -> None:
+            def set_timer(timeout: Observable[Any]) -> None:
                 my_id = _id[0]
 
                 def timer_wins():
@@ -59,7 +64,7 @@ def timeout_with_mapper(
                 d = SingleAssignmentDisposable()
                 timer.disposable = d
 
-                def on_next(x):
+                def on_next(x: Any) -> None:
                     if timer_wins():
                         subscription.disposable = other.subscribe(
                             observer, scheduler=scheduler
@@ -67,11 +72,11 @@ def timeout_with_mapper(
 
                     d.dispose()
 
-                def on_error(e):
+                def on_error(e: Exception) -> None:
                     if timer_wins():
                         observer.on_error(e)
 
-                def on_completed():
+                def on_completed() -> None:
                     if timer_wins():
                         subscription.disposable = other.subscribe(observer)
 
@@ -88,7 +93,7 @@ def timeout_with_mapper(
 
                 return res
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 if observer_wins():
                     observer.on_next(x)
                     timeout = None
@@ -100,11 +105,11 @@ def timeout_with_mapper(
 
                     set_timer(timeout)
 
-            def on_error(error):
+            def on_error(error: Exception) -> None:
                 if observer_wins():
                     observer.on_error(error)
 
-            def on_completed():
+            def on_completed() -> None:
                 if observer_wins():
                     observer.on_completed()
 
@@ -116,3 +121,6 @@ def timeout_with_mapper(
         return Observable(subscribe)
 
     return timeout_with_mapper
+
+
+__all__ = ["timeout_with_mapper"]

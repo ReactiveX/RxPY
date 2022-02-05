@@ -8,7 +8,7 @@ _TOther = TypeVar("_TOther")
 
 
 # pylint: disable=redefined-builtin
-def _zip(
+def zip(
     *args: Observable[Any],
 ) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
     def zip(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
@@ -32,7 +32,7 @@ def _zip(
     return zip
 
 
-def _zip_with_iterable(
+def zip_with_iterable(
     seq: Iterable[_TOther],
 ) -> Callable[[Observable[_T]], Observable[Tuple[_T, _TOther]]]:
     def zip_with_iterable(source: Observable[_T]) -> Observable[Tuple[_T, _TOther]]:
@@ -81,4 +81,4 @@ def _zip_with_iterable(
     return zip_with_iterable
 
 
-__all__ = ["_zip", "_zip_with_iterable"]
+__all__ = ["zip", "zip_with_iterable"]

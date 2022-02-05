@@ -1,28 +1,32 @@
 from asyncio import Future
 from datetime import datetime
-from typing import Callable, Optional, Union, cast
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from rx import from_future, throw
 from rx.core import Observable, abc, typing
-from rx.disposable import (CompositeDisposable, SerialDisposable,
-                           SingleAssignmentDisposable)
-from rx.internal.utils import is_future
+from rx.disposable import (
+    CompositeDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-def _timeout(
-    duetime: typing.AbsoluteTime,
-    other: Optional[Union[Observable, Future]] = None,
+
+def timeout(
+    duetime: typing.AbsoluteOrRelativeTime,
+    other: Optional[Union[Observable[_T], "Future[_T]"]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
 
     other = other or throw(Exception("Timeout"))
-    if is_future(other):
-        obs = from_future(cast(Future, other))
+    if isinstance(other, Future):
+        obs = from_future(other)
     else:
-        obs = cast(Observable, other)
+        obs = other
 
-    def timeout(source: Observable) -> Observable:
+    def timeout(source: Observable[_T]) -> Observable[_T]:
         """Returns the source observable sequence or the other observable
         sequence if duetime elapses.
 
@@ -37,7 +41,10 @@ def _timeout(
             case of a timeout.
         """
 
-        def subscribe(observer, scheduler_=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             if isinstance(duetime, datetime):
@@ -56,24 +63,26 @@ def _timeout(
             def create_timer():
                 my_id = _id[0]
 
-                def action(scheduler, state=None):
+                def action(scheduler: abc.SchedulerBase, state: Any = None):
                     switched[0] = _id[0] == my_id
                     timer_wins = switched[0]
                     if timer_wins:
-                        subscription.disposable = obs.subscribe(observer, scheduler=scheduler)
+                        subscription.disposable = obs.subscribe(
+                            observer, scheduler=scheduler
+                        )
 
                 timer.disposable = scheduler_method(duetime, action)
 
             create_timer()
 
-            def on_next(value):
+            def on_next(value: _T) -> None:
                 send_wins = not switched[0]
                 if send_wins:
                     _id[0] += 1
                     observer.on_next(value)
                     create_timer()
 
-            def on_error(error):
+            def on_error(error: Exception) -> None:
                 on_error_wins = not switched[0]
                 if on_error_wins:
                     _id[0] += 1
@@ -85,7 +94,9 @@ def _timeout(
                     _id[0] += 1
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler_)
+            original.disposable = source.subscribe_(
+                on_next, on_error, on_completed, scheduler_
+            )
             return CompositeDisposable(subscription, timer)
 
         return Observable(subscribe)
