@@ -8,7 +8,7 @@ from rx.scheduler import TimeoutScheduler
 _TState = TypeVar("_TState")
 
 
-def _generate_with_relative_time(
+def generate_with_relative_time_(
     initial_state: _TState,
     condition: Predicate[_TState],
     iterate: Mapper[_TState, _TState],
@@ -85,4 +85,4 @@ def _generate_with_relative_time(
     return Observable(subscribe)
 
 
-__all__ = ["_generate_with_relative_time"]
+__all__ = ["generate_with_relative_time_"]

@@ -94,7 +94,7 @@ def observable_timer_timespan_and_period(
     return observable_timer_duetime_and_period(duetime, period, scheduler)
 
 
-def _timer(
+def timer_(
     duetime: typing.AbsoluteOrRelativeTime,
     period: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
@@ -111,4 +111,4 @@ def _timer(
     return observable_timer_timespan_and_period(duetime, period, scheduler)
 
 
-__all__ = ["_timer"]
+__all__ = ["timer_"]

@@ -6,7 +6,7 @@ from rx.scheduler import CurrentThreadScheduler
 _T = TypeVar("_T")
 
 
-def _return_value(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
+def return_value_(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -53,4 +53,4 @@ def _from_callable(supplier: Callable[[], _T], scheduler: Optional[abc.Scheduler
     return Observable(subscribe)
 
 
-__all__ = ["_return_value", "_from_callable"]
+__all__ = ["return_value_", "_from_callable"]

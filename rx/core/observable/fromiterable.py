@@ -7,7 +7,9 @@ from rx.scheduler import CurrentThreadScheduler
 _T = TypeVar("_T")
 
 
-def from_iterable(iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
+def from_iterable_(
+    iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
     """Converts an iterable to an observable sequence.
 
     Example:
@@ -22,7 +24,9 @@ def from_iterable(iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase]
         given iterable sequence.
     """
 
-    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)
         disposed = False
@@ -47,3 +51,6 @@ def from_iterable(iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase]
         return CompositeDisposable(_scheduler.schedule(action), disp)
 
     return Observable(subscribe)
+
+
+__all__ = ["from_iterable_"]

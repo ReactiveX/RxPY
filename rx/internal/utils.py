@@ -41,11 +41,12 @@ def alias(name: str, doc: str, fun: Callable[..., Any]) -> Callable[..., Any]:
     _fun = cast(FunctionType, fun)
     args = (_fun.__code__, _fun.__globals__)
     kwargs = {"name": name, "argdefs": _fun.__defaults__, "closure": _fun.__closure__}
-    alias = FunctionType(*args, **kwargs)  # type: ignore
-    alias = update_wrapper(alias, _fun)
-    alias.__kwdefaults__ = _fun.__kwdefaults__
-    alias.__doc__ = doc
-    return alias
+    alias_ = FunctionType(*args, **kwargs)  # type: ignore
+    alias_ = update_wrapper(alias_, _fun)
+    alias_.__kwdefaults__ = _fun.__kwdefaults__
+    alias_.__doc__ = doc
+    alias_.__annotations__ = _fun.__annotations__
+    return alias_
 
 
 class NotSet:

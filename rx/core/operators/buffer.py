@@ -6,7 +6,7 @@ from rx.core import Observable, pipe
 _T = TypeVar("_T")
 
 
-def buffer(
+def buffer_(
     boundaries: Observable[Any],
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
@@ -32,9 +32,9 @@ def _buffer_toggle(
     )
 
 
-def buffer_with_count(
+def buffer_with_count_(
     count: int, skip: Optional[int] = None
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -74,4 +74,4 @@ def buffer_with_count(
     return buffer_with_count
 
 
-__all__ = ["buffer", "buffer_with_count"]
+__all__ = ["buffer_", "buffer_with_count_"]

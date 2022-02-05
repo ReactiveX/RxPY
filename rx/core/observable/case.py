@@ -8,7 +8,7 @@ _Key = TypeVar("_Key")
 _T = TypeVar("_T")
 
 
-def _case(
+def case_(
     mapper: Callable[[], _Key],
     sources: Mapping[_Key, Observable[_T]],
     default_source: Optional[Union[Observable[_T], "Future[_T]"]] = None,
@@ -33,4 +33,4 @@ def _case(
     return defer(factory)
 
 
-__all__ = ["_case"]
+__all__ = ["case_"]

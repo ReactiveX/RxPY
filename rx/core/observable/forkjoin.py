@@ -4,7 +4,7 @@ from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _fork_join(*sources: Observable) -> Observable:
+def fork_join_(*sources: Observable) -> Observable:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
@@ -19,7 +19,9 @@ def _fork_join(*sources: Observable) -> Observable:
 
     parent = sources[0]
 
-    def subscribe(observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None) -> CompositeDisposable:
+    def subscribe(
+        observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None
+    ) -> CompositeDisposable:
         n = len(sources)
         values = [None] * n
         is_done = [False] * n
@@ -53,10 +55,15 @@ def _fork_join(*sources: Observable) -> Observable:
                 with parent.lock:
                     done(i)
 
-            subscriptions[i].disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subscriptions[i].disposable = sources[i].subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
 
         for i in range(n):
             _subscribe(i)
         return CompositeDisposable(subscriptions)
 
     return Observable(subscribe)
+
+
+__all__ = ["fork_join_"]

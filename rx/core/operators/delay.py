@@ -101,7 +101,7 @@ def observable_delay_timespan(
     return Observable(subscribe)
 
 
-def _delay(
+def delay_(
     duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def delay(source: Observable[_T]) -> Observable[_T]:
@@ -123,4 +123,4 @@ def _delay(
     return delay
 
 
-__all__ = ["_delay"]
+__all__ = ["delay_"]

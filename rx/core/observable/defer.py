@@ -8,7 +8,7 @@ from rx.scheduler import ImmediateScheduler
 _T = TypeVar("_T")
 
 
-def _defer(
+def defer_(
     factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]]
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified factory
@@ -40,4 +40,4 @@ def _defer(
     return Observable(subscribe)
 
 
-__all__ = ["_defer"]
+__all__ = ["defer_"]

@@ -1,11 +1,14 @@
-from typing import Any, Callable
+from typing import Any, Callable, Optional, TypeVar
 
-from rx.core import Observable
-from rx.core.abc import DisposableBase
+from rx.core import Observable, abc
+
+_T = TypeVar("_T")
 
 
-def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Observable]:
-    def default_if_empty(source: Observable) -> Observable:
+def default_if_empty_(
+    default_value: _T = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def default_if_empty(source: Observable[_T]) -> Observable[_T]:
         """Returns the elements of the specified sequence or the
         specified value in a singleton sequence if the sequence is
         empty.
@@ -22,10 +25,13 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
             source.
         """
 
-        def subscribe(observer, scheduler=None) -> DisposableBase:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             found = [False]
 
-            def on_next(x: Any):
+            def on_next(x: _T):
                 found[0] = True
                 observer.on_next(x)
 
@@ -34,8 +40,13 @@ def _default_if_empty(default_value: Any = None) -> Callable[[Observable], Obser
                     observer.on_next(default_value)
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
 
         return Observable(subscribe)
 
     return default_if_empty
+
+
+__all__ = ["default_if_empty_"]

@@ -6,7 +6,7 @@ from rx.core import Observable
 _T = TypeVar("_T")
 
 
-def _concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def concat_(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     def concat(source: Observable[_T]) -> Observable[_T]:
         """Concatenates all the observable sequences.
 
@@ -23,4 +23,4 @@ def _concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_
     return concat
 
 
-__all__ = ["_concat"]
+__all__ = ["concat_"]

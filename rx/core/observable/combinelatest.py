@@ -4,7 +4,7 @@ from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def _combine_latest(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
@@ -62,10 +62,15 @@ def _combine_latest(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
             subscription = subscriptions[i]
             assert subscription
-            subscription.disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            subscription.disposable = sources[i].subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
 
         for idx in range(n):
             func(idx)
         return CompositeDisposable(subscriptions)
 
     return Observable(subscribe)
+
+
+__all__ = ["combine_latest_"]

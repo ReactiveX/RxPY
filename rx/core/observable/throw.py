@@ -4,7 +4,7 @@ from rx.core import Observable, abc
 from rx.scheduler import ImmediateScheduler
 
 
-def _throw(
+def throw_(
     exception: Union[str, Exception], scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[Any]:
     exception = exception if isinstance(exception, Exception) else Exception(exception)
@@ -22,4 +22,4 @@ def _throw(
     return Observable(subscribe)
 
 
-__all__ = ["_throw"]
+__all__ = ["throw_"]

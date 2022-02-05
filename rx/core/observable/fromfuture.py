@@ -8,7 +8,7 @@ from rx.disposable import Disposable
 _T = TypeVar("_T")
 
 
-def _from_future(future: "Future[_T]") -> Observable[_T]:
+def from_future_(future: "Future[_T]") -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     Args:
@@ -47,4 +47,4 @@ def _from_future(future: "Future[_T]") -> Observable[_T]:
     return Observable(subscribe)
 
 
-__all__ = ["_from_future"]
+__all__ = ["from_future_"]

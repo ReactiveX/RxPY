@@ -4,7 +4,7 @@ import rx
 from rx.core import Observable
 
 
-def _combine_latest(
+def combine_latest_(
     *others: Observable[Any],
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     def combine_latest(source: Observable[Any]) -> Observable[Any]:
@@ -27,4 +27,4 @@ def _combine_latest(
     return combine_latest
 
 
-__all__ = ["_combine_latest"]
+__all__ = ["combine_latest_"]

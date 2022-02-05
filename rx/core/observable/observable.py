@@ -162,7 +162,8 @@ class Observable(abc.ObservableBase[_T]):
             if isinstance(subscriber, abc.DisposableBase) or hasattr(
                 subscriber, "dispose"
             ):
-                return subscriber
+                # Note: cast can be avoided using Protocols (Python 3.9)
+                return cast(abc.DisposableBase, subscriber)
 
             return Disposable(subscriber)
 

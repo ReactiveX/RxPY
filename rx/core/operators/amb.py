@@ -8,7 +8,7 @@ from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 _T = TypeVar("_T")
 
 
-def amb(
+def amb_(
     right_source: Union[Observable[_T], "Future[_T]"]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
 
@@ -90,4 +90,4 @@ def amb(
     return amb
 
 
-__all__ = ["amb"]
+__all__ = ["amb_"]

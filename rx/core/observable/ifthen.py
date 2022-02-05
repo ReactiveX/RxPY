@@ -1,13 +1,13 @@
 from asyncio import Future
-from typing import Callable, Union, cast, TypeVar
+from typing import Callable, Union, TypeVar
 
 import rx
-from rx.core import Observable, abc, typing
+from rx.core import Observable, abc
 
 _T = TypeVar("_T")
 
 
-def _if_then(
+def if_then_(
     condition: Callable[[], bool],
     then_source: Union[Observable[_T], "Future[_T]"],
     else_source: Union[None, Observable[_T], "Future[_T]"] = None,
@@ -48,4 +48,4 @@ def _if_then(
     return rx.defer(factory)
 
 
-__all__ = ["_if_then"]
+__all__ = ["if_then_"]

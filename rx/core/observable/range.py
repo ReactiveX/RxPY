@@ -6,8 +6,11 @@ from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import CurrentThreadScheduler
 
 
-def _range(
-    start: int, stop: Optional[int] = None, step: Optional[int] = None, scheduler: Optional[abc.SchedulerBase] = None
+def range_(
+    start: int,
+    stop: Optional[int] = None,
+    step: Optional[int] = None,
+    scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[int]:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
@@ -38,7 +41,9 @@ def _range(
     else:
         range_t = range(start, _stop, _step)
 
-    def subscribe(observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None):
+    def subscribe(
+        observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
+    ):
         nonlocal range_t
 
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
@@ -58,4 +63,4 @@ def _range(
     return Observable(subscribe)
 
 
-__all__ = ["_range"]
+__all__ = ["range_"]

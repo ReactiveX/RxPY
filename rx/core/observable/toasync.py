@@ -8,7 +8,7 @@ from rx.subject import AsyncSubject
 _T = TypeVar("_T")
 
 
-def to_async(
+def to_async_(
     func: Callable[..., _T], scheduler: Optional[abc.SchedulerBase] = None
 ) -> Callable[..., Observable[_T]]:
     """Converts the function into an asynchronous function. Each
@@ -51,4 +51,4 @@ def to_async(
     return wrapper
 
 
-__all__ = ["to_async"]
+__all__ = ["to_async_"]

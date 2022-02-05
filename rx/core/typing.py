@@ -38,6 +38,7 @@ __all__ = [
     "Accumulator",
     "AbsoluteTime",
     "AbsoluteOrRelativeTime",
+    "Comparer",
     "Mapper",
     "MapperIndexed",
     "OnNext",

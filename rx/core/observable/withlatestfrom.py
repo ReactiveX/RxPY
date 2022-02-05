@@ -4,7 +4,7 @@ from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import NotSet
 
 
-def _with_latest_from(parent: Observable[Any], *sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def with_latest_from_(parent: Observable[Any], *sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     NO_VALUE = NotSet()
 
     def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
@@ -42,4 +42,4 @@ def _with_latest_from(parent: Observable[Any], *sources: Observable[Any]) -> Obs
     return Observable(subscribe)
 
 
-__all__ = ["_with_latest_from"]
+__all__ = ["with_latest_from_"]

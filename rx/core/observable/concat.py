@@ -8,7 +8,7 @@ from rx.scheduler import CurrentThreadScheduler
 _T = TypeVar("_T")
 
 
-def _concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
+def concat_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
     def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
@@ -48,4 +48,4 @@ def _concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
     return Observable(subscribe)
 
 
-__all__ = ["_concat_with_iterable"]
+__all__ = ["concat_with_iterable_"]

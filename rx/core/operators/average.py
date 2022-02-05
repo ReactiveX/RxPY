@@ -14,7 +14,7 @@ class AverageValue(object):
         self.count = count
 
 
-def average(
+def average_(
     key_mapper: Optional[Mapper[_T, _TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[float]]:
     def average(source: Observable[_T]) -> Observable[float]:
@@ -60,4 +60,4 @@ def average(
     return average
 
 
-__all__ = ["average"]
+__all__ = ["average_"]

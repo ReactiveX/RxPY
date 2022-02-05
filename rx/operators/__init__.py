@@ -66,9 +66,9 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
         determining whether all elements in the source sequence pass
         the test in the specified predicate.
     """
-    from rx.core.operators.all import all
+    from rx.core.operators.all import all_
 
-    return all(predicate)
+    return all_(predicate)
 
 
 def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -91,9 +91,9 @@ def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_
         returns an observable sequence that surfaces any of the given
         sequences, whichever reacted first.
     """
-    from rx.core.operators.amb import amb
+    from rx.core.operators.amb import amb_
 
-    return amb(right_source)
+    return amb_(right_source)
 
 
 def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
@@ -104,9 +104,9 @@ def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
         returns and observable sequence that hides the identity of the
         source sequence.
     """
-    from rx.core.operators.asobservable import as_observable
+    from rx.core.operators.asobservable import as_observable_
 
-    return as_observable()
+    return as_observable_()
 
 
 def average(
@@ -137,9 +137,9 @@ def average(
         returns an observable sequence containing a single element with
         the average of the sequence of values.
     """
-    from rx.core.operators.average import average
+    from rx.core.operators.average import average_
 
-    return average(key_mapper)
+    return average_(key_mapper)
 
 
 def buffer(
@@ -167,9 +167,9 @@ def buffer(
         A function that takes an observable source and returns an
         observable sequence of buffers.
     """
-    from rx.core.operators.buffer import buffer
+    from rx.core.operators.buffer import buffer_
 
-    return buffer(boundaries)
+    return buffer_(boundaries)
 
 
 def buffer_when(
@@ -269,9 +269,9 @@ def buffer_with_count(
         A function that takes an observable source and returns an
         observable sequence of buffers.
     """
-    from rx.core.operators.buffer import buffer_with_count
+    from rx.core.operators.buffer import buffer_with_count_
 
-    return buffer_with_count(count, skip)
+    return buffer_with_count_(count, skip)
 
 
 def buffer_with_time(
@@ -411,9 +411,9 @@ def combine_latest(
         returns an observable sequence containing the result of
         combining elements of the sources into a tuple.
     """
-    from rx.core.operators.combinelatest import _combine_latest
+    from rx.core.operators.combinelatest import combine_latest_
 
-    return _combine_latest(*others)
+    return combine_latest_(*others)
 
 
 def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -435,9 +435,9 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
         returns an observable sequence that contains the elements of
         each given sequence, in sequential order.
     """
-    from rx.core.operators.concat import _concat
+    from rx.core.operators.concat import concat_
 
-    return _concat(*sources)
+    return concat_(*sources)
 
 
 def contains(
@@ -467,9 +467,9 @@ def contains(
         whether the source sequence contains an element that has the
         specified value.
     """
-    from rx.core.operators.contains import _contains
+    from rx.core.operators.contains import contains_
 
-    return _contains(value, comparer)
+    return contains_(value, comparer)
 
 
 def count(
@@ -501,9 +501,9 @@ def count(
         provided, else the count of items in the sequence.
     """
 
-    from rx.core.operators.count import _count
+    from rx.core.operators.count import count_
 
-    return _count(predicate)
+    return count_(predicate)
 
 
 def debounce(
@@ -539,7 +539,9 @@ def debounce(
 throttle_with_timeout = debounce
 
 
-def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observable]:
+def default_if_empty(
+    default_value: _T = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the elements of the specified sequence or the specified
     value in a singleton sequence if the sequence is empty.
 
@@ -564,9 +566,9 @@ def default_if_empty(default_value: Any = None) -> Callable[[Observable], Observ
         default value if the source is empty otherwise, the elements of
         the source.
     """
-    from rx.core.operators.defaultifempty import _default_if_empty
+    from rx.core.operators.defaultifempty import default_if_empty_
 
-    return _default_if_empty(default_value)
+    return default_if_empty_(default_value)
 
 
 def delay_subscription(
@@ -678,9 +680,9 @@ def delay(
         A partially applied operator function that takes the source
         observable and returns a time-shifted sequence.
     """
-    from rx.core.operators.delay import _delay
+    from rx.core.operators.delay import delay_
 
-    return _delay(duetime, scheduler)
+    return delay_(duetime, scheduler)
 
 
 def distinct(
@@ -2135,7 +2137,7 @@ def publish_value(
 
 
 def reduce(
-    accumulator: Accumulator[_TState, _T], seed: Union[_T, NotSet] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, NotSet] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """The reduce operator.
 
@@ -2173,14 +2175,14 @@ def reduce(
     return reduce(accumulator, seed)
 
 
-def ref_count() -> Callable[[ConnectableObservable], Observable]:
+def ref_count() -> Callable[[ConnectableObservable[_T]], Observable[_T]]:
     """Returns an observable sequence that stays connected to the
     source as long as there is at least one subscription to the
     observable sequence.
     """
-    from rx.core.operators.connectable.refcount import _ref_count
+    from rx.core.operators.connectable.refcount import ref_count_
 
-    return _ref_count()
+    return ref_count_()
 
 
 def repeat(

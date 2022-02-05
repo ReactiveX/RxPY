@@ -7,7 +7,7 @@ from rx.core.typing import Predicate
 _T = TypeVar("_T")
 
 
-def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
+def all_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
 
     filtering = ops.filter(lambda v: not predicate(v))
     mapping = ops.map(lambda b: not b)
@@ -16,4 +16,4 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     return pipe(filtering, some, mapping)
 
 
-__all__ = ["all"]
+__all__ = ["all_"]

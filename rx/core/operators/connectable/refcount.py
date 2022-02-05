@@ -1,34 +1,46 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar
 
-from rx.core import ConnectableObservable, Observable
+from rx.core import ConnectableObservable, Observable, abc
 from rx.disposable import Disposable
 
+_T = TypeVar("_T")
 
-def _ref_count() -> Callable[[ConnectableObservable], Observable]:
+
+def ref_count_() -> Callable[[ConnectableObservable[_T]], Observable[_T]]:
     """Returns an observable sequence that stays connected to the
     source as long as there is at least one subscription to the
     observable sequence.
     """
 
-    connectable_subscription = [None]
-    count = [0]
+    connectable_subscription: Optional[abc.DisposableBase] = None
+    count = 0
 
-    def ref_count(source: ConnectableObservable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            count[0] += 1
-            should_connect = count[0] == 1
+    def ref_count(source: ConnectableObservable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            nonlocal connectable_subscription, count
+
+            count += 1
+            should_connect = count == 1
             subscription = source.subscribe(observer, scheduler=scheduler)
             if should_connect:
-                connectable_subscription[0] = source.connect(scheduler)
+                connectable_subscription = source.connect(scheduler)
 
             def dispose():
+                nonlocal connectable_subscription, count
+
                 subscription.dispose()
-                count[0] -= 1
-                if not count[0]:
-                    connectable_subscription[0].dispose()
+                count -= 1
+                if not count and connectable_subscription:
+                    connectable_subscription.dispose()
 
             return Disposable(dispose)
 
         return Observable(subscribe)
 
     return ref_count
+
+
+__all__ = ["ref_count_"]

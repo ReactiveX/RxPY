@@ -4,7 +4,7 @@ from rx.core import Observable, abc
 from rx.disposable import Disposable
 
 
-def _never() -> Observable[Any]:
+def never_() -> Observable[Any]:
     """Returns a non-terminating observable sequence, which can be used
     to denote an infinite duration (e.g. when using reactive joins).
 
@@ -18,4 +18,4 @@ def _never() -> Observable[Any]:
     return Observable(subscribe)
 
 
-__all__ = ["_never"]
+__all__ = ["never_"]

@@ -7,7 +7,7 @@ from rx.core import Observable
 _T = TypeVar("_T")
 
 
-def _start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
+def start_async_(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
     try:
         future = function_async()
     except Exception as ex:  # pylint: disable=broad-except
@@ -16,4 +16,4 @@ def _start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
     return from_future(future)
 
 
-__all__ = ["_start_async"]
+__all__ = ["start_async_"]

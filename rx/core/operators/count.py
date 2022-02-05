@@ -7,7 +7,7 @@ from rx.core.typing import Predicate
 _T = TypeVar("_T")
 
 
-def _count(
+def count_(
     predicate: Optional[Predicate[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[int]]:
 
@@ -15,8 +15,11 @@ def _count(
         filtering = ops.filter(predicate)
         return pipe(filtering, ops.count())
 
-    counter = ops.reduce(lambda n, _: n + 1, seed=0)
-    return pipe(counter)
+    def reducer(n: int, _: _T) -> int:
+        return n + 1
+
+    counter = ops.reduce(reducer, seed=0)
+    return counter
 
 
-__all__ = ["_count"]
+__all__ = ["count_"]
