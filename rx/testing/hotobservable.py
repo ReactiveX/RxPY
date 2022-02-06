@@ -12,7 +12,9 @@ _T = TypeVar("_T")
 
 
 class HotObservable(Observable[_T]):
-    def __init__(self, scheduler: VirtualTimeScheduler, messages: List[Recorded]) -> None:
+    def __init__(
+        self, scheduler: VirtualTimeScheduler, messages: List[Recorded[_T]]
+    ) -> None:
         super().__init__()
 
         self.scheduler: VirtualTimeScheduler = scheduler
@@ -22,7 +24,7 @@ class HotObservable(Observable[_T]):
 
         observable = self
 
-        def get_action(notification: Notification):
+        def get_action(notification: Notification[_T]):
             def action(scheduler: abc.SchedulerBase, state: Any):
                 for observer in observable.observers[:]:
                     notification.accept(observer)
@@ -37,13 +39,19 @@ class HotObservable(Observable[_T]):
             action = get_action(notification)
             scheduler.schedule_absolute(message.time, action)
 
-    def _subscribe_core(self, observer=None, scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
-        self.observers.append(observer)
+    def _subscribe_core(
+        self,
+        observer: Optional[abc.ObserverBase[_T]] = None,
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
+        if observer:
+            self.observers.append(observer)
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
         def dispose_action():
-            self.observers.remove(observer)
+            if observer:
+                self.observers.remove(observer)
             start = self.subscriptions[index].subscribe
             end = self.scheduler.clock
             self.subscriptions[index] = Subscription(start, end)

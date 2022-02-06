@@ -1,11 +1,16 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar
 
-from rx.core import Observable
+from rx.core import Observable, typing, abc
 from rx.disposable import Disposable
 
 
-def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
-    def finally_action(source: Observable) -> Observable:
+_T = TypeVar("_T")
+
+
+def finally_action_(
+    action: typing.Action,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def finally_action(source: Observable[_T]) -> Observable[_T]:
         """Invokes a specified action after the source observable
         sequence terminates gracefully or exceptionally.
 
@@ -20,7 +25,10 @@ def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
             behavior applied.
         """
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             try:
                 subscription = source.subscribe(observer, scheduler=scheduler)
             except Exception:
@@ -34,5 +42,10 @@ def _finally_action(action: Callable) -> Callable[[Observable], Observable]:
                     action()
 
             return Disposable(dispose)
+
         return Observable(subscribe)
+
     return finally_action
+
+
+__all__ = ["finally_action_"]

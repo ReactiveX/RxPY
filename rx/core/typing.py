@@ -15,7 +15,7 @@ from .abc.scheduler import (
 )
 from .abc.startable import StartableBase
 
-_TState = TypeVar("_TState")  # Can be anything
+_TState = TypeVar("_TState")
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 

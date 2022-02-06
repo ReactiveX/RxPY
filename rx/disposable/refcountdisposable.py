@@ -2,7 +2,7 @@ from threading import RLock
 from typing import Optional
 
 from rx.core.abc import DisposableBase
-from rx.disposable import Disposable
+from .disposable import Disposable
 
 
 class RefCountDisposable(DisposableBase):

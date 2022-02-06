@@ -3,7 +3,7 @@ from typing import Any, NoReturn, TypeVar, Union
 
 _T = TypeVar("_T")
 
-# Defaults
+
 def noop(*args: Any, **kw: Any):
     """No operation. Returns nothing"""
     pass

@@ -1018,7 +1018,7 @@ def filter_indexed(
     return filter_indexed_(predicate_indexed)
 
 
-def finally_action(action: Callable) -> Callable[[Observable], Observable]:
+def finally_action(action: typing.Action) -> Callable[[Observable[_T]], Observable[_T]]:
     """Invokes a specified action after the source observable sequence
     terminates gracefully or exceptionally.
 
@@ -1042,9 +1042,9 @@ def finally_action(action: Callable) -> Callable[[Observable], Observable]:
         returns an observable sequence with the action-invoking
         termination behavior applied.
     """
-    from rx.core.operators.finallyaction import _finally_action
+    from rx.core.operators.finallyaction import finally_action_
 
-    return _finally_action(action)
+    return finally_action_(action)
 
 
 def find(
