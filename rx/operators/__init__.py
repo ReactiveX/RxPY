@@ -3232,8 +3232,7 @@ def take_while(
     predicate: Predicate[_T], inclusive: bool = False
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns elements from an observable sequence as long as a
-    specified condition is true. The element's index is used in the
-    logic of the predicate function.
+    specified condition is true.
 
     .. marble::
         :alt: take_while
