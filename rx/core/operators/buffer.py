@@ -10,25 +10,41 @@ def buffer_(
     boundaries: Observable[Any],
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
-        ops.window(boundaries), ops.flat_map(pipe(ops.to_iterable(), ops.map(list)))
+        ops.window(boundaries),
+        ops.flat_map(
+            pipe(
+                ops.to_iterable(),
+                ops.map(list),
+            ),
+        ),
     )
 
 
-def _buffer_when(
-    closing_mapper: Callable[[], Observable]
-) -> Callable[[Observable], Observable]:
+def buffer_when_(
+    closing_mapper: Callable[[], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window_when(closing_mapper),
-        ops.flat_map(pipe(ops.to_iterable(), ops.map(list))),
+        ops.flat_map(
+            pipe(
+                ops.to_iterable(),
+                ops.map(list),
+            )
+        ),
     )
 
 
-def _buffer_toggle(
-    openings: Observable, closing_mapper: Callable[[Any], Observable]
-) -> Callable[[Observable], Observable]:
+def buffer_toggle_(
+    openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window_toggle(openings, closing_mapper),
-        ops.flat_map(pipe(ops.to_iterable(), ops.map(list))),
+        ops.flat_map(
+            pipe(
+                ops.to_iterable(),
+                ops.map(list),
+            )
+        ),
     )
 
 
@@ -74,4 +90,4 @@ def buffer_with_count_(
     return buffer_with_count
 
 
-__all__ = ["buffer_", "buffer_with_count_"]
+__all__ = ["buffer_", "buffer_with_count_", "buffer_when_", "buffer_toggle_"]

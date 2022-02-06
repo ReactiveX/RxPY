@@ -1,8 +1,8 @@
 from collections import OrderedDict
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, Any, Type
 
 from rx import operators as ops
-from rx.core import GroupedObservable, Observable
+from rx.core import GroupedObservable, Observable, abc
 from rx.core.typing import Mapper
 from rx.disposable import (
     CompositeDisposable,
@@ -12,13 +12,17 @@ from rx.disposable import (
 from rx.internal.basic import identity
 from rx.subject import Subject
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
+_TValue = TypeVar("_TValue")
 
-def _group_by_until(
-    key_mapper: Mapper,
-    element_mapper: Optional[Mapper],
-    duration_mapper: Callable[[GroupedObservable], Observable],
-    subject_mapper: Optional[Callable[[], Subject]] = None,
-) -> Callable[[Observable], Observable]:
+
+def group_by_until_(
+    key_mapper: Mapper[_T, _TKey],
+    element_mapper: Optional[Mapper[_T, _TValue]],
+    duration_mapper: Callable[[GroupedObservable[_TKey, _T]], Observable[Any]],
+    subject_mapper: Optional[Callable[[], Subject[_T]]] = None,
+) -> Callable[[Observable[_T]], Observable[GroupedObservable[_TKey, _TValue]]]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -46,16 +50,21 @@ def _group_by_until(
 
     element_mapper = element_mapper or identity
 
-    default_subject_mapper = Subject
+    default_subject_mapper: Callable[[], Subject[_T]] = lambda: Subject()
     subject_mapper = subject_mapper or default_subject_mapper
 
-    def group_by_until(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
-            writers = OrderedDict()
+    def group_by_until(
+        source: Observable[_T],
+    ) -> Observable[GroupedObservable[_TKey, _TValue]]:
+        def subscribe(
+            observer: abc.ObserverBase[GroupedObservable[_TKey, _TValue]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            writers: OrderedDict[_TKey, abc.ObserverBase[_TValue]] = OrderedDict()
             group_disposable = CompositeDisposable()
             ref_count_disposable = RefCountDisposable(group_disposable)
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 writer = None
                 key = None
 
@@ -84,8 +93,12 @@ def _group_by_until(
                     fire_new_map_entry = True
 
                 if fire_new_map_entry:
-                    group = GroupedObservable(key, writer, ref_count_disposable)
-                    duration_group = GroupedObservable(key, writer)
+                    group: GroupedObservable[_TKey, _TValue] = GroupedObservable(
+                        key, writer, ref_count_disposable
+                    )
+                    duration_group: GroupedObservable[_TKey, Any] = GroupedObservable(
+                        key, writer
+                    )
                     try:
                         duration = duration_mapper(duration_group)
                     except Exception as e:
@@ -106,10 +119,10 @@ def _group_by_until(
 
                         group_disposable.remove(sad)
 
-                    def on_next(value):
+                    def on_next(value: Any) -> None:
                         pass
 
-                    def on_error(exn):
+                    def on_error(exn: Exception) -> None:
                         for wrt in writers.values():
                             wrt.on_error(exn)
                         observer.on_error(exn)
@@ -132,13 +145,13 @@ def _group_by_until(
 
                 writer.on_next(element)
 
-            def on_error(ex):
+            def on_error(ex: Exception) -> None:
                 for wrt in writers.values():
                     wrt.on_error(ex)
 
                 observer.on_error(ex)
 
-            def on_completed():
+            def on_completed() -> None:
                 for wrt in writers.values():
                     wrt.on_completed()
 
@@ -152,3 +165,6 @@ def _group_by_until(
         return Observable(subscribe)
 
     return group_by_until
+
+
+__all__ = ["group_by_until_"]

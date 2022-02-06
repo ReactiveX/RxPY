@@ -1,11 +1,14 @@
 import math
 import types
-from typing import Any
+from typing import Any, Generic, TypeVar, Union
 
 from rx.core.notification import OnCompleted, OnError, OnNext
+from rx.core import typing
 
 from .recorded import Recorded
 from .subscription import Subscription
+
+_T = TypeVar("_T")
 
 
 def is_prime(i: int) -> bool:
@@ -23,11 +26,11 @@ def is_prime(i: int) -> bool:
 
 
 # New predicate tests
-class OnNextPredicate:
-    def __init__(self, predicate) -> None:
+class OnNextPredicate(Generic[_T]):
+    def __init__(self, predicate: typing.Predicate[_T]) -> None:
         self.predicate = predicate
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if other == self:
             return True
         if other is None:
@@ -37,11 +40,11 @@ class OnNextPredicate:
         return self.predicate(other.value)
 
 
-class OnErrorPredicate:
-    def __init__(self, predicate):
+class OnErrorPredicate(Generic[_T]):
+    def __init__(self, predicate: typing.Predicate[_T]):
         self.predicate = predicate
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if other == self:
             return True
         if other is None:
@@ -57,21 +60,21 @@ class ReactiveTest:
     disposed = 1000
 
     @staticmethod
-    def on_next(ticks: int, value: Any) -> Recorded:
+    def on_next(ticks: int, value: _T) -> Recorded[_T]:
         if isinstance(value, types.FunctionType):
             return Recorded(ticks, OnNextPredicate(value))
 
         return Recorded(ticks, OnNext(value))
 
     @staticmethod
-    def on_error(ticks: int, exception: Exception) -> Recorded:
+    def on_error(ticks: int, exception: Union[Exception, str]) -> Recorded[Any]:
         if isinstance(exception, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(exception))
 
         return Recorded(ticks, OnError(exception))
 
     @staticmethod
-    def on_completed(ticks: int) -> Recorded:
+    def on_completed(ticks: int) -> Recorded[Any]:
         return Recorded(ticks, OnCompleted())
 
     @staticmethod

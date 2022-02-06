@@ -1,16 +1,29 @@
-from rx.disposable import CompositeDisposable
+from typing import TypeVar, Optional, Generic
+from rx.disposable import CompositeDisposable, RefCountDisposable, Disposable
+from rx.core import abc
 
 from .observable import Observable
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
 
-class GroupedObservable(Observable):
-    def __init__(self, key, underlying_observable, merged_disposable=None):
+
+class GroupedObservable(Generic[_TKey, _T], Observable[_T]):
+    def __init__(
+        self,
+        key: _TKey,
+        underlying_observable: Observable[_T],
+        merged_disposable: Optional[RefCountDisposable] = None,
+    ):
         super().__init__()
         self.key = key
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             return CompositeDisposable(
-                merged_disposable.disposable,
+                merged_disposable.disposable if merged_disposable else Disposable(),
                 underlying_observable.subscribe(observer, scheduler=scheduler),
             )
 
@@ -18,5 +31,9 @@ class GroupedObservable(Observable):
             underlying_observable if not merged_disposable else Observable(subscribe)
         )
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
         return self.underlying_observable.subscribe(observer, scheduler=scheduler)

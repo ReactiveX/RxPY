@@ -176,8 +176,8 @@ def buffer(
 
 
 def buffer_when(
-    closing_mapper: Callable[[], Observable]
-) -> Callable[[Observable], Observable]:
+    closing_mapper: Callable[[], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or
     more buffers.
 
@@ -204,9 +204,9 @@ def buffer_when(
         A function that takes an observable source and returns an
         observable sequence of windows.
     """
-    from rx.core.operators.buffer import _buffer_when
+    from rx.core.operators.buffer import buffer_when_
 
-    return _buffer_when(closing_mapper)
+    return buffer_when_(closing_mapper)
 
 
 def buffer_toggle(
@@ -240,9 +240,9 @@ def buffer_toggle(
         A function that takes an observable source and returns an
         observable sequence of windows.
     """
-    from rx.core.operators.buffer import _buffer_toggle
+    from rx.core.operators.buffer import buffer_toggle_
 
-    return _buffer_toggle(openings, closing_mapper)
+    return buffer_toggle_(openings, closing_mapper)
 
 
 def buffer_with_count(
@@ -1328,10 +1328,10 @@ def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
 
 
 def group_by(
-    key_mapper: Mapper,
-    element_mapper: Optional[Mapper] = None,
-    subject_mapper: Optional[Callable[[], Subject]] = None,
-) -> Callable[[Observable], Observable]:
+    key_mapper: Mapper[_T, _TKey],
+    element_mapper: Optional[Mapper[_T, _TValue]] = None,
+    subject_mapper: Optional[Callable[[], Subject[_TValue]]] = None,
+) -> Callable[[Observable[_T]], Observable[GroupedObservable[_TKey, _TValue]]]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function and comparer and selects the
     resulting elements by using a specified function.
@@ -1369,11 +1369,11 @@ def group_by(
 
 
 def group_by_until(
-    key_mapper: Mapper,
-    element_mapper: Optional[Mapper],
-    duration_mapper: Callable[[GroupedObservable], Observable],
-    subject_mapper: Optional[Callable[[], Subject]] = None,
-) -> Callable[[Observable], Observable]:
+    key_mapper: Mapper[_T, _TKey],
+    element_mapper: Optional[Mapper[_T, _TValue]],
+    duration_mapper: Callable[[GroupedObservable[_TKey, _TValue]], Observable[Any]],
+    subject_mapper: Optional[Callable[[], Subject[_TValue]]] = None,
+) -> Callable[[Observable[_T]], Observable[GroupedObservable[_TKey, _TValue]]]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it
@@ -1411,9 +1411,9 @@ def group_by_until(
         group with the same key value can be created once an element
         with such a key value is encountered.
     """
-    from rx.core.operators.groupbyuntil import _group_by_until
+    from rx.core.operators.groupbyuntil import group_by_until_
 
-    return _group_by_until(key_mapper, element_mapper, duration_mapper, subject_mapper)
+    return group_by_until_(key_mapper, element_mapper, duration_mapper, subject_mapper)
 
 
 def group_join(
