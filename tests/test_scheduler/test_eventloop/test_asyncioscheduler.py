@@ -7,12 +7,11 @@ from rx.scheduler.eventloop import AsyncIOScheduler
 
 
 class TestAsyncIOScheduler(unittest.TestCase):
-
     def test_asyncio_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
-        assert abs(diff) < timedelta(milliseconds=1)
+        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may be 1 ms in CI
 
     def test_asyncio_schedule_now_units(self):
         loop = asyncio.get_event_loop()

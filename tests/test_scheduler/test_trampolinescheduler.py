@@ -12,7 +12,7 @@ class TestTrampolineScheduler(unittest.TestCase):
     def test_trampoline_now(self):
         scheduler = TrampolineScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: diff can be 1 ms in CI
+        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may be 1 ms in CI
 
     def test_trampoline_now_units(self):
         scheduler = TrampolineScheduler()
