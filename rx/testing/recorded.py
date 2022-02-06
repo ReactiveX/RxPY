@@ -1,8 +1,11 @@
-from typing import Any, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, Optional, TypeVar, Union, cast
 
 from rx.core import Notification, typing
 from rx.internal.basic import default_comparer
-from rx.testing.reactivetest import OnErrorPredicate, OnNextPredicate
+
+if TYPE_CHECKING:
+    from rx.testing.reactivetest import OnErrorPredicate, OnNextPredicate
+
 
 _T = TypeVar("_T")
 
@@ -11,7 +14,7 @@ class Recorded(Generic[_T]):
     def __init__(
         self,
         time: int,
-        value: Union[Notification[_T], OnNextPredicate[_T], OnErrorPredicate[_T]],
+        value: Union[Notification[_T], "OnNextPredicate[_T]", "OnErrorPredicate[_T]"],
         comparer: Optional[typing.Comparer[_T]] = None,
     ):
         self.time = time
