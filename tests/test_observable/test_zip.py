@@ -95,7 +95,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_completed(220)]
+        assert results.messages == []
 
     def test_zip_non_empty_never(self):
         scheduler = TestScheduler()
@@ -109,7 +109,7 @@ class TestZip(unittest.TestCase):
                 ops.map(sum))
 
         results = scheduler.start(create)
-        assert results.messages == [on_completed(220)]
+        assert results.messages == []
 
     def test_zip_non_empty_non_empty(self):
         scheduler = TestScheduler()
@@ -125,6 +125,36 @@ class TestZip(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2 + 3), on_completed(230)]
+
+    def test_zip_non_empty_non_empty_sequential(self):
+        scheduler = TestScheduler()
+        msgs1 = [on_next(210, 1), on_next(215, 2), on_completed(230)]
+        msgs2 = [on_next(240, 1), on_next(245, 3), on_completed(250)]
+        e1 = scheduler.create_cold_observable(msgs1)
+        e2 = scheduler.create_cold_observable(msgs2)
+
+        def create():
+            return e1.pipe(
+                ops.zip(e2),
+                ops.map(sum))
+
+        results = scheduler.start(create)
+        assert results.messages == [on_next(200+240, 1 + 1), on_next(200+245, 2 + 3), on_completed(200+245)]
+
+    def test_zip_non_empty_partial_sequential(self):
+        scheduler = TestScheduler()
+        msgs1 = [on_next(210, 1), on_next(215, 2), on_completed(230)]
+        msgs2 = [on_next(240, 1), on_completed(250)]
+        e1 = scheduler.create_cold_observable(msgs1)
+        e2 = scheduler.create_cold_observable(msgs2)
+
+        def create():
+            return e1.pipe(
+                ops.zip(e2),
+                ops.map(sum))
+
+        results = scheduler.start(create)
+        assert results.messages == [on_next(200+240, 1 + 1), on_completed(200+250)]
 
     def test_zip_empty_error(self):
         ex = 'ex'
