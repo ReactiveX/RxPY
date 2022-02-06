@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import List, Optional, Any, Tuple, cast
 
 from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def fork_join_(*sources: Observable) -> Observable:
+def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
@@ -20,8 +20,9 @@ def fork_join_(*sources: Observable) -> Observable:
     parent = sources[0]
 
     def subscribe(
-        observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None
-    ) -> CompositeDisposable:
+        observer: abc.ObserverBase[Tuple[Any, ...]],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
         n = len(sources)
         values = [None] * n
         is_done = [False] * n
@@ -41,17 +42,19 @@ def fork_join_(*sources: Observable) -> Observable:
                 else:
                     observer.on_completed()
 
-        subscriptions = [None] * n
+        subscriptions: List[SingleAssignmentDisposable] = [
+            cast(SingleAssignmentDisposable, None)
+        ] * n
 
         def _subscribe(i: int):
             subscriptions[i] = SingleAssignmentDisposable()
 
-            def on_next(value):
+            def on_next(value: Any) -> None:
                 with parent.lock:
                     values[i] = value
                     has_value[i] = True
 
-            def on_completed():
+            def on_completed() -> None:
                 with parent.lock:
                     done(i)
 

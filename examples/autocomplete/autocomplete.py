@@ -6,24 +6,25 @@ populate the autocomplete dropdown in the web UI. Start using
 Uses the RxPY IOLoopScheduler.
 """
 
+from asyncio import Future
 import os
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.httputil import url_concat
 from tornado.escape import json_decode
 from tornado import ioloop
 
-from rx import Observable, operators as ops
+from rx import operators as ops
 from rx.subject import Subject
 from rx.scheduler.eventloop import IOLoopScheduler
 
 scheduler = IOLoopScheduler(ioloop.IOLoop.current())
 
 
-def search_wikipedia(term):
+def search_wikipedia(term: str) -> Future[HTTPResponse]:
     """Search Wikipedia for a given term"""
     url = "http://en.wikipedia.org/w/api.php"
 
@@ -45,10 +46,10 @@ class WSHandler(WebSocketHandler):
 
         # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (send) it with new values
-        self.stream: Subject[Dict[str, str]] = Subject()
+        self.subject: Subject[Dict[str, str]] = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
-        searcher = self.stream.pipe(
+        searcher = self.subject.pipe(
             ops.map(lambda x: x["term"]),
             ops.filter(
                 lambda text: len(text) > 2
@@ -58,17 +59,19 @@ class WSHandler(WebSocketHandler):
             ops.flat_map_latest(search_wikipedia),
         )
 
-        def send_response(x):
+        def send_response(x: HTTPResponse) -> None:
             self.write_message(x.body)
 
-        def on_error(ex: Exception):
+        def on_error(ex: Exception) -> None:
             print(ex)
 
-        searcher.subscribe(send_response, on_error, scheduler=scheduler)
+        searcher.subscribe_(
+            on_next=send_response, on_error=on_error, scheduler=scheduler
+        )
 
-    def on_message(self, message):
+    def on_message(self, message: Union[bytes, str]):
         obj = json_decode(message)
-        self.stream.on_next(obj)
+        self.subject.on_next(obj)
 
     def on_close(self):
         print("WebSocket closed")

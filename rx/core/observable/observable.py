@@ -82,7 +82,6 @@ class Observable(abc.ObservableBase[_T]):
         it has a (callable) attribute named :code:`on_next`, then any callback
         arguments will be ignored.
 
-
         Examples:
             >>> source.subscribe()
             >>> source.subscribe(observer)

@@ -1,4 +1,5 @@
-from typing import Callable, Iterable, Optional, TypeVar
+from asyncio import Future
+from typing import Callable, Iterable, Optional, TypeVar, Union
 
 from rx import from_, from_future
 from rx import operators as ops
@@ -93,7 +94,7 @@ def flat_map_indexed_(
 
 
 def flat_map_latest_(
-    mapper: Mapper[_T1, Observable[_T2]]
+    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]]
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map_latest(source: Observable[_T1]) -> Observable[_T2]:
         """Projects each element of an observable sequence into a new

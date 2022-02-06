@@ -1273,7 +1273,7 @@ def flat_map_indexed(
 
 
 def flat_map_latest(
-    mapper: Mapper[_T1, Observable[_T2]]
+    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]]
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
@@ -1299,7 +1299,9 @@ def flat_map_latest(
     return flat_map_latest_(mapper)
 
 
-def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
+def fork_join(
+    *others: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
@@ -1322,9 +1324,9 @@ def fork_join(*others: Observable) -> Callable[[Observable], Observable]:
         return an observable sequence containing the result
         of combining last element from each source in given sequence.
     """
-    from rx.core.operators.forkjoin import _fork_join
+    from rx.core.operators.forkjoin import fork_join_
 
-    return _fork_join(*others)
+    return fork_join_(*others)
 
 
 def group_by(
@@ -3002,7 +3004,9 @@ def sum(
     return sum_(key_mapper)
 
 
-def switch_latest() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def switch_latest() -> Callable[
+    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
+]:
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
