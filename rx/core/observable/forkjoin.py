@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Tuple, cast
+from typing import Any, List, Optional, Tuple, cast
 
 from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
