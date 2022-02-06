@@ -10,7 +10,7 @@ from rx.internal.utils import is_future
 # pylint: disable=redefined-builtin
 
 
-def _zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
@@ -53,13 +53,17 @@ def _zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         def func(i: int):
             source = sources[i]
             sad = SingleAssignmentDisposable()
-            source: Observable[Any] = from_future(source) if is_future(source) else source
+            source: Observable[Any] = (
+                from_future(source) if is_future(source) else source
+            )
 
             def on_next(x: Any):
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            sad.disposable = source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
             subscriptions[i] = sad
 
         for idx in range(n):
@@ -67,3 +71,6 @@ def _zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         return CompositeDisposable(subscriptions)
 
     return Observable(subscribe)
+
+
+__all__ = ["zip_"]

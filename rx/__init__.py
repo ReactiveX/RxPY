@@ -874,7 +874,9 @@ def of(*args: _T) -> Observable[_T]:
 
 
 def on_error_resume_next(
-    *sources: Union[Observable[_T], "Future[_T]", Callable[[Optional[Exception]], Observable[_T]]]
+    *sources: Union[
+        Observable[_T], "Future[_T]", Callable[[Optional[Exception]], Observable[_T]]
+    ]
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
@@ -1243,9 +1245,9 @@ def zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         An observable sequence containing the result of combining
         elements of the sources as a :class:`tuple`.
     """
-    from .core.observable.zip import _zip
+    from .core.observable.zip import zip_
 
-    return _zip(*args)
+    return zip_(*args)
 
 
 __all__ = [
