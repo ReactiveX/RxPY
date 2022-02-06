@@ -84,8 +84,8 @@ class TestScheduler(VirtualTimeScheduler):
         disposed = disposed or ReactiveTest.disposed
 
         observer = self.create_observer()
-        subscription = [None]
-        source = [None]
+        subscription: List[Optional[abc.DisposableBase]] = [None]
+        source: List[Optional[abc.ObservableBase[_T]]] = [None]
 
         def action_create(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at create time. Defaults to 100"""
@@ -94,15 +94,17 @@ class TestScheduler(VirtualTimeScheduler):
 
         self.schedule_absolute(created, action_create)
 
-        def action_subscribe(scheduler, state):
+        def action_subscribe(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at subscribe time. Defaults to 200"""
+            assert source[0]
             subscription[0] = source[0].subscribe(observer, scheduler=scheduler)
             return Disposable()
 
         self.schedule_absolute(subscribed, action_subscribe)
 
-        def action_dispose(scheduler, state):
+        def action_dispose(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at dispose time. Defaults to 1000"""
+            assert subscription[0]
             subscription[0].dispose()
             return Disposable()
 
