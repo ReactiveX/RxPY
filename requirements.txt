@@ -1,4 +1,5 @@
 pytest
+pytest-xdist
 coveralls
 flake8
 black
