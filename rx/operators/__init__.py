@@ -754,9 +754,9 @@ def distinct_until_changed(
         contiguous elements, based on a computed key value, from the
         source sequence.
     """
-    from rx.core.operators.distinctuntilchanged import _distinct_until_changed
+    from rx.core.operators.distinctuntilchanged import distinct_until_changed_
 
-    return _distinct_until_changed(key_mapper, comparer)
+    return distinct_until_changed_(key_mapper, comparer)
 
 
 def do(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -873,16 +873,16 @@ def element_at(index: int) -> Callable[[Observable[_T]], Observable[_T]]:
 
     Returns:
         An operator function that takes an observable source and
-        returns an observable  sequence that produces the element at
+        returns an observable sequence that produces the element at
         the specified position in the source sequence.
     """
-    from rx.core.operators.elementatordefault import _element_at_or_default
+    from rx.core.operators.elementatordefault import element_at_or_default_
 
-    return _element_at_or_default(index, False)
+    return element_at_or_default_(index, False)
 
 
 def element_at_or_default(
-    index: int, default_value: Any = None
+    index: int, default_value: Optional[_T] = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the element at a specified index in a sequence or a
     default value if the index is out of range.
@@ -909,12 +909,12 @@ def element_at_or_default(
         specified position in the source sequence, or a default value if
         the index is outside the bounds of the source sequence.
     """
-    from rx.core.operators.elementatordefault import _element_at_or_default
+    from rx.core.operators.elementatordefault import element_at_or_default_
 
-    return _element_at_or_default(index, True, default_value)
+    return element_at_or_default_(index, True, default_value)
 
 
-def exclusive() -> Callable[[Observable[_T]], Observable[_T]]:
+def exclusive() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     """Performs a exclusive waiting for the first to finish before
     subscribing to another observable. Observables that come in between
     subscriptions will be dropped on the floor.
@@ -934,9 +934,9 @@ def exclusive() -> Callable[[Observable[_T]], Observable[_T]]:
         An exclusive observable with only the results that
         happen when subscribed.
     """
-    from rx.core.operators.exclusive import _exclusive
+    from rx.core.operators.exclusive import exclusive_
 
-    return _exclusive()
+    return exclusive_()
 
 
 def expand(mapper: Mapper) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -1044,7 +1044,9 @@ def finally_action(action: Callable) -> Callable[[Observable], Observable]:
     return _finally_action(action)
 
 
-def find(predicate: Predicate) -> Callable[[Observable], Observable]:
+def find(
+    predicate: Callable[[_T, int, Observable[_T]], bool]
+) -> Callable[[Observable[_T]], Observable[Union[_T, None]]]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns the first occurrence within
     the entire Observable sequence.
@@ -1066,12 +1068,17 @@ def find(predicate: Predicate) -> Callable[[Observable], Observable]:
         matches the conditions defined by the specified predicate, if
         found otherwise, None.
     """
-    from rx.core.operators.find import _find_value
+    from rx.core.operators.find import find_value_
 
-    return _find_value(predicate, False)
+    return cast(
+        Callable[[Observable[_T]], Observable[Union[_T, None]]],
+        find_value_(predicate, False),
+    )
 
 
-def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
+def find_index(
+    predicate: Callable[[_T, int, Observable[_T]], bool]
+) -> Callable[[Observable[_T]], Observable[Union[int, None]]]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns an Observable sequence with the
     zero-based index of the first occurrence within the entire
@@ -1094,9 +1101,12 @@ def find_index(predicate: Predicate) -> Callable[[Observable], Observable]:
         first occurrence of an element that matches the conditions
         defined by match, if found; otherwise, -1.
     """
-    from rx.core.operators.find import _find_value
+    from rx.core.operators.find import find_value_
 
-    return _find_value(predicate, True)
+    return cast(
+        Callable[[Observable[_T]], Observable[Union[int, None]]],
+        find_value_(predicate, True),
+    )
 
 
 def first(

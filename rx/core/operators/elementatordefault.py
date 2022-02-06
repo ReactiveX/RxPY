@@ -1,18 +1,26 @@
-from typing import Any, Callable
+from typing import Callable, Optional, TypeVar, cast
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.internal.exceptions import ArgumentOutOfRangeException
 
 
-def _element_at_or_default(index, has_default=False, default_value=None):
+_T = TypeVar("_T")
+
+
+def element_at_or_default_(
+    index: int, has_default: bool = False, default_value: Optional[_T] = None
+) -> Callable[[Observable[_T]], Observable[_T]]:
     if index < 0:
         raise ArgumentOutOfRangeException()
 
-    def element_at_or_default(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    def element_at_or_default(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             i = [index]
 
-            def on_next(x):
+            def on_next(x: _T) -> None:
                 found = False
                 with source.lock:
                     if i[0]:
@@ -28,9 +36,16 @@ def _element_at_or_default(index, has_default=False, default_value=None):
                 if not has_default:
                     observer.on_error(ArgumentOutOfRangeException())
                 else:
-                    observer.on_next(default_value)
+                    observer.on_next(cast(_T, default_value))
                     observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, on_completed, scheduler
+            )
+
         return Observable(subscribe)
+
     return element_at_or_default
+
+
+__all__ = ["element_at_or_default_"]

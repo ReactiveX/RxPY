@@ -1,19 +1,22 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar, cast
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.core.typing import Comparer, Mapper
 from rx.internal.basic import default_comparer, identity
 
+_T = TypeVar("_T")
+_TKey = TypeVar("_TKey")
 
-def _distinct_until_changed(
-        key_mapper: Optional[Mapper] = None,
-        comparer: Optional[Comparer] = None
-        ) -> Callable[[Observable], Observable]:
 
-    key_mapper = key_mapper or identity
+def distinct_until_changed_(
+    key_mapper: Optional[Mapper[_T, _TKey]] = None,
+    comparer: Optional[Comparer[_TKey]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+
+    key_mapper = key_mapper or cast(Callable[[_T], _TKey], identity)
     comparer = comparer or default_comparer
 
-    def distinct_until_changed(source: Observable) -> Observable:
+    def distinct_until_changed(source: Observable[_T]) -> Observable[_T]:
         """Returns an observable sequence that contains only distinct
         contiguous elements according to the key_mapper and the
         comparer.
@@ -36,11 +39,16 @@ def _distinct_until_changed(
             contiguous elements, based on a computed key value, from
             the source sequence.
         """
-        def subscribe(observer, scheduler=None):
-            has_current_key = [False]
-            current_key = [None]
 
-            def on_next(value):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
+            has_current_key = False
+            current_key: Optional[_TKey] = None
+
+            def on_next(value: _T) -> None:
+                nonlocal has_current_key, current_key
                 comparer_equals = False
                 try:
                     key = key_mapper(value)
@@ -48,18 +56,25 @@ def _distinct_until_changed(
                     observer.on_error(exception)
                     return
 
-                if has_current_key[0]:
+                if has_current_key:
                     try:
-                        comparer_equals = comparer(current_key[0], key)
+                        comparer_equals = comparer(current_key, key)
                     except Exception as exception:  # pylint: disable=broad-except
                         observer.on_error(exception)
                         return
 
-                if not has_current_key[0] or not comparer_equals:
-                    has_current_key[0] = True
-                    current_key[0] = key
+                if not has_current_key or not comparer_equals:
+                    has_current_key = True
+                    current_key = key
                     observer.on_next(value)
 
-            return source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler=scheduler)
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+            )
+
         return Observable(subscribe)
+
     return distinct_until_changed
+
+
+__all__ = ["distinct_until_changed_"]
