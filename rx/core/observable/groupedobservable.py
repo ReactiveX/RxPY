@@ -1,6 +1,7 @@
-from typing import TypeVar, Optional, Generic
-from rx.disposable import CompositeDisposable, RefCountDisposable, Disposable
+from typing import Generic, Optional, TypeVar
+
 from rx.core import abc
+from rx.disposable import CompositeDisposable, Disposable, RefCountDisposable
 
 from .observable import Observable
 

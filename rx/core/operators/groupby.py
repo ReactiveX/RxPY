@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar, Any
+from typing import Any, Callable, Optional, TypeVar
 
 import rx
 from rx import operators as ops

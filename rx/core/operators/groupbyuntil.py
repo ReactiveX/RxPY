@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Callable, Optional, TypeVar, Any, Type
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from rx import operators as ops
 from rx.core import GroupedObservable, Observable, abc

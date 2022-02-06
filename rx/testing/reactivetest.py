@@ -2,8 +2,8 @@ import math
 import types
 from typing import Any, Generic, TypeVar, Union
 
-from rx.core.notification import OnCompleted, OnError, OnNext
 from rx.core import typing
+from rx.core.notification import OnCompleted, OnError, OnNext
 
 from .recorded import Recorded
 from .subscription import Subscription
