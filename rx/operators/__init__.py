@@ -2,6 +2,7 @@
 
 from asyncio import Future
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -10,6 +11,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -32,6 +34,7 @@ from rx.core.typing import (
     Predicate,
     PredicateIndexed,
 )
+from rx.internal.basic import identity
 from rx.internal.utils import NotSet
 from rx.subject import Subject
 
@@ -1901,9 +1904,9 @@ def multicast(
         sequence produced by multicasting the source sequence within a
         mapper function.
     """
-    from rx.core.operators.multicast import _multicast
+    from rx.core.operators.multicast import multicast_
 
-    return _multicast(subject, subject_factory, mapper)
+    return multicast_(subject, subject_factory, mapper)
 
 
 def observe_on(
@@ -2047,7 +2050,9 @@ def partition_indexed(
     return partition_indexed_(predicate_indexed)
 
 
-def pluck(key: Any) -> Callable[[Observable], Observable]:
+def pluck(
+    key: _TKey,
+) -> Callable[[Observable[Dict[_TKey, _TValue]]], Observable[_TValue]]:
     """Retrieves the value of a specified key using dict-like access (as in
     element[key]) from all elements in the Observable sequence.
 
@@ -2337,7 +2342,7 @@ def sample(
 
 
 def scan(
-    accumulator: Accumulator[_TState, _T], seed: Union[_TState, NotSet] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """The scan operator.
 
@@ -2373,8 +2378,8 @@ def scan(
 
 
 def sequence_equal(
-    second: Observable, comparer: Optional[Comparer] = None
-) -> Callable[[Observable], Observable]:
+    second: Observable[_T], comparer: Optional[Comparer[_T]] = None
+) -> Callable[[Observable[_T]], Observable[bool]]:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.
 
@@ -2404,9 +2409,9 @@ def sequence_equal(
         their corresponding elements are equal according to the
         specified equality comparer.
     """
-    from rx.core.operators.sequenceequal import _sequence_equal_
+    from rx.core.operators.sequenceequal import sequence_equal_
 
-    return _sequence_equal_(second, comparer)
+    return sequence_equal_(second, comparer)
 
 
 def share() -> Callable[[Observable[_T]], Observable[_T]]:
@@ -2502,7 +2507,7 @@ def single_or_default(
 
 
 def single_or_default_async(
-    has_default: bool = False, default_value: Optional[_T] = None
+    has_default: bool = False, default_value: _T = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     from rx.core.operators.singleordefault import single_or_default_async_
 
@@ -2877,14 +2882,14 @@ def starmap(
     """
 
     if mapper is None:
-        return pipe()
+        return pipe(identity)
 
     return pipe(map(lambda values: cast(Mapper, mapper)(*values)))
 
 
 def starmap_indexed(
-    mapper: Optional[Callable[..., _T]] = None
-) -> Callable[[Observable[Tuple[Any, ...]]], Observable[_T]]:
+    mapper: Optional[Callable[..., Any]] = None
+) -> Callable[[Observable[Tuple[Any, ...]]], Observable[Any]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
     .. marble::
@@ -2909,12 +2914,12 @@ def starmap_indexed(
     """
 
     if mapper is None:
-        return pipe()
+        return pipe(identity)
 
-    return pipe(map(lambda values: cast(MapperIndexed, mapper)(*values)))
+    return pipe(map(lambda values: cast(MapperIndexed[Any, Any], mapper)(*values)))
 
 
-def start_with(*args: Any) -> Callable[[Observable], Observable]:
+def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
     """Prepends a sequence of values to an observable sequence.
 
     .. marble::
@@ -3084,7 +3089,7 @@ def take_last(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     return take_last_(count)
 
 
-def take_last_buffer(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+def take_last_buffer(count: int) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """The `take_last_buffer` operator.
 
     Returns an array with the specified number of contiguous elements
@@ -3254,8 +3259,8 @@ def take_while(
 
 
 def take_while_indexed(
-    predicate: PredicateIndexed, inclusive: bool = False
-) -> Callable[[Observable], Observable]:
+    predicate: PredicateIndexed[_T], inclusive: bool = False
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns elements from an observable sequence as long as a
     specified condition is true. The element's index is used in the
     logic of the predicate function.
@@ -3290,7 +3295,7 @@ def take_while_indexed(
 
 def take_with_time(
     duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Takes elements for the specified duration from the start of the
     observable source sequence.
 
@@ -3369,9 +3374,13 @@ def throttle_with_mapper(
     return throttle_with_mapper(throttle_duration_mapper)
 
 
+if TYPE_CHECKING:
+    from rx.core.operators.timestamp import Timestamp
+
+
 def timestamp(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[Any]]:
+) -> Callable[[Observable[_T]], Observable["Timestamp[_T]"]]:
     """The timestamp operator.
 
     Records the timestamp for each value in an observable sequence.

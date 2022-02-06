@@ -52,11 +52,15 @@ class ReplaySubject(Subject[_T]):
         super().__init__()
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
         self.scheduler = scheduler or CurrentThreadScheduler.singleton()
-        self.window = timedelta.max if window is None else self.scheduler.to_timedelta(window)
+        self.window = (
+            timedelta.max if window is None else self.scheduler.to_timedelta(window)
+        )
         self.queue: List[QueueItem] = []
 
     def _subscribe_core(
-        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
     ) -> abc.DisposableBase:
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)
@@ -77,14 +81,14 @@ class ReplaySubject(Subject[_T]):
         so.ensure_active()
         return subscription
 
-    def _trim(self, now: datetime):
+    def _trim(self, now: datetime) -> None:
         while len(self.queue) > self.buffer_size:
             self.queue.pop(0)
 
         while self.queue and (now - self.queue[0].interval) > self.window:
             self.queue.pop(0)
 
-    def _on_next_core(self, value: Any) -> None:
+    def _on_next_core(self, value: _T) -> None:
         """Notifies all subscribed observers with the value."""
 
         with self.lock:

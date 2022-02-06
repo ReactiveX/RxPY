@@ -1185,9 +1185,9 @@ def using(
         An observable sequence whose lifetime controls the lifetime
         of the dependent resource object.
     """
-    from .core.observable.using import _using
+    from .core.observable.using import using_
 
-    return _using(resource_factory, observable_factory)
+    return using_(resource_factory, observable_factory)
 
 
 def with_latest_from(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:

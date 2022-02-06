@@ -1,18 +1,20 @@
-from typing import Any
+from typing import Any, Optional, TypeVar
 
 from rx.disposable import Disposable
-
+from rx.core import abc
 from .innersubscription import InnerSubscription
 from .subject import Subject
 
+_T = TypeVar("_T")
 
-class BehaviorSubject(Subject):
+
+class BehaviorSubject(Subject[_T]):
     """Represents a value that changes over time. Observers can
     subscribe to the subject to receive the last (or initial) value and
     all subsequent notifications.
     """
 
-    def __init__(self, value) -> None:
+    def __init__(self, value: _T) -> None:
         """Initializes a new instance of the BehaviorSubject class which
         creates a subject that caches its last value and starts with the
         specified value.
@@ -24,9 +26,13 @@ class BehaviorSubject(Subject):
 
         super().__init__()
 
-        self.value = value
+        self.value: _T = value
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()
             if not self.is_stopped:
@@ -42,7 +48,7 @@ class BehaviorSubject(Subject):
 
         return Disposable()
 
-    def _on_next_core(self, value: Any) -> None:
+    def _on_next_core(self, value: _T) -> None:
         """Notifies all subscribed observers with the value."""
         with self.lock:
             observers = self.observers.copy()

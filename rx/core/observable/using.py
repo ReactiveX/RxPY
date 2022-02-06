@@ -1,13 +1,16 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar
 
 import rx
 from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, Disposable
 
+_T = TypeVar("_T")
 
-def _using(
-    resource_factory: Callable[[], abc.DisposableBase], observable_factory: Callable[[abc.DisposableBase], Observable]
-) -> Observable:
+
+def using_(
+    resource_factory: Callable[[], abc.DisposableBase],
+    observable_factory: Callable[[abc.DisposableBase], Observable[_T]],
+) -> Observable[_T]:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
     sequence's lifetime.
@@ -25,7 +28,9 @@ def _using(
         of the dependent resource object.
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         disp = Disposable()
 
         try:
@@ -38,6 +43,11 @@ def _using(
             d = rx.throw(exception).subscribe(observer, scheduler=scheduler)
             return CompositeDisposable(d, disp)
 
-        return CompositeDisposable(source.subscribe(observer, scheduler=scheduler), disp)
+        return CompositeDisposable(
+            source.subscribe(observer, scheduler=scheduler), disp
+        )
 
     return Observable(subscribe)
+
+
+__all__ = ["using_"]

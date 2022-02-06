@@ -1,11 +1,11 @@
-from typing import Callable, List, Optional, TypeVar
+from asyncio import Future
+from typing import Callable, List, Optional, TypeVar, Union
 
 import rx
 from rx import from_future
 from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
-from rx.internal.utils import is_future
 
 _T = TypeVar("_T")
 
@@ -65,6 +65,7 @@ def merge_(
                 )
 
             def on_next(inner_source: Observable[_T]) -> None:
+                assert max_concurrent
                 if active_count[0] < max_concurrent:
                     active_count[0] += 1
                     subscribe(inner_source)
@@ -110,13 +111,13 @@ def merge_all_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
             m = SingleAssignmentDisposable()
             group.add(m)
 
-            def on_next(inner_source: Observable[_T]):
+            def on_next(inner_source: Union[Observable[_T], "Future[_T]"]):
                 inner_subscription = SingleAssignmentDisposable()
                 group.add(inner_subscription)
 
                 inner_source = (
                     from_future(inner_source)
-                    if is_future(inner_source)
+                    if isinstance(inner_source, Future)
                     else inner_source
                 )
 

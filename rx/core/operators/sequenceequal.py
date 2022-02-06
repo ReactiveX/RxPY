@@ -8,7 +8,7 @@ from rx.internal import default_comparer
 _T = TypeVar("_T")
 
 
-def _sequence_equal_(
+def sequence_equal_(
     second: Observable[_T], comparer: Optional[typing.Comparer[_T]] = None
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     comparer = comparer or default_comparer
@@ -116,4 +116,4 @@ def _sequence_equal_(
     return sequence_equal
 
 
-__all__ = ["_sequence_equal_"]
+__all__ = ["sequence_equal_"]

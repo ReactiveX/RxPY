@@ -1,20 +1,24 @@
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, NamedTuple, Optional
+from typing import Any, Callable, Optional, TypeVar, Generic
 
 from rx import defer, operators
 from rx.core import Observable, abc
 from rx.scheduler import TimeoutScheduler
 
+_T = TypeVar("_T")
 
-class Timestamp(NamedTuple):
-    value: Any
+
+@dataclass
+class Timestamp(Generic[_T]):
+    value: _T
     timestamp: datetime
 
 
 def timestamp_(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[Any]], Observable[Timestamp]]:
-    def timestamp(source: Observable[Any]) -> Observable[Timestamp]:
+) -> Callable[[Observable[_T]], Observable[Timestamp[_T]]]:
+    def timestamp(source: Observable[Any]) -> Observable[Timestamp[_T]]:
         """Records the timestamp for each value in an observable sequence.
 
         Examples:

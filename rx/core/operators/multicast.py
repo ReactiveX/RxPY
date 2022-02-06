@@ -1,14 +1,18 @@
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, TypeVar, Union
 
 from rx.core import ConnectableObservable, Observable, abc
-from rx.core.typing import Mapper
 from rx.disposable import CompositeDisposable
 
+_T = TypeVar("_T")
 
-def _multicast(subject: Optional[abc.SubjectBase] = None,
-               subject_factory: Optional[Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase]] = None,
-               mapper: Optional[Callable[[ConnectableObservable], Observable]] = None
-               ) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+
+def multicast_(
+    subject: Optional[abc.SubjectBase[_T]] = None,
+    subject_factory: Optional[
+        Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_T]]
+    ] = None,
+    mapper: Optional[Callable[[ConnectableObservable[_T]], Observable[_T]]] = None,
+) -> Callable[[Observable[_T]], Union[Observable[_T], ConnectableObservable[_T]]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
@@ -36,13 +40,27 @@ def _multicast(subject: Optional[abc.SubjectBase] = None,
         function.
     """
 
-    def multicast(source: Observable) -> Union[Observable, ConnectableObservable]:
+    def multicast(
+        source: Observable[_T],
+    ) -> Union[Observable[_T], ConnectableObservable[_T]]:
         if subject_factory:
-            def subscribe(observer, scheduler=None):
-                connectable = source.pipe(_multicast(subject=subject_factory(scheduler)))
-                subscription = mapper(connectable).subscribe(observer, scheduler=scheduler)
+
+            def subscribe(
+                observer: abc.ObserverBase[_T],
+                scheduler: Optional[abc.SchedulerBase] = None,
+            ) -> abc.DisposableBase:
+                connectable = source.pipe(
+                    multicast_(subject=subject_factory(scheduler))
+                )
+                assert mapper
+                subscription = mapper(connectable).subscribe(
+                    observer, scheduler=scheduler
+                )
 
                 return CompositeDisposable(subscription, connectable.connect(scheduler))
+
             return Observable(subscribe)
-        return ConnectableObservable(source, subject)
+        ret: ConnectableObservable[_T] = ConnectableObservable(source, subject)
+        return ret
+
     return multicast
