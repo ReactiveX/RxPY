@@ -12,7 +12,9 @@ def never_() -> Observable[Any]:
         An observable sequence whose observers will never get called.
     """
 
-    def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         return Disposable()
 
     return Observable(subscribe)

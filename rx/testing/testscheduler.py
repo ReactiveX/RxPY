@@ -21,7 +21,10 @@ class TestScheduler(VirtualTimeScheduler):
     __test__ = False
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: _TState = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: _TState = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at the specified virtual
         time.

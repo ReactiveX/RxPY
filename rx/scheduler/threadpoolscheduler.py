@@ -12,7 +12,9 @@ class ThreadPoolScheduler(NewThreadScheduler):
     class ThreadPoolThread(abc.StartableBase):
         """Wraps a concurrent future as a thread."""
 
-        def __init__(self, executor: ThreadPoolExecutor, target: typing.StartableTarget):
+        def __init__(
+            self, executor: ThreadPoolExecutor, target: typing.StartableTarget
+        ):
             self.executor: ThreadPoolExecutor = executor
             self.target: typing.StartableTarget = target
             self.future: Optional[Future] = None

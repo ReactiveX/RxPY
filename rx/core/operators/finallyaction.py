@@ -1,8 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 from rx.disposable import Disposable
-
 
 _T = TypeVar("_T")
 

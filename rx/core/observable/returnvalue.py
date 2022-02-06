@@ -6,7 +6,9 @@ from rx.scheduler import CurrentThreadScheduler
 _T = TypeVar("_T")
 
 
-def return_value_(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
+def return_value_(
+    value: _T, scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
     There is an alias called 'just'.
@@ -23,7 +25,9 @@ def return_value_(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> O
         element.
     """
 
-    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
         def action(scheduler: abc.SchedulerBase, state: Any = None):
@@ -35,8 +39,12 @@ def return_value_(value: _T, scheduler: Optional[abc.SchedulerBase] = None) -> O
     return Observable(subscribe)
 
 
-def _from_callable(supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None) -> Observable[_T]:
-    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
+def _from_callable(
+    supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+) -> Observable[_T]:
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+    ):
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
         def action(_: abc.SchedulerBase, __: Any = None):

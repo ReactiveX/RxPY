@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Optional, TypeVar, Generic
+from typing import Any, Callable, Generic, Optional, TypeVar
 
 from rx import defer, operators
 from rx.core import Observable, abc

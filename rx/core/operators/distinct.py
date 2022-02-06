@@ -24,9 +24,9 @@ class HashSet:
         return ret_value
 
 
-def _distinct(key_mapper: Optional[Mapper] = None,
-              comparer: Optional[Comparer] = None
-              ) -> Callable[[Observable], Observable]:
+def _distinct(
+    key_mapper: Optional[Mapper] = None, comparer: Optional[Comparer] = None
+) -> Callable[[Observable], Observable]:
     comparer = comparer or default_comparer
 
     def distinct(source: Observable) -> Observable:
@@ -61,6 +61,11 @@ def _distinct(key_mapper: Optional[Mapper] = None,
                         return
 
                 hashset.push(key) and observer.on_next(x)
-            return source.subscribe_(on_next, observer.on_error,observer.on_completed, scheduler)
+
+            return source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
+
         return Observable(subscribe)
+
     return distinct

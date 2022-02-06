@@ -13,11 +13,12 @@ from rx.internal.basic import identity
 from rx.subject import Subject
 
 
-def _group_by_until(key_mapper: Mapper,
-                    element_mapper: Optional[Mapper],
-                    duration_mapper: Callable[[GroupedObservable], Observable],
-                    subject_mapper: Optional[Callable[[], Subject]] = None,
-                    ) -> Callable[[Observable], Observable]:
+def _group_by_until(
+    key_mapper: Mapper,
+    element_mapper: Optional[Mapper],
+    duration_mapper: Callable[[GroupedObservable], Observable],
+    subject_mapper: Optional[Callable[[], Subject]] = None,
+) -> Callable[[Observable], Observable]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
     to control the lifetime of groups. When a group expires, it receives
@@ -116,7 +117,9 @@ def _group_by_until(key_mapper: Mapper,
                     def on_completed():
                         expire()
 
-                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(on_next, on_error, on_completed, scheduler)
+                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(
+                        on_next, on_error, on_completed, scheduler
+                    )
 
                 try:
                     element = element_mapper(x)
@@ -141,7 +144,11 @@ def _group_by_until(key_mapper: Mapper,
 
                 observer.on_completed()
 
-            group_disposable.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            group_disposable.add(
+                source.subscribe_(on_next, on_error, on_completed, scheduler)
+            )
             return ref_count_disposable
+
         return Observable(subscribe)
+
     return group_by_until

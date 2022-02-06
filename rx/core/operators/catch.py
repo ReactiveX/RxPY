@@ -6,7 +6,9 @@ from rx.disposable import SerialDisposable, SingleAssignmentDisposable
 from rx.internal.utils import is_future
 
 
-def catch_handler(source: Observable, handler: Callable[[Exception, Observable], Observable]) -> Observable:
+def catch_handler(
+    source: Observable, handler: Callable[[Exception, Observable], Observable]
+) -> Observable:
     def subscribe(observer, scheduler=None):
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -25,7 +27,9 @@ def catch_handler(source: Observable, handler: Callable[[Exception, Observable],
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler=scheduler)
 
-        d1.disposable = source.subscribe_(observer.on_next, on_error, observer.on_completed, scheduler)
+        d1.disposable = source.subscribe_(
+            observer.on_next, on_error, observer.on_completed, scheduler
+        )
         return subscription
 
     return Observable(subscribe)
@@ -59,6 +63,8 @@ def _catch(
         elif isinstance(handler, abc.ObservableBase):
             return rx.catch(source, handler)
         else:
-            raise TypeError("catch operator takes whether an Observable or a callable handler as argument.")
+            raise TypeError(
+                "catch operator takes whether an Observable or a callable handler as argument."
+            )
 
     return catch

@@ -6,12 +6,16 @@ from typing import Optional
 
 class SequenceContainsNoElementsError(Exception):
     def __init__(self, msg: Optional[str] = None):
-        super(SequenceContainsNoElementsError, self).__init__(msg or "Sequence contains no elements")
+        super(SequenceContainsNoElementsError, self).__init__(
+            msg or "Sequence contains no elements"
+        )
 
 
 class ArgumentOutOfRangeException(ValueError):
     def __init__(self, msg: Optional[str] = None):
-        super(ArgumentOutOfRangeException, self).__init__(msg or "Argument out of range")
+        super(ArgumentOutOfRangeException, self).__init__(
+            msg or "Argument out of range"
+        )
 
 
 class DisposedException(Exception):

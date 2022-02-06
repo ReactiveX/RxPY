@@ -37,7 +37,10 @@ def skip_with_time_(
             specified duration from the start of the source sequence.
         """
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             open = [False]
 
@@ -50,7 +53,9 @@ def skip_with_time_(
                 if open[0]:
                     observer.on_next(x)
 
-            d = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
+            d = source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler_
+            )
             return CompositeDisposable(t, d)
 
         return Observable(subscribe)

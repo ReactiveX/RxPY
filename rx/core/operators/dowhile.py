@@ -19,4 +19,5 @@ def _do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observ
 
     def do_while(source: Observable) -> Observable:
         return source.pipe(ops.concat(source.pipe(ops.while_do(condition))))
+
     return do_while

@@ -30,7 +30,9 @@ class Subject(Observable[_T], Observer[_T], abc.SubjectBase[_T]):
             raise DisposedException()
 
     def _subscribe_core(
-        self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
     ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()

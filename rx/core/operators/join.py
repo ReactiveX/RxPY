@@ -7,11 +7,11 @@ from rx.internal import noop
 from rx.operators import take
 
 
-def _join(right: Observable,
-          left_duration_mapper: Callable[[Any], Observable],
-          right_duration_mapper: Callable[[Any], Observable],
-          ) -> Callable[[Observable], Observable]:
-
+def _join(
+    right: Observable,
+    left_duration_mapper: Callable[[Any], Observable],
+    right_duration_mapper: Callable[[Any], Observable],
+) -> Callable[[Observable], Observable]:
     def join(source: Observable) -> Observable:
         """Correlates the elements of two sequences based on
         overlapping durations.
@@ -60,7 +60,9 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(
+                    noop, observer.on_error, lambda: expire(), scheduler
+                )
 
                 for val in right_map.values():
                     result = (value, val)
@@ -72,7 +74,11 @@ def _join(right: Observable,
                 if right_done or not len(left_map):
                     observer.on_completed()
 
-            group.add(left.subscribe_(on_next_left, observer.on_error, on_completed_left, scheduler))
+            group.add(
+                left.subscribe_(
+                    on_next_left, observer.on_error, on_completed_left, scheduler
+                )
+            )
 
             def on_next_right(value):
                 nonlocal right_id
@@ -97,7 +103,9 @@ def _join(right: Observable,
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(noop, observer.on_error, lambda: expire(), scheduler)
+                md.disposable = duration.pipe(take(1)).subscribe_(
+                    noop, observer.on_error, lambda: expire(), scheduler
+                )
 
                 for val in left_map.values():
                     result = (val, value)
@@ -109,7 +117,13 @@ def _join(right: Observable,
                 if left_done or not len(right_map):
                     observer.on_completed()
 
-            group.add(right.subscribe_(on_next_right, observer.on_error, on_completed_right, scheduler))
+            group.add(
+                right.subscribe_(
+                    on_next_right, observer.on_error, on_completed_right, scheduler
+                )
+            )
             return group
+
         return Observable(subscribe)
+
     return join

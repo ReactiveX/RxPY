@@ -29,7 +29,9 @@ class Scheduler(abc.SchedulerBase):
         return default_now()
 
     @abstractmethod
-    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -45,7 +47,10 @@ class Scheduler(abc.SchedulerBase):
 
     @abstractmethod
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -63,7 +68,10 @@ class Scheduler(abc.SchedulerBase):
 
     @abstractmethod
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

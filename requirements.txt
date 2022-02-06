@@ -1,3 +1,5 @@
 pytest
 coveralls
 flake8
+black
+isort

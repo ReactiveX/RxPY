@@ -2,6 +2,7 @@ from threading import RLock
 from typing import Optional
 
 from rx.core.abc import DisposableBase
+
 from .disposable import Disposable
 
 

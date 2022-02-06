@@ -15,7 +15,7 @@ def is_prime(i: int) -> bool:
         return False
 
     _max = int(math.floor(math.sqrt(i)))
-    for j in range(2, _max+1):
+    for j in range(2, _max + 1):
         if not i % j:
             return False
 
@@ -32,7 +32,7 @@ class OnNextPredicate:
             return True
         if other is None:
             return False
-        if other.kind != 'N':
+        if other.kind != "N":
             return False
         return self.predicate(other.value)
 
@@ -46,7 +46,7 @@ class OnErrorPredicate:
             return True
         if other is None:
             return False
-        if other.kind != 'E':
+        if other.kind != "E":
             return False
         return self.predicate(other.exception)
 

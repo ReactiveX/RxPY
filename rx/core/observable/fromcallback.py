@@ -5,7 +5,9 @@ from rx.core.typing import Mapper
 from rx.disposable import Disposable
 
 
-def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[[], Observable]:
+def _from_callback(
+    func: Callable, mapper: Optional[Mapper] = None
+) -> Callable[[], Observable]:
     """Converts a callback function to an observable sequence.
 
     Args:
@@ -23,7 +25,9 @@ def _from_callback(func: Callable, mapper: Optional[Mapper] = None) -> Callable[
     def function(*args):
         arguments = list(args)
 
-        def subscribe(observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
+        def subscribe(
+            observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None
+        ) -> abc.DisposableBase:
             def handler(*args):
                 results = list(args)
                 if mapper:

@@ -21,11 +21,17 @@ _TState = TypeVar("_TState")
 class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
     """Creates an object that schedules units of work on a designated thread."""
 
-    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None, exit_if_empty: bool = False) -> None:
+    def __init__(
+        self,
+        thread_factory: Optional[typing.StartableFactory] = None,
+        exit_if_empty: bool = False,
+    ) -> None:
         super().__init__()
         self._is_disposed = False
 
-        self._thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
+        self._thread_factory: typing.StartableFactory = (
+            thread_factory or default_thread_factory
+        )
         self._thread: Optional[typing.Startable] = None
         self._condition = threading.Condition(threading.Lock())
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
@@ -33,7 +39,9 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
 
         self._exit_if_empty = exit_if_empty
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -48,7 +56,10 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -66,7 +77,10 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         return self.schedule_absolute(self.now + duetime, action, state)
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

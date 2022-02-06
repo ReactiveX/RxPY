@@ -3,7 +3,6 @@ from typing import Callable, Optional, TypeVar, cast
 from rx.core import Observable, abc
 from rx.internal.exceptions import ArgumentOutOfRangeException
 
-
 _T = TypeVar("_T")
 
 

@@ -8,7 +8,9 @@ from rx.disposable import (
 )
 
 
-def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> Callable[[Observable], Observable]:
+def _delay_with_mapper(
+    subscription_delay=None, delay_duration_mapper=None
+) -> Callable[[Observable], Observable]:
     def delay_with_mapper(source: Observable) -> Observable:
         """Time shifts the observable sequence based on a subscription
         delay and a delay mapper function for each element.
@@ -66,19 +68,25 @@ def _delay_with_mapper(subscription_delay=None, delay_duration_mapper=None) -> C
                         delays.remove(d)
                         done()
 
-                    d.disposable = delay.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+                    d.disposable = delay.subscribe_(
+                        on_next, observer.on_error, on_completed, scheduler
+                    )
 
                 def on_completed():
                     at_end[0] = True
                     subscription.dispose()
                     done()
 
-                subscription.disposable = source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+                subscription.disposable = source.subscribe_(
+                    on_next, observer.on_error, on_completed, scheduler
+                )
 
             if not sub_delay:
                 start()
             else:
-                subscription.disposable = sub_delay.subscribe_(lambda _: start(), observer.on_error, start)
+                subscription.disposable = sub_delay.subscribe_(
+                    lambda _: start(), observer.on_error, start
+                )
 
             return CompositeDisposable(subscription, delays)
 

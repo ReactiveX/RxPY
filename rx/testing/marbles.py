@@ -13,7 +13,7 @@ from rx.testing import ReactiveTest, Recorded, TestScheduler
 
 new_thread_scheduler = NewThreadScheduler()
 
-MarblesContext = namedtuple('MarblesContext', 'start, cold, hot, exp')
+MarblesContext = namedtuple("MarblesContext", "start, cold, hot, exp")
 
 
 @contextmanager
@@ -63,20 +63,22 @@ def marbles_testing(timespan=1.0):
 
     def check():
         if outside_of_context:
-            warn('context functions should not be called outside of '
-                 'with statement.',
-                 UserWarning,
-                 stacklevel=3,
-                 )
+            warn(
+                "context functions should not be called outside of " "with statement.",
+                UserWarning,
+                stacklevel=3,
+            )
 
         if start_called:
-            warn('start() should only be called one time inside '
-                 'a with statement.',
-                 UserWarning,
-                 stacklevel=3,
-                 )
+            warn(
+                "start() should only be called one time inside " "a with statement.",
+                UserWarning,
+                stacklevel=3,
+            )
 
-    def test_start(create: Union[Observable, Callable[[], Observable]]) -> List[Recorded]:
+    def test_start(
+        create: Union[Observable, Callable[[], Observable]]
+    ) -> List[Recorded]:
         nonlocal start_called
         check()
 
@@ -93,30 +95,36 @@ def marbles_testing(timespan=1.0):
             created=created,
             subscribed=subscribed,
             disposed=disposed,
-            )
+        )
         start_called = True
         return mock_observer.messages
 
-    def test_expected(string: str, lookup: Dict = None, error: Exception = None) -> List[Recorded]:
+    def test_expected(
+        string: str, lookup: Dict = None, error: Exception = None
+    ) -> List[Recorded]:
         messages = parse(
             string,
             timespan=timespan,
             time_shift=subscribed,
             lookup=lookup,
             error=error,
-            )
+        )
         return messages_to_records(messages)
 
-    def test_cold(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+    def test_cold(
+        string: str, lookup: Dict = None, error: Exception = None
+    ) -> Observable:
         check()
         return rx.from_marbles(
             string,
             timespan=timespan,
             lookup=lookup,
             error=error,
-            )
+        )
 
-    def test_hot(string: str, lookup: Dict = None, error: Exception = None) -> Observable:
+    def test_hot(
+        string: str, lookup: Dict = None, error: Exception = None
+    ) -> Observable:
         check()
         hot_obs = rx.hot(
             string,
@@ -125,7 +133,7 @@ def marbles_testing(timespan=1.0):
             lookup=lookup,
             error=error,
             scheduler=scheduler,
-            )
+        )
         return hot_obs
 
     try:
@@ -134,8 +142,9 @@ def marbles_testing(timespan=1.0):
         outside_of_context = True
 
 
-def messages_to_records(messages: List[Tuple[RelativeTime, Notification]]
-                        ) -> List[Recorded]:
+def messages_to_records(
+    messages: List[Tuple[RelativeTime, Notification]]
+) -> List[Recorded]:
     """
     Helper function to convert messages returned by parse() to a list of
     Recorded.
@@ -145,8 +154,8 @@ def messages_to_records(messages: List[Tuple[RelativeTime, Notification]]
     dispatcher = dict(
         N=lambda t, n: ReactiveTest.on_next(t, n.value),
         E=lambda t, n: ReactiveTest.on_error(t, n.exception),
-        C=lambda t, n: ReactiveTest.on_completed(t)
-        )
+        C=lambda t, n: ReactiveTest.on_completed(t),
+    )
 
     for message in messages:
         time, notification = message

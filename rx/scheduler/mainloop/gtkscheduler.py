@@ -48,7 +48,9 @@ class GtkScheduler(PeriodicScheduler):
             if periodic:
                 state = cast(typing.ScheduledPeriodicAction, action)(state)
             else:
-                sad.disposable = self.invoke_action(cast(typing.ScheduledAction[_TState], action), state=state)
+                sad.disposable = self.invoke_action(
+                    cast(typing.ScheduledAction[_TState], action), state=state
+                )
 
             return periodic
 
@@ -60,7 +62,9 @@ class GtkScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:

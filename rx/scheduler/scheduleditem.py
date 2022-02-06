@@ -11,7 +11,11 @@ _TState = TypeVar("_TState")
 
 class ScheduledItem(object):
     def __init__(
-        self, scheduler: Scheduler, state: Optional[_TState], action: abc.ScheduledAction[_TState], duetime: datetime
+        self,
+        scheduler: Scheduler,
+        state: Optional[_TState],
+        action: abc.ScheduledAction[_TState],
+        duetime: datetime,
     ) -> None:
         self.scheduler: Scheduler = scheduler
         self.state: Optional[Any] = state

@@ -21,9 +21,13 @@ class Timestamp(object):
 
 
 def observable_delay_timespan(
-    source: Observable[_T], duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    source: Observable[_T],
+    duetime: typing.RelativeTime,
+    scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[_T]:
-    def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+    ):
         nonlocal duetime
 
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
@@ -49,7 +53,12 @@ def observable_delay_timespan(
                     exception[0] = notification.value.exception
                     should_run = not running[0]
                 else:
-                    queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
+                    queue.append(
+                        Timestamp(
+                            value=notification.value,
+                            timestamp=notification.timestamp + duetime,
+                        )
+                    )
                     should_run = not active[0]
                     active[0] = True
 
@@ -93,11 +102,15 @@ def observable_delay_timespan(
                         if ex:
                             observer.on_error(ex)
                         elif should_continue:
-                            mad.disposable = scheduler.schedule_relative(recurse_duetime, action)
+                            mad.disposable = scheduler.schedule_relative(
+                                recurse_duetime, action
+                            )
 
                     mad.disposable = _scheduler.schedule_relative(duetime, action)
 
-        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe_(on_next, scheduler=_scheduler)
+        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe_(
+            on_next, scheduler=_scheduler
+        )
 
         return CompositeDisposable(subscription, cancelable)
 

@@ -31,7 +31,9 @@ class TrampolineScheduler(Scheduler):
     def get_trampoline(self) -> Trampoline:
         return self._tramp
 
-    def schedule(self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -46,7 +48,10 @@ class TrampolineScheduler(Scheduler):
         return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -64,7 +69,10 @@ class TrampolineScheduler(Scheduler):
         return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

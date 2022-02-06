@@ -9,7 +9,8 @@ _T = TypeVar("_T")
 
 
 def skip_until_with_time_(
-    start_time: typing.AbsoluteOrRelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    start_time: typing.AbsoluteOrRelativeTime,
+    scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_until_with_time(source: Observable[_T]) -> Observable[_T]:
         """Skips elements from the observable source sequence until the
@@ -38,7 +39,10 @@ def skip_until_with_time_(
         else:
             scheduler_method = "schedule_relative"
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler_: Optional[abc.SchedulerBase] = None,
+        ):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             open = [False]
@@ -47,7 +51,9 @@ def skip_until_with_time_(
                 if open[0]:
                     observer.on_next(x)
 
-            subscription = source.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler_)
+            subscription = source.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler_
+            )
 
             def action(scheduler: abc.SchedulerBase, state: Any):
                 open[0] = True

@@ -1,6 +1,6 @@
 from typing import List
 
-from rx.core import typing, abc
+from rx.core import abc, typing
 from rx.scheduler import VirtualTimeScheduler
 
 

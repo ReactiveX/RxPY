@@ -12,4 +12,7 @@ def _buffer_with_time(
     if not timeshift:
         timeshift = timespan
 
-    return pipe(ops.window_with_time(timespan, timeshift, scheduler), ops.flat_map(lambda x: x.pipe(ops.to_iterable())))
+    return pipe(
+        ops.window_with_time(timespan, timeshift, scheduler),
+        ops.flat_map(lambda x: x.pipe(ops.to_iterable())),
+    )

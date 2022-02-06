@@ -6,11 +6,7 @@ from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import CurrentThreadScheduler
 
 
-def _generate(initial_state: Any,
-              condition: Predicate,
-              iterate: Mapper
-              ) -> Observable:
-
+def _generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Observable:
     def subscribe(observer, scheduler=None):
         scheduler = scheduler or CurrentThreadScheduler.singleton()
         first = True
@@ -46,4 +42,5 @@ def _generate(initial_state: Any,
 
         mad.disposable = scheduler.schedule(action)
         return mad
+
     return Observable(subscribe)

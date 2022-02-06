@@ -25,7 +25,9 @@ class TwistedScheduler(PeriodicScheduler):
         super().__init__()
         self._reactor = reactor
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:

@@ -10,7 +10,9 @@ _T = TypeVar("_T")
 def last_or_default_async(
     source: Observable[_T], has_default: bool = False, default_value: Any = None
 ) -> Observable[_T]:
-    def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ):
         value = [default_value]
         seen_value = [False]
 
@@ -57,4 +59,5 @@ def last_or_default(
 
     return last_or_default
 
-__all__ = [ "last_or_default", "last_or_default_async"]
+
+__all__ = ["last_or_default", "last_or_default_async"]

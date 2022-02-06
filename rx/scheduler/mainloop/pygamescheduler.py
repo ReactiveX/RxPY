@@ -35,7 +35,9 @@ class PyGameScheduler(PeriodicScheduler):
         self._lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:

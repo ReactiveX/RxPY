@@ -10,7 +10,9 @@ _T_in = TypeVar("_T_in", contravariant=True)
 
 
 class ScheduledObserver(Observer[_T_in]):
-    def __init__(self, scheduler: abc.SchedulerBase, observer: abc.ObserverBase[_T_in]) -> None:
+    def __init__(
+        self, scheduler: abc.SchedulerBase, observer: abc.ObserverBase[_T_in]
+    ) -> None:
         super().__init__()
 
         self.scheduler = scheduler

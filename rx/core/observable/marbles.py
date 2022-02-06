@@ -107,7 +107,9 @@ def from_marbles(
     scheduler: Optional[SchedulerBase] = None,
 ) -> Observable:
 
-    messages = parse(string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True)
+    messages = parse(
+        string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True
+    )
 
     def subscribe(observer, scheduler_):
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
@@ -247,7 +249,9 @@ def parse(
             elements = group[1:-1].split(",")
             for elm in elements:
                 check_stopped(elm)
-            grp_messages = [map_element(timestamp, elm) for elm in elements if elm != ""]
+            grp_messages = [
+                map_element(timestamp, elm) for elm in elements if elm != ""
+            ]
             messages.extend(grp_messages)
             iframe += len(group)
 

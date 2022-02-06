@@ -20,7 +20,11 @@ class ConnectableObservable(Observable[_T]):
 
         super().__init__()
 
-    def _subscribe_core(self, observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+    def _subscribe_core(
+        self,
+        observer: abc.ObserverBase[_T],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ):
         return self.subject.subscribe(observer, scheduler=scheduler)
 
     def connect(self, scheduler: Optional[abc.SchedulerBase] = None):
@@ -55,7 +59,10 @@ class ConnectableObservable(Observable[_T]):
             connectable_subscription[0] = source.connect()
             is_connected[0] = True
 
-        def subscribe(observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ):
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)

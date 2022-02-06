@@ -6,7 +6,7 @@ from weakref import WeakKeyDictionary
 from .trampoline import Trampoline
 from .trampolinescheduler import TrampolineScheduler
 
-log = logging.getLogger('Rx')
+log = logging.getLogger("Rx")
 
 
 class CurrentThreadScheduler(TrampolineScheduler):
@@ -21,12 +21,11 @@ class CurrentThreadScheduler(TrampolineScheduler):
     """
 
     _global: MutableMapping[
-        type,
-        MutableMapping[Thread, 'CurrentThreadScheduler']
+        type, MutableMapping[Thread, "CurrentThreadScheduler"]
     ] = WeakKeyDictionary()
 
     @classmethod
-    def singleton(cls) -> 'CurrentThreadScheduler':
+    def singleton(cls) -> "CurrentThreadScheduler":
         """
         Obtain a singleton instance for the current thread. Please note, if you
         pass this instance to another thread, it will effectively behave as
@@ -61,7 +60,6 @@ class CurrentThreadScheduler(TrampolineScheduler):
 
 
 class _Local(local):
-
     def __init__(self) -> None:
         super().__init__()
         self.tramp = Trampoline()

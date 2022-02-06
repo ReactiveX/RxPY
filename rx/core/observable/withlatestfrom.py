@@ -5,11 +5,17 @@ from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.utils import NotSet
 
 
-def with_latest_from_(parent: Observable[Any], *sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def with_latest_from_(
+    parent: Observable[Any], *sources: Observable[Any]
+) -> Observable[Tuple[Any, ...]]:
     NO_VALUE = NotSet()
 
-    def subscribe(observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None) -> abc.DisposableBase:
-        def subscribe_all(parent: Observable[Any], *children: Observable[Any]) -> List[SingleAssignmentDisposable]:
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
+        def subscribe_all(
+            parent: Observable[Any], *children: Observable[Any]
+        ) -> List[SingleAssignmentDisposable]:
 
             values = [NO_VALUE for _ in children]
 
@@ -20,7 +26,9 @@ def with_latest_from_(parent: Observable[Any], *sources: Observable[Any]) -> Obs
                     with parent.lock:
                         values[i] = value
 
-                subscription.disposable = child.subscribe_(on_next, observer.on_error, scheduler=scheduler)
+                subscription.disposable = child.subscribe_(
+                    on_next, observer.on_error, scheduler=scheduler
+                )
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
@@ -31,10 +39,14 @@ def with_latest_from_(parent: Observable[Any], *sources: Observable[Any]) -> Obs
                         result = (value,) + tuple(values)
                         observer.on_next(result)
 
-            disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
+            disp = parent.subscribe_(
+                on_next, observer.on_error, observer.on_completed, scheduler
+            )
             parent_subscription.disposable = disp
 
-            children_subscription = [subscribe_child(i, child) for i, child in enumerate(children)]
+            children_subscription = [
+                subscribe_child(i, child) for i, child in enumerate(children)
+            ]
 
             return [parent_subscription] + children_subscription
 

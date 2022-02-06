@@ -18,11 +18,17 @@ log = logging.getLogger("Rx")
 class NewThreadScheduler(PeriodicScheduler):
     """Creates an object that schedules each unit of work on a separate thread."""
 
-    def __init__(self, thread_factory: Optional[typing.StartableFactory] = None) -> None:
+    def __init__(
+        self, thread_factory: Optional[typing.StartableFactory] = None
+    ) -> None:
         super().__init__()
-        self.thread_factory: typing.StartableFactory = thread_factory or default_thread_factory
+        self.thread_factory: typing.StartableFactory = (
+            thread_factory or default_thread_factory
+        )
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -34,11 +40,16 @@ class NewThreadScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
+        scheduler = EventLoopScheduler(
+            thread_factory=self.thread_factory, exit_if_empty=True
+        )
         return scheduler.schedule(action, state)
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -52,11 +63,16 @@ class NewThreadScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        scheduler = EventLoopScheduler(thread_factory=self.thread_factory, exit_if_empty=True)
+        scheduler = EventLoopScheduler(
+            thread_factory=self.thread_factory, exit_if_empty=True
+        )
         return scheduler.schedule_relative(duetime, action, state)
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

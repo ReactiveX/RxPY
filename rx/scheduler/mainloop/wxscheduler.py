@@ -62,14 +62,18 @@ class WxScheduler(PeriodicScheduler):
             if periodic:
                 state = cast(typing.ScheduledPeriodicAction, action)(state)
             else:
-                sad.disposable = cast(typing.ScheduledAction[_TState], action)(scheduler, state)
+                sad.disposable = cast(typing.ScheduledAction[_TState], action)(
+                    scheduler, state
+                )
 
         msecs = max(1, int(self.to_seconds(time) * 1000.0))  # Must be non-zero
 
         log.debug("timeout wx: %s", msecs)
 
         timer = self._timer_class(interval)
-        timer.Start(msecs, self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT)
+        timer.Start(
+            msecs, self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT
+        )
         self._timers.add(timer)
 
         def dispose() -> None:
@@ -78,7 +82,9 @@ class WxScheduler(PeriodicScheduler):
 
         return CompositeDisposable(sad, Disposable(dispose))
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:

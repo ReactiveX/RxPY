@@ -1,6 +1,6 @@
-from typing import Any, TypeVar, Generic, Optional, cast
+from typing import Any, Generic, Optional, TypeVar, cast
 
-from rx.core import typing, Notification
+from rx.core import Notification, typing
 from rx.internal.basic import default_comparer
 
 _T = TypeVar("_T")

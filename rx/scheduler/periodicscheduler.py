@@ -38,7 +38,9 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
         disp: MultipleAssignmentDisposable = MultipleAssignmentDisposable()
         seconds: float = self.to_seconds(period)
 
-        def periodic(scheduler: abc.SchedulerBase, state: Optional[_TState] = None) -> Optional[Disposable]:
+        def periodic(
+            scheduler: abc.SchedulerBase, state: Optional[_TState] = None
+        ) -> Optional[Disposable]:
             if disp.is_disposed:
                 return None
 
@@ -59,7 +61,9 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
         return disp
 
     @abstractmethod
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -75,7 +79,10 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
 
     @abstractmethod
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -93,7 +100,10 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
 
     @abstractmethod
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: typing.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

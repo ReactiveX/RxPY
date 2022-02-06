@@ -16,7 +16,12 @@ class ObservableBase(Generic[_T_out], ABC):
     __slots__ = ()
 
     @abstractmethod
-    def subscribe(self, observer: ObserverBase[_T_out], *, scheduler: Optional[SchedulerBase] = None) -> DisposableBase:
+    def subscribe(
+        self,
+        observer: ObserverBase[_T_out],
+        *,
+        scheduler: Optional[SchedulerBase] = None
+    ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 
         Args:

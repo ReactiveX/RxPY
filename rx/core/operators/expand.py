@@ -22,6 +22,7 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             An observable sequence containing all the elements produced
             by the recursive expansion.
         """
+
         def subscribe(observer, scheduler=None):
             scheduler = scheduler or ImmediateScheduler.singleton()
 
@@ -66,7 +67,9 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
                         if active_count[0] == 0:
                             observer.on_completed()
 
-                    sad.disposable = work.subscribe_(on_next, observer.on_error, on_complete, scheduler)
+                    sad.disposable = work.subscribe_(
+                        on_next, observer.on_error, on_complete, scheduler
+                    )
                     m.disposable = scheduler.schedule(action)
 
                 if is_owner:
@@ -76,5 +79,7 @@ def _expand(mapper: Mapper) -> Callable[[Observable], Observable]:
             active_count[0] += 1
             ensure_active()
             return d
+
         return Observable(subscribe)
+
     return expand

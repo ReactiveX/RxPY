@@ -19,6 +19,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Check formatting
+        run: |
+          black --check --verbose rx
+          isort --check rx
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names

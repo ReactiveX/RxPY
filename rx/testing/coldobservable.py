@@ -1,6 +1,6 @@
 from typing import Any, List, Optional, TypeVar
 
-from rx.core import Observable, abc, Notification
+from rx.core import Notification, Observable, abc
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import VirtualTimeScheduler
 

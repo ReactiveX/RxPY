@@ -53,7 +53,9 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
         return self.to_datetime(self._clock)
 
-    def schedule(self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None) -> abc.DisposableBase:
+    def schedule(
+        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+    ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
         Args:
@@ -68,7 +70,10 @@ class VirtualTimeScheduler(PeriodicScheduler):
         return self.schedule_absolute(self._clock, action, state=state)
 
     def schedule_relative(
-        self, duetime: typing.RelativeTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.RelativeTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -86,7 +91,10 @@ class VirtualTimeScheduler(PeriodicScheduler):
         return self.schedule_absolute(time, action, state=state)
 
     def schedule_absolute(
-        self, duetime: typing.AbsoluteTime, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self,
+        duetime: typing.AbsoluteTime,
+        action: abc.ScheduledAction[_TState],
+        state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -225,7 +233,9 @@ class VirtualTimeScheduler(PeriodicScheduler):
 
     @classmethod
     @abstractmethod
-    def add(cls, absolute: typing.AbsoluteTime, relative: typing.RelativeTime) -> typing.AbsoluteTime:
+    def add(
+        cls, absolute: typing.AbsoluteTime, relative: typing.RelativeTime
+    ) -> typing.AbsoluteTime:
         """Adds a relative time value to an absolute time value.
 
         Args:
