@@ -13,12 +13,8 @@ from rx.internal.exceptions import WouldBlockException
 
 
 class TestImmediateScheduler(unittest.TestCase):
-
     def test_immediate_singleton(self):
-        scheduler = [
-            ImmediateScheduler(),
-            ImmediateScheduler.singleton()
-        ]
+        scheduler = [ImmediateScheduler(), ImmediateScheduler.singleton()]
         assert scheduler[0] is scheduler[1]
 
         gate = [threading.Semaphore(0), threading.Semaphore(0)]
@@ -51,7 +47,7 @@ class TestImmediateScheduler(unittest.TestCase):
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) <= timedelta(milliseconds=1)
+        assert abs(diff) <= timedelta(milliseconds=2)  # NOTE: may be 1 ms in CI
 
     def test_immediate_now_units(self):
         scheduler = ImmediateScheduler()
