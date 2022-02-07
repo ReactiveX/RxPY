@@ -29,7 +29,10 @@ def max_(
         maximum element in the source sequence.
     """
 
-    return pipe(ops.max_by(identity, comparer), ops.map(first_only))
+    return pipe(
+        ops.max_by(identity, comparer),
+        ops.map(first_only),
+    )
 
 
 __all__ = ["max_"]

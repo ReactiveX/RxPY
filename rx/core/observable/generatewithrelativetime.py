@@ -18,8 +18,9 @@ def generate_with_relative_time_(
     initial state until the condition fails.
 
     Example:
-        res = source.generate_with_relative_time(0, lambda x: True,
-        lambda x: x + 1, lambda x: 0.5)
+        res = source.generate_with_relative_time(
+            0, lambda x: True, lambda x: x + 1, lambda x: 0.5
+        )
 
     Args:
         initial_state: Initial state.
