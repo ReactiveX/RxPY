@@ -231,55 +231,55 @@ class Observable(abc.ObservableBase[_T]):
     @overload
     def pipe(
         self,
-        op1: Callable[[Observable[_T]], _A],
-        op2: Callable[[_A], _B],
-        op3: Callable[[_B], _C],
+        __op1: Callable[[Observable[_T]], _A],
+        __op2: Callable[[_A], _B],
+        __op3: Callable[[_B], _C],
     ) -> _C:
         ...
 
     @overload
     def pipe(
         self,
-        op1: Callable[[Observable[_T]], _A],
-        op2: Callable[[_A], _B],
-        op3: Callable[[_B], _C],
-        op4: Callable[[_C], _D],
+        __op1: Callable[[Observable[_T]], _A],
+        __op2: Callable[[_A], _B],
+        __op3: Callable[[_B], _C],
+        __op4: Callable[[_C], _D],
     ) -> _D:
         ...
 
     @overload
     def pipe(
         self,
-        op1: Callable[[Observable[_T]], _A],
-        op2: Callable[[_A], _B],
-        op3: Callable[[_B], _C],
-        op4: Callable[[_C], _D],
-        op5: Callable[[_D], _E],
+        __op1: Callable[[Observable[_T]], _A],
+        __op2: Callable[[_A], _B],
+        __op3: Callable[[_B], _C],
+        __op4: Callable[[_C], _D],
+        __op5: Callable[[_D], _E],
     ) -> _E:
         ...
 
     @overload
     def pipe(
-        self,  # pylint: disable=function-redefined, no-self-use, too-many-arguments
-        op1: Callable[[Observable[_T]], _A],
-        op2: Callable[[_A], _B],
-        op3: Callable[[_B], _C],
-        op4: Callable[[_C], _D],
-        op5: Callable[[_D], _E],
-        op6: Callable[[_E], _F],
+        self,
+        __op1: Callable[[Observable[_T]], _A],
+        __op2: Callable[[_A], _B],
+        __op3: Callable[[_B], _C],
+        __op4: Callable[[_C], _D],
+        __op5: Callable[[_D], _E],
+        __op6: Callable[[_E], _F],
     ) -> _F:
         ...
 
     @overload
     def pipe(
-        self,  # pylint: too-many-arguments
-        op1: Callable[[Observable[_T]], _A],
-        op2: Callable[[_A], _B],
-        op3: Callable[[_B], _C],
-        op4: Callable[[_C], _D],
-        op5: Callable[[_D], _E],
-        op6: Callable[[_E], _F],
-        op7: Callable[[_F], _G],
+        self,
+        __op1: Callable[[Observable[_T]], _A],
+        __op2: Callable[[_A], _B],
+        __op3: Callable[[_B], _C],
+        __op4: Callable[[_C], _D],
+        __op5: Callable[[_D], _E],
+        __op6: Callable[[_E], _F],
+        __op7: Callable[[_F], _G],
     ) -> _G:
         ...
 
@@ -371,7 +371,7 @@ class Observable(abc.ObservableBase[_T]):
 
         return concat(self, other)
 
-    def __getitem__(self, key: slice) -> Observable[_T]:
+    def __getitem__(self, key: Union[slice, int]) -> Observable[_T]:
         """
         Pythonic version of :func:`slice <rx.operators.slice>`.
 
@@ -413,10 +413,8 @@ class Observable(abc.ObservableBase[_T]):
 
         if isinstance(key, slice):
             start, stop, step = key.start, key.stop, key.step
-        elif isinstance(key, int):
-            start, stop, step = key, key + 1, 1
         else:
-            raise TypeError("Invalid argument type.")
+            start, stop, step = key, key + 1, 1
 
         from ..operators.slice import slice_
 
