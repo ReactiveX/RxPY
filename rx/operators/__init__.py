@@ -1270,6 +1270,7 @@ def flat_map(
 
     return flat_map_(mapper)
 
+
 @overload
 def flat_map_indexed(
     mapper_indexed: Optional["Future[_T2]"] = None,
