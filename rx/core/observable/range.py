@@ -23,7 +23,8 @@ def range_(
 
     Args:
         start: The value of the first integer in the sequence.
-        count: The number of sequential integers to generate.
+        stop: [Optional] Generate number up to (exclusive) the stop value. Default is `sys.maxsize`.
+        step: [Optional] The step to be used (default is 1).
         scheduler: The scheduler to schedule the values on.
 
     Returns:

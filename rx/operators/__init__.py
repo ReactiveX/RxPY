@@ -15,6 +15,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    overload,
 )
 
 from rx.core import (
@@ -1183,9 +1184,51 @@ def first_or_default(
     return first_or_default_(predicate, default_value)
 
 
+@overload
+def flat_map(
+    mapper: Optional["Future[_T2]"] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map(
+    mapper: Optional[Iterable[_T2]] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map(
+    mapper: Optional[Observable[_T2]] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map(
+    mapper: Optional[Mapper[_T1, "Future[_T2]"]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map(
+    mapper: Optional[Mapper[_T1, Iterable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+@overload
 def flat_map(
     mapper: Optional[Mapper[_T1, Observable[_T2]]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+def flat_map(
+    mapper: Optional[Any] = None,
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """The flat_map operator.
 
     .. marble::
@@ -1227,10 +1270,51 @@ def flat_map(
 
     return flat_map_(mapper)
 
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional["Future[_T2]"] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional[Iterable[_T2]] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional[Observable[_T2]] = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional[MapperIndexed[_T1, "Future[_T2]"]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional[MapperIndexed[_T1, Iterable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+@overload
+def flat_map_indexed(
+    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
 
 def flat_map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    mapper_indexed: Any = None,
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """The `flat_map_indexed` operator.
 
     One of the Following:

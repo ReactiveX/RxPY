@@ -1,11 +1,10 @@
 from asyncio import Future
-from typing import Callable, Iterable, Optional, TypeVar, Union
+from typing import Any, Callable, Iterable, Optional, TypeVar, Union, cast
 
 from rx import from_, from_future
 from rx import operators as ops
 from rx.core import Observable
 from rx.core.typing import Mapper, MapperIndexed
-from rx.internal.utils import is_future
 
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
@@ -13,19 +12,21 @@ _T2 = TypeVar("_T2")
 
 def _flat_map_internal(
     source: Observable[_T1],
-    mapper: Optional[Mapper[_T1, Observable[_T2]]] = None,
-    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
-) -> Observable[_T2]:
+    mapper: Optional[Mapper[_T1, Any]] = None,
+    mapper_indexed: Optional[MapperIndexed[_T1, Any]] = None,
+) -> Observable[Any]:
     def projection(x: _T1, i: int):
         mapper_result = (
             mapper(x) if mapper else mapper_indexed(x, i) if mapper_indexed else None
         )
-        if is_future(mapper_result):
-            result = from_future(mapper_result)
+        if isinstance(mapper_result, Future):
+            result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))
         elif isinstance(mapper_result, Iterable):
             result = from_(mapper_result)
-        else:
+        elif isinstance(mapper_result, Observable):
             result = mapper_result
+        else:
+            result = from_(mapper_result)
         return result
 
     return source.pipe(ops.map_indexed(projection), ops.merge_all())
@@ -64,9 +65,9 @@ def flat_map_(
 
 
 def flat_map_indexed_(
-    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    def flat_map_indexed(source: Observable[_T1]) -> Observable[_T2]:
+    mapper_indexed: Optional[Any] = None,
+) -> Callable[[Observable[Any]], Observable[Any]]:
+    def flat_map_indexed(source: Observable[Any]) -> Observable[Any]:
         """One of the Following:
         Projects each element of an observable sequence to an observable
         sequence and merges the resulting observable sequences into one

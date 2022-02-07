@@ -31,7 +31,6 @@ _E = TypeVar("_E")
 _F = TypeVar("_F")
 _G = TypeVar("_G")
 
-
 # Please make sure the version here remains the same as in project.cfg
 __version__ = "3.2.0"
 
@@ -929,7 +928,8 @@ def range(
 
     Args:
         start: The value of the first integer in the sequence.
-        count: The number of sequential integers to generate.
+        stop: [Optional] Generate number up to (exclusive) the stop value. Default is `sys.maxsize`.
+        step: [Optional] The step to be used (default is 1).
         scheduler: [Optional] The scheduler to schedule the values on. If not
             specified, the default is to use an instance of
             :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
