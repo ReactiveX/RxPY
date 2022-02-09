@@ -80,3 +80,5 @@ _build
 .pyre
 
 .ionide/
+
+.python-version
