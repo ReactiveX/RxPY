@@ -5,7 +5,6 @@ from typing import Any, List, Mapping, Optional, Tuple, Union
 
 from rx import Observable
 from rx.core import Notification, abc, notification, typing
-from rx.core.typing import AbsoluteOrRelativeTime, RelativeTime
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import NewThreadScheduler
 
@@ -34,8 +33,8 @@ tokens = re.compile(pattern)
 
 def hot(
     string: str,
-    timespan: RelativeTime = 0.1,
-    duetime: AbsoluteOrRelativeTime = 0.0,
+    timespan: typing.RelativeTime = 0.1,
+    duetime: typing.AbsoluteOrRelativeTime = 0.0,
     lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
@@ -102,8 +101,8 @@ def hot(
 
 def from_marbles(
     string: str,
-    timespan: RelativeTime = 0.1,
-    lookup: Optional[Mapping[str, Any]] = None,
+    timespan: typing.RelativeTime = 0.1,
+    lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[Any]:
@@ -118,7 +117,9 @@ def from_marbles(
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
         disp = CompositeDisposable()
 
-        def schedule_msg(message: Tuple[RelativeTime, Notification[Any]]) -> None:
+        def schedule_msg(
+            message: Tuple[typing.RelativeTime, Notification[Any]]
+        ) -> None:
             duetime, notification = message
 
             def action(scheduler: abc.SchedulerBase, state: Any = None):
@@ -137,12 +138,12 @@ def from_marbles(
 
 def parse(
     string: str,
-    timespan: RelativeTime = 1.0,
-    time_shift: RelativeTime = 0.0,
+    timespan: typing.RelativeTime = 1.0,
+    time_shift: typing.RelativeTime = 0.0,
     lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
     raise_stopped: bool = False,
-) -> List[Tuple[RelativeTime, notification.Notification[Any]]]:
+) -> List[Tuple[typing.RelativeTime, notification.Notification[Any]]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
