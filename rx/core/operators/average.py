@@ -1,11 +1,9 @@
-from typing import Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar, cast
 
 from rx import operators
-from rx.core import Observable
-from rx.core.typing import Mapper
+from rx.core import Observable, typing
 
 _T = TypeVar("_T")
-_TKey = TypeVar("_TKey")
 
 
 class AverageValue(object):
@@ -15,7 +13,7 @@ class AverageValue(object):
 
 
 def average_(
-    key_mapper: Optional[Mapper[_T, _TKey]] = None,
+    key_mapper: Optional[typing.Mapper[_T, float]] = None,
 ) -> Callable[[Observable[_T]], Observable[float]]:
     def average(source: Observable[_T]) -> Observable[float]:
         """Partially applied average operator.
@@ -35,11 +33,9 @@ def average_(
             average of the sequence of values.
         """
 
-        if key_mapper:
-            return source.pipe(
-                operators.map(key_mapper),
-                operators.average(),
-            )
+        key_mapper_: typing.Mapper[_T, float] = key_mapper or (
+            lambda x: float(cast(Any, x))
+        )
 
         def accumulator(prev: AverageValue, cur: float) -> AverageValue:
             return AverageValue(sum=prev.sum + cur, count=prev.count + 1)
@@ -51,11 +47,14 @@ def average_(
             return s.sum / float(s.count)
 
         seed = AverageValue(sum=0, count=0)
-        return source.pipe(
+
+        ret = source.pipe(
+            operators.map(key_mapper_),
             operators.scan(accumulator, seed),
             operators.last(),
             operators.map(mapper),
         )
+        return ret
 
     return average
 

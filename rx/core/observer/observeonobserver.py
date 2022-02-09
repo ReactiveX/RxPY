@@ -1,10 +1,12 @@
-from typing import Any
+from typing import Any, TypeVar
 
 from .scheduledobserver import ScheduledObserver
 
+_T = TypeVar("_T")
 
-class ObserveOnObserver(ScheduledObserver):
-    def _on_next_core(self, value: Any) -> None:
+
+class ObserveOnObserver(ScheduledObserver[_T]):
+    def _on_next_core(self, value: _T) -> None:
         super()._on_next_core(value)
         self.ensure_active()
 

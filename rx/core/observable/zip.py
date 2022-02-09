@@ -7,8 +7,6 @@ from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal.concurrency import synchronized
 
-# pylint: disable=redefined-builtin
-
 
 def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
@@ -49,8 +47,8 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
                 observer.on_next(res)
 
-                # after sending the zipped values, complete the observer if at least one upstream observable
-                # is completed and its queue has length zero
+                # after sending the zipped values, complete the observer if at least one
+                # upstream observable is completed and its queue has length zero
                 if any(
                     (
                         done

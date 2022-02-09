@@ -11,7 +11,7 @@ _T_in = TypeVar("_T_in", contravariant=True)
 class AutoDetachObserver(abc.ObserverBase[_T_in]):
     def __init__(
         self,
-        on_next: Optional[typing.OnNext] = None,
+        on_next: Optional[typing.OnNext[_T_in]] = None,
         on_error: Optional[typing.OnError] = None,
         on_completed: Optional[typing.OnCompleted] = None,
     ) -> None:
