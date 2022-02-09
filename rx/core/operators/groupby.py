@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional, TypeVar
 
-from rx.core import Observable, GroupedObservable, typing
+from rx.core import GroupedObservable, Observable, typing
 from rx.subject import Subject
 
 _T = TypeVar("_T")
