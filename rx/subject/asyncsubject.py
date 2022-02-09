@@ -1,6 +1,6 @@
-from typing import Any, Optional, TypeVar, cast
+from typing import Optional, TypeVar, cast
 
-from rx.core import abc, typing
+from rx.core import abc
 from rx.disposable import Disposable
 
 from .innersubscription import InnerSubscription

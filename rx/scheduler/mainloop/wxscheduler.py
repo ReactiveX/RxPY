@@ -49,7 +49,7 @@ class WxScheduler(PeriodicScheduler):
     def _wxtimer_schedule(
         self,
         time: typing.AbsoluteOrRelativeTime,
-        action: typing.ScheduledSingleOrPeriodicAction,
+        action: typing.ScheduledSingleOrPeriodicAction[_TState],
         state: Optional[_TState] = None,
         periodic: bool = False,
     ) -> abc.DisposableBase:
@@ -60,7 +60,7 @@ class WxScheduler(PeriodicScheduler):
         def interval() -> None:
             nonlocal state
             if periodic:
-                state = cast(typing.ScheduledPeriodicAction, action)(state)
+                state = cast(typing.ScheduledPeriodicAction[_TState], action)(state)
             else:
                 sad.disposable = cast(typing.ScheduledAction[_TState], action)(
                     scheduler, state
@@ -141,7 +141,7 @@ class WxScheduler(PeriodicScheduler):
     def schedule_periodic(
         self,
         period: typing.RelativeTime,
-        action: typing.ScheduledPeriodicAction,
+        action: typing.ScheduledPeriodicAction[_TState],
         state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.

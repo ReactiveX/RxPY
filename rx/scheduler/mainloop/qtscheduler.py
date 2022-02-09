@@ -102,7 +102,7 @@ class QtScheduler(PeriodicScheduler):
     def schedule_periodic(
         self,
         period: typing.RelativeTime,
-        action: typing.ScheduledPeriodicAction,
+        action: typing.ScheduledPeriodicAction[_TState],
         state: Optional[_TState] = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.

@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar
+from typing import Optional, TypeVar
 
 from rx.core import abc
 from rx.disposable import Disposable
