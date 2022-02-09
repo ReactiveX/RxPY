@@ -854,9 +854,9 @@ def do_while(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[
         An observable sequence which is repeated as long
         as the condition holds.
     """
-    from rx.core.operators.dowhile import _do_while
+    from rx.core.operators.dowhile import do_while_
 
-    return _do_while(condition)
+    return do_while_(condition)
 
 
 def element_at(index: int) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -943,7 +943,9 @@ def exclusive() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     return exclusive_()
 
 
-def expand(mapper: Mapper) -> Callable[[Observable[_T]], Observable[_T]]:
+def expand(
+    mapper: typing.Mapper[_T, Observable[_T]]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Expands an observable sequence by recursively invoking mapper.
 
     Args:
@@ -955,9 +957,9 @@ def expand(mapper: Mapper) -> Callable[[Observable[_T]], Observable[_T]]:
         An observable sequence containing all the elements produced
     by the recursive expansion.
     """
-    from rx.core.operators.expand import _expand
+    from rx.core.operators.expand import expand_
 
-    return _expand(mapper)
+    return expand_(mapper)
 
 
 def filter(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -1450,9 +1452,9 @@ def group_by(
         corresponds to a unique key value, containing all elements that
         share that same key value.
     """
-    from rx.core.operators.groupby import _group_by
+    from rx.core.operators.groupby import group_by_
 
-    return _group_by(key_mapper, element_mapper, subject_mapper)
+    return group_by_(key_mapper, element_mapper, subject_mapper)
 
 
 def group_by_until(

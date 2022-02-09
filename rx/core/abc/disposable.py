@@ -4,7 +4,7 @@ from typing import Optional, Type
 
 
 class DisposableBase(ABC):
-    """Disposable abstract base class. Untyped."""
+    """Disposable abstract base class."""
 
     __slots__ = ()
 

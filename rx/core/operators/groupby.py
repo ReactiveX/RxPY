@@ -12,7 +12,7 @@ _TKey = TypeVar("_TKey")
 _TValue = TypeVar("_TValue")
 
 
-def _group_by(
+def group_by_(
     key_mapper: Mapper[_T, _TKey],
     element_mapper: Optional[Mapper[_T, _TValue]] = None,
     subject_mapper: Optional[Callable[[], Subject[_TValue]]] = None,
@@ -25,4 +25,4 @@ def _group_by(
     )
 
 
-__all__ = ["_group_by"]
+__all__ = ["group_by_"]

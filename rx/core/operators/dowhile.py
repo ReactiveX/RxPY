@@ -1,10 +1,14 @@
-from typing import Any, Callable
+from typing import Callable, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable
 
+_T = TypeVar("_T")
 
-def _do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observable]:
+
+def do_while_(
+    condition: Callable[[_T], bool]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a do while
     loop.
 
@@ -17,7 +21,10 @@ def _do_while(condition: Callable[[Any], bool]) -> Callable[[Observable], Observ
         as the condition holds.
     """
 
-    def do_while(source: Observable) -> Observable:
+    def do_while(source: Observable[_T]) -> Observable[_T]:
         return source.pipe(ops.concat(source.pipe(ops.while_do(condition))))
 
     return do_while
+
+
+__all__ = ["do_while_"]
