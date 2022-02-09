@@ -16,7 +16,7 @@ class SingleAssignmentDisposable(DisposableBase):
         """Initializes a new instance of the SingleAssignmentDisposable
         class.
         """
-        self.is_disposed = False
+        self.is_disposed: bool = False
         self.current: Optional[DisposableBase] = None
         self.lock = RLock()
 
@@ -29,18 +29,12 @@ class SingleAssignmentDisposable(DisposableBase):
         if self.current:
             raise Exception("Disposable has already been assigned")
 
-        old: Optional[DisposableBase] = None
-
         with self.lock:
             should_dispose = self.is_disposed
             if not should_dispose:
-                old = self.current
                 self.current = value
 
-        if old is not None:
-            old.dispose()
-
-        if should_dispose and value:
+        if self.is_disposed and value:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)
